@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box'
-import { ReactElement, ReactNode } from 'react'
+import SvgIcon from '@mui/material/SvgIcon'
+import sortBy from 'lodash/sortBy'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
@@ -14,10 +16,11 @@ import Play3Icon from '@core/shared/ui/icons/Play3'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock
-} from '../../../../__generated__/GetJourney'
+  BlockFields as Block,
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_ImageBlock as ImageBlock,
+  BlockFields_StepBlock as StepBlock
+} from '../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { useStepBlockNextBlockUpdateMutation } from '../../../libs/useStepBlockNextBlockUpdateMutation'
 
@@ -25,30 +28,6 @@ import { BaseNode } from './BaseNode'
 
 export interface StepBlockNodeData extends TreeBlock<StepBlock> {
   steps: Array<TreeBlock<StepBlock>>
-}
-
-interface BlockIconProps {
-  background: string
-  icon: ReactNode
-}
-function BlockIcon({ background, icon }: BlockIconProps): ReactElement {
-  return (
-    <Box
-      sx={{
-        borderRadius: 20,
-        height: 30,
-        width: 30,
-        display: 'flex',
-        position: 'absolute',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'white',
-        background
-      }}
-    >
-      {icon}
-    </Box>
-  )
 }
 
 function getBackgroundImage(card?: TreeBlock<CardBlock>): string | undefined {
@@ -85,84 +64,114 @@ function getBackgroundImage(card?: TreeBlock<CardBlock>): string | undefined {
   return bgImage
 }
 
-function getIconAndColorForBlockType(blockType: string): {
-  icon: React.ReactNode
-} {
-  switch (blockType) {
-    case 'VideoBlock':
-      return {
-        icon: (
-          <BlockIcon
-            background="linear-gradient(to bottom, #f89f4c, #de7818)"
-            icon={<Play3Icon fontSize="small" />}
-          />
-        )
-      }
-
-    case 'TextResponseBlock':
-      return {
-        icon: (
-          <BlockIcon
-            background="linear-gradient(to bottom, #b849ec, #9415d1)"
-            icon={<TextInput1Icon fontSize="small" />}
-          />
-        )
-      }
-
-    case 'ButtonBlock':
-      return {
-        icon: (
-          <BlockIcon
-            background="linear-gradient(to bottom, #4c9bf8, #1873de)"
-            icon={<GitBranchIcon fontSize="small" />}
-          />
-        )
-      }
-    case 'TypographyBlock':
-      return {
-        icon: (
-          <BlockIcon
-            background="linear-gradient(to bottom, #00C3C3, #03a3a3)"
-            icon={<AlignCenterIcon fontSize="small" />}
-          />
-        )
-      }
-
-    case 'RadioQuestionBlock':
-      return {
-        icon: (
-          <BlockIcon
-            background="linear-gradient(to bottom, #b849ec, #9415d1)"
-            icon={<TextInput1Icon fontSize="small" />}
-          />
-        )
-      }
-
-    default:
-      return {
-        icon: <FlexAlignBottom1Icon fontSize="small" />
-      }
-  }
+interface BlockIconProps {
+  typename: Block['__typename']
 }
 
-function hasBlockOfType(step, blockType): boolean {
-  return step?.children[0].children.some(
-    (child) => child.__typename === blockType
+function BlockIcon({ typename }: BlockIconProps): ReactElement {
+  let background: string | undefined
+  let Icon: typeof SvgIcon
+  switch (typename) {
+    case 'VideoBlock':
+      background = 'linear-gradient(to bottom, #f89f4c, #de7818)'
+      Icon = Play3Icon
+      break
+    case 'TextResponseBlock':
+      background = 'linear-gradient(to bottom, #b849ec, #9415d1)'
+      Icon = TextInput1Icon
+      break
+    case 'ButtonBlock':
+      background = 'linear-gradient(to bottom, #4c9bf8, #1873de)'
+      Icon = GitBranchIcon
+      break
+    case 'TypographyBlock':
+      background = 'linear-gradient(to bottom, #00C3C3, #03a3a3)'
+      Icon = AlignCenterIcon
+      break
+    case 'RadioQuestionBlock':
+      background = 'linear-gradient(to bottom, #b849ec, #9415d1)'
+      Icon = TextInput1Icon
+      break
+    default:
+      Icon = FlexAlignBottom1Icon
+  }
+
+  return (
+    <Box
+      sx={{
+        borderRadius: 20,
+        height: 30,
+        width: 30,
+        display: 'flex',
+        position: 'absolute',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        background
+      }}
+    >
+      <Icon fontSize="small" />
+    </Box>
   )
+}
+
+function getPriorityBlock(card?: TreeBlock<CardBlock>): TreeBlock | undefined {
+  if (card == null) return
+
+  const children = sortBy(
+    card.children.filter(({ id }) => card.coverBlockId !== id),
+    (block) => {
+      switch (block.__typename) {
+        case 'VideoBlock':
+          return 1
+        case 'TextResponseBlock':
+          return 2
+        case 'ButtonBlock':
+          return 3
+        case 'RadioQuestionBlock':
+          return 4
+        case 'TypographyBlock':
+          return 5
+        default:
+          return 6
+      }
+    }
+  )
+  return children[0]
+}
+
+interface CardMetadata {
+  title?: string
+  subtitle?: string
+  description?: string
+  priorityBlock?: TreeBlock
+  bgImage?: string
+}
+
+function getCardMetadata(card?: TreeBlock<CardBlock>): CardMetadata {
+  if (card == null) return {}
+
+  const priorityBlock = getPriorityBlock(card)
+  const bgImage = getBackgroundImage(card)
+
+  // if priority block is video
+
+  // set language as subtitle
+  // set video title as title
+  // set duration as the description
+
+  // else get the title from typography
+  // get the subtitle
+
+  return { priorityBlock, bgImage }
 }
 
 export function StepBlockNode({
   data: { steps, ...step }
 }: NodeProps<StepBlockNodeData>): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-  const { title, subtitle } = getStepHeading(step.id, step.children, steps, t)
-  const videoStartToEnd = '0:00 - 99:99'
-  const language = 'Eastern European Arabic language'
-
-  const card = step.children.find((card) => card.__typename === 'CardBlock') as
-    | TreeBlock<CardBlock>
-    | undefined
-  const bgImage = getBackgroundImage(card)
+  const card = step?.children[0] as TreeBlock<CardBlock> | undefined
+  const { title, subtitle, description, priorityBlock, bgImage } =
+    getCardMetadata(card)
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const {
     state: { selectedStep },
@@ -195,93 +204,37 @@ export function StepBlockNode({
     dispatch({ type: 'SetSelectedStepAction', step })
   }
 
-  const blockType = hasBlockOfType(step, 'VideoBlock')
-    ? 'VideoBlock'
-    : hasBlockOfType(step, 'TextResponseBlock')
-    ? 'TextResponseBlock'
-    : hasBlockOfType(step, 'ButtonBlock')
-    ? 'ButtonBlock'
-    : hasBlockOfType(step, 'RadioQuestionBlock')
-    ? 'RadioQuestionBlock'
-    : hasBlockOfType(step, 'TypographyBlock')
-    ? 'TypographyBlock'
-    : 'DefaultBlock'
-
-  const { icon } = getIconAndColorForBlockType(blockType)
   return (
     <BaseNode
       selected={selectedStep?.id === step.id}
       onSourceConnect={handleConnect}
       onClick={handleClick}
       icon={
-        card?.backgroundColor != null || bgImage != null ? (
-          <Box
-            sx={{
-              height: '100%',
-              flexShrink: 0,
-              width: 56,
-              left: 0,
-              margin: 0,
-              borderLeft: '1px solid white',
-              borderTop: '1px solid white',
-              borderBottom: '1px solid white',
-              borderRadius: '8px 0 0 8px ',
-              bgcolor: card?.backgroundColor,
-              backgroundImage: bgImage != null ? `url(${bgImage})` : undefined,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center center',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Box
-              sx={{
-                borderRadius: 20,
-                height: '30%',
-                width: '40%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'white',
-                opacity: hasBlockOfType(
-                  steps[step.parentOrder ?? -1],
-                  blockType
-                )
-                  ? 1
-                  : 0
-              }}
-            >
-              {icon}
-            </Box>
-          </Box>
-        ) : (
-          <Box
-            sx={{
-              height: '100%',
-              flexShrink: 0,
-              width: 50,
-              left: 0,
-              margin: 0,
-              borderLeft: '1px solid white',
-              borderTop: '1px solid white',
-              borderBottom: '1px solid white',
-              borderRadius: '8px 0 0 8px ',
-              backgroundColor: '#efefef',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center center',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-start'
-            }}
-          />
-        )
+        <Box
+          sx={{
+            height: '100%',
+            flexShrink: 0,
+            width: 50,
+            border: '1px solid white',
+            borderBottomLeftRadius: 2,
+            borderBottomRightRadius: 2,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            bgcolor: card?.backgroundColor ?? 'background.default',
+            backgroundImage: bgImage != null ? `url(${bgImage})` : undefined
+          }}
+        >
+          {priorityBlock != null && (
+            <BlockIcon typename={priorityBlock.__typename} />
+          )}
+        </Box>
       }
       title={title}
-      language={language}
       subtitle={subtitle}
-      blockType={blockType}
-      videoStartToEnd={videoStartToEnd}
+      description={description}
     />
   )
 }

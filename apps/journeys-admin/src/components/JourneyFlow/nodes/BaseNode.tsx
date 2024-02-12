@@ -32,11 +32,9 @@ interface BaseNodeProps {
   ) => void
   onClick?: () => void
   icon: ReactNode
-  title: string
-  language?: string
+  title?: string
   subtitle?: string
-  blockType?: string
-  videoStartToEnd?: string
+  description?: string
   selected?: 'descendant' | boolean
   variant?: 'step' | 'action'
 }
@@ -96,453 +94,214 @@ export function BaseNode({
 
   switch (variant) {
     case 'step':
-      switch (blockType) {
-        case 'VideoBlock':
-          return (
-            <Box
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              sx={{ height: '150%', overflow: 'visible' }}
+      return (
+        <Box
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          sx={{ height: '150%', overflow: 'visible' }}
+        >
+          <Card
+            sx={{
+              borderRadius: 2,
+              outline: '2px solid',
+              outlineColor: (theme) =>
+                selected === true
+                  ? theme.palette.primary.main
+                  : selected === 'descendant'
+                  ? theme.palette.divider
+                  : 'transparent',
+              outlineOffset: '5px'
+            }}
+          >
+            <CardContent
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyItems: 'center',
+                width: STEP_NODE_WIDTH,
+                height: STEP_NODE_HEIGHT,
+                gap: 2,
+                margin: 0,
+                padding: 0,
+                borderRadius: 1
+              }}
+              onClick={onClick}
             >
-              <Card
+              {icon}
+
+              <Box
                 sx={{
-                  borderRadius: 2,
-                  outline: '2px solid',
-                  outlineColor: (theme) =>
-                    selected === true
-                      ? theme.palette.primary.main
-                      : selected === 'descendant'
-                      ? theme.palette.divider
-                      : 'transparent',
-                  outlineOffset: '5px'
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  justifyContent: 'center',
+                  width: STEP_NODE_WIDTH,
+                  height: STEP_NODE_HEIGHT,
+                  margin: 0,
+                  padding: 2
                 }}
+                onClick={onClick}
               >
-                <CardContent
+                <Typography
                   sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'flex-start',
-                    justifyContent: 'center',
-                    width: STEP_NODE_WIDTH,
-                    height: STEP_NODE_HEIGHT,
-                    gap: 2,
-                    margin: 0,
-                    padding: 0
+                    display: '-webkit-box',
+                    '-webkit-box-orient': 'vertical',
+                    '-webkit-line-clamp': '2',
+                    overflow: 'hidden',
+                    padding: 0,
+                    fontSize: 11,
+                    fontWeight: 'bold',
+                    height: 'auto',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    alignSelf: 'flex-start',
+                    marginBottom: 1,
+                    lineHeight: 1.3,
+                    alignItems: 'flex-end'
                   }}
-                  onClick={onClick}
                 >
-                  {icon}
-
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'left',
-                      justifyContent: 'center',
-                      width: STEP_NODE_WIDTH,
-                      height: STEP_NODE_HEIGHT,
-                      margin: 0,
-                      paddingLeft: 1,
-                      paddingRight: 3
-                    }}
-                    onClick={onClick}
-                  >
-                    <Typography
+                  {title ?? (
+                    // replace with skeleton
+                    <Box
                       sx={{
-                        display: '-webkit-box',
-                        '-webkit-box-orient': 'vertical',
-                        '-webkit-line-clamp': '1',
-                        overflow: 'hidden',
-                        padding: 0,
-                        fontSize: 10,
-                        color: '#7f7e8c',
-                        height: 10,
-                        lineHeight: 1,
-                        marginBottom: 0,
-                        alignContent: 'left'
-                      }}
-                    >
-                      {language !== '' ? (
-                        language
-                      ) : (
-                        <Box
-                          sx={{
-                            height: 12,
-                            width: 37,
-                            borderRadius: 1,
-                            backgroundColor: '#efefef',
-                            backgroundSize: 'cover',
-                            alignItems: 'left',
-
-                            lineHeight: 1,
-                            alignContent: 'left',
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                            marginTop: 0
-                          }}
-                        />
-                      )}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        display: '-webkit-box',
-                        '-webkit-box-orient': 'vertical',
-                        '-webkit-line-clamp': '2',
-                        overflow: 'hidden',
-                        fontWeight: 'bold',
-                        fontSize: 11,
-                        padding: 0,
-                        paddingBottom: '1px',
-                        top: 0,
-                        lineHeight: 1.2,
-                        transform: 'scaleY(0.9)',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        alignSelf: 'flex-start',
-                        justifyContent: 'center',
-                        marginBottom: 1,
-                        marginTop: 1
-                      }}
-                    >
-                      {title !== '' ? (
-                        title
-                      ) : (
-                        <Box
-                          sx={{
-                            height: 12,
-                            width: 117,
-                            borderRadius: 1,
-                            backgroundColor: '#efefef',
-                            backgroundSize: 'cover',
-                            alignItems: 'left',
-                            alignContent: 'left',
-                            display: 'flex',
-                            justifyContent: 'flex-start'
-                          }}
-                        />
-                      )}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        display: '-webkit-box',
-                        '-webkit-box-orient': 'vertical',
-                        '-webkit-line-clamp': '2',
-                        overflow: 'hidden',
-                        padding: 0,
-                        fontSize: 10,
-                        height: 11,
-                        lineHeight: 1.2,
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        alignSelf: 'flex-start',
-                        marginBottom: 0,
-                        top: 0
-                      }}
-                    >
-                      {videoStartToEnd}
-                    </Typography>
-                  </Box>
-                </CardContent>
-                <Handle
-                  type="target"
-                  position={Position.Top}
-                  style={{
-                    width: 7.5,
-                    height: 7.5,
-                    background: 'white',
-                    border:
-                      selected !== false
-                        ? '2px solid #c52d3aff'
-                        : '2px solid #aaacbb',
-                    outline: '1px solid white',
-                    outlineColor: 'white',
-                    cursor: 'pointer',
-                    top: selected !== false ? -9.5 : -4
-                  }}
-                />
-                <Handle
-                  type="target"
-                  position={Position.Bottom}
-                  isConnectableStart={false}
-                  style={{
-                    overflow: 'visible',
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: 0,
-                    background: 'tranparent',
-                    opacity: 0
-                  }}
-                />
-                <Handle
-                  type="source"
-                  position={Position.Bottom}
-                  onConnect={onSourceConnect}
-                  onClick={handleClick}
-                  style={{
-                    width: 7.5,
-                    height: 7.5,
-                    background: 'white',
-                    border:
-                      selected !== false
-                        ? '2px solid #c52d3aff'
-                        : '2px solid #aaacbb',
-                    outline: '1px solid',
-                    outlineColor: 'white',
-                    visibility: isHovered ? 'hidden' : 'visible',
-                    bottom: selected !== false ? -9.5 : -4
-                  }}
-                />
-
-                <Handle
-                  type="source"
-                  position={Position.Bottom}
-                  onConnect={onSourceConnect}
-                  onClick={handleClick}
-                  style={{
-                    position: 'fixed',
-                    width: 40,
-                    height: 40,
-                    top: 60,
-                    background: 'transparent',
-                    borderColor: 'transparent',
-                    borderRadius: 20,
-                    overflow: 'visible'
-                  }}
-                />
-                {isHovered && (
-                  <>
-                    <ArrowDownwardRoundedIcon
-                      style={{
+                        height: 12,
+                        width: 117,
+                        borderRadius: 1,
+                        backgroundColor: '#efefef',
+                        backgroundSize: 'cover',
+                        alignItems: 'left',
+                        alignContent: 'left',
                         display: 'flex',
-                        top: STEP_NODE_HEIGHT - 9,
-                        left: STEP_NODE_WIDTH / 2 - 9,
-                        position: 'absolute',
-                        borderRadius: '50%',
-                        color: 'white',
-                        fontSize: 'large',
-                        padding: 0,
-                        marginTop: 5,
-                        backgroundColor: '#c52d3aff'
+                        justifyContent: 'flex-end'
                       }}
                     />
-                  </>
-                )}
-              </Card>
-            </Box>
-          )
-
-        default:
-          return (
-            <Box
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              sx={{ height: '150%', overflow: 'visible' }}
-            >
-              <Card
-                sx={{
-                  borderRadius: 2,
-                  outline: '2px solid',
-                  outlineColor: (theme) =>
-                    selected === true
-                      ? theme.palette.primary.main
-                      : selected === 'descendant'
-                      ? theme.palette.divider
-                      : 'transparent',
-                  outlineOffset: '5px'
-                }}
-              >
-                <CardContent
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyItems: 'center',
-                    width: STEP_NODE_WIDTH,
-                    height: STEP_NODE_HEIGHT,
-                    gap: 2,
-                    margin: 0,
-                    padding: 0,
-                    borderRadius: 1
-                  }}
-                  onClick={onClick}
-                >
-                  {icon}
-
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-start',
-                      justifyContent: 'center',
-                      width: STEP_NODE_WIDTH,
-                      height: STEP_NODE_HEIGHT,
-                      margin: 0,
-                      padding: 2
-                    }}
-                    onClick={onClick}
-                  >
-                    <Typography
-                      sx={{
-                        display: '-webkit-box',
-                        '-webkit-box-orient': 'vertical',
-                        '-webkit-line-clamp': '2',
-                        overflow: 'hidden',
-                        padding: 0,
-                        fontSize: 11,
-                        fontWeight: 'bold',
-                        height: 'auto',
-                        flexDirection: 'column',
-                        justifyContent: 'flex-end',
-                        alignSelf: 'flex-start',
-                        marginBottom: 1,
-                        lineHeight: 1.3,
-                        alignItems: 'flex-end'
-                      }}
-                    >
-                      {title !== '' ? (
-                        title
-                      ) : (
-                        <Box
-                          sx={{
-                            height: 12,
-                            width: 117,
-                            borderRadius: 1,
-                            backgroundColor: '#efefef',
-                            backgroundSize: 'cover',
-                            alignItems: 'left',
-                            alignContent: 'left',
-                            display: 'flex',
-                            justifyContent: 'flex-end'
-                          }}
-                        />
-                      )}
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        display: '-webkit-box',
-                        '-webkit-box-orient': 'vertical',
-                        '-webkit-line-clamp': '2',
-                        fontSize: 10,
-                        lineHeight: '1.2',
-                        justifyContent: 'top',
-                        color: '#7f7e8c',
-                        overflow: 'hidden',
-                        paddingBottom: '1px'
-                      }}
-                    >
-                      {title !== '' ? (
-                        subtitle
-                      ) : (
-                        <Box
-                          sx={{
-                            height: 12,
-                            width: 95,
-                            borderRadius: 1,
-                            backgroundColor: '#efefef',
-                            backgroundSize: 'cover',
-                            alignItems: 'left',
-                            alignContent: 'left',
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                            marginTop: 1
-                          }}
-                        />
-                      )}
-                    </Typography>
-                  </Box>
-
-                  {isHovered && (
-                    <>
-                      <ArrowDownwardRoundedIcon
-                        style={{
-                          display: 'flex',
-                          top: STEP_NODE_HEIGHT - 9,
-                          left: STEP_NODE_WIDTH / 2 - 9,
-                          position: 'absolute',
-                          borderRadius: '50%',
-                          color: 'white',
-                          fontSize: 'large',
-                          padding: 0,
-                          marginTop: 5,
-                          backgroundColor: '#c52d3aff'
-                        }}
-                      />
-                    </>
                   )}
-                </CardContent>
-                <Handle
-                  type="target"
-                  position={Position.Top}
-                  style={{
-                    width: 7.5,
-                    height: 7.5,
-                    background: 'white',
-                    border:
-                      selected !== false
-                        ? '2px solid #c52d3aff'
-                        : '2px solid #aaacbb',
-                    outline: '1px solid white',
-                    outlineColor: 'white',
-                    cursor: 'pointer',
-                    top: selected !== false ? -9.5 : -4
-                  }}
-                />
-                <Handle
-                  type="target"
-                  position={Position.Bottom}
-                  isConnectableStart={false}
-                  style={{
-                    overflow: 'visible',
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: 0,
-                    background: 'tranparent',
-                    opacity: 0
-                  }}
-                />
-                <Handle
-                  type="source"
-                  position={Position.Bottom}
-                  onConnect={onSourceConnect}
-                  onClick={handleClick}
-                  style={{
-                    width: 7.5,
-                    height: 7.5,
-                    background: 'white',
-                    border:
-                      selected !== false
-                        ? '2px solid #c52d3aff'
-                        : '2px solid #aaacbb',
-                    outline: '1px solid',
-                    outlineColor: 'white',
-                    visibility: isHovered ? 'hidden' : 'visible',
+                </Typography>
 
-                    bottom: selected !== false ? -9.5 : -4
+                <Typography
+                  sx={{
+                    display: '-webkit-box',
+                    '-webkit-box-orient': 'vertical',
+                    '-webkit-line-clamp': '2',
+                    fontSize: 10,
+                    lineHeight: '1.2',
+                    justifyContent: 'top',
+                    color: '#7f7e8c',
+                    overflow: 'hidden',
+                    paddingBottom: '1px'
                   }}
-                />
+                >
+                  {title != null ? (
+                    subtitle
+                  ) : (
+                    // replace with skeleton
+                    <Box
+                      sx={{
+                        height: 12,
+                        width: 95,
+                        borderRadius: 1,
+                        backgroundColor: '#efefef',
+                        backgroundSize: 'cover',
+                        alignItems: 'left',
+                        alignContent: 'left',
+                        display: 'flex',
+                        justifyContent: 'flex-start',
+                        marginTop: 1
+                      }}
+                    />
+                  )}
+                </Typography>
+              </Box>
+              {isHovered && (
+                <>
+                  <ArrowDownwardRoundedIcon
+                    style={{
+                      display: 'flex',
+                      top: STEP_NODE_HEIGHT - 9,
+                      left: STEP_NODE_WIDTH / 2 - 9,
+                      position: 'absolute',
+                      borderRadius: '50%',
+                      color: 'white',
+                      fontSize: 'large',
+                      padding: 0,
+                      marginTop: 5,
+                      backgroundColor: '#c52d3aff'
+                    }}
+                  />
+                </>
+              )}
+            </CardContent>
+            <Handle
+              type="target"
+              position={Position.Top}
+              style={{
+                width: 7.5,
+                height: 7.5,
+                background: 'white',
+                border:
+                  selected !== false
+                    ? '2px solid #c52d3aff'
+                    : '2px solid #aaacbb',
+                outline: '1px solid white',
+                outlineColor: 'white',
+                cursor: 'pointer',
+                top: selected !== false ? -9.5 : -4
+              }}
+            />
+            <Handle
+              type="target"
+              position={Position.Bottom}
+              isConnectableStart={false}
+              style={{
+                overflow: 'visible',
+                width: '100%',
+                height: '100%',
+                borderRadius: 0,
+                background: 'tranparent',
+                opacity: 0
+              }}
+            />
+            <Handle
+              type="source"
+              position={Position.Bottom}
+              onConnect={onSourceConnect}
+              onClick={handleClick}
+              style={{
+                width: 7.5,
+                height: 7.5,
+                background: 'white',
+                border:
+                  selected !== false
+                    ? '2px solid #c52d3aff'
+                    : '2px solid #aaacbb',
+                outline: '1px solid',
+                outlineColor: 'white',
+                visibility: isHovered ? 'hidden' : 'visible',
 
-                <Handle
-                  type="source"
-                  position={Position.Bottom}
-                  onConnect={onSourceConnect}
-                  onClick={handleClick}
-                  style={{
-                    position: 'fixed',
-                    width: 40,
-                    height: 40,
-                    top: 60,
-                    background: 'transparent',
-                    borderColor: 'transparent',
-                    borderRadius: 20,
-                    overflow: 'visible'
-                  }}
-                />
-              </Card>
-            </Box>
-          )
-      }
+                bottom: selected !== false ? -9.5 : -4
+              }}
+            />
 
+            <Handle
+              type="source"
+              position={Position.Bottom}
+              onConnect={onSourceConnect}
+              onClick={handleClick}
+              style={{
+                position: 'fixed',
+                width: 40,
+                height: 40,
+                top: 60,
+                background: 'transparent',
+                borderColor: 'transparent',
+                borderRadius: 20,
+                overflow: 'visible'
+              }}
+            />
+          </Card>
+        </Box>
+      )
     case 'action':
       return (
         <Box
