@@ -36,7 +36,7 @@ export enum ActiveJourneyEditContent {
 
 export enum ActiveSlide {
   JourneyFlow = 0,
-  Canvas = 1,
+  Content = 1,
   Drawer = 2
 }
 
@@ -156,7 +156,7 @@ export const reducer = (
         selectedComponent: action.component,
         selectedBlock: undefined,
         journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
-        activeSlide: ActiveSlide.Canvas
+        activeSlide: ActiveSlide.Content
       }
     case 'SetSelectedBlockAction':
       return {
@@ -164,7 +164,7 @@ export const reducer = (
         selectedBlock: action.block,
         selectedComponent: undefined,
         journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
-        activeSlide: ActiveSlide.Canvas
+        activeSlide: ActiveSlide.Content
       }
     case 'SetSelectedBlockByIdAction':
       return {

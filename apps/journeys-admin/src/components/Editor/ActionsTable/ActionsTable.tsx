@@ -64,7 +64,7 @@ export function ActionsTable(): ReactElement {
   function handleSelect(): void {
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Canvas
+      activeSlide: ActiveSlide.Content
     })
   }
 

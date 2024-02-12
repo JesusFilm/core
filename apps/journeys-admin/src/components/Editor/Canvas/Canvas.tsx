@@ -6,7 +6,6 @@ import { ReactElement, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   ActiveFab,
@@ -22,11 +21,9 @@ import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../FramePortal'
 
-import { AddBlockToolbar } from './AddBlockToolbar'
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
@@ -165,7 +162,7 @@ export function Canvas(): ReactElement {
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        flexGrow: { xs: 1, sm: activeSlide === ActiveSlide.Canvas ? 1 : 0 },
+        flexGrow: { xs: 1, sm: activeSlide === ActiveSlide.Content ? 1 : 0 },
         transition: (theme) =>
           theme.transitions.create('flex-grow', { duration: 300 })
       }}
@@ -181,22 +178,6 @@ export function Canvas(): ReactElement {
             justifyContent: 'center'
           }}
         >
-          {/* <Box
-            sx={{
-              width: {
-                xs: 50,
-                sm: activeSlide === ActiveSlide.Canvas ? 50 : 0
-              },
-              mr: { xs: 2, sm: activeSlide === ActiveSlide.Canvas ? 7 : 0 },
-              transition: (theme) =>
-                theme.transitions.create(['width', 'margin'], {
-                  duration: 150
-                }),
-              overflow: 'hidden'
-            }}
-          >
-            <QuickControls />
-          </Box> */}
           <TransitionGroup
             component={Box}
             data-testid={`step-${selectedStep.id}`}

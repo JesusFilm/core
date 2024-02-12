@@ -97,7 +97,7 @@ export function Slider(): ReactElement {
         sx={{
           position: 'absolute',
           left: 0,
-          top: activeSlide === ActiveSlide.Canvas ? 5 : -75,
+          top: activeSlide === ActiveSlide.Content ? 5 : -75,
           right: 0,
           height: 40,
           zIndex: 2,

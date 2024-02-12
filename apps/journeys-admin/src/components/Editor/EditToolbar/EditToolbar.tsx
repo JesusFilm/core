@@ -36,7 +36,7 @@ export function EditToolbar(): ReactElement {
     })
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Canvas
+      activeSlide: ActiveSlide.Content
     })
   }
 
