@@ -3,14 +3,14 @@ import { fireEvent, render } from '@testing-library/react'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
-import { AddBlockToolbar } from '.'
+import { AddBlockButton } from '.'
 
-describe('AddBlockToolbar', () => {
+describe('AddBlockButton', () => {
   it('contains all blocks', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <FlagsProvider flags={{ formiumForm: true }}>
-          <AddBlockToolbar />
+          <AddBlockButton />
         </FlagsProvider>
       </MockedProvider>
     )

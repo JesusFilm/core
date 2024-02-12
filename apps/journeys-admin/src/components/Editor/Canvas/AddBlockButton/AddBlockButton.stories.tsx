@@ -7,19 +7,19 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 
-import { AddBlockToolbar } from '.'
+import { AddBlockButton } from '.'
 
-const AddBlockToolbarStory: Meta<typeof AddBlockToolbar> = {
+const AddBlockButtonStory: Meta<typeof AddBlockButton> = {
   ...journeysAdminConfig,
-  component: AddBlockToolbar,
-  title: 'Journeys-Admin/Editor/ControlPanel/AddBlockToolbar',
+  component: AddBlockButton,
+  title: 'Journeys-Admin/Editor/ControlPanel/AddBlockButton',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-export const Default: StoryObj<typeof AddBlockToolbar> = {
+export const Default: StoryObj<typeof AddBlockButton> = {
   render: () => {
     return (
       <MockedProvider mocks={[]}>
@@ -55,7 +55,7 @@ export const Default: StoryObj<typeof AddBlockToolbar> = {
               }
             }}
           >
-            <AddBlockToolbar />
+            <AddBlockButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -63,4 +63,4 @@ export const Default: StoryObj<typeof AddBlockToolbar> = {
   }
 }
 
-export default AddBlockToolbarStory
+export default AddBlockButtonStory

@@ -26,7 +26,7 @@ import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../FramePortal'
 
-import { AddBlockToolbar } from './AddBlockToolbar'
+import { AddBlockButton } from './AddBlockButton'
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
@@ -175,7 +175,7 @@ export function Canvas(): ReactElement {
                 xs: 50,
                 sm: activeSlide === ActiveSlide.Canvas ? 50 : 0
               },
-              mr: { xs: 2, sm: activeSlide === ActiveSlide.Canvas ? 7 : 0 },
+              mr: { xs: 2, sm: activeSlide === ActiveSlide.Canvas ? 3 : 0 },
               transition: (theme) =>
                 theme.transitions.create(['width', 'margin'], {
                   duration: 150
@@ -312,16 +312,15 @@ export function Canvas(): ReactElement {
                 xs: 50,
                 sm: activeSlide === ActiveSlide.Canvas ? 50 : 0
               },
-              ml: { xs: 2, sm: activeSlide === ActiveSlide.Canvas ? 7 : 0 },
+              ml: { xs: 2, sm: activeSlide === ActiveSlide.Canvas ? 3 : 0 },
               transition: (theme) =>
                 theme.transitions.create(['width', 'margin'], {
                   duration: 150
                 }),
-              overflow: 'hidden',
-              alignSelf: 'center'
+              overflow: 'hidden'
             }}
           >
-            <AddBlockToolbar selectedCard={cardBlock} />
+            <AddBlockButton selectedCard={cardBlock} />
           </Box>
         </Stack>
       )}

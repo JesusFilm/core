@@ -1,4 +1,6 @@
+import { Stack } from '@mui/material'
 import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
@@ -42,40 +44,30 @@ export function Button({
       onMouseDown={(e) => e.preventDefault()}
       data-testid={`JourneysAdminButton${testId ?? ''}`}
     >
-      <StyledTooltip
-        title={
-          <Typography variant="caption" color="#30313D">
-            {t(value)}
-          </Typography>
-        }
-        placement="right"
-        slotProps={{
-          popper: {
-            modifiers: [
-              {
-                name: 'offset',
-                options: {
-                  offset: [0, -10]
-                }
-              }
-            ]
-          }
+      <Card
+        variant="outlined"
+        sx={{
+          height: 80,
+          borderRadius: 2
         }}
       >
-        <Box>
-          <CardActionArea onClick={handleClick} disabled={disabled}>
-            <CardContent
-              sx={{
-                px: 3.5,
-                py: 3,
-                color: disabled ? 'secondary.light' : 'auto'
-              }}
-            >
+        <CardActionArea onClick={handleClick} disabled={disabled}>
+          <CardContent
+            sx={{
+              height: 80,
+              pl: 6,
+              color: disabled ? 'secondary.light' : 'auto',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            <Stack direction="row" gap={4}>
               {icon}
-            </CardContent>
-          </CardActionArea>
-        </Box>
-      </StyledTooltip>
+              <Typography>{t(value)}</Typography>
+            </Stack>
+          </CardContent>
+        </CardActionArea>
+      </Card>
     </Box>
   )
 }

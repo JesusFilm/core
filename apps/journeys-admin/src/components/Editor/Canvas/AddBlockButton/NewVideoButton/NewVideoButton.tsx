@@ -21,11 +21,11 @@ export const VIDEO_BLOCK_CREATE = gql`
 `
 
 interface NewVideoButtonProps {
-  disabled: boolean
+  disabled?: boolean
 }
 
 export function NewVideoButton({
-  disabled
+  disabled = false
 }: NewVideoButtonProps): ReactElement {
   const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { journey } = useJourney()
