@@ -1,0 +1,25 @@
+type EmailPreference {
+  id: ID!
+  userEmail: String!
+  teamInvites: Boolean!
+  journeyNotifications: Boolean!
+  thirdCategory: Boolean!
+}
+
+extend type Query {
+  emailPreferences: [EmailPreference]
+  emailPreference(id: ID!, idType: String!): EmailPreference
+}
+
+input EmailPreferenceUpdateInput {
+  id: ID!
+  journeyNotifications: Boolean!
+  teamInvites: Boolean!
+  thirdCategory: Boolean!
+}
+
+extend type Mutation {
+  updateEmailPreference(input: EmailPreferenceUpdateInput!): EmailPreference
+  createEmailPreferencesForAllUsers: Boolean
+  findOrCreateEmailPreference(email: String!): EmailPreference
+}

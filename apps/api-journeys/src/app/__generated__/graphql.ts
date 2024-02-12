@@ -462,6 +462,13 @@ export class ChatButtonUpdateInput {
     platform?: Nullable<ChatPlatform>;
 }
 
+export class EmailPreferenceUpdateInput {
+    id: string;
+    journeyNotifications: boolean;
+    teamInvites: boolean;
+    thirdCategory: boolean;
+}
+
 export class ButtonClickEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -795,6 +802,10 @@ export abstract class IQuery {
 
     abstract block(id: string): Block | Promise<Block>;
 
+    abstract emailPreferences(): Nullable<Nullable<EmailPreference>[]> | Promise<Nullable<Nullable<EmailPreference>[]>>;
+
+    abstract emailPreference(id: string, idType: string): Nullable<EmailPreference> | Promise<Nullable<EmailPreference>>;
+
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
@@ -1038,6 +1049,15 @@ export class ChatButton {
     id: string;
     link?: Nullable<string>;
     platform?: Nullable<ChatPlatform>;
+}
+
+export class EmailPreference {
+    __typename?: 'EmailPreference';
+    id: string;
+    userEmail: string;
+    teamInvites: boolean;
+    journeyNotifications: boolean;
+    thirdCategory: boolean;
 }
 
 export class ButtonClickEvent implements Event {
@@ -1466,6 +1486,12 @@ export abstract class IMutation {
     abstract chatButtonUpdate(id: string, journeyId: string, input: ChatButtonUpdateInput): ChatButton | Promise<ChatButton>;
 
     abstract chatButtonRemove(id: string): ChatButton | Promise<ChatButton>;
+
+    abstract updateEmailPreference(input: EmailPreferenceUpdateInput): Nullable<EmailPreference> | Promise<Nullable<EmailPreference>>;
+
+    abstract createEmailPreferencesForAllUsers(): Nullable<boolean> | Promise<Nullable<boolean>>;
+
+    abstract findOrCreateEmailPreference(email: string): Nullable<EmailPreference> | Promise<Nullable<EmailPreference>>;
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
