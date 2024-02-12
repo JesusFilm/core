@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client'
 import last from 'lodash/last'
-import { ReactElement, useCallback, useEffect } from 'react'
+import { ReactElement, ReactNode, useCallback, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
@@ -20,11 +20,15 @@ import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousE
 interface SwipeNavigationProps {
   activeBlock: TreeBlock<StepFields>
   rtl: boolean
+  children?: ReactNode // Used for testing
 }
+
+export const swipeSensitivity = 50
 
 export function SwipeNavigation({
   activeBlock,
-  rtl
+  rtl,
+  children
 }: SwipeNavigationProps): ReactElement {
   const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
     STEP_NEXT_EVENT_CREATE
@@ -163,7 +167,6 @@ export function SwipeNavigation({
   useEffect(() => {
     let touchstartX = 0
     let touchendX = 0
-    const swipeSensitivity = 50
 
     function checkDirection(): void {
       if (touchendX + swipeSensitivity < touchstartX && enableTouchMoveNext) {
@@ -194,5 +197,5 @@ export function SwipeNavigation({
     }
   }, [activeBlock, enableTouchMoveNext, handleNav, rtl])
 
-  return <></>
+  return <>{children}</>
 }
