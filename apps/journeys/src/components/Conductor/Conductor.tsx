@@ -5,7 +5,6 @@ import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
-import { use100vh } from 'react-div-100vh'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -49,7 +48,6 @@ interface ConductorProps {
 export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { setTreeBlocks, blockHistory, showHeaderFooter } = useBlocks()
   const theme = useTheme()
-  const viewportHeight = use100vh()
   const router = useRouter()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
@@ -150,7 +148,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         data-testid="Conductor"
         sx={{
           justifyContent: 'center',
-          height: viewportHeight ?? '100vh',
+          height: '100svh',
           background: theme.palette.grey[900],
           p: { lg: 6 },
           overflow: 'hidden'
