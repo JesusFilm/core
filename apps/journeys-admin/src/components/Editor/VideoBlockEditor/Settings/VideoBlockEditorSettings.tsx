@@ -13,6 +13,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeField from 'react-simple-timefield'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Play2Icon from '@core/shared/ui/icons/Play2'
@@ -292,16 +293,6 @@ export function VideoBlockEditorSettings({
               >
                 {t('Video always muted on the first card')}
               </Typography>
-              {values.autoplay === true && values.muted === false && (
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: 'warning.main'
-                  }}
-                >
-                  {t('Some mobile browsers may override this choice')}
-                </Typography>
-              )}
             </Stack>
             <Switch
               checked={values.muted}
@@ -315,6 +306,16 @@ export function VideoBlockEditorSettings({
               }}
             />
           </Stack>
+          {values.autoplay === true && values.muted === false && (
+            <Stack direction="row" alignItems="center" color="text.secondary">
+              <InformationCircleContainedIcon sx={{ mr: 4 }} />
+              <Typography variant="caption">
+                {t(
+                  'Some mobile browsers may override this choice and default the playback to mute when autoplay is enabled'
+                )}
+              </Typography>
+            </Stack>
+          )}
           <Divider />
           <VideoBlockEditorSettingsPoster
             selectedBlock={posterBlock}
