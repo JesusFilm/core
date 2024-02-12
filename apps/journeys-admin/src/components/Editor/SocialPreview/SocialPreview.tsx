@@ -24,7 +24,7 @@ export function SocialPreview(): ReactElement {
   function handleSelect(): void {
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Canvas
+      activeSlide: ActiveSlide.Content
     })
   }
 
@@ -36,7 +36,7 @@ export function SocialPreview(): ReactElement {
           direction="row"
           alignItems="center"
           justifyContent={
-            activeSlide === ActiveSlide.Canvas ? 'space-evenly' : 'flex-start'
+            activeSlide === ActiveSlide.Content ? 'space-evenly' : 'flex-start'
           }
           data-testid="SocialPreview"
           sx={{
@@ -47,7 +47,7 @@ export function SocialPreview(): ReactElement {
           <Box sx={{ ml: 17.5 }}>
             <SocialPreviewPost />
           </Box>
-          {activeSlide === ActiveSlide.Canvas && (
+          {activeSlide === ActiveSlide.Content && (
             <>
               <Divider
                 orientation="vertical"
