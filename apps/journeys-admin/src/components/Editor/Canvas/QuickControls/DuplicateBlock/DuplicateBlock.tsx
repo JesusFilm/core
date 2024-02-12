@@ -133,11 +133,6 @@ export function DuplicateBlock({
           disabled={disableAction}
           onClick={handleDuplicateBlock}
           data-testId={`Duplicate-${blockLabel}`}
-          sx={{
-            borderRadius: '100%',
-            border: '1px solid #E6E6E6',
-            p: 3
-          }}
         >
           <CopyLeftIcon />
         </IconButton>
