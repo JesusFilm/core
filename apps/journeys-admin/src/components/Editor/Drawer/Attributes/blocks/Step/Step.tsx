@@ -47,7 +47,8 @@ export function Step({
       id={`next-step-${id}`}
       icon={locked ? <Lock1Icon /> : <LockOpen1Icon />}
       name={t('Next Card')}
-      value={heading}
+      value={heading !== 'None' ? heading.title : 'None'}
+      subtitle={heading !== 'None' ? heading.subtitle : 'None'}
       description={locked ? t('Locked With Interaction') : t('Unlocked Card')}
       drawerTitle={t('Next Card Properties')}
       testId={`Step-${id}`}

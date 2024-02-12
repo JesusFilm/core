@@ -11,6 +11,7 @@ interface AttributeProps {
   icon: ReactElement
   name: string
   value: string
+  subtitle?: string
   description: string
   drawerTitle: string
   children: ReactNode

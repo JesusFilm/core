@@ -1,12 +1,11 @@
 import Box from '@mui/material/Box'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
-import { getStepSubtitle } from '@core/journeys/ui/getStepSubtitle'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
@@ -26,6 +25,30 @@ import { BaseNode } from './BaseNode'
 
 export interface StepBlockNodeData extends TreeBlock<StepBlock> {
   steps: Array<TreeBlock<StepBlock>>
+}
+
+interface BlockIconProps {
+  background: string
+  icon: ReactNode
+}
+function BlockIcon({ background, icon }: BlockIconProps): ReactElement {
+  return (
+    <Box
+      sx={{
+        borderRadius: 20,
+        height: 30,
+        width: 30,
+        display: 'flex',
+        position: 'absolute',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        background
+      }}
+    >
+      {icon}
+    </Box>
+  )
 }
 
 function getBackgroundImage(card?: TreeBlock<CardBlock>): string | undefined {
@@ -69,113 +92,55 @@ function getIconAndColorForBlockType(blockType: string): {
     case 'VideoBlock':
       return {
         icon: (
-          <Box
-            sx={{
-              borderRadius: 20,
-              height: 30,
-              width: 30,
-              display: 'flex',
-              position: 'absolute',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'linear-gradient(to bottom, #f89f4c, #de7818)',
-              color: 'white'
-            }}
-          >
-            <Play3Icon fontSize="small" />
-          </Box>
+          <BlockIcon
+            background="linear-gradient(to bottom, #f89f4c, #de7818)"
+            icon={<Play3Icon fontSize="small" />}
+          />
         )
       }
 
     case 'TextResponseBlock':
       return {
         icon: (
-          <Box
-            sx={{
-              borderRadius: 20,
-              height: 30,
-              width: 30,
-              display: 'flex',
-              position: 'absolute',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'linear-gradient(to bottom, #b849ec, #9415d1)',
-              color: 'white'
-            }}
-          >
-            <TextInput1Icon fontSize="small" />
-          </Box>
+          <BlockIcon
+            background="linear-gradient(to bottom, #b849ec, #9415d1)"
+            icon={<TextInput1Icon fontSize="small" />}
+          />
         )
       }
-    case 'RadioOptionBlock':
-      return {
-        icon: <TextInput1Icon fontSize="large" />
-      }
+
     case 'ButtonBlock':
       return {
         icon: (
-          <Box
-            sx={{
-              borderRadius: 20,
-              height: 30,
-              width: 30,
-              display: 'flex',
-              position: 'absolute',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'linear-gradient(to bottom, #4c9bf8, #1873de)',
-              color: 'white'
-            }}
-          >
-            <GitBranchIcon fontSize="small" />
-          </Box>
+          <BlockIcon
+            background="linear-gradient(to bottom, #4c9bf8, #1873de)"
+            icon={<GitBranchIcon fontSize="small" />}
+          />
         )
       }
     case 'TypographyBlock':
       return {
         icon: (
-          <Box
-            sx={{
-              borderRadius: 20,
-              height: 30,
-              width: 30,
-              display: 'flex',
-              position: 'absolute',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'linear-gradient(to bottom, #00C3C3, #03a3a3)',
-              color: 'white'
-            }}
-          >
-            <AlignCenterIcon fontSize="small" />
-          </Box>
+          <BlockIcon
+            background="linear-gradient(to bottom, #00C3C3, #03a3a3)"
+            icon={<AlignCenterIcon fontSize="small" />}
+          />
         )
       }
 
     case 'RadioQuestionBlock':
       return {
         icon: (
-          <Box
-            sx={{
-              borderRadius: 20,
-              height: 30,
-              width: 30,
-              display: 'flex',
-              position: 'absolute',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'linear-gradient(to bottom, #b849ec, #9415d1)',
-              color: 'white'
-            }}
-          >
-            <TextInput1Icon fontSize="small" />
-          </Box>
+          <BlockIcon
+            background="linear-gradient(to bottom, #b849ec, #9415d1)"
+            icon={<TextInput1Icon fontSize="small" />}
+          />
         )
       }
 
     default:
       return {
-        icon: <FlexAlignBottom1Icon fontSize="large" />
+        icon: <FlexAlignBottom1Icon fontSize="small" />
       }
   }
 }
@@ -190,8 +155,7 @@ export function StepBlockNode({
   data: { steps, ...step }
 }: NodeProps<StepBlockNodeData>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const title = getStepHeading(step.id, step.children, steps, t)
-  const subtitle = getStepSubtitle(step.id, step.children, steps, t)
+  const { title, subtitle } = getStepHeading(step.id, step.children, steps, t)
   const videoStartToEnd = '0:00 - 99:99'
   const language = 'Eastern European Arabic language'
 

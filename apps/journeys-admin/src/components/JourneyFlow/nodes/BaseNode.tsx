@@ -191,9 +191,8 @@ export function BaseNode({
                         overflow: 'hidden',
                         fontWeight: 'bold',
                         fontSize: 11,
-
-                        height: 'auto',
                         padding: 0,
+                        paddingBottom: '1px',
                         top: 0,
                         lineHeight: 1.2,
                         transform: 'scaleY(0.9)',
@@ -413,8 +412,7 @@ export function BaseNode({
                             alignItems: 'left',
                             alignContent: 'left',
                             display: 'flex',
-                            justifyContent: 'flex-end',
-                            marginTop: 2
+                            justifyContent: 'flex-end'
                           }}
                         />
                       )}
@@ -429,7 +427,8 @@ export function BaseNode({
                         lineHeight: '1.2',
                         justifyContent: 'top',
                         color: '#7f7e8c',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        paddingBottom: '1px'
                       }}
                     >
                       {title !== '' ? (
@@ -446,7 +445,7 @@ export function BaseNode({
                             alignContent: 'left',
                             display: 'flex',
                             justifyContent: 'flex-start',
-                            marginTop: 2
+                            marginTop: 1
                           }}
                         />
                       )}

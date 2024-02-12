@@ -47,17 +47,33 @@ export function getStepHeading(
   children: TreeBlock[],
   steps: TreeBlock[],
   t: (str: string, options?: TOptions) => string
-): string {
+): { title: string; subtitle?: string } {
   const descendants = flatten(children)
 
   const heading =
     descendants.length > 0
-      ? descendants.reduce(findMostImportantTypographyBlock, null)
-      : undefined
+      ? descendants.reduce<TreeBlock<TypographyBlock> | null>(
+          findMostImportantTypographyBlock,
+          null
+        )
+      : null
 
-  if (heading != null && heading.__typename === 'TypographyBlock') {
-    return heading.content
+  const secondMostImportant =
+    heading !== null && descendants.length > 1
+      ? descendants
+          .filter((block) => block !== heading)
+          .reduce<TreeBlock<TypographyBlock> | null>(
+            findMostImportantTypographyBlock,
+            null
+          )
+      : null
+
+  if (heading != null) {
+    return {
+      title: heading.content,
+      subtitle: secondMostImportant?.content ?? ''
+    }
   } else {
-    return ''
+    return { title: '', subtitle: '' }
   }
 }
