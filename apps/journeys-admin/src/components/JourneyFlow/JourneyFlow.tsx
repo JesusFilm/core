@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import { SmartBezierEdge } from '@tisoap/react-flow-smart-edge'
-import { SmartBezierEdge } from '@tisoap/react-flow-smart-edge'
 import findIndex from 'lodash/findIndex'
 import { ReactElement, useEffect, useState } from 'react'
 import {
@@ -36,7 +35,7 @@ import { useNavigateToBlockActionUpdateMutation } from '../../libs/useNavigateTo
 import { useStepAndCardBlockCreateMutation } from '../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../libs/useStepBlockNextBlockUpdateMutation'
 
-import ButtonEdge from './edges/ButtonEdge'
+// import ButtonEdge from './edges/ButtonEdge'
 import {
   ACTION_NODE_HEIGHT_GAP,
   ACTION_NODE_WIDTH,
@@ -92,7 +91,6 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   const nodes: InternalNode[] = []
   const edges: Edge[] = []
 
-  const blocks: Array<Array<TreeBlock<StepBlock>>> = []
   const blocks: Array<Array<TreeBlock<StepBlock>>> = []
   const visitedStepIds: string[] = []
 
@@ -154,8 +152,6 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     step: TreeBlock<StepBlock>
   ): Array<TreeBlock<StepBlock>> {
     const descendants: Array<TreeBlock<StepBlock>> = []
-  ): Array<TreeBlock<StepBlock>> {
-    const descendants: Array<TreeBlock<StepBlock>> = []
     const nextStep = getNextStep(step)
     if (nextStep != null) descendants.push(nextStep)
     const children = step.children[0].children.filter(isActionBlock)
@@ -168,7 +164,6 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     return descendants
   }
 
-  function processSteps(steps: Array<TreeBlock<StepBlock>>): void {
   function processSteps(steps: Array<TreeBlock<StepBlock>>): void {
     blocks.push(steps)
     const descendants = steps.flatMap((step) => {

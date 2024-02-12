@@ -29,9 +29,7 @@ export interface StepBlockNodeData extends TreeBlock<StepBlock> {
 }
 
 function getBackgroundImage(card?: TreeBlock<CardBlock>): string | undefined {
-  console.log('getting bgimage')
   if (card == null) return
-  console.log('card wasnt  null: ', card)
 
   let bgImage: string | undefined
 

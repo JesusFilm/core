@@ -26,28 +26,6 @@ function findMostImportantTypographyBlock(
   return currentIndex > previousIndex ? current : previous
 }
 
-function findSecondMostImportantTypographyBlock(
-  mostImportant: TreeBlock<TypographyBlock> | null,
-  current: TreeBlock
-): TreeBlock<TypographyBlock> | null {
-  if (current.__typename !== 'TypographyBlock') return mostImportant
-  const mostImportantIndex =
-    mostImportant != null
-      ? orderedVariants.findIndex(
-          (variant) => variant === mostImportant.variant
-        )
-      : -1
-
-  const currentIndex = orderedVariants.findIndex(
-    (variant) => variant === current.variant
-  )
-  if (mostImportantIndex === -1 || currentIndex > mostImportantIndex) {
-    return mostImportant
-  } else {
-    return current
-  }
-}
-
 const orderedVariants: TypographyVariant[] = [
   TypographyVariant.overline,
   TypographyVariant.caption,
@@ -79,12 +57,18 @@ export function getStepSubtitle(
         )
       : null
 
+  const typs = descendants.filter((a) => a.__typename === 'TypographyBlock')
+  console.log('Most important: ', mostImportant?.content)
+  console.log('descendannts: ', typs)
+
   const secondMostImportant =
-    descendants.length > 0
-      ? descendants.reduce(
-          findSecondMostImportantTypographyBlock,
-          mostImportant
-        )
+    mostImportant !== null && descendants.length > 1
+      ? descendants
+          .filter((block) => block !== mostImportant)
+          .reduce<TreeBlock<TypographyBlock> | null>(
+            findMostImportantTypographyBlock,
+            null
+          )
       : null
 
   if (
