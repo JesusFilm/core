@@ -48,7 +48,7 @@ export function SwipeNavigation({
   const onFirstStep = activeBlock === treeBlocks[0]
   const onLastStep = activeBlock === last(treeBlocks)
 
-  const handleNav = useCallback(
+  const handleNavigation = useCallback(
     (direction: 'next' | 'previous'): void => {
       if (variant === 'admin') return
 
@@ -168,18 +168,18 @@ export function SwipeNavigation({
       const targetElement = eventData.event.target as HTMLElement
       if (targetElement.classList.contains('MuiSlider-thumb')) return
       if (rtl) {
-        handleNav('previous')
+        handleNavigation('previous')
       } else {
-        handleNav('next')
+        handleNavigation('next')
       }
     },
     onSwipedRight: (eventData) => {
       const targetElement = eventData.event.target as HTMLElement
       if (targetElement.classList.contains('MuiSlider-thumb')) return
       if (rtl) {
-        handleNav('next')
+        handleNavigation('next')
       } else {
-        handleNav('previous')
+        handleNavigation('previous')
       }
     },
     preventScrollOnSwipe: true
