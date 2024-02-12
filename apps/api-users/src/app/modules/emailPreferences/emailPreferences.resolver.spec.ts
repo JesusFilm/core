@@ -1,156 +1,92 @@
-// import { Test, TestingModule } from '@nestjs/testing'
-// import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { Test } from '@nestjs/testing';
 
-// import { User } from '.prisma/api-users-client'
+import { EmailPreferencesUpdateInput } from '../../__generated__/graphql';
+import { PrismaService } from '../../lib/prisma.service';
 
-// import { PrismaService } from '../../lib/prisma.service'
+import { EmailPreferencesResolver } from './emailPreferences.resolver';
 
-// import { UserResolver } from './user.resolver'
+describe('EmailPreferencesResolver', () => {
+    let resolver: EmailPreferencesResolver;
+    let prismaService: PrismaService;
 
-// jest.mock('@core/nest/common/firebaseClient', () => ({
-//   auth: {
-//     getUser: jest.fn().mockResolvedValue({
-//       displayName: 'fo sho',
-//       email: 'tho@no.co',
-//       photoURL: 'p'
-//     })
-//   },
-//   impersonateUser: jest.fn().mockResolvedValue('impersonationToken')
-// }))
+    beforeEach(async () => {
+        const moduleRef = await Test.createTestingModule({
+            providers: [
+                EmailPreferencesResolver,
+                {
+                    provide: PrismaService,
+                    useValue: {
+                        // Mock the PrismaService methods used in the resolver
+                        emailPreferences: jest.fn(),
+                        emailPreference: jest.fn(),
+                        updateEmailPreferences: jest.fn(),
+                        findOrCreateEmailPreference: jest.fn(),
+                        createEmailPreferencesForAllUsers: jest.fn(),
+                    },
+                },
+            ],
+        }).compile();
 
-// describe('UserResolver', () => {
-//   let resolver: UserResolver, prismaService: DeepMockProxy<PrismaService>
+        resolver = moduleRef.get<EmailPreferencesResolver>(EmailPreferencesResolver);
+        prismaService = moduleRef.get<PrismaService>(PrismaService);
+    });
 
-//   const user = {
-//     id: 'userId',
-//     firstName: 'fo',
-//     lastName: 'sho',
-//     email: 'tho@no.co',
-//     imageUrl: 'po'
-//   } as unknown as User
+    describe('emailPreferences', () => {
+        it('should return an array of email preferences', async () => {
+            const emailPreferences = [{ id: '1', email: 'test@example.com' }];
+            jest.spyOn(prismaService, 'emailPreference' as never).mockResolvedValue(emailPreferences as never);
 
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [
-//         UserResolver,
-//         {
-//           provide: PrismaService,
-//           useValue: mockDeep<PrismaService>()
-//         }
-//       ]
-//     }).compile()
-//     resolver = module.get<UserResolver>(UserResolver)
-//     prismaService = module.get<PrismaService>(
-//       PrismaService
-//     ) as DeepMockProxy<PrismaService>
-//   })
+            const result = await resolver.emailPreferences();
 
-//   describe('me', () => {
-//     it('returns User', async () => {
-//       prismaService.user.findUnique.mockResolvedValueOnce(user)
-//       expect(await resolver.me('userId')).toEqual(user)
-//       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-//         where: { userId: user.id }
-//       })
-//     })
+            expect(result).toEqual(emailPreferences);
+            expect(prismaService.emailPreferences).toHaveBeenCalled();
+        });
+    });
 
-//     it('fetches user from firebase', async () => {
-//       prismaService.user.findUnique.mockResolvedValueOnce(null)
-//       prismaService.user.upsert.mockResolvedValueOnce(user)
-//       expect(await resolver.me('userId')).toEqual(user)
-//       expect(prismaService.user.upsert).toHaveBeenCalledWith({
-//         create: {
-//           email: 'tho@no.co',
-//           firstName: 'fo',
-//           imageUrl: 'p',
-//           lastName: 'sho',
-//           userId: 'userId'
-//         },
-//         update: {
-//           email: 'tho@no.co',
-//           firstName: 'fo',
-//           imageUrl: 'p',
-//           lastName: 'sho',
-//           userId: 'userId'
-//         },
-//         where: { userId: 'userId' }
-//       })
-//     })
-//   })
+    describe('emailPreference', () => {
+        it('should return a single email preference', async () => {
+            const emailPreference = { id: '1', email: 'test@example.com' };
+            jest.spyOn(prismaService, 'emailPreferences' as never).mockResolvedValue(emailPreference as never);
 
-//   describe('userImpersonate', () => {
-//     const userToImpersonate = {
-//       id: 'imposterId',
-//       userId: 'imposterUserId',
-//       firstName: 'imposter',
-//       lastName: 'alpha',
-//       email: 'imposters@inc.com'
-//     } as unknown as User
+            const result = await resolver.emailPreference('1', 'id');
 
-//     it('returns a user token', async () => {
-//       prismaService.user.findUnique.mockResolvedValueOnce({
-//         ...user,
-//         superAdmin: true
-//       })
-//       prismaService.user.findUnique.mockResolvedValueOnce(userToImpersonate)
-//       expect(
-//         await resolver.userImpersonate('userId', 'imposters@inc.com')
-//       ).toBe('impersonationToken')
-//     })
+            expect(result).toEqual(emailPreference);
+            expect(prismaService.emailPreferences).toHaveBeenCalledWith('1', 'id');
+        });
+    });
 
-//     it('throws an error when user is not a superAdmin', async () => {
-//       prismaService.user.findUnique.mockResolvedValueOnce(user)
-//       await expect(
-//         resolver.userImpersonate('userId', 'imposters@inc.com')
-//       ).rejects.toThrow('user is not allowed to impersonate another user')
-//     })
+    describe('updateEmailPreferences', () => {
+        it('should update email preferences', async () => {
+            const input: EmailPreferencesUpdateInput = { id: '1', journeyNotifications: true, teamInvites: true, thirdCategory: true };
+            const updatedEmailPreference = { id: '1', email: 'updated@example.com' };
+            jest.spyOn(prismaService, 'emailPreferences' as never).mockResolvedValue(updatedEmailPreference as never);
 
-//     it('throws an error when email does not match any user', async () => {
-//       prismaService.user.findUnique.mockResolvedValueOnce({
-//         ...user,
-//         superAdmin: true
-//       })
-//       prismaService.user.findUnique.mockResolvedValueOnce(null)
-//       await expect(
-//         resolver.userImpersonate('userId', 'imposters@inc.com')
-//       ).rejects.toThrow('email does not match any user')
-//     })
-//   })
+            const result = await resolver.updateEmailPreferences(input);
 
-//   describe('resolveReference', () => {
-//     it('returns User', async () => {
-//       prismaService.user.findUnique.mockResolvedValueOnce(user)
-//       expect(
-//         await resolver.resolveReference({ __typename: 'User', id: 'userId' })
-//       ).toEqual(user)
-//       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-//         where: { userId: user.id }
-//       })
-//     })
+            expect(result).toEqual(updatedEmailPreference);
+            expect(prismaService.emailPreferences).toHaveBeenCalledWith(input);
+        });
+    });
 
-//     it('fetches user from firebase', async () => {
-//       prismaService.user.findUnique.mockResolvedValueOnce(null)
-//       prismaService.user.upsert.mockResolvedValueOnce(user)
-//       expect(
-//         await resolver.resolveReference({ __typename: 'User', id: 'userId' })
-//       ).toEqual(user)
-//       expect(prismaService.user.upsert).toHaveBeenCalledWith({
-//         create: {
-//           email: 'tho@no.co',
-//           firstName: 'fo',
-//           imageUrl: 'p',
-//           lastName: 'sho',
-//           userId: 'userId'
-//         },
-//         update: {
-//           email: 'tho@no.co',
-//           firstName: 'fo',
-//           imageUrl: 'p',
-//           lastName: 'sho',
-//           userId: 'userId'
-//         },
-//         where: { userId: 'userId' }
-//       })
-//     })
-//   })
-// })
+    describe('findOrCreateEmailPreference', () => {
+        it('should find or create an email preference', async () => {
+            const email = 'test@example.com';
+            const emailPreference = { id: '1', email: 'test@example.com' };
+            jest.spyOn(prismaService, 'findOrCreateEmailPreferences' as never).mockResolvedValue(emailPreference as never);
+
+            const result = await resolver.findOrCreateEmailPreference(email);
+
+            expect(result).toEqual(emailPreference);
+            expect(resolver.findOrCreateEmailPreference).toHaveBeenCalledWith(email);
+        });
+    });
+
+    describe('createEmailPreferencesForAllUsers', () => {
+        it('should create email preferences for all users', async () => {
+            const result = await resolver.createEmailPreferencesForAllUsers();
+
+            expect(result).toBe(true);
+            expect(resolver.createEmailPreferencesForAllUsers).toHaveBeenCalled();
+        });
+    });
+});
