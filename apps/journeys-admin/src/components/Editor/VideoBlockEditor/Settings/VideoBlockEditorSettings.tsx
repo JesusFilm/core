@@ -292,18 +292,16 @@ export function VideoBlockEditorSettings({
               >
                 {t('Video always muted on the first card')}
               </Typography>
-              {values.autoplay != null &&
-                values.muted != null &&
-                !values.muted && (
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: 'warning.main'
-                    }}
-                  >
-                    {t('Some mobile browsers may override this choice')}
-                  </Typography>
-                )}
+              {values.autoplay === true && values.muted === false && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'warning.main'
+                  }}
+                >
+                  {t('Some mobile browsers may override this choice')}
+                </Typography>
+              )}
             </Stack>
             <Switch
               checked={values.muted}
