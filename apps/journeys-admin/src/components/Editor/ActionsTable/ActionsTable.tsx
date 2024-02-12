@@ -6,6 +6,8 @@ import {
   GoalType,
   getLinkActionGoal
 } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { ActionFields_LinkAction as LinkAction } from '../../../../__generated__/ActionFields'
@@ -23,6 +25,7 @@ export interface Actions {
 export function ActionsTable(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const { dispatch } = useEditor()
 
   function countUrls(journey: Journey | undefined): Actions[] {
     const actions = (journey?.blocks ?? [])
@@ -58,6 +61,13 @@ export function ActionsTable(): ReactElement {
     }
   }
 
+  function handleSelect(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Content
+    })
+  }
+
   return (
     <Stack
       gap={2}
@@ -67,6 +77,7 @@ export function ActionsTable(): ReactElement {
       py={6}
       flexGrow={1}
       data-testid="EditorActionsTable"
+      onClick={handleSelect}
     >
       {journey != null &&
         (actions != null && actions.length > 0 ? (
