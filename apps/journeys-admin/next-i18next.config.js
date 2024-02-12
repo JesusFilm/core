@@ -1,5 +1,3 @@
-const { supportedLocales } = require('./middleware')
-
 const isBrowser = typeof window !== 'undefined'
 let localePath
 if (isBrowser) {
@@ -19,7 +17,27 @@ if (isBrowser) {
 const i18nConfig = {
   i18n: {
     defaultLocale: 'en',
-    locales: supportedLocales,
+    locales: [
+      'am', // Amharic
+      'ar', // Arabic
+      'bn', // Bengali
+      'en', // English
+      'es', // Spanish
+      'fr', // French
+      'hi', // Hindi
+      'id', // Indonesian
+      'ja', // Japanese
+      'my', // Burmese
+      'ru', // Russian
+      'th', // Thai
+      'tl', // Tagalog
+      'tr', // Turkish
+      'ur', // Urdu (Pakistan)
+      'vi', // Vietnamese
+      'zh-CN', // Chinese, Simplified
+      'zh-TW', // Chinese, Traditional
+      'zh-HK' // Chinese, Traditional (Hongkong)
+    ],
     localeDetection: false
   },
   fallbackLng: {
@@ -28,38 +46,21 @@ const i18nConfig = {
     ar: ['ar-SA'],
     bn: ['bn-BD'],
     es: ['es-ES'],
-    'es-AR': ['es-ES'],
-    'es-CO': ['es-ES'],
-    'es-MX': ['es-ES'],
-    'es-PE': ['es-ES'],
-    'es-US': ['es-ES'],
-    'es-VE': ['es-ES'],
-    'es-419': ['es-ES'],
     fr: ['fr-FR'],
-    'fr-BE': ['fr-FR'],
-    'fr-CA': ['fr-FR'],
-    'fr-LU': ['fr-FR'],
-    'fr-QC': ['fr-FR'],
-    'fr-CH': ['fr-FR'],
     hi: ['hi-IN'],
     id: ['id-ID'],
     ja: ['ja-JP'],
     my: ['my-MM'],
     ru: ['ru-RU'],
-    'ru-BY': ['ru-RU'],
-    'ru-MD': ['ru-RU'],
-    'ru-UA': ['ru-RU'],
     th: ['th-TH'],
     tl: ['tl-PH'],
     tr: ['tr-TR'],
-    'tr-CY': ['tr-TR'],
     ur: ['ur-PK'],
     vi: ['vi-VN'],
+    zh: ['zh-CN'],
     'zh-CN': ['zh-CN'],
-    'zh-SG': ['zh-CN'],
     'zh-TW': ['zh-TW'],
-    'zh-HK': ['zh-TW'],
-    'zh-MO': ['zh-TW']
+    'zh-HK': ['zh-TW']
   },
   localePath
 }

@@ -99,9 +99,9 @@ export function LanguageSwitcher({
           crowdinLanguage.data.language.locale === crowdinLocale
       )
       return (
-        // always display English
-        language.id === '529' ||
-        crowdinLanguages?.data.translationProgress === 100
+        (language.id === '529' || // always display English
+          crowdinLanguages?.data.translationProgress === 100) &&
+        language.id !== '22658' // temporarily disable Arabic as RTL currently not working
       )
     })
   }

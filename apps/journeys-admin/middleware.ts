@@ -1,104 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export const supportedLocales = [
-  // Amharic
-  'am',
-  'am-ET',
-
-  // Arabic
-  'ar',
-  'ar-BH', // Bahrain
-  'ar-EG', // Egypt
-  'ar-SA', // Saudi Arabia
-  'ar-YE', // Yemen
-
-  // Bengali
-  'bn',
-  'bn-BD', // Bangla
-  'bn-IN', // Indian
-
-  // English
-  'en',
-  'en-AU', // Australia
-  'en-CA', // Canada
-  'en-GB', // United Kingdom
-  'en-NZ', // New Zealand
-  'en-US', // United States
-
-  // Spanish
-  'es',
-  'es-ES',
-  'es-AR', // Argentina
-  'es-CO', // Columbia
-  'es-MX', // Mexico
-  'es-PE', // Peru
-  'es-US', // USA
-  'es-VE', // Venezuela
-  'es-419', // Latin, America
-
-  // French
-  'fr',
-  'fr-FR',
-  'fr-BE', // Belgium
-  'fr-CA', // Canada
-  'fr-LU', // Luxembourg
-  'fr-QC', // Quebec
-  'fr-CH', // Switzerland
-
-  // Hindi
-  'hi',
-  'hi-IN',
-
-  // Indonesia
-  'id',
-  'id-ID',
-
-  // Japanese
-  'ja',
-  'ja-JP',
-
-  // Burmese
-  'my',
-  'my-MM',
-
-  // Russian
-  'ru',
-  'ru-RU',
-  'ru-BY', // Belarus
-  'ru-MD', // Moldova
-  'ru-UA', // Ukraine
-
-  // Thai
-  'th',
-  'th-TH',
-
-  // Tagalog
-  'tl',
-  'tl-PH',
-
-  // Turkish
-  'tr',
-  'tr-TR',
-  'tr-CY', // Cyprus
-
-  // Urdu (Pakistan)
-  'ur-PK',
-
-  // Vietnamese
-  'vi',
-  'vi-VN',
-
-  // Chinese, Simplified
-  'zh-CN',
-  'zh-SG', // Singapore
-
-  // Chinese, Traditional
-  'zh-TW',
-  'zh-HK', // Hongkong
-  'zh-MO' // Macao
-]
-
 const PUBLIC_FILE_REGEX = /\.(.*)$/
+
+const supportedLocales = [
+  'am', // Amharic
+  'ar', // Arabic
+  'bn', // Bengali
+  'en', // English
+  'es', // Spanish
+  'fr', // French
+  'hi', // Hindi
+  'id', // Indonesian
+  'ja', // Japanese
+  'my', // Burmese
+  'ru', // Russian
+  'th', // Thai
+  'tl', // Tagalog
+  'tr', // Turkish
+  'ur', // Urdu (Pakistan)
+  'vi', // Vietnamese
+  'zh-CN', // Chinese, Simplified
+  'zh-TW', // Chinese, Traditional
+  'zh-HK' // Chinese, Traditional (Hongkong)
+]
 
 const getBrowserLanguage = (req): string | undefined => {
   const acceptedLanguages = req.headers
@@ -106,9 +30,10 @@ const getBrowserLanguage = (req): string | undefined => {
     ?.split(',')
     .map((item) => {
       const [code, priority] = item.trim().split(';')
+      const trimmedCode = code.includes('zh') === true ? code : code.slice(0, 2)
       const langPriority =
         priority != null ? parseFloat(priority.split('=')[1]) : 1
-      return { code, priority: isNaN(langPriority) ? 1 : langPriority }
+      return { trimmedCode, priority: isNaN(langPriority) ? 1 : langPriority }
     })
 
   const sortedLanguages = acceptedLanguages?.sort(
@@ -116,14 +41,11 @@ const getBrowserLanguage = (req): string | undefined => {
   )
 
   if (sortedLanguages != null && sortedLanguages.length > 0) {
-    const browserCode = sortedLanguages[0].code
-    console.log(browserCode)
-
+    const browserCode = sortedLanguages[0].trimmedCode
     if (supportedLocales.includes(browserCode)) {
       return browserCode
     }
   }
-
   return 'en'
 }
 
