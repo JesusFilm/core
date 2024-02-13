@@ -73,7 +73,7 @@ describe('HostLocationFieldForm', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <HostLocationFieldForm empty />
+          <HostLocationFieldForm />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -88,7 +88,7 @@ describe('HostLocationFieldForm', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <HostLocationFieldForm disabled />
+          <HostLocationFieldForm />
         </JourneyProvider>
       </MockedProvider>
     )

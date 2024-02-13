@@ -21,7 +21,7 @@ export const VIDEO_BLOCK_CREATE = gql`
 `
 
 interface NewVideoButtonProps {
-  disabled: boolean
+  disabled?: boolean
 }
 
 export function NewVideoButton({

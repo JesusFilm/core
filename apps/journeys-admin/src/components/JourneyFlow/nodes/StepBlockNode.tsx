@@ -11,7 +11,10 @@ import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { getStepSubtitle } from '@core/journeys/ui/getStepSubtitle'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -209,7 +212,7 @@ export function StepBlockNode({
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
 
   const {
-    state: { selectedStep },
+    state: { selectedStep, journeyEditContentComponent },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -243,7 +246,10 @@ export function StepBlockNode({
     <BaseNode
       isTargetConnectable
       isSourceConnectable="arrow"
-      selected={selectedStep?.id === step.id}
+      selected={
+        journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
+        selectedStep?.id === step.id
+      }
       onSourceConnect={handleConnect}
     >
       {({ selected }) => (

@@ -6,17 +6,17 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
+import { BlockDuplicate } from '../../../../../../__generated__/BlockDuplicate'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey_blocks_TypographyBlock as TypographyBlock
-} from '../../../../../__generated__/GetJourney'
+} from '../../../../../../__generated__/GetJourney'
 import {
   TypographyAlign,
   TypographyColor,
   TypographyVariant
-} from '../../../../../__generated__/globalTypes'
+} from '../../../../../../__generated__/globalTypes'
 
 import { BLOCK_DUPLICATE, DuplicateBlock } from './DuplicateBlock'
 

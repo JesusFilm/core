@@ -20,41 +20,10 @@ export const Default: StoryObj<typeof Accordion> = {
         name="Style"
         value="Dark"
         description="Card Styling"
-      />
+      >
+        test
+      </Accordion>
     )
-  }
-}
-
-export const Empty: StoryObj<typeof Accordion> = {
-  render: () => {
-    return (
-      <Accordion
-        icon={<PaletteIcon />}
-        name="Style"
-        value=""
-        description="Card Styling"
-      />
-    )
-  }
-}
-
-export const Expanded: StoryObj<typeof Accordion> = {
-  render: () => {
-    return (
-      <Accordion
-        icon={<PaletteIcon />}
-        name="Style"
-        value="Dark"
-        description="Card Styling"
-        expanded
-      />
-    )
-  }
-}
-
-export const Minimal: StoryObj<typeof Accordion> = {
-  render: () => {
-    return <Accordion icon={<PaletteIcon />} value="Palette" expanded />
   }
 }
 

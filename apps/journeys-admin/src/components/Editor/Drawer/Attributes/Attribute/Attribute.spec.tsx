@@ -20,7 +20,10 @@ describe('Attribute', () => {
         name="name"
         value="value"
         description="description"
-      />
+        drawerTitle="drawerTitle"
+      >
+        test
+      </Attribute>
     )
     expect(getByText('test')).toBeInTheDocument()
     expect(getByText('name')).toBeInTheDocument()
@@ -39,8 +42,10 @@ describe('Attribute', () => {
             name="name"
             value="value"
             description="description"
-            onClick={handleClick}
-          />
+            drawerTitle="drawerTitle"
+          >
+            test
+          </Attribute>
         </EditorProvider>
       </ThemeProvider>
     )

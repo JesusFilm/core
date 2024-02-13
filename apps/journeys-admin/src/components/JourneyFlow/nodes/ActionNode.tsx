@@ -2,7 +2,10 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ComponentProps, ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields } from '../../../../__generated__/BlockFields'
@@ -30,7 +33,7 @@ export function ActionNode({
   const { journey } = useJourney()
 
   const {
-    state: { selectedBlock }
+    state: { selectedBlock, journeyEditContentComponent }
   } = useEditor()
 
   async function handleSourceConnect(params): Promise<void> {
@@ -44,9 +47,12 @@ export function ActionNode({
   return (
     <BaseNode
       isSourceConnectable
-      selected={selectedBlock?.id === block.id}
       onSourceConnect={handleSourceConnect}
-      variant="action"
+      selected={
+        journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
+        selectedBlock?.id === block.id
+      }
+      isTargetConnectable={false}
       {...props}
     >
       <Box

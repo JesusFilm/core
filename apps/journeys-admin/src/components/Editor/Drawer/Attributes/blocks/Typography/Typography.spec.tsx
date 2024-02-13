@@ -7,6 +7,7 @@ import {
   ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
 import {
@@ -47,6 +48,7 @@ describe('Typography properties', () => {
     drawerMobileOpen: false,
     activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
+    activeSlide: ActiveSlide.JourneyFlow,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 

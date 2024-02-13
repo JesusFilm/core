@@ -11,6 +11,7 @@ import {
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
@@ -67,6 +68,7 @@ describe('Canvas', () => {
     drawerMobileOpen: false,
     activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
+    activeSlide: ActiveSlide.JourneyFlow,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 

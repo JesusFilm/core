@@ -10,6 +10,7 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
@@ -44,6 +45,7 @@ describe('Footer', () => {
     drawerMobileOpen: false,
     activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
+    activeSlide: ActiveSlide.JourneyFlow,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 

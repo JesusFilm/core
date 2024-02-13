@@ -42,8 +42,10 @@ export const Default: StoryObj<typeof Attributes> = {
     }
 
     return (
-      <EditorProvider>
-        <Attributes selected={selected} step={selected} />
+      <EditorProvider
+        initialState={{ selectedStep: selected, selectedBlock: selected }}
+      >
+        <Attributes />
       </EditorProvider>
     )
   }
@@ -92,11 +94,17 @@ export const WithMove: StoryObj<typeof Attributes> = {
 
     return (
       <MockedProvider>
-        <EditorProvider>
-          <Attributes
-            selected={{ ...block, id: 'typographyBlockId2', parentOrder: 1 }}
-            step={step}
-          />
+        <EditorProvider
+          initialState={{
+            selectedStep: step,
+            selectedBlock: {
+              ...block,
+              id: 'typographyBlockId2',
+              parentOrder: 1
+            }
+          }}
+        >
+          <Attributes />
         </EditorProvider>
       </MockedProvider>
     )
