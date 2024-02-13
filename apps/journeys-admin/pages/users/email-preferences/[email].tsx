@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
@@ -8,76 +8,77 @@ import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-const GET_EMAIL_PREFERENCES = gql`
-  query GetEmailPreference($emailPreferenceId: ID!, $idType: String!) {
-    emailPreference(id: $emailPreferenceId, idType: $idType) {
-      userEmail
-      journeyNotifications
-      teamInvites
-      thirdCategory
-    }
-  }
-`
-
 const FIND_OR_CREATE_EMAIL_PREFERENCE = gql`
   mutation FindOrCreateEmailPreference($email: String!) {
     findOrCreateEmailPreference(email: $email) {
-      id
-      userEmail
-      journeyNotifications
-      teamInvites
-      thirdCategory
+      email
+      unsubscribeAll
+      teamInvite
+      teamRemoved
+      teamInviteAccepted
+      journeyEditInvite
+      journeyRequestApproved
+      journeyAccessRequest
     }
   }
 `
 
-const UPDATE_EMAIL_PREFERENCES = gql`
-  mutation UpdateEmailPreferences($input: EmailPreferencesUpdateInput!) {
-    updateEmailPreferences(input: $input) {
-      id
-      journeyNotifications
-      teamInvites
-      thirdCategory
+const UPDATE_EMAIL_PREFERENCE = gql`
+  mutation UpdateEmailPreference($input: EmailPreferenceUpdateInput!) {
+    updateEmailPreference(input: $input) {
+      email
+      unsubscribeAll
+      teamInvite
+      teamRemoved
+      teamInviteAccepted
+      journeyEditInvite
+      journeyRequestApproved
+      journeyAccessRequest
     }
   }
 `
 
-interface EmailPreferences {
-  userEmail: string
-  journeyNotifications: boolean
-  teamInvites: boolean
-  thirdCategory: boolean
+interface EmailPreference {
+  email: string
+  unsubscribeAll: boolean
+  teamInvite: boolean
+  teamRemoved: boolean
+  teamInviteAccepted: boolean
+  journeyEditInvite: boolean
+  journeyRequestApproved: boolean
+  journeyAccessRequest: boolean
 }
+
 function EmailPreferencesPage(): ReactElement {
   const router = useRouter()
   const { email } = router.query
   const { t } = useTranslation('apps-journeys-admin')
-
-  const { data } = useQuery(GET_EMAIL_PREFERENCES, {
-    variables: { email, idType: 'email' }
-  })
-  const [updateEmailPreferences] = useMutation(UPDATE_EMAIL_PREFERENCES)
+  const [updateEmailPreference] = useMutation(UPDATE_EMAIL_PREFERENCE)
   const [findOrCreateEmailPreference] = useMutation(FIND_OR_CREATE_EMAIL_PREFERENCE)
-
   const [emailPreferences, setEmailPreferences] =
-    useState<EmailPreferences | null>(null)
+    useState<EmailPreference | null>(null)
   const [loading, setLoading] = useState(false) // Add loading state
 
-
   useEffect(() => {
-    if (data != null && data?.emailPreference != null) {
-      console.log(data.emailPreference)
-      setEmailPreferences(
-        (data as { emailPreference: EmailPreferences }).emailPreference
-      )
+    const fetchEmailPreferences = async (): Promise<void> => {
+      const { data } = await findOrCreateEmailPreference({
+        variables: {
+          email: email as string
+        }
+      })
+      setEmailPreferences(data.findOrCreateEmailPreference)
     }
-  }, [data])
+
+    fetchEmailPreferences().catch((error) => {
+      console.error('Error fetching email preferences:', error)
+    })
+  }, [email, findOrCreateEmailPreference])
 
   const handlePreferenceChange = async (
-    preference: keyof EmailPreferences
+    preference: keyof EmailPreference
   ): Promise<void> => {
     if (emailPreferences !== null) {
-      const updatedPreferences: EmailPreferences = {
+      const updatedPreferences: EmailPreference = {
         ...emailPreferences,
         [preference]: emailPreferences[preference]
       }
@@ -87,16 +88,18 @@ function EmailPreferencesPage(): ReactElement {
 
   const handleSubmit = async (): Promise<void> => {
     if (emailPreferences !== null) {
-      const { journeyNotifications, teamInvites, thirdCategory } =
-        emailPreferences
       setLoading(true) // Set loading state to true
-      await updateEmailPreferences({
+      await updateEmailPreference({
         variables: {
           input: {
-            id: emailPreferenceId,
-            journeyNotifications,
-            teamInvites,
-            thirdCategory
+            email: emailPreferences.email,
+            unsubscribeAll: emailPreferences.unsubscribeAll,
+            teamInvite: emailPreferences.teamInvite,
+            teamRemoved: emailPreferences.teamRemoved,
+            teamInviteAccepted: emailPreferences.teamInviteAccepted,
+            journeyEditInvite: emailPreferences.journeyEditInvite,
+            journeyRequestApproved: emailPreferences.journeyRequestApproved,
+            journeyAccessRequest: emailPreferences.journeyAccessRequest
           }
         }
       })
@@ -106,11 +109,9 @@ function EmailPreferencesPage(): ReactElement {
 
   const handleUnsubscribeAll = async (): Promise<void> => {
     if (emailPreferences != null) {
-      const updatedPreferences: EmailPreferences = {
-        userEmail: emailPreferences.userEmail,
-        journeyNotifications: false,
-        teamInvites: false,
-        thirdCategory: false
+      const updatedPreferences: EmailPreference = {
+        ...emailPreferences,
+        unsubscribeAll: !emailPreferences.unsubscribeAll
       }
       setEmailPreferences(updatedPreferences)
     }
@@ -135,51 +136,43 @@ function EmailPreferencesPage(): ReactElement {
       {emailPreferences !== null && (
         <Grid container spacing={12}>
           <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Journey Notifications')}</Typography>
-            <Typography variant="body2">
-              {t('Description for Journey Notifications')}
-            </Typography>
-          </Grid>
-          <Grid item xs={2} md={2}>
-            <Switch
-              checked={emailPreferences.journeyNotifications}
-              onChange={async () =>
-                await handlePreferenceChange('journeyNotifications')
-              }
-              name="journeyNotifications"
-              inputProps={{ 'aria-label': 'Journey Notifications' }}
-            />
-          </Grid>
-          <Grid item xs={10} md={10}>
             <Typography variant="h5">{t('Team Invites')}</Typography>
             <Typography variant="body2">
-              {t(`This is a description for Team Invites. This is a description for
-              Team Invites. This is a description for Team Invites. This is a
-              description for Team Invites.`)}
+              {t('Optional Description.')}
             </Typography>
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
-              checked={emailPreferences.teamInvites}
-              onChange={async () => await handlePreferenceChange('teamInvites')}
-              name="teamInvites"
+              checked={emailPreferences.teamInvite}
+              onChange={async () =>
+                await handlePreferenceChange('teamInvite')
+              }
+              name="journeyNotifications"
               inputProps={{ 'aria-label': 'Team Invites' }}
             />
           </Grid>
           <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Third Category')}</Typography>
-            <Typography variant="body2">
-              {t('Description for Third Category')}
-            </Typography>
+            <Typography variant="h5">{t('Team Removed')}</Typography>
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
-              checked={emailPreferences.thirdCategory}
+              checked={emailPreferences.teamRemoved}
+              onChange={async () => await handlePreferenceChange('teamRemoved')}
+              name="teamRemoved"
+              inputProps={{ 'aria-label': 'Team Removed' }}
+            />
+          </Grid>
+          <Grid item xs={10} md={10}>
+            <Typography variant="h5">{t('Team Invite Accepted')}</Typography>
+          </Grid>
+          <Grid item xs={2} md={2}>
+            <Switch
+              checked={emailPreferences.teamInviteAccepted}
               onChange={async () =>
-                await handlePreferenceChange('thirdCategory')
+                await handlePreferenceChange('teamInviteAccepted')
               }
-              name="thirdCategory"
-              inputProps={{ 'aria-label': 'Third Category' }}
+              name="teamInviteAccepted"
+              inputProps={{ 'aria-label': 'Team Invite Accepted' }}
             />
           </Grid>
           <Grid item xs={12} md={12}>
