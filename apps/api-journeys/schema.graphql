@@ -1175,7 +1175,7 @@ type EmailPreference {
 }
 
 input EmailPreferenceUpdateInput {
-  email: String
+  email: String!
   unsubscribeAll: Boolean!
   teamInvite: Boolean!
   teamRemoved: Boolean!

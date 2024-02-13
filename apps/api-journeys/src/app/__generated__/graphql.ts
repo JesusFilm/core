@@ -463,7 +463,7 @@ export class ChatButtonUpdateInput {
 }
 
 export class EmailPreferenceUpdateInput {
-    email?: Nullable<string>;
+    email: string;
     unsubscribeAll: boolean;
     teamInvite: boolean;
     teamRemoved: boolean;
