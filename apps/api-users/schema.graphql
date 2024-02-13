@@ -10,43 +10,6 @@ directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFAC
 
 directive @extends on OBJECT | INTERFACE
 
-type EmailPreferences {
-  id: ID!
-  userEmail: String!
-  teamInvites: Boolean!
-  journeyNotifications: Boolean!
-  thirdCategory: Boolean!
-}
-
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
-  emailPreferences: [EmailPreferences]
-  emailPreference(id: ID!, idType: String!): EmailPreferences
-  me: User
-  user(id: ID!): User
-  userByEmail(email: String!): User
-}
-
-input EmailPreferencesUpdateInput {
-  id: ID!
-  journeyNotifications: Boolean!
-  teamInvites: Boolean!
-  thirdCategory: Boolean!
-}
-
-extend type Mutation {
-  updateEmailPreferences(input: EmailPreferencesUpdateInput!): EmailPreferences
-  createEmailPreferencesForAllUsers: Boolean
-  findOrCreateEmailPreference(email: String!): EmailPreferences
-  userImpersonate(email: String!): String
-  createVerificationRequest: Boolean
-  validateEmail(email: String!, token: String!): User
-}
-
 type User
   @key(fields: "id")
 {
@@ -56,8 +19,24 @@ type User
   email: String!
   imageUrl: String
   superAdmin: Boolean
-  emailPreferences: EmailPreferences
   emailVerified: Boolean!
+}
+
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
+  me: User
+  user(id: ID!): User
+  userByEmail(email: String!): User
+}
+
+extend type Mutation {
+  userImpersonate(email: String!): String
+  createVerificationRequest: Boolean
+  validateEmail(email: String!, token: String!): User
 }
 
 extend type Language

@@ -5,7 +5,6 @@ type User @key(fields: "id") {
   email: String!
   imageUrl: String
   superAdmin: Boolean
-  emailPreferences: EmailPreferences
   emailVerified: Boolean!
 }
 
