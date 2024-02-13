@@ -1,9 +1,12 @@
 type EmailPreference {
-  id: ID!
-  userEmail: String!
-  teamInvites: Boolean!
-  journeyNotifications: Boolean!
-  thirdCategory: Boolean!
+  email: String
+  unsubscribeAll: Boolean!
+  teamInvite: Boolean!
+  teamRemoved: Boolean!
+  teamInviteAccepted: Boolean!
+  journeyEditInvite: Boolean!
+  journeyRequestApproved: Boolean!
+  journeyAccessRequest: Boolean!
 }
 
 extend type Query {
@@ -12,14 +15,17 @@ extend type Query {
 }
 
 input EmailPreferenceUpdateInput {
-  id: ID!
-  journeyNotifications: Boolean!
-  teamInvites: Boolean!
-  thirdCategory: Boolean!
+  email: String
+  unsubscribeAll: Boolean!
+  teamInvite: Boolean!
+  teamRemoved: Boolean!
+  teamInviteAccepted: Boolean!
+  journeyEditInvite: Boolean!
+  journeyRequestApproved: Boolean!
+  journeyAccessRequest: Boolean!
 }
 
 extend type Mutation {
   updateEmailPreference(input: EmailPreferenceUpdateInput!): EmailPreference
-  createEmailPreferencesForAllUsers: Boolean
   findOrCreateEmailPreference(email: String!): EmailPreference
 }
