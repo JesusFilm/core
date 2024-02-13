@@ -95,8 +95,8 @@ function ValidateEmail({
   }
 
   const handleLogout = async (): Promise<void> => {
-    await client.resetStore()
     await user.signOut()
+    await client.resetStore()
     setActiveTeam(null)
     await router.push('/users/sign-in')
   }
