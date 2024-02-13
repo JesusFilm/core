@@ -2,14 +2,15 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
-import { Journey } from '.prisma/api-journeys-client'
 import { User } from '@core/nest/common/firebaseClient'
 
-import { Journey as JourneyWithUserJourney } from '../../__generated__/graphql'
 import {
   JourneyAccessRequest,
-  JourneyRequestApproved
+  JourneyRequestApproved,
+  JourneyWithTeamAndUserJourney
 } from '../email/email.consumer'
+
+type OmittedUser = Omit<User, 'id' | 'emailVerified'>
 
 @Injectable()
 export class UserJourneyService {
@@ -21,8 +22,8 @@ export class UserJourneyService {
   ) {}
 
   async sendJourneyAccessRequest(
-    journey: JourneyWithUserJourney,
-    user: Omit<User, 'id' | 'email'>
+    journey: JourneyWithTeamAndUserJourney,
+    user: OmittedUser
   ): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
 
@@ -43,9 +44,9 @@ export class UserJourneyService {
   }
 
   async sendJourneyApproveEmail(
-    journey: Journey,
+    journey: JourneyWithTeamAndUserJourney,
     userId: string,
-    user: Omit<User, 'id' | 'email'>
+    user: OmittedUser
   ): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
 
@@ -54,7 +55,7 @@ export class UserJourneyService {
       {
         userId,
         url,
-        journeyTitle: journey.title,
+        journey,
         sender: user
       },
       {

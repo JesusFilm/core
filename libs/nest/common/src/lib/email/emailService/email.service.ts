@@ -28,6 +28,14 @@ export class EmailService {
         console.log(e)
       }
     } else {
+      if (
+        to.endsWith('example.com') ||
+        to.endsWith('example.org') ||
+        to.endsWith('example.net') ||
+        to.endsWith('example.edu')
+      )
+        throw new Error('Example email address')
+
       await new SES({ region: 'us-east-2' }).sendEmail({
         Source: 'support@nextstep.is',
         Destination: { ToAddresses: [to] },

@@ -1,12 +1,11 @@
-import { Body, Container, Head, Html, Preview } from '@react-email/components'
+import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
 import {
   ActionCard,
-  BodyText,
-  BodyTitle,
   BodyWrapper,
+  EmailContainer,
   Footer,
   Header,
   UnsubscribeLink
@@ -16,7 +15,8 @@ import { User } from '@core/nest/common/firebaseClient'
 interface TeamInviteAcceptedEmailProps {
   teamName: string
   inviteLink: string
-  sender: Omit<User, 'id' | 'email' | 'emailVerified'>
+  recipient: Omit<User, 'id' | 'emailVerified'>
+  sender: Omit<User, 'id' | 'emailVerified'>
   story?: boolean
 }
 
@@ -27,6 +27,7 @@ interface WrapperProps {
 export const TeamInviteAcceptedEmail = ({
   teamName,
   inviteLink,
+  recipient,
   sender,
   story = false
 }: TeamInviteAcceptedEmailProps): ReactElement => {
@@ -41,25 +42,23 @@ export const TeamInviteAcceptedEmail = ({
   }
 
   const emailBody: ReactNode = (
-    <Container className="my-[40px] rounded border border-solid border-[#eaeaea]">
-      <Header sender={sender} />
-      <BodyWrapper>
-        <BodyTitle
-          bodyTitle={`${sender.firstName} was added to your team ${teamName}`}
-        />
-        <BodyText>
-          If this is in error, please go to ${teamName} team manage dashboard to
-          remove them
-        </BodyText>
-        <ActionCard
-          url={inviteLink}
-          headerText={teamName}
-          buttonText=" View Team"
-        />
+    <>
+      <Header />
+      <EmailContainer>
+        <BodyWrapper>
+          <ActionCard
+            url={inviteLink}
+            headerText={`${sender.firstName} accepted your invite to: `}
+            subHeaderText={`${teamName}`}
+            buttonText="View Team"
+            sender={sender}
+            recipient={recipient}
+          />
+        </BodyWrapper>
+        <Footer />
         <UnsubscribeLink />
-      </BodyWrapper>
-      <Footer />
-    </Container>
+      </EmailContainer>
+    </>
   )
 
   return (
@@ -77,7 +76,12 @@ export const TeamInviteAcceptedEmail = ({
 
 const withHTML = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Html>
+    <Html
+      style={{
+        height: '100%',
+        width: '100%'
+      }}
+    >
       <Head />
       {children}
     </Html>
@@ -86,7 +90,7 @@ const withHTML = ({ children }: WrapperProps): ReactElement => {
 
 const withBody = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Body className="bg-[#DEDFE0] my-auto mx-auto font-sans px-2">
+    <Body className="my-[0px] mx-[0px] font-sans h-full w-full">
       {children}
     </Body>
   )
@@ -98,6 +102,13 @@ TeamInviteAcceptedEmail.PreviewProps = {
   sender: {
     firstName: 'Joe',
     lastName: 'Ro-Nimo',
+    email: 'jojo@example.com',
+    imageUrl: undefined
+  },
+  recipient: {
+    firstName: 'Nee',
+    email: 'neesail@example.com',
+    lastName: 'Sail',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   }

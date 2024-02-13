@@ -13,18 +13,4 @@ export function BodyWrapper({ children }: BodyWrapperProps): ReactElement {
   return <Section className="bg-[#EFEFEF]">{children}</Section>
 }
 
-BodyWrapper.PreviewProps = {
-  children: (
-    <>
-      <BodyText>Lorem ipsum dolor set</BodyText>
-      <ActionCard
-        url="https://admin.nextstep.is/"
-        headerText="[Lorem Ipsum]"
-        buttonText="Lorem"
-      />
-      <UnsubscribeLink />
-    </>
-  )
-} satisfies BodyWrapperProps
-
 export default BodyWrapper
