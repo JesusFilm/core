@@ -25,8 +25,6 @@ interface SwipeNavigationProps {
   children: ReactNode
 }
 
-export const swipeSensitivity = 50
-
 export function SwipeNavigation({
   activeBlock,
   rtl,

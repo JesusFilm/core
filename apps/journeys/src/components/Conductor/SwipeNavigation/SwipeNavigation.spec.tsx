@@ -1,7 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { ComponentProps, ReactNode } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -18,8 +17,6 @@ import {
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
 import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousEventCreate'
-
-import { swipeSensitivity } from './SwipeNavigation'
 
 import { SwipeNavigation } from '.'
 
@@ -52,17 +49,8 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
 
 describe('SwipeNavigation', () => {
   mockUuidv4.mockReturnValue('uuid')
-  const swipeStart = 100
-  const swipeLeft = swipeStart - (swipeSensitivity + 1)
-  const swipeRight = swipeStart + (swipeSensitivity + 1)
-
-  const SwipeTestComponent = (
-    props: ComponentProps<typeof SwipeNavigation>
-  ): ReactNode => (
-    <SwipeNavigation {...props}>
-      <Box data-testid="swipe-test-box" />
-    </SwipeNavigation>
-  )
+  const swipeLeft = -100
+  const swipeRight = 100
 
   const step1: TreeBlock<StepBlock> = {
     id: 'step1.id',
@@ -144,17 +132,20 @@ describe('SwipeNavigation', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepNextEventCreate]}>
-        <SwipeTestComponent activeBlock={step1} rtl={false} />
+        <SwipeNavigation activeBlock={step1} rtl={false}>
+          <Box data-testid="swipe-test-box" />
+        </SwipeNavigation>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
 
     fireEvent.touchStart(swipeElement, {
-      changedTouches: [{ screenX: swipeStart }]
+      touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement, {
-      changedTouches: [{ screenX: swipeLeft }]
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
     })
+    fireEvent.touchEnd(swipeElement)
 
     expect(blockHistoryVar()).toHaveLength(2)
     expect(blockHistoryVar()[1].id).toBe('step2.id')
@@ -166,17 +157,20 @@ describe('SwipeNavigation', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepPreviousEventCreate]}>
-        <SwipeTestComponent activeBlock={step2} rtl={false} />
+        <SwipeNavigation activeBlock={step2} rtl={false}>
+          <Box data-testid="swipe-test-box" />
+        </SwipeNavigation>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
 
     fireEvent.touchStart(swipeElement, {
-      changedTouches: [{ screenX: swipeStart }]
+      touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement, {
-      changedTouches: [{ screenX: swipeRight }]
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeRight, clientY: 0 }]
     })
+    fireEvent.touchEnd(swipeElement)
 
     expect(blockHistoryVar()).toHaveLength(1)
     expect(blockHistoryVar()[0].id).toBe('step1.id')
@@ -189,17 +183,20 @@ describe('SwipeNavigation', () => {
 
     const { getByTestId } = render(
       <MockedProvider>
-        <SwipeTestComponent activeBlock={lockedStep1} rtl={false} />
+        <SwipeNavigation activeBlock={lockedStep1} rtl={false}>
+          <Box data-testid="swipe-test-box" />
+        </SwipeNavigation>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
 
     fireEvent.touchStart(swipeElement, {
-      changedTouches: [{ screenX: swipeStart }]
+      touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement, {
-      changedTouches: [{ screenX: swipeLeft }]
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
     })
+    fireEvent.touchEnd(swipeElement)
 
     expect(blockHistoryVar()).toHaveLength(1)
   })
@@ -210,17 +207,20 @@ describe('SwipeNavigation', () => {
 
     const { getByTestId } = render(
       <MockedProvider>
-        <SwipeTestComponent activeBlock={step1} rtl={false} />
+        <SwipeNavigation activeBlock={step1} rtl={false}>
+          <Box data-testid="swipe-test-box" />
+        </SwipeNavigation>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
 
     fireEvent.touchStart(swipeElement, {
-      changedTouches: [{ screenX: swipeStart }]
+      touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement, {
-      changedTouches: [{ screenX: swipeRight }]
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeRight, clientY: 0 }]
     })
+    fireEvent.touchEnd(swipeElement)
 
     expect(blockHistoryVar()).toHaveLength(1)
   })
@@ -231,17 +231,20 @@ describe('SwipeNavigation', () => {
 
     const { getByTestId } = render(
       <MockedProvider>
-        <SwipeTestComponent activeBlock={step3} rtl={false} />
+        <SwipeNavigation activeBlock={step3} rtl={false}>
+          <Box data-testid="swipe-test-box" />
+        </SwipeNavigation>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
 
     fireEvent.touchStart(swipeElement, {
-      changedTouches: [{ screenX: swipeStart }]
+      touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement, {
-      changedTouches: [{ screenX: swipeLeft }]
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
     })
+    fireEvent.touchEnd(swipeElement)
 
     expect(blockHistoryVar()).toHaveLength(3)
   })
@@ -252,17 +255,20 @@ describe('SwipeNavigation', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepNextEventCreate]}>
-        <SwipeTestComponent activeBlock={step1} rtl />
+        <SwipeNavigation activeBlock={step1} rtl>
+          <Box data-testid="swipe-test-box" />
+        </SwipeNavigation>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
 
     fireEvent.touchStart(swipeElement, {
-      changedTouches: [{ screenX: swipeStart }]
+      touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement, {
-      changedTouches: [{ screenX: swipeRight }]
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeRight, clientY: 0 }]
     })
+    fireEvent.touchEnd(swipeElement)
 
     expect(blockHistoryVar()).toHaveLength(2)
     expect(blockHistoryVar()[1].id).toBe('step2.id')
@@ -274,17 +280,20 @@ describe('SwipeNavigation', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepPreviousEventCreate]}>
-        <SwipeTestComponent activeBlock={step2} rtl />
+        <SwipeNavigation activeBlock={step2} rtl>
+          <Box data-testid="swipe-test-box" />
+        </SwipeNavigation>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
 
     fireEvent.touchStart(swipeElement, {
-      changedTouches: [{ screenX: swipeStart }]
+      touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement, {
-      changedTouches: [{ screenX: swipeLeft }]
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
     })
+    fireEvent.touchEnd(swipeElement)
 
     expect(blockHistoryVar()).toHaveLength(1)
     expect(blockHistoryVar()[0].id).toBe('step1.id')
@@ -296,17 +305,20 @@ describe('SwipeNavigation', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepNextEventCreate]}>
-        <SwipeTestComponent activeBlock={step1} rtl={false} />
+        <SwipeNavigation activeBlock={step1} rtl={false}>
+          <Box data-testid="swipe-test-box" />
+        </SwipeNavigation>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
 
     fireEvent.touchStart(swipeElement, {
-      changedTouches: [{ screenX: swipeStart }]
+      touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement, {
-      changedTouches: [{ screenX: swipeLeft }]
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
     })
+    fireEvent.touchEnd(swipeElement)
 
     await waitFor(() =>
       expect(mockStepNextEventCreate.result).toHaveBeenCalled()
@@ -319,17 +331,20 @@ describe('SwipeNavigation', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepPreviousEventCreate]}>
-        <SwipeTestComponent activeBlock={step2} rtl={false} />
+        <SwipeNavigation activeBlock={step2} rtl={false}>
+          <Box data-testid="swipe-test-box" />
+        </SwipeNavigation>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
 
     fireEvent.touchStart(swipeElement, {
-      changedTouches: [{ screenX: swipeStart }]
+      touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement, {
-      changedTouches: [{ screenX: swipeRight }]
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeRight, clientY: 0 }]
     })
+    fireEvent.touchEnd(swipeElement)
 
     await waitFor(() =>
       expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
@@ -342,17 +357,20 @@ describe('SwipeNavigation', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepNextEventCreate]}>
-        <SwipeTestComponent activeBlock={step1} rtl={false} />
+        <SwipeNavigation activeBlock={step1} rtl={false}>
+          <Box data-testid="swipe-test-box" />
+        </SwipeNavigation>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
 
     fireEvent.touchStart(swipeElement, {
-      changedTouches: [{ screenX: swipeStart }]
+      touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement, {
-      changedTouches: [{ screenX: swipeLeft }]
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
     })
+    fireEvent.touchEnd(swipeElement)
 
     await waitFor(() =>
       expect(mockedDataLayer).toHaveBeenCalledWith({
@@ -374,17 +392,20 @@ describe('SwipeNavigation', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepPreviousEventCreate]}>
-        <SwipeTestComponent activeBlock={step2} rtl={false} />
+        <SwipeNavigation activeBlock={step2} rtl={false}>
+          <Box data-testid="swipe-test-box" />
+        </SwipeNavigation>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
 
     fireEvent.touchStart(swipeElement, {
-      changedTouches: [{ screenX: swipeStart }]
+      touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement, {
-      changedTouches: [{ screenX: swipeRight }]
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeRight, clientY: 0 }]
     })
+    fireEvent.touchEnd(swipeElement)
 
     await waitFor(() =>
       expect(mockedDataLayer).toHaveBeenCalledWith({
