@@ -1,9 +1,7 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { Journey } from '.prisma/api-journeys-client'
-
-import { Journey as JourneyWithUserJourney } from '../../__generated__/graphql'
+import { JourneyWithTeamAndUserJourney } from '../email/email.consumer'
 import { UserJourneyModule } from '../userJourney/userJourney.module'
 
 import { UserJourneyService } from './userJourney.service'
@@ -32,14 +30,21 @@ describe('UserJourneyService', () => {
       // Arrange
       const journey = {
         id: 'journeyId',
-        title: 'Journey Title'
-      } as unknown as Journey
+        title: 'Journey Title',
+        team: {
+          title: 'Ukrainian outreach team Odessa'
+        },
+        primaryImageBlock: {
+          id: 'primaryImageBlockId',
+          src: undefined
+        }
+      } as unknown as JourneyWithTeamAndUserJourney
       const userId = 'userId'
       const user = {
         userId: 'senderUserId',
         firstName: 'John',
         lastName: 'Smith',
-        emailVerified: true
+        email: 'jsmith@example.com'
       }
       // Act
       await service.sendJourneyApproveEmail(journey, userId, user)
@@ -49,7 +54,7 @@ describe('UserJourneyService', () => {
         'journey-request-approved',
         {
           userId,
-          journeyTitle: journey.title,
+          journey,
           sender: user,
           url: expect.stringContaining('/journeys/journeyId')
         },
@@ -70,12 +75,12 @@ describe('UserJourneyService', () => {
         id: 'journeyId',
         title: 'Journey Title',
         userJourneys: []
-      } as unknown as JourneyWithUserJourney
+      } as unknown as JourneyWithTeamAndUserJourney
       const user = {
         userId: 'senderUserId',
         firstName: 'John',
         lastName: 'Smith',
-        emailVerified: true
+        email: 'jsmith@example.com'
       }
       // Act
       await service.sendJourneyAccessRequest(journey, user)

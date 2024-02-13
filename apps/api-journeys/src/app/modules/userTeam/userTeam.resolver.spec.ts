@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { UserTeam, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { User } from '@core/nest/common/firebaseClient'
 
 import { UserTeamRole as GraphQlUserTeamRole } from '../../__generated__/graphql'
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
@@ -240,15 +239,6 @@ describe('UserTeamResolver', () => {
   })
 
   describe('userTeamDelete', () => {
-    const user: User = {
-      id: 'userId',
-      firstName: 'Joe',
-      lastName: 'Ron-Imo',
-      email: 'jron@example.com',
-      imageUrl: undefined,
-      emailVerified: true
-    }
-
     it('deletes userTeam', async () => {
       const userTeam = {
         id: 'userTeamId',
@@ -267,7 +257,7 @@ describe('UserTeamResolver', () => {
         id: 'userId'
       })
       await expect(
-        userTeamResolver.userTeamDelete(ability, 'userTeamId', user)
+        userTeamResolver.userTeamDelete(ability, 'userTeamId')
       ).resolves.toEqual(userTeam)
       expect(prismaService.userTeam.delete).toHaveBeenCalledWith({
         where: { id: 'userTeamId' }
@@ -291,7 +281,7 @@ describe('UserTeamResolver', () => {
         id: 'userId2'
       })
       await expect(
-        userTeamResolver.userTeamDelete(ability, 'userTeamId', user)
+        userTeamResolver.userTeamDelete(ability, 'userTeamId')
       ).rejects.toThrow('user is not allowed to delete userTeam')
     })
 
@@ -301,7 +291,7 @@ describe('UserTeamResolver', () => {
         id: 'userId'
       })
       await expect(
-        userTeamResolver.userTeamDelete(ability, 'userTeamId', user)
+        userTeamResolver.userTeamDelete(ability, 'userTeamId')
       ).rejects.toThrow('userTeam not found')
     })
   })
