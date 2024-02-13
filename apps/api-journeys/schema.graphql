@@ -1164,7 +1164,7 @@ input ChatButtonUpdateInput {
 }
 
 type EmailPreference {
-  email: String
+  email: String!
   unsubscribeAll: Boolean!
   teamInvite: Boolean!
   teamRemoved: Boolean!

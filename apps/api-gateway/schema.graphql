@@ -387,7 +387,7 @@ input EmailActionInput
 type EmailPreference
   @join__type(graph: JOURNEYS)
 {
-  email: String
+  email: String!
   unsubscribeAll: Boolean!
   teamInvite: Boolean!
   teamRemoved: Boolean!

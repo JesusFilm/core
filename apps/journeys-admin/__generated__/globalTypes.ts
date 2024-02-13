@@ -298,11 +298,15 @@ export interface EmailActionInput {
   email: string;
 }
 
-export interface EmailPreferencesUpdateInput {
-  id: string;
-  journeyNotifications: boolean;
-  teamInvites: boolean;
-  thirdCategory: boolean;
+export interface EmailPreferenceUpdateInput {
+  email: string;
+  unsubscribeAll: boolean;
+  teamInvite: boolean;
+  teamRemoved: boolean;
+  teamInviteAccepted: boolean;
+  journeyEditInvite: boolean;
+  journeyRequestApproved: boolean;
+  journeyAccessRequest: boolean;
 }
 
 export interface FormBlockCreateInput {
