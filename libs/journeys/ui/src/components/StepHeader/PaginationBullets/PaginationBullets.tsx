@@ -2,10 +2,10 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
-import Circle from '@core/shared/ui/icons/Circle'
-
 import { TreeBlock, useBlocks } from '../../../libs/block'
 import { StepFields } from '../../Step/__generated__/StepFields'
+
+import { Bullet } from './Bullet'
 
 export function PaginationBullets(): ReactElement {
   const { treeBlocks, blockHistory } = useBlocks()
@@ -14,7 +14,7 @@ export function PaginationBullets(): ReactElement {
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
 
-  function isAdjacentBlock(block: TreeBlock): boolean {
+  function isAdjacent(block: TreeBlock): boolean {
     if (activeBlock.parentOrder !== null && block.parentOrder !== null)
       if (
         block.parentOrder - activeBlock.parentOrder === -1 ||
@@ -25,7 +25,7 @@ export function PaginationBullets(): ReactElement {
     return false
   }
 
-  function isSecondBlock(block: TreeBlock): boolean {
+  function isAdjacentNext(block: TreeBlock): boolean {
     if (activeBlock.parentOrder !== null && block.parentOrder !== null)
       if (
         block.parentOrder - activeBlock.parentOrder === 2 ||
@@ -59,22 +59,21 @@ export function PaginationBullets(): ReactElement {
         }}
       >
         {treeBlocks.map((block) => {
-          if (block.parentOrder === null || activeBlock.parentOrder === null)
+          if (block.parentOrder == null || activeBlock.parentOrder == null)
             return <></>
+          const base = 38
+          const distanceFromBase = block.parentOrder * gap
+          const moveDistance = activeBlock.parentOrder * gap
+
           if (block.id === activeBlock.id) {
             return (
-              <Circle
+              <Bullet
                 key={block.id}
-                data-testid="activeBlock"
+                data-testid="activeBullet"
+                variant="lg"
                 sx={{
-                  fontSize: '8px',
-                  scale: '1',
                   color: { xs: 'primary.main', lg: 'white' },
-                  bgcolor: { xs: 'primary.main', lg: 'white' },
-                  borderRadius: '100%',
-                  left: `${
-                    38 + gap * block.parentOrder - activeBlock.parentOrder * gap
-                  }px`,
+                  left: `${base + distanceFromBase - moveDistance}px`,
                   position: 'absolute',
                   transition: 'scale .2s, left .2s'
                 }}
@@ -82,22 +81,14 @@ export function PaginationBullets(): ReactElement {
             )
           } else {
             return (
-              <Circle
+              <Bullet
                 key={block.id}
+                variant={
+                  isAdjacent(block) ? 'md' : isAdjacentNext(block) ? 'sm' : 'sm'
+                }
                 sx={{
-                  fontSize: '8px',
                   color: { xs: 'primary.main', lg: 'white' },
-                  bgcolor: { xs: 'primary.main', lg: 'white' },
-                  borderRadius: '100%',
-                  scale: isAdjacentBlock(block)
-                    ? '.66'
-                    : isSecondBlock(block)
-                    ? '.33'
-                    : '.33',
-                  opacity: '60%',
-                  left: `${
-                    38 + gap * block.parentOrder - activeBlock.parentOrder * gap
-                  }px`,
+                  left: `${base + distanceFromBase - moveDistance}px`,
                   position: 'absolute',
                   transition: 'scale .2s, left .2s'
                 }}

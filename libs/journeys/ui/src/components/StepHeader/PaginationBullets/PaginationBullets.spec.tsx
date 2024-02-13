@@ -34,10 +34,10 @@ describe('PaginationBullets', () => {
     children: []
   }
 
-  it('should display activeBlock', () => {
+  it('should display the active bullet', () => {
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
     const { getByTestId } = render(<PaginationBullets />)
-    expect(getByTestId('activeBlock')).toBeInTheDocument()
+    expect(getByTestId('activeBullet')).toBeInTheDocument()
   })
 })
