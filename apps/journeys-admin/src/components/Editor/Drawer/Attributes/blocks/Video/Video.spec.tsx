@@ -7,6 +7,10 @@ import {
   ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveSlide,
+  EditorState
+} from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
@@ -66,11 +70,12 @@ describe('Video', () => {
     children: []
   }
 
-  const state = {
+  const state: EditorState = {
     steps: [],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
+    activeSlide: ActiveSlide.JourneyFlow,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 

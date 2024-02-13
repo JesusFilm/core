@@ -9,6 +9,7 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
 
@@ -47,6 +48,7 @@ describe('Step', () => {
     drawerMobileOpen: false,
     activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
+    activeSlide: ActiveSlide.JourneyFlow,
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 
@@ -112,6 +114,7 @@ describe('Step', () => {
           drawerMobileOpen: false,
           activeTab: ActiveTab.Journey,
           activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         },
         dispatch
@@ -187,6 +190,7 @@ describe('Step', () => {
           drawerMobileOpen: false,
           activeTab: ActiveTab.Journey,
           activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         },
         dispatch
@@ -253,6 +257,7 @@ describe('Step', () => {
           drawerMobileOpen: false,
           activeTab: ActiveTab.Journey,
           activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         },
         dispatch
