@@ -11,13 +11,14 @@ export class EmailPreferenceResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
-  async EmailPreferences(): Promise<EmailPreference[]> {
+  async emailPreferences(): Promise<EmailPreference[]> {
+    console.log("HERE IN QUERY")
     const result = await this.prismaService.emailPreference.findMany()
     return result
   }
 
   @Query()
-  async EmailPreference(
+  async emailPreference(
     @Args('id') id: string,
     @Args('idType') idType: string
   ): Promise<EmailPreference> {
@@ -52,22 +53,29 @@ export class EmailPreferenceResolver {
   async findOrCreateEmailPreference(
     @Args('email') email: string
   ): Promise<EmailPreference> {
-    const result = await this.prismaService.emailPreference.findUnique({
-      where: { email }
-    })
-    if (result != null) return result
-    return this.prismaService.emailPreference.create({
-      data: {
-        email,
-        unsubscribeAll: false,
-        teamInvite: true,
-        teamRemoved: true,
-        teamInviteAccepted: true,
-        journeyEditInvite: true,
-        journeyRequestApproved: true,
-        journeyAccessRequest: true,
-      }
-    })
+    
+    console.log("HERE IN THE MUTATION")
+    try {
+      const result = await this.prismaService.emailPreference.findUnique({
+        where: { email }
+      })
+      if (result != null) return result
+      return this.prismaService.emailPreference.create({
+        data: {
+          email,
+          unsubscribeAll: false,
+          teamInvite: true,
+          teamRemoved: true,
+          teamInviteAccepted: true,
+          journeyEditInvite: true,
+          journeyRequestApproved: true,
+          journeyAccessRequest: true,
+        }
+      })
+    } catch (error) {
+      console.error('Error in findOrCreateEmailPreference:', error)
+      throw error
+    }
   }
 
 }
