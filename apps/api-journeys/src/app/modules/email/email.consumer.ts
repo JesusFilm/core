@@ -148,8 +148,7 @@ export class EmailConsumer extends WorkerHost {
       to: data.user.email,
       subject: `You have been removed from team: ${job.data.teamName}`,
       text,
-      html,
-      type: 'teamInvites'
+      html
     })
   }
 
@@ -191,8 +190,7 @@ export class EmailConsumer extends WorkerHost {
         to: job.data.email,
         subject: `Invitation to join team: ${job.data.teamName}`,
         text,
-        html,
-        type: 'teamInvites'
+        html
       })
     } else {
       const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
@@ -224,8 +222,7 @@ export class EmailConsumer extends WorkerHost {
         to: job.data.email,
         subject: `Invitation to join team: ${job.data.teamName}`,
         text,
-        html,
-        type: 'teamInvites'
+        html
       })
     }
   }
@@ -285,8 +282,7 @@ export class EmailConsumer extends WorkerHost {
           job.data.sender.firstName ?? 'A new member'
         } has been added to your team`,
         text,
-        html,
-        type: 'teamInvites'
+        html
       })
     }
   }
@@ -337,8 +333,7 @@ export class EmailConsumer extends WorkerHost {
       to: data.user.email,
       subject: `${job.data.sender.firstName} requests access to a journey`,
       html,
-      text,
-      type: 'journeyNotifications'
+      text
     })
   }
 
@@ -387,8 +382,7 @@ export class EmailConsumer extends WorkerHost {
       to: data.user.email,
       subject: `${job.data.journeyTitle} has been shared with you`,
       html,
-      text,
-      type: 'journeyNotifications'
+      text
     })
   }
 
