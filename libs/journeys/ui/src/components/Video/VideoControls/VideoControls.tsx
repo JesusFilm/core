@@ -379,7 +379,6 @@ export function VideoControls({
               }
             }}
             onClick={(event) => event.stopPropagation()}
-            onTouchEnd={(event) => event.stopPropagation()}
           >
             <Stack
               direction="row"

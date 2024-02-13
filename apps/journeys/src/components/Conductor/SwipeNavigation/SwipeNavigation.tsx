@@ -1,8 +1,10 @@
 import { useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
 import last from 'lodash/last'
-import { ReactElement, ReactNode, useCallback, useEffect } from 'react'
+import { ReactElement, ReactNode, useCallback } from 'react'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
+import { useSwipeable } from 'react-swipeable'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
@@ -20,7 +22,7 @@ import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousE
 interface SwipeNavigationProps {
   activeBlock: TreeBlock<StepFields>
   rtl: boolean
-  children?: ReactNode // Used for testing
+  children: ReactNode
 }
 
 export const swipeSensitivity = 50
@@ -45,11 +47,10 @@ export function SwipeNavigation({
     previousActiveBlock
   } = useBlocks()
   const { t } = useTranslation('apps-journeys')
-  const enableTouchMoveNext = !activeBlock?.locked ?? false
   const onFirstStep = activeBlock === treeBlocks[0]
   const onLastStep = activeBlock === last(treeBlocks)
 
-  const handleNav = useCallback(
+  const handleNavigation = useCallback(
     (direction: 'next' | 'previous'): void => {
       if (variant === 'admin') return
 
@@ -164,38 +165,31 @@ export function SwipeNavigation({
     ]
   )
 
-  useEffect(() => {
-    let touchstartX = 0
-    let touchendX = 0
-
-    function checkDirection(): void {
-      if (touchendX + swipeSensitivity < touchstartX && enableTouchMoveNext) {
-        const direction = rtl ? 'previous' : 'next'
-        handleNav(direction)
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: (eventData) => {
+      const targetElement = eventData.event.target as HTMLElement
+      if (targetElement.classList.contains('MuiSlider-thumb')) return
+      if (rtl) {
+        handleNavigation('previous')
+      } else {
+        handleNavigation('next')
       }
-      if (touchendX - swipeSensitivity > touchstartX) {
-        const direction = rtl ? 'next' : 'previous'
-        handleNav(direction)
+    },
+    onSwipedRight: (eventData) => {
+      const targetElement = eventData.event.target as HTMLElement
+      if (targetElement.classList.contains('MuiSlider-thumb')) return
+      if (rtl) {
+        handleNavigation('next')
+      } else {
+        handleNavigation('previous')
       }
-    }
+    },
+    preventScrollOnSwipe: true
+  })
 
-    function touchStart(e): void {
-      touchstartX = e.changedTouches[0].screenX
-    }
-
-    function touchEnd(e): void {
-      touchendX = e.changedTouches[0].screenX
-      checkDirection()
-    }
-
-    document.addEventListener('touchstart', touchStart)
-    document.addEventListener('touchend', touchEnd)
-
-    return () => {
-      document.removeEventListener('touchstart', touchStart)
-      document.removeEventListener('touchend', touchEnd)
-    }
-  }, [activeBlock, enableTouchMoveNext, handleNav, rtl])
-
-  return <>{children}</>
+  return (
+    <Box {...swipeHandlers} sx={{ height: 'inherit', width: 'inherit' }}>
+      {children}
+    </Box>
+  )
 }

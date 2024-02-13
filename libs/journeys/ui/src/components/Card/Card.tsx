@@ -212,7 +212,7 @@ export function Card({
       }
     })
   }
-  const handleNav = (e: MouseEvent): void => {
+  const handleNavigation = (e: MouseEvent): void => {
     if (variant === 'admin') return
     const view = e.view as unknown as Window
     if (rtl) {
@@ -259,7 +259,7 @@ export function Card({
         transform: 'translateZ(0)' // safari glitch with border radius
       }}
       elevation={3}
-      onClick={handleNav}
+      onClick={handleNavigation}
     >
       {coverBlock != null && !fullscreen ? (
         <ContainedCover
