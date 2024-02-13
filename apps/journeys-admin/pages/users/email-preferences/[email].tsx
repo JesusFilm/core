@@ -5,6 +5,7 @@ import Grid from '@mui/material/Grid'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -51,7 +52,9 @@ interface EmailPreference {
 
 function EmailPreferencesPage(): ReactElement {
   const router = useRouter()
-  const { email } = router.query
+  const { email, unsuball } = router.query
+  const { enqueueSnackbar } = useSnackbar()
+  console.log(unsuball)
   const { t } = useTranslation('apps-journeys-admin')
   const [updateEmailPreference] = useMutation(UPDATE_EMAIL_PREFERENCE)
   const [findOrCreateEmailPreference] = useMutation(FIND_OR_CREATE_EMAIL_PREFERENCE)
@@ -68,6 +71,28 @@ function EmailPreferencesPage(): ReactElement {
       })
       console.log('data', data)
       setEmailPreferences(data.findOrCreateEmailPreference)
+
+      // Check if the unsuball query parameter is present
+      if (unsuball !== undefined) {
+        await updateEmailPreference({
+          variables: {
+            input: {
+              email: data.findOrCreateEmailPreference.email,
+              unsubscribeAll: true,
+              teamInvite: false,
+              teamRemoved: false,
+              teamInviteAccepted: false,
+              journeyEditInvite: false,
+              journeyRequestApproved: false,
+              journeyAccessRequest: false
+            }
+          }
+        })
+        enqueueSnackbar(t(`Unsubscribed From all Emails.`), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      }
     }
 if (email !== undefined && email !== null) {
     fetchEmailPreferences().catch((error) => {
@@ -104,11 +129,16 @@ if (email !== undefined && email !== null) {
             journeyAccessRequest: emailPreferences.journeyAccessRequest
           }
         }
+      }).then(() => {
+      enqueueSnackbar(t(`Email Preferences Updated.`), {
+        variant: 'success',
+        preventDuplicate: true
       })
+    })
       setLoading(false) // Set loading state to false after mutation is complete
     }
   }
-
+  
   const handleUnsubscribeAll = async (): Promise<void> => {
     if (emailPreferences != null) {
       const updatedPreferences: EmailPreference = {
@@ -225,14 +255,13 @@ if (email !== undefined && email !== null) {
             <Button
               variant="contained"
               onClick={handleSubmit}
-              disabled={loading} // Disable the button when loading is true
+              disabled={loading}
               sx={{
                 display: 'flex',
                 margin: 'auto'
               }}
             >
-              {loading ? 'Loading...' : 'Submit'}{' '}
-              {/* Show loading text when loading is true */}
+              {t('Submit Changes')}
             </Button>
           </Grid>
         </Grid>
