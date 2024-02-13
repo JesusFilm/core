@@ -11,6 +11,7 @@ import {
   UnsubscribeLink
 } from '@core/nest/common/email/components'
 import { User } from '@core/nest/common/firebaseClient'
+
 import { JourneyWithTeamAndUserJourney } from '../../../modules/email/email.consumer'
 
 interface JourneySharedEmailProps {
@@ -53,7 +54,7 @@ export const JourneySharedEmail = ({
             recipient={recipient}
             journey={journey}
             variant="sharedWithYou"
-            headerText={`journey shared with you!`}
+            headerText="journey shared with you!"
             buttonText="View Journey"
           />
           <UnsubscribeLink />

@@ -1,11 +1,9 @@
-import { Body, Container, Head, Html, Preview } from '@react-email/components'
+import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
 import {
   ActionCard,
-  BodyText,
-  BodyTitle,
   BodyWrapper,
   EmailContainer,
   Footer,

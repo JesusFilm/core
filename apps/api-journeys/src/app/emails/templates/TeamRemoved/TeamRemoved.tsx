@@ -4,8 +4,6 @@ import { ReactElement, ReactNode } from 'react'
 
 import {
   ActionCard,
-  BodyText,
-  BodyTitle,
   BodyWrapper,
   EmailContainer,
   Footer,
@@ -45,12 +43,10 @@ export const TeamRemovedEmail = ({
       <EmailContainer>
         <BodyWrapper>
           <ActionCard
-            url={`https://admin.nextstep.is/`}
-            headerText={`You were removed from:`}
+            url="https://admin.nextstep.is/"
+            headerText="You were removed from:"
             subHeaderText={`${teamName}`}
-            bodyText={
-              'If this is in error, please contact the team manager to be invited back.'
-            }
+            bodyText="If this is in error, please contact the team manager to be invited back."
             buttonText="View Your Teams"
             recipient={recipient}
             sender={undefined}

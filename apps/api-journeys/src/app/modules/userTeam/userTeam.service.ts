@@ -2,9 +2,6 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
-import { User } from '@core/nest/common/firebaseClient'
-
-// import { Team } from '../../__generated__/graphql'
 import { TeamRemoved } from '../email/email.consumer'
 
 @Injectable()

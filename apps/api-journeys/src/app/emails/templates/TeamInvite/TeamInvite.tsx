@@ -4,8 +4,6 @@ import { ReactElement, ReactNode } from 'react'
 
 import {
   ActionCard,
-  BodyText,
-  BodyTitle,
   BodyWrapper,
   EmailContainer,
   Footer,
