@@ -463,10 +463,14 @@ export class ChatButtonUpdateInput {
 }
 
 export class EmailPreferenceUpdateInput {
-    id: string;
-    journeyNotifications: boolean;
-    teamInvites: boolean;
-    thirdCategory: boolean;
+    email?: Nullable<string>;
+    unsubscribeAll: boolean;
+    teamInvite: boolean;
+    teamRemoved: boolean;
+    teamInviteAccepted: boolean;
+    journeyEditInvite: boolean;
+    journeyRequestApproved: boolean;
+    journeyAccessRequest: boolean;
 }
 
 export class ButtonClickEventCreateInput {
@@ -1053,11 +1057,14 @@ export class ChatButton {
 
 export class EmailPreference {
     __typename?: 'EmailPreference';
-    id: string;
-    userEmail: string;
-    teamInvites: boolean;
-    journeyNotifications: boolean;
-    thirdCategory: boolean;
+    email?: Nullable<string>;
+    unsubscribeAll: boolean;
+    teamInvite: boolean;
+    teamRemoved: boolean;
+    teamInviteAccepted: boolean;
+    journeyEditInvite: boolean;
+    journeyRequestApproved: boolean;
+    journeyAccessRequest: boolean;
 }
 
 export class ButtonClickEvent implements Event {
@@ -1488,8 +1495,6 @@ export abstract class IMutation {
     abstract chatButtonRemove(id: string): ChatButton | Promise<ChatButton>;
 
     abstract updateEmailPreference(input: EmailPreferenceUpdateInput): Nullable<EmailPreference> | Promise<Nullable<EmailPreference>>;
-
-    abstract createEmailPreferencesForAllUsers(): Nullable<boolean> | Promise<Nullable<boolean>>;
 
     abstract findOrCreateEmailPreference(email: string): Nullable<EmailPreference> | Promise<Nullable<EmailPreference>>;
 

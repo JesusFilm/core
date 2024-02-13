@@ -222,7 +222,6 @@ extend type Mutation {
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
   updateEmailPreference(input: EmailPreferenceUpdateInput!): EmailPreference
-  createEmailPreferencesForAllUsers: Boolean
   findOrCreateEmailPreference(email: String!): EmailPreference
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
@@ -1165,18 +1164,25 @@ input ChatButtonUpdateInput {
 }
 
 type EmailPreference {
-  id: ID!
-  userEmail: String!
-  teamInvites: Boolean!
-  journeyNotifications: Boolean!
-  thirdCategory: Boolean!
+  email: String
+  unsubscribeAll: Boolean!
+  teamInvite: Boolean!
+  teamRemoved: Boolean!
+  teamInviteAccepted: Boolean!
+  journeyEditInvite: Boolean!
+  journeyRequestApproved: Boolean!
+  journeyAccessRequest: Boolean!
 }
 
 input EmailPreferenceUpdateInput {
-  id: ID!
-  journeyNotifications: Boolean!
-  teamInvites: Boolean!
-  thirdCategory: Boolean!
+  email: String
+  unsubscribeAll: Boolean!
+  teamInvite: Boolean!
+  teamRemoved: Boolean!
+  teamInviteAccepted: Boolean!
+  journeyEditInvite: Boolean!
+  journeyRequestApproved: Boolean!
+  journeyAccessRequest: Boolean!
 }
 
 enum ButtonAction {

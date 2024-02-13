@@ -387,20 +387,27 @@ input EmailActionInput
 type EmailPreference
   @join__type(graph: JOURNEYS)
 {
-  id: ID!
-  userEmail: String!
-  teamInvites: Boolean!
-  journeyNotifications: Boolean!
-  thirdCategory: Boolean!
+  email: String
+  unsubscribeAll: Boolean!
+  teamInvite: Boolean!
+  teamRemoved: Boolean!
+  teamInviteAccepted: Boolean!
+  journeyEditInvite: Boolean!
+  journeyRequestApproved: Boolean!
+  journeyAccessRequest: Boolean!
 }
 
 input EmailPreferenceUpdateInput
   @join__type(graph: JOURNEYS)
 {
-  id: ID!
-  journeyNotifications: Boolean!
-  teamInvites: Boolean!
-  thirdCategory: Boolean!
+  email: String
+  unsubscribeAll: Boolean!
+  teamInvite: Boolean!
+  teamRemoved: Boolean!
+  teamInviteAccepted: Boolean!
+  journeyEditInvite: Boolean!
+  journeyRequestApproved: Boolean!
+  journeyAccessRequest: Boolean!
 }
 
 interface Event
@@ -1222,7 +1229,6 @@ type Mutation
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
   updateEmailPreference(input: EmailPreferenceUpdateInput!): EmailPreference @join__field(graph: JOURNEYS)
-  createEmailPreferencesForAllUsers: Boolean @join__field(graph: JOURNEYS)
   findOrCreateEmailPreference(email: String!): EmailPreference @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
