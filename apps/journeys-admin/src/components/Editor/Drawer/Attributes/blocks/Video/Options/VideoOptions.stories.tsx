@@ -70,6 +70,7 @@ const video: TreeBlock<VideoBlock> = {
 const videoLanguages: GetVideoVariantLanguages_video = {
   __typename: 'Video',
   id: '2_0-FallingPlates',
+  variant: null,
   variantLanguages: [
     {
       __typename: 'Language',

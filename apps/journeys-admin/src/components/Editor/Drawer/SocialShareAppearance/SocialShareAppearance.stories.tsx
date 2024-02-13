@@ -16,7 +16,7 @@ import {
   ThemeName
 } from '../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import { Drawer } from '../../Drawer copy/Drawer'
+import { Drawer } from '../Drawer'
 
 import { SocialShareAppearance } from './SocialShareAppearance'
 

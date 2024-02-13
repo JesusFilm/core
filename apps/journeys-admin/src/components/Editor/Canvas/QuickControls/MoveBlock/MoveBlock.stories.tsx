@@ -67,7 +67,9 @@ export const Default: StoryObj<typeof MoveBlock> = {
   render: () => {
     return (
       <MockedProvider>
-        <EditorProvider>
+        <EditorProvider
+          initialState={{ selectedBlock: block, selectedStep: step }}
+        >
           <Stack
             direction="row"
             spacing={4}
@@ -77,7 +79,7 @@ export const Default: StoryObj<typeof MoveBlock> = {
               px: 6
             }}
           >
-            <MoveBlock selectedBlock={block} selectedStep={step} />
+            <MoveBlock />
           </Stack>
         </EditorProvider>
       </MockedProvider>

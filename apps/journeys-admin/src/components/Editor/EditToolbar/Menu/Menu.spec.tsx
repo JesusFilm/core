@@ -15,7 +15,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
-import { BLOCK_DUPLICATE } from '../DuplicateBlock/DuplicateBlock'
+import { BLOCK_DUPLICATE } from '../../Canvas/QuickControls/DuplicateBlock/DuplicateBlock'
 
 import { GET_ROLE } from './Menu'
 
