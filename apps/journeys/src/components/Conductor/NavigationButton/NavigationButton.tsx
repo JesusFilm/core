@@ -175,7 +175,7 @@ export function NavigationButton({
       }
     })
   }
-  function handleNav(direction: 'next' | 'previous'): void {
+  function handleNavigation(direction: 'next' | 'previous'): void {
     if (journeyVariant === 'admin') return
     if (direction === 'next' && !onLastStep && !activeBlock.locked) {
       handleNextNavigationEventCreate()
@@ -235,7 +235,7 @@ export function NavigationButton({
         <IconButton
           data-testid={`ConductorNavigationButton${capitalize(variant)}`}
           size="small"
-          onClick={() => handleNav(variant)}
+          onClick={() => handleNavigation(variant)}
           disableRipple
           sx={{
             pointerEvents: 'all',
