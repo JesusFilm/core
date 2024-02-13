@@ -53,18 +53,17 @@ import {
   RadioOptionBlockNodeData
 } from './nodes/RadioOptionBlockNode'
 import { SignUpBlockNode, SignUpBlockNodeData } from './nodes/SignUpBlockNode'
+import {
+  SocialPreviewNode,
+  SocialPreviewNodeData
+} from './nodes/SocialPreviewNode'
 import { StepBlockNode, StepBlockNodeData } from './nodes/StepBlockNode'
 import {
   TextResponseBlockNode,
   TextResponseBlockNodeData
 } from './nodes/TextResponseBlockNode'
 import { VideoBlockNode, VideoBlockNodeData } from './nodes/VideoBlockNode'
-
 import 'reactflow/dist/style.css'
-import {
-  SocialPreviewNode,
-  SocialPreviewNodeData
-} from './nodes/SocialPreviewNode'
 
 type InternalNode =
   | Node<StepBlockNodeData, 'StepBlock'>
