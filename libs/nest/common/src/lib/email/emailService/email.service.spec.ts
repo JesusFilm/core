@@ -35,7 +35,7 @@ describe('EmailService', () => {
   })
 
   const email = {
-    to: 'text@example.com',
+    to: 'text@xample.com',
     subject: 'Test Subject',
     text: 'Test Body',
     html: 'Test Html'
