@@ -1,21 +1,22 @@
+import Grid from '@mui/material/Grid'
+import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
-import Stack from '@mui/material/Stack'
-
-import { NewTypographyButton } from '../Canvas/Button/NewTypographyButton'
-import { NewImageButton } from '../Canvas/Button/NewImageButton'
-import { NewVideoButton } from '../Canvas/Button/NewVideoButton'
-import { NewRadioQuestionButton } from '../Canvas/Button/NewRadioQuestionButton'
-import { NewTextResponseButton } from '../Canvas/Button/NewTextResponseButton'
-import { NewSignUpButton } from '../Canvas/Button/NewSignUpButton'
-import { NewButtonButton } from '../Canvas/Button/NewButtonButton'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { NewFormButton } from '../Canvas/Button/NewFormButton'
-import { Grid, useMediaQuery } from '@mui/material'
-import { Theme } from '@mui/material/styles'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
+import { NewButtonButton } from '../Canvas/Button/NewButtonButton'
+import { NewFormButton } from '../Canvas/Button/NewFormButton'
+import { NewImageButton } from '../Canvas/Button/NewImageButton'
+import { NewRadioQuestionButton } from '../Canvas/Button/NewRadioQuestionButton'
+import { NewSignUpButton } from '../Canvas/Button/NewSignUpButton'
+import { NewTextResponseButton } from '../Canvas/Button/NewTextResponseButton'
+import { NewTypographyButton } from '../Canvas/Button/NewTypographyButton'
+import { NewVideoButton } from '../Canvas/Button/NewVideoButton'
 
 export function AddBlock(): ReactElement {
   const { formiumForm } = useFlags()

@@ -1,13 +1,14 @@
-import Plus2 from '@core/shared/ui/icons/Plus2'
-import { Stack } from '@mui/material'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
+import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import Plus2 from '@core/shared/ui/icons/Plus2'
 
 export interface NewBlockButtonProps {
   disabled?: boolean

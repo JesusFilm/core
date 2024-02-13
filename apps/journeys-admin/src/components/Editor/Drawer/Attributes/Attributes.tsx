@@ -12,9 +12,9 @@ import {
 
 import { Drawer } from '..'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
+import { AddBlock } from '../../AddBlock'
 import { CardTemplateDrawer } from '../../CardTemplateDrawer'
 import { SocialShareAppearance } from '../SocialShareAppearance'
-import { AddBlock } from '../../AddBlock'
 
 const Footer = dynamic(
   async () =>
@@ -211,7 +211,7 @@ export function Attributes(): ReactElement {
     case ActiveJourneyEditContent.Canvas:
       if (activeTab === ActiveTab.Blocks) {
         return (
-          <Drawer title={'Add new blocks'}>
+          <Drawer title="Add new blocks">
             <AddBlock />
           </Drawer>
         )

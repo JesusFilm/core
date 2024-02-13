@@ -1,8 +1,11 @@
 import MuiFab, { FabProps } from '@mui/material/Fab'
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import Zoom from '@mui/material/Zoom'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
   ActiveJourneyEditContent,
@@ -12,10 +15,8 @@ import {
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
+
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { Theme } from '@mui/material/styles'
-import { TreeBlock } from '@core/journeys/ui/block'
 
 interface FabProp {
   visible?: boolean

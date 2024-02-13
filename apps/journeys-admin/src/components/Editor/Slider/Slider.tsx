@@ -1,12 +1,11 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { styled, useTheme } from '@mui/material/styles'
+import { Theme, styled, useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useEffect, useRef } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 
 import {
   ActiveJourneyEditContent,
@@ -19,10 +18,10 @@ import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import { JourneyFlow } from '../../JourneyFlow'
 import { ActionsTable } from '../ActionsTable'
 import { Canvas } from '../Canvas'
+import { Fab } from '../Canvas/Fab'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Attributes } from '../Drawer/Attributes'
 import { SocialPreview } from '../SocialPreview'
-import { Fab } from '../Canvas/Fab'
 
 const StyledSwiper = styled(Swiper)(() => ({}))
 const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
@@ -33,7 +32,7 @@ export function Slider(): ReactElement {
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const {
-    state: { activeSlide, journeyEditContentComponent, steps },
+    state: { activeSlide, journeyEditContentComponent },
     dispatch
   } = useEditor()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
