@@ -114,6 +114,6 @@ export class BullMQService {
 
     await this.createBatchJob(batch.id);
 
-    return batch as Batch;
+    return batch as unknown as Batch;
   }
 }

@@ -1,5 +1,3 @@
-import { unlink } from 'fs';
-
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';

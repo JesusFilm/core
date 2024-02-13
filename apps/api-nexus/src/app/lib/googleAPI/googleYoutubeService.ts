@@ -39,7 +39,6 @@ interface ChannelsResponse {
       description: string;
     };
   }>;
-  grant_type: 'authorization_code' | 'refresh_token';
 }
 
 @Injectable()
