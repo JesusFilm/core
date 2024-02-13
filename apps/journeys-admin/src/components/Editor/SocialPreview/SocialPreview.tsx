@@ -14,12 +14,11 @@ import { SocialPreviewMessage } from './Message/SocialPreviewMessage'
 import { SocialPreviewPost } from './Post/SocialPreviewPost'
 
 export function SocialPreview(): ReactElement {
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
     state: { activeSlide },
     dispatch
   } = useEditor()
-  // uses usemediaquery to force component reload for sizing
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   function handleSelect(): void {
     dispatch({
@@ -30,37 +29,43 @@ export function SocialPreview(): ReactElement {
 
   return (
     <>
-      {mdUp ? (
+      {smUp ? (
         <Stack
           onClick={handleSelect}
           direction="row"
           alignItems="center"
-          justifyContent={
-            activeSlide === ActiveSlide.Content ? 'space-evenly' : 'flex-start'
-          }
           data-testid="SocialPreview"
-          sx={{
-            width: '100%',
-            height: '100%'
-          }}
+          sx={{ width: '100%' }}
         >
-          <Box sx={{ ml: 17.5 }}>
+          <Stack
+            flexGrow={1}
+            alignItems="center"
+            sx={{
+              cursor:
+                activeSlide === ActiveSlide.JourneyFlow ? 'pointer' : undefined,
+              flexGrow: activeSlide === ActiveSlide.Content ? 1 : 0,
+              minWidth: 387,
+              transition: (theme) =>
+                theme.transitions.create('flex-grow', { duration: 300 })
+            }}
+          >
             <SocialPreviewPost />
-          </Box>
-          {activeSlide === ActiveSlide.Content && (
-            <>
-              <Divider
-                orientation="vertical"
-                sx={{
-                  height: '308px',
-                  bgcolor: '#DCDDE5',
-                  transform: 'scale(1.33)',
-                  transformOrigin: 'center'
-                }}
-              />
-              <SocialPreviewMessage />
-            </>
-          )}
+          </Stack>
+          <Divider orientation="vertical" sx={{ height: 300 }} />
+          <Stack
+            flexGrow={1}
+            alignItems="center"
+            sx={{
+              flexGrow: 1,
+              opacity: activeSlide === ActiveSlide.Content ? 1 : 0,
+              transition: (theme) =>
+                theme.transitions.create(['flex-grow', 'opacity'], {
+                  duration: 300
+                })
+            }}
+          >
+            <SocialPreviewMessage />
+          </Stack>
         </Stack>
       ) : (
         <Box

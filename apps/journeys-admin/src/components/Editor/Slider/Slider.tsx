@@ -268,13 +268,7 @@ export function Slider(): ReactElement {
                   })}`
               }}
             >
-              {journeyEditContentComponent === 'canvas' ? (
-                <Content />
-              ) : journeyEditContentComponent === 'social' ? (
-                <SocialPreview />
-              ) : (
-                <></>
-              )}
+              <Content />
             </Box>
           </CSSTransition>
         </TransitionGroup>
