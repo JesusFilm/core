@@ -221,6 +221,9 @@ extend type Mutation {
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
+  updateEmailPreference(input: EmailPreferenceUpdateInput!): EmailPreference
+  createEmailPreferencesForAllUsers: Boolean
+  findOrCreateEmailPreference(email: String!): EmailPreference
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -346,6 +349,8 @@ type Query {
 
 extend type Query {
   block(id: ID!): Block!
+  emailPreferences: [EmailPreference]
+  emailPreference(id: ID!, idType: String!): EmailPreference
   hosts(teamId: ID!): [Host!]!
 
   """
@@ -1157,6 +1162,21 @@ input ChatButtonCreateInput {
 input ChatButtonUpdateInput {
   link: String
   platform: ChatPlatform
+}
+
+type EmailPreference {
+  id: ID!
+  userEmail: String!
+  teamInvites: Boolean!
+  journeyNotifications: Boolean!
+  thirdCategory: Boolean!
+}
+
+input EmailPreferenceUpdateInput {
+  id: ID!
+  journeyNotifications: Boolean!
+  teamInvites: Boolean!
+  thirdCategory: Boolean!
 }
 
 enum ButtonAction {

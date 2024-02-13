@@ -384,6 +384,25 @@ input EmailActionInput
   email: String!
 }
 
+type EmailPreference
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  userEmail: String!
+  teamInvites: Boolean!
+  journeyNotifications: Boolean!
+  thirdCategory: Boolean!
+}
+
+input EmailPreferenceUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  journeyNotifications: Boolean!
+  teamInvites: Boolean!
+  thirdCategory: Boolean!
+}
+
 interface Event
   @join__type(graph: JOURNEYS)
 {
@@ -1202,6 +1221,9 @@ type Mutation
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
+  updateEmailPreference(input: EmailPreferenceUpdateInput!): EmailPreference @join__field(graph: JOURNEYS)
+  createEmailPreferencesForAllUsers: Boolean @join__field(graph: JOURNEYS)
+  findOrCreateEmailPreference(email: String!): EmailPreference @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
@@ -1393,6 +1415,8 @@ type Query
   @join__type(graph: VIDEOS)
 {
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
+  emailPreferences: [EmailPreference] @join__field(graph: JOURNEYS)
+  emailPreference(id: ID!, idType: String!): EmailPreference @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
   """
