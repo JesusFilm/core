@@ -81,7 +81,21 @@ const journeyRequestApproved: Job<JourneyRequestApproved, unknown, string> = {
   name: 'journey-request-approved',
   data: {
     userId: 'userId',
-    journeyTitle: 'Why Jesus?',
+    journey: {
+      id: 'journeyId',
+      title: 'Journey Title',
+      team: {
+        title: 'Ukrainian outreach team Odessa'
+      },
+      userJourneys: [
+        {
+          id: 'userJourneyId',
+          userId: 'userId2',
+          journeyId: 'journeyId',
+          role: UserJourneyRole.owner
+        }
+      ] as UserJourney[]
+    },
     url: 'http://example.com/journey/journeyId',
     sender: {
       firstName: 'Joe',
@@ -98,6 +112,9 @@ const journeyAccessRequest: Job<JourneyAccessRequest, unknown, string> = {
     journey: {
       id: 'journeyId',
       title: 'Journey Title',
+      team: {
+        title: 'Ukrainian outreach team Odessa'
+      },
       userJourneys: [
         {
           id: 'userJourneyId',
@@ -120,7 +137,21 @@ const journeyEditJob: Job<JourneyEditInviteJob, unknown, string> = {
   name: 'journey-edit-invite',
   data: {
     email: 'jsmith@example.com',
-    journeyTitle: 'test-journey',
+    journey: {
+      id: 'journeyId',
+      title: 'Journey Title',
+      team: {
+        title: 'Ukrainian outreach team Odessa'
+      },
+      userJourneys: [
+        {
+          id: 'userJourneyId',
+          userId: 'userId2',
+          journeyId: 'journeyId',
+          role: UserJourneyRole.owner
+        }
+      ] as UserJourney[]
+    },
     url: 'http://example.com/journey/journeyId',
     sender: {
       firstName: 'Joe',
@@ -388,7 +419,7 @@ describe('EmailConsumer', () => {
       expect(emailService.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
         to: 'jsmith@exmaple.com',
-        subject: 'Why Jesus? has been shared with you',
+        subject: 'Journey Title has been shared with you',
         html: expect.any(String),
         text: expect.any(String)
       })
@@ -419,7 +450,7 @@ describe('EmailConsumer', () => {
       expect(emailService.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
         to: journeyEditJob.data.email,
-        subject: 'test-journey has been shared with you',
+        subject: 'Journey Title has been shared with you',
         html: expect.any(String),
         text: expect.any(String)
       })
@@ -445,7 +476,7 @@ describe('EmailConsumer', () => {
       expect(emailService.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
         to: journeyEditJob.data.email,
-        subject: 'test-journey has been shared with you',
+        subject: 'Journey Title has been shared with you',
         html: expect.any(String),
         text: expect.any(String)
       })
