@@ -34,7 +34,6 @@ import { VIDEO_BLOCK_CREATE } from '../Canvas/AddBlockToolbar/NewVideoButton/New
 
 import { ControlPanel } from '.'
 
-
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'uuid'

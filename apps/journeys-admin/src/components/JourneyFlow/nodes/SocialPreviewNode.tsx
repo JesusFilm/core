@@ -1,8 +1,7 @@
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
@@ -32,7 +31,7 @@ export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
   const { dispatch } = useEditor()
 
-  function handleClick() {
+  function handleClick(): void {
     dispatch({
       type: 'SetJourneyEditContentAction',
       component: ActiveJourneyEditContent.SocialPreview

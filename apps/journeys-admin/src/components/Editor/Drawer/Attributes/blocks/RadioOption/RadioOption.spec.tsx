@@ -11,7 +11,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 
-import { Drawer } from "../../.."
+import { Drawer } from '../../..'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Action } from '../../Action'
