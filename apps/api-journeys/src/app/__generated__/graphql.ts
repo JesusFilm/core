@@ -1057,7 +1057,7 @@ export class ChatButton {
 
 export class EmailPreference {
     __typename?: 'EmailPreference';
-    email?: Nullable<string>;
+    email: string;
     unsubscribeAll: boolean;
     teamInvite: boolean;
     teamRemoved: boolean;
