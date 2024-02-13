@@ -221,17 +221,22 @@ export function Attributes(): ReactElement {
       break
   }
 
+  const showSocialPreview =
+    journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
+
+  const showProperties =
+    selected !== 'none' &&
+    selectedStep !== undefined &&
+    selectedStep.children[0]?.children.length > 0
+
   return (
     <Drawer title={blockTitle}>
-      {journeyEditContentComponent ===
-      ActiveJourneyEditContent.SocialPreview ? (
+      {showSocialPreview ? (
         <SocialShareAppearance />
-      ) : selected !== 'none' &&
-        selectedStep !== undefined &&
-        selectedStep.children[0]?.children.length > 0 ? (
-          <Stack>
-            <AttributesContent selected={selected} step={selectedStep} />
-          </Stack>
+      ) : showProperties ? (
+        <Stack>
+          <AttributesContent selected={selected} step={selectedStep} />
+        </Stack>
       ) : (
         <CardTemplateDrawer />
       )}
