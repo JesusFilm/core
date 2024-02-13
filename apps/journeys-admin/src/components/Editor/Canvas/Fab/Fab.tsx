@@ -16,9 +16,10 @@ import { TreeBlock } from '@core/journeys/ui/block'
 
 interface FabProps {
   disabled?: boolean
+  visible?: boolean
 }
 
-export function Fab({ disabled }: FabProps): ReactElement {
+export function Fab({ disabled, visible = true }: FabProps): ReactElement {
   const {
     state: { activeFab, selectedStep },
     dispatch
@@ -59,7 +60,7 @@ export function Fab({ disabled }: FabProps): ReactElement {
 
   return (
     <>
-      <Zoom in={!hasVideoBlock} unmountOnExit data-testid="Fab">
+      <Zoom in={!hasVideoBlock && visible} unmountOnExit data-testid="Fab">
         {activeFab === ActiveFab.Add ? (
           <MuiFab
             variant={smUp ? 'extended' : 'circular'}

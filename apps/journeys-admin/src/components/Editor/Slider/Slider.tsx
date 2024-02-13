@@ -5,6 +5,8 @@ import { ReactElement, useEffect, useRef } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 import {
   ActiveJourneyEditContent,
@@ -34,6 +36,7 @@ export function Slider(): ReactElement {
     state: { activeSlide, journeyEditContentComponent, steps },
     dispatch
   } = useEditor()
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
@@ -288,8 +291,9 @@ export function Slider(): ReactElement {
         }}
       >
         <Attributes />
-        <Fab disabled={steps == null} />
+        <Fab disabled={steps == null} visible={smUp} />
       </StyledSwiperSlide>
+      <Fab disabled={steps == null} visible={!smUp} />
     </StyledSwiper>
   )
 }
