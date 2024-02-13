@@ -1,94 +1,73 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-// import { emailPreference } from '.prisma/api-users-client'
+import { EmailPreference } from '.prisma/api-journeys-client'
 
-// import { emailPreferenceUpdateInput } from '../../__generated__/graphql'
+import { EmailPreferenceUpdateInput } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
-@Resolver('emailPreference')
+@Resolver('EmailPreference')
 export class EmailPreferenceResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
-  // @Query()
-  // async emailPreferences(): Promise<emailPreference[]> {
-  //   const result = await this.prismaService.emailPreference.findMany()
-  //   return result
-  // }
+  @Query()
+  async EmailPreferences(): Promise<EmailPreference[]> {
+    const result = await this.prismaService.emailPreference.findMany()
+    return result
+  }
 
-  // @Query()
-  // async emailPreference(
-  //   @Args('id') id: string,
-  //   @Args('idType') idType: string
-  // ): Promise<emailPreference> {
-  //   const result = await this.prismaService.emailPreference.findFirst({
-  //     where: {
-  //       [idType]: id
-  //     }
-  //   })
-  //   if (result == null)
-  //     throw new GraphQLError('Email Prefrences not found', {
-  //       extensions: { code: 'NOT_FOUND' }
-  //     })
+  @Query()
+  async EmailPreference(
+    @Args('id') id: string,
+    @Args('idType') idType: string
+  ): Promise<EmailPreference> {
+    const result = await this.prismaService.emailPreference.findFirst({
+      where: {
+        [idType]: id
+      }
+    })
+    if (result == null)
+      throw new GraphQLError('Email Prefrences not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
 
-  //   return result
-  // }
+    return result
+  }
 
-  // @Mutation()
-  // async updateemailPreference(
-  //   @Args('input') input: emailPreferenceUpdateInput
-  // ): Promise<emailPreference> {
-  //   const { id, ...data } = input
-  //   const result = await this.prismaService.emailPreference.update({
-  //     where: { id },
-  //     data
-  //   })
-  //   return result
-  // }
+  @Mutation()
+  async updateEmailPreference(
+    @Args('input') input: EmailPreferenceUpdateInput
+  ): Promise<EmailPreference> {
+    const { email, ...rest } = input;
+    await this.prismaService.emailPreference.findUnique({
+      where: { email }
+    });
+    return this.prismaService.emailPreference.update({
+      where: { email },
+      data: rest
+    });
+  }
 
-  // @Mutation()
-  // async findOrCreateEmailPreference(
-  //   @Args('email') email: string
-  // ): Promise<emailPreference> {
-  //   let emailPreference = await this.prismaService.emailPreference.findFirst({
-  //     where: {
-  //       userEmail: email
-  //     }
-  //   })
+  @Mutation()
+  async findOrCreateEmailPreference(
+    @Args('email') email: string
+  ): Promise<EmailPreference> {
+    const result = await this.prismaService.emailPreference.findUnique({
+      where: { email }
+    })
+    if (result != null) return result
+    return this.prismaService.emailPreference.create({
+      data: {
+        email,
+        unsubscribeAll: false,
+        teamInvite: true,
+        teamRemoved: true,
+        teamInviteAccepted: true,
+        journeyEditInvite: true,
+        journeyRequestApproved: true,
+        journeyAccessRequest: true,
+      }
+    })
+  }
 
-  //   if (emailPreference == null) {
-  //     emailPreference = await this.prismaService.emailPreference.create({
-  //       data: {
-  //         userEmail: email
-  //       }
-  //     })
-  //     const user = await this.prismaService.user.findFirst({
-  //       where: {
-  //         email
-  //       }
-  //     })
-
-  //     if (user != null) {
-  //       await this.prismaService.user.update({
-  //         where: { id: user.id },
-  //         data: { emailPreferenceId: emailPreference.id }
-  //       })
-  //     }
-  //   }
-
-  //   return emailPreference
-  // }
-
-  // @Mutation()
-  // async createemailPreferenceForAllUsers(): Promise<boolean> {
-  //   const users = await this.prismaService.user.findMany({
-  //     where: { emailPreferenceId: null }
-  //   })
-
-  //   for (const user of users) {
-  //     await this.findOrCreateEmailPreference(user.email)
-  //   }
-
-  //   return true
-  // }
 }
