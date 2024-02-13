@@ -16,9 +16,8 @@ import { NewTextResponseButton } from './NewTextResponseButton'
 import { NewTypographyButton } from './NewTypographyButton'
 import { NewVideoButton } from './NewVideoButton'
 
-
 interface AddBlockToolbarProps {
-  selectedCard: TreeBlock<CardBlock>
+  selectedCard?: TreeBlock<CardBlock>
 }
 
 export function AddBlockToolbar({

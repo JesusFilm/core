@@ -102,8 +102,10 @@ describe('MoveBlockButton', () => {
             variant: 'admin'
           }}
         >
-          <EditorProvider>
-            <MoveBlock selectedBlock={block2} selectedStep={step} />
+          <EditorProvider
+            initialState={{ selectedBlock: block2, selectedStep: step }}
+          >
+            <MoveBlock />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -136,8 +138,10 @@ describe('MoveBlockButton', () => {
             variant: 'admin'
           }}
         >
-          <EditorProvider>
-            <MoveBlock selectedBlock={block1} selectedStep={step} />
+          <EditorProvider
+            initialState={{ selectedBlock: block1, selectedStep: step }}
+          >
+            <MoveBlock />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -150,8 +154,10 @@ describe('MoveBlockButton', () => {
   it('should disable move up if first block', async () => {
     const { getByRole } = render(
       <MockedProvider>
-        <EditorProvider>
-          <MoveBlock selectedBlock={block1} selectedStep={step} />
+        <EditorProvider
+          initialState={{ selectedBlock: block1, selectedStep: step }}
+        >
+          <MoveBlock />
         </EditorProvider>
       </MockedProvider>
     )
@@ -163,8 +169,10 @@ describe('MoveBlockButton', () => {
   it('should disable move down if last block', async () => {
     const { getByRole } = render(
       <MockedProvider>
-        <EditorProvider>
-          <MoveBlock selectedBlock={block2} selectedStep={step} />
+        <EditorProvider
+          initialState={{ selectedBlock: block2, selectedStep: step }}
+        >
+          <MoveBlock />
         </EditorProvider>
       </MockedProvider>
     )
@@ -191,8 +199,13 @@ describe('MoveBlockButton', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <EditorProvider>
-          <MoveBlock selectedBlock={block1} selectedStep={stepWithOneBlock} />
+        <EditorProvider
+          initialState={{
+            selectedBlock: block1,
+            selectedStep: stepWithOneBlock
+          }}
+        >
+          <MoveBlock />
         </EditorProvider>
       </MockedProvider>
     )

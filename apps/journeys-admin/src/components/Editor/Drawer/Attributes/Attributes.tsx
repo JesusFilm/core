@@ -12,6 +12,7 @@ import {
 import { Drawer } from '..'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
 import { CardTemplateDrawer } from '../../CardTemplateDrawer'
+import { SocialShareAppearance } from '../SocialShareAppearance'
 
 const Footer = dynamic(
   async () =>
@@ -101,64 +102,92 @@ const Form = dynamic(
 )
 
 interface AttributesProps {
-  selected: string | TreeBlock
-  step: TreeBlock<StepBlock>
+  selectedBlock?: TreeBlock
+  selectedStep?: TreeBlock<StepBlock>
+  showDrawer?: boolean
 }
 
-function AttributesContent({ selected, step }: AttributesProps): ReactElement {
-  if (typeof selected === 'string') {
-    switch (selected) {
-      case 'Footer': {
-        return <Footer />
-      }
-      default:
-        return <></>
-    }
-  } else {
-    switch (selected.__typename) {
-      case 'CardBlock':
-        return <Card {...selected} />
-      case 'FormBlock':
-        return <Form {...selected} />
-      case 'StepBlock': {
-        const block = selected.children.find(
-          (block) =>
-            block.__typename === 'CardBlock' ||
-            block.__typename === 'VideoBlock'
-        )
-        return (
+function AttributesContent({
+  selectedBlock,
+  selectedStep,
+  showDrawer
+}: AttributesProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  let component
+  let title: string | undefined
+  switch (selectedBlock?.__typename) {
+    case 'CardBlock':
+      component = <Card {...selectedBlock} />
+      break
+    case 'FormBlock':
+      title = t('Form Properties')
+      component = <Form {...selectedBlock} />
+      break
+    case 'StepBlock': {
+      const card = selectedBlock.children[0]
+      if (card?.children.length > 0) {
+        title = t('Card Properties')
+        component = (
           <>
-            <Step {...selected} />
-            {block != null && (
-              <AttributesContent selected={block} step={step} />
+            <Step {...selectedBlock} />
+            {card != null && (
+              <AttributesContent
+                selectedBlock={card}
+                selectedStep={selectedStep}
+              />
             )}
           </>
         )
+      } else {
+        title = t('Card Templates')
+        component = <CardTemplateDrawer />
       }
-      case 'VideoBlock':
-        return <Video {...selected} />
-      case 'ImageBlock':
-        return <Image {...selected} alt={selected.alt} />
-      case 'TypographyBlock':
-        return <Typography {...selected} />
-      case 'ButtonBlock':
-        return <Button {...selected} />
-      case 'RadioOptionBlock':
-        return <RadioOption {...selected} />
-      case 'SignUpBlock':
-        return <SignUp {...selected} />
-      case 'TextResponseBlock':
-        return <TextResponse {...selected} />
-      default:
-        return <></>
+      break
     }
+    case 'VideoBlock':
+      title = t('Video Properties')
+      component = <Video {...selectedBlock} />
+      break
+    case 'ImageBlock':
+      title = t('Image Properties')
+      component = <Image {...selectedBlock} alt={selectedBlock.alt} />
+      break
+    case 'TypographyBlock':
+      title = t('Typography Properties')
+      component = <Typography {...selectedBlock} />
+      break
+    case 'ButtonBlock':
+      title = t('Button Properties')
+      component = <Button {...selectedBlock} />
+      break
+    case 'RadioOptionBlock':
+      title = t('Poll Option Properties')
+      component = <RadioOption {...selectedBlock} />
+      break
+    case 'SignUpBlock':
+      title = t('Subscribe Properties')
+      component = <SignUp {...selectedBlock} />
+      break
+    case 'TextResponseBlock':
+      title = t('Feedback Properties')
+      component = <TextResponse {...selectedBlock} />
+      break
+    default:
+      component = <></>
+      break
   }
+  return showDrawer === true ? (
+    <Drawer title={title}>
+      <Stack>{component}</Stack>
+    </Drawer>
+  ) : (
+    <Stack>{component}</Stack>
+  )
 }
 
 export function Attributes(): ReactElement {
   const {
     state: {
-      drawerTitle: title,
       selectedComponent,
       selectedBlock,
       selectedStep,
@@ -166,74 +195,31 @@ export function Attributes(): ReactElement {
     }
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
-  const selected = selectedComponent ?? selectedBlock ?? 'none'
-  let blockTitle: string | undefined
-  switch (selectedBlock?.__typename) {
-    case 'ButtonBlock':
-      blockTitle = t('Button Properties')
-      break
-    case 'FormBlock':
-      blockTitle = t('Form Properties')
-      break
-    case 'ImageBlock':
-      blockTitle = t('Image Properties')
-      break
-    case 'RadioQuestionBlock':
-      blockTitle = t('Poll Properties')
-      break
-    case 'RadioOptionBlock':
-      blockTitle = t('Poll Option Properties')
-      break
-    case 'SignUpBlock':
-      blockTitle = t('Subscribe Properties')
-      break
-    case 'StepBlock':
-      if (selectedBlock.children[0]?.children.length > 0) {
-        blockTitle = t('Card Properties')
-      } else {
-        blockTitle = t('Card Templates')
-      }
-      break
-    case 'TextResponseBlock':
-      blockTitle = t('Feedback Properties')
-      break
-    case 'TypographyBlock':
-      blockTitle = t('Typography Properties')
-      break
-    case 'VideoBlock':
-      blockTitle = t('Video Properties')
-      break
-    default:
-      blockTitle = title
-  }
-  switch (selectedComponent) {
-    case 'Footer':
-      blockTitle = t('Footer Properties')
-      break
-  }
+
   switch (journeyEditContentComponent) {
     case ActiveJourneyEditContent.SocialPreview:
-      blockTitle = t('Social Share Preview')
-      break
+      return (
+        <Drawer title={t('Social Share Preview')}>
+          <SocialShareAppearance />
+        </Drawer>
+      )
     case ActiveJourneyEditContent.Action:
-      blockTitle = t('Information')
-      break
-    case ActiveJourneyEditContent.JourneyFlow:
-      blockTitle = t('Properties')
-      break
+      return <Drawer title={t('Information')} />
+    case ActiveJourneyEditContent.Canvas:
+      if (selectedComponent === 'Footer') {
+        return (
+          <Drawer title={t('Footer Properties')}>
+            <Footer />
+          </Drawer>
+        )
+      } else {
+        return (
+          <AttributesContent
+            selectedBlock={selectedBlock}
+            selectedStep={selectedStep}
+            showDrawer
+          />
+        )
+      }
   }
-
-  return (
-    <Drawer title={blockTitle}>
-      {selected !== 'none' &&
-      selectedStep !== undefined &&
-      selectedStep.children[0]?.children.length > 0 ? (
-        <Stack sx={{ overflow: 'auto' }}>
-          <AttributesContent selected={selected} step={selectedStep} />
-        </Stack>
-      ) : (
-        <CardTemplateDrawer />
-      )}
-    </Drawer>
-  )
 }

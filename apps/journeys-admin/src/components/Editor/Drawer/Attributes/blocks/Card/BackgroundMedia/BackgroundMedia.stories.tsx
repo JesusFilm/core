@@ -5,7 +5,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { Drawer } from "../../../.."
+import { Drawer } from '../../../..'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -160,6 +160,7 @@ const image: TreeBlock<ImageBlock> = {
 const videoLanguages: GetVideoVariantLanguages_video = {
   __typename: 'Video',
   id: '2_0-FallingPlates',
+  variant: null,
   variantLanguages: [
     {
       __typename: 'Language',

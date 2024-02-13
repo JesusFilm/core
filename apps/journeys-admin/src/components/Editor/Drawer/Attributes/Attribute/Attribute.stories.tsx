@@ -23,7 +23,10 @@ export const Default: StoryObj<typeof Attribute> = {
           name="Style"
           value="Dark"
           description="Card Styling"
-        />
+          drawerTitle="drawerTitle"
+        >
+          test
+        </Attribute>
       </EditorProvider>
     )
   }

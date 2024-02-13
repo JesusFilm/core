@@ -94,8 +94,8 @@ export function Drawer({
             ? {
                 // temporary drawer
                 borderRadius: 4,
-                borderBottomLeftRadius: { xs: 0, sm: 4 },
-                borderBottomRightRadius: { xs: 0, sm: 4 },
+                borderBottomLeftRadius: { xs: 0, sm: 16 },
+                borderBottomRightRadius: { xs: 0, sm: 16 },
                 width: smUp ? DRAWER_WIDTH : 'auto',
                 top: EDIT_TOOLBAR_HEIGHT + 20,
                 left: { xs: 0, sm: 'auto' },
@@ -106,19 +106,26 @@ export function Drawer({
             : {
                 // permanent drawer
                 borderRadius: 4,
-                borderBottomLeftRadius: { xs: 0, sm: 4 },
-                borderBottomRightRadius: { xs: 0, sm: 4 },
+                borderBottomLeftRadius: { xs: 0, sm: 16 },
+                borderBottomRightRadius: { xs: 0, sm: 16 },
                 width: smUp ? DRAWER_WIDTH : 'auto',
                 left: { xs: 0, sm: 'auto' },
                 top: { xs: 0, sm: 20 },
                 right: { xs: 0, sm: 20 },
-                bottom: { xs: 0, sm: 20 },
-                height: 'auto'
+                bottom: { xs: 0, sm: 'unset' },
+                height: 'auto',
+                minHeight: 'calc(100% - 40px)',
+                maxHeight: 'calc(100% - 4px)'
               }
       }}
     >
       <DrawerTitle title={title} onClose={onClose} />
-      {children}
+      <Box
+        className="swiper-no-swiping"
+        sx={{ flexGrow: 1, overflow: 'auto', mb: { sm: 4 } }}
+      >
+        {children}
+      </Box>
     </MuiDrawer>
   )
 }

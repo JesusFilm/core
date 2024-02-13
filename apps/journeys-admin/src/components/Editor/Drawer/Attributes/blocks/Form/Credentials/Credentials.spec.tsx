@@ -10,6 +10,7 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { GetJourney_journey_blocks_FormBlock as FormBlock } from '../../../../../../../../__generated__/GetJourney'
 
@@ -42,6 +43,7 @@ const state: EditorState = {
   drawerMobileOpen: false,
   activeTab: ActiveTab.Journey,
   activeFab: ActiveFab.Add,
+  activeSlide: ActiveSlide.JourneyFlow,
   journeyEditContentComponent: ActiveJourneyEditContent.Canvas
 }
 
