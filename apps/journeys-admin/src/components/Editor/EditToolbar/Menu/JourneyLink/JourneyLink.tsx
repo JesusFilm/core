@@ -12,7 +12,7 @@ import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import Code1Icon from '@core/shared/ui/icons/Code1'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
-import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
+import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 import { SlugDialog } from './SlugDialog'

@@ -5,8 +5,8 @@ import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { journeysAdminConfig } from '../../../../../libs/storybook'
-import { defaultJourney } from '../../../data'
+import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { defaultJourney } from '../../../../data'
 
 import { JOURNEY_SLUG_UPDATE, SlugDialog } from './SlugDialog'
 

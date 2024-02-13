@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { defaultJourney } from '../../data'
+import { defaultJourney } from '../../../data'
 
 import { JourneyLink } from './JourneyLink'
 

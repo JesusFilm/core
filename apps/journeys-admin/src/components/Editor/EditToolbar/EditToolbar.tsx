@@ -8,14 +8,8 @@ import NextLink from 'next/link'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
-import Bulb from '@core/shared/ui/icons/Bulb'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import Play3 from '@core/shared/ui/icons/Play3'
 import Share from '@core/shared/ui/icons/Share'
@@ -23,26 +17,15 @@ import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
-import { JourneyLink } from '../Properties/JourneyLink'
 
 import { Analytics } from './Analytics'
 import { Menu } from './Menu'
+import { JourneyLink } from './Menu/JourneyLink'
+import { Strategy } from './Strategy'
 
 export function EditToolbar(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { dispatch } = useEditor()
-
-  function handleGoalsClick(): void {
-    dispatch({
-      type: 'SetJourneyEditContentAction',
-      component: ActiveJourneyEditContent.Action
-    })
-    dispatch({
-      type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Content
-    })
-  }
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
@@ -128,22 +111,7 @@ export function EditToolbar(): ReactElement {
             </Typography>
           </Stack>
           <Analytics journey={journey} variant="button" />
-          <Button
-            variant="outlined"
-            color="secondary"
-            startIcon={<Bulb />}
-            sx={{
-              display: {
-                xs: 'none',
-                md: 'flex'
-              }
-            }}
-            onClick={handleGoalsClick}
-          >
-            <Typography variant="subtitle2" sx={{ py: 1 }}>
-              {t('Strategy')}
-            </Typography>
-          </Button>
+          <Strategy variant="button" />
           <Button
             variant="contained"
             color="secondary"

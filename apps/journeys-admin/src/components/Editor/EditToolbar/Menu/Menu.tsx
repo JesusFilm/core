@@ -8,7 +8,6 @@ import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import File5Icon from '@core/shared/ui/icons/File5'
@@ -20,15 +19,22 @@ import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
-import { AccessDialog } from '../../../AccessDialog'
 import { MenuItem } from '../../../MenuItem'
-import { DeleteBlock } from '../../Canvas/QuickControls/DeleteBlock'
-import { DuplicateBlock } from '../../Canvas/QuickControls/DuplicateBlock'
 import { Analytics } from '../Analytics'
+import { Strategy } from '../Strategy'
 
 import { CopyMenuItem } from './CopyMenuItem'
 import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
 import { LanguageMenuItem } from './LanguageMenuItem'
+
+const AccessDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "components/AccessDialog" */
+      '../../../AccessDialog'
+    ).then((mod) => mod.AccessDialog),
+  { ssr: false }
+)
 
 const DescriptionDialog = dynamic(
   async () =>
@@ -66,9 +72,6 @@ export const GET_ROLE = gql`
 `
 
 export function Menu(): ReactElement {
-  const {
-    state: { selectedBlock }
-  } = useEditor()
   const router = useRouter()
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
@@ -97,10 +100,6 @@ export function Menu(): ReactElement {
   function handleOpenAccessDialog(): void {
     setRoute('access')
     setAccessDialogOpen(true)
-    setAnchorEl(null)
-  }
-  function handleCloseAccessDialog(): void {
-    setAccessDialogOpen(false)
     setAnchorEl(null)
   }
 
@@ -173,18 +172,11 @@ export function Menu(): ReactElement {
             onClick={handleCloseMenu}
           />
         </NextLink>
-        {/* <DuplicateBlock
-          variant="list-item"
-          disabled={selectedBlock?.__typename === 'VideoBlock'}
-          handleClick={handleCloseMenu}
-        />
-        <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} /> */}
         <MenuItem
           label={t('Manage Access')}
           icon={<UsersProfiles2 />}
           onClick={handleOpenAccessDialog}
         />
-        {/* <Divider /> */}
         {journey?.template === true && (
           <MenuItem
             label={t('Template Settings')}
@@ -213,7 +205,10 @@ export function Menu(): ReactElement {
         {journey?.template !== true && isPublisher === true && (
           <CreateTemplateMenuItem />
         )}
-        {/* // Strategy //  {journey!=null && } */}
+        {journey != null && (
+          <Strategy variant="list-item" closeMenu={handleCloseMenu} />
+          // <Strategy variant="list-item" />
+        )}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && <Divider />}
         {journey != null &&

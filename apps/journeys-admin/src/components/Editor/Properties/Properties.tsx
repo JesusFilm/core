@@ -3,9 +3,10 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
+import { JourneyLink } from '../EditToolbar/Menu/JourneyLink'
+
 import { AccessControl } from './AccessControl'
 import { JourneyDetails } from './JourneyDetails'
-import { JourneyLink } from './JourneyLink'
 
 interface PropertiesProps {
   isPublisher?: boolean
