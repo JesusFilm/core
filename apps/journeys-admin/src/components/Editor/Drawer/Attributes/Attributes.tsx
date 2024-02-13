@@ -229,9 +229,9 @@ export function Attributes(): ReactElement {
       ) : selected !== 'none' &&
         selectedStep !== undefined &&
         selectedStep.children[0]?.children.length > 0 ? (
-          <Stack>
-            <AttributesContent selected={selected} step={selectedStep} />
-          </Stack>
+        <Stack>
+          <AttributesContent selected={selected} step={selectedStep} />
+        </Stack>
       ) : (
         <CardTemplateDrawer />
       )}
