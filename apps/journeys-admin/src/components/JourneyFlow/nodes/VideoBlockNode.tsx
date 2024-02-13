@@ -2,8 +2,6 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
-import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
-
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 
 import { ActionNode } from './ActionNode'
@@ -19,7 +17,6 @@ export function VideoBlockNode({
     <ActionNode
       block={block}
       title={block.video?.title?.[0]?.value ?? block.title ?? t('Video')}
-      iconAndImage={<VideoOnIcon />}
     />
   )
 }

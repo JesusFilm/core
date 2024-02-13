@@ -1,13 +1,15 @@
 import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Skeleton from '@mui/material/Skeleton'
 import SvgIcon from '@mui/material/SvgIcon'
-// import { useTranslation } from 'i18next'
+import Typography from '@mui/material/Typography'
 import sortBy from 'lodash/sortBy'
 import { ReactElement } from 'react'
 import { NodeProps } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-// import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
@@ -24,7 +26,14 @@ import {
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { useStepBlockNextBlockUpdateMutation } from '../../../libs/useStepBlockNextBlockUpdateMutation'
 
+import { ACTION_NODE_HEIGHT, ACTION_NODE_HEIGHT_GAP } from './ActionNode'
 import { BaseNode } from './BaseNode'
+
+export const STEP_NODE_WIDTH = 200
+export const STEP_NODE_HEIGHT = 76
+export const STEP_NODE_WIDTH_GAP = 200
+export const STEP_NODE_HEIGHT_GAP =
+  ACTION_NODE_HEIGHT + ACTION_NODE_HEIGHT_GAP + 43
 
 export interface StepBlockNodeData extends TreeBlock<StepBlock> {
   steps: Array<TreeBlock<StepBlock>>
@@ -188,6 +197,7 @@ export function StepBlockNode({
   const { title, subtitle, description, priorityBlock, bgImage } =
     getCardMetadata(card, ...steps)
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
+
   const {
     state: { selectedStep },
     dispatch
@@ -221,35 +231,137 @@ export function StepBlockNode({
 
   return (
     <BaseNode
+      isTargetConnectable
+      isSourceConnectable="arrow"
       selected={selectedStep?.id === step.id}
       onSourceConnect={handleConnect}
-      onClick={handleClick}
-      iconAndImage={
-        <Box
-          sx={{
-            height: '100%',
-            flexShrink: 0,
-            width: 50,
-            border: '1px solid white',
-            borderBottomLeftRadius: 8,
-            borderTopLeftRadius: 8,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            bgcolor: card?.backgroundColor ?? 'background.default',
-            backgroundImage: bgImage != null ? `url(${bgImage})` : undefined
-          }}
-        >
-          {priorityBlock != null && (
-            <BlockIcon typename={priorityBlock.__typename} />
-          )}
+    >
+      {({ selected }) => (
+        <Box onClick={handleClick} sx={{ height: '150%', overflow: 'visible' }}>
+          <Card
+            sx={{
+              borderRadius: 2,
+              outline: '2px solid',
+              outlineColor: (theme) =>
+                selected === true
+                  ? theme.palette.primary.main
+                  : selected === 'descendant'
+                  ? theme.palette.divider
+                  : 'transparent',
+              outlineOffset: '5px'
+            }}
+          >
+            <CardContent
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyItems: 'center',
+                width: STEP_NODE_WIDTH,
+                height: STEP_NODE_HEIGHT,
+                gap: 2,
+                margin: 0,
+                padding: 0,
+                borderRadius: 1,
+                paddingBottom: '0px !important'
+              }}
+            >
+              <Box
+                sx={{
+                  height: '100%',
+                  flexShrink: 0,
+                  width: 50,
+                  border: '1px solid white',
+                  borderBottomLeftRadius: 8,
+                  borderTopLeftRadius: 8,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center center',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bgcolor: card?.backgroundColor ?? 'background.default',
+                  backgroundImage:
+                    bgImage != null ? `url(${bgImage})` : undefined
+                }}
+              >
+                {priorityBlock != null && (
+                  <BlockIcon typename={priorityBlock.__typename} />
+                )}
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  justifyContent: 'center',
+                  width: STEP_NODE_WIDTH,
+                  height: STEP_NODE_HEIGHT,
+                  margin: 0,
+                  padding: 2
+                }}
+              >
+                <Typography
+                  sx={{
+                    display: '-webkit-box',
+                    '-webkit-box-orient': 'vertical',
+                    '-webkit-line-clamp': '2',
+                    overflow: 'hidden',
+                    padding: 0,
+                    fontSize: 11,
+                    fontWeight: 'bold',
+                    height: 'auto',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    alignSelf: 'flex-start',
+                    marginBottom: 0.5,
+                    lineHeight: 1.3,
+                    alignItems: 'flex-end'
+                  }}
+                >
+                  {title ?? (
+                    <Skeleton
+                      animation={false}
+                      sx={{
+                        height: 16,
+                        width: 117,
+                        borderRadius: 1,
+                        color: 'background.paper'
+                      }}
+                    />
+                  )}
+                </Typography>
+                <Typography
+                  sx={{
+                    display: '-webkit-box',
+                    '-webkit-box-orient': 'vertical',
+                    '-webkit-line-clamp': '2',
+                    fontSize: 10,
+                    lineHeight: '1.2',
+                    justifyContent: 'top',
+                    color: '#7f7e8c',
+                    overflow: 'hidden',
+                    paddingBottom: '1px'
+                  }}
+                >
+                  {title != null ? (
+                    subtitle
+                  ) : (
+                    <Skeleton
+                      animation={false}
+                      sx={{
+                        height: 16,
+                        width: 95,
+                        borderRadius: 1,
+                        color: 'background.paper'
+                      }}
+                    />
+                  )}
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
         </Box>
-      }
-      title={title}
-      subtitle={subtitle}
-      description={description}
-    />
+      )}
+    </BaseNode>
   )
 }

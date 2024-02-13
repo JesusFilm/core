@@ -2,8 +2,6 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
-import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
-
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../__generated__/GetJourney'
 
 import { ActionNode } from './ActionNode'
@@ -15,11 +13,5 @@ export function TextResponseBlockNode({
 }: NodeProps<TextResponseBlockNodeData>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  return (
-    <ActionNode
-      block={block}
-      title={t('Feedback')}
-      iconAndImage={<TextInput1Icon />}
-    />
-  )
+  return <ActionNode block={block} title={t('Feedback')} />
 }

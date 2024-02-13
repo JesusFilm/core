@@ -39,12 +39,8 @@ import { useStepBlockNextBlockUpdateMutation } from '../../libs/useStepBlockNext
 import {
   ACTION_NODE_HEIGHT_GAP,
   ACTION_NODE_WIDTH,
-  ACTION_NODE_WIDTH_GAP,
-  STEP_NODE_HEIGHT,
-  STEP_NODE_HEIGHT_GAP,
-  STEP_NODE_WIDTH,
-  STEP_NODE_WIDTH_GAP
-} from './nodes/BaseNode'
+  ACTION_NODE_WIDTH_GAP
+} from './nodes/ActionNode'
 import { ButtonBlockNode, ButtonBlockNodeData } from './nodes/ButtonBlockNode'
 import { FormBlockNode, FormBlockNodeData } from './nodes/FormBlockNode'
 import {
@@ -52,7 +48,14 @@ import {
   RadioOptionBlockNodeData
 } from './nodes/RadioOptionBlockNode'
 import { SignUpBlockNode, SignUpBlockNodeData } from './nodes/SignUpBlockNode'
-import { StepBlockNode, StepBlockNodeData } from './nodes/StepBlockNode'
+import {
+  STEP_NODE_HEIGHT,
+  STEP_NODE_HEIGHT_GAP,
+  STEP_NODE_WIDTH,
+  STEP_NODE_WIDTH_GAP,
+  StepBlockNode,
+  StepBlockNodeData
+} from './nodes/StepBlockNode'
 import {
   TextResponseBlockNode,
   TextResponseBlockNodeData
