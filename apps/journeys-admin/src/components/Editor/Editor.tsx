@@ -50,7 +50,7 @@ export function Editor({
         <>
           <EditToolbar />
           <Slider />
-          <Fab onAddClick={() => console.log('This is clicked')} visible />
+          <Fab disabled={steps == null} />
         </>
       </EditorProvider>
     </JourneyProvider>

@@ -7,21 +7,24 @@ import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
+import {
+  ActiveSlide,
+  ActiveTab
+} from '@core/journeys/ui/EditorProvider/EditorProvider'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { Drawer } from '../../Drawer'
 import { AddBlockDrawer } from '../../AddBlockDrawer'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 interface FabProp {
-  visible?: boolean
-  onAddClick: () => void
   disabled?: boolean
 }
 
-export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
+export function Fab({ disabled }: FabProp): ReactElement {
   const {
-    state: { activeFab, activeSlide },
+    state: { activeFab, activeSlide, selectedStep },
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
@@ -29,9 +32,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
   const [open, setOpen] = useState(false)
 
   function toggleOpen(): void {
-    if (smUp) {
-      setOpen(!open)
-    }
+    setOpen(!open)
   }
   function handleEditFab(): void {
     dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
@@ -42,20 +43,34 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
 
   const fabStyles = {
     position: 'absolute',
-    bottom: { xs: 16, sm: 48 },
+    bottom: { xs: 16, sm: 64 },
     right: { xs: 16, sm: activeSlide === ActiveSlide.Content ? 424 : 24 }
   }
 
+  const cardBlock = selectedStep?.children.find(
+    (block) => block.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock>
+
+  const hasVideoBlock =
+    cardBlock?.children?.find(
+      (block) =>
+        block.__typename === 'VideoBlock' && cardBlock.coverBlockId !== block.id
+    ) != null
+
+  const hasChildBlock = cardBlock?.children?.some(
+    (block) => block.id !== cardBlock.coverBlockId
+  )
+
   return (
     <>
-      <Zoom in={visible} unmountOnExit data-testid="Fab">
+      <Zoom in unmountOnExit data-testid="Fab">
         {activeFab === ActiveFab.Add ? (
           <MuiFab
             variant={smUp ? 'extended' : 'circular'}
             size="large"
             color="primary"
             onClick={toggleOpen}
-            disabled={disabled}
+            disabled={disabled || hasVideoBlock}
             sx={fabStyles}
           >
             <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
@@ -67,7 +82,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
             size="large"
             color="primary"
             onClick={handleEditFab}
-            disabled={disabled}
+            disabled={disabled || hasVideoBlock}
             sx={fabStyles}
           >
             <Edit2Icon sx={{ mr: smUp ? 3 : 0 }} />
@@ -79,7 +94,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
             size="large"
             color="primary"
             onClick={handleSaveFab}
-            disabled={disabled}
+            disabled={disabled || hasVideoBlock}
             sx={fabStyles}
           >
             <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
@@ -88,7 +103,7 @@ export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
         )}
       </Zoom>
       <Drawer title={'Add new blocks'} open={open} onClose={toggleOpen}>
-        <AddBlockDrawer />
+        <AddBlockDrawer hasVideo={hasVideoBlock} hasBlock={hasChildBlock} />
       </Drawer>
     </>
   )

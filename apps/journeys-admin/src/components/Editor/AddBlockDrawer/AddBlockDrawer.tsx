@@ -14,7 +14,15 @@ import { NewFormButton } from '../Canvas/Button/NewFormButton'
 import { Grid, useMediaQuery } from '@mui/material'
 import { Theme } from '@mui/material/styles'
 
-export function AddBlockDrawer(): ReactElement {
+export interface AddBlockDrawerProps {
+  hasVideo: boolean
+  hasBlock: boolean
+}
+
+export function AddBlockDrawer({
+  hasVideo,
+  hasBlock
+}: AddBlockDrawerProps): ReactElement {
   const { formiumForm } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
@@ -22,40 +30,40 @@ export function AddBlockDrawer(): ReactElement {
     <>
       {smUp ? (
         <Stack gap={4} mt={6} px={5}>
-          <NewTypographyButton />
-          <NewImageButton />
-          <NewVideoButton />
-          <NewRadioQuestionButton />
-          <NewTextResponseButton />
-          <NewSignUpButton />
-          <NewButtonButton />
-          {formiumForm && <NewFormButton />}
+          <NewTypographyButton disabled={hasVideo} />
+          <NewImageButton disabled={hasVideo} />
+          <NewVideoButton disabled={hasBlock} />
+          <NewRadioQuestionButton disabled={hasVideo} />
+          <NewTextResponseButton disabled={hasVideo} />
+          <NewSignUpButton disabled={hasVideo} />
+          <NewButtonButton disabled={hasVideo} />
+          {formiumForm && <NewFormButton disabled={hasVideo} />}
         </Stack>
       ) : (
         <Grid p={5} container spacing={4}>
           <Grid item xs={6}>
-            <NewTypographyButton />
+            <NewTypographyButton disabled={hasVideo} />
           </Grid>
           <Grid item xs={6}>
-            <NewImageButton />
+            <NewImageButton disabled={hasVideo} />
           </Grid>
           <Grid item xs={6}>
-            <NewVideoButton />
+            <NewVideoButton disabled={hasBlock} />
           </Grid>
           <Grid item xs={6}>
-            <NewRadioQuestionButton />
+            <NewRadioQuestionButton disabled={hasVideo} />
           </Grid>
           <Grid item xs={6}>
-            <NewTextResponseButton />
+            <NewTextResponseButton disabled={hasVideo} />
           </Grid>
           <Grid item xs={6}>
-            <NewSignUpButton />
+            <NewSignUpButton disabled={hasVideo} />
           </Grid>
           <Grid item xs={6}>
-            <NewButtonButton />
+            <NewButtonButton disabled={hasVideo} />
           </Grid>
           <Grid item xs={6}>
-            {formiumForm && <NewFormButton />}
+            {formiumForm && <NewFormButton disabled={hasVideo} />}
           </Grid>
         </Grid>
       )}

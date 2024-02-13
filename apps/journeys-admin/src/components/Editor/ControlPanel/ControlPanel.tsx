@@ -204,13 +204,7 @@ export function ControlPanel(): ReactElement {
           </MuiFab>
         )}
         {journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
-          !hasVideoBlock && (
-            <Fab
-              visible={activeTab !== ActiveTab.Blocks}
-              onAddClick={handleAddFabClick}
-              disabled={steps == null}
-            />
-          )}
+          !hasVideoBlock && <Fab disabled={steps == null} />}
       </Box>
       <Stack
         sx={{

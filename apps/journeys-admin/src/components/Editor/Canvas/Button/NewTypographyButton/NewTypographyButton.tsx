@@ -13,7 +13,7 @@ import Type3Icon from '@core/shared/ui/icons/Type3'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
-import { Button } from '../Button'
+import { Button, NewBlockButtonProps } from '../Button'
 
 export const TYPOGRAPHY_BLOCK_CREATE = gql`
   ${TYPOGRAPHY_FIELDS}
@@ -26,7 +26,9 @@ export const TYPOGRAPHY_BLOCK_CREATE = gql`
   }
 `
 
-export function NewTypographyButton(): ReactElement {
+export function NewTypographyButton({
+  disabled
+}: NewBlockButtonProps): ReactElement {
   const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
     TYPOGRAPHY_BLOCK_CREATE
   )
@@ -97,6 +99,7 @@ export function NewTypographyButton(): ReactElement {
       value="Text"
       onClick={handleClick}
       testId="NewTypographyButton"
+      disabled={disabled}
     />
   )
 }

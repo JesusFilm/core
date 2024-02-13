@@ -13,7 +13,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import File5Icon from '@core/shared/ui/icons/File5'
 
 import { FormBlockCreate } from '../../../../../../__generated__/FormBlockCreate'
-import { Button } from '../Button'
+import { Button, NewBlockButtonProps } from '../Button'
 
 export const FORM_BLOCK_CREATE = gql`
   ${FORM_FIELDS}
@@ -24,7 +24,7 @@ export const FORM_BLOCK_CREATE = gql`
   }
 `
 
-export function NewFormButton(): ReactElement {
+export function NewFormButton({ disabled }: NewBlockButtonProps): ReactElement {
   const [formBlockCreate] = useMutation<FormBlockCreate>(FORM_BLOCK_CREATE)
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -93,6 +93,7 @@ export function NewFormButton(): ReactElement {
       value={t('Form')}
       onClick={handleClick}
       testId="NewFormiumFormIcon"
+      disabled={disabled}
     />
   )
 }

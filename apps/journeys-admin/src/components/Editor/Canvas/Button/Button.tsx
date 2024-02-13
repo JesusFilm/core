@@ -9,6 +9,10 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+export interface NewBlockButtonProps {
+  disabled?: boolean
+}
+
 interface ButtonProps {
   icon: ReactElement
   value: string
@@ -38,7 +42,13 @@ export function Button({
       <Tooltip
         title={
           <Typography variant="caption" lineHeight="12px">
-            {t('Click to add')}
+            {t(
+              disabled && value === 'Video'
+                ? 'Video Blocks cannot be placed on top of Block'
+                : disabled
+                ? 'Blocks cannot be placed on top of Video Block'
+                : 'Click to add'
+            )}
           </Typography>
         }
         placement="top"
@@ -56,45 +66,48 @@ export function Button({
           }
         }}
       >
-        <Card
-          variant="outlined"
-          sx={{
-            height: 80,
-            borderRadius: 2,
-            '&:hover': {
-              borderColor: { xs: 'editor.divider', sm: 'primary.main' },
-              borderWidth: { xs: '1px', sm: '2px' },
-              '.plus2-icon': {
-                color: { xs: 'editor.divider', sm: 'primary.main' }
+        <Box>
+          <Card
+            variant="outlined"
+            sx={{
+              pointerEvents: disabled ? 'none' : 'auto',
+              height: 80,
+              borderRadius: 2,
+              '&:hover': {
+                borderColor: { xs: 'editor.divider', sm: 'primary.main' },
+                borderWidth: { xs: '1px', sm: '2px' },
+                '.plus2-icon': {
+                  color: { xs: 'editor.divider', sm: 'primary.main' }
+                }
               }
-            }
-          }}
-        >
-          <CardActionArea onClick={handleClick} disabled={disabled}>
-            <CardContent
-              sx={{
-                height: 80,
-                pl: 6,
-                color: disabled ? 'secondary.light' : 'auto',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}
-            >
-              <Stack direction="row" gap={4}>
-                {icon}
-                <Typography>{t(value)}</Typography>
-              </Stack>
-              <Plus2
-                color="secondary"
-                className="plus2-icon"
+            }}
+          >
+            <CardActionArea onClick={handleClick} disabled={disabled}>
+              <CardContent
                 sx={{
-                  mr: 3.5
+                  height: 80,
+                  pl: 6,
+                  color: disabled ? 'secondary.light' : 'auto',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
                 }}
-              />
-            </CardContent>
-          </CardActionArea>
-        </Card>
+              >
+                <Stack direction="row" gap={4}>
+                  {icon}
+                  <Typography>{t(value)}</Typography>
+                </Stack>
+                <Plus2
+                  color="secondary"
+                  className="plus2-icon"
+                  sx={{
+                    mr: 3.5
+                  }}
+                />
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Box>
       </Tooltip>
     </Box>
   )
