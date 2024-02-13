@@ -12,10 +12,10 @@ const TeamInviteEmailDemo: Meta<typeof TeamInviteEmail> = {
 const Template: StoryObj<typeof TeamInviteEmail> = {
   render: ({ ...args }) => (
     <TeamInviteEmail
-      email={args.email}
       teamName={args.teamName}
       inviteLink="https://admin.nextstep.is/"
       sender={args.sender}
+      recipient={args.recipient}
       story
     />
   )
@@ -30,7 +30,13 @@ export const Default = {
       imageUrl: 'https://bit.ly/3Gth4Yf'
     },
     email: 'joeronimo@example.com',
-    teamName: 'JFP Sol'
+    teamName: 'JFP Sol',
+    recipient: {
+      firstName: 'Nee',
+      email: 'neesail@example.com',
+      lastName: 'Sail',
+      imageUrl: undefined
+    }
   }
 }
 

@@ -12,8 +12,6 @@ import { GraphQLError } from 'graphql'
 
 import { Prisma, UserTeam } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { User } from '@core/nest/common/firebaseClient'
-import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 
 import {
   UserTeamFilterInput,
@@ -96,8 +94,7 @@ export class UserTeamResolver {
   @UseGuards(AppCaslGuard)
   async userTeamDelete(
     @CaslAbility() ability: AppAbility,
-    @Args('id') id: string,
-    @CurrentUser() user: User
+    @Args('id') id: string
   ): Promise<UserTeam> {
     const userTeam = await this.prismaService.userTeam.findUnique({
       where: { id },
@@ -114,8 +111,7 @@ export class UserTeamResolver {
 
       await this.userTeamService.sendTeamRemovedEmail(
         userTeam.team.title,
-        userTeam.userId,
-        user
+        userTeam.userId
       )
 
       return userTeamDelete

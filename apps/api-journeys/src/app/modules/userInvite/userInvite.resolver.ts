@@ -69,7 +69,8 @@ export class UserInviteResolver {
               team: {
                 include: { userTeams: true }
               },
-              userJourneys: true
+              userJourneys: true,
+              primaryImageBlock: true
             }
           }
         }
@@ -81,7 +82,7 @@ export class UserInviteResolver {
       await this.userInviteService.sendEmail(
         userInvite.journey,
         input.email,
-        omit(sender, ['id', 'email'])
+        omit(sender, ['id'])
       )
       return userInvite
     })

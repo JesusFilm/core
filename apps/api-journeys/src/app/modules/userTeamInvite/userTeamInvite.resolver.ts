@@ -83,7 +83,7 @@ export class UserTeamInviteResolver {
       await this.userTeamInviteService.sendTeamInviteEmail(
         userTeamInvite.team as unknown as Team,
         input.email,
-        omit(sender, ['id', 'email', 'emailVerified'])
+        omit(sender, ['id', 'emailVerified'])
       )
       return userTeamInvite
     })
@@ -180,7 +180,7 @@ export class UserTeamInviteResolver {
 
     await this.userTeamInviteService.sendTeamInviteAcceptedEmail(
       redeemedUserTeamInvite.team,
-      omit(user, ['id', 'email', 'emailVerified'])
+      omit(user, ['id', 'emailVerified'])
     )
     return redeemedUserTeamInvite
   }

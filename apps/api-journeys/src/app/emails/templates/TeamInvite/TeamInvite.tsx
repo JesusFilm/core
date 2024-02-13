@@ -1,4 +1,4 @@
-import { Body, Container, Head, Html, Preview } from '@react-email/components'
+import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
@@ -7,6 +7,7 @@ import {
   BodyText,
   BodyTitle,
   BodyWrapper,
+  EmailContainer,
   Footer,
   Header,
   UnsubscribeLink
@@ -14,10 +15,10 @@ import {
 import { User } from '@core/nest/common/firebaseClient'
 
 interface TeamInviteEmailProps {
-  email: string
   teamName: string
   inviteLink: string
-  sender: Omit<User, 'id' | 'email' | 'emailVerified'>
+  recipient: Omit<User, 'id' | 'emailVerified'>
+  sender: Omit<User, 'id' | 'emailVerified'>
   story?: boolean
 }
 
@@ -26,8 +27,8 @@ interface WrapperProps {
 }
 
 export const TeamInviteEmail = ({
-  email,
   teamName,
+  recipient,
   inviteLink,
   sender,
   story = false
@@ -44,25 +45,21 @@ export const TeamInviteEmail = ({
 
   const emailBody: ReactNode = (
     <>
-      <Container className="my-[40px] rounded border border-solid border-[#eaeaea]">
-        <Header sender={sender} />
+      <Header />
+      <EmailContainer>
         <BodyWrapper>
-          <BodyTitle
-            bodyTitle={`${sender.firstName} invites you to the workspace: ${teamName}`}
-          />
           <ActionCard
             url={inviteLink}
-            headerText={`Login to NextSteps to join ${sender.firstName}`}
-            buttonText={`Join ${sender.firstName}`}
+            headerText={`${sender.firstName} invites you to the workspace: `}
+            subHeaderText={`${teamName}`}
+            buttonText="Join Now"
+            sender={sender}
+            recipient={recipient}
           />
-          <BodyText>
-            If you do not want to be on this team, ask ${sender.firstName} to
-            remove you.
-          </BodyText>
-          <UnsubscribeLink />
         </BodyWrapper>
         <Footer />
-      </Container>
+        <UnsubscribeLink />
+      </EmailContainer>
     </>
   )
 
@@ -97,14 +94,21 @@ const withBody = ({ children }: WrapperProps): ReactElement => {
 }
 
 TeamInviteEmail.PreviewProps = {
-  email: 'james@example.com',
   teamName: 'JFP Sol Team',
   inviteLink: 'https://admin.nextstep.is/',
   sender: {
     firstName: 'Joe',
     lastName: 'Ron-Imo',
+    email: 'joejoesbizzareadventures@example.com',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+  },
+  recipient: {
+    firstName: 'Nee',
+    email: 'neesail@example.com',
+    lastName: 'Sail',
+    imageUrl:
+      'https://s3-alpha-sig.figma.com/img/772d/9819/02ebd5f068f6a3d437b4fc9f012a7102?Expires=1708905600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=C6QXa0ycSXjPnW8H~f5fo49JwKf~aW~GMm8CSifCuWcCLDs-ft-h8Db9DNzIfaxlnYPNNJ2OzEzxcmYinmB~RL5CGYJQZUGKvu1YwoximgzXP~0vDbxYJ2Hrm~M9uQhIth2yHFZmDeBt1j6YtBmxpuAb89e1GYbOeOXqFF8gZqD74rL0nhwdw5vX3-J7LLd31bUOJhQ8CEdcZHNjQlqb3Twv3pxShAS0OIBlpwON8TLwKASKedYvz-3qwxNsr97AbyOocNFrmCXtVZv8Eqe6-qMatDnLrXRNBklQcLjK36tDzNx1SBv8-iBj~BasAva2FwQmu9aegkjlTP43eMbRLw__'
   }
 } satisfies TeamInviteEmailProps
 

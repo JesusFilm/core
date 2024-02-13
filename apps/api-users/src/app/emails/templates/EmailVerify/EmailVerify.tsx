@@ -16,9 +16,10 @@ interface VerifyEmailProps {
   inviteLink: string
   token: string
   story?: boolean
-  sender: {
+  recipient: {
     firstName: string
     lastName: string
+    email: string
     imageUrl?: string
   }
 }
@@ -29,7 +30,7 @@ interface WrapperProps {
 
 export const EmailVerifyEmail = ({
   inviteLink,
-  sender,
+  recipient,
   token,
   story = false
 }: VerifyEmailProps): ReactElement => {
@@ -43,19 +44,22 @@ export const EmailVerifyEmail = ({
     )
   }
   const emailBody: ReactNode = (
-    <EmailContainer>
-      <Header sender={sender} />
-      <BodyWrapper>
-        <ActionCard
-          url={inviteLink}
-          headerText="Verify your email address to start making interactive Journeys!"
-          buttonText="Verify Email Address"
-        />
-        <BodyText>Verification Token: {token}</BodyText>
+    <>
+      <Header />
+      <EmailContainer>
+        <BodyWrapper>
+          <ActionCard
+            url={inviteLink}
+            headerText="Verify your email address to start making interactive Journeys!"
+            subHeaderText={token}
+            buttonText="Verify Email Address"
+            recipient={recipient}
+          />
+        </BodyWrapper>
+        <Footer />
         <UnsubscribeLink />
-      </BodyWrapper>
-      <Footer />
-    </EmailContainer>
+      </EmailContainer>
+    </>
   )
   return (
     <>
@@ -81,17 +85,16 @@ const withHTML = ({ children }: WrapperProps): ReactElement => {
 
 const withBody = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Body className="bg-[#DEDFE0] my-auto mx-auto font-sans px-2">
-      {children}
-    </Body>
+    <Body className="bg-[#DEDFE0] my-auto mx-auto font-sans">{children}</Body>
   )
 }
 
 EmailVerifyEmail.PreviewProps = {
   token: '123456',
-  sender: {
+  recipient: {
     firstName: 'Joe',
     lastName: 'Ron-Imo',
+    email: 'joe@example.com',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },

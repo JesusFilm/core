@@ -43,15 +43,16 @@ export class EmailConsumer extends WorkerHost {
 
     if (user == null) return
 
-    const sender = {
+    const recipient = {
       firstName: user.firstName ?? '',
+      email: user.email ?? '',
       lastName: user.lastName ?? '',
       imageUrl: user.imageUrl ?? undefined
     }
     const html = render(
       EmailVerifyEmail({
         token: job.data.token,
-        sender,
+        recipient,
         inviteLink: url
       }),
       {
@@ -62,7 +63,7 @@ export class EmailConsumer extends WorkerHost {
     const text = render(
       EmailVerifyEmail({
         token: job.data.token,
-        sender,
+        recipient,
         inviteLink: url
       }),
       {

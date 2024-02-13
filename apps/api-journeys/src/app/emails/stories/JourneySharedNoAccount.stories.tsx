@@ -1,20 +1,21 @@
 import { Meta, StoryObj } from '@storybook/react'
 
 import { apiJourneysConfig } from '../../lib/apiJourneysConfig/apiJourneysConfig'
-import { Journey } from '../../modules/userInvite/userInvite.service'
-import { JourneyAccessRequestEmail } from '../templates/JourneyAccessRequest'
+import { JourneySharedNoAccountEmail } from '../templates/JourneyShared/JourneySharedNoAccount'
+import { JourneyWithTeamAndUserJourney } from '../../modules/email/email.consumer'
 
-const JourneyAccessRequestEmailDemo: Meta<typeof JourneyAccessRequestEmail> = {
+const JourneySharedNoAccountEmailDemo: Meta<
+  typeof JourneySharedNoAccountEmail
+> = {
   ...apiJourneysConfig,
-  component: JourneyAccessRequestEmail,
-  title: 'Api-Journeys/Emails/JourneyAccessRequestEmail'
+  component: JourneySharedNoAccountEmail,
+  title: 'Api-Journeys/Emails/JourneySharedNoAccountEmail'
 }
 
-const Template: StoryObj<typeof JourneyAccessRequestEmail> = {
+const Template: StoryObj<typeof JourneySharedNoAccountEmail> = {
   render: ({ ...args }) => (
-    <JourneyAccessRequestEmail
+    <JourneySharedNoAccountEmail
       journey={args.journey}
-      recipient={args.recipient}
       inviteLink="https://admin.nextstep.is/journeys/journeyId"
       sender={args.sender}
       story
@@ -33,21 +34,14 @@ export const Default = {
       primaryImageBlock: {
         src: 'https://s3-alpha-sig.figma.com/img/772d/9819/02ebd5f068f6a3d437b4fc9f012a7102?Expires=1708905600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=C6QXa0ycSXjPnW8H~f5fo49JwKf~aW~GMm8CSifCuWcCLDs-ft-h8Db9DNzIfaxlnYPNNJ2OzEzxcmYinmB~RL5CGYJQZUGKvu1YwoximgzXP~0vDbxYJ2Hrm~M9uQhIth2yHFZmDeBt1j6YtBmxpuAb89e1GYbOeOXqFF8gZqD74rL0nhwdw5vX3-J7LLd31bUOJhQ8CEdcZHNjQlqb3Twv3pxShAS0OIBlpwON8TLwKASKedYvz-3qwxNsr97AbyOocNFrmCXtVZv8Eqe6-qMatDnLrXRNBklQcLjK36tDzNx1SBv8-iBj~BasAva2FwQmu9aegkjlTP43eMbRLw__'
       }
-    } as unknown as Journey,
-    inviteLink: 'https://admin.nextstep.is/journeys/journeyId',
-    recipient: {
-      firstName: 'Joe',
-      lastName: 'Ron-Imo',
-      email: 'ronImo@example',
-      imageUrl: undefined
-    },
+    } as unknown as JourneyWithTeamAndUserJourney,
     sender: {
-      firstName: 'Nee',
-      email: 'neesail@example.com',
-      lastName: 'Sail',
-      imageUrl: undefined
+      firstName: 'Joe',
+      email: 'ro-nimo@example.com',
+      lastName: 'Ro-Nimo',
+      imageUrl: 'https://bit.ly/3Gth4Yf'
     }
   }
 }
 
-export default JourneyAccessRequestEmailDemo
+export default JourneySharedNoAccountEmailDemo
