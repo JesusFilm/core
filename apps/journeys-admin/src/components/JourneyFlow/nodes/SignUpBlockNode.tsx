@@ -16,6 +16,10 @@ export function SignUpBlockNode({
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <ActionNode block={block} title={t('Subscribe')} icon={<Mail2Icon />} />
+    <ActionNode
+      block={block}
+      title={t('Subscribe')}
+      iconAndImage={<Mail2Icon />}
+    />
   )
 }

@@ -2,6 +2,7 @@ import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
+import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode, useState } from 'react'
 import { Handle, OnConnect, Position } from 'reactflow'
@@ -31,7 +32,7 @@ interface BaseNodeProps {
     params: { target: string } | Parameters<OnConnect>[0]
   ) => void
   onClick?: () => void
-  icon: ReactNode
+  iconAndImage: ReactNode
   title?: string
   subtitle?: string
   description?: string
@@ -44,12 +45,9 @@ export function BaseNode({
   isSourceConnectable,
   onSourceConnect,
   onClick,
-  icon,
+  iconAndImage,
   title,
-  language,
   subtitle,
-  blockType,
-  videoStartToEnd,
   selected = false,
   variant = 'step'
 }: BaseNodeProps): ReactElement {
@@ -128,7 +126,7 @@ export function BaseNode({
               }}
               onClick={onClick}
             >
-              {icon}
+              {iconAndImage}
 
               <Box
                 sx={{
@@ -156,24 +154,19 @@ export function BaseNode({
                     flexDirection: 'column',
                     justifyContent: 'flex-end',
                     alignSelf: 'flex-start',
-                    marginBottom: 1,
+                    marginBottom: 0.5,
                     lineHeight: 1.3,
                     alignItems: 'flex-end'
                   }}
                 >
                   {title ?? (
-                    // replace with skeleton
-                    <Box
+                    <Skeleton
+                      animation={false}
                       sx={{
-                        height: 12,
+                        height: 16,
                         width: 117,
                         borderRadius: 1,
-                        backgroundColor: '#efefef',
-                        backgroundSize: 'cover',
-                        alignItems: 'left',
-                        alignContent: 'left',
-                        display: 'flex',
-                        justifyContent: 'flex-end'
+                        color: 'background.paper'
                       }}
                     />
                   )}
@@ -195,19 +188,13 @@ export function BaseNode({
                   {title != null ? (
                     subtitle
                   ) : (
-                    // replace with skeleton
-                    <Box
+                    <Skeleton
+                      animation={false}
                       sx={{
-                        height: 12,
+                        height: 16,
                         width: 95,
                         borderRadius: 1,
-                        backgroundColor: '#efefef',
-                        backgroundSize: 'cover',
-                        alignItems: 'left',
-                        alignContent: 'left',
-                        display: 'flex',
-                        justifyContent: 'flex-start',
-                        marginTop: 1
+                        color: 'background.paper'
                       }}
                     />
                   )}

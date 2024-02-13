@@ -22,7 +22,7 @@ export function ButtonBlockNode({
       title={
         block.label != null && block.label !== '' ? block.label : t('Button')
       }
-      icon={<Cursor6Icon />}
+      iconAndImage={<Cursor6Icon />}
     />
   )
 }

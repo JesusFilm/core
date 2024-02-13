@@ -16,6 +16,10 @@ export function TextResponseBlockNode({
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <ActionNode block={block} title={t('Feedback')} icon={<TextInput1Icon />} />
+    <ActionNode
+      block={block}
+      title={t('Feedback')}
+      iconAndImage={<TextInput1Icon />}
+    />
   )
 }

@@ -19,7 +19,7 @@ export function VideoBlockNode({
     <ActionNode
       block={block}
       title={block.video?.title?.[0]?.value ?? block.title ?? t('Video')}
-      icon={<VideoOnIcon />}
+      iconAndImage={<VideoOnIcon />}
     />
   )
 }

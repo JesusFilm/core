@@ -1,13 +1,13 @@
 import Box from '@mui/material/Box'
 import SvgIcon from '@mui/material/SvgIcon'
+// import { useTranslation } from 'i18next'
 import sortBy from 'lodash/sortBy'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+// import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
@@ -148,22 +148,37 @@ interface CardMetadata {
   bgImage?: string
 }
 
-function getCardMetadata(card?: TreeBlock<CardBlock>): CardMetadata {
+function getCardMetadata(
+  card?: TreeBlock<CardBlock>,
+  steps?: TreeBlock<StepBlock>,
+  step?
+): CardMetadata {
   if (card == null) return {}
 
   const priorityBlock = getPriorityBlock(card)
   const bgImage = getBackgroundImage(card)
 
   // if priority block is video
+  if (priorityBlock?.__typename === 'VideoBlock') {
+    const title = priorityBlock.title !== null ? priorityBlock.title : undefined
+    const subtitle =
+      priorityBlock.videoVariantLanguageId !== null
+        ? priorityBlock.videoVariantLanguageId
+        : undefined
+    const description =
+      priorityBlock.duration !== null
+        ? String(priorityBlock.duration)
+        : undefined
 
-  // set language as subtitle
-  // set video title as title
-  // set duration as the description
+    return { title, subtitle, description, priorityBlock, bgImage }
+  } else {
+    //  get the title from typography
+    // get the subtitle
+    const title = 'a ' // getStepHeading(step.id, step.children, steps, t)
 
-  // else get the title from typography
-  // get the subtitle
-
-  return { priorityBlock, bgImage }
+    const subtitle = 'b' // getStepSubtitle()
+    return { title, subtitle, priorityBlock, bgImage }
+  }
 }
 
 export function StepBlockNode({
@@ -171,7 +186,7 @@ export function StepBlockNode({
 }: NodeProps<StepBlockNodeData>): ReactElement {
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const { title, subtitle, description, priorityBlock, bgImage } =
-    getCardMetadata(card)
+    getCardMetadata(card, ...steps)
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const {
     state: { selectedStep },
@@ -209,15 +224,15 @@ export function StepBlockNode({
       selected={selectedStep?.id === step.id}
       onSourceConnect={handleConnect}
       onClick={handleClick}
-      icon={
+      iconAndImage={
         <Box
           sx={{
             height: '100%',
             flexShrink: 0,
             width: 50,
             border: '1px solid white',
-            borderBottomLeftRadius: 2,
-            borderBottomRightRadius: 2,
+            borderBottomLeftRadius: 8,
+            borderTopLeftRadius: 8,
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
             display: 'flex',

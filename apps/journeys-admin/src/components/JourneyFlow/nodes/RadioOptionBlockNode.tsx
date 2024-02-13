@@ -21,7 +21,7 @@ export function RadioOptionBlockNode({
       title={
         block.label != null && block.label !== '' ? block.label : t('Option')
       }
-      icon={<CheckContainedIcon />}
+      iconAndImage={<CheckContainedIcon />}
     />
   )
 }

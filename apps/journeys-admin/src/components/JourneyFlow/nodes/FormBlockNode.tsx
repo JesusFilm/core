@@ -15,5 +15,7 @@ export function FormBlockNode({
 }: NodeProps<FormBlockNodeData>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  return <ActionNode block={block} title={t('Form')} icon={<File5Icon />} />
+  return (
+    <ActionNode block={block} title={t('Form')} iconAndImage={<File5Icon />} />
+  )
 }
