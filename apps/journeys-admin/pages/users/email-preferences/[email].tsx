@@ -57,7 +57,7 @@ function EmailPreferencesPage(): ReactElement {
   const [findOrCreateEmailPreference] = useMutation(FIND_OR_CREATE_EMAIL_PREFERENCE)
   const [emailPreferences, setEmailPreferences] =
     useState<EmailPreference | null>(null)
-  const [loading, setLoading] = useState(false) // Add loading state
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const fetchEmailPreferences = async (): Promise<void> => {
@@ -66,21 +66,23 @@ function EmailPreferencesPage(): ReactElement {
           email: email as string
         }
       })
+      console.log('data', data)
       setEmailPreferences(data.findOrCreateEmailPreference)
     }
-
+if (email !== undefined && email !== null) {
     fetchEmailPreferences().catch((error) => {
       console.error('Error fetching email preferences:', error)
     })
+  }
   }, [email, findOrCreateEmailPreference])
 
-  const handlePreferenceChange = async (
-    preference: keyof EmailPreference
-  ): Promise<void> => {
+  const handlePreferenceChange = (preference: keyof EmailPreference) => async () =>{
     if (emailPreferences !== null) {
+      console.log('emailPreferences', emailPreferences)
+      console.log('preference', preference)
       const updatedPreferences: EmailPreference = {
         ...emailPreferences,
-        [preference]: emailPreferences[preference]
+        [preference]: !(emailPreferences[preference] as boolean)
       }
       setEmailPreferences(updatedPreferences)
     }
@@ -136,7 +138,7 @@ function EmailPreferencesPage(): ReactElement {
       {emailPreferences !== null && (
         <Grid container spacing={12}>
           <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Team Invites')}</Typography>
+            <Typography variant="h5">{t('Team Invite')}</Typography>
             <Typography variant="body2">
               {t('Optional Description.')}
             </Typography>
@@ -144,20 +146,21 @@ function EmailPreferencesPage(): ReactElement {
           <Grid item xs={2} md={2}>
             <Switch
               checked={emailPreferences.teamInvite}
-              onChange={async () =>
-                await handlePreferenceChange('teamInvite')
-              }
+              onChange={handlePreferenceChange('teamInvite')}
               name="journeyNotifications"
               inputProps={{ 'aria-label': 'Team Invites' }}
             />
           </Grid>
           <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Team Removed')}</Typography>
+            <Typography variant="h5">{t('Team Remova')}</Typography>
+            <Typography variant="body2">
+              {t('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.')}
+            </Typography>
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
               checked={emailPreferences.teamRemoved}
-              onChange={async () => await handlePreferenceChange('teamRemoved')}
+              onChange={handlePreferenceChange('teamRemoved')}
               name="teamRemoved"
               inputProps={{ 'aria-label': 'Team Removed' }}
             />
@@ -168,12 +171,44 @@ function EmailPreferencesPage(): ReactElement {
           <Grid item xs={2} md={2}>
             <Switch
               checked={emailPreferences.teamInviteAccepted}
-              onChange={async () =>
-                await handlePreferenceChange('teamInviteAccepted')
+              onChange={handlePreferenceChange('teamInviteAccepted')
               }
               name="teamInviteAccepted"
               inputProps={{ 'aria-label': 'Team Invite Accepted' }}
             />
+          </Grid>
+          <Grid item xs={10} md={10}>
+            <Typography variant="h5">{t('Journey Edit Invite')}</Typography>
+          </Grid>
+          <Grid item xs={2} md={2}>
+            <Switch
+                  checked={emailPreferences.journeyEditInvite}
+                  onChange={handlePreferenceChange('journeyEditInvite')}
+                  name="journeyEditInvite"
+                  inputProps={{ 'aria-label': 'Journey Edit Invite' }}
+                />
+          </Grid>
+          <Grid item xs={10} md={10}>
+            <Typography variant="h5">{t('Journey Request Approved')}</Typography>
+          </Grid>
+          <Grid item xs={2} md={2}>
+            <Switch
+                  checked={emailPreferences.journeyRequestApproved}
+                  onChange={handlePreferenceChange('journeyRequestApproved')}
+                  name="journeyRequestApproved"
+                  inputProps={{ 'aria-label': 'Journey Request Approved' }}
+                />
+          </Grid>
+          <Grid item xs={10} md={10}>
+            <Typography variant="h5">{t('Journey Access Request')}</Typography>
+          </Grid>
+          <Grid item xs={2} md={2}>
+            <Switch
+                  checked={emailPreferences.journeyAccessRequest}
+                  onChange={handlePreferenceChange('journeyAccessRequest')}
+                  name="journeyAccessRequest"
+                  inputProps={{ 'aria-label': 'Journey Access Request' }}
+                />
           </Grid>
           <Grid item xs={12} md={12}>
             <Button
