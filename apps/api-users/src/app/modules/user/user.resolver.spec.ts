@@ -144,14 +144,16 @@ describe('UserResolver', () => {
           firstName: 'fo',
           imageUrl: 'p',
           lastName: 'sho',
-          userId: 'userId'
+          userId: 'userId',
+          emailVerified: true
         },
         update: {
           email: 'tho@no.co',
           firstName: 'fo',
           imageUrl: 'p',
           lastName: 'sho',
-          userId: 'userId'
+          userId: 'userId',
+          emailVerified: true
         },
         where: { userId: 'userId' }
       })
