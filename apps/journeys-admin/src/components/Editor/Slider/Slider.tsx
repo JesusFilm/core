@@ -20,6 +20,7 @@ import { Canvas } from '../Canvas'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Attributes } from '../Drawer/Attributes'
 import { SocialPreview } from '../SocialPreview'
+import { Fab } from '../Canvas/Fab'
 
 const StyledSwiper = styled(Swiper)(() => ({}))
 const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
@@ -30,7 +31,7 @@ export function Slider(): ReactElement {
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const {
-    state: { activeSlide, journeyEditContentComponent },
+    state: { activeSlide, journeyEditContentComponent, steps },
     dispatch
   } = useEditor()
 
@@ -287,6 +288,7 @@ export function Slider(): ReactElement {
         }}
       >
         <Attributes />
+        <Fab disabled={steps == null} />
       </StyledSwiperSlide>
     </StyledSwiper>
   )

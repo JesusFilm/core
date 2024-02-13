@@ -8,23 +8,19 @@ import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
-import {
-  ActiveSlide,
-  ActiveTab
-} from '@core/journeys/ui/EditorProvider/EditorProvider'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { Drawer } from '../../Drawer'
 import { AddBlockDrawer } from '../../AddBlockDrawer'
 import { TreeBlock } from '@core/journeys/ui/block'
 
-interface FabProp {
+interface FabProps {
   disabled?: boolean
 }
 
-export function Fab({ disabled }: FabProp): ReactElement {
+export function Fab({ disabled }: FabProps): ReactElement {
   const {
-    state: { activeFab, activeSlide, selectedStep },
+    state: { activeFab, selectedStep },
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
@@ -44,7 +40,7 @@ export function Fab({ disabled }: FabProp): ReactElement {
   const fabStyles = {
     position: 'absolute',
     bottom: { xs: 16, sm: 64 },
-    right: { xs: 16, sm: activeSlide === ActiveSlide.Content ? 424 : 24 }
+    right: { xs: 16, sm: 424 }
   }
 
   const cardBlock = selectedStep?.children.find(
@@ -63,7 +59,7 @@ export function Fab({ disabled }: FabProp): ReactElement {
 
   return (
     <>
-      <Zoom in unmountOnExit data-testid="Fab">
+      <Zoom in={!hasVideoBlock} unmountOnExit data-testid="Fab">
         {activeFab === ActiveFab.Add ? (
           <MuiFab
             variant={smUp ? 'extended' : 'circular'}
