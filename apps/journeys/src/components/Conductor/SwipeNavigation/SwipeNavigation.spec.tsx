@@ -13,6 +13,7 @@ import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
@@ -467,5 +468,31 @@ describe('SwipeNavigation', () => {
         }
       })
     )
+  })
+
+  it('should not swipe on admin', () => {
+    treeBlocksVar([step1, step2, step3])
+    blockHistoryVar([step1])
+
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ variant: 'admin' }}>
+          <SwipeNavigation activeBlock={step1} rtl={false}>
+            <Box data-testid="swipe-test-box" />
+          </SwipeNavigation>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const swipeElement = getByTestId('swipe-test-box')
+
+    fireEvent.touchStart(swipeElement, {
+      touches: [{ clientX: 0, clientY: 0 }]
+    })
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
+    })
+    fireEvent.touchEnd(swipeElement)
+
+    expect(blockHistoryVar()).toHaveLength(1)
   })
 })
