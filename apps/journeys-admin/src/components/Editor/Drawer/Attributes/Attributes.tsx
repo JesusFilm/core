@@ -14,7 +14,7 @@ import { Drawer } from '..'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
 import { CardTemplateDrawer } from '../../CardTemplateDrawer'
 import { SocialShareAppearance } from '../SocialShareAppearance'
-import { AddBlockDrawer } from '../../AddBlockDrawer'
+import { AddBlock } from '../../AddBlock'
 
 const Footer = dynamic(
   async () =>
@@ -212,7 +212,7 @@ export function Attributes(): ReactElement {
       if (activeTab === ActiveTab.Blocks) {
         return (
           <Drawer title={'Add new blocks'}>
-            <AddBlockDrawer />
+            <AddBlock />
           </Drawer>
         )
       }

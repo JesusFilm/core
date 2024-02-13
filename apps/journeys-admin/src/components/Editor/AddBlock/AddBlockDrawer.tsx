@@ -17,7 +17,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '@core/journeys/ui/block'
 
-export function AddBlockDrawer(): ReactElement {
+export function AddBlock(): ReactElement {
   const { formiumForm } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
