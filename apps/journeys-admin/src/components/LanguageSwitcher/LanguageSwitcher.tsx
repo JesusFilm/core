@@ -34,7 +34,6 @@ export function LanguageSwitcher({
   const router = useRouter()
   const { t, i18n } = useTranslation('apps-journeys-admin')
 
-  const placeholderLanguage = { id: '', nativeName: '', localName: '' }
   const [languages, setLanguages] = useState<Language[]>([])
   const [languageState, setLanguageState] = useState<languageState>({
     confirmLanguageChange: false,
@@ -68,7 +67,10 @@ export function LanguageSwitcher({
       const language = data?.languages.find(
         (language) => language.id === localeId
       )
-      const locale = getLocaleLanguage('id', language?.id ?? '')?.locale
+      const locale = getLocaleLanguage('id', language?.id ?? '')?.twoLettersCode
+
+      const cookieFingerprint = '00001'
+      document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${locale}; path=/`
       const path = router.asPath
       await router.push(path, path, { locale })
       document.dir = dir(i18n?.language)
@@ -98,10 +100,9 @@ export function LanguageSwitcher({
           crowdinLanguage.data.language.locale === crowdinLocale
       )
       return (
-        // always display English
-        language.id === '529' ||
-        language.id === '22658' ||
-        crowdinLanguages?.data.translationProgress === 100
+        (language.id === '529' || // always display English
+          crowdinLanguages?.data.translationProgress === 100) &&
+        language.id !== '22658' // show arabic as an option when RTL working
       )
     })
   }
@@ -140,11 +141,9 @@ export function LanguageSwitcher({
         <Stack gap={2}>
           <LanguageAutocomplete
             onChange={async (value) => await handleLocaleSwitch(value?.id)}
-            value={
-              currentLanguage != null ? currentLanguage : placeholderLanguage
-            }
+            value={currentLanguage}
             languages={languages}
-            loading={loading}
+            loading={loading || languages.length === 0}
           />
           {languageState.confirmLanguageChange && (
             <Alert
