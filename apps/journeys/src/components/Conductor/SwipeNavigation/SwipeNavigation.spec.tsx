@@ -249,6 +249,54 @@ describe('SwipeNavigation', () => {
     expect(blockHistoryVar()).toHaveLength(3)
   })
 
+  it('should block swipe left on mui slider', () => {
+    treeBlocksVar([step1, step2, step3])
+    blockHistoryVar([step1])
+
+    const { getByTestId } = render(
+      <MockedProvider>
+        <SwipeNavigation activeBlock={step1} rtl={false}>
+          <Box data-testid="swipe-test-box" className="MuiSlider-thumb" />
+        </SwipeNavigation>
+      </MockedProvider>
+    )
+    const swipeElement = getByTestId('swipe-test-box')
+
+    fireEvent.touchStart(swipeElement, {
+      touches: [{ clientX: 0, clientY: 0 }]
+    })
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
+    })
+    fireEvent.touchEnd(swipeElement)
+
+    expect(blockHistoryVar()).toHaveLength(1)
+  })
+
+  it('should block swipe right on mui slider', () => {
+    treeBlocksVar([step1, step2, step3])
+    blockHistoryVar([step1, step2])
+
+    const { getByTestId } = render(
+      <MockedProvider>
+        <SwipeNavigation activeBlock={step2} rtl={false}>
+          <Box data-testid="swipe-test-box" className="MuiSlider-thumb" />
+        </SwipeNavigation>
+      </MockedProvider>
+    )
+    const swipeElement = getByTestId('swipe-test-box')
+
+    fireEvent.touchStart(swipeElement, {
+      touches: [{ clientX: 0, clientY: 0 }]
+    })
+    fireEvent.touchMove(swipeElement, {
+      touches: [{ clientX: swipeRight, clientY: 0 }]
+    })
+    fireEvent.touchEnd(swipeElement)
+
+    expect(blockHistoryVar()).toHaveLength(2)
+  })
+
   it('should swipe next on rtl', () => {
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
