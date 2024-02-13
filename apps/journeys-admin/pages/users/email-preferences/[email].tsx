@@ -19,6 +19,18 @@ const GET_EMAIL_PREFERENCES = gql`
   }
 `
 
+const FIND_OR_CREATE_EMAIL_PREFERENCE = gql`
+  mutation FindOrCreateEmailPreference($email: String!) {
+    findOrCreateEmailPreference(email: $email) {
+      id
+      userEmail
+      journeyNotifications
+      teamInvites
+      thirdCategory
+    }
+  }
+`
+
 const UPDATE_EMAIL_PREFERENCES = gql`
   mutation UpdateEmailPreferences($input: EmailPreferencesUpdateInput!) {
     updateEmailPreferences(input: $input) {
@@ -38,17 +50,19 @@ interface EmailPreferences {
 }
 function EmailPreferencesPage(): ReactElement {
   const router = useRouter()
-  const { emailPreferenceId } = router.query
+  const { email } = router.query
   const { t } = useTranslation('apps-journeys-admin')
 
   const { data } = useQuery(GET_EMAIL_PREFERENCES, {
-    variables: { emailPreferenceId, idType: 'id' }
+    variables: { email, idType: 'email' }
   })
   const [updateEmailPreferences] = useMutation(UPDATE_EMAIL_PREFERENCES)
+  const [findOrCreateEmailPreference] = useMutation(FIND_OR_CREATE_EMAIL_PREFERENCE)
 
   const [emailPreferences, setEmailPreferences] =
     useState<EmailPreferences | null>(null)
   const [loading, setLoading] = useState(false) // Add loading state
+
 
   useEffect(() => {
     if (data != null && data?.emailPreference != null) {
