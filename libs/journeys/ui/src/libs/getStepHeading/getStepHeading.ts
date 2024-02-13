@@ -1,4 +1,5 @@
 import { TOptions } from 'i18next'
+import findIndex from 'lodash/findIndex'
 
 import { TypographyVariant } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../block'
@@ -9,6 +10,19 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
     (result, item) => [...result, item, ...flatten(item.children)],
     []
   )
+}
+
+function getStepNumber(
+  stepId: string,
+  steps: TreeBlock[],
+  t: (str: string, options?: TOptions) => string
+): string {
+  const index = findIndex(steps, { id: stepId })
+  if (index === -1) {
+    return t('Untitled')
+  } else {
+    return t('Step {{number}}', { number: index + 1 })
+  }
 }
 
 function findMostImportantTypographyBlock(
@@ -58,6 +72,6 @@ export function getStepHeading(
   if (heading != null && heading.__typename === 'TypographyBlock') {
     return heading.content
   } else {
-    return ''
+    return getStepNumber(stepId, steps, t)
   }
 }
