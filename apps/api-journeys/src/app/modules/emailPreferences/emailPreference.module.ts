@@ -9,4 +9,4 @@ import { EmailPreferenceResolver } from './emailPreference.resolver'
   providers: [EmailPreferenceResolver, PrismaService],
   exports: []
 })
-export class EmailPreferencesModule {}
+export class EmailPreferenceModule {}
