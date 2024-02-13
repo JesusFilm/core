@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveJourneyEditContent,
+  ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 
@@ -13,6 +14,7 @@ import { Drawer } from '..'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
 import { CardTemplateDrawer } from '../../CardTemplateDrawer'
 import { SocialShareAppearance } from '../SocialShareAppearance'
+import { AddBlockDrawer } from '../../AddBlockDrawer'
 
 const Footer = dynamic(
   async () =>
@@ -191,7 +193,8 @@ export function Attributes(): ReactElement {
       selectedComponent,
       selectedBlock,
       selectedStep,
-      journeyEditContentComponent
+      journeyEditContentComponent,
+      activeTab
     }
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
@@ -206,6 +209,13 @@ export function Attributes(): ReactElement {
     case ActiveJourneyEditContent.Action:
       return <Drawer title={t('Information')} />
     case ActiveJourneyEditContent.Canvas:
+      if (activeTab === ActiveTab.Blocks) {
+        return (
+          <Drawer title={'Add new blocks'}>
+            <AddBlockDrawer />
+          </Drawer>
+        )
+      }
       if (selectedComponent === 'Footer') {
         return (
           <Drawer title={t('Footer Properties')}>

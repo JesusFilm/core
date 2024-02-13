@@ -291,9 +291,9 @@ export function Slider(): ReactElement {
         }}
       >
         <Attributes />
-        <Fab disabled={steps == null} visible={smUp} />
+        <Fab visible={smUp} />
       </StyledSwiperSlide>
-      <Fab disabled={steps == null} visible={!smUp} />
+      <Fab visible={!smUp} />
     </StyledSwiper>
   )
 }

@@ -41,7 +41,11 @@ export function Button({
     >
       <Tooltip
         title={
-          <Typography variant="caption" lineHeight="12px">
+          <Typography
+            display={{ xs: 'none', sm: 'flex' }}
+            variant="caption"
+            lineHeight="12px"
+          >
             {t(
               disabled && value === 'Video'
                 ? 'Video Blocks cannot be placed on top of Block'
@@ -101,6 +105,7 @@ export function Button({
                   color="secondary"
                   className="plus2-icon"
                   sx={{
+                    display: { xs: 'none', sm: 'flex' },
                     mr: 3.5
                   }}
                 />
