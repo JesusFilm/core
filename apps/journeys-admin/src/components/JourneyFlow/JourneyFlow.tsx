@@ -53,13 +53,16 @@ import {
   RadioOptionBlockNodeData
 } from './nodes/RadioOptionBlockNode'
 import { SignUpBlockNode, SignUpBlockNodeData } from './nodes/SignUpBlockNode'
+import {
+  SocialPreviewNode,
+  SocialPreviewNodeData
+} from './nodes/SocialPreviewNode'
 import { StepBlockNode, StepBlockNodeData } from './nodes/StepBlockNode'
 import {
   TextResponseBlockNode,
   TextResponseBlockNodeData
 } from './nodes/TextResponseBlockNode'
 import { VideoBlockNode, VideoBlockNodeData } from './nodes/VideoBlockNode'
-
 import 'reactflow/dist/style.css'
 
 type InternalNode =
@@ -70,6 +73,7 @@ type InternalNode =
   | Node<SignUpBlockNodeData, 'SignUpBlock'>
   | Node<FormBlockNodeData, 'FormBlock'>
   | Node<VideoBlockNodeData, 'VideoBlock'>
+  | Node<SocialPreviewNodeData, 'SocialPreview'>
 
 interface Connection<T = BlockFields> {
   block: TreeBlock<T>
@@ -291,6 +295,13 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     })
   })
 
+  nodes.push({
+    type: 'SocialPreview',
+    id: 'SocialPreview',
+    position: { x: -165, y: -195 },
+    data: { __typename: 'SocialPreview' }
+  })
+
   return { nodes, edges }
 }
 
@@ -392,7 +403,8 @@ export function JourneyFlow(): ReactElement {
           TextResponseBlock: TextResponseBlockNode,
           SignUpBlock: SignUpBlockNode,
           FormBlock: FormBlockNode,
-          VideoBlock: VideoBlockNode
+          VideoBlock: VideoBlockNode,
+          SocialPreview: SocialPreviewNode
         }}
         proOptions={{ hideAttribution: true }}
       >

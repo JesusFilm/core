@@ -4,7 +4,10 @@ import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
@@ -69,7 +72,7 @@ export function StepBlockNode({
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
 
   const {
-    state: { selectedStep },
+    state: { selectedStep, journeyEditContentComponent },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -101,7 +104,10 @@ export function StepBlockNode({
 
   return (
     <BaseNode
-      selected={selectedStep?.id === step.id}
+      selected={
+        journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
+        selectedStep?.id === step.id
+      }
       onSourceConnect={handleConnect}
       onClick={handleClick}
       icon={

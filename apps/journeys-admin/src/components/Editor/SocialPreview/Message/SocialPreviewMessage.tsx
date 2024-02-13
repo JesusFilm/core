@@ -79,28 +79,26 @@ export function SocialPreviewMessage(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Box
-      width={256}
-      sx={{
-        transform: { md: 'scale(1)', lg: 'scale(1.33)' },
-        transformOrigin: 'top center'
-      }}
-      data-testid="SocialPreviewMessage"
-    >
+    <Box maxWidth={256} data-testid="SocialPreviewMessage">
       <Stack direction="column" justifyContent="start">
-        <Typography variant="caption" pb={4} textAlign="center">
+        <Typography
+          variant="caption"
+          pb={4}
+          textAlign="center"
+          sx={{ fontSize: 16 }}
+        >
           {t('Messaging App View')}
         </Typography>
-        <Box>
-          <MessageBubble width={200} height={40} direction="left" />
+        <Stack alignItems="center">
+          <MessageBubble width={252} height={54} direction="left" />
           {journey != null && (
-            <MessageBubble width={240} direction="right">
-              <Stack direction="column">
+            <MessageBubble width={315} direction="right">
+              <Stack direction="column" sx={{ p: 1 }}>
                 <Stack direction="row" gap={2}>
                   {journey?.primaryImageBlock?.src == null ? (
                     <Box
-                      width={60}
-                      height={60}
+                      width={78}
+                      height={78}
                       data-testid="social-preview-message-empty"
                       bgcolor="rgba(0, 0, 0, 0.1)"
                       borderRadius="6px"
@@ -109,59 +107,64 @@ export function SocialPreviewMessage(): ReactElement {
                     <Image
                       src={journey.primaryImageBlock.src}
                       alt={journey.primaryImageBlock.alt ?? ''}
-                      width="60"
-                      height="60"
+                      width="78"
+                      height="78"
                       style={{
-                        borderRadius: '4px',
+                        borderRadius: '5px',
                         maxWidth: '100%',
                         objectFit: 'cover'
                       }}
                     />
                   )}
-                  <Stack width={164} flexGrow={1} justifyContent="center">
-                    {isEmpty(journey?.seoTitle) ? (
+                  <Stack
+                    width={164}
+                    flexGrow={1}
+                    justifyContent="center"
+                    gap={1.5}
+                  >
+                    {isEmpty(journey?.seoTitle?.trim()) ? (
                       <Box
-                        width={156}
-                        height={12}
+                        width={205}
+                        height={15}
                         bgcolor="#EFEFEF"
-                        borderRadius="6px"
-                        mb={1}
+                        borderRadius="5px"
                       />
                     ) : (
                       <Typography
                         variant="body1"
                         fontWeight={600}
-                        fontSize={9}
-                        lineHeight="12px"
+                        fontSize={12}
+                        lineHeight="15px"
+                        noWrap
                       >
                         {journey.seoTitle}
                       </Typography>
                     )}
-                    {isEmpty(journey?.seoDescription) ? (
+                    {isEmpty(journey?.seoDescription?.trim()) ? (
                       <Box
-                        width={110}
-                        height={12}
+                        width={144}
+                        height={15}
                         bgcolor="#EFEFEF"
-                        borderRadius="6px"
-                        mb={1}
+                        borderRadius="5px"
                       />
                     ) : (
                       <Typography
                         variant="body2"
-                        fontSize={7}
-                        lineHeight="11px"
+                        fontSize={8}
+                        lineHeight="15px"
+                        sx={{ wordBreak: 'break-word' }}
                       >
                         {journey.seoDescription}
                       </Typography>
                     )}
                   </Stack>
                 </Stack>
-                <Box maxWidth={224}>
+                <Box>
                   <Typography
                     variant="body1"
-                    fontSize={8}
-                    lineHeight="12px"
-                    mt={1}
+                    fontSize={10.5}
+                    lineHeight="16px"
+                    mt={2}
                     color="#C52D3A"
                     // eslint-disable-next-line i18next/no-literal-string
                   >
@@ -171,8 +174,8 @@ export function SocialPreviewMessage(): ReactElement {
               </Stack>
             </MessageBubble>
           )}
-          <MessageBubble width={200} height={40} direction="right" />
-        </Box>
+          <MessageBubble width={252} height={54} direction="right" />
+        </Stack>
       </Stack>
     </Box>
   )
