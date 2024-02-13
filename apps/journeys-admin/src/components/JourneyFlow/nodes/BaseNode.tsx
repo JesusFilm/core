@@ -33,7 +33,7 @@ interface BaseNodeProps {
   icon: ReactNode
   title: string
   selected?: 'descendant' | boolean
-  variant?: 'step' | 'action'
+  variant?: 'step' | 'action' | 'social'
 }
 
 export function BaseNode({
@@ -140,7 +140,7 @@ export function BaseNode({
                 border:
                   selected !== false
                     ? '2px solid #c52d3aff'
-                    : '2px solid #aaacbb ',
+                    : '2px solid #aaacbb',
                 outline: '1.5px solid white',
                 outlineColor: 'white',
                 cursor: 'pointer'
@@ -172,7 +172,7 @@ export function BaseNode({
                   border:
                     selected !== false
                       ? '2px solid #c52d3aff'
-                      : '2px solid #aaacbb ',
+                      : '2px solid #aaacbb',
                   outline: '1.5px solid white',
                   outlineColor: 'white',
                   visibility: isHovered ? 'hidden' : 'visible'
@@ -271,6 +271,21 @@ export function BaseNode({
               }}
             />
           )}
+        </Box>
+      )
+    case 'social':
+      return (
+        <Box
+          onClick={onClick}
+          sx={{
+            outline: '2px solid',
+            outlineColor: (theme) =>
+              selected !== false ? theme.palette.primary.main : 'transparent',
+            outlineOffset: '2px',
+            borderRadius: '8px'
+          }}
+        >
+          {icon}
         </Box>
       )
   }

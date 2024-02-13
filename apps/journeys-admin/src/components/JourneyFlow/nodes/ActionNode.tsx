@@ -1,6 +1,9 @@
 import { ComponentProps, ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields } from '../../../../__generated__/BlockFields'
@@ -22,7 +25,7 @@ export function ActionNode({
   const { journey } = useJourney()
 
   const {
-    state: { selectedBlock }
+    state: { selectedBlock, journeyEditContentComponent }
   } = useEditor()
 
   async function onConnect(params): Promise<void> {
@@ -39,7 +42,10 @@ export function ActionNode({
 
   return (
     <BaseNode
-      selected={selectedBlock?.id === block.id}
+      selected={
+        journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
+        selectedBlock?.id === block.id
+      }
       isTargetConnectable={false}
       onSourceConnect={onConnect}
       onClick={handleClick}
