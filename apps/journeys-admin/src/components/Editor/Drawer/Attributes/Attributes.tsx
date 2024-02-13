@@ -206,7 +206,11 @@ export function Attributes(): ReactElement {
       )
     case ActiveJourneyEditContent.Action:
       return (
-        <Drawer title={t('Information')}>
+        <Drawer
+          title={
+            selectedComponent != null ? t('Goal Details') : t('Information')
+          }
+        >
           <ActionDetails />
         </Drawer>
       )

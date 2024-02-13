@@ -30,50 +30,15 @@ export function ActionsList({
   actions,
   goalLabel
 }: ActionsListProps): ReactElement {
-  const { dispatch } = useEditor()
+  const {
+    dispatch,
+    state: { selectedComponent }
+  } = useEditor()
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
-  const [selectedAction, setSelectedAction] = useState<string | undefined>(
-    actions[0]?.url
-  )
-  const [open, setOpen] = useState(false)
-
-  const openActionDetails = (url: string): void => {
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      mobileOpen: true,
-      title: 'Goal Details',
-      children: (
-        <ActionDetails
-          url={url}
-          goalLabel={goalLabel}
-          setSelectedAction={setSelectedAction}
-        />
-      )
-    })
+  const handleClick = (url?: string): void => {
+    dispatch({ type: 'SetSelectedComponentAction', component: url })
   }
-
-  const handleClick = (url: string): void => {
-    setSelectedAction(url)
-    if (selectedAction != null) openActionDetails(selectedAction)
-  }
-
-  useEffect(() => {
-    if (window.innerWidth < 768) {
-      setSelectedAction(selectedAction)
-    }
-
-    function handleResize(): void {
-      if (window.innerWidth > 768 && selectedAction != null) {
-        openActionDetails(selectedAction)
-      }
-    }
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAction])
-
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
@@ -114,7 +79,7 @@ export function ActionsList({
                 alignSelf: mdUp ? 'none' : 'end',
                 mb: mdUp ? 0 : 4
               }}
-              onClick={() => setOpen(true)}
+              onClick={() => handleClick()}
             >
               <Typography variant="subtitle2">{t('Learn More')}</Typography>
             </Button>
@@ -127,51 +92,11 @@ export function ActionsList({
         </Stack>
         <ActionsListView
           actions={actions}
-          selectedAction={selectedAction}
+          selectedAction={selectedComponent}
           goalLabel={goalLabel}
           handleClick={handleClick}
         />
       </Stack>
-      <Drawer
-        anchor={mdUp ? 'right' : 'bottom'}
-        variant="temporary"
-        open={open}
-        elevation={mdUp ? 1 : 0}
-        hideBackdrop
-        sx={{
-          left: {
-            xs: 0,
-            sm: 'unset'
-          },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: mdUp ? 328 : '100%',
-            height: '100%',
-            display: 'flex'
-          }
-        }}
-      >
-        <AppBar position="static" color="default">
-          <Toolbar>
-            <Typography
-              variant="subtitle1"
-              noWrap
-              component="div"
-              sx={{ flexGrow: 1 }}
-            >
-              {t('Information')}
-            </Typography>
-            <IconButton
-              onClick={() => setOpen(false)}
-              sx={{ display: 'inline-flex' }}
-              edge="end"
-            >
-              <X2Icon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <ActionInformation />
-      </Drawer>
     </>
   )
 }

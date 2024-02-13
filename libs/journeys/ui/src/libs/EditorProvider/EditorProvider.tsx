@@ -43,7 +43,7 @@ export enum ActiveSlide {
 export interface EditorState {
   steps?: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
-  selectedComponent?: 'Footer'
+  selectedComponent?: 'Footer' | string
   selectedBlock?: TreeBlock
   selectedAttributeId?: string
   drawerTitle?: string
@@ -154,9 +154,9 @@ export const reducer = (
       return {
         ...state,
         selectedComponent: action.component,
-        selectedBlock: undefined,
-        journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
-        activeSlide: ActiveSlide.Content
+        selectedBlock: undefined
+        // journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
+        // activeSlide: ActiveSlide.Content
       }
     case 'SetSelectedBlockAction':
       return {
