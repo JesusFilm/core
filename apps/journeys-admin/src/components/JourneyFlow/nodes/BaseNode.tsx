@@ -7,11 +7,11 @@ import { ReactElement, ReactNode, useState } from 'react'
 import { Handle, OnConnect, Position } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { useStepAndCardBlockCreateMutation } from '../../../libs/useStepAndCardBlockCreateMutation'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 export const ACTION_NODE_WIDTH = 125
 export const ACTION_NODE_HEIGHT = 28

@@ -10,10 +10,10 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
-import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 import Share from '@core/shared/ui/icons/Share'
+import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
+import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
 export function SocialPreviewPost(): ReactElement {
   const { journey } = useJourney()

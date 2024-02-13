@@ -1,27 +1,24 @@
+import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
+import CardMedia from '@mui/material/CardMedia'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
-
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-
-import { BaseNode } from './BaseNode'
-
-import Avatar from '@mui/material/Avatar'
-
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
+import { ReactElement } from 'react'
 
-import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
-import Stack from '@mui/material/Stack'
-import CardMedia from '@mui/material/CardMedia'
-import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
-import MessageCircle from '@core/shared/ui/icons/MessageCircle'
-import Share from '@core/shared/ui/icons/Share'
 import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import MessageCircle from '@core/shared/ui/icons/MessageCircle'
+import Share from '@core/shared/ui/icons/Share'
+import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
+import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
+
+import { BaseNode } from './BaseNode'
 
 export interface SocialPreviewNodeData {
   __typename: 'SocialPreview'

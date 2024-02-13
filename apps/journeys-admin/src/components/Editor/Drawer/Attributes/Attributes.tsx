@@ -1,6 +1,7 @@
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -11,7 +12,6 @@ import {
 import { Drawer } from '..'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
 import { CardTemplateDrawer } from '../../CardTemplateDrawer'
-import { useTranslation } from 'react-i18next'
 import { SocialShareAppearance } from '../SocialShareAppearance'
 
 const Footer = dynamic(
@@ -229,9 +229,9 @@ export function Attributes(): ReactElement {
       ) : selected !== 'none' &&
         selectedStep !== undefined &&
         selectedStep.children[0]?.children.length > 0 ? (
-        <Stack>
-          <AttributesContent selected={selected} step={selectedStep} />
-        </Stack>
+          <Stack>
+            <AttributesContent selected={selected} step={selectedStep} />
+          </Stack>
       ) : (
         <CardTemplateDrawer />
       )}

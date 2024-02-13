@@ -8,10 +8,10 @@ import { Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { SocialPreviewMessage } from './Message/SocialPreviewMessage'
 import { SocialPreviewPost } from './Post/SocialPreviewPost'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 export function SocialPreview(): ReactElement {
   const {
