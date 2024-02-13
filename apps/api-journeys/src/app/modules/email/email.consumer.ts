@@ -9,11 +9,7 @@ import { Prisma } from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
 import { User } from '@core/nest/common/firebaseClient'
 
-import {
-  Journey as JourneyWithUserJourney,
-  UserJourneyRole,
-  UserTeamRole
-} from '../../__generated__/graphql'
+import { UserJourneyRole, UserTeamRole } from '../../__generated__/graphql'
 import { JourneyAccessRequestEmail } from '../../emails/templates/JourneyAccessRequest'
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
 import { JourneySharedNoAccountEmail } from '../../emails/templates/JourneyShared/JourneySharedNoAccount'
@@ -30,23 +26,32 @@ const apollo = new ApolloClient({
   }
 })
 
-type OmittedUser = Omit<User, 'id' | 'email' | 'emailVerified'>
+type OmittedUser = Omit<User, 'id' | 'emailVerified'>
+
+export type JourneyWithTeamAndUserJourney = Prisma.JourneyGetPayload<{
+  include: {
+    userJourneys: true
+    team: true
+    primaryImageBlock: true
+  }
+}>
+
 export interface JourneyEditInviteJob {
   email: string
-  journeyTitle: string
+  journey: JourneyWithTeamAndUserJourney
   url: string
   sender: OmittedUser
 }
 
 export interface JourneyRequestApproved {
   userId: string
-  journeyTitle: string
+  journey: JourneyWithTeamAndUserJourney
   url: string
   sender: OmittedUser
 }
 
 export interface JourneyAccessRequest {
-  journey: JourneyWithUserJourney
+  journey: JourneyWithTeamAndUserJourney
   url: string
   sender: OmittedUser
 }
@@ -71,7 +76,6 @@ export interface TeamInviteAccepted {
 export interface TeamRemoved {
   teamName: string
   userId: string
-  sender: OmittedUser
 }
 
 export type ApiJourneysJob =
@@ -118,6 +122,8 @@ export class EmailConsumer extends WorkerHost {
           user(id: $userId) {
             id
             email
+            firstName
+            imageUrl
           }
         }
       `,
@@ -127,7 +133,7 @@ export class EmailConsumer extends WorkerHost {
     const html = render(
       TeamRemovedEmail({
         teamName: job.data.teamName,
-        sender: job.data.sender
+        recipient: data.user
       }),
       {
         pretty: true
@@ -137,7 +143,7 @@ export class EmailConsumer extends WorkerHost {
     const text = render(
       TeamRemovedEmail({
         teamName: job.data.teamName,
-        sender: job.data.sender
+        recipient: data.user
       }),
       {
         plainText: true
@@ -158,6 +164,9 @@ export class EmailConsumer extends WorkerHost {
         query UserByEmail($email: String!) {
           userByEmail(email: $email) {
             id
+            email
+            firstName
+            imageUrl
           }
         }
       `,
@@ -197,7 +206,7 @@ export class EmailConsumer extends WorkerHost {
       const html = render(
         TeamInviteEmail({
           teamName: job.data.teamName,
-          email: job.data.email,
+          recipient: data.userByEmail,
           inviteLink: url,
           sender: job.data.sender
         }),
@@ -209,7 +218,7 @@ export class EmailConsumer extends WorkerHost {
       const text = render(
         TeamInviteEmail({
           teamName: job.data.teamName,
-          email: job.data.email,
+          recipient: data.userByEmail,
           inviteLink: url,
           sender: job.data.sender
         }),
@@ -240,6 +249,8 @@ export class EmailConsumer extends WorkerHost {
               user(id: $userId) {
                 id
                 email
+                firstName
+                imageUrl
               }
             }
           `,
@@ -258,7 +269,8 @@ export class EmailConsumer extends WorkerHost {
         TeamInviteAcceptedEmail({
           teamName: job.data.team.title,
           inviteLink: job.data.url,
-          sender: job.data.sender
+          sender: job.data.sender,
+          recipient: recipient.user
         }),
         {
           pretty: true
@@ -269,7 +281,8 @@ export class EmailConsumer extends WorkerHost {
         TeamInviteAcceptedEmail({
           teamName: job.data.team.title,
           inviteLink: job.data.url,
-          sender: job.data.sender
+          sender: job.data.sender,
+          recipient: recipient.user
         }),
         {
           plainText: true
@@ -298,7 +311,9 @@ export class EmailConsumer extends WorkerHost {
         query User($userId: ID!) {
           user(id: $userId) {
             id
+            firstName
             email
+            imageUrl
           }
         }
       `,
@@ -310,8 +325,9 @@ export class EmailConsumer extends WorkerHost {
     }
     const html = render(
       JourneyAccessRequestEmail({
-        journeyTitle: job.data.journey.title,
+        journey: job.data.journey,
         inviteLink: job.data.url,
+        recipient: data,
         sender: job.data.sender
       }),
       {
@@ -320,8 +336,9 @@ export class EmailConsumer extends WorkerHost {
     )
     const text = render(
       JourneyAccessRequestEmail({
-        journeyTitle: job.data.journey.title,
+        journey: job.data.journey,
         inviteLink: job.data.url,
+        recipient: data,
         sender: job.data.sender
       }),
       {
@@ -347,6 +364,8 @@ export class EmailConsumer extends WorkerHost {
           user(id: $userId) {
             id
             email
+            firstName
+            imageUrl
           }
         }
       `,
@@ -359,9 +378,10 @@ export class EmailConsumer extends WorkerHost {
 
     const html = render(
       JourneySharedEmail({
-        journeyTitle: job.data.journeyTitle,
+        journey: job.data.journey,
         inviteLink: job.data.url,
-        sender: job.data.sender
+        sender: job.data.sender,
+        recipient: data.user
       }),
       {
         pretty: true
@@ -370,9 +390,10 @@ export class EmailConsumer extends WorkerHost {
 
     const text = render(
       JourneySharedEmail({
-        journeyTitle: job.data.journeyTitle,
+        journey: job.data.journey,
         inviteLink: job.data.url,
-        sender: job.data.sender
+        sender: job.data.sender,
+        recipient: data.user
       }),
       {
         plainText: true
@@ -380,7 +401,7 @@ export class EmailConsumer extends WorkerHost {
     )
     await this.emailService.sendEmail({
       to: data.user.email,
-      subject: `${job.data.journeyTitle} has been shared with you`,
+      subject: `${job.data.journey.title} has been shared with you`,
       html,
       text
     })
@@ -393,6 +414,9 @@ export class EmailConsumer extends WorkerHost {
         query UserByEmail($email: String!) {
           userByEmail(email: $email) {
             id
+            email
+            firstName
+            imageUrl
           }
         }
       `,
@@ -404,7 +428,7 @@ export class EmailConsumer extends WorkerHost {
       const html = render(
         JourneySharedNoAccountEmail({
           sender: job.data.sender,
-          journeyTitle: job.data.journeyTitle,
+          journey: job.data.journey,
           inviteLink: url
         }),
         {
@@ -413,7 +437,7 @@ export class EmailConsumer extends WorkerHost {
       )
       const text = render(
         JourneySharedNoAccountEmail({
-          journeyTitle: job.data.journeyTitle,
+          journey: job.data.journey,
           inviteLink: url,
           sender: job.data.sender
         }),
@@ -423,7 +447,7 @@ export class EmailConsumer extends WorkerHost {
       )
       await this.emailService.sendEmail({
         to: job.data.email,
-        subject: `${job.data.journeyTitle} has been shared with you`,
+        subject: `${job.data.journey.title} has been shared with you`,
         html,
         text
       })
@@ -431,8 +455,9 @@ export class EmailConsumer extends WorkerHost {
       const html = render(
         JourneySharedEmail({
           sender: job.data.sender,
-          journeyTitle: job.data.journeyTitle,
-          inviteLink: job.data.url
+          journey: job.data.journey,
+          inviteLink: job.data.url,
+          recipient: data.userByEmail
         }),
         {
           pretty: true
@@ -440,9 +465,10 @@ export class EmailConsumer extends WorkerHost {
       )
       const text = render(
         JourneySharedEmail({
-          journeyTitle: job.data.journeyTitle,
+          journey: job.data.journey,
           inviteLink: job.data.url,
-          sender: job.data.sender
+          sender: job.data.sender,
+          recipient: data.userByEmail
         }),
         {
           plainText: true
@@ -450,7 +476,7 @@ export class EmailConsumer extends WorkerHost {
       )
       await this.emailService.sendEmail({
         to: job.data.email,
-        subject: `${job.data.journeyTitle} has been shared with you`,
+        subject: `${job.data.journey.title} has been shared with you on NextSteps`,
         html,
         text
       })

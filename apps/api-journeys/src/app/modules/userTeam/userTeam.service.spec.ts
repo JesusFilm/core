@@ -32,21 +32,14 @@ describe('UserTeamService', () => {
         title: 'Team Title'
       } as unknown as Team
       const userId = 'userId'
-      const sender = {
-        firstName: 'Joe',
-        lastName: 'Ro-Nimo',
-        imageUrl:
-          'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-      }
 
-      await service.sendTeamRemovedEmail(team.title, userId, sender)
+      await service.sendTeamRemovedEmail(team.title, userId)
 
       expect(emailQueue.add).toHaveBeenCalledWith(
         'team-removed',
         {
           teamName: team.title,
-          userId,
-          sender
+          userId
         },
         {
           removeOnComplete: true,
