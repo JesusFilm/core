@@ -9,7 +9,6 @@ import { Bullet } from './Bullet'
 
 export function PaginationBullets(): ReactElement {
   const { treeBlocks, blockHistory } = useBlocks()
-  const gap = 16
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
@@ -25,25 +24,12 @@ export function PaginationBullets(): ReactElement {
     return false
   }
 
-  function isAdjacentNext(block: TreeBlock): boolean {
-    if (activeBlock.parentOrder !== null && block.parentOrder !== null)
-      if (
-        block.parentOrder - activeBlock.parentOrder === 2 ||
-        activeBlock.parentOrder - block.parentOrder === 2
-      ) {
-        return true
-      }
-    return false
-  }
-
   return (
     <Box
       sx={{
         position: 'absolute',
         top: 13,
-        width: '100%',
-        zIndex: 1,
-        display: 'flex'
+        width: '100%'
       }}
     >
       <Stack
@@ -61,40 +47,22 @@ export function PaginationBullets(): ReactElement {
         {treeBlocks.map((block) => {
           if (block.parentOrder == null || activeBlock.parentOrder == null)
             return <></>
-          const base = 38
-          const distanceFromBase = block.parentOrder * gap
+
+          const isActive = block.id === activeBlock.id
+          const gap = 16
+          const initial = 38
+          const distanceFromInitial = block.parentOrder * gap
           const moveDistance = activeBlock.parentOrder * gap
 
-          if (block.id === activeBlock.id) {
-            return (
-              <Bullet
-                key={block.id}
-                data-testid="activeBullet"
-                variant="lg"
-                sx={{
-                  color: { xs: 'primary.main', lg: 'white' },
-                  left: `${base + distanceFromBase - moveDistance}px`,
-                  position: 'absolute',
-                  transition: 'scale .2s, left .2s'
-                }}
-              />
-            )
-          } else {
-            return (
-              <Bullet
-                key={block.id}
-                variant={
-                  isAdjacent(block) ? 'md' : isAdjacentNext(block) ? 'sm' : 'sm'
-                }
-                sx={{
-                  color: { xs: 'primary.main', lg: 'white' },
-                  left: `${base + distanceFromBase - moveDistance}px`,
-                  position: 'absolute',
-                  transition: 'scale .2s, left .2s'
-                }}
-              />
-            )
-          }
+          return (
+            <Bullet
+              key={block.id}
+              variant={
+                isActive ? 'active' : isAdjacent(block) ? 'adjacent' : 'default'
+              }
+              left={initial + distanceFromInitial - moveDistance}
+            />
+          )
         })}
       </Stack>
     </Box>

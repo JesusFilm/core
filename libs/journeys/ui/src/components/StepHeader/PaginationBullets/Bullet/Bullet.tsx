@@ -1,22 +1,26 @@
 import CircleIcon from '@mui/icons-material/Circle'
-import { SxProps } from '@mui/material/styles'
 import { ReactElement } from 'react'
 
-type BulletVariant = 'lg' | 'md' | 'sm'
+type BulletVariant = 'active' | 'adjacent' | 'default'
 
 interface BulletProps {
-  variant?: BulletVariant
-  sx?: SxProps
+  variant: BulletVariant
+  left: number
 }
 
-export function Bullet({ variant, sx }: BulletProps): ReactElement {
+export function Bullet({ variant, left }: BulletProps): ReactElement {
   return (
     <CircleIcon
+      data-testid={`bullet-${variant}`}
       sx={{
-        ...sx,
+        color: { xs: 'primary.main', lg: 'white' },
         fontSize: '10px',
-        scale: variant === 'sm' ? '.33' : variant === 'md' ? '.66' : '1',
-        opacity: variant === 'lg' ? '100%' : '60%'
+        scale:
+          variant === 'active' ? '1' : variant === 'adjacent' ? '0.66' : '0.33',
+        opacity: variant === 'active' ? '100%' : '60%',
+        position: 'absolute',
+        transition: 'scale 0.2s, left 0.2s',
+        left: `${left}px`
       }}
     />
   )
