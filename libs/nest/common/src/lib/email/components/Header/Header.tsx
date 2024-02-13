@@ -8,7 +8,7 @@ export function Header(): ReactElement {
     <Section className="bg-[#FFFFFF] h-[72px] w-full">
       <Container>
         <Row className="align-middle">
-          <Column className="text-center">
+          <Column align="center">
             <EmailLogo />
           </Column>
         </Row>
