@@ -43,7 +43,7 @@ export function OnboardingPageWrapper({
         </Box>
         {children}
       </Stack>
-      <Stack direction="row" gap={4}>
+      <Stack direction="row" alignItems="center" gap={4}>
         <Link
           variant="body2"
           underline="none"
@@ -52,10 +52,15 @@ export function OnboardingPageWrapper({
             cursor: 'pointer'
           }}
           href={`mailto:support@nextstep.is?subject=${emailSubject}`}
+          suppressHydrationWarning
         >
           {t('Feedback & Support')}
         </Link>
-        <Button size="small" onClick={() => setOpen(true)}>
+        <Button
+          size="small"
+          onClick={() => setOpen(true)}
+          suppressHydrationWarning
+        >
           {t('Language')}
         </Button>
       </Stack>
