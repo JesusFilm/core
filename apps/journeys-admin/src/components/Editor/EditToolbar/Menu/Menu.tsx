@@ -173,18 +173,18 @@ export function Menu(): ReactElement {
             onClick={handleCloseMenu}
           />
         </NextLink>
-        <DuplicateBlock
+        {/* <DuplicateBlock
           variant="list-item"
           disabled={selectedBlock?.__typename === 'VideoBlock'}
           handleClick={handleCloseMenu}
         />
-        <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
+        <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} /> */}
         <MenuItem
           label={t('Manage Access')}
           icon={<UsersProfiles2 />}
           onClick={handleOpenAccessDialog}
         />
-        <Divider />
+        {/* <Divider /> */}
         {journey?.template === true && (
           <MenuItem
             label={t('Template Settings')}
@@ -213,6 +213,7 @@ export function Menu(): ReactElement {
         {journey?.template !== true && isPublisher === true && (
           <CreateTemplateMenuItem />
         )}
+        {/* // Strategy //  {journey!=null && } */}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && <Divider />}
         {journey != null &&

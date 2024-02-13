@@ -56,7 +56,7 @@ export function EditToolbar(): ReactElement {
     <Stack
       direction="row"
       alignItems="center"
-      spacing={{ xs: 2, sm: 6 }}
+      spacing={{ xs: 2, sm: 4 }}
       sx={{
         height: EDIT_TOOLBAR_HEIGHT,
         backgroundColor: 'background.paper',
@@ -140,7 +140,9 @@ export function EditToolbar(): ReactElement {
             }}
             onClick={handleGoalsClick}
           >
-            {t('Strategy')}
+            <Typography variant="subtitle2" sx={{ py: 1 }}>
+              {t('Strategy')}
+            </Typography>
           </Button>
           <Button
             variant="contained"
@@ -154,7 +156,10 @@ export function EditToolbar(): ReactElement {
               }
             }}
           >
-            {t('Share')}
+            <Typography variant="subtitle2" sx={{ py: 1 }}>
+              {t('Share')}
+            </Typography>
+            {/* {t('Share')} */}
           </Button>
           <IconButton
             component="a"
