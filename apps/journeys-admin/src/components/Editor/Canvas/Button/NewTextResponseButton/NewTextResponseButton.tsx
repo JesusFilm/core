@@ -11,7 +11,7 @@ import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { TextResponseBlockCreate } from '../../../../../../__generated__/TextResponseBlockCreate'
-import { Button, NewBlockButtonProps } from '../Button'
+import { Button } from '../Button'
 
 export const TEXT_RESPONSE_BLOCK_CREATE = gql`
   ${TEXT_RESPONSE_FIELDS}
@@ -44,9 +44,7 @@ export const TEXT_RESPONSE_BLOCK_CREATE = gql`
   }
 `
 
-export function NewTextResponseButton({
-  disabled
-}: NewBlockButtonProps): ReactElement {
+export function NewTextResponseButton(): ReactElement {
   const [textResponseBlockCreate] = useMutation<TextResponseBlockCreate>(
     TEXT_RESPONSE_BLOCK_CREATE
   )
@@ -139,7 +137,6 @@ export function NewTextResponseButton({
       value="Feedback"
       onClick={handleClick}
       testId="NewTextResponseButton"
-      disabled={disabled}
     />
   )
 }

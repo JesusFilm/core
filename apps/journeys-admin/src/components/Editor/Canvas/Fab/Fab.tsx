@@ -1,5 +1,7 @@
 import MuiFab, { FabProps } from '@mui/material/Fab'
 import { Theme } from '@mui/material/styles'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Zoom from '@mui/material/Zoom'
 import { ReactElement } from 'react'
@@ -17,6 +19,7 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
+import { DRAWER_WIDTH } from '../../constants'
 
 interface FabProp {
   visible?: boolean
@@ -48,7 +51,8 @@ export function Fab({ visible = true }: FabProp): ReactElement {
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
 
-  const hasVideoBlock =
+  const disabled =
+    steps == null ||
     cardBlock?.children?.find(
       (block) =>
         block.__typename === 'VideoBlock' && cardBlock.coverBlockId !== block.id
@@ -58,16 +62,31 @@ export function Fab({ visible = true }: FabProp): ReactElement {
     variant: smUp ? 'extended' : 'circular',
     size: 'large',
     color: 'primary',
-    disabled: steps == null || hasVideoBlock,
+    disabled,
     sx: {
       position: 'absolute',
-      bottom: { xs: 16, sm: 64 },
-      right: { xs: 16, sm: 424 }
+      bottom: { xs: 16, sm: 73 },
+      right: { xs: 16, sm: DRAWER_WIDTH + 84 }
     }
   }
 
   return (
-    <>
+    <Tooltip
+      title={
+        <Typography
+          display={{
+            xs: 'none',
+            sm: 'flex'
+          }}
+          variant="caption"
+          lineHeight="12px"
+        >
+          {t('Blocks cannot be placed on top of Video Block')}
+        </Typography>
+      }
+      placement="top"
+      arrow
+    >
       <Zoom
         in={
           visible &&
@@ -93,6 +112,6 @@ export function Fab({ visible = true }: FabProp): ReactElement {
           </MuiFab>
         )}
       </Zoom>
-    </>
+    </Tooltip>
   )
 }

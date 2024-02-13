@@ -9,7 +9,7 @@ import Image3Icon from '@core/shared/ui/icons/Image3'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
-import { Button, NewBlockButtonProps } from '../Button'
+import { Button } from '../Button'
 
 export const IMAGE_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}
@@ -23,9 +23,7 @@ export const IMAGE_BLOCK_CREATE = gql`
   }
 `
 
-export function NewImageButton({
-  disabled
-}: NewBlockButtonProps): ReactElement {
+export function NewImageButton(): ReactElement {
   const [imageBlockCreate] = useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
@@ -87,7 +85,6 @@ export function NewImageButton({
       value="Image"
       onClick={handleClick}
       testId="NewImageButton"
-      disabled={disabled}
     />
   )
 }

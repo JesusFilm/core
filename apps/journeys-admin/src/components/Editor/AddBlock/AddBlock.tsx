@@ -29,12 +29,6 @@ export function AddBlock(): ReactElement {
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
 
-  const hasVideoBlock =
-    cardBlock?.children?.find(
-      (block) =>
-        block.__typename === 'VideoBlock' && cardBlock.coverBlockId !== block.id
-    ) != null
-
   const hasChildBlock = cardBlock?.children?.some(
     (block) => block.id !== cardBlock.coverBlockId
   )
@@ -43,40 +37,40 @@ export function AddBlock(): ReactElement {
     <>
       {smUp ? (
         <Stack gap={4} mt={6} px={5}>
-          <NewTypographyButton disabled={hasVideoBlock} />
-          <NewImageButton disabled={hasVideoBlock} />
+          <NewTypographyButton />
+          <NewImageButton />
           <NewVideoButton disabled={hasChildBlock} />
-          <NewRadioQuestionButton disabled={hasVideoBlock} />
-          <NewTextResponseButton disabled={hasVideoBlock} />
-          <NewSignUpButton disabled={hasVideoBlock} />
-          <NewButtonButton disabled={hasVideoBlock} />
-          {formiumForm && <NewFormButton disabled={hasVideoBlock} />}
+          <NewRadioQuestionButton />
+          <NewTextResponseButton />
+          <NewSignUpButton />
+          <NewButtonButton />
+          {formiumForm && <NewFormButton />}
         </Stack>
       ) : (
         <Grid p={5} container spacing={4}>
           <Grid item xs={6}>
-            <NewTypographyButton disabled={hasVideoBlock} />
+            <NewTypographyButton />
           </Grid>
           <Grid item xs={6}>
-            <NewImageButton disabled={hasVideoBlock} />
+            <NewImageButton />
           </Grid>
           <Grid item xs={6}>
             <NewVideoButton disabled={hasChildBlock} />
           </Grid>
           <Grid item xs={6}>
-            <NewRadioQuestionButton disabled={hasVideoBlock} />
+            <NewRadioQuestionButton />
           </Grid>
           <Grid item xs={6}>
-            <NewTextResponseButton disabled={hasVideoBlock} />
+            <NewTextResponseButton />
           </Grid>
           <Grid item xs={6}>
-            <NewSignUpButton disabled={hasVideoBlock} />
+            <NewSignUpButton />
           </Grid>
           <Grid item xs={6}>
-            <NewButtonButton disabled={hasVideoBlock} />
+            <NewButtonButton />
           </Grid>
           <Grid item xs={6}>
-            {formiumForm && <NewFormButton disabled={hasVideoBlock} />}
+            {formiumForm && <NewFormButton />}
           </Grid>
         </Grid>
       )}

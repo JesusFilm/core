@@ -20,7 +20,7 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../../../__generated__/globalTypes'
-import { Button, NewBlockButtonProps } from '../Button'
+import { Button } from '../Button'
 
 export const BUTTON_BLOCK_CREATE = gql`
   ${BUTTON_FIELDS}
@@ -48,9 +48,7 @@ export const BUTTON_BLOCK_CREATE = gql`
   }
 `
 
-export function NewButtonButton({
-  disabled
-}: NewBlockButtonProps): ReactElement {
+export function NewButtonButton(): ReactElement {
   const [buttonBlockCreate] =
     useMutation<ButtonBlockCreate>(BUTTON_BLOCK_CREATE)
   const { journey } = useJourney()
@@ -162,7 +160,6 @@ export function NewButtonButton({
       value="Button"
       onClick={handleClick}
       testId="NewButton"
-      disabled={disabled}
     />
   )
 }

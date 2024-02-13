@@ -11,7 +11,7 @@ import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { RadioQuestionBlockCreate } from '../../../../../../__generated__/RadioQuestionBlockCreate'
-import { Button, NewBlockButtonProps } from '../Button'
+import { Button } from '../Button'
 
 export const RADIO_QUESTION_BLOCK_CREATE = gql`
   ${RADIO_QUESTION_FIELDS}
@@ -42,9 +42,7 @@ export const RADIO_QUESTION_BLOCK_CREATE = gql`
   }
 `
 
-export function NewRadioQuestionButton({
-  disabled
-}: NewBlockButtonProps): ReactElement {
+export function NewRadioQuestionButton(): ReactElement {
   const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
     RADIO_QUESTION_BLOCK_CREATE
   )
@@ -140,7 +138,6 @@ export function NewRadioQuestionButton({
       value="Poll"
       onClick={handleClick}
       testId="NewRadioQuestionButton"
-      disabled={disabled}
     />
   )
 }

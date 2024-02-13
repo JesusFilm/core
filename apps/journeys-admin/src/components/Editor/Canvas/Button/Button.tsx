@@ -10,10 +10,6 @@ import { useTranslation } from 'react-i18next'
 
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
-export interface NewBlockButtonProps {
-  disabled?: boolean
-}
-
 interface ButtonProps {
   icon: ReactElement
   value: string
@@ -50,8 +46,6 @@ export function Button({
             {t(
               disabled && value === 'Video'
                 ? 'Video Blocks cannot be placed on top of Block'
-                : disabled
-                ? 'Blocks cannot be placed on top of Video Block'
                 : 'Click to add'
             )}
           </Typography>
