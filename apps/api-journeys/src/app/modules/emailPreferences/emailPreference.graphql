@@ -1,5 +1,5 @@
 type EmailPreference {
-  email: String
+  email: String!
   unsubscribeAll: Boolean!
   teamInvite: Boolean!
   teamRemoved: Boolean!
@@ -15,7 +15,7 @@ extend type Query {
 }
 
 input EmailPreferenceUpdateInput {
-  email: String
+  email: String!
   unsubscribeAll: Boolean!
   teamInvite: Boolean!
   teamRemoved: Boolean!
