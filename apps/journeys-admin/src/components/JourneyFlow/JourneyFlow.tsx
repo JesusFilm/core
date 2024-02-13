@@ -19,7 +19,10 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockFields } from '../../../__generated__/BlockFields'
+import {
+  BlockFields,
+  BlockFields_CardBlock as CardBlock
+} from '../../../__generated__/BlockFields'
 import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey_blocks_FormBlock as FormBlock,
@@ -88,6 +91,19 @@ type ActionBlock =
   | TreeBlock<VideoBlock>
 
 const isActionBlock = (block): block is ActionBlock => 'action' in block
+
+function filterActionBlocks(step: TreeBlock<StepBlock>): ActionBlock[] {
+  const card = step.children[0] as TreeBlock<CardBlock> | undefined
+  if (card == null) return []
+
+  return card.children
+    .flatMap((block) =>
+      block.__typename === 'RadioQuestionBlock' ? block.children : block
+    )
+    .filter(
+      (child) => card.coverBlockId !== child.id && isActionBlock(child)
+    ) as ActionBlock[]
+}
 
 function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   nodes: InternalNode[]
@@ -159,8 +175,10 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     const descendants: Array<TreeBlock<StepBlock>> = []
     const nextStep = getNextStep(step)
     if (nextStep != null) descendants.push(nextStep)
-    const children = step.children[0].children.filter(isActionBlock)
-    children.forEach((child) => {
+
+    const blocks = filterActionBlocks(step)
+
+    blocks.forEach((child) => {
       if (child.action?.__typename === 'NavigateToBlockAction') {
         const nextStep = getStepFromId(child.action?.blockId)
         if (nextStep != null) descendants.push(nextStep)
@@ -265,7 +283,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
         position: { x: stepX, y: stepY }
       })
       const blockY = stepY + STEP_NODE_HEIGHT + ACTION_NODE_HEIGHT_GAP
-      const blocks = step.children[0].children.filter(isActionBlock)
+      const blocks = filterActionBlocks(step)
       blocks.forEach((block, index) => {
         const blockX =
           stepX +
