@@ -54,6 +54,12 @@ services:
       ]
     volumes:
       - redis-data:/data
+  maildev:
+    image: 'maildev/maildev:latest'
+    restart: unless-stopped
+    ports:
+      - 1080:1080
+      - 1025:1025
 volumes:
   core-node-doppler:
   postgres-data:
