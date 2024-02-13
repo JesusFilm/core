@@ -7,7 +7,6 @@ import { ReactElement, ReactNode, useState } from 'react'
 import { Handle, OnConnect, Position } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
@@ -50,9 +49,6 @@ export function BaseNode({
   const { journey } = useJourney()
   const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
   const [isHovered, setIsHovered] = useState(false)
-  const {
-    state: { journeyEditContentComponent }
-  } = useEditor()
 
   const handleMouseEnter = (): void => {
     setIsHovered(true)
@@ -89,14 +85,6 @@ export function BaseNode({
     }
   }
 
-  function isSelected(): boolean {
-    if (variant === 'social') {
-      return journeyEditContentComponent === 'social'
-    } else {
-      return selected !== false && journeyEditContentComponent === 'canvas'
-    }
-  }
-
   switch (variant) {
     case 'step':
       return (
@@ -110,7 +98,7 @@ export function BaseNode({
               borderRadius: 1,
               outline: '2px solid',
               outlineColor: (theme) =>
-                isSelected()
+                selected === true
                   ? theme.palette.primary.main
                   : selected === 'descendant'
                   ? theme.palette.divider
@@ -149,9 +137,10 @@ export function BaseNode({
                 width: 7,
                 height: 7,
                 background: 'white',
-                border: isSelected()
-                  ? '2px solid #c52d3aff'
-                  : '2px solid #aaacbb ',
+                border:
+                  selected !== false
+                    ? '2px solid #c52d3aff'
+                    : '2px solid #aaacbb',
                 outline: '1.5px solid white',
                 outlineColor: 'white',
                 cursor: 'pointer'
@@ -180,9 +169,10 @@ export function BaseNode({
                   width: 7,
                   height: 7,
                   background: 'white',
-                  border: isSelected()
-                    ? '2px solid #c52d3aff'
-                    : '2px solid #aaacbb ',
+                  border:
+                    selected !== false
+                      ? '2px solid #c52d3aff'
+                      : '2px solid #aaacbb',
                   outline: '1.5px solid white',
                   outlineColor: 'white',
                   visibility: isHovered ? 'hidden' : 'visible'
@@ -290,7 +280,7 @@ export function BaseNode({
           sx={{
             outline: '2px solid',
             outlineColor: (theme) =>
-              isSelected() ? theme.palette.primary.main : 'transparent',
+              selected !== false ? theme.palette.primary.main : 'transparent',
             outlineOffset: '2px',
             borderRadius: '8px'
           }}

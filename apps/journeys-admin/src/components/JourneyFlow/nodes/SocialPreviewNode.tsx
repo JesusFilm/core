@@ -26,7 +26,10 @@ export interface SocialPreviewNodeData {
 
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
-  const { dispatch } = useEditor()
+  const {
+    dispatch,
+    state: { journeyEditContentComponent }
+  } = useEditor()
 
   function handleClick(): void {
     dispatch({
@@ -37,6 +40,9 @@ export function SocialPreviewNode(): ReactElement {
 
   return (
     <BaseNode
+      selected={
+        journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
+      }
       onClick={() => handleClick()}
       title={journey?.title ?? 'Social Preview'}
       variant="social"
