@@ -1,91 +1,98 @@
 import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
+import {
+  ActiveJourneyEditContent,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 import Share from '@core/shared/ui/icons/Share'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
-export function SocialPreviewPost(): ReactElement {
+import { BaseNode } from './BaseNode'
+
+export interface SocialPreviewNodeData {
+  __typename: 'SocialPreview'
+}
+
+export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
-  const { t } = useTranslation('apps-journeys-admin')
+  const {
+    dispatch,
+    state: { journeyEditContentComponent }
+  } = useEditor()
+
+  function handleClick(): void {
+    dispatch({
+      type: 'SetJourneyEditContentAction',
+      component: ActiveJourneyEditContent.SocialPreview
+    })
+  }
 
   return (
-    <Box data-testid="SocialPreviewPost">
-      <Stack
-        direction="column"
-        justifyContent="flex-start"
-        alignContent="center"
-        alignItems="center"
-      >
-        <Typography
-          variant="caption"
-          pb={4}
-          textAlign="center"
-          sx={{ fontSize: 16 }}
-        >
-          {t('Social App View')}
-        </Typography>
-        {journey != null && (
+    <BaseNode
+      selected={
+        journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
+      }
+      onClick={() => handleClick()}
+      title={journey?.title ?? 'Social Preview'}
+      variant="social"
+      icon={
+        journey != null && (
           <Card
             sx={{
-              maxWidth: { xs: 208, md: 228 },
-              height: { xs: 274, md: 294 },
-              border: '0.5px solid #DEDFE0',
-              borderRadius: '16px',
+              height: 168,
+              width: 130.5,
+              borderRadius: '9px',
               display: 'block',
-              padding: 2.5
+              px: 1.5
             }}
-            elevation={0}
           >
             <Stack
-              pb={2}
-              mb={0}
               direction="row"
-              width="100%"
+              height="30px"
               justifyContent="space-between"
               alignItems="center"
             >
               <Avatar
                 sx={{
-                  width: 26,
-                  height: 26,
-                  mr: 2,
+                  height: 15,
+                  width: 15,
                   bgcolor: (theme) => theme.palette.background.default,
-                  color: (theme) => theme.palette.background.paper
+                  color: (theme) => theme.palette.background.paper,
+                  mr: 1.5
                 }}
               >
-                <UserProfile2Icon />
+                <UserProfile2Icon sx={{ height: '15px' }} />
               </Avatar>
               <Box flexGrow={1}>
                 <Box
-                  width={80}
-                  height={16}
+                  width={45}
+                  height={9}
                   bgcolor="#EFEFEF"
-                  borderRadius="8px"
+                  borderRadius="4.5px"
                 />
               </Box>
               <Box
-                width={16}
-                height={16}
+                width={9}
+                height={9}
                 bgcolor="#EFEFEF"
-                borderRadius="8px"
-                mr={0}
+                borderRadius="4.5px"
               />
             </Stack>
             <CardMedia
               sx={{
-                width: 208,
-                height: 158,
+                width: 118.5,
+                height: 90,
                 display: 'flex',
                 flexDirection: 'column'
               }}
@@ -94,19 +101,19 @@ export function SocialPreviewPost(): ReactElement {
                 <Box
                   data-testid="social-preview-post-empty"
                   display="block"
-                  width={208}
-                  height={158}
+                  width={118.5}
+                  height={90}
                   bgcolor="rgba(0, 0, 0, 0.1)"
-                  borderRadius="5px"
+                  borderRadius="4px"
                 />
               ) : (
                 <Image
                   src={journey.primaryImageBlock.src}
                   alt={journey.primaryImageBlock.alt ?? ''}
-                  width={208}
-                  height={158}
+                  width={118.5}
+                  height={90}
                   style={{
-                    borderRadius: '5px',
+                    borderRadius: '4px',
                     maxWidth: '100%',
                     objectFit: 'cover'
                   }}
@@ -114,25 +121,26 @@ export function SocialPreviewPost(): ReactElement {
               )}
             </CardMedia>
             <Stack
-              gap={5}
+              gap={2}
               sx={{
                 flexDirection: 'column',
+                display: 'flex',
                 height: 36
               }}
             >
-              <Stack gap={1.5} sx={{ mt: 2 }}>
+              <Stack gap={0.75} sx={{ mt: 1 }}>
                 {isEmpty(journey?.seoTitle?.trim()) ? (
                   <Box
-                    width={208}
-                    height={15}
+                    width={118.5}
+                    height={9}
                     bgcolor="#EFEFEF"
-                    borderRadius="8px"
+                    borderRadius="4px"
                   />
                 ) : (
                   <Typography
                     variant="subtitle1"
-                    fontSize={12}
-                    lineHeight="15px"
+                    fontSize={7}
+                    lineHeight="9px"
                     color="#26262E"
                     noWrap
                   >
@@ -141,16 +149,16 @@ export function SocialPreviewPost(): ReactElement {
                 )}
                 {isEmpty(journey?.seoDescription?.trim()) ? (
                   <Box
-                    width={208}
-                    height={15}
+                    width={118.5}
+                    height={9}
                     bgcolor="#EFEFEF"
-                    borderRadius="8px"
+                    borderRadius="4px"
                   />
                 ) : (
                   <Typography
                     variant="body2"
-                    fontSize={8}
-                    lineHeight="15px"
+                    fontSize={4.5}
+                    lineHeight="9px"
                     color="#6D6D7D"
                     noWrap
                   >
@@ -163,14 +171,14 @@ export function SocialPreviewPost(): ReactElement {
                 justifyContent="space-around"
                 color="#EFEFEF"
               >
-                <ThumbsUp sx={{ fontSize: 15 }} />
-                <MessageCircle sx={{ fontSize: 15 }} />
-                <Share sx={{ fontSize: 15 }} />
+                <ThumbsUp sx={{ fontSize: 9 }} />
+                <MessageCircle sx={{ fontSize: 9 }} />
+                <Share sx={{ fontSize: 9 }} />
               </Stack>
             </Stack>
           </Card>
-        )}
-      </Stack>
-    </Box>
+        )
+      }
+    />
   )
 }
