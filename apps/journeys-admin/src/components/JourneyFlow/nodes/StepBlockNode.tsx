@@ -4,21 +4,27 @@ import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
 import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
+import { TOptions } from 'i18next'
 import sortBy from 'lodash/sortBy'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+import { getStepSubtitle } from '@core/journeys/ui/getStepSubtitle'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 import GitBranchIcon from '@core/shared/ui/icons/GitBranch'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import {
   BlockFields as Block,
+  BlockFields_CardBlock,
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_StepBlock as StepBlock
@@ -158,9 +164,10 @@ interface CardMetadata {
 }
 
 function getCardMetadata(
-  card?: TreeBlock<CardBlock>,
-  steps?: TreeBlock<StepBlock>,
-  step?
+  card: TreeBlock<BlockFields_CardBlock> | undefined,
+  steps: Array<TreeBlock<StepBlock>>,
+  step: TreeBlock<StepBlock>,
+  t: (str: string, options?: TOptions) => string
 ): CardMetadata {
   if (card == null) return {}
 
@@ -170,22 +177,24 @@ function getCardMetadata(
   // if priority block is video
   if (priorityBlock?.__typename === 'VideoBlock') {
     const title = priorityBlock.title !== null ? priorityBlock.title : undefined
+    console.log(priorityBlock)
     const subtitle =
-      priorityBlock.videoVariantLanguageId !== null
-        ? priorityBlock.videoVariantLanguageId
+      priorityBlock.startAt !== null && priorityBlock.endAt !== null
+        ? secondsToTimeFormat(priorityBlock.startAt, { trimZeroes: true }) +
+          '-' +
+          secondsToTimeFormat(priorityBlock.endAt, { trimZeroes: true })
         : undefined
-    const description =
-      priorityBlock.duration !== null
-        ? String(priorityBlock.duration)
-        : undefined
+
+    const description = 'English' // priorityBlock.video?.variant !== null ? String(priorityBlock.video?.variant) : undefined
+
+    const bgImage =
+      priorityBlock.image !== null ? priorityBlock.image : undefined
 
     return { title, subtitle, description, priorityBlock, bgImage }
   } else {
-    //  get the title from typography
-    // get the subtitle
-    const title = 'a ' // getStepHeading(step.id, step.children, steps, t)
+    const title = getStepHeading(step.id, step.children, steps, t)
 
-    const subtitle = 'b' // getStepSubtitle()
+    const subtitle = getStepSubtitle(step.id, step.children, steps, t)
     return { title, subtitle, priorityBlock, bgImage }
   }
 }
@@ -193,9 +202,10 @@ function getCardMetadata(
 export function StepBlockNode({
   data: { steps, ...step }
 }: NodeProps<StepBlockNodeData>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const { title, subtitle, description, priorityBlock, bgImage } =
-    getCardMetadata(card, ...steps)
+    getCardMetadata(card, steps, step, t)
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
 
   const {
@@ -304,6 +314,26 @@ export function StepBlockNode({
                   sx={{
                     display: '-webkit-box',
                     '-webkit-box-orient': 'vertical',
+                    '-webkit-line-clamp': '1',
+                    overflow: 'hidden',
+                    padding: 0,
+                    fontSize: 9,
+                    height: 'auto',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    alignSelf: 'flex-start',
+                    marginBottom: 1,
+                    lineHeight: 1.3,
+                    alignItems: 'flex-end',
+                    color: '#444451'
+                  }}
+                >
+                  {description !== '' ? description : ''}
+                </Typography>
+                <Typography
+                  sx={{
+                    display: '-webkit-box',
+                    '-webkit-box-orient': 'vertical',
                     '-webkit-line-clamp': '2',
                     overflow: 'hidden',
                     padding: 0,
@@ -313,12 +343,15 @@ export function StepBlockNode({
                     flexDirection: 'column',
                     justifyContent: 'flex-end',
                     alignSelf: 'flex-start',
-                    marginBottom: 0.5,
+                    marginBottom: 1,
                     lineHeight: 1.3,
-                    alignItems: 'flex-end'
+                    alignItems: 'flex-end',
+                    color: '#26262E'
                   }}
                 >
-                  {title ?? (
+                  {title !== '' ? (
+                    title
+                  ) : (
                     <Skeleton
                       animation={false}
                       sx={{
@@ -338,12 +371,12 @@ export function StepBlockNode({
                     fontSize: 10,
                     lineHeight: '1.2',
                     justifyContent: 'top',
-                    color: '#7f7e8c',
+                    color: '#444451',
                     overflow: 'hidden',
                     paddingBottom: '1px'
                   }}
                 >
-                  {title != null ? (
+                  {title !== '' ? (
                     subtitle
                   ) : (
                     <Skeleton
