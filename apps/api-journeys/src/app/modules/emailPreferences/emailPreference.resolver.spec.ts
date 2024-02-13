@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing'
 import { EmailPreferencesUpdateInput } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
-import { EmailPreferencesResolver } from './emailPreferences.resolver'
+import { EmailPreferenceResolver } from './emailPreferences.resolver'
 
 describe('EmailPreferencesResolver', () => {
   let resolver: EmailPreferencesResolver
