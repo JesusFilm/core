@@ -9,7 +9,7 @@ import { StepFields } from '../../Step/__generated__/StepFields'
 
 export function PaginationBullets(): ReactElement {
   const { treeBlocks, blockHistory } = useBlocks()
-  const gap = 17
+  const gap = 16
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
@@ -50,7 +50,7 @@ export function PaginationBullets(): ReactElement {
         direction="row"
         sx={{
           position: 'absolute',
-          transform: 'translateX(-40%)',
+          transform: 'translateX(-50%)',
           width: '84px',
           height: '16px',
           alignItems: 'center',
@@ -73,7 +73,7 @@ export function PaginationBullets(): ReactElement {
                   bgcolor: { xs: 'primary.main', lg: 'white' },
                   borderRadius: '100%',
                   left: `${
-                    32 + gap * block.parentOrder - activeBlock.parentOrder * gap
+                    38 + gap * block.parentOrder - activeBlock.parentOrder * gap
                   }px`,
                   position: 'absolute',
                   transition: 'scale .2s, left .2s'
@@ -96,7 +96,7 @@ export function PaginationBullets(): ReactElement {
                     : '.33',
                   opacity: '60%',
                   left: `${
-                    32 + gap * block.parentOrder - activeBlock.parentOrder * gap
+                    38 + gap * block.parentOrder - activeBlock.parentOrder * gap
                   }px`,
                   position: 'absolute',
                   transition: 'scale .2s, left .2s'
