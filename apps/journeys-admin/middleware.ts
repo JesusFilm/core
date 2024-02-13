@@ -101,17 +101,18 @@ export function middleware(req: NextRequest): NextResponse | undefined {
   const nextLocaleCookie = req.cookies.get('NEXT_LOCALE')?.value
   const extractedLocale = nextLocaleCookie?.slice(6)
 
+  // Redirect if NEXT_LOCALE cookie is not set
+  if (nextLocaleCookie == null) {
+    return handleRedirect(req, browserLanguage, true)
+  }
+
   // Check if the NEXT_LOCALE cookie is set and does not match the current locale
   if (
     nextLocaleCookie != null &&
     extractedLocale !== nextLocale &&
-    supportedLocales.includes(extractedLocale as string)
+    (supportedLocales.includes(extractedLocale as string) ||
+      supportedLocales.includes(extractedLocale?.split('-')[0] as string))
   ) {
     return handleRedirect(req, extractedLocale)
-  }
-
-  // Redirect if NEXT_LOCALE cookie is not set and browser language is different from current locale
-  if (nextLocaleCookie == null && browserLanguage !== nextLocale) {
-    return handleRedirect(req, browserLanguage, true)
   }
 }
