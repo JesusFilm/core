@@ -78,11 +78,7 @@ export const CARD_POLL_CREATE = gql`
   }
 `
 
-interface CardPollProps {
-  onClick: () => void
-}
-
-export function CardPoll({ onClick }: CardPollProps): ReactElement {
+export function CardPoll(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -213,7 +209,6 @@ export function CardPoll({ onClick }: CardPollProps): ReactElement {
         }
       }
     })
-    onClick()
   }
 
   return (
