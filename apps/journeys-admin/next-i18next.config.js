@@ -34,6 +34,7 @@ const i18nConfig = {
       'tr', // Turkish
       'ur', // Urdu (Pakistan)
       'vi', // Vietnamese
+      'zh', // Chinese
       'zh-CN', // Chinese, Simplified
       'zh-TW' // Chinese, Traditional
     ],
@@ -56,9 +57,7 @@ const i18nConfig = {
     tr: ['tr-TR'],
     ur: ['ur-PK'],
     vi: ['vi-VN'],
-    zh: ['zh-CN'],
-    'zh-CN': ['zh-CN'],
-    'zh-TW': ['zh-TW']
+    zh: ['zh-CN']
   },
   localePath
 }

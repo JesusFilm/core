@@ -21,7 +21,8 @@ const supportedLocales = [
   'tl', // Tagalog
   'tr', // Turkish
   'ur', // Urdu (Pakistan)
-  'vi', // Vietnamese
+  'vi', // Vietnamese,
+  'zh', // Chinese
   'zh-CN', // Chinese, Simplified
   'zh-TW' // Chinese, Traditional
 ]
@@ -75,15 +76,7 @@ function handleRedirect(
   )
   const response = NextResponse.redirect(redirectUrl)
   if (updateCookie === true) {
-    const cookieOptions = {
-      path: '/',
-      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // Expires in 7 days
-    }
-    response.cookies.set(
-      'NEXT_LOCALE',
-      `${COOKIE_FINGERPRINT}-${locale}`,
-      cookieOptions
-    )
+    response.cookies.set('NEXT_LOCALE', `${COOKIE_FINGERPRINT}-${locale}`)
   }
   return response
 }
