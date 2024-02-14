@@ -4,8 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { UPDATE_JOURNEY_HOST } from '../../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
-import { UPDATE_JOURNEY_HOST } from '../HostFormDrawer/HostTitleFieldForm/HostTitleFieldForm'
 
 import { HostList } from './HostList'
 

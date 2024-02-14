@@ -4,10 +4,10 @@ import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { UPDATE_JOURNEY_HOST } from '../../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
 import { DELETE_HOST, HostFormDrawer } from './HostFormDrawer'
-import { UPDATE_JOURNEY_HOST } from './HostTitleFieldForm/HostTitleFieldForm'
 
 jest.mock('uuid', () => ({
   __esModule: true,

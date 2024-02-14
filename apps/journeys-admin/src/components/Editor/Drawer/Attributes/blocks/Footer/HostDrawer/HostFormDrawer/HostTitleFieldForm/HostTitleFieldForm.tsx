@@ -5,8 +5,8 @@ import { object, string } from 'yup'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { CreateHost } from '../../../../../../../../../../__generated__/CreateHost'
-import { UpdateJourneyHost } from '../../../../../../../../../../__generated__/UpdateJourneyHost'
 import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
+import { useUpdateJourneyHostMutation } from '../../../../../../../../../libs/useUpdateJourneyHostMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
 export const CREATE_HOST = gql`
@@ -18,22 +18,9 @@ export const CREATE_HOST = gql`
   }
 `
 
-export const UPDATE_JOURNEY_HOST = gql`
-  mutation UpdateJourneyHost($id: ID!, $input: JourneyUpdateInput!) {
-    journeyUpdate(id: $id, input: $input) {
-      id
-      host {
-        id
-      }
-    }
-  }
-`
-
 export function HostTitleFieldForm(): ReactElement {
   const [hostCreate] = useMutation<CreateHost>(CREATE_HOST)
-  const [journeyHostUpdate] =
-    useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
-
+  const [journeyHostUpdate] = useUpdateJourneyHostMutation()
   const { updateHost } = useHostUpdateMutation()
   const { journey } = useJourney()
 

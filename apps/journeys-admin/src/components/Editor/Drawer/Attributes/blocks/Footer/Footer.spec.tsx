@@ -22,7 +22,6 @@ import {
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { Footer } from './Footer'
-import { HostDrawer } from './HostDrawer'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -148,11 +147,6 @@ describe('Footer', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
       id: 'hosted-by'
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      mobileOpen: true,
-      children: <HostDrawer />
     })
   })
 

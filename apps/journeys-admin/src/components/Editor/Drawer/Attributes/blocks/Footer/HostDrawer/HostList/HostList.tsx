@@ -1,12 +1,10 @@
-import { useMutation } from '@apollo/client'
 import List from '@mui/material/List'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields_host as Host } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { UpdateJourneyHost } from '../../../../../../../../../__generated__/UpdateJourneyHost'
-import { UPDATE_JOURNEY_HOST } from '../HostFormDrawer/HostTitleFieldForm/HostTitleFieldForm'
+import { useUpdateJourneyHostMutation } from '../../../../../../../../libs/useUpdateJourneyHostMutation'
 import { HostListItem } from '../HostListItem'
 
 interface HostListProps {
@@ -17,8 +15,7 @@ interface HostListProps {
 export function HostList({ hosts, onItemClick }: HostListProps): ReactElement {
   const { journey } = useJourney()
 
-  const [journeyHostUpdate] =
-    useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
+  const [journeyHostUpdate] = useUpdateJourneyHostMutation()
 
   const handleClick = async (hostId: string): Promise<void> => {
     await onItemClick(hostId)

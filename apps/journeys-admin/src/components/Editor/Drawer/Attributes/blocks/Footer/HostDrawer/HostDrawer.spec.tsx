@@ -10,11 +10,11 @@ import {
 } from '../../../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
+import { UPDATE_JOURNEY_HOST } from '../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { GET_ALL_TEAM_HOSTS, HostDrawer } from './HostDrawer'
-import { UPDATE_JOURNEY_HOST } from './HostFormDrawer/HostTitleFieldForm/HostTitleFieldForm'
 
 const user1 = { id: 'userId', email: 'admin@email.com' }
 

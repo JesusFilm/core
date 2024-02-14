@@ -38,14 +38,6 @@ const NextCard = dynamic(
   { ssr: false }
 )
 
-const HostSidePanel = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "HostSidePanel" */ '../Drawer/Attributes/blocks/Footer/HostDrawer'
-    ).then((mod) => mod.HostSidePanel),
-  { ssr: false }
-)
-
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -72,12 +64,6 @@ export function Canvas(): ReactElement {
     dispatch({
       type: 'SetActiveTabAction',
       activeTab: ActiveTab.Properties
-    })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: t('Hosted By'),
-      mobileOpen: true,
-      children: <HostSidePanel />
     })
     dispatch({
       type: 'SetSelectedAttributeIdAction',

@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
@@ -11,15 +11,12 @@ import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
-import { UpdateJourneyHost } from '../../../../../../../../__generated__/UpdateJourneyHost'
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
+import { useUpdateJourneyHostMutation } from '../../../../../../../libs/useUpdateJourneyHostMutation'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
 import { ContainedIconButton } from '../../../../../../ContainedIconButton'
 
 import { HostFormDrawer } from './HostFormDrawer'
-import { UPDATE_JOURNEY_HOST } from './HostFormDrawer/HostTitleFieldForm/HostTitleFieldForm'
-// import { HostInfoDrawer } from './HostInfoDrawer/HostInfoDrawer'
-// import { HostListDrawer } from './HostListDrawer'
 
 export const GET_ALL_TEAM_HOSTS = gql`
   query Hosts($teamId: ID!) {
@@ -76,8 +73,7 @@ export function HostDrawer(): ReactElement {
     variables: { teamId: journey?.team?.id },
     skip: journey?.team == null
   })
-  const [journeyHostUpdate] =
-    useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
+  const [journeyHostUpdate] = useUpdateJourneyHostMutation()
 
   useEffect(() => {
     void loadUser()
