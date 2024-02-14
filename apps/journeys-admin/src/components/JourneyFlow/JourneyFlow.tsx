@@ -153,7 +153,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
           strokeWidth: 2,
           strokeDasharray: 4
         },
-        type: 'smart'
+        type: 'bezier' //'smart'
       })
     }
     if (step.nextBlockId != null && step.nextBlockId !== step.id) {
@@ -168,7 +168,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
           strokeWidth: 2,
           strokeDasharray: 4
         },
-        type: 'smart'
+        type: 'bezier' //'smart'
       })
     }
   }
@@ -256,9 +256,9 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
           id: `${block.id}->${block.action.blockId}`,
           source: block.id,
           target: block.action.blockId,
-          type: 'smart',
+          type: 'bezier',//'smart',
           markerEnd: {
-            type: MarkerType.Arrow
+            type: MarkerType.ArrowClosed
           },
           style: {
             strokeWidth: 2

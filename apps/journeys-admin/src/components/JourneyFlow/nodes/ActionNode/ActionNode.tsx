@@ -18,7 +18,7 @@ import { BaseNode } from '../BaseNode'
 
 export const ACTION_NODE_WIDTH = 100
 export const ACTION_NODE_HEIGHT = 28
-export const ACTION_NODE_WIDTH_GAP = 11
+export const ACTION_NODE_WIDTH_GAP = 12
 export const ACTION_NODE_HEIGHT_GAP = 16
 
 export interface ActionNodeProps extends ComponentProps<typeof BaseNode> {
@@ -77,7 +77,7 @@ export function ActionNode({
             width: ACTION_NODE_WIDTH,
             height: ACTION_NODE_HEIGHT,
             py: 1,
-            px: 4
+            px: 2
           }}
           onClick={handleClick}
         >
