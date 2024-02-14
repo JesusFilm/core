@@ -12,7 +12,7 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
   )
 }
 
-export function getStepHeadings(
+export function getCardHeadings(
   children: TreeBlock[]
 ): [title?: string, heading?: string] {
   const orderedTypographyVariants =

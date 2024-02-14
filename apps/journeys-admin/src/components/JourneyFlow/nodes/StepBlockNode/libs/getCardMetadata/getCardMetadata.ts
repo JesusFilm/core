@@ -1,15 +1,10 @@
-import { TOptions } from 'i18next'
-
 import { TreeBlock } from '@core/journeys/ui/block'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import {
-  BlockFields_CardBlock,
-  BlockFields_StepBlock as StepBlock
-} from '../../../../../../../__generated__/BlockFields'
+import { BlockFields_CardBlock } from '../../../../../../../__generated__/BlockFields'
 import { getBackgroundImage } from '../getBackgroundImage'
+import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'
-import { getStepHeadings } from '../getStepHeadings'
 
 interface CardMetadata {
   title?: string
@@ -20,15 +15,11 @@ interface CardMetadata {
 }
 
 export function getCardMetadata(
-  card: TreeBlock<BlockFields_CardBlock> | undefined,
-  steps: Array<TreeBlock<StepBlock>>,
-  step: TreeBlock<StepBlock>,
-  t: (str: string, options?: TOptions) => string
+  card: TreeBlock<BlockFields_CardBlock> | undefined
 ): CardMetadata {
   if (card == null) return {}
 
   const priorityBlock = getPriorityBlock(card)
-  const bgImage = getBackgroundImage(card)
 
   if (priorityBlock?.__typename === 'VideoBlock') {
     const title =
@@ -41,7 +32,6 @@ export function getCardMetadata(
           '-' +
           secondsToTimeFormat(priorityBlock.endAt, { trimZeroes: true })
         : undefined
-
     const bgImage =
       priorityBlock.video?.image !== null
         ? priorityBlock.video?.image
@@ -49,7 +39,9 @@ export function getCardMetadata(
 
     return { title, subtitle, priorityBlock, bgImage }
   } else {
-    const [title, subtitle] = getStepHeadings(step.children)
+    const [title, subtitle] = getCardHeadings(card.children)
+    const bgImage = getBackgroundImage(card)
+
     return { title, subtitle, priorityBlock, bgImage }
   }
 }

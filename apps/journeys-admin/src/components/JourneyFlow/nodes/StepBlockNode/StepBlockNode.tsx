@@ -4,7 +4,6 @@ import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -38,10 +37,9 @@ export interface StepBlockNodeData extends TreeBlock<StepBlock> {
 export function StepBlockNode({
   data: { steps, ...step }
 }: NodeProps<StepBlockNodeData>): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const { title, subtitle, description, priorityBlock, bgImage } =
-    getCardMetadata(card, steps, step, t)
+    getCardMetadata(card)
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
 
   const {
