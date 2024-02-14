@@ -101,6 +101,7 @@ export function BaseNode({
               height: '100%',
               borderRadius: 0,
               background: 'transparent',
+              borderColor: 'transparent',
               opacity: 1
             }}
           />
