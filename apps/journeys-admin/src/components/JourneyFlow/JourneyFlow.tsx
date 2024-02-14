@@ -7,6 +7,7 @@ import {
   Controls,
   Edge,
   Node,
+  MarkerType,
   OnConnectEnd,
   OnConnectStart,
   ReactFlow,
