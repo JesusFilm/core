@@ -12,6 +12,7 @@ import {
 import { Drawer } from '..'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
 import { ActionDetails } from '../../ActionDetails'
+import { AddBlock } from '../../AddBlock'
 import { CardTemplateDrawer } from '../../CardTemplateDrawer'
 import { SocialShareAppearance } from '../SocialShareAppearance'
 
@@ -215,20 +216,27 @@ export function Attributes(): ReactElement {
         </Drawer>
       )
     case ActiveJourneyEditContent.Canvas:
-      if (selectedComponent === 'Footer') {
-        return (
-          <Drawer title={t('Footer Properties')}>
-            <Footer />
-          </Drawer>
-        )
-      } else {
-        return (
-          <AttributesContent
-            selectedBlock={selectedBlock}
-            selectedStep={selectedStep}
-            showDrawer
-          />
-        )
+      switch (selectedComponent) {
+        case 'AddBlock':
+          return (
+            <Drawer title={t('Add a block')}>
+              <AddBlock />
+            </Drawer>
+          )
+        case 'Footer':
+          return (
+            <Drawer title={t('Footer Properties')}>
+              <Footer />
+            </Drawer>
+          )
+        default:
+          return (
+            <AttributesContent
+              selectedBlock={selectedBlock}
+              selectedStep={selectedStep}
+              showDrawer
+            />
+          )
       }
   }
 }
