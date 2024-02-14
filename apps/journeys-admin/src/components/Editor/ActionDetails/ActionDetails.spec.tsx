@@ -8,8 +8,6 @@ import { ActionDetails } from './ActionDetails'
 import { journey } from './data'
 
 describe('ActionDetails', () => {
-  const url = 'https://www.google.com/'
-
   it('should return placeholder text', () => {
     const { getByText } = render(
       <MockedProvider>
