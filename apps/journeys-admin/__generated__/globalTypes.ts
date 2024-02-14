@@ -298,17 +298,6 @@ export interface EmailActionInput {
   email: string;
 }
 
-export interface EmailPreferenceUpdateInput {
-  email: string;
-  unsubscribeAll: boolean;
-  teamInvite: boolean;
-  teamRemoved: boolean;
-  teamInviteAccepted: boolean;
-  journeyEditInvite: boolean;
-  journeyRequestApproved: boolean;
-  journeyAccessRequest: boolean;
-}
-
 export interface FormBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -404,6 +393,17 @@ export interface JourneyVisitorFilter {
   hasIcon?: boolean | null;
   hideInactive?: boolean | null;
   countryCode?: string | null;
+}
+
+export interface JourneysEmailPreferenceUpdateInput {
+  email: string;
+  unsubscribeAll: boolean;
+  teamInvite: boolean;
+  teamRemoved: boolean;
+  teamInviteAccepted: boolean;
+  journeyEditInvite: boolean;
+  journeyRequestApproved: boolean;
+  journeyAccessRequest: boolean;
 }
 
 export interface JourneysFilter {
