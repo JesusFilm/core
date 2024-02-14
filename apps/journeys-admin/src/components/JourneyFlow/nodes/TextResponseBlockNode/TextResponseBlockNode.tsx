@@ -2,9 +2,8 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
-import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../__generated__/GetJourney'
-
-import { ActionNode } from './ActionNode'
+import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../__generated__/GetJourney'
+import { ActionNode } from '../ActionNode'
 
 export type TextResponseBlockNodeData = TextResponseBlock
 

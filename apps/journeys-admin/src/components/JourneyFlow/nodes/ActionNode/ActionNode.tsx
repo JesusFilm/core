@@ -8,10 +8,9 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockFields } from '../../../../__generated__/BlockFields'
-import { useNavigateToBlockActionUpdateMutation } from '../../../libs/useNavigateToBlockActionUpdateMutation'
-
-import { BaseNode } from './BaseNode'
+import { BlockFields } from '../../../../../__generated__/BlockFields'
+import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
+import { BaseNode } from '../BaseNode'
 
 export const ACTION_NODE_WIDTH = 125
 export const ACTION_NODE_HEIGHT = 28

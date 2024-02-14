@@ -2,9 +2,8 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
-import { GetJourney_journey_blocks_FormBlock as FormBlock } from '../../../../__generated__/GetJourney'
-
-import { ActionNode } from './ActionNode'
+import { GetJourney_journey_blocks_FormBlock as FormBlock } from '../../../../../__generated__/GetJourney'
+import { ActionNode } from '../ActionNode'
 
 export type FormBlockNodeData = FormBlock
 
