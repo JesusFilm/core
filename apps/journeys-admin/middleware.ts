@@ -67,11 +67,7 @@ function getBrowserLanguage(req: NextRequest): string | undefined {
   return getPreferredLanguage(sortedLanguages)
 }
 
-function handleRedirect(
-  req: NextRequest,
-  locale?: string,
-  updateCookie?: boolean
-): NextResponse {
+function handleRedirect(req: NextRequest, locale?: string): NextResponse {
   const redirectUrl = new URL(
     `/${locale}${req.nextUrl.pathname}${req.nextUrl.search}`,
     req.url
