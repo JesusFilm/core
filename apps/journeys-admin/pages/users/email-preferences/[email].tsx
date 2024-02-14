@@ -57,7 +57,9 @@ function EmailPreferencesPage(): ReactElement {
   console.log(unsuball)
   const { t } = useTranslation('apps-journeys-admin')
   const [updateEmailPreference] = useMutation(UPDATE_EMAIL_PREFERENCE)
-  const [findOrCreateEmailPreference] = useMutation(FIND_OR_CREATE_EMAIL_PREFERENCE)
+  const [findOrCreateEmailPreference] = useMutation(
+    FIND_OR_CREATE_EMAIL_PREFERENCE
+  )
   const [emailPreferences, setEmailPreferences] =
     useState<EmailPreference | null>(null)
   const [loading, setLoading] = useState(false)
@@ -94,24 +96,25 @@ function EmailPreferencesPage(): ReactElement {
         })
       }
     }
-if (email !== undefined && email !== null) {
-    fetchEmailPreferences().catch((error) => {
-      console.error('Error fetching email preferences:', error)
-    })
-  }
+    if (email !== undefined && email !== null) {
+      fetchEmailPreferences().catch((error) => {
+        console.error('Error fetching email preferences:', error)
+      })
+    }
   }, [email, findOrCreateEmailPreference])
 
-  const handlePreferenceChange = (preference: keyof EmailPreference) => async () =>{
-    if (emailPreferences !== null) {
-      console.log('emailPreferences', emailPreferences)
-      console.log('preference', preference)
-      const updatedPreferences: EmailPreference = {
-        ...emailPreferences,
-        [preference]: !(emailPreferences[preference] as boolean)
+  const handlePreferenceChange =
+    (preference: keyof EmailPreference) => async () => {
+      if (emailPreferences !== null) {
+        console.log('emailPreferences', emailPreferences)
+        console.log('preference', preference)
+        const updatedPreferences: EmailPreference = {
+          ...emailPreferences,
+          [preference]: !(emailPreferences[preference] as boolean)
+        }
+        setEmailPreferences(updatedPreferences)
       }
-      setEmailPreferences(updatedPreferences)
     }
-  }
 
   const handleSubmit = async (): Promise<void> => {
     if (emailPreferences !== null) {
@@ -130,15 +133,15 @@ if (email !== undefined && email !== null) {
           }
         }
       }).then(() => {
-      enqueueSnackbar(t(`Email Preferences Updated.`), {
-        variant: 'success',
-        preventDuplicate: true
+        enqueueSnackbar(t(`Email Preferences Updated.`), {
+          variant: 'success',
+          preventDuplicate: true
+        })
       })
-    })
       setLoading(false) // Set loading state to false after mutation is complete
     }
   }
-  
+
   const handleUnsubscribeAll = async (): Promise<void> => {
     if (emailPreferences != null) {
       const updatedPreferences: EmailPreference = {
@@ -184,7 +187,9 @@ if (email !== undefined && email !== null) {
           <Grid item xs={10} md={10}>
             <Typography variant="h5">{t('Team Remova')}</Typography>
             <Typography variant="body2">
-              {t('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.')}
+              {t(
+                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+              )}
             </Typography>
           </Grid>
           <Grid item xs={2} md={2}>
@@ -201,8 +206,7 @@ if (email !== undefined && email !== null) {
           <Grid item xs={2} md={2}>
             <Switch
               checked={emailPreferences.teamInviteAccepted}
-              onChange={handlePreferenceChange('teamInviteAccepted')
-              }
+              onChange={handlePreferenceChange('teamInviteAccepted')}
               name="teamInviteAccepted"
               inputProps={{ 'aria-label': 'Team Invite Accepted' }}
             />
@@ -212,33 +216,35 @@ if (email !== undefined && email !== null) {
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
-                  checked={emailPreferences.journeyEditInvite}
-                  onChange={handlePreferenceChange('journeyEditInvite')}
-                  name="journeyEditInvite"
-                  inputProps={{ 'aria-label': 'Journey Edit Invite' }}
-                />
+              checked={emailPreferences.journeyEditInvite}
+              onChange={handlePreferenceChange('journeyEditInvite')}
+              name="journeyEditInvite"
+              inputProps={{ 'aria-label': 'Journey Edit Invite' }}
+            />
           </Grid>
           <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Journey Request Approved')}</Typography>
+            <Typography variant="h5">
+              {t('Journey Request Approved')}
+            </Typography>
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
-                  checked={emailPreferences.journeyRequestApproved}
-                  onChange={handlePreferenceChange('journeyRequestApproved')}
-                  name="journeyRequestApproved"
-                  inputProps={{ 'aria-label': 'Journey Request Approved' }}
-                />
+              checked={emailPreferences.journeyRequestApproved}
+              onChange={handlePreferenceChange('journeyRequestApproved')}
+              name="journeyRequestApproved"
+              inputProps={{ 'aria-label': 'Journey Request Approved' }}
+            />
           </Grid>
           <Grid item xs={10} md={10}>
             <Typography variant="h5">{t('Journey Access Request')}</Typography>
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
-                  checked={emailPreferences.journeyAccessRequest}
-                  onChange={handlePreferenceChange('journeyAccessRequest')}
-                  name="journeyAccessRequest"
-                  inputProps={{ 'aria-label': 'Journey Access Request' }}
-                />
+              checked={emailPreferences.journeyAccessRequest}
+              onChange={handlePreferenceChange('journeyAccessRequest')}
+              name="journeyAccessRequest"
+              inputProps={{ 'aria-label': 'Journey Access Request' }}
+            />
           </Grid>
           <Grid item xs={12} md={12}>
             <Button

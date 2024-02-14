@@ -12,7 +12,7 @@ export class EmailPreferenceResolver {
 
   @Query()
   async emailPreferences(): Promise<EmailPreference[]> {
-    console.log("HERE IN QUERY")
+    console.log('HERE IN QUERY')
     const result = await this.prismaService.emailPreference.findMany()
     return result
   }
@@ -39,22 +39,21 @@ export class EmailPreferenceResolver {
   async updateEmailPreference(
     @Args('input') input: EmailPreferenceUpdateInput
   ): Promise<EmailPreference> {
-    const { email, ...rest } = input;
+    const { email, ...rest } = input
     await this.prismaService.emailPreference.findUnique({
       where: { email }
-    });
+    })
     return this.prismaService.emailPreference.update({
       where: { email },
       data: rest
-    });
+    })
   }
 
   @Mutation()
   async findOrCreateEmailPreference(
     @Args('email') email: string
   ): Promise<EmailPreference> {
-    
-    console.log("HERE IN THE MUTATION")
+    console.log('HERE IN THE MUTATION')
     try {
       const result = await this.prismaService.emailPreference.findUnique({
         where: { email }
@@ -69,7 +68,7 @@ export class EmailPreferenceResolver {
           teamInviteAccepted: true,
           journeyEditInvite: true,
           journeyRequestApproved: true,
-          journeyAccessRequest: true,
+          journeyAccessRequest: true
         }
       })
     } catch (error) {
@@ -77,5 +76,4 @@ export class EmailPreferenceResolver {
       throw error
     }
   }
-
 }
