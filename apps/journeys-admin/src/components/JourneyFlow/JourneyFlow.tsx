@@ -149,7 +149,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
         //   type: MarkerType.Arrow
         // },
         style: {
-          // strokeWidth: 2,
+          strokeWidth: 2,
           strokeDasharray: 4
         },
         type: 'smart'
@@ -164,7 +164,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
         //   type: MarkerType.Arrow
         // },
         style: {
-          // strokeWidth: 2,
+          strokeWidth: 2,
           strokeDasharray: 4
         },
         type: 'smart'
@@ -413,7 +413,7 @@ export function JourneyFlow(): ReactElement {
         proOptions={{ hideAttribution: true }}
       >
         <Controls showInteractive={false} />
-        <Background color="#aaa" gap={16} />
+        <Background color="#F1F1F1" gap={16} />
       </ReactFlow>
     </Box>
   )
