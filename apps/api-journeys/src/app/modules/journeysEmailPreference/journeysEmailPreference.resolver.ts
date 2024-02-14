@@ -15,11 +15,10 @@ export class JourneysEmailPreferenceResolver {
     @Args('input') input: JourneysEmailPreferenceUpdateInput
   ): Promise<JourneysEmailPreference> {
     const { email, ...rest } = input
-    const journeysEmailPreference = await this.prismaService.journeysEmailPreference.findUnique(
-      {
+    const journeysEmailPreference =
+      await this.prismaService.journeysEmailPreference.findUnique({
         where: { email }
-      }
-    )
+      })
 
     console.log('journeysEmailPreference', journeysEmailPreference)
     console.log('rest', rest)
@@ -30,7 +29,10 @@ export class JourneysEmailPreferenceResolver {
         data: input
       })
 
-    console.log('updatedJourneysEmailPreference', updatedJourneysEmailPreference)
+    console.log(
+      'updatedJourneysEmailPreference',
+      updatedJourneysEmailPreference
+    )
 
     return updatedJourneysEmailPreference
   }

@@ -21,6 +21,8 @@ input JourneysEmailPreferenceUpdateInput {
 }
 
 extend type Mutation {
-  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
+  updateJourneysEmailPreference(
+    input: JourneysEmailPreferenceUpdateInput!
+  ): JourneysEmailPreference
   findOrCreateJourneysEmailPreference(email: String!): JourneysEmailPreference
 }
