@@ -22,7 +22,6 @@ import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
-import { Journey as JourneyWithUserJourney } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
@@ -68,7 +67,7 @@ export class UserJourneyResolver {
         update: {},
         include: {
           journey: {
-            include: { userJourneys: true }
+            include: { userJourneys: true, team: true, primaryImageBlock: true }
           }
         }
       })
@@ -78,8 +77,8 @@ export class UserJourneyResolver {
         })
 
       await this.userJourneyService.sendJourneyAccessRequest(
-        userJourney.journey as unknown as JourneyWithUserJourney,
-        omit(user, ['id', 'email'])
+        userJourney.journey,
+        omit(user, ['id', 'emailVerified'])
       )
       return userJourney
     })
@@ -98,7 +97,8 @@ export class UserJourneyResolver {
         journey: {
           include: {
             team: { include: { userTeams: true } },
-            userJourneys: true
+            userJourneys: true,
+            primaryImageBlock: true
           }
         }
       }
@@ -120,7 +120,7 @@ export class UserJourneyResolver {
     await this.userJourneyService.sendJourneyApproveEmail(
       userJourney.journey,
       userJourney.userId,
-      omit(user, ['id', 'email'])
+      omit(user, ['id', 'emailVerified'])
     )
     return retVal
   }

@@ -3,8 +3,7 @@ import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
 import {
-  BodyText,
-  BodyTitle,
+  ActionCard,
   BodyWrapper,
   EmailContainer,
   Footer,
@@ -15,7 +14,7 @@ import { User } from '@core/nest/common/firebaseClient'
 
 interface TeamRemovedEmailProps {
   teamName?: string
-  sender: Omit<User, 'id' | 'email' | 'emailVerified'>
+  recipient: Omit<User, 'id' | 'emailVerified'>
   story?: boolean
 }
 
@@ -25,10 +24,10 @@ interface WrapperProps {
 
 export const TeamRemovedEmail = ({
   teamName,
-  sender,
+  recipient,
   story = false
 }: TeamRemovedEmailProps): ReactElement => {
-  const previewText = `${sender.firstName} has been added to your team`
+  const previewText = `You have been removed from: ${teamName}`
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
     return (
       <>
@@ -39,19 +38,24 @@ export const TeamRemovedEmail = ({
   }
 
   const emailBody: ReactNode = (
-    <EmailContainer>
-      <Header sender={sender} />
-      <BodyWrapper>
-        <BodyTitle
-          bodyTitle={`You were removed from ${teamName} by ${sender.firstName}.`}
-        />
-        <BodyText>
-          If this is in error, please contact a Team Manager in ${teamName}
-        </BodyText>
+    <>
+      <Header />
+      <EmailContainer>
+        <BodyWrapper>
+          <ActionCard
+            url="https://admin.nextstep.is/"
+            headerText="You were removed from:"
+            subHeaderText={`${teamName}`}
+            bodyText="If this is in error, please contact the team manager to be invited back."
+            buttonText="View Your Teams"
+            recipient={recipient}
+            sender={undefined}
+          />
+        </BodyWrapper>
+        <Footer />
         <UnsubscribeLink />
-      </BodyWrapper>
-      <Footer />
-    </EmailContainer>
+      </EmailContainer>
+    </>
   )
 
   return (
@@ -69,7 +73,12 @@ export const TeamRemovedEmail = ({
 
 const withHTML = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Html>
+    <Html
+      style={{
+        height: '100%',
+        width: '100%'
+      }}
+    >
       <Head />
       {children}
     </Html>
@@ -78,7 +87,7 @@ const withHTML = ({ children }: WrapperProps): ReactElement => {
 
 const withBody = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Body className="bg-[#DEDFE0] my-auto mx-auto font-sans px-2">
+    <Body className="my-[0px] mx-[0px] font-sans h-full w-full">
       {children}
     </Body>
   )
@@ -86,9 +95,10 @@ const withBody = ({ children }: WrapperProps): ReactElement => {
 
 TeamRemovedEmail.PreviewProps = {
   teamName: 'JFP Sol Team',
-  sender: {
+  recipient: {
     firstName: 'Joe',
     lastName: 'Ro-Nimo',
+    email: 'jron@example.com',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   }

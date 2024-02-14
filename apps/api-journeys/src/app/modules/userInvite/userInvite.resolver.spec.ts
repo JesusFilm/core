@@ -151,6 +151,7 @@ describe('UserInviteResolver', () => {
         include: {
           journey: {
             include: {
+              primaryImageBlock: true,
               team: {
                 include: { userTeams: true }
               },

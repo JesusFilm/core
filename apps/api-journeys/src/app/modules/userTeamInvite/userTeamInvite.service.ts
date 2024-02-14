@@ -21,7 +21,7 @@ export class UserTeamInviteService {
   async sendTeamInviteEmail(
     team: Team,
     email: string,
-    sender: Omit<User, 'id' | 'email' | 'emailVerified'>
+    sender: Omit<User, 'id' | 'emailVerified'>
   ): Promise<void> {
     await this.emailQueue.add(
       'team-invite',
@@ -41,7 +41,7 @@ export class UserTeamInviteService {
 
   async sendTeamInviteAcceptedEmail(
     team: TeamWithUserTeam,
-    sender: Omit<User, 'id' | 'email' | 'emailVerified'>
+    sender: Omit<User, 'id' | 'emailVerified'>
   ): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
 

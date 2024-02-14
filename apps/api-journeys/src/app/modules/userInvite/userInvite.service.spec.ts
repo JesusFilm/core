@@ -1,8 +1,7 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { Journey } from '.prisma/api-journeys-client'
-
+import { JourneyWithTeamAndUserJourney } from '../email/email.consumer'
 import { UserInviteModule } from '../userInvite/userInvite.module'
 
 import { UserInviteService } from './userInvite.service'
@@ -31,14 +30,15 @@ describe('UserTeamService', () => {
       const journey = {
         id: 'journeyId',
         title: 'Journey Title'
-      } as unknown as Journey
+      } as unknown as JourneyWithTeamAndUserJourney
       const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${
         journey.id
       }`
 
       const user = {
         firstName: 'Joe',
-        lastName: 'Smith'
+        lastName: 'Smith',
+        email: 'joesmith@example.com'
       }
 
       const email = 'tav@example.com'
@@ -50,7 +50,7 @@ describe('UserTeamService', () => {
         {
           email,
           url,
-          journeyTitle: 'Journey Title',
+          journey,
           sender: user
         },
         {

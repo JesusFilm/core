@@ -2,10 +2,18 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
-import { Journey } from '.prisma/api-journeys-client'
+import { Prisma } from '.prisma/api-journeys-client'
 import { User } from '@core/nest/common/firebaseClient'
 
 import { JourneyEditInviteJob } from '../email/email.consumer'
+
+export type Journey = Prisma.JourneyGetPayload<{
+  include: {
+    userJourneys: true
+    team: true
+    primaryImageBlock: true
+  }
+}>
 
 @Injectable()
 export class UserInviteService {
@@ -17,7 +25,7 @@ export class UserInviteService {
   async sendEmail(
     journey: Journey,
     email: string,
-    sender: Omit<User, 'id' | 'email' | 'emailVerified'>
+    sender: Omit<User, 'id' | 'emailVerified'>
   ): Promise<void> {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
 
@@ -26,7 +34,7 @@ export class UserInviteService {
       {
         email,
         url,
-        journeyTitle: journey.title,
+        journey,
         sender
       },
       {
