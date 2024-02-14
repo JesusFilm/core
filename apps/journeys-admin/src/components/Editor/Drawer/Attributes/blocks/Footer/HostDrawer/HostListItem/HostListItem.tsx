@@ -7,7 +7,7 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { HostAvatars } from '@core/journeys/ui/StepFooter/HostAvatars'
 
-import { UpdateHost_hostUpdate as Host } from '../../../../../../../../../__generated__/UpdateHost'
+import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../../__generated__/GetAllTeamHosts'
 
 interface HostListItemProps extends Omit<Host, 'teamId' | '__typename'> {
   onClick: (hostId: string) => void
@@ -25,7 +25,7 @@ export function HostListItem({
 
   return (
     <ListItemButton
-      sx={{ px: 6, py: 5 }}
+      sx={{ p: 4 }}
       divider
       selected={journey?.host?.id === hostId}
       onClick={() => onClick(hostId)}

@@ -7,12 +7,9 @@ import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__ge
 
 import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation'
 import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
+import { UPDATE_JOURNEY_HOST } from '../../../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 
-import {
-  CREATE_HOST,
-  HostTitleFieldForm,
-  UPDATE_JOURNEY_HOST
-} from './HostTitleFieldForm'
+import { CREATE_HOST, HostTitleFieldForm } from './HostTitleFieldForm'
 
 jest.mock('uuid', () => ({
   __esModule: true,
