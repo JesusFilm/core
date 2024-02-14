@@ -1,7 +1,5 @@
 import MuiFab, { FabProps } from '@mui/material/Fab'
 import { Theme } from '@mui/material/styles'
-import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Zoom from '@mui/material/Zoom'
 import { ReactElement } from 'react'
@@ -71,47 +69,30 @@ export function Fab({ visible = true }: FabProp): ReactElement {
   }
 
   return (
-    <Tooltip
-      title={
-        <Typography
-          display={{
-            xs: 'none',
-            sm: 'flex'
-          }}
-          variant="caption"
-          lineHeight="12px"
-        >
-          {t('Blocks cannot be placed on top of Video Block')}
-        </Typography>
+    <Zoom
+      in={
+        visible &&
+        journeyEditContentComponent === ActiveJourneyEditContent.Canvas
       }
-      placement="top"
-      arrow
+      unmountOnExit
+      data-testid="Fab"
     >
-      <Zoom
-        in={
-          visible &&
-          journeyEditContentComponent === ActiveJourneyEditContent.Canvas
-        }
-        unmountOnExit
-        data-testid="Fab"
-      >
-        {activeFab === ActiveFab.Add ? (
-          <MuiFab {...fabProps} onClick={handleClick}>
-            <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
-            {smUp ? t('Add') : ''}
-          </MuiFab>
-        ) : activeFab === ActiveFab.Edit ? (
-          <MuiFab {...fabProps} onClick={handleEditFab}>
-            <Edit2Icon sx={{ mr: smUp ? 3 : 0 }} />
-            {smUp ? t('Edit') : ''}
-          </MuiFab>
-        ) : (
-          <MuiFab {...fabProps} onClick={handleSaveFab}>
-            <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
-            {smUp ? t('Done') : ''}
-          </MuiFab>
-        )}
-      </Zoom>
-    </Tooltip>
+      {activeFab === ActiveFab.Add ? (
+        <MuiFab {...fabProps} onClick={handleClick}>
+          <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
+          {smUp ? t('Add') : ''}
+        </MuiFab>
+      ) : activeFab === ActiveFab.Edit ? (
+        <MuiFab {...fabProps} onClick={handleEditFab}>
+          <Edit2Icon sx={{ mr: smUp ? 3 : 0 }} />
+          {smUp ? t('Edit') : ''}
+        </MuiFab>
+      ) : (
+        <MuiFab {...fabProps} onClick={handleSaveFab}>
+          <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
+          {smUp ? t('Done') : ''}
+        </MuiFab>
+      )}
+    </Zoom>
   )
 }
