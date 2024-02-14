@@ -70,7 +70,7 @@ describe('ActionsList', () => {
 
     it('should render the information drawer on the right', () => {
       const { getByTestId, getByRole } = render(
-        <ActionsList actions={actions} goalLabel={() => 'Visit a website'} />
+        <ActionsList actions={actions} />
       )
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
       expect(getByTestId('ActionInformation').parentElement).toHaveClass(
@@ -80,7 +80,7 @@ describe('ActionsList', () => {
 
     it('should close information drawer on close icon click', () => {
       const { getByTestId, getByText, getByRole } = render(
-        <ActionsList actions={actions} goalLabel={() => 'Visit a website'} />
+        <ActionsList actions={actions} />
       )
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
       expect(getByText('Information')).toBeInTheDocument()
@@ -91,18 +91,14 @@ describe('ActionsList', () => {
     })
 
     it('should render a list of actions', () => {
-      const { getAllByText } = render(
-        <ActionsList actions={actions} goalLabel={() => 'Visit a website'} />
-      )
+      const { getAllByText } = render(<ActionsList actions={actions} />)
       expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
       expect(getAllByText('Visit a website')[0]).toBeInTheDocument()
       expect(getAllByText(2)[0]).toBeInTheDocument()
     })
 
     it('should open the drawer or dispatch on click', () => {
-      const { getAllByTestId } = render(
-        <ActionsList actions={actions} goalLabel={() => 'Visit a website'} />
-      )
+      const { getAllByTestId } = render(<ActionsList actions={actions} />)
       fireEvent.click(getAllByTestId('Edit2Icon')[0])
       expect(dispatch).toHaveBeenCalled()
     })
@@ -115,7 +111,7 @@ describe('ActionsList', () => {
 
     it('should render the information drawer from the bottom', () => {
       const { getByTestId, getByText, getByRole } = render(
-        <ActionsList actions={actions} goalLabel={() => 'Visit a website'} />
+        <ActionsList actions={actions} />
       )
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
       expect(getByText('Information')).toBeInTheDocument()
@@ -125,9 +121,7 @@ describe('ActionsList', () => {
     })
 
     it('should render the actions list in mobile view', () => {
-      const { getAllByText } = render(
-        <ActionsList actions={actions} goalLabel={() => 'Visit a website'} />
-      )
+      const { getAllByText } = render(<ActionsList actions={actions} />)
       expect(getAllByText('Target and Action')[0]).toBeInTheDocument()
       expect(getAllByText('Appears on')).not.toHaveLength(2)
     })

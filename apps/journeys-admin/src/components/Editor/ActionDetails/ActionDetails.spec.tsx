@@ -13,7 +13,7 @@ describe('ActionDetails', () => {
   it('should return placeholder text', () => {
     const { getByText } = render(
       <MockedProvider>
-        <ActionDetails goalLabel={() => 'Visit a website'} />
+        <ActionDetails />
       </MockedProvider>
     )
     expect(getByText('What are Goals?')).toBeInTheDocument()
@@ -25,7 +25,7 @@ describe('ActionDetails', () => {
   it('should return action editor', () => {
     const { getByDisplayValue, getByText } = render(
       <MockedProvider>
-        <ActionDetails url={url} goalLabel={() => 'Visit a website'} />
+        <ActionDetails />
       </MockedProvider>
     )
     expect(getByDisplayValue('https://www.google.com/')).toBeInTheDocument()
@@ -37,7 +37,7 @@ describe('ActionDetails', () => {
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <ActionDetails url={url} goalLabel={() => 'Visit a website'} />
+            <ActionDetails />
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
