@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix types
-
 import { ReactElement } from 'react'
 
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
@@ -12,6 +10,7 @@ export function VideoWrapperPaused({ block }: WrapperProps): ReactElement {
         ...block,
         videoId: null
       }}
+      activeStep={false}
     />
   ) : (
     <></>

@@ -145,7 +145,6 @@ export function InitAndPlay({
             (player.duration() ?? 0) > 0 ? player.duration() : null
 
           if (playerDuration != null) {
-            console.log(playerDuration)
             setVideoEndTime(Math.min(videoEndTime, playerDuration))
           }
         }
