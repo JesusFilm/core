@@ -4,16 +4,21 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/router'
+import { withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { FindOrCreateEmailPreference } from '../../__generated__/FindOrCreateEmailPreference'
+import {
+  FindOrCreateEmailPreference,
+  FindOrCreateEmailPreferenceVariables
+} from '../../__generated__/FindOrCreateEmailPreference'
 import {
   UpdateEmailPreference,
+  UpdateEmailPreferenceVariables,
   UpdateEmailPreference_updateEmailPreference
 } from '../../__generated__/UpdateEmailPreference'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 const FIND_OR_CREATE_EMAIL_PREFERENCE = gql`
   mutation FindOrCreateEmailPreference($email: String!) {
@@ -50,66 +55,21 @@ type EmailPreference = Omit<
   '__typename'
 >
 
-function EmailPreferencesPage(): ReactElement {
-  const router = useRouter()
-  const { email, unsubscribeAll } = router.query
+function EmailPreferencesPage({
+  emailPreferenceData,
+  updatePrefs
+}): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
-  const [updateEmailPreference] = useMutation<UpdateEmailPreference>(
-    UPDATE_EMAIL_PREFERENCE
-  )
-  const [findOrCreateEmailPreference] =
-    useMutation<FindOrCreateEmailPreference>(FIND_OR_CREATE_EMAIL_PREFERENCE)
+  const [updateEmailPreference, { loading }] =
+    useMutation<UpdateEmailPreference>(UPDATE_EMAIL_PREFERENCE)
+
   const [emailPreferences, setEmailPreferences] = useState<
     EmailPreference | null | undefined
-  >(null)
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    const fetchEmailPreferences = async (): Promise<void> => {
-      const { data } = await findOrCreateEmailPreference({
-        variables: {
-          email: email as string
-        }
-      })
-      setEmailPreferences(data?.findOrCreateEmailPreference)
-
-      // Check if the unsuball query parameter is present
-      if (unsubscribeAll !== undefined) {
-        const updatePrefs = await updateEmailPreference({
-          variables: {
-            input: {
-              email: data?.findOrCreateEmailPreference?.email,
-              unsubscribeAll: true,
-              teamInvite: false,
-              teamRemoved: false,
-              teamInviteAccepted: false,
-              journeyEditInvite: false,
-              journeyRequestApproved: false,
-              journeyAccessRequest: false
-            }
-          }
-        })
-        setEmailPreferences(updatePrefs?.data?.updateEmailPreference)
-        enqueueSnackbar(t(`Unsubscribed From all Emails.`), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      }
-    }
-    if (email !== undefined && email !== null) {
-      fetchEmailPreferences().catch((error) => {
-        console.error('Error fetching email preferences:', error)
-      })
-    }
-  }, [
-    email,
-    enqueueSnackbar,
-    findOrCreateEmailPreference,
-    t,
-    unsubscribeAll,
-    updateEmailPreference
-  ])
+  >(
+    updatePrefs?.updateEmailPreference ??
+      emailPreferenceData?.findOrCreateEmailPreference
+  )
 
   const handlePreferenceChange =
     (preference: keyof EmailPreference) => async () => {
@@ -124,7 +84,6 @@ function EmailPreferencesPage(): ReactElement {
 
   const handleSubmit = async (): Promise<void> => {
     if (emailPreferences != null) {
-      setLoading(true) // Set loading state to true
       await updateEmailPreference({
         variables: {
           input: {
@@ -144,16 +103,34 @@ function EmailPreferencesPage(): ReactElement {
           preventDuplicate: true
         })
       })
-      setLoading(false) // Set loading state to false after mutation is complete
     }
   }
 
   const handleUnsubscribeAll = async (): Promise<void> => {
     if (emailPreferences != null) {
       const updatedPreferences: EmailPreference = {
-        ...emailPreferences,
-        unsubscribeAll: !emailPreferences.unsubscribeAll
+        email: emailPreferences.email,
+        unsubscribeAll: true,
+        teamInvite: false,
+        teamRemoved: false,
+        teamInviteAccepted: false,
+        journeyEditInvite: false,
+        journeyRequestApproved: false,
+        journeyAccessRequest: false
       }
+      await updateEmailPreference({
+        variables: {
+          input: {
+            ...updatedPreferences
+          }
+        }
+      }).then(() => {
+        enqueueSnackbar(t(`Email Preferences Updated. Unsubscribed to all`), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      })
+
       setEmailPreferences(updatedPreferences)
     }
   }
@@ -282,4 +259,67 @@ function EmailPreferencesPage(): ReactElement {
   )
 }
 
-export default EmailPreferencesPage
+export const getServerSideProps = withUserTokenSSR()(
+  async ({ user, locale, resolvedUrl, params, query }) => {
+    const { apolloClient, translations } = await initAndAuthApp({
+      user,
+      locale,
+      resolvedUrl
+    })
+
+    let updatePrefs: UpdateEmailPreference | null | undefined
+
+    // TemplateDetailsPage
+    const { data: emailPreferenceData } = await apolloClient.mutate<
+      FindOrCreateEmailPreference,
+      FindOrCreateEmailPreferenceVariables
+    >({
+      mutation: FIND_OR_CREATE_EMAIL_PREFERENCE,
+      variables: {
+        email: query?.email as string
+      }
+    })
+
+    if (query?.unsubscribeAll != null) {
+      console.log('here')
+      const { data: updatePrefsData } = await apolloClient.mutate<
+        UpdateEmailPreference,
+        UpdateEmailPreferenceVariables
+      >({
+        mutation: UPDATE_EMAIL_PREFERENCE,
+        variables: {
+          input: {
+            email: emailPreferenceData?.findOrCreateEmailPreference
+              ?.email as string,
+            unsubscribeAll: true,
+            teamInvite: false,
+            teamRemoved: false,
+            teamInviteAccepted: false,
+            journeyEditInvite: false,
+            journeyRequestApproved: false,
+            journeyAccessRequest: false
+          }
+        }
+      })
+      if (updatePrefsData != null) updatePrefs = updatePrefsData
+    }
+    if (updatePrefs == null)
+      return {
+        props: {
+          ...translations,
+          initialApolloState: apolloClient.cache.extract(),
+          emailPreferenceData
+        }
+      }
+    return {
+      props: {
+        ...translations,
+        initialApolloState: apolloClient.cache.extract(),
+        emailPreferenceData,
+        updatePrefs
+      }
+    }
+  }
+)
+
+export default withUser()(EmailPreferencesPage)
