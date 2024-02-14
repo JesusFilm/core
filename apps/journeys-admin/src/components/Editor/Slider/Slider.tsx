@@ -175,12 +175,14 @@ export function Slider(): ReactElement {
         <Box
           sx={{
             borderRadius: 4,
+            borderTopLeftRadius: 0,
+            borderTopRightRadius: 0,
             border: (theme) => ({ sm: `1px solid ${theme.palette.divider}` }),
             borderBottom: (theme) => ({
               xs: `1px solid ${theme.palette.divider}`
             }),
             backgroundSize: '20px 20px',
-            backgroundColor: '#F1F1F1',
+            backgroundColor: '#eff2f5',
             height: '100%'
           }}
         >
