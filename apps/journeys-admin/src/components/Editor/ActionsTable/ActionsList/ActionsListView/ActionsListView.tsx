@@ -12,6 +12,10 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import {
+  GoalType,
+  getLinkActionGoal
+} from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import BibleIcon from '@core/shared/ui/icons/Bible'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
@@ -22,31 +26,39 @@ import type { Actions } from '../../ActionsTable'
 interface ActionsListViewProps {
   actions: Actions[]
   selectedAction?: string
-  goalLabel: (url: string) => string
   handleClick: (url: string) => void
 }
 
 // tested in ActionList
 export function ActionsListView({
   actions,
-  goalLabel,
   selectedAction,
   handleClick
 }: ActionsListViewProps): ReactElement {
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const { t } = useTranslation('apps-journeys-admin')
 
-  const GoalIcon = ({ url }: { url: string }): ReactElement => {
-    const color = selectedAction === url ? 'primary.main' : 'secondary.light'
-    switch (goalLabel(url)) {
-      case 'Start a Conversation':
-        return <MessageChat1Icon sx={{ color }} />
-      case 'Link to Bible':
-        return <BibleIcon sx={{ color }} />
-      case 'Visit a Website':
-        return <LinkAngledIcon sx={{ color }} />
+  function goalLabel(url: string): string {
+    const goalType = getLinkActionGoal(url)
+    switch (goalType) {
+      case GoalType.Chat:
+        return t('Start a Conversation')
+      case GoalType.Bible:
+        return t('Link to Bible')
       default:
-        return <></>
+        return t('Visit a Website')
+    }
+  }
+
+  function GoalIcon({ url }: { url: string }): ReactElement {
+    const goalType = getLinkActionGoal(url)
+    switch (goalType) {
+      case GoalType.Chat:
+        return <MessageChat1Icon />
+      case GoalType.Bible:
+        return <BibleIcon />
+      default:
+        return <LinkAngledIcon />
     }
   }
 
@@ -88,7 +100,18 @@ export function ActionsListView({
                 selectedAction={selectedAction}
                 url={url}
               >
-                <TableCell width={0} align="center" sx={{ pr: 2, pl: 5 }}>
+                <TableCell
+                  width={0}
+                  align="center"
+                  sx={{
+                    pr: 2,
+                    pl: 5,
+                    color:
+                      selectedAction === url
+                        ? 'primary.main'
+                        : 'secondary.light'
+                  }}
+                >
                   <GoalIcon url={url} />
                 </TableCell>
                 <TableCell
