@@ -265,7 +265,7 @@ describe('RadioQuestion', () => {
     )
   })
 
-  it('should set selectedId to null when activeStep is false', async () => {
+  it('should set selectedId to null when activeStep is false', () => {
     blockHistoryVar([activeBlock])
 
     const { rerender, getByTestId, getAllByRole } = render(
