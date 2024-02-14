@@ -258,7 +258,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
           target: block.action.blockId,
           type: 'bezier',//'smart',
           markerEnd: {
-            type: MarkerType.ArrowClosed
+            type: MarkerType.Arrow
           },
           style: {
             strokeWidth: 2

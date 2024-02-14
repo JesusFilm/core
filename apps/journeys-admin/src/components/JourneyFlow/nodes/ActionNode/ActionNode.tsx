@@ -17,7 +17,7 @@ import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavi
 import { BaseNode } from '../BaseNode'
 
 export const ACTION_NODE_WIDTH = 100
-export const ACTION_NODE_HEIGHT = 28
+export const ACTION_NODE_HEIGHT = 24
 export const ACTION_NODE_WIDTH_GAP = 12
 export const ACTION_NODE_HEIGHT_GAP = 16
 
@@ -77,7 +77,7 @@ export function ActionNode({
             width: ACTION_NODE_WIDTH,
             height: ACTION_NODE_HEIGHT,
             py: 1,
-            px: 2
+            px: 3
           }}
           onClick={handleClick}
         >
