@@ -120,7 +120,7 @@ function EmailPreferencesPage(): ReactElement {
         variables: {
           input: {
             email: emailPreferences.email,
-            unsubscribeAll: emailPreferences.unsubscribeAll,
+            unsubscribeAll: false,
             teamInvite: emailPreferences.teamInvite,
             teamRemoved: emailPreferences.teamRemoved,
             teamInviteAccepted: emailPreferences.teamInviteAccepted,
@@ -182,7 +182,7 @@ function EmailPreferencesPage(): ReactElement {
             />
           </Grid>
           <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Team Remova')}</Typography>
+            <Typography variant="h5">{t('Team Remove')}</Typography>
             <Typography variant="body2">
               {t(
                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
