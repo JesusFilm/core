@@ -56,8 +56,10 @@ function getPreferredLanguage(
     : 'en'
 }
 
-function getBrowserLanguage(req): string | undefined {
+function getBrowserLanguage(req: NextRequest): string | undefined {
   const acceptedLanguagesHeader = req.headers.get('accept-language')
+
+  if (acceptedLanguagesHeader == null) return
   const acceptedLanguages = parseAcceptLanguageHeader(acceptedLanguagesHeader)
   const sortedLanguages = acceptedLanguages?.sort(
     (a, b) => b.priority - a.priority
@@ -75,9 +77,7 @@ function handleRedirect(
     req.url
   )
   const response = NextResponse.redirect(redirectUrl)
-  if (updateCookie === true) {
-    response.cookies.set('NEXT_LOCALE', `${COOKIE_FINGERPRINT}-${locale}`)
-  }
+  response.cookies.set('NEXT_LOCALE', `${COOKIE_FINGERPRINT}-${locale}`)
   return response
 }
 
@@ -96,16 +96,16 @@ export function middleware(req: NextRequest): NextResponse | undefined {
 
   // Redirect if NEXT_LOCALE cookie is not set
   if (nextLocaleCookie == null) {
-    return handleRedirect(req, browserLanguage, true)
+    return handleRedirect(req, browserLanguage)
   }
 
   // Check if the NEXT_LOCALE cookie is set and does not match the current locale
   if (
-    nextLocaleCookie != null &&
     extractedLocale !== nextLocale &&
     (supportedLocales.includes(extractedLocale as string) ||
       supportedLocales.includes(extractedLocale?.split('-')[0] as string))
   ) {
-    return handleRedirect(req, extractedLocale)
+    const trimmedLocale = extractedLocale?.split('-')[0]
+    return handleRedirect(req, trimmedLocale)
   }
 }
