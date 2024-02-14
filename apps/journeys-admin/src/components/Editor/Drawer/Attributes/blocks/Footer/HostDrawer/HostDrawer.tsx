@@ -93,11 +93,11 @@ export function HostDrawer(): ReactElement {
     if (journey?.id == null) return
     if (journey?.team != null)
       await getAllTeamHosts({ variables: { teamId: journey.team.id } })
+    setOpenSelect(false)
+    setOpenCreateHost(false)
     await journeyHostUpdate({
       variables: { id: journey?.id, input: { hostId: null } }
     })
-    setOpenSelect(false)
-    setOpenCreateHost(false)
   }
 
   async function handleOpenCreateHost(): Promise<void> {

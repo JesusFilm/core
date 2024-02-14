@@ -25,7 +25,7 @@ export const DELETE_HOST = gql`
 
 interface HostFormDrawerProps {
   onClear: () => void
-  open: boolean
+  open?: boolean
   onClose: () => void
 }
 
