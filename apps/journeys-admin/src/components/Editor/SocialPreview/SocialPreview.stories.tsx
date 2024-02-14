@@ -2,30 +2,32 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { StoryObj } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey as Journey
-} from '../../../../../__generated__/GetJourney'
+} from '../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../../__generated__/globalTypes'
+} from '../../../../__generated__/globalTypes'
 import {
   StepAndCardBlockCreate,
   StepAndCardBlockCreateVariables
-} from '../../../../../__generated__/StepAndCardBlockCreate'
-import { simpleComponentConfig } from '../../../../libs/storybook'
-import { STEP_AND_CARD_BLOCK_CREATE } from '../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
+} from '../../../../__generated__/StepAndCardBlockCreate'
+import { simpleComponentConfig } from '../../../libs/storybook'
+import { STEP_AND_CARD_BLOCK_CREATE } from '../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
-import { SocialPreviewNode } from './SocialPreviewNode'
+import { SocialPreview } from './SocialPreview'
 
-const SocialPreviewNodeStory = {
+const SocialPreviewStory = {
   ...simpleComponentConfig,
-  component: SocialPreviewNode,
-  title: 'Journeys-Admin/JourneyFlow/Nodes/SocialPreviewNode'
+  component: SocialPreview,
+  title: 'Journeys-Admin/Editor/Slider/SocialPreview'
 }
 
 const stepAndCardBlockCreateMock: MockedResponse<
@@ -132,12 +134,19 @@ const blankSeoJourney: Journey = {
   primaryImageBlock: null
 }
 
-const Template: StoryObj<typeof SocialPreviewNode> = {
+const Template: StoryObj<typeof SocialPreview> = {
   render: ({ ...args }) => (
     <MockedProvider mocks={[stepAndCardBlockCreateMock]}>
       <SnackbarProvider>
         <JourneyProvider value={{ journey: args.journey }}>
-          <SocialPreviewNode />
+          <EditorProvider
+            initialState={{
+              ...args,
+              activeSlide: ActiveSlide.Content
+            }}
+          >
+            <SocialPreview />
+          </EditorProvider>
         </JourneyProvider>
       </SnackbarProvider>
     </MockedProvider>
@@ -158,4 +167,4 @@ export const Blank = {
   }
 }
 
-export default SocialPreviewNodeStory
+export default SocialPreviewStory
