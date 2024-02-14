@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
 import { EmailPreference } from '.prisma/api-journeys-client'
@@ -39,26 +39,32 @@ export class EmailPreferenceResolver {
   async findOrCreateEmailPreference(
     @Args('email') email: string
   ): Promise<EmailPreference> {
+    let result: EmailPreference | null = null
+
     try {
-      const result = await this.prismaService.emailPreference.findUnique({
+      result = await this.prismaService.emailPreference.findUnique({
         where: { email }
       })
-      if (result != null) return result
-      return this.prismaService.emailPreference.create({
-        data: {
-          email,
-          unsubscribeAll: false,
-          teamInvite: true,
-          teamRemoved: true,
-          teamInviteAccepted: true,
-          journeyEditInvite: true,
-          journeyRequestApproved: true,
-          journeyAccessRequest: true
-        }
-      })
+
+      if (result === null) {
+        result = await this.prismaService.emailPreference.create({
+          data: {
+            email,
+            unsubscribeAll: false,
+            teamInvite: true,
+            teamRemoved: true,
+            teamInviteAccepted: true,
+            journeyEditInvite: true,
+            journeyRequestApproved: true,
+            journeyAccessRequest: true
+          }
+        })
+      }
     } catch (error) {
       console.error('Error in findOrCreateEmailPreference:', error)
-      throw GraphQLError
+      throw new GraphQLError('Error in findOrCreateEmailPreference')
     }
+
+    return result
   }
 }
