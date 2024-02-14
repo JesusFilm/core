@@ -66,6 +66,10 @@ export function Canvas(): ReactElement {
       component: 'Footer'
     })
     dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Content
+    })
+    dispatch({
       type: 'SetActiveFabAction',
       activeFab: ActiveFab.Add
     })

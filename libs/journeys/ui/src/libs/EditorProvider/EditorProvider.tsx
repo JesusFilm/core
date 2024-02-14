@@ -155,8 +155,6 @@ export const reducer = (
         ...state,
         selectedComponent: action.component,
         selectedBlock: undefined
-        // journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
-        // activeSlide: ActiveSlide.Content
       }
     case 'SetSelectedBlockAction':
       return {
