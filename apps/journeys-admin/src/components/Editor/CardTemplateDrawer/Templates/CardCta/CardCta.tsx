@@ -120,11 +120,7 @@ export const CARD_CTA_CREATE = gql`
   }
 `
 
-interface CardCtaProps {
-  onClick: () => void
-}
-
-export function CardCta({ onClick }: CardCtaProps): ReactElement {
+export function CardCta(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -318,7 +314,6 @@ export function CardCta({ onClick }: CardCtaProps): ReactElement {
         }
       }
     })
-    onClick()
   }
 
   return (

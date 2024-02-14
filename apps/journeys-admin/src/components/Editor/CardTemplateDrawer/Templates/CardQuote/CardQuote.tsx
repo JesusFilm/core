@@ -52,11 +52,7 @@ export const CARD_QUOTE_CREATE = gql`
   }
 `
 
-interface CardQuoteProps {
-  onClick: () => void
-}
-
-export function CardQuote({ onClick }: CardQuoteProps): ReactElement {
+export function CardQuote(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -145,7 +141,6 @@ export function CardQuote({ onClick }: CardQuoteProps): ReactElement {
         }
       }
     })
-    onClick()
   }
 
   return (
