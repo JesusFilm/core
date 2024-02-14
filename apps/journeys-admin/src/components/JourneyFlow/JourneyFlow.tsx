@@ -250,16 +250,17 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     }
     if (block.action != null) {
       if (block.action.__typename === 'NavigateToBlockAction') {
+        // Solid connection from an option to a card
         edges.push({
           id: `${block.id}->${block.action.blockId}`,
           source: block.id,
           target: block.action.blockId,
           type: 'smart',
-          // markerEnd: {
-          //   type: MarkerType.Arrow
-          // },
+          markerEnd: {
+            type: MarkerType.Arrow
+          },
           style: {
-            // strokeWidth: 2
+            strokeWidth: 2
           }
         })
       }
