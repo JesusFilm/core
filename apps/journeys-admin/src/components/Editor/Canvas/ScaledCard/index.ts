@@ -1,1 +1,0 @@
-export { ScaledCard } from './ScaledCard'
