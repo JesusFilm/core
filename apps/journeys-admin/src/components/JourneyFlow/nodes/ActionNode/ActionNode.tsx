@@ -16,7 +16,7 @@ import {
 import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { BaseNode } from '../BaseNode'
 
-export const ACTION_NODE_WIDTH = 125
+export const ACTION_NODE_WIDTH = 100
 export const ACTION_NODE_HEIGHT = 28
 export const ACTION_NODE_WIDTH_GAP = 11
 export const ACTION_NODE_HEIGHT_GAP = 16
@@ -70,10 +70,10 @@ export function ActionNode({
           sx={{
             borderRadius: 20,
             outline: (theme) =>
-              `1px solid ${
+              `2px solid ${
                 selected !== false ? theme.palette.primary.main : 'grey'
               }`,
-            backgroundColor: '#eff2f5',
+            backgroundColor: '#F1F1F1',
             width: ACTION_NODE_WIDTH,
             height: ACTION_NODE_HEIGHT,
             py: 1,
