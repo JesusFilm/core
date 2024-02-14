@@ -3,8 +3,13 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
+import {
+  GoalType,
+  getLinkActionGoal
+} from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import BibleIcon from '@core/shared/ui/icons/Bible'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
@@ -30,16 +35,15 @@ export const MULTIPLE_LINK_ACTION_UPDATE = gql`
 
 interface ActionEditorProps {
   url: string
-  goalLabel?: (url: string) => string
   setSelectedAction?: (url: string) => void
 }
 
 export function ActionEditor({
   url,
-  goalLabel,
   setSelectedAction
 }: ActionEditorProps): ReactElement {
   const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const blocks = (journey?.blocks ?? [])
     .filter((block) => ((block as ButtonBlock).action as LinkAction) != null)
@@ -101,19 +105,23 @@ export function ActionEditor({
       })
     })
     setSelectedAction?.(url)
-    goalLabel?.(url)
   }
 
+  let label: string
   let icon: ReactNode
-  switch (goalLabel?.(url)) {
-    case 'Start a Conversation':
+  const goalType = getLinkActionGoal(url)
+  switch (goalType) {
+    case GoalType.Chat:
       icon = <MessageChat1Icon sx={{ color: 'secondary.light' }} />
+      label = t('Start a Conversation')
       break
-    case 'Link to Bible':
+    case GoalType.Bible:
       icon = <BibleIcon sx={{ color: 'secondary.light' }} />
+      label = t('Link to Bible')
       break
     default:
       icon = <LinkAngledIcon sx={{ color: 'secondary.light' }} />
+      label = t('Visit a Website')
       break
   }
 
@@ -128,7 +136,7 @@ export function ActionEditor({
       />
       <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 3 }}>
         {icon}
-        <Typography variant="subtitle2">{goalLabel?.(url)}</Typography>
+        <Typography variant="subtitle2">{label}</Typography>
       </Stack>
     </Box>
   )

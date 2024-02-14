@@ -69,7 +69,7 @@ describe('ActionDetails', () => {
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <ActionEditor url="https://www.google.com/" goalLabel={jest.fn()} />
+          <ActionEditor url="https://www.google.com/" />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -85,7 +85,7 @@ describe('ActionDetails', () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <ActionEditor url={url} goalLabel={jest.fn()} />
+          <ActionEditor url={url} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -102,7 +102,7 @@ describe('ActionDetails', () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <ActionEditor url={url} goalLabel={jest.fn()} />
+          <ActionEditor url={url} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -121,7 +121,7 @@ describe('ActionDetails', () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <ActionEditor url={url} goalLabel={jest.fn()} />
+          <ActionEditor url={url} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -140,7 +140,7 @@ describe('ActionDetails', () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <ActionEditor url="https://www.google.com/" goalLabel={jest.fn()} />
+          <ActionEditor url="https://www.google.com/" />
         </JourneyProvider>
       </MockedProvider>
     )

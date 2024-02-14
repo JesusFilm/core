@@ -11,6 +11,10 @@ import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../..
 import { VideoBlockCreate } from '../../../../../../__generated__/VideoBlockCreate'
 import { Button } from '../Button'
 
+interface NewVideoButtonProps {
+  disabled?: boolean
+}
+
 export const VIDEO_BLOCK_CREATE = gql`
   ${VIDEO_FIELDS}
   mutation VideoBlockCreate($input: VideoBlockCreateInput!) {
@@ -20,12 +24,8 @@ export const VIDEO_BLOCK_CREATE = gql`
   }
 `
 
-interface NewVideoButtonProps {
-  disabled?: boolean
-}
-
 export function NewVideoButton({
-  disabled
+  disabled = false
 }: NewVideoButtonProps): ReactElement {
   const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { journey } = useJourney()

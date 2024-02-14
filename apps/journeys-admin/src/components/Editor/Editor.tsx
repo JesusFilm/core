@@ -12,6 +12,7 @@ import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/Block
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
 import { EditToolbar } from './EditToolbar'
+import { Fab } from './Fab'
 import { Slider } from './Slider'
 
 interface EditorProps {
@@ -47,6 +48,7 @@ export function Editor({
         <>
           <EditToolbar />
           <Slider />
+          <Fab />
         </>
       </EditorProvider>
     </JourneyProvider>
