@@ -54,7 +54,6 @@ function EmailPreferencesPage(): ReactElement {
   const router = useRouter()
   const { email, unsuball } = router.query
   const { enqueueSnackbar } = useSnackbar()
-  console.log(unsuball)
   const { t } = useTranslation('apps-journeys-admin')
   const [updateEmailPreference] = useMutation(UPDATE_EMAIL_PREFERENCE)
   const [findOrCreateEmailPreference] = useMutation(
@@ -71,12 +70,11 @@ function EmailPreferencesPage(): ReactElement {
           email: email as string
         }
       })
-      console.log('data', data)
       setEmailPreferences(data.findOrCreateEmailPreference)
 
       // Check if the unsuball query parameter is present
       if (unsuball !== undefined) {
-        await updateEmailPreference({
+        const updatePrefs = await updateEmailPreference({
           variables: {
             input: {
               email: data.findOrCreateEmailPreference.email,
@@ -90,6 +88,7 @@ function EmailPreferencesPage(): ReactElement {
             }
           }
         })
+        setEmailPreferences(updatePrefs.data.updateEmailPreference)
         enqueueSnackbar(t(`Unsubscribed From all Emails.`), {
           variant: 'success',
           preventDuplicate: true
@@ -106,8 +105,6 @@ function EmailPreferencesPage(): ReactElement {
   const handlePreferenceChange =
     (preference: keyof EmailPreference) => async () => {
       if (emailPreferences !== null) {
-        console.log('emailPreferences', emailPreferences)
-        console.log('preference', preference)
         const updatedPreferences: EmailPreference = {
           ...emailPreferences,
           [preference]: !(emailPreferences[preference] as boolean)
