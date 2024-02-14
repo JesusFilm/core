@@ -1,4 +1,4 @@
-import { act, cleanup, render, waitFor } from '@testing-library/react'
+import { act, cleanup, render } from '@testing-library/react'
 import { ComponentProps } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -130,8 +130,15 @@ describe('InitAndPlay', () => {
     expect(defaultProps.setVideoEndTime).toHaveBeenCalledWith(20)
   })
 
-  // FIX (SWIPE): spyOn
-  it.skip('should handle autoplay muted for first step', async () => {
+  it('should handle autoplay', () => {
+    const playStub = jest.spyOn(player, 'play')
+
+    render(<InitAndPlay {...defaultProps} />)
+
+    expect(playStub).toHaveBeenCalled()
+  })
+
+  it('should handle autoplay muted for first step', () => {
     const stepBlock = {
       __typename: 'StepBlock',
       id: 'step1.id',
@@ -139,28 +146,12 @@ describe('InitAndPlay', () => {
     } as unknown as TreeBlock<StepBlock>
     blockHistoryVar([stepBlock])
 
-    render(<InitAndPlay {...defaultProps} />)
-
-    act(() => {
-      player.trigger('play')
-    })
-
-    expect(player.muted()).toBe(true)
-
     const playStub = jest.spyOn(player, 'play')
-    await waitFor(() => expect(playStub).toHaveBeenCalled())
-  })
-
-  // FIX (SWIPE): spyOn
-  it.skip('should handle autoplay muted on browser error', async () => {
-    expect(true).toBe(true)
 
     render(<InitAndPlay {...defaultProps} />)
 
-    jest.spyOn(player, 'play').mockImplementation(() => {
-      throw new Error('Browser error')
-    })
     expect(player.muted()).toBe(true)
+    expect(playStub).toHaveBeenCalled()
   })
 
   it('should pause player when inactive', () => {
