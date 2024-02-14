@@ -12,9 +12,9 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import File5Icon from '@core/shared/ui/icons/File5'
 import MoreIcon from '@core/shared/ui/icons/More'
-import Play3 from '@core/shared/ui/icons/Play3'
+import Play3Icon from '@core/shared/ui/icons/Play3'
 import SettingsIcon from '@core/shared/ui/icons/Settings'
-import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
@@ -167,14 +167,14 @@ export function Menu(): ReactElement {
         >
           <MenuItem
             label={t('Preview')}
-            icon={<Play3 />}
+            icon={<Play3Icon />}
             openInNew
             onClick={handleCloseMenu}
           />
         </NextLink>
         <MenuItem
           label={t('Manage Access')}
-          icon={<UsersProfiles2 />}
+          icon={<UsersProfiles2Icon />}
           onClick={handleOpenAccessDialog}
         />
         {journey?.template === true && (
@@ -207,7 +207,6 @@ export function Menu(): ReactElement {
         )}
         {journey != null && (
           <Strategy variant="list-item" closeMenu={handleCloseMenu} />
-          // <Strategy variant="list-item" />
         )}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && <Divider />}
