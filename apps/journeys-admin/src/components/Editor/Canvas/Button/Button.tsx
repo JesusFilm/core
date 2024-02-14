@@ -3,7 +3,8 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
-import Tooltip from '@mui/material/Tooltip'
+import { styled } from '@mui/material/styles'
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -17,6 +18,19 @@ interface ButtonProps {
   testId?: string
   disabled?: boolean
 }
+
+const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(() => ({
+  [`& .${tooltipClasses.tooltipArrow}`]: {
+    backgroundColor: '#30313C'
+  },
+  [`& .${tooltipClasses.arrow}`]: {
+    '&:before': {
+      backgroundColor: `#30313C`
+    }
+  }
+}))
 
 export function Button({
   icon,
@@ -36,12 +50,13 @@ export function Button({
       onMouseDown={(e) => e.preventDefault()}
       data-testid={`JourneysAdminButton${testId ?? ''}`}
     >
-      <Tooltip
+      <StyledTooltip
         title={
           <Typography
             display={{ xs: 'none', sm: 'flex' }}
             variant="caption"
             lineHeight="12px"
+            sx={{ my: 1.25 }}
           >
             {t(
               disabled && value === 'Video'
@@ -108,7 +123,7 @@ export function Button({
             </CardActionArea>
           </Card>
         </Box>
-      </Tooltip>
+      </StyledTooltip>
     </Box>
   )
 }
