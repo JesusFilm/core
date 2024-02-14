@@ -88,7 +88,7 @@ export function FormiumForm({
         alignItems: 'center'
       }}
     >
-      <Typography variant="h6" color="error" suppressHydrationWarning>
+      <Typography variant="h6" color="error">
         {t('Error Loading Form')}
       </Typography>
     </Box>

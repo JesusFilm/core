@@ -52,15 +52,10 @@ export function OnboardingPageWrapper({
             cursor: 'pointer'
           }}
           href={`mailto:support@nextstep.is?subject=${emailSubject}`}
-          suppressHydrationWarning
         >
           {t('Feedback & Support')}
         </Link>
-        <Button
-          size="small"
-          onClick={() => setOpen(true)}
-          suppressHydrationWarning
-        >
+        <Button size="small" onClick={() => setOpen(true)}>
           {t('Language')}
         </Button>
       </Stack>

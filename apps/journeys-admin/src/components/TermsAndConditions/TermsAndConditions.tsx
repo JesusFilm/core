@@ -47,10 +47,8 @@ export function TermsAndConditions(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      <Typography variant="h4" suppressHydrationWarning>
-        {t('Before You Start')}
-      </Typography>
-      <Typography variant="body1" sx={{ mt: 3 }} suppressHydrationWarning>
+      <Typography variant="h4">{t('Before You Start')}</Typography>
+      <Typography variant="body1" sx={{ mt: 3 }}>
         {t('Please review these documents:')}
       </Typography>
       <List
@@ -94,11 +92,7 @@ export function TermsAndConditions(): ReactElement {
           <ListItemText
             id="i-agree-label"
             primary={
-              <Typography
-                variant="body1"
-                color="secondary.dark"
-                suppressHydrationWarning
-              >
+              <Typography variant="body1" color="secondary.dark">
                 {t('I agree with listed above conditions and requirements')}
               </Typography>
             }
@@ -121,7 +115,6 @@ export function TermsAndConditions(): ReactElement {
           }
         }}
         endIcon={<ArrowRightSmIcon />}
-        suppressHydrationWarning
       >
         {t('Next')}
       </Button>

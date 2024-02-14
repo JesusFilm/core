@@ -33,6 +33,8 @@ export function LanguageSwitcher({
   const router = useRouter()
   const { t, i18n } = useTranslation('apps-journeys-admin')
 
+  console.log('i18n:', i18n)
+
   const [languages, setLanguages] = useState<Language[]>([])
   const [languageState, setLanguageState] = useState<languageState>({
     confirmLanguageChange: false,
@@ -87,7 +89,7 @@ export function LanguageSwitcher({
     let prevLanguage
     if (prevLanguageId != null)
       prevLanguage = getLocaleLanguage('id', prevLanguageId)?.locale
-    return prevLanguage ?? i18n.language
+    return prevLanguage ?? i18n?.language
   }
 
   function filterAvailableLanguages(languages, crowdinData): Language[] {
