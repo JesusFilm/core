@@ -348,8 +348,6 @@ type Query {
 
 extend type Query {
   block(id: ID!): Block!
-  emailPreferences: [EmailPreference]
-  emailPreference(id: ID!, idType: String!): EmailPreference
   hosts(teamId: ID!): [Host!]!
 
   """

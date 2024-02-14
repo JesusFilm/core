@@ -1421,8 +1421,6 @@ type Query
   @join__type(graph: VIDEOS)
 {
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
-  emailPreferences: [EmailPreference] @join__field(graph: JOURNEYS)
-  emailPreference(id: ID!, idType: String!): EmailPreference @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
   """

@@ -806,10 +806,6 @@ export abstract class IQuery {
 
     abstract block(id: string): Block | Promise<Block>;
 
-    abstract emailPreferences(): Nullable<Nullable<EmailPreference>[]> | Promise<Nullable<Nullable<EmailPreference>[]>>;
-
-    abstract emailPreference(id: string, idType: string): Nullable<EmailPreference> | Promise<Nullable<EmailPreference>>;
-
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;

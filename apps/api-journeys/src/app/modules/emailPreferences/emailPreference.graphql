@@ -9,11 +9,6 @@ type EmailPreference {
   journeyAccessRequest: Boolean!
 }
 
-extend type Query {
-  emailPreferences: [EmailPreference]
-  emailPreference(id: ID!, idType: String!): EmailPreference
-}
-
 input EmailPreferenceUpdateInput {
   email: String!
   unsubscribeAll: Boolean!
