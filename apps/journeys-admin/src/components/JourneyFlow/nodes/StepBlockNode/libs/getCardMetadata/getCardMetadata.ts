@@ -33,7 +33,11 @@ export function getCardMetadata(
 
   // if priority block is video
   if (priorityBlock?.__typename === 'VideoBlock') {
-    const title = priorityBlock.title !== null ? priorityBlock.title : undefined
+    console.log(priorityBlock)
+    const title =
+      priorityBlock.video !== null
+        ? priorityBlock.video.title[0].value
+        : undefined
     console.log(priorityBlock)
     const subtitle =
       priorityBlock.startAt !== null && priorityBlock.endAt !== null
@@ -50,7 +54,6 @@ export function getCardMetadata(
     return { title, subtitle, description, priorityBlock, bgImage }
   } else {
     const title = getStepHeading(step.id, step.children, steps, t)
-
     const subtitle = getStepSubtitle(step.id, step.children, steps, t)
     return { title, subtitle, priorityBlock, bgImage }
   }
