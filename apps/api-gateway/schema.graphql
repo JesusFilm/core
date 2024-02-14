@@ -384,32 +384,6 @@ input EmailActionInput
   email: String!
 }
 
-type EmailPreference
-  @join__type(graph: JOURNEYS)
-{
-  email: String!
-  unsubscribeAll: Boolean!
-  teamInvite: Boolean!
-  teamRemoved: Boolean!
-  teamInviteAccepted: Boolean!
-  journeyEditInvite: Boolean!
-  journeyRequestApproved: Boolean!
-  journeyAccessRequest: Boolean!
-}
-
-input EmailPreferenceUpdateInput
-  @join__type(graph: JOURNEYS)
-{
-  email: String!
-  unsubscribeAll: Boolean!
-  teamInvite: Boolean!
-  teamRemoved: Boolean!
-  teamInviteAccepted: Boolean!
-  journeyEditInvite: Boolean!
-  journeyRequestApproved: Boolean!
-  journeyAccessRequest: Boolean!
-}
-
 interface Event
   @join__type(graph: JOURNEYS)
 {
@@ -786,6 +760,32 @@ input JourneyProfileUpdateInput
   @join__type(graph: JOURNEYS)
 {
   lastActiveTeamId: String
+}
+
+type JourneysEmailPreference
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
+  unsubscribeAll: Boolean!
+  teamInvite: Boolean!
+  teamRemoved: Boolean!
+  teamInviteAccepted: Boolean!
+  journeyEditInvite: Boolean!
+  journeyRequestApproved: Boolean!
+  journeyAccessRequest: Boolean!
+}
+
+input JourneysEmailPreferenceUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
+  unsubscribeAll: Boolean!
+  teamInvite: Boolean!
+  teamRemoved: Boolean!
+  teamInviteAccepted: Boolean!
+  journeyEditInvite: Boolean!
+  journeyRequestApproved: Boolean!
+  journeyAccessRequest: Boolean!
 }
 
 input JourneysFilter
@@ -1228,8 +1228,6 @@ type Mutation
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
-  updateEmailPreference(input: EmailPreferenceUpdateInput!): EmailPreference @join__field(graph: JOURNEYS)
-  findOrCreateEmailPreference(email: String!): EmailPreference @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
@@ -1276,6 +1274,8 @@ type Mutation
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference @join__field(graph: JOURNEYS)
+  findOrCreateJourneysEmailPreference(email: String!): JourneysEmailPreference @join__field(graph: JOURNEYS)
   teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
   teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)

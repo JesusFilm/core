@@ -221,8 +221,6 @@ extend type Mutation {
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
-  updateEmailPreference(input: EmailPreferenceUpdateInput!): EmailPreference
-  findOrCreateEmailPreference(email: String!): EmailPreference
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -269,6 +267,8 @@ extend type Mutation {
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   journeyProfileOnboardingFormComplete: JourneyProfile!
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
+  findOrCreateJourneysEmailPreference(email: String!): JourneysEmailPreference
   teamCreate(input: TeamCreateInput): Team!
   teamUpdate(id: ID!, input: TeamUpdateInput): Team!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
@@ -1159,28 +1159,6 @@ input ChatButtonCreateInput {
 input ChatButtonUpdateInput {
   link: String
   platform: ChatPlatform
-}
-
-type EmailPreference {
-  email: String!
-  unsubscribeAll: Boolean!
-  teamInvite: Boolean!
-  teamRemoved: Boolean!
-  teamInviteAccepted: Boolean!
-  journeyEditInvite: Boolean!
-  journeyRequestApproved: Boolean!
-  journeyAccessRequest: Boolean!
-}
-
-input EmailPreferenceUpdateInput {
-  email: String!
-  unsubscribeAll: Boolean!
-  teamInvite: Boolean!
-  teamRemoved: Boolean!
-  teamInviteAccepted: Boolean!
-  journeyEditInvite: Boolean!
-  journeyRequestApproved: Boolean!
-  journeyAccessRequest: Boolean!
 }
 
 enum ButtonAction {
@@ -2114,6 +2092,28 @@ enum JourneyVisitorSort {
   date
   duration
   activity
+}
+
+type JourneysEmailPreference {
+  email: String!
+  unsubscribeAll: Boolean!
+  teamInvite: Boolean!
+  teamRemoved: Boolean!
+  teamInviteAccepted: Boolean!
+  journeyEditInvite: Boolean!
+  journeyRequestApproved: Boolean!
+  journeyAccessRequest: Boolean!
+}
+
+input JourneysEmailPreferenceUpdateInput {
+  email: String!
+  unsubscribeAll: Boolean!
+  teamInvite: Boolean!
+  teamRemoved: Boolean!
+  teamInviteAccepted: Boolean!
+  journeyEditInvite: Boolean!
+  journeyRequestApproved: Boolean!
+  journeyAccessRequest: Boolean!
 }
 
 type Team

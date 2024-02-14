@@ -469,7 +469,7 @@ model Action {
   @@index(parentBlockId)
 }
 
-model EmailPreference {
+model JourneysEmailPreference {
   email                  String  @id @unique
   unsubscribeAll         Boolean
   teamInvite             Boolean

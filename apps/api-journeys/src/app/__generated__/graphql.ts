@@ -462,17 +462,6 @@ export class ChatButtonUpdateInput {
     platform?: Nullable<ChatPlatform>;
 }
 
-export class EmailPreferenceUpdateInput {
-    email: string;
-    unsubscribeAll: boolean;
-    teamInvite: boolean;
-    teamRemoved: boolean;
-    teamInviteAccepted: boolean;
-    journeyEditInvite: boolean;
-    journeyRequestApproved: boolean;
-    journeyAccessRequest: boolean;
-}
-
 export class ButtonClickEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -675,6 +664,17 @@ export class JourneyVisitorFilter {
     hasIcon?: Nullable<boolean>;
     hideInactive?: Nullable<boolean>;
     countryCode?: Nullable<string>;
+}
+
+export class JourneysEmailPreferenceUpdateInput {
+    email: string;
+    unsubscribeAll: boolean;
+    teamInvite: boolean;
+    teamRemoved: boolean;
+    teamInviteAccepted: boolean;
+    journeyEditInvite: boolean;
+    journeyRequestApproved: boolean;
+    journeyAccessRequest: boolean;
 }
 
 export class TeamCreateInput {
@@ -1051,18 +1051,6 @@ export class ChatButton {
     platform?: Nullable<ChatPlatform>;
 }
 
-export class EmailPreference {
-    __typename?: 'EmailPreference';
-    email: string;
-    unsubscribeAll: boolean;
-    teamInvite: boolean;
-    teamRemoved: boolean;
-    teamInviteAccepted: boolean;
-    journeyEditInvite: boolean;
-    journeyRequestApproved: boolean;
-    journeyAccessRequest: boolean;
-}
-
 export class ButtonClickEvent implements Event {
     __typename?: 'ButtonClickEvent';
     id: string;
@@ -1298,6 +1286,18 @@ export class JourneyVisitorsConnection {
     pageInfo: PageInfo;
 }
 
+export class JourneysEmailPreference {
+    __typename?: 'JourneysEmailPreference';
+    email: string;
+    unsubscribeAll: boolean;
+    teamInvite: boolean;
+    teamRemoved: boolean;
+    teamInviteAccepted: boolean;
+    journeyEditInvite: boolean;
+    journeyRequestApproved: boolean;
+    journeyAccessRequest: boolean;
+}
+
 export class Team {
     __typename?: 'Team';
     id: string;
@@ -1490,10 +1490,6 @@ export abstract class IMutation {
 
     abstract chatButtonRemove(id: string): ChatButton | Promise<ChatButton>;
 
-    abstract updateEmailPreference(input: EmailPreferenceUpdateInput): Nullable<EmailPreference> | Promise<Nullable<EmailPreference>>;
-
-    abstract findOrCreateEmailPreference(email: string): Nullable<EmailPreference> | Promise<Nullable<EmailPreference>>;
-
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
     abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
@@ -1557,6 +1553,10 @@ export abstract class IMutation {
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyProfileOnboardingFormComplete(): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
+
+    abstract findOrCreateJourneysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 
