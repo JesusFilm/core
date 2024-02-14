@@ -135,13 +135,13 @@ export class EmailConsumer extends WorkerHost {
     })
 
     // check recipient preferences
-    const prefereces = await this.prismaService.emailPreference.findFirst({
+    const preferences = await this.prismaService.emailPreference.findFirst({
       where: {
         email: data.user.email
       }
     })
     // do not send email if team removed notification is not preferred
-    if (prefereces?.teamRemoved === false) return
+    if (preferences?.teamRemoved === false || preferences?.unsubscribeAll === true) return
 
     const html = render(
       TeamRemovedEmail({
@@ -173,13 +173,13 @@ export class EmailConsumer extends WorkerHost {
 
   async teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
     // check recipient preferences
-    const prefereces = await this.prismaService.emailPreference.findFirst({
+    const preferences = await this.prismaService.emailPreference.findFirst({
       where: {
         email: job.data.email
       }
     })
     // do not send email if team removed notification is not preferred
-    if (prefereces?.teamInvite === false) return
+    if (preferences?.teamInvite === false || preferences.unsubscribeAll === true) return
 
     const { data } = await apollo.query({
       query: gql`
@@ -290,13 +290,13 @@ export class EmailConsumer extends WorkerHost {
 
     for (const recipient of receipientEmails) {
       // check recipient preferences
-      const prefereces = await this.prismaService.emailPreference.findFirst({
+      const preferences = await this.prismaService.emailPreference.findFirst({
         where: {
           email: recipient.user.email
         }
       })
       // do not send email if team removed notification is not preferred
-      if (prefereces?.teamInviteAccepted === false) return
+      if (preferences?.teamInviteAccepted === false || preferences.unsubscribeAll === true) return
 
       const html = render(
         TeamInviteAcceptedEmail({
@@ -356,13 +356,13 @@ export class EmailConsumer extends WorkerHost {
       throw new Error('User not found')
     }
     // check recipient preferences
-    const prefereces = await this.prismaService.emailPreference.findFirst({
+    const preferences = await this.prismaService.emailPreference.findFirst({
       where: {
         email: data.user.email
       }
     })
     // do not send email if team removed notification is not preferred
-    if (prefereces?.journeyAccessRequest === false) return
+    if (preferences?.journeyAccessRequest === false || preferences.unsubscribeAll === true) return
 
     const html = render(
       JourneyAccessRequestEmail({
@@ -416,13 +416,13 @@ export class EmailConsumer extends WorkerHost {
       throw new Error('User not found')
     }
     // check recipient preferences
-    const prefereces = await this.prismaService.emailPreference.findFirst({
+    const preferences = await this.prismaService.emailPreference.findFirst({
       where: {
         email: data.user.email
       }
     })
     // do not send email if team removed notification is not preferred
-    if (prefereces?.journeyRequestApproved === false) return
+    if (preferences?.journeyRequestApproved === false || preferences.unsubscribeAll === true) return
 
     const html = render(
       JourneySharedEmail({
@@ -457,13 +457,13 @@ export class EmailConsumer extends WorkerHost {
 
   async journeyEditInvite(job: Job<JourneyEditInviteJob>): Promise<void> {
     // check recipient preferences
-    const prefereces = await this.prismaService.emailPreference.findFirst({
+    const preferences = await this.prismaService.emailPreference.findFirst({
       where: {
         email: job.data.email
       }
     })
     // do not send email if team removed notification is not preferred
-    if (prefereces?.journeyEditInvite === false) return
+    if (preferences?.journeyEditInvite === false || preferences.unsubscribeAll === true) return
 
     const { data } = await apollo.query({
       query: gql`
