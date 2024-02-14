@@ -52,7 +52,7 @@ interface EmailPreference {
 
 function EmailPreferencesPage(): ReactElement {
   const router = useRouter()
-  const { email, unsuball } = router.query
+  const { email, unsubscribeAll } = router.query
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const [updateEmailPreference] = useMutation(UPDATE_EMAIL_PREFERENCE)
@@ -73,7 +73,7 @@ function EmailPreferencesPage(): ReactElement {
       setEmailPreferences(data.findOrCreateEmailPreference)
 
       // Check if the unsuball query parameter is present
-      if (unsuball !== undefined) {
+      if (unsubscribeAll !== undefined) {
         const updatePrefs = await updateEmailPreference({
           variables: {
             input: {
