@@ -370,7 +370,7 @@ describe('CardCta', () => {
           value={{ journey: { id: 'journeyId' } as unknown as Journey }}
         >
           <EditorProvider initialState={{ steps: [step] }}>
-            <CardCta onClick={jest.fn()} />
+            <CardCta />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

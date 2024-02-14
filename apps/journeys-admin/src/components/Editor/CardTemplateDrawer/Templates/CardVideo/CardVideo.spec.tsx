@@ -106,7 +106,7 @@ describe('CardVideo', () => {
           value={{ journey: { id: 'journeyId' } as unknown as Journey }}
         >
           <EditorProvider initialState={{ steps: [step] }}>
-            <CardVideo onClick={jest.fn()} />
+            <CardVideo />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
