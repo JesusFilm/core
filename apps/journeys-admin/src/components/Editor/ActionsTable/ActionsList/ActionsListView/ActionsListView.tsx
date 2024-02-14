@@ -51,7 +51,8 @@ export function ActionsListView({
   }
 
   function GoalIcon({ url }: { url: string }): ReactElement {
-    switch (getLinkActionGoal(url)) {
+    const goalType = getLinkActionGoal(url)
+    switch (goalType) {
       case GoalType.Chat:
         return <MessageChat1Icon />
       case GoalType.Bible:
