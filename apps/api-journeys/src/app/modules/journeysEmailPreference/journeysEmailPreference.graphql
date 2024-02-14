@@ -1,4 +1,4 @@
-type EmailPreference {
+type JourneysEmailPreference {
   email: String!
   unsubscribeAll: Boolean!
   teamInvite: Boolean!
@@ -9,7 +9,7 @@ type EmailPreference {
   journeyAccessRequest: Boolean!
 }
 
-input EmailPreferenceUpdateInput {
+input JourneysEmailPreferenceUpdateInput {
   email: String!
   unsubscribeAll: Boolean!
   teamInvite: Boolean!
@@ -21,6 +21,6 @@ input EmailPreferenceUpdateInput {
 }
 
 extend type Mutation {
-  updateEmailPreference(input: EmailPreferenceUpdateInput!): EmailPreference
-  findOrCreateEmailPreference(email: String!): EmailPreference
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
+  findOrCreateJourneysEmailPreference(email: String!): JourneysEmailPreference
 }
