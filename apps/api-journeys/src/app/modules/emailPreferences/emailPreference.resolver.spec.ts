@@ -1,6 +1,5 @@
 import { Test } from '@nestjs/testing'
 
-import { EmailPreferenceUpdateInput } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { EmailPreferenceResolver } from './emailPreference.resolver'
@@ -9,6 +8,17 @@ describe('EmailPreferenceResolver', () => {
   let resolver: EmailPreferenceResolver
   let prismaService: PrismaService
 
+  const emailPreference = {
+    email: 'test@example.com',
+    unsubscribeAll: false,
+    teamInvite: true,
+    teamRemoved: true,
+    teamInviteAccepted: true,
+    journeyEditInvite: true,
+    journeyRequestApproved: true,
+    journeyAccessRequest: true
+  }
+
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
@@ -16,12 +26,13 @@ describe('EmailPreferenceResolver', () => {
         {
           provide: PrismaService,
           useValue: {
-            // Mock the PrismaService methods used in the resolver
-            emailPreferences: jest.fn(),
-            emailPreference: jest.fn(),
-            updateEmailPreferences: jest.fn(),
-            findOrCreateEmailPreference: jest.fn(),
-            createEmailPreferencesForAllUsers: jest.fn()
+            emailPreference: {
+              findMany: jest.fn(),
+              findFirst: jest.fn(),
+              findUnique: jest.fn(),
+              update: jest.fn(),
+              create: jest.fn()
+            }
           }
         }
       ]
@@ -31,75 +42,76 @@ describe('EmailPreferenceResolver', () => {
     prismaService = moduleRef.get<PrismaService>(PrismaService)
   })
 
-  describe('emailPreferences', () => {
-    it('should return an array of email preferences', async () => {
-      const emailPreferences = [{ id: '1', email: 'test@example.com' }]
+  describe('updateEmailPreference', () => {
+    it('should update email preference', async () => {
+      const updatedEmailPreference = { teaminvite: true, ...emailPreference }
       jest
-        .spyOn(prismaService, 'emailPreference' as never)
-        .mockResolvedValue(emailPreferences as never)
+        .spyOn(prismaService.emailPreference, 'findUnique')
+        .mockResolvedValue(emailPreference)
+      jest
+        .spyOn(prismaService.emailPreference, 'update')
+        .mockResolvedValue(updatedEmailPreference)
 
-      const result = await resolver.emailPreferences()
+      const result = await resolver.updateEmailPreference(
+        updatedEmailPreference
+      )
 
-      expect(result).toEqual(emailPreferences)
-      expect(prismaService.emailPreferences).toHaveBeenCalled()
+      expect(result).toEqual(updatedEmailPreference)
+      expect(prismaService.emailPreference.findUnique).toHaveBeenCalledWith({
+        where: { email: 'test@example.com' }
+      })
+      expect(prismaService.emailPreference.update).toHaveBeenCalledWith({
+        where: { email: 'test@example.com' },
+        data: updatedEmailPreference
+      })
     })
   })
 
-  // describe('emailPreference', () => {
-  //   it('should return a single email preference', async () => {
-  //     const emailPreference = { id: '1', email: 'test@example.com' }
-  //     jest
-  //       .spyOn(prismaService, 'emailPreferences' as never)
-  //       .mockResolvedValue(emailPreference as never)
+  describe('findOrCreateEmailPreference', () => {
+    it('should find an existing email preference', async () => {
+      const email = emailPreference.email
+      const existingEmailPreference = emailPreference
+      jest
+        .spyOn(prismaService.emailPreference, 'findUnique')
+        .mockResolvedValue(existingEmailPreference)
 
-  //     const result = await resolver.emailPreference('1', 'id')
+      const result = await resolver.findOrCreateEmailPreference(email)
 
-  //     expect(result).toEqual(emailPreference)
-  //     expect(prismaService.emailPreferences).toHaveBeenCalledWith('1', 'id')
-  //   })
-  // })
+      expect(result).toEqual(existingEmailPreference)
+      expect(prismaService.emailPreference.findUnique).toHaveBeenCalledWith({
+        where: { email }
+      })
+      expect(prismaService.emailPreference.create).not.toHaveBeenCalled()
+    })
 
-  // describe('updateEmailPreferences', () => {
-  //   it('should update email preferences', async () => {
-  //     const input: EmailPreferencesUpdateInput = {
-  //       id: '1',
-  //       journeyNotifications: true,
-  //       teamInvites: true,
-  //       thirdCategory: true
-  //     }
-  //     const updatedEmailPreference = { id: '1', email: 'updated@example.com' }
-  //     jest
-  //       .spyOn(prismaService, 'emailPreferences' as never)
-  //       .mockResolvedValue(updatedEmailPreference as never)
+    it('should create a new email preference if it does not exist', async () => {
+      const newEmailPreference = emailPreference
+      const email = emailPreference.email
+      jest
+        .spyOn(prismaService.emailPreference, 'findUnique')
+        .mockResolvedValue(null)
+      jest
+        .spyOn(prismaService.emailPreference, 'create')
+        .mockResolvedValue(newEmailPreference)
 
-  //     const result = await resolver.updateEmailPreferences(input)
+      const result = await resolver.findOrCreateEmailPreference(email)
 
-  //     expect(result).toEqual(updatedEmailPreference)
-  //     expect(prismaService.emailPreferences).toHaveBeenCalledWith(input)
-  //   })
-  // })
-
-  // describe('findOrCreateEmailPreference', () => {
-  //   it('should find or create an email preference', async () => {
-  //     const email = 'test@example.com'
-  //     const emailPreference = { id: '1', email: 'test@example.com' }
-  //     jest
-  //       .spyOn(prismaService, 'findOrCreateEmailPreferences' as never)
-  //       .mockResolvedValue(emailPreference as never)
-
-  //     const result = await resolver.findOrCreateEmailPreference(email)
-
-  //     expect(result).toEqual(emailPreference)
-  //     expect(resolver.findOrCreateEmailPreference).toHaveBeenCalledWith(email)
-  //   })
-  // })
-
-  // describe('createEmailPreferencesForAllUsers', () => {
-  //   it('should create email preferences for all users', async () => {
-  //     const result = await resolver.createEmailPreferencesForAllUsers()
-
-  //     expect(result).toBe(true)
-  //     expect(resolver.createEmailPreferencesForAllUsers).toHaveBeenCalled()
-  //   })
-  // })
+      expect(result).toEqual(newEmailPreference)
+      expect(prismaService.emailPreference.findUnique).toHaveBeenCalledWith({
+        where: { email }
+      })
+      expect(prismaService.emailPreference.create).toHaveBeenCalledWith({
+        data: {
+          email,
+          unsubscribeAll: false,
+          teamInvite: true,
+          teamRemoved: true,
+          teamInviteAccepted: true,
+          journeyEditInvite: true,
+          journeyRequestApproved: true,
+          journeyAccessRequest: true
+        }
+      })
+    })
+  })
 })
