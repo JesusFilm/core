@@ -36,7 +36,9 @@ const FIND_OR_CREATE_EMAIL_PREFERENCE = gql`
 `
 
 const UPDATE_EMAIL_PREFERENCE = gql`
-  mutation UpdateJourneysEmailPreference($input: JourneysEmailPreferenceUpdateInput!) {
+  mutation UpdateJourneysEmailPreference(
+    $input: JourneysEmailPreferenceUpdateInput!
+  ) {
     updateJourneysEmailPreference(input: $input) {
       email
       unsubscribeAll
@@ -93,7 +95,8 @@ function EmailPreferencesPage({
             teamRemoved: journeysEmailPreference.teamRemoved,
             teamInviteAccepted: journeysEmailPreference.teamInviteAccepted,
             journeyEditInvite: journeysEmailPreference.journeyEditInvite,
-            journeyRequestApproved: journeysEmailPreference.journeyRequestApproved,
+            journeyRequestApproved:
+              journeysEmailPreference.journeyRequestApproved,
             journeyAccessRequest: journeysEmailPreference.journeyAccessRequest
           }
         }
@@ -281,7 +284,6 @@ export const getServerSideProps = withUserTokenSSR()(
     })
 
     if (query?.unsubscribeAll != null) {
-      console.log('here')
       const { data: updatePrefsData } = await apolloClient.mutate<
         UpdateJourneysEmailPreference,
         UpdateJourneysEmailPreferenceVariables
@@ -289,8 +291,8 @@ export const getServerSideProps = withUserTokenSSR()(
         mutation: UPDATE_EMAIL_PREFERENCE,
         variables: {
           input: {
-            email: journeysEmailPreferenceData?.findOrCreateJourneysEmailPreference
-              ?.email as string,
+            email: journeysEmailPreferenceData
+              ?.findOrCreateJourneysEmailPreference?.email as string,
             unsubscribeAll: true,
             teamInvite: false,
             teamRemoved: false,
