@@ -1,6 +1,9 @@
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_ImageBlock as ImageBlock
+} from '../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 
 export function getBackgroundImage(
@@ -22,10 +25,12 @@ export function getBackgroundImage(
       coverBlock.source !== VideoBlockSource.cloudflare
         ? // Use posterBlockId image or default poster image on video
           coverBlock?.posterBlockId != null
-          ? coverBlock.children.find(
-              (block) =>
-                block.id === coverBlock.posterBlockId &&
-                block.__typename === 'ImageBlock'
+          ? (
+              coverBlock.children.find(
+                (block) =>
+                  block.id === coverBlock.posterBlockId &&
+                  block.__typename === 'ImageBlock'
+              ) as TreeBlock<ImageBlock>
             )?.src
           : coverBlock?.video?.image
         : // Use Youtube or Cloudflare set poster image
