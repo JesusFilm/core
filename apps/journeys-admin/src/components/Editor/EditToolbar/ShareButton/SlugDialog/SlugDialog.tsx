@@ -9,7 +9,7 @@ import { object, string } from 'yup'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { JourneySlugUpdate } from '../../../../../../../__generated__/JourneySlugUpdate'
+import { JourneySlugUpdate } from '../../../../../../__generated__/JourneySlugUpdate'
 
 export const JOURNEY_SLUG_UPDATE = gql`
   mutation JourneySlugUpdate($id: ID!, $input: JourneyUpdateInput!) {

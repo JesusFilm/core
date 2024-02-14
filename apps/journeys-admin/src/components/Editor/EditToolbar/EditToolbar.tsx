@@ -1,18 +1,14 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import Play3Icon from '@core/shared/ui/icons/Play3'
-import ShareIcon from '@core/shared/ui/icons/Share'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
@@ -20,21 +16,11 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Analytics } from './Analytics'
 import { Menu } from './Menu'
-import { JourneyLink } from './Menu/JourneyLink'
+import { ShareButton } from './ShareButton'
 import { Strategy } from './Strategy'
 
 export function EditToolbar(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-
-  function handleShowMenu(event: React.MouseEvent<HTMLButtonElement>): void {
-    setAnchorEl(event.currentTarget)
-  }
-  function handleCloseMenu(): void {
-    setAnchorEl(null)
-  }
   return (
     <Stack
       direction="row"
@@ -112,22 +98,7 @@ export function EditToolbar(): ReactElement {
           </Stack>
           <Analytics journey={journey} variant="button" />
           <Strategy variant="button" />
-          <Button
-            variant="contained"
-            color="secondary"
-            startIcon={<ShareIcon />}
-            onClick={handleShowMenu}
-            sx={{
-              display: {
-                xs: 'none',
-                md: 'flex'
-              }
-            }}
-          >
-            <Typography variant="subtitle2" sx={{ py: 1 }}>
-              {t('Share')}
-            </Typography>
-          </Button>
+          <ShareButton />
           <IconButton
             component="a"
             href={`/api/preview?slug=${journey.slug}`}
@@ -155,9 +126,6 @@ export function EditToolbar(): ReactElement {
           >
             <Play3Icon />
           </IconButton>
-          <Dialog open={Boolean(anchorEl)} onClose={handleCloseMenu}>
-            <JourneyLink isMenu />
-          </Dialog>
         </>
       )}
       <Menu />

@@ -4,19 +4,19 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
-import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { publishedJourney } from '../../../data'
+import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
+import { simpleComponentConfig } from '../../../../libs/storybook'
+import { publishedJourney } from '../../data'
 
-import { JourneyLink } from './JourneyLink'
+import { ShareButton } from './ShareButton'
 
-const JourneyLinkStory: Meta<typeof JourneyLink> = {
+const ShareButtonStory: Meta<typeof ShareButton> = {
   ...simpleComponentConfig,
-  component: JourneyLink,
-  title: 'Journeys-Admin/JourneyView/JourneyLink'
+  component: ShareButton,
+  title: 'Journeys-Admin/JourneyView/ShareButton'
 }
 
-const Template: StoryObj<typeof JourneyLink> = {
+const Template: StoryObj<typeof ShareButton> = {
   render: ({ ...args }) => (
     <ApolloLoadingProvider>
       <MockedProvider>
@@ -27,7 +27,7 @@ const Template: StoryObj<typeof JourneyLink> = {
               backgroundColor: 'background.paper'
             }}
           >
-            <JourneyLink />
+            <ShareButton />
           </Box>
         </JourneyProvider>
       </MockedProvider>
@@ -49,4 +49,4 @@ export const Loading = {
   }
 }
 
-export default JourneyLinkStory
+export default ShareButtonStory

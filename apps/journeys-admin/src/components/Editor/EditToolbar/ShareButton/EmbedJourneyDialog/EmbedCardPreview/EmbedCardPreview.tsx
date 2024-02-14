@@ -13,8 +13,8 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import {
   ThemeMode,
   ThemeName
-} from '../../../../../../../../__generated__/globalTypes'
-import { FramePortal } from '../../../../../../FramePortal'
+} from '../../../../../../../__generated__/globalTypes'
+import { FramePortal } from '../../../../../FramePortal'
 
 const CARD_WIDTH = 340
 

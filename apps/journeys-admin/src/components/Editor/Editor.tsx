@@ -12,7 +12,6 @@ import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/Block
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
 import { EditToolbar } from './EditToolbar'
-import { Properties } from './Properties'
 import { Slider } from './Slider'
 
 interface EditorProps {
@@ -42,7 +41,6 @@ export function Editor({
           steps,
           selectedStep,
           drawerTitle: 'Properties',
-          drawerChildren: <Properties isPublisher={false} />,
           journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
         }}
       >
