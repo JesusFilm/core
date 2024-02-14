@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
@@ -7,7 +7,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { ActionFields_LinkAction as LinkAction } from '../../../../__generated__/ActionFields'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 
 import { ActionsBanner } from './ActionsBanner'
 import { ActionsList } from './ActionsList'
@@ -21,8 +20,8 @@ export function ActionsTable(): ReactElement {
   const { journey } = useJourney()
   const { dispatch } = useEditor()
 
-  function countUrls(journey: Journey | undefined): Actions[] {
-    const actions = (journey?.blocks ?? [])
+  const actions = useMemo((): Actions[] => {
+    const actionsMap = (journey?.blocks ?? [])
       .filter(
         (block) =>
           ((block as ButtonBlock).action as LinkAction)?.__typename ===
@@ -33,14 +32,13 @@ export function ActionsTable(): ReactElement {
         counts[url] = ((counts[url] ?? 0) as number) + 1
         return counts
       }, {})
-
-    return Object.entries(actions).map(([url, count]) => ({
+    const actions = Object.entries(actionsMap).map(([url, count]) => ({
       url,
       count
     })) as Actions[]
-  }
-
-  const actions = countUrls(journey)
+    dispatch({ type: 'SetSelectedComponentAction', component: actions[0].url })
+    return actions
+  }, [journey?.blocks, dispatch])
 
   function handleSelect(): void {
     dispatch({
