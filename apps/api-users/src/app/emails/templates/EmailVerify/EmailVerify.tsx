@@ -56,7 +56,7 @@ export const EmailVerifyEmail = ({
           />
         </BodyWrapper>
         <Footer />
-        <UnsubscribeLink />
+        <UnsubscribeLink recipientEmail={recipient.email} />
       </EmailContainer>
     </>
   )
