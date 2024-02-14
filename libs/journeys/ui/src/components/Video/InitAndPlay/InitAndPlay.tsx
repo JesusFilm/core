@@ -178,13 +178,10 @@ export function InitAndPlay({
         player.muted(true)
       }
       // Tries to autoplay, fallback to muted autoplay if not allowed
-      void player.play()?.catch((error) => {
-        // if (error.name === 'NotAllowedError') {
-        // }
+      void player.play()?.catch(() => {
         player.muted(true)
-        console.log(error)
+        void player.play()
       })
-      void player.play()
     }
   }, [activeStep, activeBlock, autoplay, blockId, player])
 
