@@ -17,6 +17,7 @@ interface TeamInviteNoAccountProps {
   inviteLink: string
   sender: Omit<User, 'id' | 'emailVerified'>
   story?: boolean
+  recipientEmail: string
 }
 
 interface WrapperProps {
@@ -27,6 +28,7 @@ export const TeamInviteNoAccountEmail = ({
   teamName,
   inviteLink,
   sender,
+  recipientEmail,
   story = false
 }: TeamInviteNoAccountProps): ReactElement => {
   const previewText = `Join ${teamName} on Next Steps`
@@ -53,7 +55,7 @@ export const TeamInviteNoAccountEmail = ({
           />
         </BodyWrapper>
         <Footer />
-        <UnsubscribeLink />
+        <UnsubscribeLink recipientEmail={recipientEmail} />
       </EmailContainer>
     </>
   )
@@ -102,7 +104,8 @@ TeamInviteNoAccountEmail.PreviewProps = {
     lastName: 'Ron-Imo',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  }
+  },
+  recipientEmail: 'someEmail@example.com'
 } satisfies TeamInviteNoAccountProps
 
 export default TeamInviteNoAccountEmail

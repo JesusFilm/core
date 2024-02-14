@@ -1,21 +1,27 @@
 import { Column, Link, Row, Section, Text } from '@react-email/components'
 import { ReactElement } from 'react'
 
-export function UnsubscribeLink(): ReactElement {
+interface UnsubscribeLinkProps {
+  recipientEmail: string
+}
+
+export function UnsubscribeLink({
+  recipientEmail
+}: UnsubscribeLinkProps): ReactElement {
   return (
     <Section>
       <Row>
         <Column align="center">
           <Text className="text-[#6D6D7D] text-[12px] leading-[20px] font-[400] font-sans m-[0px]">
             <Link
-              href="https://admin.nextstep.is/"
+              href={`https://admin.nextstep.is/email-preferences/${recipientEmail}`}
               className="text-[#26262E] no-underline p-[2px]"
             >
               Change Notifications Setting
             </Link>
             •
             <Link
-              href="https://admin.nextstep.is/"
+              href={`https://admin.nextstep.is/email-preferences/${recipientEmail}?unsubscribeAll=true`}
               className="text-[#26262E] no-underline p-[2px]"
             >
               Unsubscribe
@@ -35,9 +41,7 @@ export function UnsubscribeLink(): ReactElement {
 }
 
 UnsubscribeLink.PreviewProps = {
-  headerText: 'To join them create an account with Next Steps',
-  buttonText: 'Create Account',
-  url: 'https://admin.nextstep.is/'
+  email: 'giogio@example.com'
 }
 
 export default UnsubscribeLink

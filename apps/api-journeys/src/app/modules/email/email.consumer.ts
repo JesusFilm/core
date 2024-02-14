@@ -17,6 +17,7 @@ import { TeamInviteEmail } from '../../emails/templates/TeamInvite'
 import { TeamInviteNoAccountEmail } from '../../emails/templates/TeamInvite/TeamInviteNoAccount'
 import { TeamInviteAcceptedEmail } from '../../emails/templates/TeamInviteAccepted'
 import { TeamRemovedEmail } from '../../emails/templates/TeamRemoved'
+import { PrismaService } from '../../lib/prisma.service'
 
 const apollo = new ApolloClient({
   uri: process.env.GATEWAY_URL,
@@ -88,7 +89,10 @@ export type ApiJourneysJob =
 
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
-  constructor(private readonly emailService: EmailService) {
+  constructor(
+    private readonly emailService: EmailService,
+    private readonly prismaService: PrismaService
+  ) {
     super()
   }
 
@@ -130,6 +134,15 @@ export class EmailConsumer extends WorkerHost {
       variables: { userId: job.data.userId }
     })
 
+    // check recipient preferences
+    const prefereces = await this.prismaService.emailPreference.findFirst({
+      where: {
+        email: data.user.email
+      }
+    })
+    // do not send email if team removed notification is not preferred
+    if (prefereces?.teamRemoved === false) return
+
     const html = render(
       TeamRemovedEmail({
         teamName: job.data.teamName,
@@ -159,6 +172,15 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
+    // check recipient preferences
+    const prefereces = await this.prismaService.emailPreference.findFirst({
+      where: {
+        email: job.data.email
+      }
+    })
+    // do not send email if team removed notification is not preferred
+    if (prefereces?.teamInvite === false) return
+
     const { data } = await apollo.query({
       query: gql`
         query UserByEmail($email: String!) {
@@ -179,7 +201,8 @@ export class EmailConsumer extends WorkerHost {
         TeamInviteNoAccountEmail({
           teamName: job.data.teamName,
           inviteLink: url,
-          sender: job.data.sender
+          sender: job.data.sender,
+          recipientEmail: job.data.email
         }),
         {
           pretty: true
@@ -189,7 +212,8 @@ export class EmailConsumer extends WorkerHost {
         TeamInviteNoAccountEmail({
           teamName: job.data.teamName,
           inviteLink: url,
-          sender: job.data.sender
+          sender: job.data.sender,
+          recipientEmail: job.data.email
         }),
         {
           plainText: true
@@ -265,6 +289,15 @@ export class EmailConsumer extends WorkerHost {
     }
 
     for (const recipient of receipientEmails) {
+      // check recipient preferences
+      const prefereces = await this.prismaService.emailPreference.findFirst({
+        where: {
+          email: recipient.user.email
+        }
+      })
+      // do not send email if team removed notification is not preferred
+      if (prefereces?.teamInviteAccepted === false) return
+
       const html = render(
         TeamInviteAcceptedEmail({
           teamName: job.data.team.title,
@@ -305,7 +338,6 @@ export class EmailConsumer extends WorkerHost {
       (userJourney) => userJourney.role === UserJourneyRole.owner
     )?.userId
 
-    // TODO: use this users call to check if user is subscribed to this type of email notification
     const { data } = await apollo.query({
       query: gql`
         query User($userId: ID!) {
@@ -323,6 +355,15 @@ export class EmailConsumer extends WorkerHost {
     if (data.user == null) {
       throw new Error('User not found')
     }
+    // check recipient preferences
+    const prefereces = await this.prismaService.emailPreference.findFirst({
+      where: {
+        email: data.user.email
+      }
+    })
+    // do not send email if team removed notification is not preferred
+    if (prefereces?.journeyAccessRequest === false) return
+
     const html = render(
       JourneyAccessRequestEmail({
         journey: job.data.journey,
@@ -357,7 +398,6 @@ export class EmailConsumer extends WorkerHost {
   async journeyRequestApproved(
     job: Job<JourneyRequestApproved>
   ): Promise<void> {
-    // TODO: use this users call to check if user is subscribed to this type of email notification
     const { data } = await apollo.query({
       query: gql`
         query User($userId: ID!) {
@@ -375,6 +415,14 @@ export class EmailConsumer extends WorkerHost {
     if (data.user == null) {
       throw new Error('User not found')
     }
+    // check recipient preferences
+    const prefereces = await this.prismaService.emailPreference.findFirst({
+      where: {
+        email: data.user.email
+      }
+    })
+    // do not send email if team removed notification is not preferred
+    if (prefereces?.journeyRequestApproved === false) return
 
     const html = render(
       JourneySharedEmail({
@@ -408,7 +456,15 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async journeyEditInvite(job: Job<JourneyEditInviteJob>): Promise<void> {
-    // TODO: use this to check if user is subscribed to this type of email notification
+    // check recipient preferences
+    const prefereces = await this.prismaService.emailPreference.findFirst({
+      where: {
+        email: job.data.email
+      }
+    })
+    // do not send email if team removed notification is not preferred
+    if (prefereces?.journeyEditInvite === false) return
+
     const { data } = await apollo.query({
       query: gql`
         query UserByEmail($email: String!) {
@@ -429,7 +485,8 @@ export class EmailConsumer extends WorkerHost {
         JourneySharedNoAccountEmail({
           sender: job.data.sender,
           journey: job.data.journey,
-          inviteLink: url
+          inviteLink: url,
+          recipientEmail: job.data.email
         }),
         {
           pretty: true
@@ -439,7 +496,8 @@ export class EmailConsumer extends WorkerHost {
         JourneySharedNoAccountEmail({
           journey: job.data.journey,
           inviteLink: url,
-          sender: job.data.sender
+          sender: job.data.sender,
+          recipientEmail: job.data.email
         }),
         {
           plainText: true
