@@ -1,11 +1,6 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
-import {
-  GoalType,
-  getLinkActionGoal
-} from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -23,7 +18,6 @@ export interface Actions {
 }
 
 export function ActionsTable(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { dispatch } = useEditor()
 
@@ -48,19 +42,6 @@ export function ActionsTable(): ReactElement {
 
   const actions = countUrls(journey)
 
-  const goalLabel = (url: string): string => {
-    if (url === '') return ''
-    const goalType = getLinkActionGoal(url)
-    switch (goalType) {
-      case GoalType.Chat:
-        return t('Start a Conversation')
-      case GoalType.Bible:
-        return t('Link to Bible')
-      default:
-        return t('Visit a Website')
-    }
-  }
-
   function handleSelect(): void {
     dispatch({
       type: 'SetActiveSlideAction',
@@ -81,7 +62,7 @@ export function ActionsTable(): ReactElement {
     >
       {journey != null &&
         (actions != null && actions.length > 0 ? (
-          <ActionsList actions={actions} goalLabel={goalLabel} />
+          <ActionsList actions={actions} />
         ) : (
           <ActionsBanner />
         ))}

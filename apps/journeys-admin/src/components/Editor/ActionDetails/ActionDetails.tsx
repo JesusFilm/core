@@ -8,13 +8,7 @@ import { ActionCards } from './ActionCards'
 import { ActionEditor } from './ActionEditor'
 import { ActionInformation } from './ActionInformation'
 
-interface ActionDetailsProps {
-  url?: string
-  goalLabel?: (url: string) => string
-  setSelectedAction?: (url: string) => void
-}
-
-export function ActionDetails({ goalLabel }: ActionDetailsProps): ReactElement {
+export function ActionDetails(): ReactElement {
   const {
     state: { selectedComponent },
     dispatch
@@ -33,7 +27,6 @@ export function ActionDetails({ goalLabel }: ActionDetailsProps): ReactElement {
         <Stack gap={7} sx={{ px: 6, pb: 6 }}>
           <ActionEditor
             url={selectedComponent}
-            goalLabel={goalLabel}
             setSelectedAction={setSelectedAction}
           />
           <ActionCards url={selectedComponent} />

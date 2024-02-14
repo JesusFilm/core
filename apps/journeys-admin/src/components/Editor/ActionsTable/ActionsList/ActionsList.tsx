@@ -1,35 +1,24 @@
-import AppBar from '@mui/material/AppBar'
 import Button from '@mui/material/Button'
-import Drawer from '@mui/material/Drawer'
-import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
-import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Box from '@mui/system/Box'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
-import X2Icon from '@core/shared/ui/icons/X2'
 
-import { ActionDetails } from '../../ActionDetails'
-import { ActionInformation } from '../../ActionDetails/ActionInformation'
 import type { Actions } from '../ActionsTable'
 
 import { ActionsListView } from './ActionsListView'
 
 interface ActionsListProps {
   actions: Actions[]
-  goalLabel: (url: string) => string
 }
 
-export function ActionsList({
-  actions,
-  goalLabel
-}: ActionsListProps): ReactElement {
+export function ActionsList({ actions }: ActionsListProps): ReactElement {
   const {
     dispatch,
     state: { selectedComponent }
@@ -93,7 +82,6 @@ export function ActionsList({
         <ActionsListView
           actions={actions}
           selectedAction={selectedComponent}
-          goalLabel={goalLabel}
           handleClick={handleClick}
         />
       </Stack>
