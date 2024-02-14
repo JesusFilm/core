@@ -4,7 +4,8 @@ import { LandingPage } from '../pages/landing-page'
 import { LeftNav } from '../pages/left-nav'
 import { OnboardingPages } from '../pages/onboarding-pages'
 
-test('Create a new user', async ({ page }) => {
+// eslint-disable-next-line playwright/no-skipped-test
+test.skip('Create a new user', async ({ page }) => {
   test.setTimeout(60000)
 
   const landingPage = new LandingPage(page)

@@ -4,18 +4,27 @@ import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
+import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
 
+import { EmailModule } from './modules/email/email.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { UserModule } from './modules/user/user.module'
 
 @Module({
   imports: [
     NestHealthModule,
+    EmailModule,
     UserModule,
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_URL ?? 'redis',
+        port: 6379
+      }
+    }),
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths:

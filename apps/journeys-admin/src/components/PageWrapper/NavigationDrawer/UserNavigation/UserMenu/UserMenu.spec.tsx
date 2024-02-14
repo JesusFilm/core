@@ -27,6 +27,7 @@ describe('UserMenu', () => {
               lastName: 'One',
               imageUrl: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com',
+              emailVerified: true,
               superAdmin: false
             }}
             profileOpen
@@ -85,6 +86,7 @@ describe('UserMenu', () => {
                 lastName: 'One',
                 imageUrl: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
+                emailVerified: true,
                 superAdmin: false
               }}
               profileOpen
