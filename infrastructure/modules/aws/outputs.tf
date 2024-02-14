@@ -53,3 +53,7 @@ output "ecs" {
 output "route53_private_zone_id" {
   value = module.route53_private_zone.id
 }
+
+output "cidr" {
+  value = var.cidr
+}
