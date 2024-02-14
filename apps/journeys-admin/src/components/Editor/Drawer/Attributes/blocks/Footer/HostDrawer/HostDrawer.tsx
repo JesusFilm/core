@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql, useLazyQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
@@ -10,6 +10,10 @@ import { HostAvatars } from '@core/journeys/ui/StepFooter/HostAvatars'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
+import {
+  GetAllTeamHosts,
+  GetAllTeamHostsVariables
+} from '../../../../../../../../__generated__/GetAllTeamHosts'
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { useUpdateJourneyHostMutation } from '../../../../../../../libs/useUpdateJourneyHostMutation'
@@ -19,7 +23,7 @@ import { ContainedIconButton } from '../../../../../../ContainedIconButton'
 import { HostFormDrawer } from './HostFormDrawer'
 
 export const GET_ALL_TEAM_HOSTS = gql`
-  query Hosts($teamId: ID!) {
+  query GetAllTeamHosts($teamId: ID!) {
     hosts(teamId: $teamId) {
       id
       location
@@ -69,10 +73,10 @@ export function HostDrawer(): ReactElement {
       : data.userTeams.find((userTeam) => userTeam.user.email === user.email) !=
         null
   // Fetch all hosts made for a team
-  const { data: teamHosts, refetch } = useQuery(GET_ALL_TEAM_HOSTS, {
-    variables: { teamId: journey?.team?.id },
-    skip: journey?.team == null
-  })
+  const [getAllTeamHosts, { data: teamHosts }] = useLazyQuery<
+    GetAllTeamHosts,
+    GetAllTeamHostsVariables
+  >(GET_ALL_TEAM_HOSTS)
   const [journeyHostUpdate] = useUpdateJourneyHostMutation()
 
   useEffect(() => {
@@ -81,11 +85,14 @@ export function HostDrawer(): ReactElement {
   }, [])
 
   useEffect(() => {
-    if (journey?.team != null) void refetch({ teamId: journey.team.id })
-  }, [journey?.team, refetch])
+    if (journey?.team != null)
+      void getAllTeamHosts({ variables: { teamId: journey.team.id } })
+  }, [journey?.team, getAllTeamHosts])
 
   async function handleClear(): Promise<void> {
-    if (journey?.team != null) await refetch({ teamId: journey.team.id })
+    if (journey?.id == null) return
+    if (journey?.team != null)
+      await getAllTeamHosts({ variables: { teamId: journey.team.id } })
     await journeyHostUpdate({
       variables: { id: journey?.id, input: { hostId: null } }
     })
@@ -94,6 +101,7 @@ export function HostDrawer(): ReactElement {
   }
 
   async function handleOpenCreateHost(): Promise<void> {
+    if (journey?.id == null) return
     await journeyHostUpdate({
       variables: { id: journey?.id, input: { hostId: null } }
     })

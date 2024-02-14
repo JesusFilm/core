@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: Hosts
+// GraphQL query operation: GetAllTeamHosts
 // ====================================================
 
-export interface Hosts_hosts {
+export interface GetAllTeamHosts_hosts {
   __typename: "Host";
   id: string;
   location: string | null;
@@ -16,10 +16,10 @@ export interface Hosts_hosts {
   title: string;
 }
 
-export interface Hosts {
-  hosts: Hosts_hosts[];
+export interface GetAllTeamHosts {
+  hosts: GetAllTeamHosts_hosts[];
 }
 
-export interface HostsVariables {
+export interface GetAllTeamHostsVariables {
   teamId: string;
 }

@@ -2,8 +2,8 @@ import List from '@mui/material/List'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields_host as Host } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../../__generated__/GetAllTeamHosts'
 import { useUpdateJourneyHostMutation } from '../../../../../../../../libs/useUpdateJourneyHostMutation'
 import { HostListItem } from '../HostListItem'
 

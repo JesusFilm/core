@@ -7,12 +7,13 @@ import { useTranslation } from 'react-i18next'
 
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
+import { GetAllTeamHosts } from '../../../../../../../../../__generated__/GetAllTeamHosts'
 import { Drawer } from '../../../../../Drawer'
 import { HostList } from '../HostList'
 
 interface HostListDrawerProps {
   openSelect: boolean
-  teamHosts?: any
+  teamHosts?: GetAllTeamHosts
   onClose: () => void
   setOpenInfo: () => void
   handleOpenCreateHost: () => void
