@@ -1,8 +1,6 @@
 import { TOptions } from 'i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { getStepHeading } from '@core/journeys/ui/getStepHeading'
-import { getStepSubtitle } from '@core/journeys/ui/getStepSubtitle'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import {
@@ -10,7 +8,8 @@ import {
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
 import { getBackgroundImage } from '../getBackgroundImage'
-import { getPriorityBlock } from '../getPriorityBlock/getPriorityBlock'
+import { getPriorityBlock } from '../getPriorityBlock'
+import { getStepHeadings } from '../getStepHeadings'
 
 interface CardMetadata {
   title?: string
@@ -50,8 +49,7 @@ export function getCardMetadata(
 
     return { title, subtitle, priorityBlock, bgImage }
   } else {
-    const title = getStepHeading(step.id, step.children, steps, t)
-    const subtitle = getStepSubtitle(step.id, step.children, steps, t)
+    const [title, subtitle] = getStepHeadings(step.children)
     return { title, subtitle, priorityBlock, bgImage }
   }
 }
