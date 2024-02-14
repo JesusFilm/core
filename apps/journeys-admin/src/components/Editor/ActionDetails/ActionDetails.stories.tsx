@@ -25,7 +25,7 @@ const Template: StoryObj<ComponentProps<typeof ActionDetails>> = {
     <MockedProvider>
       <JourneyProvider value={{ journey, variant: 'admin' }}>
         <Box sx={{ backgroundColor: 'background.paper' }}>
-          <ActionDetails {...args} />
+          <ActionDetails />
         </Box>
       </JourneyProvider>
     </MockedProvider>
