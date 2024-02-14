@@ -9,6 +9,12 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { FindOrCreateEmailPreference } from '../../__generated__/FindOrCreateEmailPreference'
+import {
+  UpdateEmailPreference,
+  UpdateEmailPreference_updateEmailPreference
+} from '../../__generated__/UpdateEmailPreference'
+
 const FIND_OR_CREATE_EMAIL_PREFERENCE = gql`
   mutation FindOrCreateEmailPreference($email: String!) {
     findOrCreateEmailPreference(email: $email) {
@@ -39,28 +45,24 @@ const UPDATE_EMAIL_PREFERENCE = gql`
   }
 `
 
-interface EmailPreference {
-  email: string
-  unsubscribeAll: boolean
-  teamInvite: boolean
-  teamRemoved: boolean
-  teamInviteAccepted: boolean
-  journeyEditInvite: boolean
-  journeyRequestApproved: boolean
-  journeyAccessRequest: boolean
-}
+type EmailPreference = Omit<
+  UpdateEmailPreference_updateEmailPreference,
+  '__typename'
+>
 
 function EmailPreferencesPage(): ReactElement {
   const router = useRouter()
   const { email, unsubscribeAll } = router.query
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
-  const [updateEmailPreference] = useMutation(UPDATE_EMAIL_PREFERENCE)
-  const [findOrCreateEmailPreference] = useMutation(
-    FIND_OR_CREATE_EMAIL_PREFERENCE
+  const [updateEmailPreference] = useMutation<UpdateEmailPreference>(
+    UPDATE_EMAIL_PREFERENCE
   )
-  const [emailPreferences, setEmailPreferences] =
-    useState<EmailPreference | null>(null)
+  const [findOrCreateEmailPreference] =
+    useMutation<FindOrCreateEmailPreference>(FIND_OR_CREATE_EMAIL_PREFERENCE)
+  const [emailPreferences, setEmailPreferences] = useState<
+    EmailPreference | null | undefined
+  >(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -70,14 +72,14 @@ function EmailPreferencesPage(): ReactElement {
           email: email as string
         }
       })
-      setEmailPreferences(data.findOrCreateEmailPreference)
+      setEmailPreferences(data?.findOrCreateEmailPreference)
 
       // Check if the unsuball query parameter is present
       if (unsubscribeAll !== undefined) {
         const updatePrefs = await updateEmailPreference({
           variables: {
             input: {
-              email: data.findOrCreateEmailPreference.email,
+              email: data?.findOrCreateEmailPreference?.email,
               unsubscribeAll: true,
               teamInvite: false,
               teamRemoved: false,
@@ -88,7 +90,7 @@ function EmailPreferencesPage(): ReactElement {
             }
           }
         })
-        setEmailPreferences(updatePrefs.data.updateEmailPreference)
+        setEmailPreferences(updatePrefs?.data?.updateEmailPreference)
         enqueueSnackbar(t(`Unsubscribed From all Emails.`), {
           variant: 'success',
           preventDuplicate: true
@@ -100,11 +102,18 @@ function EmailPreferencesPage(): ReactElement {
         console.error('Error fetching email preferences:', error)
       })
     }
-  }, [email, findOrCreateEmailPreference])
+  }, [
+    email,
+    enqueueSnackbar,
+    findOrCreateEmailPreference,
+    t,
+    unsubscribeAll,
+    updateEmailPreference
+  ])
 
   const handlePreferenceChange =
     (preference: keyof EmailPreference) => async () => {
-      if (emailPreferences !== null) {
+      if (emailPreferences != null) {
         const updatedPreferences: EmailPreference = {
           ...emailPreferences,
           [preference]: !(emailPreferences[preference] as boolean)
@@ -114,7 +123,7 @@ function EmailPreferencesPage(): ReactElement {
     }
 
   const handleSubmit = async (): Promise<void> => {
-    if (emailPreferences !== null) {
+    if (emailPreferences != null) {
       setLoading(true) // Set loading state to true
       await updateEmailPreference({
         variables: {
@@ -165,7 +174,7 @@ function EmailPreferencesPage(): ReactElement {
         {t('Email Preferences')}
       </Typography>
 
-      {emailPreferences !== null && (
+      {emailPreferences != null && (
         <Grid container spacing={12}>
           <Grid item xs={10} md={10}>
             <Typography variant="h5">{t('Team Invite')}</Typography>
