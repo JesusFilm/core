@@ -2,15 +2,22 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NodeProps } from 'reactflow'
 
-import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../__generated__/GetJourney'
+import { TreeBlock } from '@core/journeys/ui/block'
+
+import {
+  BlockFields_SignUpBlock as SignUpBlock,
+  BlockFields_StepBlock as StepBlock
+} from '../../../../../__generated__/BlockFields'
 import { ActionNode } from '../ActionNode'
 
-export type SignUpBlockNodeData = SignUpBlock
+export interface SignUpBlockNodeData extends TreeBlock<SignUpBlock> {
+  step: TreeBlock<StepBlock>
+}
 
 export function SignUpBlockNode({
-  data: block
+  data: { step, ...block }
 }: NodeProps<SignUpBlockNodeData>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  return <ActionNode block={block} title={t('Subscribe')} />
+  return <ActionNode block={block} step={step} title={t('Subscribe')} />
 }

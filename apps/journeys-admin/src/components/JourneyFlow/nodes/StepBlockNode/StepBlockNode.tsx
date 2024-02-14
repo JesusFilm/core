@@ -50,7 +50,7 @@ export function StepBlockNode({
   } = useEditor()
   const { journey } = useJourney()
 
-  async function handleConnect(params): Promise<void> {
+  async function handleSourceConnect(params): Promise<void> {
     if (journey == null) return
 
     await stepBlockNextBlockUpdate({
@@ -83,157 +83,155 @@ export function StepBlockNode({
         journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
         selectedStep?.id === step.id
       }
-      onSourceConnect={handleConnect}
+      onSourceConnect={handleSourceConnect}
     >
       {({ selected }) => (
-        <Box onClick={handleClick} sx={{ height: '150%', overflow: 'visible' }}>
-          <Card
+        <Card
+          sx={{
+            borderRadius: 2,
+            outline: (theme) =>
+              `2px solid ${
+                selected === true
+                  ? theme.palette.primary.main
+                  : selected === 'descendant'
+                  ? theme.palette.divider
+                  : 'transparent'
+              }`,
+            outlineOffset: '5px'
+          }}
+          onClick={handleClick}
+        >
+          <CardContent
             sx={{
-              borderRadius: 2,
-              outline: (theme) =>
-                `2px solid ${
-                  selected === true
-                    ? theme.palette.primary.main
-                    : selected === 'descendant'
-                    ? theme.palette.divider
-                    : 'transparent'
-                }`,
-              outlineOffset: '5px'
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyItems: 'center',
+              width: STEP_NODE_WIDTH,
+              height: STEP_NODE_HEIGHT,
+              gap: 2,
+              margin: 0,
+              padding: 0,
+              borderRadius: 1,
+              paddingBottom: '0px !important'
             }}
           >
-            <CardContent
+            <Box
               sx={{
+                height: '100%',
+                flexShrink: 0,
+                width: 50,
+                border: '1px solid white',
+                borderBottomLeftRadius: 8,
+                borderTopLeftRadius: 8,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center center',
                 display: 'flex',
-                flexDirection: 'row',
                 alignItems: 'center',
-                justifyItems: 'center',
-                width: STEP_NODE_WIDTH,
-                height: STEP_NODE_HEIGHT,
-                gap: 2,
-                margin: 0,
-                padding: 0,
-                borderRadius: 1,
-                paddingBottom: '0px !important'
+                justifyContent: 'center',
+                bgcolor: card?.backgroundColor ?? 'background.default',
+                backgroundImage: bgImage != null ? `url(${bgImage})` : undefined
               }}
             >
-              <Box
+              {priorityBlock != null && (
+                <StepBlockNodeIcon typename={priorityBlock.__typename} />
+              )}
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                width: STEP_NODE_WIDTH,
+                height: STEP_NODE_HEIGHT,
+                margin: 0,
+                padding: 2
+              }}
+            >
+              <Typography
                 sx={{
-                  height: '100%',
-                  flexShrink: 0,
-                  width: 50,
-                  border: '1px solid white',
-                  borderBottomLeftRadius: 8,
-                  borderTopLeftRadius: 8,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center center',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  bgcolor: card?.backgroundColor ?? 'background.default',
-                  backgroundImage:
-                    bgImage != null ? `url(${bgImage})` : undefined
-                }}
-              >
-                {priorityBlock != null && (
-                  <StepBlockNodeIcon typename={priorityBlock.__typename} />
-                )}
-              </Box>
-              <Box
-                sx={{
-                  display: 'flex',
+                  display: '-webkit-box',
+                  '-webkit-box-orient': 'vertical',
+                  '-webkit-line-clamp': '1',
+                  overflow: 'hidden',
+                  padding: 0,
+                  fontSize: 9,
+                  height: 'auto',
                   flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  justifyContent: 'center',
-                  width: STEP_NODE_WIDTH,
-                  height: STEP_NODE_HEIGHT,
-                  margin: 0,
-                  padding: 2
+                  justifyContent: 'flex-end',
+                  alignSelf: 'flex-start',
+                  marginBottom: 1,
+                  lineHeight: 1.3,
+                  alignItems: 'flex-end',
+                  color: '#444451'
                 }}
               >
-                <Typography
-                  sx={{
-                    display: '-webkit-box',
-                    '-webkit-box-orient': 'vertical',
-                    '-webkit-line-clamp': '1',
-                    overflow: 'hidden',
-                    padding: 0,
-                    fontSize: 9,
-                    height: 'auto',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    alignSelf: 'flex-start',
-                    marginBottom: 1,
-                    lineHeight: 1.3,
-                    alignItems: 'flex-end',
-                    color: '#444451'
-                  }}
-                >
-                  {description !== '' ? description : ''}
-                </Typography>
-                <Typography
-                  sx={{
-                    display: '-webkit-box',
-                    '-webkit-box-orient': 'vertical',
-                    '-webkit-line-clamp': '2',
-                    overflow: 'hidden',
-                    padding: 0,
-                    fontSize: 11,
-                    fontWeight: 'bold',
-                    height: 'auto',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    alignSelf: 'flex-start',
-                    marginBottom: 1,
-                    lineHeight: 1.3,
-                    alignItems: 'flex-end',
-                    color: '#26262E'
-                  }}
-                >
-                  {title !== '' ? (
-                    title
-                  ) : (
-                    <Skeleton
-                      animation={false}
-                      sx={{
-                        height: 16,
-                        width: 117,
-                        borderRadius: 1,
-                        color: 'background.paper'
-                      }}
-                    />
-                  )}
-                </Typography>
-                <Typography
-                  sx={{
-                    display: '-webkit-box',
-                    '-webkit-box-orient': 'vertical',
-                    '-webkit-line-clamp': '2',
-                    fontSize: 10,
-                    lineHeight: '1.2',
-                    justifyContent: 'top',
-                    color: '#444451',
-                    overflow: 'hidden',
-                    paddingBottom: '1px'
-                  }}
-                >
-                  {title !== '' ? (
-                    subtitle
-                  ) : (
-                    <Skeleton
-                      animation={false}
-                      sx={{
-                        height: 16,
-                        width: 95,
-                        borderRadius: 1,
-                        color: 'background.paper'
-                      }}
-                    />
-                  )}
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
+                {description !== '' ? description : ''}
+              </Typography>
+              <Typography
+                sx={{
+                  display: '-webkit-box',
+                  '-webkit-box-orient': 'vertical',
+                  '-webkit-line-clamp': '2',
+                  overflow: 'hidden',
+                  padding: 0,
+                  fontSize: 11,
+                  fontWeight: 'bold',
+                  height: 'auto',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-end',
+                  alignSelf: 'flex-start',
+                  marginBottom: 1,
+                  lineHeight: 1.3,
+                  alignItems: 'flex-end',
+                  color: '#26262E'
+                }}
+              >
+                {title !== '' ? (
+                  title
+                ) : (
+                  <Skeleton
+                    animation={false}
+                    sx={{
+                      height: 16,
+                      width: 117,
+                      borderRadius: 1,
+                      color: 'background.paper'
+                    }}
+                  />
+                )}
+              </Typography>
+              <Typography
+                sx={{
+                  display: '-webkit-box',
+                  '-webkit-box-orient': 'vertical',
+                  '-webkit-line-clamp': '2',
+                  fontSize: 10,
+                  lineHeight: '1.2',
+                  justifyContent: 'top',
+                  color: '#444451',
+                  overflow: 'hidden',
+                  paddingBottom: '1px'
+                }}
+              >
+                {title !== '' ? (
+                  subtitle
+                ) : (
+                  <Skeleton
+                    animation={false}
+                    sx={{
+                      height: 16,
+                      width: 95,
+                      borderRadius: 1,
+                      color: 'background.paper'
+                    }}
+                  />
+                )}
+              </Typography>
+            </Box>
+          </CardContent>
+        </Card>
       )}
     </BaseNode>
   )

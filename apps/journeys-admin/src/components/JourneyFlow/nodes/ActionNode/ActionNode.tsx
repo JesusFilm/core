@@ -2,13 +2,17 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ComponentProps, ReactElement } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockFields } from '../../../../../__generated__/BlockFields'
+import {
+  BlockFields as Block,
+  BlockFields_StepBlock as StepBlock
+} from '../../../../../__generated__/BlockFields'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { BaseNode } from '../BaseNode'
 
@@ -19,20 +23,22 @@ export const ACTION_NODE_HEIGHT_GAP = 16
 
 export interface ActionNodeProps extends ComponentProps<typeof BaseNode> {
   title: string
-  block: BlockFields
+  block: TreeBlock<Block>
+  step: TreeBlock<StepBlock>
 }
 
 export function ActionNode({
-  block,
   title,
+  block,
+  step,
   onSourceConnect,
   ...props
 }: ActionNodeProps): ReactElement {
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
   const { journey } = useJourney()
-
   const {
-    state: { selectedBlock, journeyEditContentComponent }
+    state: { selectedBlock, journeyEditContentComponent },
+    dispatch
   } = useEditor()
 
   async function handleSourceConnect(params): Promise<void> {
@@ -41,6 +47,11 @@ export function ActionNode({
     await navigateToBlockActionUpdate(block, params.target)
 
     onSourceConnect?.(params)
+  }
+
+  function handleClick(): void {
+    dispatch({ type: 'SetSelectedStepAction', step })
+    dispatch({ type: 'SetSelectedBlockAction', block })
   }
 
   return (
@@ -54,33 +65,37 @@ export function ActionNode({
       isTargetConnectable={false}
       {...props}
     >
-      <Box
-        sx={{
-          borderRadius: 20,
-          outline: (theme) => `2px solid ${theme.palette.divider}`,
-          backgroundColor: '#eff2f5',
-          outlineWidth: 1,
-          outlineColor: 'grey',
-          width: ACTION_NODE_WIDTH,
-          height: ACTION_NODE_HEIGHT,
-          py: 1,
-          px: 4
-        }}
-      >
-        <Typography
+      {({ selected }) => (
+        <Box
           sx={{
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-            textAlign: 'center',
-            fontWeight: 'bold',
-            fontSize: 10
+            borderRadius: 20,
+            outline: (theme) =>
+              `1px solid ${
+                selected !== false ? theme.palette.primary.main : 'grey'
+              }`,
+            backgroundColor: '#eff2f5',
+            width: ACTION_NODE_WIDTH,
+            height: ACTION_NODE_HEIGHT,
+            py: 1,
+            px: 4
           }}
-          variant="body2"
+          onClick={handleClick}
         >
-          {title}
-        </Typography>
-      </Box>
+          <Typography
+            sx={{
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              textAlign: 'center',
+              fontWeight: 'bold',
+              fontSize: 10
+            }}
+            variant="body2"
+          >
+            {title}
+          </Typography>
+        </Box>
+      )}
     </BaseNode>
   )
 }

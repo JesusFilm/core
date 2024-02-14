@@ -209,42 +209,42 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
         nodes.push({
           ...node,
           type: block.__typename,
-          data: block
+          data: { ...block, step }
         })
         break
       case 'ButtonBlock':
         nodes.push({
           ...node,
           type: block.__typename,
-          data: block
+          data: { ...block, step }
         })
         break
       case 'TextResponseBlock':
         nodes.push({
           ...node,
           type: block.__typename,
-          data: block
+          data: { ...block, step }
         })
         break
       case 'SignUpBlock':
         nodes.push({
           ...node,
           type: block.__typename,
-          data: block
+          data: { ...block, step }
         })
         break
       case 'FormBlock':
         nodes.push({
           ...node,
           type: block.__typename,
-          data: block
+          data: { ...block, step }
         })
         break
       case 'VideoBlock':
         nodes.push({
           ...node,
           type: block.__typename,
-          data: block
+          data: { ...block, step }
         })
         break
     }
