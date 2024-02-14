@@ -8,25 +8,33 @@ import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
-import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import File5Icon from '@core/shared/ui/icons/File5'
 import MoreIcon from '@core/shared/ui/icons/More'
+import Play3Icon from '@core/shared/ui/icons/Play3'
 import SettingsIcon from '@core/shared/ui/icons/Settings'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
 import { MenuItem } from '../../../MenuItem'
-import { DeleteBlock } from '../../Canvas/QuickControls/DeleteBlock'
-import { DuplicateBlock } from '../../Canvas/QuickControls/DuplicateBlock'
 import { Analytics } from '../Analytics'
+import { Strategy } from '../Strategy'
 
 import { CopyMenuItem } from './CopyMenuItem'
 import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
 import { LanguageMenuItem } from './LanguageMenuItem'
+
+const AccessDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "components/AccessDialog" */
+      '../../../AccessDialog'
+    ).then((mod) => mod.AccessDialog),
+  { ssr: false }
+)
 
 const DescriptionDialog = dynamic(
   async () =>
@@ -64,14 +72,14 @@ export const GET_ROLE = gql`
 `
 
 export function Menu(): ReactElement {
-  const {
-    state: { selectedBlock }
-  } = useEditor()
   const router = useRouter()
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
+  const [accessDialogOpen, setAccessDialogOpen] = useState<
+    boolean | undefined
+  >()
   const [titleDialogOpen, setTitleDialogOpen] = useState<boolean | undefined>()
   const [descriptionDialogOpen, setDescriptionDialogOpen] = useState<
     boolean | undefined
@@ -87,6 +95,12 @@ export function Menu(): ReactElement {
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })
+  }
+
+  function handleOpenAccessDialog(): void {
+    setRoute('access')
+    setAccessDialogOpen(true)
+    setAnchorEl(null)
   }
 
   function handleShowMenu(event: React.MouseEvent<HTMLButtonElement>): void {
@@ -153,18 +167,16 @@ export function Menu(): ReactElement {
         >
           <MenuItem
             label={t('Preview')}
-            icon={<EyeOpenIcon />}
+            icon={<Play3Icon />}
             openInNew
             onClick={handleCloseMenu}
           />
         </NextLink>
-        <DuplicateBlock
-          variant="list-item"
-          disabled={selectedBlock?.__typename === 'VideoBlock'}
-          handleClick={handleCloseMenu}
+        <MenuItem
+          label={t('Manage Access')}
+          icon={<UsersProfiles2Icon />}
+          onClick={handleOpenAccessDialog}
         />
-        <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
-        <Divider />
         {journey?.template === true && (
           <MenuItem
             label={t('Template Settings')}
@@ -193,6 +205,9 @@ export function Menu(): ReactElement {
         {journey?.template !== true && isPublisher === true && (
           <CreateTemplateMenuItem />
         )}
+        {journey != null && (
+          <Strategy variant="list-item" closeMenu={handleCloseMenu} />
+        )}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && <Divider />}
         {journey != null &&
@@ -200,6 +215,13 @@ export function Menu(): ReactElement {
             <CopyMenuItem journey={journey} onClose={handleCloseMenu} />
           )}
       </MuiMenu>
+      {journey?.id != null && accessDialogOpen != null && (
+        <AccessDialog
+          journeyId={journey.id}
+          open={accessDialogOpen}
+          onClose={() => setAccessDialogOpen(false)}
+        />
+      )}
       {titleDialogOpen != null && (
         <TitleDialog open={titleDialogOpen} onClose={handleCloseTitleDialog} />
       )}

@@ -7,7 +7,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { defaultJourney } from '../../data'
 
-import { JourneyLink } from './JourneyLink'
+import { ShareButton } from './ShareButton'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -21,7 +21,7 @@ jest.mock('next/router', () => ({
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-describe('JourneyLink', () => {
+describe('ShareButton', () => {
   const push = jest.fn()
   const on = jest.fn()
 
@@ -43,7 +43,7 @@ describe('JourneyLink', () => {
               variant: 'admin'
             }}
           >
-            <JourneyLink />
+            <ShareButton />
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -85,7 +85,7 @@ describe('JourneyLink', () => {
               variant: 'admin'
             }}
           >
-            <JourneyLink />
+            <ShareButton />
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>

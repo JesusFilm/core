@@ -32,6 +32,7 @@ import Bell2 from './Bell2'
 import Bible from './Bible'
 import Book from './Book'
 import Box from './Box'
+import Bulb from './Bulb'
 import Calendar1 from './Calendar1'
 import Calendar4 from './Calendar4'
 import Check from './Check'
@@ -224,6 +225,7 @@ export type IconName =
   | 'Bible'
   | 'Book'
   | 'Box'
+  | 'Bulb'
   | 'Calendar1'
   | 'Calendar4'
   | 'CheckBroken'
@@ -420,6 +422,7 @@ const iconComponents: IconComponents = {
   Bible,
   Book,
   Box,
+  Bulb,
   Calendar1,
   Calendar4,
   CheckBroken,
