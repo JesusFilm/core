@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { Theme, styled, useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import { styled, useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect, useRef } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
@@ -18,7 +17,6 @@ import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import { JourneyFlow } from '../../JourneyFlow'
 import { ActionsTable } from '../ActionsTable'
 import { Canvas } from '../Canvas'
-import { Fab } from '../Canvas/Fab'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Attributes } from '../Drawer/Attributes'
 import { SocialPreview } from '../SocialPreview'
@@ -35,7 +33,6 @@ export function Slider(): ReactElement {
     state: { activeSlide, journeyEditContentComponent },
     dispatch
   } = useEditor()
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
@@ -290,9 +287,7 @@ export function Slider(): ReactElement {
         }}
       >
         <Attributes />
-        <Fab visible={smUp} />
       </StyledSwiperSlide>
-      <Fab visible={!smUp} />
     </StyledSwiper>
   )
 }

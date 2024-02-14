@@ -16,34 +16,52 @@ import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
-import { DRAWER_WIDTH } from '../../constants'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
+import { DRAWER_WIDTH } from '../constants'
 
-interface FabProp {
-  visible?: boolean
-}
-
-export function Fab({ visible = true }: FabProp): ReactElement {
+export function Fab(): ReactElement {
   const {
-    state: { activeFab, selectedStep, steps, journeyEditContentComponent },
+    state: {
+      activeFab,
+      activeSlide,
+      selectedComponent,
+      selectedStep,
+      steps,
+      journeyEditContentComponent
+    },
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  function handleClick(): void {
-    dispatch({
-      type: 'SetSelectedComponentAction',
-      component: 'Fab'
-    })
-    if (!smUp) {
+  function handleAddFab(): void {
+    if (selectedComponent === 'AddBlock') {
       dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.Drawer
+        type: 'SetSelectedComponentAction'
       })
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        block: selectedStep
+      })
+      if (!smUp) {
+        dispatch({
+          type: 'SetActiveSlideAction',
+          activeSlide: ActiveSlide.Content
+        })
+      }
+    } else {
+      dispatch({
+        type: 'SetSelectedComponentAction',
+        component: 'AddBlock'
+      })
+      if (!smUp) {
+        dispatch({
+          type: 'SetActiveSlideAction',
+          activeSlide: ActiveSlide.Drawer
+        })
+      }
     }
   }
-
   function handleEditFab(): void {
     dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
   }
@@ -77,16 +95,25 @@ export function Fab({ visible = true }: FabProp): ReactElement {
   return (
     <Zoom
       in={
-        visible &&
-        journeyEditContentComponent === ActiveJourneyEditContent.Canvas
+        journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
+        activeSlide > ActiveSlide.JourneyFlow
       }
       unmountOnExit
       data-testid="Fab"
     >
       {activeFab === ActiveFab.Add ? (
-        <MuiFab {...fabProps} onClick={handleClick}>
-          <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
-          {smUp ? t('Add') : ''}
+        <MuiFab {...fabProps} onClick={handleAddFab}>
+          {selectedComponent === 'AddBlock' ? (
+            <>
+              <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
+              {smUp ? t('Done') : ''}
+            </>
+          ) : (
+            <>
+              <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
+              {smUp ? t('Add') : ''}
+            </>
+          )}
         </MuiFab>
       ) : activeFab === ActiveFab.Edit ? (
         <MuiFab {...fabProps} onClick={handleEditFab}>

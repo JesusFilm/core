@@ -207,27 +207,27 @@ export function Attributes(): ReactElement {
     case ActiveJourneyEditContent.Action:
       return <Drawer title={t('Information')} />
     case ActiveJourneyEditContent.Canvas:
-      if (selectedComponent === 'Fab') {
-        return (
-          <Drawer title="Add new blocks">
-            <AddBlock />
-          </Drawer>
-        )
-      }
-      if (selectedComponent === 'Footer') {
-        return (
-          <Drawer title={t('Footer Properties')}>
-            <Footer />
-          </Drawer>
-        )
-      } else {
-        return (
-          <AttributesContent
-            selectedBlock={selectedBlock}
-            selectedStep={selectedStep}
-            showDrawer
-          />
-        )
+      switch (selectedComponent) {
+        case 'AddBlock':
+          return (
+            <Drawer title={t('Add a block')}>
+              <AddBlock />
+            </Drawer>
+          )
+        case 'Footer':
+          return (
+            <Drawer title={t('Footer Properties')}>
+              <Footer />
+            </Drawer>
+          )
+        default:
+          return (
+            <AttributesContent
+              selectedBlock={selectedBlock}
+              selectedStep={selectedStep}
+              showDrawer
+            />
+          )
       }
   }
 }
