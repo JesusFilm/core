@@ -225,7 +225,7 @@ describe('CardForm', () => {
           value={{ journey: { id: 'journeyId' } as unknown as Journey }}
         >
           <EditorProvider initialState={{ steps: [step] }}>
-            <CardForm onClick={jest.fn()} />
+            <CardForm />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
