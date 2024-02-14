@@ -1,7 +1,4 @@
 import Grid from '@mui/material/Grid'
-import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -20,7 +17,6 @@ import { NewVideoButton } from '../Canvas/Button/NewVideoButton'
 
 export function AddBlock(): ReactElement {
   const { formiumForm } = useFlags()
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
     state: { selectedStep }
   } = useEditor()
@@ -35,45 +31,34 @@ export function AddBlock(): ReactElement {
 
   return (
     <>
-      {smUp ? (
-        <Stack gap={4} mt={6} px={5}>
+      <Grid p={5} container spacing={4}>
+        <Grid item xs={6} sm={12}>
           <NewTypographyButton />
-          <NewImageButton />
-          <NewVideoButton disabled={hasChildBlock} />
-          <NewRadioQuestionButton />
-          <NewTextResponseButton />
-          <NewSignUpButton />
-          <NewButtonButton />
-          {formiumForm && <NewFormButton />}
-        </Stack>
-      ) : (
-        <Grid p={5} container spacing={4}>
-          <Grid item xs={6}>
-            <NewTypographyButton />
-          </Grid>
-          <Grid item xs={6}>
-            <NewImageButton />
-          </Grid>
-          <Grid item xs={6}>
-            <NewVideoButton disabled={hasChildBlock} />
-          </Grid>
-          <Grid item xs={6}>
-            <NewRadioQuestionButton />
-          </Grid>
-          <Grid item xs={6}>
-            <NewTextResponseButton />
-          </Grid>
-          <Grid item xs={6}>
-            <NewSignUpButton />
-          </Grid>
-          <Grid item xs={6}>
-            <NewButtonButton />
-          </Grid>
-          <Grid item xs={6}>
-            {formiumForm && <NewFormButton />}
-          </Grid>
         </Grid>
-      )}
+        <Grid item xs={6} sm={12}>
+          <NewImageButton />
+        </Grid>
+        <Grid item xs={6} sm={12}>
+          <NewVideoButton disabled={hasChildBlock} />
+        </Grid>
+        <Grid item xs={6} sm={12}>
+          <NewRadioQuestionButton />
+        </Grid>
+        <Grid item xs={6} sm={12}>
+          <NewTextResponseButton />
+        </Grid>
+        <Grid item xs={6} sm={12}>
+          <NewSignUpButton />
+        </Grid>
+        <Grid item xs={6} sm={12}>
+          <NewButtonButton />
+        </Grid>
+        {formiumForm && (
+          <Grid item xs={6} sm={12}>
+            <NewFormButton />
+          </Grid>
+        )}
+      </Grid>
     </>
   )
 }
