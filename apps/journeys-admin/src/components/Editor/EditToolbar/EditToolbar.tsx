@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
-import Play3 from '@core/shared/ui/icons/Play3'
-import Share from '@core/shared/ui/icons/Share'
+import Play3Icon from '@core/shared/ui/icons/Play3'
+import ShareIcon from '@core/shared/ui/icons/Share'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
@@ -115,7 +115,7 @@ export function EditToolbar(): ReactElement {
           <Button
             variant="contained"
             color="secondary"
-            startIcon={<Share />}
+            startIcon={<ShareIcon />}
             onClick={handleShowMenu}
             sx={{
               display: {
@@ -127,7 +127,6 @@ export function EditToolbar(): ReactElement {
             <Typography variant="subtitle2" sx={{ py: 1 }}>
               {t('Share')}
             </Typography>
-            {/* {t('Share')} */}
           </Button>
           <IconButton
             component="a"
@@ -141,7 +140,7 @@ export function EditToolbar(): ReactElement {
               }
             }}
           >
-            <Play3 />
+            <Play3Icon />
           </IconButton>
           <IconButton
             aria-label="Preview"
@@ -154,7 +153,7 @@ export function EditToolbar(): ReactElement {
               }
             }}
           >
-            <Play3 />
+            <Play3Icon />
           </IconButton>
           <Dialog open={Boolean(anchorEl)} onClose={handleCloseMenu}>
             <JourneyLink isMenu />

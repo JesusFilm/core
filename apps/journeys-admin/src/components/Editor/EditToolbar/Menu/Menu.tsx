@@ -218,7 +218,7 @@ export function Menu(): ReactElement {
       </MuiMenu>
       {journey?.id != null && accessDialogOpen != null && (
         <AccessDialog
-          journeyId={journey?.id}
+          journeyId={journey.id}
           open={accessDialogOpen}
           onClose={() => setAccessDialogOpen(false)}
         />

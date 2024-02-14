@@ -1,14 +1,15 @@
 import Button from '@mui/material/Button'
-import { ReactElement, useEffect } from 'react'
-
-import BulbIcon from '@core/shared/ui/icons/Bulb'
 import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import BulbIcon from '@core/shared/ui/icons/Bulb'
+
 import { MenuItem } from '../../../MenuItem'
 
 interface StrategyProps {
