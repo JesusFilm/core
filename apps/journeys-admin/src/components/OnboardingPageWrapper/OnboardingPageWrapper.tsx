@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { ReactElement, ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -56,7 +57,7 @@ export function OnboardingPageWrapper({
           {t('Feedback & Support')}
         </Link>
         <Button size="small" onClick={() => setOpen(true)}>
-          {t('Language')}
+          <Typography variant="body2">{t('Language')}</Typography>
         </Button>
       </Stack>
       {open && (

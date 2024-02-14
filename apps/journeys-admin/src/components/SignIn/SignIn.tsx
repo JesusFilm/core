@@ -94,7 +94,7 @@ export function SignIn(): ReactElement {
               {t('Feedback & Support')}
             </Typography>
             <Button size="small" onClick={() => setOpen(true)}>
-              {t('Language')}
+              <Typography variant="body2">{t('Language')}</Typography>
             </Button>
           </Stack>
           {open && (
