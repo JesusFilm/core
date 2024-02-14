@@ -414,7 +414,7 @@ export function JourneyFlow(): ReactElement {
         proOptions={{ hideAttribution: true }}
       >
         <Controls showInteractive={false} />
-        <Background color="#F1F1F1" gap={16} />
+        <Background color="#aaa" gap={16} />
       </ReactFlow>
     </Box>
   )
