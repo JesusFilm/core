@@ -470,7 +470,7 @@ model Action {
 }
 
 model EmailPreference {
-  email                  String  @id
+  email                  String  @id @unique
   unsubscribeAll         Boolean
   teamInvite             Boolean
   teamRemoved            Boolean
@@ -478,4 +478,6 @@ model EmailPreference {
   journeyEditInvite      Boolean
   journeyRequestApproved Boolean
   journeyAccessRequest   Boolean
+
+  @@index(email)
 }
