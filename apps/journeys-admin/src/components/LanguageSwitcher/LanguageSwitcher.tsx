@@ -33,8 +33,6 @@ export function LanguageSwitcher({
   const router = useRouter()
   const { t, i18n } = useTranslation('apps-journeys-admin')
 
-  console.log('i18n:', i18n)
-
   const [languages, setLanguages] = useState<Language[]>([])
   const [languageState, setLanguageState] = useState<languageState>({
     confirmLanguageChange: false,
