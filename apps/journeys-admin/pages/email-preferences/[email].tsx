@@ -289,7 +289,7 @@ export const getServerSideProps = withUserTokenSSR()(
         mutation: UPDATE_EMAIL_PREFERENCE,
         variables: {
           input: {
-            email: journeysEmailPreferenceData?.findOrCreateEmailPreference
+            email: journeysEmailPreferenceData?.findOrCreateJourneysEmailPreference
               ?.email as string,
             unsubscribeAll: true,
             teamInvite: false,
