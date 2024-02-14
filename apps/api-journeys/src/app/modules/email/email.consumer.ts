@@ -179,7 +179,7 @@ export class EmailConsumer extends WorkerHost {
       }
     })
     // do not send email if team removed notification is not preferred
-    if (preferences?.teamInvite === false || preferences.unsubscribeAll === true) return
+    if (preferences?.teamInvite === false || preferences?.unsubscribeAll === true) return
 
     const { data } = await apollo.query({
       query: gql`
@@ -296,7 +296,7 @@ export class EmailConsumer extends WorkerHost {
         }
       })
       // do not send email if team removed notification is not preferred
-      if (preferences?.teamInviteAccepted === false || preferences.unsubscribeAll === true) return
+      if (preferences?.teamInviteAccepted === false || preferences?.unsubscribeAll === true) return
 
       const html = render(
         TeamInviteAcceptedEmail({
@@ -362,7 +362,7 @@ export class EmailConsumer extends WorkerHost {
       }
     })
     // do not send email if team removed notification is not preferred
-    if (preferences?.journeyAccessRequest === false || preferences.unsubscribeAll === true) return
+    if (preferences?.journeyAccessRequest === false || preferences?.unsubscribeAll === true) return
 
     const html = render(
       JourneyAccessRequestEmail({
@@ -422,7 +422,7 @@ export class EmailConsumer extends WorkerHost {
       }
     })
     // do not send email if team removed notification is not preferred
-    if (preferences?.journeyRequestApproved === false || preferences.unsubscribeAll === true) return
+    if (preferences?.journeyRequestApproved === false || preferences?.unsubscribeAll === true) return
 
     const html = render(
       JourneySharedEmail({
@@ -463,7 +463,7 @@ export class EmailConsumer extends WorkerHost {
       }
     })
     // do not send email if team removed notification is not preferred
-    if (preferences?.journeyEditInvite === false || preferences.unsubscribeAll === true) return
+    if (preferences?.journeyEditInvite === false || preferences?.unsubscribeAll === true) return
 
     const { data } = await apollo.query({
       query: gql`
