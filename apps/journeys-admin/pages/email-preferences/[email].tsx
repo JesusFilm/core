@@ -9,6 +9,12 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { FindOrCreateEmailPreference } from '../../__generated__/FindOrCreateEmailPreference'
+import {
+  UpdateEmailPreference,
+  UpdateEmailPreference_updateEmailPreference
+} from '../../__generated__/UpdateEmailPreference'
+
 const FIND_OR_CREATE_EMAIL_PREFERENCE = gql`
   mutation FindOrCreateJourneysEmailPreference($email: String!) {
     findOrCreateJourneysEmailPreference(email: $email) {
@@ -39,28 +45,24 @@ const UPDATE_EMAIL_PREFERENCE = gql`
   }
 `
 
-interface JourneysEmailPreference {
-  email: string
-  unsubscribeAll: boolean
-  teamInvite: boolean
-  teamRemoved: boolean
-  teamInviteAccepted: boolean
-  journeyEditInvite: boolean
-  journeyRequestApproved: boolean
-  journeyAccessRequest: boolean
-}
+type EmailPreference = Omit<
+  UpdateEmailPreference_updateEmailPreference,
+  '__typename'
+>
 
 function JourneysEmailPreferencesPage(): ReactElement {
   const router = useRouter()
   const { email, unsubscribeAll } = router.query
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
-  const [updateJourneysEmailPreference] = useMutation(UPDATE_EMAIL_PREFERENCE)
-  const [findOrCreateJourneysEmailPreference] = useMutation(
-    FIND_OR_CREATE_EMAIL_PREFERENCE
+  const [updateEmailPreference] = useMutation<UpdateEmailPreference>(
+    UPDATE_EMAIL_PREFERENCE
   )
-  const [journeysEmailPreference, setJourneysEmailPreference] =
-    useState<JourneysEmailPreference | null>(null)
+  const [findOrCreateEmailPreference] =
+    useMutation<FindOrCreateEmailPreference>(FIND_OR_CREATE_EMAIL_PREFERENCE)
+  const [emailPreferences, setEmailPreferences] = useState<
+    EmailPreference | null | undefined
+  >(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -70,14 +72,14 @@ function JourneysEmailPreferencesPage(): ReactElement {
           email: email as string
         }
       })
-      setJourneysEmailPreference(data.findOrCreateJourneysEmailPreference)
+      setEmailPreferences(data?.findOrCreateEmailPreference)
 
       // Check if the unsuball query parameter is present
       if (unsubscribeAll !== undefined) {
         const updatePrefs = await updateJourneysEmailPreference({
           variables: {
             input: {
-              email: data.findOrCreateJourneysEmailPreference.email,
+              email: data?.findOrCreateEmailPreference?.email,
               unsubscribeAll: true,
               teamInvite: false,
               teamRemoved: false,
@@ -88,7 +90,7 @@ function JourneysEmailPreferencesPage(): ReactElement {
             }
           }
         })
-        setJourneysEmailPreference(updatePrefs.data.updateJourneysEmailPreference)
+        setEmailPreferences(updatePrefs?.data?.updateEmailPreference)
         enqueueSnackbar(t(`Unsubscribed From all Emails.`), {
           variant: 'success',
           preventDuplicate: true
@@ -100,21 +102,28 @@ function JourneysEmailPreferencesPage(): ReactElement {
         console.error('Error fetching email preferences:', error)
       })
     }
-  }, [email, findOrCreateJourneysEmailPreference])
+  }, [
+    email,
+    enqueueSnackbar,
+    findOrCreateEmailPreference,
+    t,
+    unsubscribeAll,
+    updateEmailPreference
+  ])
 
   const handlePreferenceChange =
-    (preference: keyof JourneysEmailPreference) => async () => {
-      if (journeysEmailPreference !== null) {
-        const updatedPreferences: JourneysEmailPreference = {
-          ...journeysEmailPreference,
-          [preference]: !(journeysEmailPreference[preference] as boolean)
+    (preference: keyof EmailPreference) => async () => {
+      if (emailPreferences != null) {
+        const updatedPreferences: EmailPreference = {
+          ...emailPreferences,
+          [preference]: !(emailPreferences[preference] as boolean)
         }
         setJourneysEmailPreference(updatedPreferences)
       }
     }
 
   const handleSubmit = async (): Promise<void> => {
-    if (journeysEmailPreference !== null) {
+    if (emailPreferences != null) {
       setLoading(true) // Set loading state to true
       await updateJourneysEmailPreference({
         variables: {
@@ -165,7 +174,7 @@ function JourneysEmailPreferencesPage(): ReactElement {
         {t('Email Preferences')}
       </Typography>
 
-      {journeysEmailPreference !== null && (
+      {emailPreferences != null && (
         <Grid container spacing={12}>
           <Grid item xs={10} md={10}>
             <Typography variant="h5">{t('Team Invite')}</Typography>
