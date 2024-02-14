@@ -4,16 +4,21 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/router'
+import { withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { FindOrCreateEmailPreference } from '../../__generated__/FindOrCreateEmailPreference'
 import {
-  UpdateEmailPreference,
-  UpdateEmailPreference_updateEmailPreference
-} from '../../__generated__/UpdateEmailPreference'
+  FindOrCreateJourneysEmailPreference,
+  FindOrCreateJourneysEmailPreferenceVariables
+} from '../../__generated__/FindOrCreateJourneysEmailPreference'
+import {
+  UpdateJourneysEmailPreference,
+  UpdateJourneysEmailPreferenceVariables,
+  UpdateJourneysEmailPreference_updateJourneysEmailPreference
+} from '../../__generated__/UpdateJourneysEmailPreference'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 const FIND_OR_CREATE_EMAIL_PREFERENCE = gql`
   mutation FindOrCreateJourneysEmailPreference($email: String!) {
@@ -45,86 +50,40 @@ const UPDATE_EMAIL_PREFERENCE = gql`
   }
 `
 
-type EmailPreference = Omit<
-  UpdateEmailPreference_updateEmailPreference,
+type JourneysEmailPreference = Omit<
+  UpdateJourneysEmailPreference_updateJourneysEmailPreference,
   '__typename'
 >
 
-function JourneysEmailPreferencesPage(): ReactElement {
-  const router = useRouter()
-  const { email, unsubscribeAll } = router.query
+function EmailPreferencesPage({
+  journeysEmailPreferenceData,
+  updatePrefs
+}): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
-  const [updateEmailPreference] = useMutation<UpdateEmailPreference>(
-    UPDATE_EMAIL_PREFERENCE
+  const [updateJourneysEmailPreference, { loading }] =
+    useMutation<UpdateJourneysEmailPreference>(UPDATE_EMAIL_PREFERENCE)
+
+  const [journeysEmailPreference, setJourneysEmailPreference] = useState<
+    JourneysEmailPreference | null | undefined
+  >(
+    updatePrefs?.updateJourneysEmailPreference ??
+      journeysEmailPreferenceData?.findOrCreateJourneysEmailPreference
   )
-  const [findOrCreateEmailPreference] =
-    useMutation<FindOrCreateEmailPreference>(FIND_OR_CREATE_EMAIL_PREFERENCE)
-  const [emailPreferences, setEmailPreferences] = useState<
-    EmailPreference | null | undefined
-  >(null)
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    const fetchJourneysEmailPreferences = async (): Promise<void> => {
-      const { data } = await findOrCreateJourneysEmailPreference({
-        variables: {
-          email: email as string
-        }
-      })
-      setEmailPreferences(data?.findOrCreateEmailPreference)
-
-      // Check if the unsuball query parameter is present
-      if (unsubscribeAll !== undefined) {
-        const updatePrefs = await updateJourneysEmailPreference({
-          variables: {
-            input: {
-              email: data?.findOrCreateEmailPreference?.email,
-              unsubscribeAll: true,
-              teamInvite: false,
-              teamRemoved: false,
-              teamInviteAccepted: false,
-              journeyEditInvite: false,
-              journeyRequestApproved: false,
-              journeyAccessRequest: false
-            }
-          }
-        })
-        setEmailPreferences(updatePrefs?.data?.updateEmailPreference)
-        enqueueSnackbar(t(`Unsubscribed From all Emails.`), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      }
-    }
-    if (email !== undefined && email !== null) {
-      fetchJourneysEmailPreferences().catch((error) => {
-        console.error('Error fetching email preferences:', error)
-      })
-    }
-  }, [
-    email,
-    enqueueSnackbar,
-    findOrCreateEmailPreference,
-    t,
-    unsubscribeAll,
-    updateEmailPreference
-  ])
 
   const handlePreferenceChange =
-    (preference: keyof EmailPreference) => async () => {
-      if (emailPreferences != null) {
-        const updatedPreferences: EmailPreference = {
-          ...emailPreferences,
-          [preference]: !(emailPreferences[preference] as boolean)
+    (preference: keyof JourneysEmailPreference) => async () => {
+      if (journeysEmailPreference != null) {
+        const updatedPreferences: JourneysEmailPreference = {
+          ...journeysEmailPreference,
+          [preference]: !(journeysEmailPreference[preference] as boolean)
         }
         setJourneysEmailPreference(updatedPreferences)
       }
     }
 
   const handleSubmit = async (): Promise<void> => {
-    if (emailPreferences != null) {
-      setLoading(true) // Set loading state to true
+    if (journeysEmailPreference != null) {
       await updateJourneysEmailPreference({
         variables: {
           input: {
@@ -144,16 +103,34 @@ function JourneysEmailPreferencesPage(): ReactElement {
           preventDuplicate: true
         })
       })
-      setLoading(false) // Set loading state to false after mutation is complete
     }
   }
 
   const handleUnsubscribeAll = async (): Promise<void> => {
     if (journeysEmailPreference != null) {
       const updatedPreferences: JourneysEmailPreference = {
-        ...journeysEmailPreference,
-        unsubscribeAll: !journeysEmailPreference.unsubscribeAll
+        email: journeysEmailPreference.email,
+        unsubscribeAll: true,
+        teamInvite: false,
+        teamRemoved: false,
+        teamInviteAccepted: false,
+        journeyEditInvite: false,
+        journeyRequestApproved: false,
+        journeyAccessRequest: false
       }
+      await updateJourneysEmailPreference({
+        variables: {
+          input: {
+            ...updatedPreferences
+          }
+        }
+      }).then(() => {
+        enqueueSnackbar(t(`Email Preferences Updated. Unsubscribed to all`), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      })
+
       setJourneysEmailPreference(updatedPreferences)
     }
   }
@@ -174,7 +151,7 @@ function JourneysEmailPreferencesPage(): ReactElement {
         {t('Email Preferences')}
       </Typography>
 
-      {emailPreferences != null && (
+      {journeysEmailPreference != null && (
         <Grid container spacing={12}>
           <Grid item xs={10} md={10}>
             <Typography variant="h5">{t('Team Invite')}</Typography>
@@ -282,4 +259,67 @@ function JourneysEmailPreferencesPage(): ReactElement {
   )
 }
 
-export default JourneysEmailPreferencesPage
+export const getServerSideProps = withUserTokenSSR()(
+  async ({ user, locale, resolvedUrl, params, query }) => {
+    const { apolloClient, translations } = await initAndAuthApp({
+      user,
+      locale,
+      resolvedUrl
+    })
+
+    let updatePrefs: UpdateJourneysEmailPreference | null | undefined
+
+    // TemplateDetailsPage
+    const { data: journeysEmailPreferenceData } = await apolloClient.mutate<
+      FindOrCreateJourneysEmailPreference,
+      FindOrCreateJourneysEmailPreferenceVariables
+    >({
+      mutation: FIND_OR_CREATE_EMAIL_PREFERENCE,
+      variables: {
+        email: query?.email as string
+      }
+    })
+
+    if (query?.unsubscribeAll != null) {
+      console.log('here')
+      const { data: updatePrefsData } = await apolloClient.mutate<
+        UpdateJourneysEmailPreference,
+        UpdateJourneysEmailPreferenceVariables
+      >({
+        mutation: UPDATE_EMAIL_PREFERENCE,
+        variables: {
+          input: {
+            email: journeysEmailPreferenceData?.findOrCreateEmailPreference
+              ?.email as string,
+            unsubscribeAll: true,
+            teamInvite: false,
+            teamRemoved: false,
+            teamInviteAccepted: false,
+            journeyEditInvite: false,
+            journeyRequestApproved: false,
+            journeyAccessRequest: false
+          }
+        }
+      })
+      if (updatePrefsData != null) updatePrefs = updatePrefsData
+    }
+    if (updatePrefs == null)
+      return {
+        props: {
+          ...translations,
+          initialApolloState: apolloClient.cache.extract(),
+          journeysEmailPreferenceData
+        }
+      }
+    return {
+      props: {
+        ...translations,
+        initialApolloState: apolloClient.cache.extract(),
+        journeysEmailPreferenceData,
+        updatePrefs
+      }
+    }
+  }
+)
+
+export default withUser()(EmailPreferencesPage)
