@@ -2,12 +2,13 @@ import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { Test, TestingModule } from '@nestjs/testing'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Job } from 'bullmq'
-import { mockDeep } from 'jest-mock-extended'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { UserJourney } from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
 
 import { UserJourneyRole, UserTeamRole } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
 
 import {
   EmailConsumer,
@@ -164,6 +165,7 @@ const journeyEditJob: Job<JourneyEditInviteJob, unknown, string> = {
 describe('EmailConsumer', () => {
   let emailConsumer: EmailConsumer
   let emailService: EmailService
+  let prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -176,11 +178,18 @@ describe('EmailConsumer', () => {
         {
           provide: EmailService,
           useValue: mockDeep<EmailService>()
+        },
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
     emailConsumer = module.get<EmailConsumer>(EmailConsumer)
     emailService = module.get<EmailService>(EmailService)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
 
   afterEach(() => {
@@ -274,6 +283,33 @@ describe('EmailConsumer', () => {
         text: expect.any(String)
       })
     })
+
+    it('should not send email if user preference is false', async () => {
+      prismaService.emailPreference.findFirst.mockResolvedValueOnce({
+        email: 'jsmith@exmaple.com',
+        unsubscribeAll: false,
+        teamInvite: true,
+        teamRemoved: false,
+        teamInviteAccepted: true,
+        journeyEditInvite: true,
+        journeyRequestApproved: true,
+        journeyAccessRequest: true
+      })
+
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'userid',
+                email: 'jsmith@exmaple.com'
+              }
+            }
+          } as unknown as ApolloQueryResult<unknown>)
+      )
+      await emailConsumer.teamRemovedEmail(teamRemoved)
+      expect(emailService.sendEmail).not.toHaveBeenCalled()
+    })
   })
 
   describe('teamInviteEmail', () => {
@@ -331,6 +367,22 @@ describe('EmailConsumer', () => {
         text: expect.any(String)
       })
     })
+
+    it('should not send email if user preference is false', async () => {
+      prismaService.emailPreference.findFirst.mockResolvedValueOnce({
+        email: 'jsmith@exmaple.com',
+        unsubscribeAll: false,
+        teamInvite: false,
+        teamRemoved: true,
+        teamInviteAccepted: true,
+        journeyEditInvite: true,
+        journeyRequestApproved: true,
+        journeyAccessRequest: true
+      })
+
+      await emailConsumer.teamInviteEmail(teamInviteJob)
+      expect(emailService.sendEmail).not.toHaveBeenCalled()
+    })
   })
 
   describe('teamInviteAcceptedEmail', () => {
@@ -361,6 +413,33 @@ describe('EmailConsumer', () => {
         html: expect.any(String),
         text: expect.any(String)
       })
+    })
+
+    it('should not send email if user preference is false', async () => {
+      prismaService.emailPreference.findFirst.mockResolvedValue({
+        email: 'jsmith@exmaple.com',
+        unsubscribeAll: false,
+        teamInvite: true,
+        teamRemoved: true,
+        teamInviteAccepted: false,
+        journeyEditInvite: true,
+        journeyRequestApproved: true,
+        journeyAccessRequest: true
+      })
+
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'userid',
+                email: 'jsmith@exmaple.com'
+              }
+            }
+          } as unknown as ApolloQueryResult<unknown>)
+      )
+      await emailConsumer.teamInviteAcceptedEmail(teamInviteAccepted)
+      expect(emailService.sendEmail).not.toHaveBeenCalled()
     })
   })
 
@@ -393,6 +472,33 @@ describe('EmailConsumer', () => {
         text: expect.any(String)
       })
     })
+
+    it('should not send email if user preference is false', async () => {
+      prismaService.emailPreference.findFirst.mockResolvedValueOnce({
+        email: 'jsmith@exmaple.com',
+        unsubscribeAll: false,
+        teamInvite: true,
+        teamRemoved: true,
+        teamInviteAccepted: true,
+        journeyEditInvite: true,
+        journeyRequestApproved: true,
+        journeyAccessRequest: false
+      })
+
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'userid',
+                email: 'jsmith@exmaple.com'
+              }
+            }
+          } as unknown as ApolloQueryResult<unknown>)
+      )
+      await emailConsumer.journeyAccessRequest(journeyAccessRequest)
+      expect(emailService.sendEmail).not.toHaveBeenCalled()
+    })
   })
 
   describe('journeyRequestApproved', () => {
@@ -423,6 +529,33 @@ describe('EmailConsumer', () => {
         html: expect.any(String),
         text: expect.any(String)
       })
+    })
+
+    it('should not send email if user preference is false', async () => {
+      prismaService.emailPreference.findFirst.mockResolvedValueOnce({
+        email: 'jsmith@exmaple.com',
+        unsubscribeAll: false,
+        teamInvite: true,
+        teamRemoved: true,
+        teamInviteAccepted: true,
+        journeyEditInvite: true,
+        journeyRequestApproved: false,
+        journeyAccessRequest: true
+      })
+
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'userid',
+                email: 'jsmith@exmaple.com'
+              }
+            }
+          } as unknown as ApolloQueryResult<unknown>)
+      )
+      await emailConsumer.journeyRequestApproved(journeyRequestApproved)
+      expect(emailService.sendEmail).not.toHaveBeenCalled()
     })
   })
 
@@ -480,6 +613,33 @@ describe('EmailConsumer', () => {
         html: expect.any(String),
         text: expect.any(String)
       })
+    })
+
+    it('should not send email if user preference is false', async () => {
+      prismaService.emailPreference.findFirst.mockResolvedValueOnce({
+        email: 'jsmith@exmaple.com',
+        unsubscribeAll: false,
+        teamInvite: true,
+        teamRemoved: true,
+        teamInviteAccepted: true,
+        journeyEditInvite: false,
+        journeyRequestApproved: true,
+        journeyAccessRequest: true
+      })
+
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'userid',
+                email: 'jsmith@exmaple.com'
+              }
+            }
+          } as unknown as ApolloQueryResult<unknown>)
+      )
+      await emailConsumer.journeyEditInvite(journeyEditJob)
+      expect(emailService.sendEmail).not.toHaveBeenCalled()
     })
   })
 })
