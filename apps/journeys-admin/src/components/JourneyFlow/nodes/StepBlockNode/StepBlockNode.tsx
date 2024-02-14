@@ -186,7 +186,7 @@ export function StepBlockNode({
                   color: '#26262E'
                 }}
               >
-                {title !== '' ? (
+                {title != null && title !== '' ? (
                   title
                 ) : (
                   <Skeleton
@@ -213,7 +213,7 @@ export function StepBlockNode({
                   paddingBottom: '1px'
                 }}
               >
-                {title !== '' ? (
+                {title != null && title !== '' ? (
                   subtitle
                 ) : (
                   <Skeleton
