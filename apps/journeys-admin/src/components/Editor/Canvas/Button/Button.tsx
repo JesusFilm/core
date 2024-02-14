@@ -91,31 +91,38 @@ export function Button({
                 borderColor: { xs: 'editor.divider', sm: 'primary.main' },
                 borderWidth: { xs: '1px', sm: '2px' },
                 '.plus2-icon': {
-                  color: { xs: 'editor.divider', sm: 'primary.main' }
+                  display: 'flex'
                 }
               }
             }}
           >
-            <CardActionArea onClick={handleClick} disabled={disabled}>
+            <CardActionArea
+              onClick={handleClick}
+              disabled={disabled}
+              sx={{
+                height: '100%',
+                justifyContent: 'center',
+                display: 'flex'
+              }}
+            >
               <CardContent
                 sx={{
-                  height: 80,
-                  pl: 6,
+                  px: 0,
+                  width: 253,
                   color: disabled ? 'secondary.light' : 'auto',
                   display: 'flex',
-                  alignItems: 'center',
                   justifyContent: 'space-between'
                 }}
               >
-                <Stack direction="row" gap={4}>
+                <Stack direction="row" gap={4} ml={3}>
                   {icon}
                   <Typography>{t(value)}</Typography>
                 </Stack>
                 <Plus2
-                  color="secondary"
+                  color="primary"
                   className="plus2-icon"
                   sx={{
-                    display: { xs: 'none', sm: 'flex' },
+                    display: 'none',
                     mr: 3.5
                   }}
                 />
