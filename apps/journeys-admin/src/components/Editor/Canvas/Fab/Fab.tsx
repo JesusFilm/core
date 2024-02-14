@@ -11,6 +11,7 @@ import {
   ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -35,6 +36,12 @@ export function Fab({ visible = true }: FabProp): ReactElement {
       type: 'SetSelectedComponentAction',
       component: 'Fab'
     })
+    if (!smUp) {
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.Drawer
+      })
+    }
   }
 
   function handleEditFab(): void {
