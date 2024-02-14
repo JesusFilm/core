@@ -48,6 +48,7 @@ export const GET_ME = gql`
       email
       imageUrl
       superAdmin
+      emailVerified
     }
   }
 `

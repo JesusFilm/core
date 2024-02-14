@@ -112,6 +112,7 @@
       "files": ["*.tsx", "*.jsx"],
       "extends": ["plugin:i18next/recommended"],
       "rules": {
+        "react/react-in-jsx-scope": "off",
         "react/jsx-indent": ["error", 2],
         "react/self-closing-comp": [
           "error",

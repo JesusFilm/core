@@ -108,4 +108,5 @@ module "ecs" {
   vpc_id                      = module.vpc.vpc_id
   internal_alb_security_group = module.internal_alb_security_group
   public_alb_security_group   = module.public_alb_security_group
+  env                         = var.env
 }

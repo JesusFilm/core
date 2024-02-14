@@ -9,7 +9,8 @@ const config: Config = {
       {
         tsconfig: '<rootDir>/tsconfig.spec.json'
       }
-    ]
+    ],
+    '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../../coverage/libs/nest/common',
