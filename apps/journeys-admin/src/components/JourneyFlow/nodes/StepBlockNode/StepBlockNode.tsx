@@ -90,13 +90,14 @@ export function StepBlockNode({
           <Card
             sx={{
               borderRadius: 2,
-              outline: '2px solid',
-              outlineColor: (theme) =>
-                selected === true
-                  ? theme.palette.primary.main
-                  : selected === 'descendant'
-                  ? theme.palette.divider
-                  : 'transparent',
+              outline: (theme) =>
+                `2px solid ${
+                  selected === true
+                    ? theme.palette.primary.main
+                    : selected === 'descendant'
+                    ? theme.palette.divider
+                    : 'transparent'
+                }`,
               outlineOffset: '5px'
             }}
           >

@@ -44,14 +44,23 @@ export function SocialPreviewNode(): ReactElement {
         journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
       }
     >
-      {journey != null && (
+      {({ selected }) => (
         <Card
           sx={{
             height: 168,
             width: 130.5,
-            borderRadius: '9px',
+            borderRadius: 2,
             display: 'block',
-            px: 1.5
+            px: 1.5,
+            outline: (theme) =>
+              `2px solid ${
+                selected === true
+                  ? theme.palette.primary.main
+                  : selected === 'descendant'
+                  ? theme.palette.divider
+                  : 'transparent'
+              }`,
+            outlineOffset: '5px'
           }}
           onClick={() => handleClick()}
         >
@@ -122,7 +131,8 @@ export function SocialPreviewNode(): ReactElement {
             }}
           >
             <Stack gap={0.75} sx={{ mt: 1 }}>
-              {isEmpty(journey?.seoTitle?.trim()) ? (
+              {journey?.seoTitle == null ||
+              isEmpty(journey?.seoTitle?.trim()) ? (
                 <Box
                   width={118.5}
                   height={9}
@@ -140,7 +150,8 @@ export function SocialPreviewNode(): ReactElement {
                   {journey.seoTitle}
                 </Typography>
               )}
-              {isEmpty(journey?.seoDescription?.trim()) ? (
+              {journey?.seoDescription == null ||
+              isEmpty(journey?.seoDescription?.trim()) ? (
                 <Box
                   width={118.5}
                   height={9}
