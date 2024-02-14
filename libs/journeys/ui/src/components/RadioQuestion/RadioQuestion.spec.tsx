@@ -83,7 +83,11 @@ describe('RadioQuestion', () => {
   it('should display the correct options', () => {
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <RadioQuestion {...block} addOption={<div>Add option</div>} />
+        <RadioQuestion
+          {...block}
+          addOption={<div>Add option</div>}
+          activeStep={true}
+        />
       </MockedProvider>
     )
     expect(getByText('Option 1')).toBeInTheDocument()
@@ -124,7 +128,7 @@ describe('RadioQuestion', () => {
         ]}
       >
         <JourneyProvider>
-          <RadioQuestion {...block} uuid={() => 'uuid'} />
+          <RadioQuestion {...block} uuid={() => 'uuid'} activeStep={true} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -168,7 +172,7 @@ describe('RadioQuestion', () => {
         ]}
         addTypename={false}
       >
-        <RadioQuestion {...block} uuid={() => 'uuid'} />
+        <RadioQuestion {...block} uuid={() => 'uuid'} activeStep={true} />
       </MockedProvider>
     )
     const buttons = getAllByRole('button')
@@ -195,6 +199,7 @@ describe('RadioQuestion', () => {
               <div data-testid="radioOptionWrapper">{children}</div>
             )
           }}
+          activeStep={true}
         />
       </MockedProvider>
     )
@@ -240,7 +245,7 @@ describe('RadioQuestion', () => {
         ]}
       >
         <JourneyProvider>
-          <RadioQuestion {...block} uuid={() => 'uuid'} />
+          <RadioQuestion {...block} uuid={() => 'uuid'} activeStep={true} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -260,8 +265,68 @@ describe('RadioQuestion', () => {
     )
   })
 
-  // TODO (SWIPE): finish selectedId test
-  it('should set selectedId to null when activeStep is false', () => {
-    expect(true).toBe(true)
+  it('should set selectedId to null when activeStep is false', async () => {
+    blockHistoryVar([activeBlock])
+
+    const { rerender, getByTestId, getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1',
+                  stepId: 'step.id',
+                  label: 'Untitled',
+                  value: 'Option 1'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <RadioQuestion {...block} uuid={() => 'uuid'} activeStep={true} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const buttons = getAllByRole('button')
+    fireEvent.click(buttons[0])
+    expect(buttons[0]).toBeDisabled()
+    expect(buttons[0]).toContainElement(
+      getByTestId('RadioOptionCheckCircleIcon')
+    )
+
+    rerender(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1',
+                  stepId: 'step.id',
+                  label: 'Untitled',
+                  value: 'Option 1'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <RadioQuestion {...block} uuid={() => 'uuid'} activeStep={false} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getAllByRole('button')[0]).not.toBeDisabled()
   })
 })
