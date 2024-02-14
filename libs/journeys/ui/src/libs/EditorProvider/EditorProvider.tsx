@@ -43,7 +43,7 @@ export enum ActiveSlide {
 export interface EditorState {
   steps?: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
-  selectedComponent?: 'Footer'
+  selectedComponent?: string
   selectedBlock?: TreeBlock
   selectedAttributeId?: string
   drawerTitle?: string

@@ -9,7 +9,6 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
   ActiveJourneyEditContent,
-  ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
@@ -33,8 +32,8 @@ export function Fab({ visible = true }: FabProp): ReactElement {
 
   function handleClick(): void {
     dispatch({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Blocks
+      type: 'SetSelectedComponentAction',
+      component: 'Fab'
     })
   }
 

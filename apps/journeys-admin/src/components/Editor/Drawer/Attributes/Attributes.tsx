@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveJourneyEditContent,
-  ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 
@@ -193,8 +192,7 @@ export function Attributes(): ReactElement {
       selectedComponent,
       selectedBlock,
       selectedStep,
-      journeyEditContentComponent,
-      activeTab
+      journeyEditContentComponent
     }
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
@@ -209,7 +207,7 @@ export function Attributes(): ReactElement {
     case ActiveJourneyEditContent.Action:
       return <Drawer title={t('Information')} />
     case ActiveJourneyEditContent.Canvas:
-      if (activeTab === ActiveTab.Blocks) {
+      if (selectedComponent === 'Fab') {
         return (
           <Drawer title="Add new blocks">
             <AddBlock />

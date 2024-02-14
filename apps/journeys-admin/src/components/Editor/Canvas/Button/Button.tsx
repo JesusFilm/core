@@ -60,7 +60,7 @@ export function Button({
           >
             {t(
               disabled && value === 'Video'
-                ? 'Video Blocks cannot be placed on top of Block'
+                ? 'Video Block cannot be placed on top of Blocks'
                 : 'Click to add'
             )}
           </Typography>
