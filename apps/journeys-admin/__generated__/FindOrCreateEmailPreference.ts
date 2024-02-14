@@ -4,11 +4,11 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: FindOrCreateEmailPreference
+// GraphQL mutation operation: FindOrCreateJourneysEmailPreference
 // ====================================================
 
-export interface FindOrCreateEmailPreference_findOrCreateEmailPreference {
-  __typename: "EmailPreference";
+export interface FindOrCreateJourneysEmailPreference_findOrCreateJourneysEmailPreference {
+  __typename: "JourneysEmailPreference";
   email: string;
   unsubscribeAll: boolean;
   teamInvite: boolean;
@@ -19,10 +19,10 @@ export interface FindOrCreateEmailPreference_findOrCreateEmailPreference {
   journeyAccessRequest: boolean;
 }
 
-export interface FindOrCreateEmailPreference {
-  findOrCreateEmailPreference: FindOrCreateEmailPreference_findOrCreateEmailPreference | null;
+export interface FindOrCreateJourneysEmailPreference {
+  findOrCreateJourneysEmailPreference: FindOrCreateJourneysEmailPreference_findOrCreateJourneysEmailPreference | null;
 }
 
-export interface FindOrCreateEmailPreferenceVariables {
+export interface FindOrCreateJourneysEmailPreferenceVariables {
   email: string;
 }
