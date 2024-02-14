@@ -13,12 +13,12 @@ import { LoggerModule } from 'nestjs-pino'
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { EmailModule } from './modules/email/email.module'
-import { EmailPreferenceModule } from './modules/emailPreferences/emailPreference.module'
 import { EventModule } from './modules/event/event.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'
+import { JourneysEmailPreferenceModule } from './modules/journeysEmailPreference/journeysEmailPreference.module'
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 import { TeamModule } from './modules/team/team.module'
 import { UserInviteModule } from './modules/userInvite/userInvite.module'
@@ -33,7 +33,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     ActionModule,
     BlockModule,
     EmailModule,
-    EmailPreferenceModule,
+    JourneysEmailPreferenceModule,
     EventModule,
     HostModule,
     JourneyModule,

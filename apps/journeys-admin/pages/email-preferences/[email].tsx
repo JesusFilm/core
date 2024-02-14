@@ -10,8 +10,8 @@ import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 const FIND_OR_CREATE_EMAIL_PREFERENCE = gql`
-  mutation FindOrCreateEmailPreference($email: String!) {
-    findOrCreateEmailPreference(email: $email) {
+  mutation FindOrCreateJourneysEmailPreference($email: String!) {
+    findOrCreateJourneysEmailPreference(email: $email) {
       email
       unsubscribeAll
       teamInvite
@@ -25,8 +25,8 @@ const FIND_OR_CREATE_EMAIL_PREFERENCE = gql`
 `
 
 const UPDATE_EMAIL_PREFERENCE = gql`
-  mutation UpdateEmailPreference($input: EmailPreferenceUpdateInput!) {
-    updateEmailPreference(input: $input) {
+  mutation UpdateJourneysEmailPreference($input: JourneysEmailPreferenceUpdateInput!) {
+    updateJourneysEmailPreference(input: $input) {
       email
       unsubscribeAll
       teamInvite
@@ -39,7 +39,7 @@ const UPDATE_EMAIL_PREFERENCE = gql`
   }
 `
 
-interface EmailPreference {
+interface JourneysEmailPreference {
   email: string
   unsubscribeAll: boolean
   teamInvite: boolean
@@ -50,34 +50,34 @@ interface EmailPreference {
   journeyAccessRequest: boolean
 }
 
-function EmailPreferencesPage(): ReactElement {
+function JourneysEmailPreferencesPage(): ReactElement {
   const router = useRouter()
   const { email, unsubscribeAll } = router.query
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
-  const [updateEmailPreference] = useMutation(UPDATE_EMAIL_PREFERENCE)
-  const [findOrCreateEmailPreference] = useMutation(
+  const [updateJourneysEmailPreference] = useMutation(UPDATE_EMAIL_PREFERENCE)
+  const [findOrCreateJourneysEmailPreference] = useMutation(
     FIND_OR_CREATE_EMAIL_PREFERENCE
   )
-  const [emailPreferences, setEmailPreferences] =
-    useState<EmailPreference | null>(null)
+  const [journeysEmailPreference, setJourneysEmailPreference] =
+    useState<JourneysEmailPreference | null>(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const fetchEmailPreferences = async (): Promise<void> => {
-      const { data } = await findOrCreateEmailPreference({
+    const fetchJourneysEmailPreferences = async (): Promise<void> => {
+      const { data } = await findOrCreateJourneysEmailPreference({
         variables: {
           email: email as string
         }
       })
-      setEmailPreferences(data.findOrCreateEmailPreference)
+      setJourneysEmailPreference(data.findOrCreateJourneysEmailPreference)
 
       // Check if the unsuball query parameter is present
       if (unsubscribeAll !== undefined) {
-        const updatePrefs = await updateEmailPreference({
+        const updatePrefs = await updateJourneysEmailPreference({
           variables: {
             input: {
-              email: data.findOrCreateEmailPreference.email,
+              email: data.findOrCreateJourneysEmailPreference.email,
               unsubscribeAll: true,
               teamInvite: false,
               teamRemoved: false,
@@ -88,7 +88,7 @@ function EmailPreferencesPage(): ReactElement {
             }
           }
         })
-        setEmailPreferences(updatePrefs.data.updateEmailPreference)
+        setJourneysEmailPreference(updatePrefs.data.updateJourneysEmailPreference)
         enqueueSnackbar(t(`Unsubscribed From all Emails.`), {
           variant: 'success',
           preventDuplicate: true
@@ -96,37 +96,37 @@ function EmailPreferencesPage(): ReactElement {
       }
     }
     if (email !== undefined && email !== null) {
-      fetchEmailPreferences().catch((error) => {
+      fetchJourneysEmailPreferences().catch((error) => {
         console.error('Error fetching email preferences:', error)
       })
     }
-  }, [email, findOrCreateEmailPreference])
+  }, [email, findOrCreateJourneysEmailPreference])
 
   const handlePreferenceChange =
-    (preference: keyof EmailPreference) => async () => {
-      if (emailPreferences !== null) {
-        const updatedPreferences: EmailPreference = {
-          ...emailPreferences,
-          [preference]: !(emailPreferences[preference] as boolean)
+    (preference: keyof JourneysEmailPreference) => async () => {
+      if (journeysEmailPreference !== null) {
+        const updatedPreferences: JourneysEmailPreference = {
+          ...journeysEmailPreference,
+          [preference]: !(journeysEmailPreference[preference] as boolean)
         }
-        setEmailPreferences(updatedPreferences)
+        setJourneysEmailPreference(updatedPreferences)
       }
     }
 
   const handleSubmit = async (): Promise<void> => {
-    if (emailPreferences !== null) {
+    if (journeysEmailPreference !== null) {
       setLoading(true) // Set loading state to true
-      await updateEmailPreference({
+      await updateJourneysEmailPreference({
         variables: {
           input: {
-            email: emailPreferences.email,
+            email: journeysEmailPreference.email,
             unsubscribeAll: false,
-            teamInvite: emailPreferences.teamInvite,
-            teamRemoved: emailPreferences.teamRemoved,
-            teamInviteAccepted: emailPreferences.teamInviteAccepted,
-            journeyEditInvite: emailPreferences.journeyEditInvite,
-            journeyRequestApproved: emailPreferences.journeyRequestApproved,
-            journeyAccessRequest: emailPreferences.journeyAccessRequest
+            teamInvite: journeysEmailPreference.teamInvite,
+            teamRemoved: journeysEmailPreference.teamRemoved,
+            teamInviteAccepted: journeysEmailPreference.teamInviteAccepted,
+            journeyEditInvite: journeysEmailPreference.journeyEditInvite,
+            journeyRequestApproved: journeysEmailPreference.journeyRequestApproved,
+            journeyAccessRequest: journeysEmailPreference.journeyAccessRequest
           }
         }
       }).then(() => {
@@ -140,12 +140,12 @@ function EmailPreferencesPage(): ReactElement {
   }
 
   const handleUnsubscribeAll = async (): Promise<void> => {
-    if (emailPreferences != null) {
-      const updatedPreferences: EmailPreference = {
-        ...emailPreferences,
-        unsubscribeAll: !emailPreferences.unsubscribeAll
+    if (journeysEmailPreference != null) {
+      const updatedPreferences: JourneysEmailPreference = {
+        ...journeysEmailPreference,
+        unsubscribeAll: !journeysEmailPreference.unsubscribeAll
       }
-      setEmailPreferences(updatedPreferences)
+      setJourneysEmailPreference(updatedPreferences)
     }
   }
 
@@ -165,7 +165,7 @@ function EmailPreferencesPage(): ReactElement {
         {t('Email Preferences')}
       </Typography>
 
-      {emailPreferences !== null && (
+      {journeysEmailPreference !== null && (
         <Grid container spacing={12}>
           <Grid item xs={10} md={10}>
             <Typography variant="h5">{t('Team Invite')}</Typography>
@@ -175,7 +175,7 @@ function EmailPreferencesPage(): ReactElement {
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
-              checked={emailPreferences.teamInvite}
+              checked={journeysEmailPreference.teamInvite}
               onChange={handlePreferenceChange('teamInvite')}
               name="journeyNotifications"
               inputProps={{ 'aria-label': 'Team Invites' }}
@@ -191,7 +191,7 @@ function EmailPreferencesPage(): ReactElement {
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
-              checked={emailPreferences.teamRemoved}
+              checked={journeysEmailPreference.teamRemoved}
               onChange={handlePreferenceChange('teamRemoved')}
               name="teamRemoved"
               inputProps={{ 'aria-label': 'Team Removed' }}
@@ -202,7 +202,7 @@ function EmailPreferencesPage(): ReactElement {
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
-              checked={emailPreferences.teamInviteAccepted}
+              checked={journeysEmailPreference.teamInviteAccepted}
               onChange={handlePreferenceChange('teamInviteAccepted')}
               name="teamInviteAccepted"
               inputProps={{ 'aria-label': 'Team Invite Accepted' }}
@@ -213,7 +213,7 @@ function EmailPreferencesPage(): ReactElement {
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
-              checked={emailPreferences.journeyEditInvite}
+              checked={journeysEmailPreference.journeyEditInvite}
               onChange={handlePreferenceChange('journeyEditInvite')}
               name="journeyEditInvite"
               inputProps={{ 'aria-label': 'Journey Edit Invite' }}
@@ -226,7 +226,7 @@ function EmailPreferencesPage(): ReactElement {
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
-              checked={emailPreferences.journeyRequestApproved}
+              checked={journeysEmailPreference.journeyRequestApproved}
               onChange={handlePreferenceChange('journeyRequestApproved')}
               name="journeyRequestApproved"
               inputProps={{ 'aria-label': 'Journey Request Approved' }}
@@ -237,7 +237,7 @@ function EmailPreferencesPage(): ReactElement {
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
-              checked={emailPreferences.journeyAccessRequest}
+              checked={journeysEmailPreference.journeyAccessRequest}
               onChange={handlePreferenceChange('journeyAccessRequest')}
               name="journeyAccessRequest"
               inputProps={{ 'aria-label': 'Journey Access Request' }}
@@ -273,4 +273,4 @@ function EmailPreferencesPage(): ReactElement {
   )
 }
 
-export default EmailPreferencesPage
+export default JourneysEmailPreferencesPage

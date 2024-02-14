@@ -285,7 +285,7 @@ describe('EmailConsumer', () => {
     })
 
     it('should not send email if user preference is false', async () => {
-      prismaService.emailPreference.findFirst.mockResolvedValueOnce({
+      prismaService.journeysEmailPreference.findFirst.mockResolvedValueOnce({
         email: 'jsmith@exmaple.com',
         unsubscribeAll: false,
         teamInvite: true,
@@ -369,7 +369,7 @@ describe('EmailConsumer', () => {
     })
 
     it('should not send email if user preference is false', async () => {
-      prismaService.emailPreference.findFirst.mockResolvedValueOnce({
+      prismaService.journeysEmailPreference.findFirst.mockResolvedValueOnce({
         email: 'jsmith@exmaple.com',
         unsubscribeAll: false,
         teamInvite: false,
@@ -416,7 +416,7 @@ describe('EmailConsumer', () => {
     })
 
     it('should not send email if user preference is false', async () => {
-      prismaService.emailPreference.findFirst.mockResolvedValue({
+      prismaService.journeysEmailPreference.findFirst.mockResolvedValue({
         email: 'jsmith@exmaple.com',
         unsubscribeAll: false,
         teamInvite: true,
@@ -474,7 +474,7 @@ describe('EmailConsumer', () => {
     })
 
     it('should not send email if user preference is false', async () => {
-      prismaService.emailPreference.findFirst.mockResolvedValueOnce({
+      prismaService.journeysEmailPreference.findFirst.mockResolvedValueOnce({
         email: 'jsmith@exmaple.com',
         unsubscribeAll: false,
         teamInvite: true,
@@ -532,7 +532,7 @@ describe('EmailConsumer', () => {
     })
 
     it('should not send email if user preference is false', async () => {
-      prismaService.emailPreference.findFirst.mockResolvedValueOnce({
+      prismaService.journeysEmailPreference.findFirst.mockResolvedValueOnce({
         email: 'jsmith@exmaple.com',
         unsubscribeAll: false,
         teamInvite: true,
@@ -616,7 +616,7 @@ describe('EmailConsumer', () => {
     })
 
     it('should not send email if user preference is false', async () => {
-      prismaService.emailPreference.findFirst.mockResolvedValueOnce({
+      prismaService.journeysEmailPreference.findFirst.mockResolvedValueOnce({
         email: 'jsmith@exmaple.com',
         unsubscribeAll: false,
         teamInvite: true,

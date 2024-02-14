@@ -135,7 +135,7 @@ export class EmailConsumer extends WorkerHost {
     })
 
     // check recipient preferences
-    const preferences = await this.prismaService.emailPreference.findFirst({
+    const preferences = await this.prismaService.journeysEmailPreference.findFirst({
       where: {
         email: data.user.email
       }
@@ -177,7 +177,7 @@ export class EmailConsumer extends WorkerHost {
 
   async teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
     // check recipient preferences
-    const preferences = await this.prismaService.emailPreference.findFirst({
+    const preferences = await this.prismaService.journeysEmailPreference.findFirst({
       where: {
         email: job.data.email
       }
@@ -298,7 +298,7 @@ export class EmailConsumer extends WorkerHost {
 
     for (const recipient of receipientEmails) {
       // check recipient preferences
-      const preferences = await this.prismaService.emailPreference.findFirst({
+      const preferences = await this.prismaService.journeysEmailPreference.findFirst({
         where: {
           email: recipient.user.email
         }
@@ -368,7 +368,7 @@ export class EmailConsumer extends WorkerHost {
       throw new Error('User not found')
     }
     // check recipient preferences
-    const preferences = await this.prismaService.emailPreference.findFirst({
+    const preferences = await this.prismaService.journeysEmailPreference.findFirst({
       where: {
         email: data.user.email
       }
@@ -432,7 +432,7 @@ export class EmailConsumer extends WorkerHost {
       throw new Error('User not found')
     }
     // check recipient preferences
-    const preferences = await this.prismaService.emailPreference.findFirst({
+    const preferences = await this.prismaService.journeysEmailPreference.findFirst({
       where: {
         email: data.user.email
       }
@@ -477,7 +477,7 @@ export class EmailConsumer extends WorkerHost {
 
   async journeyEditInvite(job: Job<JourneyEditInviteJob>): Promise<void> {
     // check recipient preferences
-    const preferences = await this.prismaService.emailPreference.findFirst({
+    const preferences = await this.prismaService.journeysEmailPreference.findFirst({
       where: {
         email: job.data.email
       }
