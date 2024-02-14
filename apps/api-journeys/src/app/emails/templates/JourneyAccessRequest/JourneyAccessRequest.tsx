@@ -59,7 +59,7 @@ export const JourneyAccessRequestEmail = ({
           />
         </BodyWrapper>
         <Footer />
-        <UnsubscribeLink />
+        <UnsubscribeLink recipientEmail={recipient.email} />
       </EmailContainer>
     </>
   )

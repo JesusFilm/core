@@ -57,10 +57,9 @@ export const JourneySharedEmail = ({
             headerText="journey shared with you!"
             buttonText="View Journey"
           />
-          <UnsubscribeLink />
         </BodyWrapper>
         <Footer />
-        <UnsubscribeLink />
+        <UnsubscribeLink recipientEmail={recipient.email} />
       </EmailContainer>
     </>
   )

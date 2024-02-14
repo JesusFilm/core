@@ -53,7 +53,7 @@ export const TeamRemovedEmail = ({
           />
         </BodyWrapper>
         <Footer />
-        <UnsubscribeLink />
+        <UnsubscribeLink recipientEmail={recipient.email} />
       </EmailContainer>
     </>
   )

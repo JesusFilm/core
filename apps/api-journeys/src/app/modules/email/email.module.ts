@@ -4,6 +4,8 @@ import { MailerModule } from '@nestjs-modules/mailer'
 
 import { EmailService } from '@core/nest/common/email/emailService'
 
+import { PrismaService } from '../../lib/prisma.service'
+
 import { EmailConsumer } from './email.consumer'
 
 @Global()
@@ -17,7 +19,7 @@ import { EmailConsumer } from './email.consumer'
       }
     })
   ],
-  providers: [EmailConsumer, EmailService],
+  providers: [EmailConsumer, EmailService, PrismaService],
   exports: []
 })
 export class EmailModule {}
