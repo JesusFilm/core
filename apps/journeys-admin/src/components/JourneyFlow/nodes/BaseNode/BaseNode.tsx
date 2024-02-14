@@ -10,7 +10,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import {} from '../../../../../__generated__/StepAndCardBlockCreate'
 import { useStepAndCardBlockCreateMutation } from '../../../../libs/useStepAndCardBlockCreateMutation'
-import { STEP_NODE_HEIGHT } from '../StepBlockNode'
 
 interface BaseNodeProps {
   isTargetConnectable?: boolean
@@ -102,7 +101,7 @@ export function BaseNode({
               height: '100%',
               borderRadius: 0,
               background: 'transparent',
-              opacity: 0
+              opacity: 1
             }}
           />
         </>
@@ -140,7 +139,8 @@ export function BaseNode({
               background: 'transparent',
               borderColor: 'transparent',
               borderRadius: 20,
-              overflow: 'visible'
+              overflow: 'visible',
+              zIndex: 99
             }}
           />
           {isSourceConnectable === 'arrow' && (
@@ -152,7 +152,7 @@ export function BaseNode({
                 borderRadius: '50%',
                 color: 'white',
                 fontSize: 'large',
-                top: STEP_NODE_HEIGHT - 4,
+                top: 72,
                 backgroundColor: '#c52d3aff',
                 left: '50%',
                 transform: 'translate(-50%, 0)'

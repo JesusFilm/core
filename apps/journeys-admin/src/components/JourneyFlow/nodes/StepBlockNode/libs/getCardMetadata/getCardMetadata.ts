@@ -33,12 +33,10 @@ export function getCardMetadata(
 
   // if priority block is video
   if (priorityBlock?.__typename === 'VideoBlock') {
-    console.log(priorityBlock)
     const title =
       priorityBlock.video !== null
         ? priorityBlock.video.title[0].value
         : undefined
-    console.log(priorityBlock)
     const subtitle =
       priorityBlock.startAt !== null && priorityBlock.endAt !== null
         ? secondsToTimeFormat(priorityBlock.startAt, { trimZeroes: true }) +
@@ -46,10 +44,15 @@ export function getCardMetadata(
           secondsToTimeFormat(priorityBlock.endAt, { trimZeroes: true })
         : undefined
 
-    const description = 'English' // priorityBlock.video?.variant !== null ? String(priorityBlock.video?.variant) : undefined
+    const description = 'language goes here'
+    // priorityBlock.video?.language !== null
+    //     ? String(priorityBlock.video?.variant)
+    //     : undefined
 
     const bgImage =
-      priorityBlock.image !== null ? priorityBlock.image : undefined
+      priorityBlock.video?.image !== null
+        ? priorityBlock.video?.image
+        : undefined
 
     return { title, subtitle, description, priorityBlock, bgImage }
   } else {
