@@ -92,7 +92,7 @@ export function NewFormButton(): ReactElement {
       icon={<File5Icon />}
       value={t('Form')}
       onClick={handleClick}
-      testId="NewFormiumFormIcon"
+      testId="NewFormButton"
     />
   )
 }

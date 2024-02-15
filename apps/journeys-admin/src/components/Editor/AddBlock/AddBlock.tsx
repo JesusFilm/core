@@ -30,35 +30,33 @@ export function AddBlock(): ReactElement {
   )
 
   return (
-    <>
-      <Grid p={5} container spacing={4}>
-        <Grid item xs={6} sm={12}>
-          <NewTypographyButton />
-        </Grid>
-        <Grid item xs={6} sm={12}>
-          <NewImageButton />
-        </Grid>
-        <Grid item xs={6} sm={12}>
-          <NewVideoButton disabled={hasChildBlock} />
-        </Grid>
-        <Grid item xs={6} sm={12}>
-          <NewRadioQuestionButton />
-        </Grid>
-        <Grid item xs={6} sm={12}>
-          <NewTextResponseButton />
-        </Grid>
-        <Grid item xs={6} sm={12}>
-          <NewSignUpButton />
-        </Grid>
-        <Grid item xs={6} sm={12}>
-          <NewButtonButton />
-        </Grid>
-        {formiumForm && (
-          <Grid item xs={6} sm={12}>
-            <NewFormButton />
-          </Grid>
-        )}
+    <Grid p={5} container spacing={4}>
+      <Grid item xs={6} sm={12}>
+        <NewTypographyButton />
       </Grid>
-    </>
+      <Grid item xs={6} sm={12}>
+        <NewImageButton />
+      </Grid>
+      <Grid item xs={6} sm={12}>
+        <NewVideoButton disabled={hasChildBlock} />
+      </Grid>
+      <Grid item xs={6} sm={12}>
+        <NewRadioQuestionButton />
+      </Grid>
+      <Grid item xs={6} sm={12}>
+        <NewTextResponseButton />
+      </Grid>
+      <Grid item xs={6} sm={12}>
+        <NewSignUpButton />
+      </Grid>
+      <Grid item xs={6} sm={12}>
+        <NewButtonButton />
+      </Grid>
+      {formiumForm && (
+        <Grid item xs={6} sm={12}>
+          <NewFormButton />
+        </Grid>
+      )}
+    </Grid>
   )
 }

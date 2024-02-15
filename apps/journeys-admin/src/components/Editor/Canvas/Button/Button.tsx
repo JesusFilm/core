@@ -46,10 +46,7 @@ export function Button({
   }
 
   return (
-    <Box
-      onMouseDown={(e) => e.preventDefault()}
-      data-testid={`JourneysAdminButton${testId ?? ''}`}
-    >
+    <Box onMouseDown={(e) => e.preventDefault()} data-testid={testId ?? ''}>
       <StyledTooltip
         title={
           <Typography
