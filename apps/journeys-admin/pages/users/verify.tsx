@@ -118,7 +118,7 @@ function ValidateEmail({
               <Typography variant="body1">
                 {t('To start making NextSteps journeys')}
               </Typography>
-              <Paper sx={{ padding: '30px', mt: 7 }}>
+              <Paper sx={{ padding: '30px', mt: 7, borderRadius: '8px' }}>
                 <Stack textAlign="left" spacing={4}>
                   <Typography variant="subtitle2">{email}</Typography>
                   <Typography variant="body1">
@@ -137,12 +137,25 @@ function ValidateEmail({
                   </Button>
                 </Stack>
               </Paper>
-              <Accordion sx={{ mt: 7, bgcolor: '#DEDFE0' }} elevation={0}>
+              <Accordion
+                sx={{
+                  mt: 7,
+                  bgcolor: 'transparent',
+                  boxShadow: 'none',
+                  border: '1px solid',
+                  borderRadius: '8px !important',
+                  borderColor: 'divider',
+                  '&:before': { opacity: 0 }
+                }}
+                elevation={0}
+              >
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  {t('Verify With Code Instead')}
+                  <Typography px={4}>
+                    {t('Verify With Code Instead')}
+                  </Typography>
                 </AccordionSummary>
                 <AccordionDetails sx={{ textAlign: 'left' }}>
-                  <Stack spacing={4} padding={4}>
+                  <Stack spacing={4} px={4}>
                     <Typography variant="body1">
                       {t('Enter verification code from email')}
                     </Typography>
@@ -180,9 +193,8 @@ function ValidateEmail({
               </Typography>
               <Button
                 onClick={handleLogout}
-                variant="contained"
                 sx={{ mt: 7 }}
-                color="secondary"
+                variant="text"
                 fullWidth
               >
                 {t('Logout')}
