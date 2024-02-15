@@ -14,7 +14,6 @@ import {
   GetJourney_journey_blocks_FormBlock_action as FormAction,
   GetJourney_journey_blocks_FormBlock as FormBlock
 } from '../../../../../../../../__generated__/GetJourney'
-import { Action } from '../../../Action'
 
 import { Form } from '.'
 

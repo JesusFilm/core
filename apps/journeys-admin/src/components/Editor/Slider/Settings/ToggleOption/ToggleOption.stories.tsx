@@ -1,13 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
-import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { Drawer } from '..'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { Drawer } from '../Drawer'
 
 import { ToggleOptionProps } from './ToggleOption'
 

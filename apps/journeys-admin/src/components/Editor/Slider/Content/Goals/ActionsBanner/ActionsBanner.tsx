@@ -7,15 +7,12 @@ import Image from 'next/image'
 import { ReactElement, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import goal from '../../../../../public/goal.svg'
-import { ActionDetails } from '../../../Settings/GoalDetails'
 
 export function ActionsBanner(): ReactElement {
   const theme = useTheme()
-  const { dispatch } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
 
   const ActionPoint = ({
@@ -33,12 +30,10 @@ export function ActionsBanner(): ReactElement {
     </Stack>
   )
 
-  const openActionDetails = (): void => {}
-
   useEffect(() => {
     function handleResize(): void {
       if (window.innerWidth > 768) {
-        openActionDetails()
+        // openActionDetails()
       }
     }
     handleResize()
@@ -94,7 +89,6 @@ export function ActionsBanner(): ReactElement {
               borderColor: 'secondary.main',
               borderRadius: 2
             }}
-            onClick={openActionDetails}
           >
             <Typography variant="subtitle2">{t('Learn More')}</Typography>
           </Button>
