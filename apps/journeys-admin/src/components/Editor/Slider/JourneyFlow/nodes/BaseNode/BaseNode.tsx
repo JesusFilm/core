@@ -7,9 +7,12 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
-import {} from '../../../../../__generated__/StepAndCardBlockCreate'
-import { useStepAndCardBlockCreateMutation } from '../../../../libs/useStepAndCardBlockCreateMutation'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
+import {} from '../../../../../../../__generated__/StepAndCardBlockCreate'
+import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 
 interface BaseNodeProps {
   isTargetConnectable?: boolean
@@ -134,9 +137,9 @@ export function BaseNode({
             onClick={handleClick}
             style={{
               position: 'fixed',
-              width: 40,
-              height: 40,
-              top: 60,
+              width: 35,
+              height: 35,
+              bottom: -20,
               background: 'transparent',
               borderColor: 'transparent',
               borderRadius: 20,
