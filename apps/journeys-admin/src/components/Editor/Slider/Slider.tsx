@@ -165,7 +165,7 @@ export function Slider(): ReactElement {
               top: 'calc( -50vh + 66px)',
               display: 'block',
               zIndex: -1,
-              content: ''
+              content: '""'
             }
           }}
         >

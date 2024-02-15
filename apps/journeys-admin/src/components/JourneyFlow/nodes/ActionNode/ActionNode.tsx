@@ -73,7 +73,7 @@ export function ActionNode({
               `2px solid ${
                 selected !== false ? theme.palette.primary.main : 'grey'
               }`,
-            backgroundColor: 'rgba(241,241,241,,7)',
+            backgroundColor: 'rgba(241,241,241,.7)',
             width: ACTION_NODE_WIDTH,
             height: ACTION_NODE_HEIGHT,
             px: 3
