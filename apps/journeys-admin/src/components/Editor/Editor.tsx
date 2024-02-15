@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 
@@ -15,13 +15,18 @@ import { Toolbar } from './Toolbar'
 interface EditorProps {
   journey?: Journey
   selectedStepId?: string
-  view?: ActiveContent
+  initialState?: Partial<EditorState>
 }
 
+/**
+ * Editor initializes the journey provider and editor provider states which all
+ * descendants are able to make use of via useJourney and useEditor
+ * respectively.
+ */
 export function Editor({
   journey,
   selectedStepId,
-  view
+  initialState
 }: EditorProps): ReactElement {
   const steps =
     journey != null
@@ -38,7 +43,7 @@ export function Editor({
         initialState={{
           steps,
           selectedStep,
-          activeContent: view ?? ActiveContent.Canvas
+          ...initialState
         }}
       >
         <Toolbar />

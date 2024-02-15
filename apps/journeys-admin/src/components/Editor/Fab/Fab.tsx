@@ -73,23 +73,28 @@ export function Fab(): ReactElement {
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
 
-  const disabled =
-    steps == null ||
-    cardBlock?.children?.find(
-      (block) =>
-        block.__typename === 'VideoBlock' && cardBlock.coverBlockId !== block.id
-    ) != null
-
-  const fabProps: FabProps = {
-    variant: smUp ? 'extended' : 'circular',
-    size: 'large',
-    color: 'primary',
-    disabled,
-    sx: {
-      position: 'absolute',
-      bottom: { xs: 16, sm: 73 },
-      right: { xs: 16, sm: DRAWER_WIDTH + 84 }
-    }
+  function StyledFab({ onClick }: FabProps): ReactElement {
+    return (
+      <MuiFab
+        variant={smUp ? 'extended' : 'circular'}
+        size="large"
+        color="primary"
+        disabled={
+          steps == null ||
+          cardBlock?.children?.find(
+            (block) =>
+              block.__typename === 'VideoBlock' &&
+              cardBlock.coverBlockId !== block.id
+          ) != null
+        }
+        sx={{
+          position: 'absolute',
+          bottom: { xs: 16, sm: 73 },
+          right: { xs: 16, sm: DRAWER_WIDTH + 84 }
+        }}
+        onClick={onClick}
+      />
+    )
   }
 
   return (
@@ -102,7 +107,7 @@ export function Fab(): ReactElement {
       data-testid="Fab"
     >
       {activeFab === ActiveFab.Add ? (
-        <MuiFab {...fabProps} onClick={handleAddFab}>
+        <StyledFab onClick={handleAddFab}>
           {selectedComponent === 'AddBlock' ? (
             <>
               <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
@@ -114,17 +119,17 @@ export function Fab(): ReactElement {
               {smUp ? t('Add') : ''}
             </>
           )}
-        </MuiFab>
+        </StyledFab>
       ) : activeFab === ActiveFab.Edit ? (
-        <MuiFab {...fabProps} onClick={handleEditFab}>
+        <StyledFab onClick={handleEditFab}>
           <Edit2Icon sx={{ mr: smUp ? 3 : 0 }} />
           {smUp ? t('Edit') : ''}
-        </MuiFab>
+        </StyledFab>
       ) : (
-        <MuiFab {...fabProps} onClick={handleSaveFab}>
+        <StyledFab onClick={handleSaveFab}>
           <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
           {smUp ? t('Done') : ''}
-        </MuiFab>
+        </StyledFab>
       )}
     </Zoom>
   )

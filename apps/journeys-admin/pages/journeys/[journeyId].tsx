@@ -62,7 +62,9 @@ function JourneyEditPage({ status }): ReactElement {
         <Editor
           journey={data?.journey ?? undefined}
           selectedStepId={router.query.stepId as string | undefined}
-          view={router.query.view as ActiveContent | undefined}
+          initialState={{
+            activeContent: router.query.view as ActiveContent | undefined
+          }}
         />
       )}
     </>
