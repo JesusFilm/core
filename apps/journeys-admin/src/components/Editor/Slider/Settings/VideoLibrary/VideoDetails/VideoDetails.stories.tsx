@@ -7,7 +7,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../../__generated__/GetJourney'
+} from '../../../../../../../__generated__/BlockFields'
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../../../../../test/ApolloLoadingProvider'

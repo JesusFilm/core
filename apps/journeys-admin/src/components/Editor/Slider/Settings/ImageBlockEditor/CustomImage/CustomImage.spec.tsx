@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
 
-import { BlockFields_ImageBlock as ImageBlock } from '../../../../../__generated__/BlockFields'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 
 import { CustomImage } from '.'
 

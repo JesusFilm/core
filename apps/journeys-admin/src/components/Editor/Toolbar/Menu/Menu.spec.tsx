@@ -9,13 +9,13 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
 import {
-  GetJourney_journey as Journey,
   BlockFields_StepBlock as StepBlock,
   BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../__generated__/GetJourney'
+} from '../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
-import { BLOCK_DUPLICATE } from '../../Canvas/QuickControls/DuplicateBlock/DuplicateBlock'
+import { BLOCK_DUPLICATE } from '../../Slider/Content/Canvas/QuickControls/DuplicateBlock/DuplicateBlock'
 
 import { GET_ROLE } from './Menu'
 

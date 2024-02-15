@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 
-import { SearchUnsplashPhotos_searchUnsplashPhotos_results } from '../../../../../../__generated__/SearchUnsplashPhotos'
+import { SearchUnsplashPhotos_searchUnsplashPhotos_results } from '../../../../../../../../__generated__/SearchUnsplashPhotos'
 
 import { UnsplashList } from './UnsplashList'
 

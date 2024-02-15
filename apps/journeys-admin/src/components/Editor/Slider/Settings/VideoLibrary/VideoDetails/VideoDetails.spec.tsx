@@ -8,9 +8,9 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockFields_ImageBlock as ImageBlock,
-  GetJourney_journey as Journey,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../../__generated__/GetJourney'
+} from '../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
 

@@ -4,8 +4,8 @@ import { render } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 
 import { SocialShareAppearance } from '.'
 

@@ -9,14 +9,14 @@ import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../__generated__/GetJourney'
-import { GetVideoVariantLanguages_video } from '../../../../__generated__/GetVideoVariantLanguages'
+} from '../../../../../../__generated__/BlockFields'
+import { GetVideoVariantLanguages_video } from '../../../../../../__generated__/GetVideoVariantLanguages'
 import {
   ThemeMode,
   VideoBlockSource
-} from '../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../libs/storybook'
-import { ThemeProvider } from '../../ThemeProvider'
+} from '../../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { ThemeProvider } from '../../../../ThemeProvider'
 import { videos } from '../VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEOS } from '../VideoLibrary/VideoFromLocal/VideoFromLocal'
 
