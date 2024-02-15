@@ -16,13 +16,13 @@ import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 import {
   CardIntroCreate,
   CardIntroCreateVariables
-} from '../../../../../../../../__generated__/CardIntroCreate'
+} from '../../../../../../../../../__generated__/CardIntroCreate'
 import {
   ButtonVariant,
   IconName,
   TypographyVariant,
   VideoBlockSource
-} from '../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/globalTypes'
 
 import cardIntroImage from './cardIntro.svg'
 

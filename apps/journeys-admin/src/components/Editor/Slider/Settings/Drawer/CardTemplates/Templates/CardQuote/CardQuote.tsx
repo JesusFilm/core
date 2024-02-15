@@ -14,11 +14,11 @@ import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields
 import {
   CardQuoteCreate,
   CardQuoteCreateVariables
-} from '../../../../../../../../__generated__/CardQuoteCreate'
+} from '../../../../../../../../../__generated__/CardQuoteCreate'
 import {
   TypographyColor,
   TypographyVariant
-} from '../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/globalTypes'
 
 import cardQuoteImage from './cardQuote.svg'
 

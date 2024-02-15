@@ -10,7 +10,7 @@ import { ReactElement, ReactNode } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
+import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../../../constants'
 
 interface DrawerTitleProps {
   title?: string

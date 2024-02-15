@@ -8,7 +8,7 @@ import { IconColor } from '../../../../../../../__generated__/globalTypes'
 import { IconBlockColorUpdate } from '../../../../../../../__generated__/IconBlockColorUpdate'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { ColorDisplayIcon } from '../../ColorDisplayIcon'
-import { ToggleButtonGroup } from '../../Properties/ToggleButtonGroup'
+import { ToggleButtonGroup } from '../../ToggleButtonGroup'
 
 export const ICON_BLOCK_COLOR_UPDATE = gql`
   mutation IconBlockColorUpdate(
