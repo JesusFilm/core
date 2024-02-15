@@ -136,7 +136,7 @@ export function NewButtonButton(): ReactElement {
       if (data?.buttonBlockUpdate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.buttonBlockCreate.id
+          selectedBlockId: data.buttonBlockCreate.id
         })
         dispatch({
           type: 'SetActiveFabAction',

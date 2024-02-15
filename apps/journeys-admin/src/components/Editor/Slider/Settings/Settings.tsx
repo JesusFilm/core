@@ -31,7 +31,7 @@ export function Attributes(): ReactElement {
           <SocialShareAppearance />
         </Drawer>
       )
-    case ActiveContent.Action:
+    case ActiveContent.Goals:
       return (
         <Drawer
           title={

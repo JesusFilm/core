@@ -26,7 +26,7 @@ export function ActionsList({ actions }: ActionsListProps): ReactElement {
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   const handleClick = (url?: string): void => {
-    dispatch({ type: 'SetSelectedComponentAction', component: url })
+    dispatch({ type: 'SetSelectedComponentAction', selectedComponent: url })
   }
   const { t } = useTranslation('apps-journeys-admin')
 

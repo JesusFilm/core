@@ -116,7 +116,7 @@ describe('RadioOption Attribute', () => {
     render(<RadioOption {...block} />)
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
-      id: 'radioOption1.id-radio-option-action'
+      selectedAttributeId: 'radioOption1.id-radio-option-action'
     })
   })
 })

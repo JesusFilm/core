@@ -24,7 +24,7 @@ export function StrategyItem({
   function handleGoalsClick(): void {
     dispatch({
       type: 'SetActiveContentAction',
-      component: ActiveContent.Action
+      activeContent: ActiveContent.Goals
     })
     dispatch({
       type: 'SetActiveSlideAction',

@@ -96,7 +96,7 @@ describe('Toolbar', () => {
           >
             <EditorProvider
               initialState={{
-                activeContent: ActiveContent.Action
+                activeContent: ActiveContent.Goals
               }}
             >
               <Toolbar />

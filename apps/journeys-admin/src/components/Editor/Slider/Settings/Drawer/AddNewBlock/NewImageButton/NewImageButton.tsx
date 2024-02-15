@@ -69,7 +69,7 @@ export function NewImageButton(): ReactElement {
       if (data?.imageBlockCreate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.imageBlockCreate.id
+          selectedBlockId: data.imageBlockCreate.id
         })
       }
     }

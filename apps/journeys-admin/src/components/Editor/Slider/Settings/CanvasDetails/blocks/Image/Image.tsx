@@ -25,7 +25,7 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: `${id}-image-options`
+      selectedAttributeId: `${id}-image-options`
     })
   }, [dispatch, id])
 

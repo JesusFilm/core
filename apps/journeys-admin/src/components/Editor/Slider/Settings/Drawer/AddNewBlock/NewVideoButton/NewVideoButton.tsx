@@ -74,7 +74,7 @@ export function NewVideoButton({
       if (data?.videoBlockCreate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.videoBlockCreate.id
+          selectedBlockId: data.videoBlockCreate.id
         })
       }
     }

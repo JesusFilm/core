@@ -96,7 +96,7 @@ describe('Typography properties', () => {
     render(<Typography {...block} />)
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
-      id: 'typography1.id-typography-variant'
+      selectedAttributeId: 'typography1.id-typography-variant'
     })
   })
 })

@@ -15,7 +15,7 @@ export function ActionDetails(): ReactElement {
   } = useEditor()
 
   function setSelectedAction(url: string): void {
-    dispatch({ type: 'SetSelectedComponentAction', component: url })
+    dispatch({ type: 'SetSelectedComponentAction', selectedComponent: url })
   }
 
   return (

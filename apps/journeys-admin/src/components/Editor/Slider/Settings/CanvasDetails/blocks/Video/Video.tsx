@@ -25,7 +25,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: `${id}-video-options`
+      selectedAttributeId: `${id}-video-options`
     })
   }, [id, videoId, dispatch])
 

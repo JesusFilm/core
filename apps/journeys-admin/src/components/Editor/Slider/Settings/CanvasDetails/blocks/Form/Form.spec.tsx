@@ -99,7 +99,7 @@ describe('Form', () => {
 
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
-      id: 'formBlock.id-form-action'
+      selectedAttributeId: 'formBlock.id-form-action'
     })
   })
 })

@@ -122,7 +122,7 @@ export function NewTextResponseButton(): ReactElement {
       if (data?.textResponseBlockCreate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.textResponseBlockCreate.id
+          selectedBlockId: data.textResponseBlockCreate.id
         })
       }
     }

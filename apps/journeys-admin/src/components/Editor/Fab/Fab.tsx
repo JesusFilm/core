@@ -41,7 +41,7 @@ export function Fab(): ReactElement {
       })
       dispatch({
         type: 'SetSelectedBlockAction',
-        block: selectedStep
+        selectedBlock: selectedStep
       })
       if (!smUp) {
         dispatch({
@@ -52,7 +52,7 @@ export function Fab(): ReactElement {
     } else {
       dispatch({
         type: 'SetSelectedComponentAction',
-        component: 'AddBlock'
+        selectedComponent: 'AddBlock'
       })
       if (!smUp) {
         dispatch({

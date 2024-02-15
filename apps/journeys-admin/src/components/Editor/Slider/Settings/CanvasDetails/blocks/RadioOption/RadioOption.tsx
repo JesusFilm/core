@@ -19,7 +19,7 @@ export function RadioOption({
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: `${id}-radio-option-action`
+      selectedAttributeId: `${id}-radio-option-action`
     })
   }, [dispatch, id])
 

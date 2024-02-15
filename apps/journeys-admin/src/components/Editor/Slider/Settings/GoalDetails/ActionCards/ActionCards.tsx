@@ -40,7 +40,7 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
   const blocks = transformer(journey?.blocks as TreeBlock[]).filter(hasAction)
 
   function handleClick(step): void {
-    dispatch({ type: 'SetSelectedStepAction', step })
+    dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
     dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
   }
 

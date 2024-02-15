@@ -40,7 +40,7 @@ describe('EditorContext', () => {
         expect(
           reducer(state, {
             type: 'SetSelectedStepAction',
-            step
+            selectedStep: step
           })
         ).toEqual({
           ...state,
@@ -72,7 +72,7 @@ describe('EditorContext', () => {
         expect(
           reducer(state, {
             type: 'SetSelectedComponentAction',
-            component: 'Footer'
+            selectedComponent: 'Footer'
           })
         ).toEqual({
           ...state,
@@ -102,7 +102,7 @@ describe('EditorContext', () => {
         expect(
           reducer(state, {
             type: 'SetSelectedBlockAction',
-            block
+            selectedBlock: block
           })
         ).toEqual({
           ...state,
@@ -144,7 +144,7 @@ describe('EditorContext', () => {
         expect(
           reducer(state, {
             type: 'SetSelectedBlockByIdAction',
-            id: 'card0.id'
+            selectedBlockId: 'card0.id'
           })
         ).toEqual({
           ...state,
@@ -184,7 +184,7 @@ describe('EditorContext', () => {
         expect(
           reducer(state, {
             type: 'SetSelectedBlockByIdAction',
-            id: 'card1.id'
+            selectedBlockId: 'card1.id'
           })
         ).toEqual({
           ...state,
@@ -222,7 +222,7 @@ describe('EditorContext', () => {
         expect(
           reducer(state, {
             type: 'SetSelectedAttributeIdAction',
-            id: 'testId'
+            selectedAttributeId: 'testId'
           })
         ).toEqual({
           ...state,
@@ -344,7 +344,7 @@ describe('EditorContext', () => {
         expect(
           reducer(state, {
             type: 'SetActiveContentAction',
-            component: ActiveContent.Canvas
+            activeContent: ActiveContent.Canvas
           })
         ).toEqual({
           ...state,
