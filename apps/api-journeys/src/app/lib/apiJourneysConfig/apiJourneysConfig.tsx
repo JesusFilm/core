@@ -19,7 +19,6 @@ export const apiJourneysConfig = {
   ],
   parameters: {
     ...sharedUiConfig.parameters,
-
     layout: 'fullscreen'
   }
 }

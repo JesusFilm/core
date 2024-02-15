@@ -169,11 +169,13 @@ function ValidateEmail({
                       onChange={handleChange}
                       onBlur={handleBlur}
                       error={errors.token != null && touched.token != null}
-                      helperText=<>
-                        {touched?.token != null && errors.token != null
-                          ? errors.token
-                          : ' '}
-                      </>
+                      helperText={
+                        <>
+                          {touched?.token != null && errors.token != null
+                            ? errors.token
+                            : ' '}
+                        </>
+                      }
                     />
                     <Button
                       disabled={disableValidationButton}

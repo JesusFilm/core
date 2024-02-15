@@ -75,7 +75,12 @@ export const EmailVerifyEmail = ({
 
 const withHTML = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Html>
+    <Html
+      style={{
+        height: '100%',
+        width: '100%'
+      }}
+    >
       <Head />
       {children}
     </Html>
@@ -84,7 +89,9 @@ const withHTML = ({ children }: WrapperProps): ReactElement => {
 
 const withBody = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Body className="bg-[#DEDFE0] my-auto mx-auto font-sans">{children}</Body>
+    <Body className="my-[0px] mx-[0px] font-sans h-full w-full">
+      {children}
+    </Body>
   )
 }
 
