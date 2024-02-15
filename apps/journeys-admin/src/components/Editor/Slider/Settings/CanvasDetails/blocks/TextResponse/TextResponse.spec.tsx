@@ -4,7 +4,6 @@ import { fireEvent, render } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { Drawer } from '../../..'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   IconColor,
@@ -12,6 +11,7 @@ import {
   IconSize
 } from '../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
+import { Drawer } from '../../../Drawer'
 
 import { TextResponse } from './TextResponse'
 

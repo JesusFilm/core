@@ -9,12 +9,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   CardQuoteCreate,
   CardQuoteCreateVariables
-} from '../../../../../../../../__generated__/CardQuoteCreate'
+} from '../../../../../../../../../__generated__/CardQuoteCreate'
 import {
   TypographyColor,
   TypographyVariant
-} from '../../../../../../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
+} from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 
 import { CARD_QUOTE_CREATE } from './CardQuote'
 

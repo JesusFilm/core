@@ -6,9 +6,9 @@ import { SnackbarProvider } from 'notistack'
 import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../__generated__/GetJourney'
-import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
-import { ThemeProvider } from '../../../../ThemeProvider'
+} from '../../../../../../../../__generated__/BlockFields'
+import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
+import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { VideoBlockEditorSettingsPoster } from './VideoBlockEditorSettingsPoster'
 

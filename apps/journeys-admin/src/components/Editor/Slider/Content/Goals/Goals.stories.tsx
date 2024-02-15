@@ -3,13 +3,13 @@ import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant
-} from '../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../libs/storybook'
+} from '../../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { journey } from '../../Settings/GoalDetails/data'
 
 import { ActionsTable } from '.'

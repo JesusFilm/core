@@ -6,8 +6,8 @@ import { ComponentProps } from 'react'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
-import { TypographyVariant } from '../../../../../../../__generated__/globalTypes'
+import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
 
 import { TYPOGRAPHY_BLOCK_UPDATE_CONTENT, TypographyEdit } from '.'
 

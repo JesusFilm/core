@@ -10,13 +10,13 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   CardFormCreate,
   CardFormCreateVariables
-} from '../../../../../../../../__generated__/CardFormCreate'
+} from '../../../../../../../../../__generated__/CardFormCreate'
 import {
   IconName,
   TypographyColor,
   TypographyVariant
-} from '../../../../../../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
+} from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 
 import { CARD_FORM_CREATE } from './CardForm'
 

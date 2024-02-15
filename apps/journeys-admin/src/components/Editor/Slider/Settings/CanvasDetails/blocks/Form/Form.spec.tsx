@@ -13,7 +13,7 @@ import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import {
   BlockFields_FormBlock_action as FormAction,
   BlockFields_FormBlock as FormBlock
-} from '../../../../../../../../__generated__/GetJourney'
+} from '../../../../../../../../__generated__/BlockFields'
 
 import { Form } from '.'
 
