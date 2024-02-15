@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  BlockFields_ImageBlock as ImageBlock,
   GetJourney_journey as Journey
 } from '../../../../../../__generated__/GetJourney'
 import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'

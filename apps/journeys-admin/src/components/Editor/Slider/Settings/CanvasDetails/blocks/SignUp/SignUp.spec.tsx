@@ -11,7 +11,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
-import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_SignUpBlock as SignUpBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   IconColor,
   IconName,

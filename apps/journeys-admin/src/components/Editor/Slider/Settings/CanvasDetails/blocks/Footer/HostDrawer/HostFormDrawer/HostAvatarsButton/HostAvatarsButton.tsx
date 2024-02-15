@@ -8,7 +8,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { useHostUpdateMutation } from '../../../../../../../../../../libs/useHostUpdateMutation'
 
 const ImageLibrary = dynamic(

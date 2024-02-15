@@ -9,7 +9,7 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 import SpaceHorizontalIcon from '@core/shared/ui/icons/SpaceHorizontal'
 import TransformIcon from '@core/shared/ui/icons/Transform'
 
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   ButtonColor,
   ButtonSize,

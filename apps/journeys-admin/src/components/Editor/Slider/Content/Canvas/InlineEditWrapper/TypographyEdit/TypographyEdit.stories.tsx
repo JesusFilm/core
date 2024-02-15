@@ -5,18 +5,16 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_StepBlock as StepBlock
-} from '../../../../../../__generated__/GetJourney'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,
   ThemeName,
   TypographyAlign,
   TypographyColor,
   TypographyVariant
-} from '../../../../../../__generated__/globalTypes'
-import { TypographyFields } from '../../../../../../__generated__/TypographyFields'
+} from '../../../../../../../../__generated__/globalTypes'
+import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { Canvas } from '../../Canvas'
 

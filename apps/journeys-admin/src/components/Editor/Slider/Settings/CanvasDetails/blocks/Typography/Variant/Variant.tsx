@@ -10,7 +10,7 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import DashIcon from '@core/shared/ui/icons/Dash'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
   ThemeMode,
   ThemeName,

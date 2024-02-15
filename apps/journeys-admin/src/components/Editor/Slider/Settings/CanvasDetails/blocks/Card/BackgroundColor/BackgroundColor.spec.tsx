@@ -7,7 +7,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
+  BlockFields_CardBlock as CardBlock,
   GetJourney_journey as Journey
 } from '../../../../../../../../../__generated__/GetJourney'
 import {

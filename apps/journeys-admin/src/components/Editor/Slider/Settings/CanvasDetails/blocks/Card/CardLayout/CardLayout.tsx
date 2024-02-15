@@ -13,7 +13,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 
 import { CardBlockLayoutUpdate } from '../../../../../../../../../__generated__/CardBlockLayoutUpdate'
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { HorizontalSelect } from '../../../../../../../HorizontalSelect'
 
 import cardLayoutContained from './assets/card-layout-contained.svg'

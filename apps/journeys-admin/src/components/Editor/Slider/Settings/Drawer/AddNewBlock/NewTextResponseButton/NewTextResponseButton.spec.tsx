@@ -9,7 +9,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_StepBlock as StepBlock
+  BlockFields_StepBlock as StepBlock
 } from '../../../../../__generated__/GetJourney'
 
 import { TEXT_RESPONSE_BLOCK_CREATE } from './NewTextResponseButton'

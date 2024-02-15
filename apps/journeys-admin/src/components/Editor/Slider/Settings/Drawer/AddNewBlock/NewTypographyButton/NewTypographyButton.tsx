@@ -7,7 +7,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 import Type3Icon from '@core/shared/ui/icons/Type3'
 
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
 import { TypographyBlockCreate } from '../../../../../__generated__/TypographyBlockCreate'
 import { Button } from '../Button'
 

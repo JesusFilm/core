@@ -6,7 +6,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
-import { GetJourney_journey_blocks_FormBlock as FormBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../__generated__/BlockFields'
 import { Action, actions } from '../../../Action/Action'
 import { Attribute } from '../../../Attribute'
 

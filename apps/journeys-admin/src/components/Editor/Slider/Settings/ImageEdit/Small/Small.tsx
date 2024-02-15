@@ -4,7 +4,7 @@ import { ReactElement } from 'react'
 
 import Image3Icon from '@core/shared/ui/icons/Image3'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { ImageBlockHeader } from '../../ImageBlockHeader'
 
 interface SmallProps {

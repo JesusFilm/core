@@ -16,7 +16,7 @@ import CheckIcon from '@core/shared/ui/icons/Check'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/BlockFields'
 import { GetVideo } from '../../../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { VideoDescription } from '../../VideoDescription'

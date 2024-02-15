@@ -5,8 +5,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { ButtonBlockUpdateSize } from '../../../../../../../../../__generated__/ButtonBlockUpdateSize'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
 import { ButtonSize } from '../../../../../../../../../__generated__/globalTypes'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 

@@ -7,7 +7,7 @@ import { ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../__generated__/GetJourney'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../__generated__/BlockFields'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput

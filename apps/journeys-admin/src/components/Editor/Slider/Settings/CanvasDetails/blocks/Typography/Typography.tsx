@@ -8,7 +8,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
 import Type2Icon from '@core/shared/ui/icons/Type2'
 
-import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/BlockFields'
 import { Attribute } from '../../../Attribute'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 

@@ -4,7 +4,7 @@ import { ComponentProps } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   IconColor,
   IconName,

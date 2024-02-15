@@ -5,8 +5,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_StepBlock as StepBlock
 } from '../../../../../__generated__/GetJourney'
 import {
   ThemeMode,

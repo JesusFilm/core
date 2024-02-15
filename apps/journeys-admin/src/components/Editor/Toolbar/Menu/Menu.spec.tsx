@@ -10,9 +10,9 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  BlockFields_StepBlock as StepBlock,
+  BlockFields_TypographyBlock as TypographyBlock,
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
 import { BLOCK_DUPLICATE } from '../../Canvas/QuickControls/DuplicateBlock/DuplicateBlock'

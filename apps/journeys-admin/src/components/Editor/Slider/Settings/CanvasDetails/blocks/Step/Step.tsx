@@ -8,7 +8,7 @@ import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import Lock1Icon from '@core/shared/ui/icons/Lock1'
 import LockOpen1Icon from '@core/shared/ui/icons/LockOpen1'
 
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { Attribute } from '../../../Attribute'
 
 const NextCard = dynamic(

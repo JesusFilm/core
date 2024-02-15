@@ -5,7 +5,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 

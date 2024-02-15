@@ -5,7 +5,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { TypographyColor } from '../../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockUpdateColor } from '../../../../../../../../../__generated__/TypographyBlockUpdateColor'
 import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'

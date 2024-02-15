@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
 
 const VideoBlockEditorSettingsPosterLibrary = dynamic(

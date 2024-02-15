@@ -4,8 +4,8 @@ import { Meta, StoryObj } from '@storybook/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_ImageBlock as ImageBlock
 } from '../../../../../../__generated__/GetJourney'
 import { ThemeMode } from '../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../libs/storybook'

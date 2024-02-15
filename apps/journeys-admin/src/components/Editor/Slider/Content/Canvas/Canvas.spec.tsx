@@ -13,17 +13,15 @@ import {
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_StepBlock as StepBlock
-} from '../../../../__generated__/GetJourney'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,
   ThemeName,
   TypographyAlign,
   TypographyColor,
   TypographyVariant
-} from '../../../../__generated__/globalTypes'
+} from '../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../libs/TestEditorState'
 import { ThemeProvider } from '../../ThemeProvider'
 

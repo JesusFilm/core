@@ -4,10 +4,8 @@ import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
 import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 
-import {
-  GetJourney_journey_blocks as Block,
-  GetJourney_journey as Journey
-} from '../../../__generated__/GetJourney'
+import { BlockFields as Block } from '../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,

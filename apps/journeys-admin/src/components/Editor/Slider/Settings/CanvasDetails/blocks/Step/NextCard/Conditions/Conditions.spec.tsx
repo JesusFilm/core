@@ -7,7 +7,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_StepBlock as StepBlock
+  BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../../../__generated__/GetJourney'
 
 import { Conditions, STEP_BLOCK_LOCK_UPDATE } from './Conditions'

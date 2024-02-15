@@ -7,7 +7,7 @@ import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
 import { ImageBlockCreate } from '../../../../../__generated__/ImageBlockCreate'
 import { Button } from '../Button'
 

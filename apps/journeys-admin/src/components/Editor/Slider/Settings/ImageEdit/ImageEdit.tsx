@@ -5,7 +5,7 @@ import { ReactElement, useState } from 'react'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
 import {
   JourneyImageBlockAssociationUpdate,
   JourneyImageBlockAssociationUpdateVariables

@@ -15,11 +15,11 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { ActionDelete } from '../../../../../../__generated__/ActionDelete'
 import {
-  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
-  GetJourney_journey_blocks_FormBlock as FormBlock,
-  GetJourney_journey_blocks_SignUpBlock as SignUpBlock,
-  GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_FormBlock as FormBlock,
+  BlockFields_SignUpBlock as SignUpBlock,
+  BlockFields_TextResponseBlock as TextResponseBlock,
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../__generated__/GetJourney'
 import { NavigateActionUpdate } from '../../../../../../__generated__/NavigateActionUpdate'
 

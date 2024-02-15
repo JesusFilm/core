@@ -4,7 +4,7 @@ import { ReactElement, useEffect } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { PosterImageBlockCreate } from '../../../../../../../__generated__/PosterImageBlockCreate'
 import { PosterImageBlockUpdate } from '../../../../../../../__generated__/PosterImageBlockUpdate'
 import { VideoBlockPosterImageUpdate } from '../../../../../../../__generated__/VideoBlockPosterImageUpdate'

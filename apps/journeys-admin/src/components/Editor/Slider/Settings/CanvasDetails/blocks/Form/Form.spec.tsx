@@ -11,8 +11,8 @@ import {
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import {
-  GetJourney_journey_blocks_FormBlock_action as FormAction,
-  GetJourney_journey_blocks_FormBlock as FormBlock
+  BlockFields_FormBlock_action as FormAction,
+  BlockFields_FormBlock as FormBlock
 } from '../../../../../../../../__generated__/GetJourney'
 
 import { Form } from '.'
