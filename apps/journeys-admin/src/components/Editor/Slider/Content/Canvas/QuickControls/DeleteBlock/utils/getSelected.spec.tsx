@@ -7,12 +7,12 @@ import {
 import {
   BlockFields_StepBlock as StepBlock,
   BlockFields_TypographyBlock as TypographyBlock
-} from '../../../../../../../__generated__/GetJourney'
+} from '../../../../../../../../../__generated__/BlockFields'
 import {
   TypographyAlign,
   TypographyColor,
   TypographyVariant
-} from '../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/globalTypes'
 
 import getSelected, { GetSelectedProps } from './getSelected'
 
