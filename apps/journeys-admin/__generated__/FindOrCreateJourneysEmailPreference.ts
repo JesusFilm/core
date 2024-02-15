@@ -11,12 +11,7 @@ export interface FindOrCreateJourneysEmailPreference_findOrCreateJourneysEmailPr
   __typename: "JourneysEmailPreference";
   email: string;
   unsubscribeAll: boolean;
-  teamInvite: boolean;
-  teamRemoved: boolean;
-  teamInviteAccepted: boolean;
-  journeyEditInvite: boolean;
-  journeyRequestApproved: boolean;
-  journeyAccessRequest: boolean;
+  accountNotifications: boolean;
 }
 
 export interface FindOrCreateJourneysEmailPreference {

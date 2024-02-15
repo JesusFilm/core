@@ -767,12 +767,7 @@ type JourneysEmailPreference
 {
   email: String!
   unsubscribeAll: Boolean!
-  teamInvite: Boolean!
-  teamRemoved: Boolean!
-  teamInviteAccepted: Boolean!
-  journeyEditInvite: Boolean!
-  journeyRequestApproved: Boolean!
-  journeyAccessRequest: Boolean!
+  accountNotifications: Boolean!
 }
 
 input JourneysEmailPreferenceUpdateInput
@@ -780,12 +775,7 @@ input JourneysEmailPreferenceUpdateInput
 {
   email: String!
   unsubscribeAll: Boolean!
-  teamInvite: Boolean!
-  teamRemoved: Boolean!
-  teamInviteAccepted: Boolean!
-  journeyEditInvite: Boolean!
-  journeyRequestApproved: Boolean!
-  journeyAccessRequest: Boolean!
+  accountNotifications: Boolean!
 }
 
 input JourneysFilter

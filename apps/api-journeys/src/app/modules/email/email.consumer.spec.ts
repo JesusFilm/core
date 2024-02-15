@@ -288,12 +288,7 @@ describe('EmailConsumer', () => {
       prismaService.journeysEmailPreference.findFirst.mockResolvedValueOnce({
         email: 'jsmith@exmaple.com',
         unsubscribeAll: false,
-        teamInvite: true,
-        teamRemoved: false,
-        teamInviteAccepted: true,
-        journeyEditInvite: true,
-        journeyRequestApproved: true,
-        journeyAccessRequest: true
+        accountNotifications: false
       })
 
       jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
@@ -372,12 +367,7 @@ describe('EmailConsumer', () => {
       prismaService.journeysEmailPreference.findFirst.mockResolvedValueOnce({
         email: 'jsmith@exmaple.com',
         unsubscribeAll: false,
-        teamInvite: false,
-        teamRemoved: true,
-        teamInviteAccepted: true,
-        journeyEditInvite: true,
-        journeyRequestApproved: true,
-        journeyAccessRequest: true
+        accountNotifications: false
       })
 
       await emailConsumer.teamInviteEmail(teamInviteJob)
@@ -419,12 +409,7 @@ describe('EmailConsumer', () => {
       prismaService.journeysEmailPreference.findFirst.mockResolvedValue({
         email: 'jsmith@exmaple.com',
         unsubscribeAll: false,
-        teamInvite: true,
-        teamRemoved: true,
-        teamInviteAccepted: false,
-        journeyEditInvite: true,
-        journeyRequestApproved: true,
-        journeyAccessRequest: true
+        accountNotifications: false
       })
 
       jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
@@ -477,12 +462,7 @@ describe('EmailConsumer', () => {
       prismaService.journeysEmailPreference.findFirst.mockResolvedValueOnce({
         email: 'jsmith@exmaple.com',
         unsubscribeAll: false,
-        teamInvite: true,
-        teamRemoved: true,
-        teamInviteAccepted: true,
-        journeyEditInvite: true,
-        journeyRequestApproved: true,
-        journeyAccessRequest: false
+        accountNotifications: false
       })
 
       jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
@@ -535,12 +515,7 @@ describe('EmailConsumer', () => {
       prismaService.journeysEmailPreference.findFirst.mockResolvedValueOnce({
         email: 'jsmith@exmaple.com',
         unsubscribeAll: false,
-        teamInvite: true,
-        teamRemoved: true,
-        teamInviteAccepted: true,
-        journeyEditInvite: true,
-        journeyRequestApproved: false,
-        journeyAccessRequest: true
+        accountNotifications: false
       })
 
       jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
@@ -619,12 +594,7 @@ describe('EmailConsumer', () => {
       prismaService.journeysEmailPreference.findFirst.mockResolvedValueOnce({
         email: 'jsmith@exmaple.com',
         unsubscribeAll: false,
-        teamInvite: true,
-        teamRemoved: true,
-        teamInviteAccepted: true,
-        journeyEditInvite: false,
-        journeyRequestApproved: true,
-        journeyAccessRequest: true
+        accountNotifications: false
       })
 
       jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(

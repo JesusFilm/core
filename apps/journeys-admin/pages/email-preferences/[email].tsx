@@ -25,12 +25,7 @@ const FIND_OR_CREATE_EMAIL_PREFERENCE = gql`
     findOrCreateJourneysEmailPreference(email: $email) {
       email
       unsubscribeAll
-      teamInvite
-      teamRemoved
-      teamInviteAccepted
-      journeyEditInvite
-      journeyRequestApproved
-      journeyAccessRequest
+      accountNotifications
     }
   }
 `
@@ -42,12 +37,7 @@ const UPDATE_EMAIL_PREFERENCE = gql`
     updateJourneysEmailPreference(input: $input) {
       email
       unsubscribeAll
-      teamInvite
-      teamRemoved
-      teamInviteAccepted
-      journeyEditInvite
-      journeyRequestApproved
-      journeyAccessRequest
+      accountNotifications
     }
   }
 `
@@ -91,13 +81,7 @@ function EmailPreferencesPage({
           input: {
             email: journeysEmailPreference.email,
             unsubscribeAll: false,
-            teamInvite: journeysEmailPreference.teamInvite,
-            teamRemoved: journeysEmailPreference.teamRemoved,
-            teamInviteAccepted: journeysEmailPreference.teamInviteAccepted,
-            journeyEditInvite: journeysEmailPreference.journeyEditInvite,
-            journeyRequestApproved:
-              journeysEmailPreference.journeyRequestApproved,
-            journeyAccessRequest: journeysEmailPreference.journeyAccessRequest
+            accountNotifications: journeysEmailPreference.accountNotifications
           }
         }
       }).then(() => {
@@ -114,12 +98,7 @@ function EmailPreferencesPage({
       const updatedPreferences: JourneysEmailPreference = {
         email: journeysEmailPreference.email,
         unsubscribeAll: true,
-        teamInvite: false,
-        teamRemoved: false,
-        teamInviteAccepted: false,
-        journeyEditInvite: false,
-        journeyRequestApproved: false,
-        journeyAccessRequest: false
+        accountNotifications: false
       }
       await updateJourneysEmailPreference({
         variables: {
@@ -157,79 +136,19 @@ function EmailPreferencesPage({
       {journeysEmailPreference != null && (
         <Grid container spacing={12}>
           <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Team Invite')}</Typography>
-            <Typography variant="body2">
-              {t('Optional Description.')}
-            </Typography>
-          </Grid>
-          <Grid item xs={2} md={2}>
-            <Switch
-              checked={journeysEmailPreference.teamInvite}
-              onChange={handlePreferenceChange('teamInvite')}
-              name="journeyNotifications"
-              inputProps={{ 'aria-label': 'Team Invites' }}
-            />
-          </Grid>
-          <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Team Remove')}</Typography>
+            <Typography variant="h5">{t('Account Notifications')}</Typography>
             <Typography variant="body2">
               {t(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+                'Email updates about new members to your teams, invited to a team, journey shared with you, journey access requests, and removed from a team.'
               )}
             </Typography>
           </Grid>
           <Grid item xs={2} md={2}>
             <Switch
-              checked={journeysEmailPreference.teamRemoved}
-              onChange={handlePreferenceChange('teamRemoved')}
-              name="teamRemoved"
-              inputProps={{ 'aria-label': 'Team Removed' }}
-            />
-          </Grid>
-          <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Team Invite Accepted')}</Typography>
-          </Grid>
-          <Grid item xs={2} md={2}>
-            <Switch
-              checked={journeysEmailPreference.teamInviteAccepted}
-              onChange={handlePreferenceChange('teamInviteAccepted')}
-              name="teamInviteAccepted"
-              inputProps={{ 'aria-label': 'Team Invite Accepted' }}
-            />
-          </Grid>
-          <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Journey Edit Invite')}</Typography>
-          </Grid>
-          <Grid item xs={2} md={2}>
-            <Switch
-              checked={journeysEmailPreference.journeyEditInvite}
-              onChange={handlePreferenceChange('journeyEditInvite')}
-              name="journeyEditInvite"
-              inputProps={{ 'aria-label': 'Journey Edit Invite' }}
-            />
-          </Grid>
-          <Grid item xs={10} md={10}>
-            <Typography variant="h5">
-              {t('Journey Request Approved')}
-            </Typography>
-          </Grid>
-          <Grid item xs={2} md={2}>
-            <Switch
-              checked={journeysEmailPreference.journeyRequestApproved}
-              onChange={handlePreferenceChange('journeyRequestApproved')}
-              name="journeyRequestApproved"
-              inputProps={{ 'aria-label': 'Journey Request Approved' }}
-            />
-          </Grid>
-          <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Journey Access Request')}</Typography>
-          </Grid>
-          <Grid item xs={2} md={2}>
-            <Switch
-              checked={journeysEmailPreference.journeyAccessRequest}
-              onChange={handlePreferenceChange('journeyAccessRequest')}
-              name="journeyAccessRequest"
-              inputProps={{ 'aria-label': 'Journey Access Request' }}
+              checked={journeysEmailPreference.accountNotifications}
+              onChange={handlePreferenceChange('accountNotifications')}
+              name="journeyNotifications"
+              inputProps={{ 'aria-label': 'Team Invites' }}
             />
           </Grid>
           <Grid item xs={12} md={12}>
@@ -294,12 +213,7 @@ export const getServerSideProps = withUserTokenSSR()(
             email: journeysEmailPreferenceData
               ?.findOrCreateJourneysEmailPreference?.email as string,
             unsubscribeAll: true,
-            teamInvite: false,
-            teamRemoved: false,
-            teamInviteAccepted: false,
-            journeyEditInvite: false,
-            journeyRequestApproved: false,
-            journeyAccessRequest: false
+            accountNotifications: false
           }
         }
       })
