@@ -15,8 +15,6 @@ import {
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
 
-import { Variant } from './Variant'
-
 import { Typography } from '.'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {

@@ -18,7 +18,6 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../../__generated__/globalTypes'
-import { Action } from '../../../Action'
 
 import { Button } from '.'
 
