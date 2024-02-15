@@ -33,7 +33,7 @@ import { VideoWrapper } from './VideoWrapper'
 const NextCard = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "NextCard" */ '../../Drawer/Properties/blocks/Step/NextCard'
+      /* webpackChunkName: "NextCard" */ '../../Settings/Properties/blocks/Step/NextCard'
     ).then((mod) => mod.NextCard),
   { ssr: false }
 )

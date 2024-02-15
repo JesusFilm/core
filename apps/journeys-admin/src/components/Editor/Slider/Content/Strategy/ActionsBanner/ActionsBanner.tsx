@@ -11,7 +11,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import goal from '../../../../../public/goal.svg'
-import { ActionDetails } from '../../../Drawer/GoalDetails'
+import { ActionDetails } from '../../../Settings/GoalDetails'
 
 export function ActionsBanner(): ReactElement {
   const theme = useTheme()
