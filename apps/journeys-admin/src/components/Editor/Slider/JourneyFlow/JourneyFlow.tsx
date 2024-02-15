@@ -22,7 +22,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   BlockFields,
   BlockFields_CardBlock as CardBlock
-} from '../../../__generated__/BlockFields'
+} from '../../../../../__generated__/BlockFields'
 import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey_blocks_FormBlock as FormBlock,
@@ -31,11 +31,11 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
-} from '../../../__generated__/GetJourney'
-import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
-import { useNavigateToBlockActionUpdateMutation } from '../../libs/useNavigateToBlockActionUpdateMutation'
-import { useStepAndCardBlockCreateMutation } from '../../libs/useStepAndCardBlockCreateMutation'
-import { useStepBlockNextBlockUpdateMutation } from '../../libs/useStepBlockNextBlockUpdateMutation'
+} from '../../../../../__generated__/GetJourney'
+import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
+import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
+import { useStepAndCardBlockCreateMutation } from '../../../../libs/useStepAndCardBlockCreateMutation'
+import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
 
 import {
   ACTION_NODE_HEIGHT_GAP,

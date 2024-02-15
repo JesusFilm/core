@@ -3,8 +3,8 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock
-} from '../../../../../../../__generated__/BlockFields'
-import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/BlockFields'
+import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 
 export function getBackgroundImage(
   card?: TreeBlock<CardBlock>

@@ -16,8 +16,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
-} from '../../../../../__generated__/BlockFields'
-import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
+} from '../../../../../../../__generated__/BlockFields'
+import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { ACTION_NODE_HEIGHT, ACTION_NODE_HEIGHT_GAP } from '../ActionNode'
 import { BaseNode } from '../BaseNode'
 
