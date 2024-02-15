@@ -28,7 +28,7 @@ export const STEP_NODE_WIDTH = 200
 export const STEP_NODE_HEIGHT = 76
 export const STEP_NODE_WIDTH_GAP = 200
 export const STEP_NODE_HEIGHT_GAP =
-  ACTION_NODE_HEIGHT + ACTION_NODE_HEIGHT_GAP + 93
+  ACTION_NODE_HEIGHT + ACTION_NODE_HEIGHT_GAP + 200
 
 export interface StepBlockNodeData extends TreeBlock<StepBlock> {
   steps: Array<TreeBlock<StepBlock>>
