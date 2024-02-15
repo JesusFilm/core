@@ -2,7 +2,6 @@ import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
-import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import {
   ActionCard,
   BodyWrapper,
@@ -11,6 +10,7 @@ import {
   Header,
   UnsubscribeLink
 } from '@core/nest/common/email/components'
+import { JourneyForEmails } from '@core/nest/common/email/types/types'
 import { User } from '@core/nest/common/firebaseClient'
 
 import { Journey } from '../../../modules/userInvite/userInvite.service'
@@ -56,7 +56,7 @@ export const JourneyAccessRequestEmail = ({
             variant="accessRequest"
             sender={sender}
             recipient={recipient}
-            journey={journey as unknown as JourneyFields}
+            journey={journey as unknown as JourneyForEmails}
           />
         </BodyWrapper>
         <Footer />
