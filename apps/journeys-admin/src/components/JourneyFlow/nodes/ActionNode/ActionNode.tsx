@@ -73,10 +73,9 @@ export function ActionNode({
               `2px solid ${
                 selected !== false ? theme.palette.primary.main : 'grey'
               }`,
-            backgroundColor: '#F1F1F1',
+            backgroundColor: 'rgba(241,241,241,,7)',
             width: ACTION_NODE_WIDTH,
             height: ACTION_NODE_HEIGHT,
-            py: 1,
             px: 3
           }}
           onClick={handleClick}
@@ -88,7 +87,8 @@ export function ActionNode({
               textOverflow: 'ellipsis',
               textAlign: 'center',
               fontWeight: 'bold',
-              fontSize: 10
+              fontSize: 10,
+              lineHeight: ACTION_NODE_HEIGHT,
             }}
             variant="body2"
           >
