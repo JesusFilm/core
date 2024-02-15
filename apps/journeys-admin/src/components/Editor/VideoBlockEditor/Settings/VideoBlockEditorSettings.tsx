@@ -311,7 +311,7 @@ export function VideoBlockEditorSettings({
               <InformationCircleContainedIcon sx={{ mr: 4 }} />
               <Typography variant="caption">
                 {t(
-                  'Some mobile browsers may override this choice and default the playback to mute when autoplay is enabled'
+                  'Some mobile browsers may override this choice and default the video to play muted when autoplay is enabled'
                 )}
               </Typography>
             </Stack>
