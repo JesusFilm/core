@@ -2,6 +2,7 @@ import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
+import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import {
   ActionCard,
   BodyWrapper,
@@ -54,7 +55,7 @@ export const JourneySharedNoAccountEmail = ({
             buttonText="View Journey"
             variant="sharedWithYou"
             sender={sender}
-            journey={journey}
+            journey={journey as unknown as JourneyFields}
           />
         </BodyWrapper>
         <Footer />
