@@ -9,13 +9,13 @@ import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
-import { ButtonBlockCreate } from '../../../../../__generated__/ButtonBlockCreate'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import { ButtonBlockCreate } from '../../../../../../../../__generated__/ButtonBlockCreate'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant
-} from '../../../../../__generated__/globalTypes'
+} from '../../../../../../../../__generated__/globalTypes'
 import { Button } from '../Button'
 
 export const BUTTON_BLOCK_CREATE = gql`

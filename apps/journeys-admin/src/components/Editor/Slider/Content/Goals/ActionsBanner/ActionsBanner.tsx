@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
-import goal from '../../../../../public/goal.svg'
+import goal from './assets/goal.svg'
 
 export function ActionsBanner(): ReactElement {
   const theme = useTheme()

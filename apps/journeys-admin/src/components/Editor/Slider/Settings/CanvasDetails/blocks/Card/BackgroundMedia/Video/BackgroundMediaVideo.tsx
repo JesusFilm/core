@@ -25,7 +25,7 @@ import {
 } from '../../../../../../../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../../../../libs/blockDeleteUpdate'
-import { VideoBlockEditor } from '../../../../../../VideoBlockEditor'
+import { VideoBlockEditor } from '../../../../../VideoBlockEditor'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
   mutation BlockDeleteForBackgroundVideo(

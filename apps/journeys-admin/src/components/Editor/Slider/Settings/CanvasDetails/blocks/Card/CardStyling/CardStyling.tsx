@@ -18,9 +18,10 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
-import cardStyleDark from '../../../../../../../../public/card-style-dark.svg'
-import cardStyleLight from '../../../../../../../../public/card-style-light.svg'
 import { HorizontalSelect } from '../../../../../../../HorizontalSelect'
+
+import cardStyleDark from './assets/card-style-dark.svg'
+import cardStyleLight from './assets/card-style-light.svg'
 
 export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
   mutation CardBlockThemeModeUpdate(

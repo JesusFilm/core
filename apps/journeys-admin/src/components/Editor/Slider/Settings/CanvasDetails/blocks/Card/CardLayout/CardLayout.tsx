@@ -14,9 +14,10 @@ import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 
 import { CardBlockLayoutUpdate } from '../../../../../../../../../__generated__/CardBlockLayoutUpdate'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../../__generated__/GetJourney'
-import cardLayoutContained from '../../../../../../../../public/card-layout-contained.svg'
-import cardLayoutExpanded from '../../../../../../../../public/card-layout-expanded.svg'
 import { HorizontalSelect } from '../../../../../../../HorizontalSelect'
+
+import cardLayoutContained from './assets/card-layout-contained.svg'
+import cardLayoutExpanded from './assets/card-layout-expanded.svg'
 
 export const CARD_BLOCK_LAYOUT_UPDATE = gql`
   mutation CardBlockLayoutUpdate(

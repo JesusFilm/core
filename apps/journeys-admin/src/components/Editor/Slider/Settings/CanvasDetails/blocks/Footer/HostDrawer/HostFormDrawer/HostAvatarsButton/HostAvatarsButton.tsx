@@ -14,7 +14,7 @@ import { useHostUpdateMutation } from '../../../../../../../../../../libs/useHos
 const ImageLibrary = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ImageLibrary/ImageLibrary" */ '../../../../../../../ImageLibrary'
+      /* webpackChunkName: "Editor/ImageLibrary/ImageLibrary" */ '../../../../../../ImageLibrary'
     ).then((mod) => mod.ImageLibrary),
   { ssr: false }
 )
