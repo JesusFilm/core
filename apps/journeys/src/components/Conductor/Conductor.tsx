@@ -150,14 +150,25 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           justifyContent: 'center',
           height: '100svh',
           background: theme.palette.grey[900],
-          p: { lg: 6 },
           overflow: 'hidden'
         }}
       >
         {showHeaderFooter && router.query.noi == null && (
           <StepHeader sx={{ ...mobileNotchStyling }} />
         )}
-        <Stack sx={{ height: '100%' }}>
+        <Stack
+          sx={{
+            maxHeight: {
+              xs: '100vh',
+              lg: 'calc(100vh - 80px)'
+            },
+            height: {
+              xs: 'inherit',
+              lg: 'calc(54.25vw + 102px)'
+            },
+            px: { lg: 6 }
+          }}
+        >
           <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
             <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
               <JourneyRenderer />
