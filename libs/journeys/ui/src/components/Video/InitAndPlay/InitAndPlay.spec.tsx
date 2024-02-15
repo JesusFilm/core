@@ -72,18 +72,14 @@ describe('InitAndPlay', () => {
   })
 
   it('should listen for player seeked', () => {
-    const props = {
-      ...defaultProps,
-      startTime: 5
-    }
-    render(<InitAndPlay {...props} />)
+    render(<InitAndPlay {...defaultProps} />)
 
     act(() => {
       player?.trigger('seeked')
     })
 
-    expect(player?.currentTime()).toBe(props.startAt)
-    expect(props.setLoading).toHaveBeenCalledWith(false)
+    expect(player?.currentTime()).toBe(defaultProps.startAt)
+    expect(defaultProps.setLoading).toHaveBeenCalledWith(false)
   })
 
   it('should listen for player canplay', () => {
@@ -155,8 +151,6 @@ describe('InitAndPlay', () => {
   })
 
   it('should pause player when inactive', () => {
-    expect(true).toBe(true)
-
     const props = {
       ...defaultProps,
       activeStep: false
@@ -167,8 +161,6 @@ describe('InitAndPlay', () => {
   })
 
   it('should pause player when on admin', () => {
-    expect(true).toBe(true)
-
     const stepBlock = {
       __typename: 'StepBlock',
       id: 'step1.id',
