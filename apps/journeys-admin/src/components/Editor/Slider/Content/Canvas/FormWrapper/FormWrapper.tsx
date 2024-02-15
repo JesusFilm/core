@@ -3,7 +3,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { Form } from '@core/journeys/ui/Form'
 
-import { GetJourney_journey_blocks_FormBlock as FormBlock } from '../../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_FormBlock as FormBlock } from '../../../../../../../__generated__/GetJourney'
 
 export function FormWrapper({ block, children }: WrapperProps): ReactElement {
   const defaultRenderElement = Form({

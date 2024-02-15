@@ -96,7 +96,7 @@ export const reducer = (
     case 'SetActiveContentAction':
       return {
         ...state,
-        activeContent: action.component
+        activeContent: action.activeContent
       }
     case 'SetActiveFabAction':
       return {

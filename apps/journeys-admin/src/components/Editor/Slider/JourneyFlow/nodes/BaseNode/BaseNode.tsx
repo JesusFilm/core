@@ -7,9 +7,11 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
-import {} from '../../../../../__generated__/StepAndCardBlockCreate'
-import { useStepAndCardBlockCreateMutation } from '../../../../libs/useStepAndCardBlockCreateMutation'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
+import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 
 interface BaseNodeProps {
   isTargetConnectable?: boolean

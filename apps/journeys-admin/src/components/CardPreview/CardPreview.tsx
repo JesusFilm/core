@@ -80,7 +80,7 @@ export function CardPreview({
         onSelect?.({ view: ActiveContent.Goals })
         return
       case 'social':
-        onSelect?.({ view: ActiveContent.SocialPreview })
+        onSelect?.({ view: ActiveContent.Social })
         return
     }
     if (steps == null) return

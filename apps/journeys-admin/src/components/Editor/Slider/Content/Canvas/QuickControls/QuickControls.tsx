@@ -4,7 +4,7 @@ import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
-import { ThemeProvider } from '../../../ThemeProvider'
+import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { DeleteBlock } from './DeleteBlock'
 import { DuplicateBlock } from './DuplicateBlock'

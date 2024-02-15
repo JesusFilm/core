@@ -7,7 +7,7 @@ import {
   SetSelectedStepAction
 } from '@core/journeys/ui/EditorProvider'
 
-import { BlockDelete } from '../../../../../../../__generated__/BlockDelete'
+import { BlockDelete } from '../../../../../../../../../__generated__/BlockDelete'
 
 export interface GetSelectedProps {
   parentOrder: number

@@ -5,8 +5,8 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { ActionFields_LinkAction as LinkAction } from '../../../../../__generated__/ActionFields'
-import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../__generated__/BlockFields'
+import { ActionFields_LinkAction as LinkAction } from '../../../../../../__generated__/ActionFields'
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/BlockFields'
 
 import { ActionsBanner } from './ActionsBanner'
 import { ActionsList } from './ActionsList'

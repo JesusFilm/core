@@ -9,8 +9,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   BlockFields as Block,
   BlockFields_StepBlock as StepBlock
-} from '../../../../../__generated__/BlockFields'
-import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
+} from '../../../../../../../__generated__/BlockFields'
+import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { BaseNode } from '../BaseNode'
 
 export const ACTION_NODE_WIDTH = 125

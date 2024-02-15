@@ -7,7 +7,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_StepBlock as StepBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../__generated__/BlockFields'
+} from '../../../../../../../__generated__/BlockFields'
 import { ActionNode } from '../ActionNode'
 
 export interface VideoBlockNodeData extends TreeBlock<VideoBlock> {

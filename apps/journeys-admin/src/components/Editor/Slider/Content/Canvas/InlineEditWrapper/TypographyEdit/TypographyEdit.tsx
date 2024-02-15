@@ -6,8 +6,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Typography } from '@core/journeys/ui/Typography'
 
-import { TypographyBlockUpdateContent } from '../../../../../../__generated__/TypographyBlockUpdateContent'
-import { TypographyFields } from '../../../../../../__generated__/TypographyFields'
+import { TypographyBlockUpdateContent } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
+import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
 import { InlineEditInput } from '../InlineEditInput'
 import { useOnClickOutside } from '../useOnClickOutside'
 

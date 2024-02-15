@@ -1,9 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, useMemo, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -36,7 +34,6 @@ export function Canvas(): ReactElement {
     dispatch
   } = useEditor()
   const { journey } = useJourney()
-  const { t } = useTranslation('apps-journeys-admin')
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
 

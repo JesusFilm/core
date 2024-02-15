@@ -7,7 +7,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_StepBlock as StepBlock
-} from '../../../../../__generated__/BlockFields'
+} from '../../../../../../../__generated__/BlockFields'
 import { ActionNode } from '../ActionNode'
 
 export interface RadioOptionBlockNodeData extends TreeBlock<RadioOptionBlock> {

@@ -2,7 +2,7 @@ import sortBy from 'lodash/sortBy'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 
 export function getPriorityBlock(
   card?: TreeBlock<CardBlock>
