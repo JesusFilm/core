@@ -10,9 +10,9 @@ import {
 } from '../../../../__generated__/StepAndCardBlockCreate'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
-import { AddBlock } from './AddBlock'
+import { AddNewBlock } from './AddNewBlock'
 
-describe('AddBlock', () => {
+describe('AddNewBlock', () => {
   const stepAndCardBlockCreateMock: MockedResponse<
     StepAndCardBlockCreate,
     StepAndCardBlockCreateVariables
@@ -62,7 +62,7 @@ describe('AddBlock', () => {
     const { getByTestId } = render(
       <MockedProvider mocks={[stepAndCardBlockCreateMock]}>
         <FlagsProvider flags={{ formiumForm: true }}>
-          <AddBlock />
+          <AddNewBlock />
         </FlagsProvider>
       </MockedProvider>
     )

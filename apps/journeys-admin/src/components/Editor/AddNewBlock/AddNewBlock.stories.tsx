@@ -12,12 +12,12 @@ import {
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
-import { AddBlock } from './AddBlock'
+import { AddNewBlock } from './AddNewBlock'
 
-const AddBlockStory = {
+const AddNewBlockStory = {
   ...simpleComponentConfig,
-  component: AddBlock,
-  title: 'Journeys-Admin/Editor/AddBlock'
+  component: AddNewBlock,
+  title: 'Journeys-Admin/Editor/AddNewBlock'
 }
 
 const stepAndCardBlockCreateMock: MockedResponse<
@@ -65,12 +65,12 @@ const stepAndCardBlockCreateMock: MockedResponse<
   }
 }
 
-const Template: StoryObj<typeof AddBlock> = {
+const Template: StoryObj<typeof AddNewBlock> = {
   render: () => (
     <MockedProvider mocks={[stepAndCardBlockCreateMock]}>
       <FlagsProvider flags={{ formiumForm: true }}>
         <Box sx={{ width: 328 }}>
-          <AddBlock />
+          <AddNewBlock />
         </Box>
       </FlagsProvider>
     </MockedProvider>
@@ -81,4 +81,4 @@ export const Default = {
   ...Template
 }
 
-export default AddBlockStory
+export default AddNewBlockStory

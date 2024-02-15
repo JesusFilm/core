@@ -15,7 +15,7 @@ import { NewTextResponseButton } from '../Canvas/Button/NewTextResponseButton'
 import { NewTypographyButton } from '../Canvas/Button/NewTypographyButton'
 import { NewVideoButton } from '../Canvas/Button/NewVideoButton'
 
-export function AddBlock(): ReactElement {
+export function AddNewBlock(): ReactElement {
   const { formiumForm } = useFlags()
   const {
     state: { selectedStep }

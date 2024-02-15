@@ -35,7 +35,7 @@ export function Fab(): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   function handleAddFab(): void {
-    if (selectedComponent === 'AddBlock') {
+    if (selectedComponent === 'AddNewBlock') {
       dispatch({
         type: 'SetSelectedComponentAction'
       })
@@ -52,7 +52,7 @@ export function Fab(): ReactElement {
     } else {
       dispatch({
         type: 'SetSelectedComponentAction',
-        component: 'AddBlock'
+        component: 'AddNewBlock'
       })
       if (!smUp) {
         dispatch({
@@ -103,7 +103,7 @@ export function Fab(): ReactElement {
     >
       {activeFab === ActiveFab.Add ? (
         <MuiFab {...fabProps} onClick={handleAddFab}>
-          {selectedComponent === 'AddBlock' ? (
+          {selectedComponent === 'AddNewBlock' ? (
             <>
               <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
               {smUp ? t('Done') : ''}

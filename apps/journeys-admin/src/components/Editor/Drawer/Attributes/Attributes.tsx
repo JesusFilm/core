@@ -12,7 +12,7 @@ import {
 import { Drawer } from '..'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
 import { ActionDetails } from '../../ActionDetails'
-import { AddBlock } from '../../AddBlock'
+import { AddNewBlock } from '../../AddNewBlock'
 import { CardTemplateDrawer } from '../../CardTemplateDrawer'
 import { SocialShareAppearance } from '../SocialShareAppearance'
 
@@ -217,10 +217,10 @@ export function Attributes(): ReactElement {
       )
     case ActiveJourneyEditContent.Canvas:
       switch (selectedComponent) {
-        case 'AddBlock':
+        case 'AddNewBlock':
           return (
             <Drawer title={t('Add a block')}>
-              <AddBlock />
+              <AddNewBlock />
             </Drawer>
           )
         case 'Footer':
