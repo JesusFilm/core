@@ -5,8 +5,8 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { Canvas } from './Canvas'
-import { SocialPreview } from './Social'
 import { ActionsTable } from './Goals'
+import { SocialPreview } from './Social'
 
 export function Content(): ReactElement {
   const {

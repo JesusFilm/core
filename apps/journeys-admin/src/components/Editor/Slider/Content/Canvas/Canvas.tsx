@@ -26,14 +26,6 @@ import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 
-const NextCard = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "NextCard" */ '../../Settings/Properties/blocks/Step/NextCard'
-    ).then((mod) => mod.NextCard),
-  { ssr: false }
-)
-
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)

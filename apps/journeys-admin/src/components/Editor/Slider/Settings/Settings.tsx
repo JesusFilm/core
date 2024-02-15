@@ -1,23 +1,19 @@
-import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
-import { AddBlock } from '../../AddBlock'
-import { ActionDetails } from '../ActionsTable/ActionDetails'
-
-import { CardTemplateDrawer } from './CardTemplates'
+import { AttributesContent } from './CanvasDetails/CanvasDetails'
 import { Drawer } from './Drawer'
+import { AddBlock } from './Drawer/AddNewBlock'
+import { ActionDetails } from './GoalDetails'
 import { SocialShareAppearance } from './SocialDetails'
 
 const Footer = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer" */ './Properties/blocks/Footer'
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer" */ './CanvasDetails/blocks/Footer'
     ).then((mod) => mod.Footer),
   { ssr: false }
 )

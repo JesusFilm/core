@@ -10,10 +10,9 @@ import DashIcon from '@core/shared/ui/icons/Dash'
 import {
   TypographyAlign,
   TypographyVariant
-} from '../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
-
-import { ToggleButtonGroup } from '.'
+} from '../../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../libs/storybook'
+import { ToggleButtonGroup } from '../CanvasDetails/ToggleButtonGroup'
 
 const ToggleButtonGroupStory: Meta<typeof ToggleButtonGroup> = {
   ...simpleComponentConfig,
