@@ -7,10 +7,7 @@ import { ReactElement } from 'react'
 import { NodeProps } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
@@ -43,7 +40,7 @@ export function StepBlockNode({
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
 
   const {
-    state: { selectedStep, journeyEditContentComponent },
+    state: { selectedStep, activeContent },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -78,8 +75,7 @@ export function StepBlockNode({
       isTargetConnectable
       isSourceConnectable="arrow"
       selected={
-        journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
-        selectedStep?.id === step.id
+        activeContent === ActiveContent.Canvas && selectedStep?.id === step.id
       }
       onSourceConnect={handleSourceConnect}
     >

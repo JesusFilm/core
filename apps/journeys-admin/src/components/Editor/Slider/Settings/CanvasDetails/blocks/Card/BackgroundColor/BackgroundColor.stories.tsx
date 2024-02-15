@@ -59,10 +59,7 @@ export const Light: StoryObj<typeof BackgroundColor> = {
       <MockedProvider>
         <EditorProvider
           initialState={{
-            selectedStep: step(cardLight),
-            drawerChildren: <BackgroundColor />,
-            drawerTitle: 'Background Color Properties',
-            drawerMobileOpen: true
+            selectedStep: step(cardLight)
           }}
         >
           <Drawer />
@@ -85,10 +82,7 @@ const Template: StoryObj<typeof BackgroundColor> = {
       <MockedProvider>
         <EditorProvider
           initialState={{
-            selectedStep: step(cardDark),
-            drawerChildren: <BackgroundColor />,
-            drawerTitle: 'Background Color Properties',
-            drawerMobileOpen: true
+            selectedStep: step(cardDark)
           }}
         >
           <Drawer />

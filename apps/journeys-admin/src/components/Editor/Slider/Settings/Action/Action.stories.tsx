@@ -103,10 +103,7 @@ const Template: StoryObj<typeof Action> = {
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider
             initialState={{
-              ...args,
-              drawerChildren: <Action />,
-              drawerTitle: 'Action',
-              drawerMobileOpen: true
+              ...args
             }}
           >
             <Drawer />

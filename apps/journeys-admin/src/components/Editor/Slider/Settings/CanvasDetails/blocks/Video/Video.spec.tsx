@@ -2,9 +2,8 @@ import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
+  ActiveContent,
   ActiveFab,
-  ActiveJourneyEditContent,
-  ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import {
@@ -72,11 +71,9 @@ describe('Video', () => {
 
   const state: EditorState = {
     steps: [],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+    activeContent: ActiveContent.Canvas
   }
 
   beforeEach(() => {
@@ -103,11 +100,6 @@ describe('Video', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
       id: 'video1.id-video-options'
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      title: 'Video',
-      children: <VideoOptions />
     })
   })
 })

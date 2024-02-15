@@ -27,11 +27,6 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       id: `${id}-typography-variant`
     })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Text Variant',
-      children: <Variant />
-    })
   }, [dispatch, id])
 
   return (

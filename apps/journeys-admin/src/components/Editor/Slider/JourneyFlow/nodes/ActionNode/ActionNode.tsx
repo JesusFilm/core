@@ -3,10 +3,7 @@ import Typography from '@mui/material/Typography'
 import { ComponentProps, ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
@@ -37,7 +34,7 @@ export function ActionNode({
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
   const { journey } = useJourney()
   const {
-    state: { selectedBlock, journeyEditContentComponent },
+    state: { selectedBlock, activeContent },
     dispatch
   } = useEditor()
 
@@ -59,8 +56,7 @@ export function ActionNode({
       isSourceConnectable
       onSourceConnect={handleSourceConnect}
       selected={
-        journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
-        selectedBlock?.id === block.id
+        activeContent === ActiveContent.Canvas && selectedBlock?.id === block.id
       }
       isTargetConnectable={false}
       {...props}

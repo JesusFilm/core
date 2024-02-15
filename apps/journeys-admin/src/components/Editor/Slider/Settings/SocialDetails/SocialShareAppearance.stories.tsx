@@ -89,13 +89,7 @@ const Template: StoryObj<typeof SocialShareAppearance> = {
     return (
       <MockedProvider>
         <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-          <EditorProvider
-            initialState={{
-              drawerTitle: 'Social Share Preview',
-              drawerChildren: <SocialShareAppearance />,
-              drawerMobileOpen: true
-            }}
-          >
+          <EditorProvider>
             <Drawer />
           </EditorProvider>
         </JourneyProvider>

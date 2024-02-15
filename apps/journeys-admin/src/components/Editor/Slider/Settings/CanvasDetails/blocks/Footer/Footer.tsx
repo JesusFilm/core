@@ -43,12 +43,6 @@ export function Footer(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       id: undefined
     })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: t('Hosted By'),
-      mobileOpen: true,
-      children: <HostDrawer />
-    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
 

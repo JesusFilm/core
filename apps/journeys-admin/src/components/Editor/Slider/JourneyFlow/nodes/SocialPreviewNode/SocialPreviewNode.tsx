@@ -8,10 +8,7 @@ import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 import Share from '@core/shared/ui/icons/Share'
@@ -28,22 +25,18 @@ export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
   const {
     dispatch,
-    state: { journeyEditContentComponent }
+    state: { activeContent }
   } = useEditor()
 
   function handleClick(): void {
     dispatch({
-      type: 'SetJourneyEditContentAction',
-      component: ActiveJourneyEditContent.SocialPreview
+      type: 'SetActiveContentAction',
+      component: ActiveContent.Social
     })
   }
 
   return (
-    <BaseNode
-      selected={
-        journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
-      }
-    >
+    <BaseNode selected={activeContent === ActiveContent.Social}>
       {({ selected }) => (
         <Card
           sx={{

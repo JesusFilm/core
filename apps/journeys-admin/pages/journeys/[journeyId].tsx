@@ -5,7 +5,7 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
 import {
@@ -62,7 +62,7 @@ function JourneyEditPage({ status }): ReactElement {
         <Editor
           journey={data?.journey ?? undefined}
           selectedStepId={router.query.stepId as string | undefined}
-          view={router.query.view as ActiveJourneyEditContent | undefined}
+          view={router.query.view as ActiveContent | undefined}
         />
       )}
     </>

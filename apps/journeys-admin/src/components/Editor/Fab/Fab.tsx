@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
-  ActiveJourneyEditContent,
+  ActiveContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
@@ -27,7 +27,7 @@ export function Fab(): ReactElement {
       selectedComponent,
       selectedStep,
       steps,
-      journeyEditContentComponent
+      activeContent
     },
     dispatch
   } = useEditor()
@@ -95,7 +95,7 @@ export function Fab(): ReactElement {
   return (
     <Zoom
       in={
-        journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
+        activeContent === ActiveContent.Canvas &&
         activeSlide > ActiveSlide.JourneyFlow
       }
       unmountOnExit

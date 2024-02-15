@@ -3,10 +3,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import BulbIcon from '@core/shared/ui/icons/Bulb'
 
@@ -26,8 +23,8 @@ export function StrategyItem({
 
   function handleGoalsClick(): void {
     dispatch({
-      type: 'SetJourneyEditContentAction',
-      component: ActiveJourneyEditContent.Action
+      type: 'SetActiveContentAction',
+      component: ActiveContent.Action
     })
     dispatch({
       type: 'SetActiveSlideAction',

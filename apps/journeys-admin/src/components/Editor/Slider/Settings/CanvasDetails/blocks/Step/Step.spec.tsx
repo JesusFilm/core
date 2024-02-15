@@ -2,9 +2,8 @@ import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
+  ActiveContent,
   ActiveFab,
-  ActiveJourneyEditContent,
-  ActiveTab,
   EditorProvider,
   EditorState,
   useEditor
@@ -45,11 +44,9 @@ describe('Step', () => {
 
   const state: EditorState = {
     steps: [],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+    activeContent: ActiveContent.Canvas
   }
 
   beforeEach(() => {
@@ -111,11 +108,9 @@ describe('Step', () => {
       mockUseEditor.mockReturnValue({
         state: {
           steps: [step1, step2],
-          drawerMobileOpen: false,
-          activeTab: ActiveTab.Journey,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeContent: ActiveContent.Canvas
         },
         dispatch
       })
@@ -187,11 +182,9 @@ describe('Step', () => {
       mockUseEditor.mockReturnValue({
         state: {
           steps: [step1, step2, step5],
-          drawerMobileOpen: false,
-          activeTab: ActiveTab.Journey,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeContent: ActiveContent.Canvas
         },
         dispatch
       })
@@ -254,11 +247,9 @@ describe('Step', () => {
       mockUseEditor.mockReturnValue({
         state: {
           steps: [step1, step2],
-          drawerMobileOpen: false,
-          activeTab: ActiveTab.Journey,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeContent: ActiveContent.Canvas
         },
         dispatch
       })

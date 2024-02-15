@@ -3,10 +3,7 @@ import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveJourneyEditContent,
-  EditorProvider
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
@@ -99,7 +96,7 @@ describe('Toolbar', () => {
           >
             <EditorProvider
               initialState={{
-                journeyEditContentComponent: ActiveJourneyEditContent.Action
+                activeContent: ActiveContent.Action
               }}
             >
               <Toolbar />

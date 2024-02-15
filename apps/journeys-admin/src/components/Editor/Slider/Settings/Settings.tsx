@@ -2,10 +2,7 @@ import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { AttributesContent } from './CanvasDetails/CanvasDetails'
 import { Drawer } from './Drawer'
@@ -23,23 +20,18 @@ const Footer = dynamic(
 
 export function Attributes(): ReactElement {
   const {
-    state: {
-      selectedComponent,
-      selectedBlock,
-      selectedStep,
-      journeyEditContentComponent
-    }
+    state: { selectedComponent, selectedBlock, selectedStep, activeContent }
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
 
-  switch (journeyEditContentComponent) {
-    case ActiveJourneyEditContent.SocialPreview:
+  switch (activeContent) {
+    case ActiveContent.Social:
       return (
         <Drawer title={t('Social Share Preview')}>
           <SocialShareAppearance />
         </Drawer>
       )
-    case ActiveJourneyEditContent.Action:
+    case ActiveContent.Action:
       return (
         <Drawer
           title={
@@ -49,7 +41,7 @@ export function Attributes(): ReactElement {
           <ActionDetails />
         </Drawer>
       )
-    case ActiveJourneyEditContent.Canvas:
+    case ActiveContent.Canvas:
       switch (selectedComponent) {
         case 'AddBlock':
           return (

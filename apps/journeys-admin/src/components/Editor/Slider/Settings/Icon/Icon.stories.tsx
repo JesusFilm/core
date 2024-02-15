@@ -53,10 +53,7 @@ export const Default: StoryObj<typeof Icon> = {
       <MockedProvider>
         <EditorProvider
           initialState={{
-            selectedBlock,
-            drawerChildren: <Icon id="iconBlock.id" />,
-            drawerTitle: 'Start Icon',
-            drawerMobileOpen: true
+            selectedBlock
           }}
         >
           <Drawer />
@@ -98,10 +95,7 @@ export const Filled: StoryObj<typeof Icon> = {
       <MockedProvider>
         <EditorProvider
           initialState={{
-            selectedBlock,
-            drawerChildren: <Icon id="iconBlock.id" />,
-            drawerTitle: 'Start Icon',
-            drawerMobileOpen: true
+            selectedBlock
           }}
         >
           <Drawer />

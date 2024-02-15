@@ -3,11 +3,7 @@ import { MouseEvent, ReactElement, useRef } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
-import {
-  ActiveFab,
-  ActiveTab,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { QuickControls } from '../QuickControls'
 
@@ -35,10 +31,6 @@ export function SelectableWrapper({
     block.__typename !== 'GridItemBlock'
 
   const updateEditor = (block: TreeBlock): void => {
-    dispatch({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Properties
-    })
     dispatch({ type: 'SetSelectedBlockAction', block })
     dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
   }

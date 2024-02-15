@@ -3,9 +3,8 @@ import { fireEvent, render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
+  ActiveContent,
   ActiveFab,
-  ActiveJourneyEditContent,
-  ActiveTab,
   EditorProvider,
   EditorState,
   useEditor
@@ -69,11 +68,9 @@ describe('SignUp Attributes', () => {
   }
   const state: EditorState = {
     steps: [],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+    activeContent: ActiveContent.Canvas
   }
 
   beforeEach(() => {
@@ -153,11 +150,6 @@ describe('SignUp Attributes', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
       id: 'signup.id-signup-action'
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      title: 'Form Submission',
-      children: <Action />
     })
   })
 })

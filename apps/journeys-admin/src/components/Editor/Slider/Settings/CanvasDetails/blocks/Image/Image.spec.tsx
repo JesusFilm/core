@@ -4,9 +4,8 @@ import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
+  ActiveContent,
   ActiveFab,
-  ActiveJourneyEditContent,
-  ActiveTab,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
@@ -37,11 +36,9 @@ describe('Image', () => {
   }
   const state: EditorState = {
     steps: [],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+    activeContent: ActiveContent.Canvas
   }
 
   it('should display Image Options', () => {
@@ -57,7 +54,7 @@ describe('Image', () => {
         <SnackbarProvider>
           <EditorProvider initialState={state}>
             <Image {...block} alt={block.alt} />
-            <TestEditorState renderChildren />
+            <TestEditorState />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -65,8 +62,6 @@ describe('Image', () => {
     expect(
       getByText('selectedAttributeId: image1.id-image-options')
     ).toBeInTheDocument()
-    expect(getByText('drawerMobileOpen: true')).toBeInTheDocument()
-    expect(getByText('drawerTitle: Image')).toBeInTheDocument()
     await waitFor(() =>
       expect(getByTestId('ImageBlockEditor')).toBeInTheDocument()
     )
