@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
@@ -14,6 +14,7 @@ import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 
 import { StepFields } from './__generated__/StepFields'
+import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
 import { STEP_VIEW_EVENT_CREATE } from './Step'
 
 import { Step } from '.'
@@ -142,12 +143,18 @@ const block: TreeBlock<StepFields> = {
 }
 
 describe('Step', () => {
-  it('should create a stepViewEvent', async () => {
-    mockUuidv4.mockReturnValueOnce('uuid')
-    treeBlocksVar([block])
-    blockHistoryVar([block])
-
-    const result = jest.fn(() => ({
+  const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
+    request: {
+      query: STEP_VIEW_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          blockId: 'Step1',
+          value: 'Step {{number}}'
+        }
+      }
+    },
+    result: jest.fn(() => ({
       data: {
         stepViewEventCreate: {
           id: 'uuid',
@@ -155,31 +162,23 @@ describe('Step', () => {
         }
       }
     }))
+  }
+
+  it('should create a stepViewEvent', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    treeBlocksVar([block])
+    blockHistoryVar([block])
 
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: STEP_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'Step1',
-                  value: 'Step {{number}}'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
         <JourneyProvider value={{ journey }}>
           <Step {...block} />
         </JourneyProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockStepViewEventCreate.result).toHaveBeenCalled()
+    )
   })
 
   it('should stepViewEvent to dataLayer', async () => {
@@ -187,30 +186,7 @@ describe('Step', () => {
     blockHistoryVar([block])
     treeBlocksVar([block])
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: STEP_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'Step1',
-                  value: 'Step {{number}}'
-                }
-              }
-            },
-            result: {
-              data: {
-                stepViewEventCreate: {
-                  id: 'uuid',
-                  __typename: 'StepViewEvent'
-                }
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
         <JourneyProvider value={{ journey }}>
           <Step {...block} />
         </JourneyProvider>
@@ -242,23 +218,7 @@ describe('Step', () => {
     }))
 
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: STEP_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'Step1',
-                  value: 'Step {{number}}'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[{ ...mockStepViewEventCreate, result }]}>
         <JourneyProvider value={{ journey }}>
           <Step
             {...block}
@@ -273,11 +233,14 @@ describe('Step', () => {
   })
 
   it('should render blocks', () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+
     const { getByText } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
         <Step {...block} />
       </MockedProvider>
     )
+
     expect(getByText('Button 1')).toBeInTheDocument()
     expect(getByText('Button 2')).toBeInTheDocument()
   })
@@ -287,7 +250,7 @@ describe('Step', () => {
     treeBlocksVar([])
 
     const { baseElement } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
         <JourneyProvider value={{ journey }}>
           {/* eslint-disable-next-line react/no-children-prop */}
           <Step {...block} children={[]} />
@@ -299,6 +262,7 @@ describe('Step', () => {
 
   it('should not send stepViewEvent if not activeStep', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
+    treeBlocksVar([])
     blockHistoryVar([block, { ...block, id: 'Step2' }])
 
     const result = jest.fn(() => ({
@@ -311,23 +275,7 @@ describe('Step', () => {
     }))
 
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: STEP_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'Step1',
-                  value: 'Step {{number}}'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[{ ...mockStepViewEventCreate, result }]}>
         <JourneyProvider value={{ journey }}>
           <Step {...block} />
         </JourneyProvider>
@@ -338,6 +286,7 @@ describe('Step', () => {
   })
 
   it('should set seoTitle to [journey name (step name)] if activeStep and on first card', () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
     treeBlocksVar([block])
     blockHistoryVar([block])
 
@@ -354,6 +303,7 @@ describe('Step', () => {
   })
 
   it('should set seoTitle to [step name (journey name)] if activeStep and not on first card', () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
     treeBlocksVar([{ ...block, id: 'Step0' }, block])
     blockHistoryVar([block])
 
