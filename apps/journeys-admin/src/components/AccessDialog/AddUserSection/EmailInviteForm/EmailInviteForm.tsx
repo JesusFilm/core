@@ -114,7 +114,7 @@ export function EmailInviteForm({
             helperText={
               touched?.email != null && errors.email != null
                 ? (errors.email as string)
-                : t('No email notifications. New users get access instantly.')
+                : t('New users get access instantly.')
             }
             InputProps={{
               endAdornment: (

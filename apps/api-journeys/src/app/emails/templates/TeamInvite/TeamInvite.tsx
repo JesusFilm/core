@@ -56,7 +56,7 @@ export const TeamInviteEmail = ({
           />
         </BodyWrapper>
         <Footer />
-        <UnsubscribeLink />
+        <UnsubscribeLink recipientEmail={recipient.email} />
       </EmailContainer>
     </>
   )

@@ -2,20 +2,18 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { apiJourneysConfig } from '../../lib/apiJourneysConfig/apiJourneysConfig'
 import { JourneyWithTeamAndUserJourney } from '../../modules/email/email.consumer'
-import { JourneySharedNoAccountEmail } from '../templates/JourneyShared/JourneySharedNoAccount'
+import { TeamInviteNoAccountEmail } from '../templates/TeamInvite/TeamInviteNoAccount'
 
-const JourneySharedNoAccountEmailDemo: Meta<
-  typeof JourneySharedNoAccountEmail
-> = {
+const TeamInviteNoAccountEmailDemo: Meta<typeof TeamInviteNoAccountEmail> = {
   ...apiJourneysConfig,
-  component: JourneySharedNoAccountEmail,
-  title: 'Api-Journeys/Emails/JourneySharedNoAccountEmail'
+  component: TeamInviteNoAccountEmail,
+  title: 'Api-Journeys/Emails/TeamInviteNoAccountEmail'
 }
 
-const Template: StoryObj<typeof JourneySharedNoAccountEmail> = {
+const Template: StoryObj<typeof TeamInviteNoAccountEmail> = {
   render: ({ ...args }) => (
-    <JourneySharedNoAccountEmail
-      journey={args.journey}
+    <TeamInviteNoAccountEmail
+      teamName={args.teamName}
       inviteLink="https://admin.nextstep.is/journeys/journeyId"
       sender={args.sender}
       recipientEmail={args.recipientEmail}
@@ -42,8 +40,9 @@ export const Default = {
       lastName: 'Ro-Nimo',
       imageUrl: 'https://bit.ly/3Gth4Yf'
     },
-    recipientEmail: 'someemail@example.com'
+    recipientEmail: 'someemail@example.com',
+    teamName: "Joe's Awesome Team"
   }
 }
 
-export default JourneySharedNoAccountEmailDemo
+export default TeamInviteNoAccountEmailDemo

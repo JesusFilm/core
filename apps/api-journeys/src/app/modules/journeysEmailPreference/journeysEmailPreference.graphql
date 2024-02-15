@@ -1,0 +1,18 @@
+type JourneysEmailPreference {
+  email: String!
+  unsubscribeAll: Boolean!
+  accountNotifications: Boolean!
+}
+
+input JourneysEmailPreferenceUpdateInput {
+  email: String!
+  unsubscribeAll: Boolean!
+  accountNotifications: Boolean!
+}
+
+extend type Mutation {
+  updateJourneysEmailPreference(
+    input: JourneysEmailPreferenceUpdateInput!
+  ): JourneysEmailPreference
+  findOrCreateJourneysEmailPreference(email: String!): JourneysEmailPreference
+}

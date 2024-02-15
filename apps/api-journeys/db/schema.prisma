@@ -468,3 +468,11 @@ model Action {
 
   @@index(parentBlockId)
 }
+
+model JourneysEmailPreference {
+  email                String  @id @unique
+  unsubscribeAll       Boolean
+  accountNotifications Boolean
+
+  @@index(email)
+}

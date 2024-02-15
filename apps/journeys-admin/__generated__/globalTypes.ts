@@ -395,6 +395,12 @@ export interface JourneyVisitorFilter {
   countryCode?: string | null;
 }
 
+export interface JourneysEmailPreferenceUpdateInput {
+  email: string;
+  unsubscribeAll: boolean;
+  accountNotifications: boolean;
+}
+
 export interface JourneysFilter {
   featured?: boolean | null;
   template?: boolean | null;
