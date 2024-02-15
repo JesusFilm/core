@@ -20,12 +20,12 @@ import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
 import { MenuItem } from '../../../MenuItem'
-import { Analytics } from '../Analytics'
-import { Strategy } from '../Strategy'
+import { AnalyticsItem } from '../Items/AnalyticsItem'
+import { StrategyItem } from '../Items/StrategyItem'
 
-import { CopyMenuItem } from './CopyMenuItem'
-import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
-import { LanguageMenuItem } from './LanguageMenuItem'
+import { CopyLinkItem } from './CopyLinkItem'
+import { CreateTemplateItem } from './CreateTemplateItem'
+import { LanguageItem } from './LanguageItem'
 
 const AccessDialog = dynamic(
   async () =>
@@ -39,7 +39,7 @@ const AccessDialog = dynamic(
 const DescriptionDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/EditToolbar/Menu/DescriptionDialog" */
+      /* webpackChunkName: "Editor/Toolbar/Menu/DescriptionDialog" */
       './DescriptionDialog'
     ).then((mod) => mod.DescriptionDialog),
   { ssr: false }
@@ -47,7 +47,7 @@ const DescriptionDialog = dynamic(
 const TemplateSettingsDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/EditToolbar/Menu/TemplateSettingsDialog" */
+      /* webpackChunkName: "Editor/Toolbar/Menu/TemplateSettingsDialog" */
       './TemplateSettingsDialog'
     ).then((mod) => mod.TemplateSettingsDialog),
   { ssr: false }
@@ -55,7 +55,7 @@ const TemplateSettingsDialog = dynamic(
 const TitleDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/EditToolbar/Menu/TitleDialog" */
+      /* webpackChunkName: "Editor/Toolbar/Menu/TitleDialog" */
       './TitleDialog'
     ).then((mod) => mod.TitleDialog),
   { ssr: false }
@@ -199,20 +199,22 @@ export function Menu(): ReactElement {
           />
         )}
         {(journey?.template !== true || isPublisher != null) && (
-          <LanguageMenuItem onClose={handleCloseMenu} />
-        )}
-        {journey != null && <Analytics journey={journey} variant="list-item" />}
-        {journey?.template !== true && isPublisher === true && (
-          <CreateTemplateMenuItem />
+          <LanguageItem onClose={handleCloseMenu} />
         )}
         {journey != null && (
-          <Strategy variant="list-item" closeMenu={handleCloseMenu} />
+          <AnalyticsItem journey={journey} variant="list-item" />
+        )}
+        {journey?.template !== true && isPublisher === true && (
+          <CreateTemplateItem />
+        )}
+        {journey != null && (
+          <StrategyItem variant="list-item" closeMenu={handleCloseMenu} />
         )}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && <Divider />}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && (
-            <CopyMenuItem journey={journey} onClose={handleCloseMenu} />
+            <CopyLinkItem journey={journey} onClose={handleCloseMenu} />
           )}
       </MuiMenu>
       {journey?.id != null && accessDialogOpen != null && (

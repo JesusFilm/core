@@ -15,7 +15,7 @@ import { Menu } from '.'
 const MenuStory: Meta<typeof Menu> = {
   ...journeysAdminConfig,
   component: Menu,
-  title: 'Journeys-Admin/Editor/EditToolbar/Menu'
+  title: 'Journeys-Admin/Editor/Toolbar/Menu'
 }
 
 const Template: StoryObj<typeof Menu> = {
