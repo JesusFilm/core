@@ -9,7 +9,7 @@ import {
   JourneyFields as Journey,
   JourneyFields_primaryImageBlock as PrimaryImageBlock
 } from '../../../../__generated__/JourneyFields'
-import { journey } from '../../Editor/ActionDetails/data'
+import { journey } from '../../Editor/Slider/ActionsTable/ActionDetails/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
 

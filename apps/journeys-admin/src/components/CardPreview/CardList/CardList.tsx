@@ -33,7 +33,7 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
-import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
+import { VideoWrapper } from '../../Editor/Slider/Content/Canvas/VideoWrapper'
 import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'

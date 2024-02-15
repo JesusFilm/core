@@ -11,9 +11,9 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
-import { EditToolbar } from './EditToolbar'
 import { Fab } from './Fab'
 import { Slider } from './Slider'
+import { EditToolbar } from './Toolbar'
 
 interface EditorProps {
   journey?: Journey
@@ -45,11 +45,9 @@ export function Editor({
           journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
         }}
       >
-        <>
-          <EditToolbar />
-          <Slider />
-          <Fab />
-        </>
+        <EditToolbar />
+        <Slider />
+        <Fab />
       </EditorProvider>
     </JourneyProvider>
   )
