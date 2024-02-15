@@ -177,11 +177,15 @@ export function InitAndPlay({
       if (onFirstStep) {
         player.muted(true)
       }
+
       // Tries to autoplay, fallback to muted autoplay if not allowed
-      void player.play()?.catch(() => {
-        player.muted(true)
-        void player.play()
-      })
+      const playPromise = player.play()
+      if (playPromise != null) {
+        playPromise.catch(() => {
+          player.muted(true)
+          void playPromise
+        })
+      }
     }
   }, [activeStep, activeBlock, autoplay, blockId, player])
 
