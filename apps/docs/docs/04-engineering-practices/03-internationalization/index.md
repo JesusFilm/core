@@ -1,3 +1,5 @@
+import CrowdinTranslations from './crowdin-translations.png'
+
 # Internationalization
 
 We make use of [react-i18next](https://react.i18next.com/), a powerful internationalization framework for React / React Native which is based on [i18next](http://i18next.com/). In certain projects we also use:
@@ -136,10 +138,12 @@ export async function getStaticProps({ locale }) {
 
 ## Crowdin
 
-After your files have been committed and your pull request (PR) has been merged into production, our Crowdin GitHub integration will initiate. This process involves uploading any changes to the `locales/en` directory.
+After your files have been committed and your pull request (PR) has been merged into production, our [Crowdin GitHub integration](https://support.crowdin.com/github-integration/) will initiate. This process involves uploading any changes to the `locales/en` directory.
 
 ### DeepL
 
-We have incorporated DeepL, an AI-powered machine translation engine, into our workflow. When Crowdin receives new texts for translation, DeepL automatically translates them. Upon detecting these new translations, Crowdin will automatically synchronize with GitHub and generate a new PR containing the translated texts.
+We have incorporated [DeepL](https://www.deepl.com/en/translator), an AI-powered machine translation engine, into our workflow. When Crowdin receives new texts for translation, DeepL automatically translates them. Upon detecting these new translations, Crowdin will automatically synchronize with GitHub and generate a new PR containing the translated texts.
+
+<img src={CrowdinTranslations} height="650" width="900"/>
 
 Developers are required to assign themselves to the PR created by Crowdin if it is relevant to their work. Additionally, developers should update the PR labels and seek a review from another team member as part of their responsibilities. Once the PR has been approved and reviewed successfully, developers are responsible for merging the changes into the production branch promptly.
