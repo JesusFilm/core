@@ -78,7 +78,7 @@ function ValidateEmail({
 
   const handleReValidateEmail = async (values: FormikValues): Promise<void> => {
     await validateEmail({
-      variables: { email: values.email, token: values.token },
+      variables: { email, token: values.token },
       onCompleted: async () => {
         await router.push('/')
       }
@@ -107,7 +107,7 @@ function ValidateEmail({
   return (
     <OnboardingPageWrapper emailSubject={t('Validate NextStep Email')}>
       <Formik
-        initialValues={{ email, token }}
+        initialValues={{ token }}
         onSubmit={handleReValidateEmail}
         validationSchema={validationSchema}
       >
