@@ -1,5 +1,3 @@
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import isFunction from 'lodash/isFunction'
 import {
   Dispatch,
@@ -217,7 +215,6 @@ export function EditorProvider({
   children,
   initialState
 }: EditorProviderProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [state, dispatch] = useReducer(reducer, {
     steps: [],
     selectedStep: initialState?.steps?.[0],
@@ -228,7 +225,6 @@ export function EditorProvider({
     ...initialState
   })
 
-  useEffect(() => dispatch({ type: 'SetSmUpAction', smUp }), [smUp])
   useEffect(() => {
     if (initialState?.steps != null)
       dispatch({ type: 'SetStepsAction', steps: initialState.steps })
