@@ -1,13 +1,16 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
+import {
+  TreeBlock,
+  blockHistoryVar,
+  treeBlocksVar
+} from '@core/journeys/ui/block'
+import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName } from '@core/shared/ui/themes'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { ThemeMode } from '../../../../__generated__/globalTypes'
-import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
-import { journeyUiConfig } from '../../../libs/journeyUiConfig'
+import { journeyUiConfig } from '../../../../../../libs/journeys/ui/src/libs/journeyUiConfig'
 
 import { PaginationBullets } from './PaginationBullets'
 
