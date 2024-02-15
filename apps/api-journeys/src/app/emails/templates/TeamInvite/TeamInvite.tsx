@@ -85,7 +85,7 @@ const withHTML = ({ children }: WrapperProps): ReactElement => {
 
 const withBody = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Body className="bg-[#DEDFE0] my-auto mx-auto font-sans px-2">
+    <Body className="my-[0px] mx-[0px] font-sans h-full w-full">
       {children}
     </Body>
   )

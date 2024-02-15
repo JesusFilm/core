@@ -137,12 +137,27 @@ function ValidateEmail({
                   </Button>
                 </Stack>
               </Paper>
-              <Accordion sx={{ mt: 7, bgcolor: '#DEDFE0' }} elevation={0}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Accordion
+                sx={{
+                  mt: 7,
+                  backgroundColor: 'transparent',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                  '&:before': {
+                    display: 'none'
+                  }
+                }}
+                elevation={0}
+              >
+                <AccordionSummary
+                  sx={{ pl: '30px' }}
+                  expandIcon={<ExpandMoreIcon />}
+                >
                   {t('Verify With Code Instead')}
                 </AccordionSummary>
                 <AccordionDetails sx={{ textAlign: 'left' }}>
-                  <Stack spacing={4} padding={4}>
+                  <Stack spacing={4} padding={5}>
                     <Typography variant="body1">
                       {t('Enter verification code from email')}
                     </Typography>
@@ -156,11 +171,13 @@ function ValidateEmail({
                       onChange={handleChange}
                       onBlur={handleBlur}
                       error={errors.token != null && touched.token != null}
-                      helperText=<>
-                        {touched?.token != null && errors.token != null
-                          ? errors.token
-                          : ' '}
-                      </>
+                      helperText={
+                        <>
+                          {touched?.token != null && errors.token != null
+                            ? errors.token
+                            : ' '}
+                        </>
+                      }
                     />
                     <Button
                       disabled={disableValidationButton}
@@ -181,8 +198,15 @@ function ValidateEmail({
               <Button
                 onClick={handleLogout}
                 variant="contained"
-                sx={{ mt: 7 }}
-                color="secondary"
+                sx={{
+                  mt: 7,
+                  backgroundColor: 'transparent',
+                  color: 'primary.main',
+                  '&:hover': {
+                    backgroundColor: 'transparent',
+                    boxShadow: 'none'
+                  }
+                }}
                 fullWidth
               >
                 {t('Logout')}
