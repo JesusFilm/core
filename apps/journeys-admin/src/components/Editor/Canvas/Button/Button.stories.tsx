@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
 import PaletteIcon from '@core/shared/ui/icons/Palette'
@@ -14,13 +15,21 @@ const ButtonStory: Meta<typeof Button> = {
 
 export const Default: StoryObj<typeof Button> = {
   render: () => {
-    return <Button icon={<PaletteIcon />} value="Dark" />
+    return (
+      <Box sx={{ width: 285 }}>
+        <Button icon={<PaletteIcon />} value="Button" />
+      </Box>
+    )
   }
 }
 
-export const Empty: StoryObj<typeof Button> = {
+export const Disabled: StoryObj<typeof Button> = {
   render: () => {
-    return <Button icon={<PaletteIcon />} value="" />
+    return (
+      <Box sx={{ width: 285 }}>
+        <Button icon={<PaletteIcon />} value="Disabled" disabled />
+      </Box>
+    )
   }
 }
 

@@ -1,6 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
-
-import { ThemeProvider } from '../../../ThemeProvider'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { Button } from '.'
 
@@ -10,30 +8,28 @@ describe('Button', () => {
     expect(getByText('test')).toBeInTheDocument()
   })
 
-  it('should render empty value button', () => {
-    const { getByText } = render(<Button icon={<>test</>} value="" />)
-    expect(getByText('None')).toBeInTheDocument()
-  })
-
-  it('selects attribute', () => {
+  it('should call onclick on button press', () => {
     const handleClick = jest.fn()
-    const { getByRole, baseElement, rerender } = render(
-      <ThemeProvider>
-        <Button icon={<>test</>} value="value" onClick={handleClick} />
-      </ThemeProvider>
-    )
-    expect(baseElement.getElementsByTagName('hr')[0]).toHaveStyle(
-      'border-color: #dedfe0'
+    const { getByRole } = render(
+      <Button icon={<>test</>} value="value" onClick={handleClick} />
     )
     fireEvent.click(getByRole('button'))
     expect(handleClick).toHaveBeenCalled()
-    rerender(
-      <ThemeProvider>
-        <Button icon={<>test</>} value="value" onClick={handleClick} />
-      </ThemeProvider>
+  })
+
+  it('should display tooltip on mouse hover', async () => {
+    const { getByRole, getByText } = render(
+      <Button icon={<>test</>} value="value" onClick={jest.fn()} />
     )
-    expect(baseElement.getElementsByTagName('hr')[0]).toHaveStyle(
-      'border-color: #c52d3a'
+    fireEvent.mouseOver(getByRole('button'))
+
+    await waitFor(() => expect(getByText('Click to add')).toBeInTheDocument())
+  })
+
+  it('should display disabled button correctly', () => {
+    const { getByRole } = render(
+      <Button icon={<>test</>} value="value" onClick={jest.fn()} disabled />
     )
+    expect(getByRole('button')).toBeDisabled()
   })
 })
