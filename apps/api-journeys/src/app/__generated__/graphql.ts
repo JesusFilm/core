@@ -669,12 +669,7 @@ export class JourneyVisitorFilter {
 export class JourneysEmailPreferenceUpdateInput {
     email: string;
     unsubscribeAll: boolean;
-    teamInvite: boolean;
-    teamRemoved: boolean;
-    teamInviteAccepted: boolean;
-    journeyEditInvite: boolean;
-    journeyRequestApproved: boolean;
-    journeyAccessRequest: boolean;
+    accountNotifications: boolean;
 }
 
 export class TeamCreateInput {
@@ -1290,12 +1285,7 @@ export class JourneysEmailPreference {
     __typename?: 'JourneysEmailPreference';
     email: string;
     unsubscribeAll: boolean;
-    teamInvite: boolean;
-    teamRemoved: boolean;
-    teamInviteAccepted: boolean;
-    journeyEditInvite: boolean;
-    journeyRequestApproved: boolean;
-    journeyAccessRequest: boolean;
+    accountNotifications: boolean;
 }
 
 export class Team {

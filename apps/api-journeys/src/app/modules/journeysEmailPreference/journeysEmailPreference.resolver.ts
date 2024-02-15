@@ -53,12 +53,7 @@ export class JourneysEmailPreferenceResolver {
           data: {
             email,
             unsubscribeAll: false,
-            teamInvite: true,
-            teamRemoved: true,
-            teamInviteAccepted: true,
-            journeyEditInvite: true,
-            journeyRequestApproved: true,
-            journeyAccessRequest: true
+            accountNotifications: true
           }
         })
       }

@@ -143,7 +143,7 @@ export class EmailConsumer extends WorkerHost {
       })
     // do not send email if team removed notification is not preferred
     if (
-      preferences?.teamRemoved === false ||
+      preferences?.accountNotifications === false ||
       preferences?.unsubscribeAll === true
     )
       return
@@ -186,7 +186,7 @@ export class EmailConsumer extends WorkerHost {
       })
     // do not send email if team removed notification is not preferred
     if (
-      preferences?.teamInvite === false ||
+      preferences?.accountNotifications === false ||
       preferences?.unsubscribeAll === true
     )
       return
@@ -308,7 +308,7 @@ export class EmailConsumer extends WorkerHost {
         })
       // do not send email if team removed notification is not preferred
       if (
-        preferences?.teamInviteAccepted === false ||
+        preferences?.accountNotifications === false ||
         preferences?.unsubscribeAll === true
       )
         return
@@ -379,7 +379,7 @@ export class EmailConsumer extends WorkerHost {
       })
     // do not send email if team removed notification is not preferred
     if (
-      preferences?.journeyAccessRequest === false ||
+      preferences?.accountNotifications === false ||
       preferences?.unsubscribeAll === true
     )
       return
@@ -444,7 +444,7 @@ export class EmailConsumer extends WorkerHost {
       })
     // do not send email if team removed notification is not preferred
     if (
-      preferences?.journeyRequestApproved === false ||
+      preferences?.accountNotifications === false ||
       preferences?.unsubscribeAll === true
     )
       return
@@ -490,7 +490,7 @@ export class EmailConsumer extends WorkerHost {
       })
     // do not send email if team removed notification is not preferred
     if (
-      preferences?.journeyEditInvite === false ||
+      preferences?.accountNotifications === false ||
       preferences?.unsubscribeAll === true
     )
       return
