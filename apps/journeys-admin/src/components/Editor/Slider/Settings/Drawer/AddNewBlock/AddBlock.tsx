@@ -5,7 +5,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
 
 import { NewButtonButton } from './NewButtonButton'
 import { NewFormButton } from './NewFormButton'

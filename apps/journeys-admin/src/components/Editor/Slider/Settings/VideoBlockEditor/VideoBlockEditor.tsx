@@ -7,7 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../__generated__/GetJourney'
+} from '../../../../../../__generated__/BlockFields'
 import { VideoBlockUpdateInput } from '../../../../../../__generated__/globalTypes'
 
 import { Source } from './Source'

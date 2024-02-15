@@ -9,8 +9,8 @@ import { RADIO_OPTION_FIELDS } from '@core/journeys/ui/RadioOption/radioOptionFi
 import { RADIO_QUESTION_FIELDS } from '@core/journeys/ui/RadioQuestion/radioQuestionFields'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
-import { RadioQuestionBlockCreate } from '../../../../../__generated__/RadioQuestionBlockCreate'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import { RadioQuestionBlockCreate } from '../../../../../../../../__generated__/RadioQuestionBlockCreate'
 import { Button } from '../Button'
 
 export const RADIO_QUESTION_BLOCK_CREATE = gql`

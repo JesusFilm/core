@@ -21,17 +21,15 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockFields,
-  BlockFields_CardBlock as CardBlock
-} from '../../../../../__generated__/BlockFields'
-import {
   BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_CardBlock as CardBlock,
   BlockFields_FormBlock as FormBlock,
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_StepBlock as StepBlock,
   BlockFields_TextResponseBlock as TextResponseBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../__generated__/GetJourney'
+} from '../../../../../__generated__/BlockFields'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../libs/useStepAndCardBlockCreateMutation'

@@ -7,7 +7,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../../__generated__/GetJourney'
+} from '../../../../../../../__generated__/BlockFields'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { CardPreview, OnSelectProps } from '../../../../../CardPreview'
 

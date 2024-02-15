@@ -22,8 +22,8 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../../../../__generated__/globalTypes'
-import { TestEditorState } from '../../../libs/TestEditorState'
-import { ThemeProvider } from '../../ThemeProvider'
+import { TestEditorState } from '../../../../../libs/TestEditorState'
+import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { Canvas } from '.'
 

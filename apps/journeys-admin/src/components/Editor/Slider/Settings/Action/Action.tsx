@@ -20,7 +20,7 @@ import {
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_TextResponseBlock as TextResponseBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../__generated__/GetJourney'
+} from '../../../../../../__generated__/BlockFields'
 import { NavigateActionUpdate } from '../../../../../../__generated__/NavigateActionUpdate'
 
 import { EmailAction } from './EmailAction'

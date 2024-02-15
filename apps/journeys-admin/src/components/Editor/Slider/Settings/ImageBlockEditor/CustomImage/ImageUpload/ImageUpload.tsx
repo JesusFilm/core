@@ -13,8 +13,8 @@ import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
 import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
 
-import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
-import { CreateCloudflareUploadByFile } from '../../../../../../__generated__/CreateCloudflareUploadByFile'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
+import { CreateCloudflareUploadByFile } from '../../../../../../../../__generated__/CreateCloudflareUploadByFile'
 
 export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = gql`
   mutation CreateCloudflareUploadByFile {

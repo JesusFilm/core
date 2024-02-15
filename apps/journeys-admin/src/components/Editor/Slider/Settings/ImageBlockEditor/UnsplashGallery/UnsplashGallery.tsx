@@ -5,9 +5,9 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ListUnsplashCollectionPhotos } from '../../../../../__generated__/ListUnsplashCollectionPhotos'
-import { SearchUnsplashPhotos } from '../../../../../__generated__/SearchUnsplashPhotos'
-import { TriggerUnsplashDownload } from '../../../../../__generated__/TriggerUnsplashDownload'
+import { ListUnsplashCollectionPhotos } from '../../../../../../../__generated__/ListUnsplashCollectionPhotos'
+import { SearchUnsplashPhotos } from '../../../../../../../__generated__/SearchUnsplashPhotos'
+import { TriggerUnsplashDownload } from '../../../../../../../__generated__/TriggerUnsplashDownload'
 
 import { UnsplashCollections } from './UnsplashCollections'
 import { UnsplashList } from './UnsplashList'

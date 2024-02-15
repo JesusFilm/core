@@ -10,6 +10,11 @@ import {
   BlockDeleteForBackgroundImageVariables
 } from '../../../../../../../../../../__generated__/BlockDeleteForBackgroundImage'
 import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_ImageBlock as ImageBlock,
+  BlockFields_VideoBlock as VideoBlock
+} from '../../../../../../../../../../__generated__/BlockFields'
+import {
   CardBlockImageBlockCreate,
   CardBlockImageBlockCreateVariables
 } from '../../../../../../../../../../__generated__/CardBlockImageBlockCreate'
@@ -17,11 +22,6 @@ import {
   CardBlockImageBlockUpdate,
   CardBlockImageBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
-import {
-  BlockFields_CardBlock as CardBlock,
-  BlockFields_ImageBlock as ImageBlock,
-  BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../../../../../__generated__/GetJourney'
 import { blockDeleteUpdate } from '../../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { ImageSource } from '../../../../../ImageSource'
 
