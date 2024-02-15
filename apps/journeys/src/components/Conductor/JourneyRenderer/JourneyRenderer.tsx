@@ -36,10 +36,9 @@ export function JourneyRenderer(): ReactElement {
     <>
       {treeBlocks.map((block) => {
         const cardSx: SxProps = {
-          height: 0,
-          width: 0,
-          position: 'absolute',
-          display: 'none'
+          height: 'inherit',
+          width: 'inherit',
+          position: 'absolute'
         }
 
         const isCurrent = block.id === currentBlock?.id
@@ -47,13 +46,8 @@ export function JourneyRenderer(): ReactElement {
           block.id === nextBlock?.id || block.id === previousBlock?.id
 
         if (isCurrent) {
-          cardSx.height = 'inherit'
-          cardSx.width = 'inherit'
           cardSx.position = 'relative'
-          cardSx.display = 'block'
-        } else if (isPreRender) {
-          cardSx.height = '-webkit-fill-available;'
-          cardSx.width = '-webkit-fill-available;'
+          cardSx.display = 'inherit'
         }
 
         return (
@@ -64,16 +58,12 @@ export function JourneyRenderer(): ReactElement {
           >
             <Box
               className={isCurrent ? 'active-card' : ''}
+              data-testid={`journey-card-${block.id}`}
               onClick={() => setShowNavigation(true)}
               sx={{ ...cardSx }}
             >
               {isCurrent || isPreRender ? (
-                <Box
-                  data-testid={`journey-card-${block.id}`}
-                  sx={{ height: 'inherit', width: 'inherit' }}
-                >
-                  <BlockRenderer block={block} />
-                </Box>
+                <BlockRenderer block={block} />
               ) : (
                 <></>
               )}

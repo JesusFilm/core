@@ -70,7 +70,8 @@ export function InitAndPlay({
             doubleClick: true
           },
           responsive: true,
-          muted: muted === true
+          muted: muted === true,
+          preload: 'auto'
         })
       )
     }

@@ -202,6 +202,7 @@ export function Video({
               xs: isFillAndNotYoutube() ? '-100%' : 0,
               sm: 0
             }}
+            // position="absolute"
             position={isFillAndNotYoutube() ? 'absolute' : 'inherit'}
             data-testid="video-container"
           >
