@@ -11,9 +11,9 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
-import { EditToolbar } from './EditToolbar'
 import { Fab } from './Fab'
 import { Slider } from './Slider'
+import { Toolbar } from './Toolbar'
 
 interface EditorProps {
   journey?: Journey
@@ -46,7 +46,7 @@ export function Editor({
         }}
       >
         <>
-          <EditToolbar />
+          <Toolbar />
           <Slider />
           <Fab />
         </>
