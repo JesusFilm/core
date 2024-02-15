@@ -1,8 +1,11 @@
 import { ApolloError, gql, useApolloClient, useMutation } from '@apollo/client'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
 import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
@@ -110,93 +113,81 @@ function ValidateEmail({
       >
         {({ values, handleChange, handleBlur, errors, touched }) => (
           <Form noValidate autoComplete="off" data-testid="EmailInviteForm">
-            <List>
-              <ListItem>
-                <Typography variant="h4">
-                  {t('Validate NextStep Email')}
-                </Typography>
-              </ListItem>
-              <ListItem>
-                <Typography variant="body2">
-                  {t(
-                    'Please check your email for the six-digit token that was sent to your email address.'
-                  )}
-                </Typography>
-              </ListItem>
-              <ListItem>
-                <Divider />
-              </ListItem>
-              <ListItem>
-                <TextField
-                  label={t('Email')}
-                  name="email"
-                  fullWidth
-                  variant="filled"
-                  value={values.email}
-                  autoComplete="off"
-                  disabled
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={errors.email != null && touched.email != null}
-                  helperText=<>
-                    {touched?.email != null && errors.email != null
-                      ? errors.email
-                      : ' '}
-                  </>
-                />
-              </ListItem>
-              <ListItem>
-                <TextField
-                  label={t('Token')}
-                  name="token"
-                  fullWidth
-                  variant="filled"
-                  value={values.token}
-                  autoComplete="off"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={errors.token != null && touched.token != null}
-                  helperText=<>
-                    {touched?.token != null && errors.token != null
-                      ? errors.token
-                      : ' '}
-                  </>
-                />
-              </ListItem>
-              <ListItem>
-                <Button
-                  disabled={disableValidationButton}
-                  type="submit"
-                  variant="contained"
-                  fullWidth
-                >
-                  {t('Validate Email')}
-                </Button>
-              </ListItem>
-              <ListItem>
-                <Typography variant="body2" color="error">
-                  {error?.message ?? ' '}
-                </Typography>
-              </ListItem>
-              <ListItem>
-                <Divider />
-              </ListItem>
-              <ListItem>
-                <Button
-                  onClick={handleResendValidationEmail}
-                  variant="contained"
-                  disabled={disableResendButton}
-                  fullWidth
-                >
-                  {t('Resend Validation Email')}
-                </Button>
-              </ListItem>
-              <ListItem>
-                <Button onClick={handleLogout} variant="contained" fullWidth>
-                  {t('Logout')}
-                </Button>
-              </ListItem>
-            </List>
+            <Stack textAlign="center">
+              <Typography variant="h4">{t('Verify Your Email')}</Typography>
+              <Typography variant="body1">
+                {t('To start making NextSteps journeys')}
+              </Typography>
+              <Paper sx={{ padding: '30px', mt: 7 }}>
+                <Stack textAlign="left" spacing={4}>
+                  <Typography variant="subtitle2">{email}</Typography>
+                  <Typography variant="body1">
+                    {t(
+                      'Email has been sent to this address with a link to verify your account. If you have not received the email after a few minutes, please check your spam folder.'
+                    )}
+                  </Typography>
+                  <Button
+                    onClick={handleResendValidationEmail}
+                    variant="contained"
+                    disabled={disableResendButton}
+                    color="secondary"
+                    fullWidth
+                  >
+                    {t('Resend Validation Email')}
+                  </Button>
+                </Stack>
+              </Paper>
+              <Accordion sx={{ mt: 7, bgcolor: '#DEDFE0' }} elevation={0}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  {t('Verify With Code Instead')}
+                </AccordionSummary>
+                <AccordionDetails sx={{ textAlign: 'left' }}>
+                  <Stack spacing={4} padding={4}>
+                    <Typography variant="body1">
+                      {t('Enter verification code from email')}
+                    </Typography>
+                    <TextField
+                      label={t('Code')}
+                      name="token"
+                      fullWidth
+                      variant="filled"
+                      value={values.token}
+                      autoComplete="off"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={errors.token != null && touched.token != null}
+                      helperText=<>
+                        {touched?.token != null && errors.token != null
+                          ? errors.token
+                          : ' '}
+                      </>
+                    />
+                    <Button
+                      disabled={disableValidationButton}
+                      type="submit"
+                      variant="contained"
+                      color="secondary"
+                      sx={{ mb: 4 }}
+                      fullWidth
+                    >
+                      {t('Validate Email')}
+                    </Button>
+                  </Stack>
+                </AccordionDetails>
+              </Accordion>
+              <Typography variant="body2" color="error">
+                {error?.message ?? ' '}
+              </Typography>
+              <Button
+                onClick={handleLogout}
+                variant="contained"
+                sx={{ mt: 7 }}
+                color="secondary"
+                fullWidth
+              >
+                {t('Logout')}
+              </Button>
+            </Stack>
           </Form>
         )}
       </Formik>
