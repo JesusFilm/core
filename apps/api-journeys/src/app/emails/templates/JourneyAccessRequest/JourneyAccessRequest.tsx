@@ -2,6 +2,7 @@ import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
+import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import {
   ActionCard,
   BodyWrapper,
@@ -55,7 +56,7 @@ export const JourneyAccessRequestEmail = ({
             variant="accessRequest"
             sender={sender}
             recipient={recipient}
-            journey={journey}
+            journey={journey as unknown as JourneyFields}
           />
         </BodyWrapper>
         <Footer />
