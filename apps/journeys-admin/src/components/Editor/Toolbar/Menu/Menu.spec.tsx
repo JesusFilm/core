@@ -33,7 +33,7 @@ jest.mock('next/router', () => ({
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-describe('EditToolbar Menu', () => {
+describe('Toolbar Menu', () => {
   const push = jest.fn()
   const on = jest.fn()
 
