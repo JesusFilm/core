@@ -37,22 +37,36 @@ function parseAcceptLanguageHeader(header: string): LanguagePriority[] {
     const [code, priority] = item.trim().split(';')
     const langPriority =
       priority != null ? parseFloat(priority.split('=')[1]) : 1
-    return { code, priority: isNaN(langPriority) ? 1 : langPriority }
+    return { code, priority: langPriority != null ? 1 : langPriority }
   })
 }
 
 function getPreferredLanguage(
   languages: LanguagePriority[] | undefined
-): string {
+): string | undefined {
   const preferredLanguage = languages?.find(
     (language) =>
       supportedLocales.includes(language.code) ||
       supportedLocales.includes(language.code.split('-')[0])
   )
-  return preferredLanguage?.code.includes('zh') === true
-    ? preferredLanguage.code
-    : preferredLanguage != null
-    ? preferredLanguage.code.split('-')[0]
+
+  if (preferredLanguage == null) return
+  return getSupportedLocale(preferredLanguage?.code)
+}
+
+function getSupportedLocale(input: string): string {
+  const languageCode = input.split('-')[0]
+  const regionCode = input.split('-').slice(2).join('-')
+  const regionalCode = `${languageCode}-${regionCode}`
+
+  const isSupported = (code: string): boolean => supportedLocales.includes(code)
+
+  return isSupported(input)
+    ? input
+    : isSupported(regionalCode)
+    ? regionalCode
+    : isSupported(languageCode)
+    ? languageCode
     : 'en'
 }
 
@@ -60,6 +74,7 @@ function getBrowserLanguage(req: NextRequest): string | undefined {
   const acceptedLanguagesHeader = req.headers.get('accept-language')
 
   if (acceptedLanguagesHeader == null) return
+
   const acceptedLanguages = parseAcceptLanguageHeader(acceptedLanguagesHeader)
   const sortedLanguages = acceptedLanguages?.sort(
     (a, b) => b.priority - a.priority
@@ -88,7 +103,7 @@ export function middleware(req: NextRequest): NextResponse | undefined {
   const nextLocale = req.nextUrl.locale
   const browserLanguage = getBrowserLanguage(req)
   const nextLocaleCookie = req.cookies.get('NEXT_LOCALE')?.value
-  const extractedLocale = nextLocaleCookie?.slice(6)
+  const extractedLocale = getSupportedLocale(nextLocaleCookie?.slice(6) ?? '')
 
   // Redirect if NEXT_LOCALE cookie is not set
   if (nextLocaleCookie == null) {
@@ -96,11 +111,7 @@ export function middleware(req: NextRequest): NextResponse | undefined {
   }
 
   // Check if the NEXT_LOCALE cookie is set and does not match the current locale
-  if (
-    extractedLocale !== nextLocale &&
-    (supportedLocales.includes(extractedLocale as string) ||
-      supportedLocales.includes(extractedLocale?.split('-')[0] as string))
-  ) {
+  if (extractedLocale != null && extractedLocale !== nextLocale) {
     const trimmedLocale = extractedLocale?.split('-')[0]
     return handleRedirect(req, trimmedLocale)
   }
