@@ -10,14 +10,14 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   CardIntroCreate,
   CardIntroCreateVariables
-} from '../../../../../../../../__generated__/CardIntroCreate'
+} from '../../../../../../../../../__generated__/CardIntroCreate'
 import {
   ButtonVariant,
   IconName,
   TypographyVariant,
   VideoBlockSource
-} from '../../../../../../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
+} from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 
 import { CARD_INTRO_CREATE } from './CardIntro'
 

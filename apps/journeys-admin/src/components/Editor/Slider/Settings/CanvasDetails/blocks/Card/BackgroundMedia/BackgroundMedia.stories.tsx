@@ -5,13 +5,12 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { Drawer } from '../../../..'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock,
-  GetJourney_journey as Journey,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../../../../__generated__/GetJourney'
+} from '../../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages_video } from '../../../../../../../../../__generated__/GetVideoVariantLanguages'
 import {
   JourneyStatus,
@@ -21,7 +20,8 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
-import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
+import { Drawer } from '../../../../Drawer'
+import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 
 import { BackgroundMedia } from '.'
 

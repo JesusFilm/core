@@ -9,9 +9,9 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   CardVideoCreate,
   CardVideoCreateVariables
-} from '../../../../../../../../__generated__/CardVideoCreate'
-import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
+} from '../../../../../../../../../__generated__/CardVideoCreate'
+import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 
 import { CARD_VIDEO_CREATE } from './CardVideo'
 

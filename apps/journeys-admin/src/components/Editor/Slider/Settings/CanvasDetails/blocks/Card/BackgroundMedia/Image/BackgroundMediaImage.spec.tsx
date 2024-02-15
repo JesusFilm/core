@@ -10,16 +10,16 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock,
-  GetJourney_journey as Journey,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../../../../../__generated__/GetJourney'
+} from '../../../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../../../../__generated__/globalTypes'
-import { createCloudflareUploadByUrlMock } from '../../../../../../ImageBlockEditor/CustomImage/CustomUrl/data'
+import { createCloudflareUploadByUrlMock } from '../../../../../ImageBlockEditor/CustomImage/CustomUrl/data'
 
 import {
   BLOCK_DELETE_FOR_BACKGROUND_IMAGE,

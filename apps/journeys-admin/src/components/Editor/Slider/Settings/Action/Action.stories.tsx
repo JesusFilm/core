@@ -6,7 +6,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { Drawer } from '..'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -14,6 +13,7 @@ import {
   ThemeName
 } from '../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { Drawer } from '../Drawer'
 
 import { Action, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'

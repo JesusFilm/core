@@ -5,10 +5,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  GetJourney_journey as Journey,
-  BlockFields_TypographyBlock as TypographyBlock
-} from '../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import { TypographyAlign } from '../../../../../../../../../__generated__/globalTypes'
 
 import { TYPOGRAPHY_BLOCK_UPDATE_ALIGN } from './Align'

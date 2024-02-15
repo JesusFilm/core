@@ -5,16 +5,16 @@ import { screen, userEvent } from '@storybook/testing-library'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { Drawer } from '../../../..'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
-} from '../../../../../../../../../__generated__/GetJourney'
+} from '../../../../../../../../../__generated__/BlockFields'
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { BackgroundColor } from '.'
 

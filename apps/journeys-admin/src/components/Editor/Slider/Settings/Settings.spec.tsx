@@ -7,7 +7,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
-} from '../../../../../__generated__/GetJourney'
+} from '../../../../../__generated__/BlockFields'
 import {
   ThemeMode,
   ThemeName,

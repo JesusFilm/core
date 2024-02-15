@@ -5,9 +5,9 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '../../../../../../__generated__/JourneyFields'
-import { TestEditorState } from '../../../../../libs/TestEditorState'
+import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { CARD_VIDEO_CREATE } from './Templates/CardVideo/CardVideo'
 

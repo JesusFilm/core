@@ -10,10 +10,10 @@ import { GetVideoVariantLanguages_video } from '../../../../../../../../../__gen
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
-import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
-import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
-import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
+import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
+import { videos } from '../../../../VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEO } from '../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { GET_VIDEOS } from '../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import { VideoOptions } from './VideoOptions'
 

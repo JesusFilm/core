@@ -2,10 +2,8 @@ import { render } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  BlockFields as Blocks,
-  GetJourney_journey as Journey
-} from '../../../../__generated__/GetJourney'
+import { BlockFields as Blocks } from '../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -13,7 +11,7 @@ import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../__generated__/globalTypes'
+} from '../../../../../../__generated__/globalTypes'
 
 import { ActionsTable } from './Goals'
 
