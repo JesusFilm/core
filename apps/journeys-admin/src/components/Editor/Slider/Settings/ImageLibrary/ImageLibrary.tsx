@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Dialog as SharedUiDialog } from '@core/shared/ui/Dialog'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
 import { Drawer } from '../Drawer'
 import { ImageBlockEditor } from '../ImageBlockEditor'
 

@@ -17,12 +17,12 @@ import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields
 import {
   CardFormCreate,
   CardFormCreateVariables
-} from '../../../../../../../../__generated__/CardFormCreate'
+} from '../../../../../../../../../__generated__/CardFormCreate'
 import {
   IconName,
   TypographyColor,
   TypographyVariant
-} from '../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/globalTypes'
 
 import cardFormImage from './cardForm.svg'
 

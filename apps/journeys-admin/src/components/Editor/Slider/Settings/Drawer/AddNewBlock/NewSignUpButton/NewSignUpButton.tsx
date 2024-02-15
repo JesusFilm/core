@@ -9,7 +9,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { SIGN_UP_FIELDS } from '@core/journeys/ui/SignUp/signUpFields'
 import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
 import { SignUpBlockCreate } from '../../../../../__generated__/SignUpBlockCreate'
 import { Button } from '../Button'
 

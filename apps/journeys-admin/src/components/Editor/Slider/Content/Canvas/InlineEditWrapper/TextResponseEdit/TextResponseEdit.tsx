@@ -5,8 +5,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TextResponse } from '@core/journeys/ui/TextResponse'
 
-import { TextResponseBlockUpdateContent } from '../../../../../../__generated__/TextResponseBlockUpdateContent'
-import { TextResponseFields } from '../../../../../../__generated__/TextResponseFields'
+import { TextResponseBlockUpdateContent } from '../../../../../../../../__generated__/TextResponseBlockUpdateContent'
+import { TextResponseFields } from '../../../../../../../../__generated__/TextResponseFields'
 import { InlineEditInput } from '../InlineEditInput'
 import { useOnClickOutside } from '../useOnClickOutside/useOnClickOutside'
 

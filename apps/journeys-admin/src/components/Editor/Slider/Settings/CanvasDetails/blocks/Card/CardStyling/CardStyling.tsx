@@ -13,14 +13,15 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 
 import { CardBlockThemeModeUpdate } from '../../../../../../../../../__generated__/CardBlockThemeModeUpdate'
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
-import cardStyleDark from '../../../../../../../../public/card-style-dark.svg'
-import cardStyleLight from '../../../../../../../../public/card-style-light.svg'
 import { HorizontalSelect } from '../../../../../../../HorizontalSelect'
+
+import cardStyleDark from './assets/card-style-dark.svg'
+import cardStyleLight from './assets/card-style-light.svg'
 
 export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
   mutation CardBlockThemeModeUpdate(

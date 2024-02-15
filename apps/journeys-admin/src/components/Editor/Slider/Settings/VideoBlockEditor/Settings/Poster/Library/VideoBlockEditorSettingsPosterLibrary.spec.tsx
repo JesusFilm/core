@@ -8,9 +8,9 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  BlockFields_ImageBlock as ImageBlock,
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,

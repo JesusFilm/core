@@ -3,7 +3,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
 
 import { ImageLibrary } from '.'
 

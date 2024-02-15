@@ -9,7 +9,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
 import { TextResponseBlockCreate } from '../../../../../__generated__/TextResponseBlockCreate'
 import { Button } from '../Button'
 

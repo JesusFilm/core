@@ -6,7 +6,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/BlockFields'
 import { Action, actions } from '../../../Action/Action'
 import { Attribute } from '../../../Attribute'
 

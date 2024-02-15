@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
-  GetJourney_journey_blocks as Blocks,
+  BlockFields as Blocks,
   GetJourney_journey as Journey
 } from '../../../../__generated__/GetJourney'
 import {

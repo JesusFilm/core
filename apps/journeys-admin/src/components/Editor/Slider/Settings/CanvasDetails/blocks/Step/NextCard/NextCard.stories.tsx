@@ -9,9 +9,9 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { Drawer } from '../../../..'
 import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
+  BlockFields_CardBlock as CardBlock,
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_StepBlock as StepBlock
+  BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,

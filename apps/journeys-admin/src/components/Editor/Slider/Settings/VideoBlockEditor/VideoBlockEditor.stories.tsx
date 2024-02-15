@@ -6,9 +6,9 @@ import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_ImageBlock as ImageBlock,
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages_video } from '../../../../__generated__/GetVideoVariantLanguages'
 import {

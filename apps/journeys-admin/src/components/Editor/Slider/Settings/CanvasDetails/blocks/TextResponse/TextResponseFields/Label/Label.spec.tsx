@@ -8,7 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock
+  BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../../../../../../../../../__generated__/GetJourney'
 
 import { TEXT_RESPONSE_LABEL_UPDATE } from './Label'

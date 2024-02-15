@@ -24,13 +24,13 @@ import {
   BlockFields_CardBlock as CardBlock
 } from '../../../../../__generated__/BlockFields'
 import {
-  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
-  GetJourney_journey_blocks_FormBlock as FormBlock,
-  GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock,
-  GetJourney_journey_blocks_SignUpBlock as SignUpBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_FormBlock as FormBlock,
+  BlockFields_RadioOptionBlock as RadioOptionBlock,
+  BlockFields_SignUpBlock as SignUpBlock,
+  BlockFields_StepBlock as StepBlock,
+  BlockFields_TextResponseBlock as TextResponseBlock,
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'

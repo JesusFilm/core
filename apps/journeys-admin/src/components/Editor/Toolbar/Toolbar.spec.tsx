@@ -8,7 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
 
 import { Toolbar } from '.'

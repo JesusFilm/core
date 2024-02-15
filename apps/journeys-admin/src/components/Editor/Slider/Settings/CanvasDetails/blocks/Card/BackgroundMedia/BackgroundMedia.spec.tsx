@@ -8,11 +8,11 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_ImageBlock as ImageBlock,
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  BlockFields_StepBlock as StepBlock,
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,

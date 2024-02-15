@@ -14,9 +14,9 @@ import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_ImageBlock as ImageBlock,
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../../../Attribute'
 
@@ -65,9 +65,7 @@ export function Card({
   const { rtl, locale } = getJourneyRTL(journey)
   const { t } = useTranslation('apps-journeys-admin')
 
-  const coverBlock = children.find((block) => block.id === coverBlockId) as
-    | TreeBlock<ImageBlock | VideoBlock>
-    | undefined
+  const coverBlock = children.find((block) => block.id === coverBlockId)
 
   const cardTheme = getTheme({
     themeName: themeName ?? journey?.themeName ?? ThemeName.base,

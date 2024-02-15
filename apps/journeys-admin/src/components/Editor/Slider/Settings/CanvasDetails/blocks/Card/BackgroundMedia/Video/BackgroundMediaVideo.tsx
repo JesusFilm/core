@@ -19,13 +19,13 @@ import {
   CardBlockVideoBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
 import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_ImageBlock as ImageBlock,
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../../../../libs/blockDeleteUpdate'
-import { VideoBlockEditor } from '../../../../../../VideoBlockEditor'
+import { VideoBlockEditor } from '../../../../../VideoBlockEditor'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
   mutation BlockDeleteForBackgroundVideo(

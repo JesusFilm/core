@@ -9,7 +9,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/BlockFields'
 import { GetJourneyNames } from '../../../../../../../__generated__/GetJourneyNames'
 import { NavigateToJourneyActionUpdate } from '../../../../../../../__generated__/NavigateToJourneyActionUpdate'
 

@@ -11,7 +11,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import {} from '../../../../../../../__generated__/StepAndCardBlockCreate'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 
 interface BaseNodeProps {

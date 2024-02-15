@@ -9,7 +9,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/BlockFields'
 import { LinkActionUpdate } from '../../../../../../../__generated__/LinkActionUpdate'
 import { TextFieldForm } from '../../../../../TextFieldForm'
 

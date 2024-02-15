@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { GetJourney_journey_blocks_FormBlock as FormBlock } from '../../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../../__generated__/BlockFields'
 
 import {
   ApiTokenTextField,

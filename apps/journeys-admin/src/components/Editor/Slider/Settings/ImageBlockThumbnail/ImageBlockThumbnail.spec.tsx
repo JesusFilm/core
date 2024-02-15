@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
 
 import { ImageBlockThumbnail } from './ImageBlockThumbnail'
 

@@ -9,7 +9,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   ButtonColor,
   ButtonSize,

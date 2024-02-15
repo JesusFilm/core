@@ -7,7 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/BlockFields'
 import { GetVideoVariantLanguages } from '../../../../../../../../__generated__/GetVideoVariantLanguages'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
 

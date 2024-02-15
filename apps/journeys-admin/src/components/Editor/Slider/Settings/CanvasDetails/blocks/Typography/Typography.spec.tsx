@@ -8,7 +8,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
-import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   TypographyAlign,
   TypographyColor,

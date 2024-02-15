@@ -2,7 +2,7 @@ import Stack from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import { ReactElement } from 'react'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../__generated__/GetJourney'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../__generated__/BlockFields'
 
 import { CustomUrl } from './CustomUrl'
 import { ImageUpload } from './ImageUpload'

@@ -1,7 +1,7 @@
 import { TreeBlock } from '@core/journeys/ui/block'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import { BlockFields_CardBlock } from '../../../../../../../__generated__/BlockFields'
+import { BlockFields_CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'

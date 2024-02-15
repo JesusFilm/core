@@ -10,7 +10,7 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
 import type { UnsplashAuthor } from '../ImageBlockEditor/UnsplashGallery'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 

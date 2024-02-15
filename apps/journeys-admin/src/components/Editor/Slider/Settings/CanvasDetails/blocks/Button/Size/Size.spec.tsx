@@ -6,7 +6,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
-  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  BlockFields_ButtonBlock as ButtonBlock,
   GetJourney_journey as Journey
 } from '../../../../../../../../../__generated__/GetJourney'
 import { ButtonSize } from '../../../../../../../../../__generated__/globalTypes'

@@ -11,7 +11,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import { TestEditorState } from '../../../../../../../libs/TestEditorState'
 
 import { Image } from './Image'

@@ -9,7 +9,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/BlockFields'
 import { TextFieldForm } from '../../../../../TextFieldForm'
 
 export const EMAIL_ACTION_UPDATE = gql`

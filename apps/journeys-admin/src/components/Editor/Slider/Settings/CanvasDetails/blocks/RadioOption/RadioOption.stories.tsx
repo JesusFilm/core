@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../__generated__/BlockFields'
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 
 import { RadioOption } from '.'

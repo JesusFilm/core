@@ -7,9 +7,9 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  BlockFields_ImageBlock as ImageBlock,
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'

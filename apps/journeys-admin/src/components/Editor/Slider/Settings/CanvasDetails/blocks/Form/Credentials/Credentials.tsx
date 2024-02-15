@@ -9,7 +9,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
-import { GetJourney_journey_blocks_FormBlock as FormBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../__generated__/BlockFields'
 
 import { ApiTokenTextField } from './ApiTokenTextField'
 import { FormSlugSelect } from './FormSlugSelect'

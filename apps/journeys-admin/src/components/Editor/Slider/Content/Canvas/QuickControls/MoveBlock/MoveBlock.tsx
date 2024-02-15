@@ -8,7 +8,7 @@ import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
-import { BlockOrderUpdate } from '../../../../../../__generated__/BlockOrderUpdate'
+import { BlockOrderUpdate } from '../../../../../../../../__generated__/BlockOrderUpdate'
 
 export const BLOCK_ORDER_UPDATE = gql`
   mutation BlockOrderUpdate($id: ID!, $journeyId: ID!, $parentOrder: Int!) {

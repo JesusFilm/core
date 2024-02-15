@@ -8,7 +8,7 @@ import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
 import AlignRightIcon from '@core/shared/ui/icons/AlignRight'
 
-import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { TypographyAlign } from '../../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockUpdateAlign } from '../../../../../../../../../__generated__/TypographyBlockUpdateAlign'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'

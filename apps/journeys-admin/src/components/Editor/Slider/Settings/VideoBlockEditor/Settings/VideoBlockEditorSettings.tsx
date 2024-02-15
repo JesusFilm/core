@@ -23,8 +23,8 @@ import {
 } from '@core/shared/ui/timeFormat'
 
 import {
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  BlockFields_ImageBlock as ImageBlock,
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import {
   VideoBlockObjectFit as ObjectFit,

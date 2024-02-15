@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_SignUpBlock as SignUpBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   IconColor,
   IconName,

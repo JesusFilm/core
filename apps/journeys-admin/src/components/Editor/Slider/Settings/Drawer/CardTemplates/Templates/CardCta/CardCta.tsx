@@ -17,14 +17,14 @@ import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields
 import {
   CardCtaCreate,
   CardCtaCreateVariables
-} from '../../../../../../../../__generated__/CardCtaCreate'
+} from '../../../../../../../../../__generated__/CardCtaCreate'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
   IconName,
   TypographyVariant
-} from '../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/globalTypes'
 
 import cardCtaImage from './cardCta.svg'
 

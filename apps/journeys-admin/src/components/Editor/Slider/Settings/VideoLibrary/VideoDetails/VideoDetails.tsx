@@ -12,7 +12,7 @@ import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { BlockDeleteForCoverImage } from '../../../../../../../__generated__/BlockDeleteForCoverImage'
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../__generated__/GetJourney'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput

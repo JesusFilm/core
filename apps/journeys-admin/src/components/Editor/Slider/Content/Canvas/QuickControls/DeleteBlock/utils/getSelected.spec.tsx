@@ -5,8 +5,8 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey_blocks_TypographyBlock as TypographyBlock
+  BlockFields_StepBlock as StepBlock,
+  BlockFields_TypographyBlock as TypographyBlock
 } from '../../../../../../../__generated__/GetJourney'
 import {
   TypographyAlign,

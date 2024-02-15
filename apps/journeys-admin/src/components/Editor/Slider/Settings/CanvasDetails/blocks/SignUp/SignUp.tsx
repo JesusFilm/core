@@ -6,7 +6,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
-import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_SignUpBlock as SignUpBlock } from '../../../../../../../../__generated__/BlockFields'
 import { IconFields } from '../../../../../../../../__generated__/IconFields'
 import { Action, actions } from '../../../Action/Action'
 import { Attribute } from '../../../Attribute'

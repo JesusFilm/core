@@ -10,7 +10,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseLabelUpdate } from '../../../../../../../../../../__generated__/TextResponseLabelUpdate'
 
 export const TEXT_RESPONSE_LABEL_UPDATE = gql`

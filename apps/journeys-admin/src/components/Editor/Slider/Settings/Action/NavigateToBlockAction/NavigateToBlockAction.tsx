@@ -5,8 +5,8 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
-  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { CardPreview, OnSelectProps } from '../../../../../CardPreview'

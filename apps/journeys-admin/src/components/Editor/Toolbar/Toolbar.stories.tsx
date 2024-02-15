@@ -8,7 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_TypographyBlock as TypographyBlock
+  BlockFields_TypographyBlock as TypographyBlock
 } from '../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../libs/storybook'
