@@ -3,9 +3,15 @@ import { render, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 
 import { StepFields } from './__generated__/StepFields'
 import { STEP_VIEW_EVENT_CREATE } from './Step'
@@ -38,6 +44,63 @@ jest.mock('react-i18next', () => ({
     }
   }
 }))
+
+jest.mock('next/head', () => {
+  return {
+    __esModule: true,
+    default: ({ children }: { children: React.ReactElement[] }) => {
+      return <>{children}</>
+    }
+  }
+})
+
+const journey: Journey = {
+  __typename: 'Journey',
+  id: 'journeyId',
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
+  featuredAt: null,
+  title: 'my journey',
+  strategySlug: null,
+  slug: 'my-journey',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
+  description: 'my cool journey',
+  status: JourneyStatus.draft,
+  createdAt: '2021-11-19T12:34:56.647Z',
+  publishedAt: null,
+  blocks: [
+    {
+      id: 'step0.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      locked: false,
+      nextBlockId: 'step1.id'
+    }
+  ] as TreeBlock[],
+  primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
+  userJourneys: [],
+  template: null,
+  seoTitle: null,
+  seoDescription: null,
+  chatButtons: [],
+  host: null,
+  team: null,
+  tags: []
+}
 
 const block: TreeBlock<StepFields> = {
   __typename: 'StepBlock',
@@ -111,7 +174,7 @@ describe('Step', () => {
           }
         ]}
       >
-        <JourneyProvider>
+        <JourneyProvider value={{ journey }}>
           <Step {...block} />
         </JourneyProvider>
       </MockedProvider>
@@ -148,7 +211,7 @@ describe('Step', () => {
           }
         ]}
       >
-        <JourneyProvider>
+        <JourneyProvider value={{ journey }}>
           <Step {...block} />
         </JourneyProvider>
       </MockedProvider>
@@ -196,7 +259,7 @@ describe('Step', () => {
           }
         ]}
       >
-        <JourneyProvider>
+        <JourneyProvider value={{ journey }}>
           <Step
             {...block}
             wrappers={{
@@ -220,10 +283,15 @@ describe('Step', () => {
   })
 
   it('should render empty block', () => {
+    blockHistoryVar([])
+    treeBlocksVar([])
+
     const { baseElement } = render(
       <MockedProvider>
-        {/* eslint-disable-next-line react/no-children-prop */}
-        <Step {...block} children={[]} />
+        <JourneyProvider value={{ journey }}>
+          {/* eslint-disable-next-line react/no-children-prop */}
+          <Step {...block} children={[]} />
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(baseElement).toContainHTML('<body><div /></body>')
@@ -233,10 +301,34 @@ describe('Step', () => {
 
   // TODO (SWIPE): test seo
   it('should set seoTitle to [journey name (step name)] if activeStep and on first card', () => {
-    expect(true).toBe(true)
+    treeBlocksVar([block])
+    blockHistoryVar([block])
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <Step {...block} />
+        </JourneyProvider>
+      </MockedProvider>,
+      { container: document.head }
+    )
+
+    expect(document.title).toBe('my journey (Step {{number}})')
   })
 
   it('should set seoTitle to [step name (journey name)] if activeStep and not on first card', () => {
-    expect(true).toBe(true)
+    treeBlocksVar([{ ...block, id: 'Step0' }, block])
+    blockHistoryVar([block])
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <Step {...block} />
+        </JourneyProvider>
+      </MockedProvider>,
+      { container: document.head }
+    )
+
+    expect(document.title).toBe('Step {{number}} (my journey)')
   })
 })
