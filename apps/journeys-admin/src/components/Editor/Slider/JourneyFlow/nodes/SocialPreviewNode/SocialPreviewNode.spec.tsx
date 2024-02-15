@@ -4,28 +4,29 @@ import { SnackbarProvider } from 'notistack'
 
 import {
   ActiveFab,
-  ActiveJourneyEditContent,
-  ActiveTab,
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide
+} from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey as Journey
-} from '../../../../../__generated__/GetJourney'
+} from '../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../../__generated__/globalTypes'
+} from '../../../../../../../__generated__/globalTypes'
 import {
   StepAndCardBlockCreate,
   StepAndCardBlockCreateVariables
-} from '../../../../../__generated__/StepAndCardBlockCreate'
-import { STEP_AND_CARD_BLOCK_CREATE } from '../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
+} from '../../../../../../../__generated__/StepAndCardBlockCreate'
+import { STEP_AND_CARD_BLOCK_CREATE } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
 import { SocialPreviewNode } from './SocialPreviewNode'
 
@@ -42,11 +43,9 @@ const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 describe('SocialPreviewNode', () => {
   const state: EditorState = {
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    journeyEditContentComponent: ActiveJourneyEditContent.Action
+    activeContent: ActiveContent.Social
   }
 
   const dispatch = jest.fn()
@@ -210,8 +209,8 @@ describe('SocialPreviewNode', () => {
 
     fireEvent.click(getByTestId('SocialPreviewNode'))
     expect(dispatch).toHaveBeenCalledWith({
-      component: 'social',
-      type: 'SetJourneyEditContentAction'
+      type: 'SetActiveContentAction',
+      activeContent: ActiveContent.Social
     })
   })
 })

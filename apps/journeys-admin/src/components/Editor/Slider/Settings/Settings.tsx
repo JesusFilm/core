@@ -6,7 +6,7 @@ import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { AttributesContent } from './CanvasDetails/CanvasDetails'
 import { Drawer } from './Drawer'
-import { AddBlock } from './Drawer/AddNewBlock'
+import { AddNewBlock } from './Drawer/AddNewBlock'
 import { ActionDetails } from './GoalDetails'
 import { SocialShareAppearance } from './SocialDetails'
 
@@ -43,10 +43,10 @@ export function Attributes(): ReactElement {
       )
     case ActiveContent.Canvas:
       switch (selectedComponent) {
-        case 'AddBlock':
+        case 'AddNewBlock':
           return (
             <Drawer title={t('Add a block')}>
-              <AddBlock />
+              <AddNewBlock />
             </Drawer>
           )
         case 'Footer':

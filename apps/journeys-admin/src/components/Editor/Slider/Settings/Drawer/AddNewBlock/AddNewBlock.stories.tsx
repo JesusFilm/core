@@ -4,20 +4,23 @@ import { StoryObj } from '@storybook/react'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
-import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
 import {
   StepAndCardBlockCreate,
   StepAndCardBlockCreateVariables
-} from '../../../../__generated__/StepAndCardBlockCreate'
-import { simpleComponentConfig } from '../../../libs/storybook'
-import { STEP_AND_CARD_BLOCK_CREATE } from '../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
+} from '../../../../../../../__generated__/StepAndCardBlockCreate'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { STEP_AND_CARD_BLOCK_CREATE } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
 import { AddNewBlock } from './AddNewBlock'
 
 const AddNewBlockStory = {
   ...simpleComponentConfig,
   component: AddNewBlock,
-  title: 'Journeys-Admin/Editor/AddNewBlock'
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/AddNewBlock'
 }
 
 const stepAndCardBlockCreateMock: MockedResponse<
