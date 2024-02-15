@@ -84,6 +84,7 @@ export function UserMenu({
           label={t('Language')}
           icon={<LanguageIcon />}
           onClick={() => setOpen(true)}
+          testId="Language"
         />
         <MenuItem
           label="Logout"
@@ -98,6 +99,7 @@ export function UserMenu({
             })
             setActiveTeam(null)
           }}
+          testId="LogOut"
         />
       </Menu>
       {open && (
