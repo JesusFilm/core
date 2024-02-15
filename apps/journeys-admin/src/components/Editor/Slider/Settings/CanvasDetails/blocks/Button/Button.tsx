@@ -51,7 +51,7 @@ export function Button({
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: `${id}-button-action`
+      selectedAttributeId: `${id}-button-action`
     })
   }, [dispatch, id])
 

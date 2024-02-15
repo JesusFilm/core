@@ -25,7 +25,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: `${id}-typography-variant`
+      selectedAttributeId: `${id}-typography-variant`
     })
   }, [dispatch, id])
 

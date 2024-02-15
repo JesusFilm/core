@@ -143,7 +143,7 @@ describe('Button attributes', () => {
     render(<Button {...block} />)
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
-      id: 'button.id-button-action'
+      selectedAttributeId: 'button.id-button-action'
     })
   })
 })

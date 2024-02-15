@@ -36,7 +36,7 @@ export function Accordion({
     if (expanded !== true) {
       onClick?.()
     } else {
-      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+      dispatch({ type: 'SetSelectedAttributeIdAction', selectedAttributeId: undefined })
     }
   }
 

@@ -149,7 +149,7 @@ describe('SignUp Attributes', () => {
     render(<SignUp {...block} />)
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
-      id: 'signup.id-signup-action'
+      selectedAttributeId: 'signup.id-signup-action'
     })
   })
 })

@@ -28,11 +28,11 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
     e.stopPropagation()
     dispatch({
       type: 'SetSelectedBlockAction',
-      block: selectedStep
+      selectedBlock: selectedStep
     })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: undefined
+      selectedAttributeId: undefined
     })
   }
 

@@ -143,7 +143,7 @@ describe('Footer', () => {
 
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
-      id: 'hosted-by'
+      selectedAttributeId: 'hosted-by'
     })
   })
 

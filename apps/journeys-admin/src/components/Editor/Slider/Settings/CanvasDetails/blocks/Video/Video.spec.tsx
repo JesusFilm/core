@@ -99,7 +99,7 @@ describe('Video', () => {
     render(<Video {...video} />)
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
-      id: 'video1.id-video-options'
+      selectedAttributeId: 'video1.id-video-options'
     })
   })
 })

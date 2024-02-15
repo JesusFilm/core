@@ -51,7 +51,7 @@ export function Canvas(): ReactElement {
   function handleFooterClick(): void {
     dispatch({
       type: 'SetSelectedComponentAction',
-      component: 'Footer'
+      selectedComponent: 'Footer'
     })
     dispatch({
       type: 'SetActiveSlideAction',
@@ -63,7 +63,7 @@ export function Canvas(): ReactElement {
     })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: undefined
+      selectedAttributeId: undefined
     })
 
     router.query.param = 'step-footer'
@@ -95,12 +95,12 @@ export function Canvas(): ReactElement {
     }
     dispatch({
       type: 'SetSelectedBlockAction',
-      block: selectedStep
+      selectedBlock: selectedStep
     })
     dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: `${selectedStep?.id ?? ''}-next-block`
+      selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
     })
     // reset click origin
     selectionRef.current = false

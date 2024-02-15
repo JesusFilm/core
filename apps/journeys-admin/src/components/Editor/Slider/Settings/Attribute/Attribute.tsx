@@ -34,7 +34,7 @@ export function Attribute({
   } = useEditor()
 
   const handleClick = (): void => {
-    dispatch({ type: 'SetSelectedAttributeIdAction', id })
+    dispatch({ type: 'SetSelectedAttributeIdAction', selectedAttributeId: id })
     if (param != null) {
       router.query.param = param
       void router.push(router)

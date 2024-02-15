@@ -20,7 +20,7 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: `${id}-form-action`
+      selectedAttributeId: `${id}-form-action`
     })
   }, [dispatch, id])
 

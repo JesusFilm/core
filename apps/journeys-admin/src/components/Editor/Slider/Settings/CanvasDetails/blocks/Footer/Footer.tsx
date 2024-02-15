@@ -41,7 +41,7 @@ export function Footer(): ReactElement {
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: undefined
+      selectedAttributeId: undefined
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
