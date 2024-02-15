@@ -1,4 +1,13 @@
+import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
+import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
+
+import { BlockFields as StepBlock } from '../../../../../../__generated__/BlockFields'
+import { CardTemplateDrawer } from '../Drawer/CardTemplates/CardTemplateDrawer'
+import { Drawer } from '../Drawer/Drawer'
 
 const Card = dynamic(
   async () =>
@@ -84,7 +93,7 @@ interface AttributesContentProps {
   selectedStep?: TreeBlock<StepBlock>
   showDrawer?: boolean
 }
-function AttributesContent({
+export function AttributesContent({
   selectedBlock,
   selectedStep,
   showDrawer
