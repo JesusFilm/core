@@ -1,10 +1,6 @@
 import { Section } from '@react-email/components'
 import { ReactElement, ReactNode } from 'react'
 
-import { ActionCard } from '../ActionCard'
-import { BodyText } from '../BodyText'
-import { UnsubscribeLink } from '../UnsubscribeLink'
-
 interface BodyWrapperProps {
   children: ReactNode
 }

@@ -10,6 +10,7 @@ import {
   Header,
   UnsubscribeLink
 } from '@core/nest/common/email/components'
+import { JourneyForEmails } from '@core/nest/common/email/types/types'
 import { User } from '@core/nest/common/firebaseClient'
 
 import { JourneyWithTeamAndUserJourney } from '../../../../modules/email/email.consumer'
@@ -54,7 +55,7 @@ export const JourneySharedNoAccountEmail = ({
             buttonText="View Journey"
             variant="sharedWithYou"
             sender={sender}
-            journey={journey}
+            journey={journey as unknown as JourneyForEmails}
           />
         </BodyWrapper>
         <Footer />
