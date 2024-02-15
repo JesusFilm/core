@@ -12,8 +12,8 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 
-import { CardBlockThemeModeUpdate } from '../../../../../../../../../__generated__/CardBlockThemeModeUpdate'
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { CardBlockThemeModeUpdate } from '../../../../../../../../../__generated__/CardBlockThemeModeUpdate'
 import {
   ThemeMode,
   ThemeName
