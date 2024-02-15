@@ -3,12 +3,12 @@ import { ReactElement, useEffect } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
-import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
-import { PosterImageBlockCreate } from '../../../../../../../__generated__/PosterImageBlockCreate'
-import { PosterImageBlockUpdate } from '../../../../../../../__generated__/PosterImageBlockUpdate'
-import { VideoBlockPosterImageUpdate } from '../../../../../../../__generated__/VideoBlockPosterImageUpdate'
-import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { BlockDeleteForPosterImage } from '../../../../../../../../../__generated__/BlockDeleteForPosterImage'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { PosterImageBlockCreate } from '../../../../../../../../../__generated__/PosterImageBlockCreate'
+import { PosterImageBlockUpdate } from '../../../../../../../../../__generated__/PosterImageBlockUpdate'
+import { VideoBlockPosterImageUpdate } from '../../../../../../../../../__generated__/VideoBlockPosterImageUpdate'
+import { blockDeleteUpdate } from '../../../../../../../../libs/blockDeleteUpdate'
 import { ImageLibrary } from '../../../../ImageLibrary'
 
 export const BLOCK_DELETE_FOR_POSTER_IMAGE = gql`

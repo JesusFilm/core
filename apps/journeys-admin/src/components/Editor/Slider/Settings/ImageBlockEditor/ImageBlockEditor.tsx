@@ -13,8 +13,8 @@ import Image3Icon from '@core/shared/ui/icons/Image3'
 import StarsIcon from '@core/shared/ui/icons/Stars'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
-import { BlockFields_ImageBlock as ImageBlock } from '../../../../__generated__/BlockFields'
-import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
+import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
 import { UnsplashAuthor } from './UnsplashGallery'

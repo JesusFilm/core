@@ -3,8 +3,8 @@ import Box from '@mui/material/Box'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import { CreateAiImage } from '../../../../../__generated__/CreateAiImage'
-import { SegmindModel } from '../../../../../__generated__/globalTypes'
+import { CreateAiImage } from '../../../../../../../__generated__/CreateAiImage'
+import { SegmindModel } from '../../../../../../../__generated__/globalTypes'
 
 import { AIPrompt } from './AIPrompt'
 

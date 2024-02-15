@@ -12,8 +12,8 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
-import { CreateCloudflareUploadByUrl } from '../../../../../../__generated__/CreateCloudflareUploadByUrl'
-import { TextFieldForm } from '../../../../TextFieldForm'
+import { CreateCloudflareUploadByUrl } from '../../../../../../../../__generated__/CreateCloudflareUploadByUrl'
+import { TextFieldForm } from '../../../../../../TextFieldForm'
 
 export const CREATE_CLOUDFLARE_UPLOAD_BY_URL = gql`
   mutation CreateCloudflareUploadByUrl($url: String!) {
