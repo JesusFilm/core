@@ -49,7 +49,7 @@ export function StrategyItem({
           onClick={handleGoalsClick}
         >
           <Typography variant="subtitle2" sx={{ py: 1 }}>
-            {t('StrategyItem')}
+            {t('Strategy')}
           </Typography>
         </Button>
       ) : (
