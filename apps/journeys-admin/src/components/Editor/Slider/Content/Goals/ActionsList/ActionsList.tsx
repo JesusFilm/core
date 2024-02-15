@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
-import type { Actions } from '../Strategy'
+import type { Actions } from '../Goals'
 
 import { ActionsListView } from './ActionsListView'
 

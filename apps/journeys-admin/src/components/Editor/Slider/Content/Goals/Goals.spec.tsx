@@ -15,7 +15,7 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 
-import { ActionsTable } from './Strategy'
+import { ActionsTable } from './Goals'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

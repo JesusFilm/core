@@ -8,8 +8,8 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 
 import { Canvas } from './Canvas'
-import { SocialPreview } from './SocialPreview'
-import { ActionsTable } from './Strategy'
+import { SocialPreview } from './Social'
+import { ActionsTable } from './Goals'
 
 export function Content(): ReactElement {
   const {
