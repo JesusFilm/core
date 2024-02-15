@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
+  ActiveContent,
   ActiveFab,
-  ActiveJourneyEditContent,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
@@ -16,7 +16,7 @@ import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
+import { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'
 import { DRAWER_WIDTH } from '../constants'
 
 export function Fab(): ReactElement {
@@ -27,7 +27,7 @@ export function Fab(): ReactElement {
       selectedComponent,
       selectedStep,
       steps,
-      journeyEditContentComponent
+      activeContent
     },
     dispatch
   } = useEditor()
@@ -41,7 +41,7 @@ export function Fab(): ReactElement {
       })
       dispatch({
         type: 'SetSelectedBlockAction',
-        block: selectedStep
+        selectedBlock: selectedStep
       })
       if (!smUp) {
         dispatch({
@@ -52,7 +52,7 @@ export function Fab(): ReactElement {
     } else {
       dispatch({
         type: 'SetSelectedComponentAction',
-        component: 'AddNewBlock'
+        selectedComponent: 'AddNewBlock'
       })
       if (!smUp) {
         dispatch({
@@ -95,7 +95,7 @@ export function Fab(): ReactElement {
   return (
     <Zoom
       in={
-        journeyEditContentComponent === ActiveJourneyEditContent.Canvas &&
+        activeContent === ActiveContent.Canvas &&
         activeSlide > ActiveSlide.JourneyFlow
       }
       unmountOnExit

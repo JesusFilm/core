@@ -2,12 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 
-import {
-  GetJourney_journey_blocks as Block,
-  GetJourney_journey as Journey
-} from '../../../__generated__/GetJourney'
+import { BlockFields as Block } from '../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -647,7 +645,7 @@ const Template: StoryObj<typeof Editor> = {
       <MockedProvider>
         <Editor
           journey={args.journey}
-          view={args.view ?? ActiveJourneyEditContent.Canvas}
+          view={args.view ?? ActiveContent.Canvas}
         />
       </MockedProvider>
     )

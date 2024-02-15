@@ -13,10 +13,7 @@ import type {
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import DragIcon from '@core/shared/ui/icons/Drag'
@@ -33,7 +30,7 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
-import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
+import { VideoWrapper } from '../../Editor/Slider/Content/Canvas/VideoWrapper'
 import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
@@ -73,7 +70,7 @@ export function CardList({
   showNavigationCards = false
 }: CardListProps): ReactElement {
   const {
-    state: { journeyEditContentComponent }
+    state: { activeContent }
   } = useEditor()
   const { journey } = useJourney()
 
@@ -110,9 +107,9 @@ export function CardList({
   }
 
   const selectedId =
-    journeyEditContentComponent === ActiveJourneyEditContent.Action
+    activeContent === ActiveContent.Goals
       ? 'goals'
-      : journeyEditContentComponent === ActiveJourneyEditContent.SocialPreview
+      : activeContent === ActiveContent.Social
       ? 'social'
       : selected?.id
 
@@ -131,7 +128,7 @@ export function CardList({
           key="goals"
           id="goals"
           title="Goals"
-          destination={ActiveJourneyEditContent.Action}
+          destination={ActiveContent.Goals}
           header={
             <Box
               bgcolor={(theme) => theme.palette.background.paper}
@@ -163,7 +160,7 @@ export function CardList({
           key="social"
           id="social"
           title="Social Media"
-          destination={ActiveJourneyEditContent.SocialPreview}
+          destination={ActiveContent.Social}
           header={
             journey?.primaryImageBlock?.src == null ? (
               <Box
