@@ -4,9 +4,8 @@ import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
+  ActiveContent,
   ActiveFab,
-  ActiveJourneyEditContent,
-  ActiveTab,
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
@@ -40,11 +39,9 @@ const block: TreeBlock<FormBlock> = {
 const state: EditorState = {
   steps: [],
   selectedBlock: block,
-  drawerMobileOpen: false,
-  activeTab: ActiveTab.Journey,
   activeFab: ActiveFab.Add,
   activeSlide: ActiveSlide.JourneyFlow,
-  journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+  activeContent: ActiveContent.Canvas
 }
 
 describe('Credentials', () => {

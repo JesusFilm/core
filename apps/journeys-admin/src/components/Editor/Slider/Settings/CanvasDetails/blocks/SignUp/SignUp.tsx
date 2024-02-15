@@ -29,11 +29,6 @@ export function SignUp({
       type: 'SetSelectedAttributeIdAction',
       id: `${id}-signup-action`
     })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Form Submission',
-      children: <Action />
-    })
   }, [dispatch, id])
 
   return (

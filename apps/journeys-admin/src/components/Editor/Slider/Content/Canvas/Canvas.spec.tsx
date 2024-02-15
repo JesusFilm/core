@@ -5,9 +5,8 @@ import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
+  ActiveContent,
   ActiveFab,
-  ActiveJourneyEditContent,
-  ActiveTab,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
@@ -65,11 +64,9 @@ describe('Canvas', () => {
     steps: [step0, step1],
     selectedStep: step0,
     selectedBlock: step0,
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+    activeContent: ActiveContent.Canvas
   }
 
   it('should show border around selected step', () => {
@@ -140,9 +137,6 @@ describe('Canvas', () => {
     fireEvent.click(getByTestId('step-step0.id'))
     expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
     expect(getByText(`activeFab: Add`)).toBeInTheDocument()
-    expect(getByText('activeTab: Properties')).toBeInTheDocument()
-    expect(getByText('drawerTitle: Next Card Properties')).toBeInTheDocument()
-    expect(getByText('drawerMobileOpen: true')).toBeInTheDocument()
     expect(
       getByText('selectedAttributeId: step0.id-next-block')
     ).toBeInTheDocument()
@@ -192,13 +186,6 @@ describe('Canvas', () => {
       // release the pointer at card component
       { keys: '[/MouseLeft]' }
     ])
-    await waitFor(() =>
-      expect(queryByText('activeTab: Properties')).not.toBeInTheDocument()
-    )
-    expect(
-      queryByText('drawerTitle: Next Card Properties')
-    ).not.toBeInTheDocument()
-    expect(queryByText('drawerMobileOpen: true')).not.toBeInTheDocument()
     expect(
       queryByText('selectedAttributeId: step0.id-next-block')
     ).not.toBeInTheDocument()
@@ -239,9 +226,6 @@ describe('Canvas', () => {
     fireEvent.click(getByTestId('stepFooter'))
     expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
     expect(getByText('activeFab: Add')).toBeInTheDocument()
-    expect(getByText('activeTab: Properties')).toBeInTheDocument()
-    expect(getByText('drawerTitle: Hosted By')).toBeInTheDocument()
-    expect(getByText('drawerMobileOpen: true')).toBeInTheDocument()
     expect(getByText('selectedAttributeId: hosted-by')).toBeInTheDocument()
     expect(getByText('selectedComponent: Footer')).toBeInTheDocument()
     expect(getByTestId('stepFooter')).toHaveStyle({

@@ -33,14 +33,7 @@ export function ActionsBanner(): ReactElement {
     </Stack>
   )
 
-  const openActionDetails = (): void => {
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      mobileOpen: true,
-      title: 'Information',
-      children: <ActionDetails />
-    })
-  }
+  const openActionDetails = (): void => {}
 
   useEffect(() => {
     function handleResize(): void {

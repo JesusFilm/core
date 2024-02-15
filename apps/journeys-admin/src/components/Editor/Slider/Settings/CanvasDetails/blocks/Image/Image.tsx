@@ -27,12 +27,6 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       id: `${id}-image-options`
     })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Image',
-      mobileOpen: true,
-      children: <ImageOptions />
-    })
   }, [dispatch, id])
 
   return (

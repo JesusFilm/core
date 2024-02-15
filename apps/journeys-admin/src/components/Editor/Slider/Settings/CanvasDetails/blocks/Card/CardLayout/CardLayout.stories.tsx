@@ -89,10 +89,7 @@ export const Default: StoryObj<typeof CardLayout> = {
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider
             initialState={{
-              selectedBlock: block,
-              drawerChildren: <CardLayout />,
-              drawerTitle: 'Card Layout Property',
-              drawerMobileOpen: true
+              selectedBlock: block
             }}
           >
             <Drawer />
@@ -123,10 +120,7 @@ export const FullScreen: StoryObj<typeof CardLayout> = {
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider
             initialState={{
-              selectedBlock: block,
-              drawerChildren: <CardLayout />,
-              drawerTitle: 'Card Layout Property',
-              drawerMobileOpen: true
+              selectedBlock: block
             }}
           >
             <Drawer />

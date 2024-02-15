@@ -53,11 +53,6 @@ export function Button({
       type: 'SetSelectedAttributeIdAction',
       id: `${id}-button-action`
     })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Action',
-      children: <Action />
-    })
   }, [dispatch, id])
 
   return (

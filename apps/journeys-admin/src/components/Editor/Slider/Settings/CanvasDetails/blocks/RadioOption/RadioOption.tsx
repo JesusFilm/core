@@ -21,11 +21,6 @@ export function RadioOption({
       type: 'SetSelectedAttributeIdAction',
       id: `${id}-radio-option-action`
     })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Action',
-      children: <Action />
-    })
   }, [dispatch, id])
 
   return (

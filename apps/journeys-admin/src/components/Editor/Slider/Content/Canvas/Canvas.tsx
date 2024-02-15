@@ -7,11 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import {
-  ActiveFab,
-  ActiveTab,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -66,10 +62,6 @@ export function Canvas(): ReactElement {
       activeFab: ActiveFab.Add
     })
     dispatch({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Properties
-    })
-    dispatch({
       type: 'SetSelectedAttributeIdAction',
       id: undefined
     })
@@ -106,16 +98,6 @@ export function Canvas(): ReactElement {
       block: selectedStep
     })
     dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-    dispatch({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Properties
-    })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: t('Next Card Properties'),
-      mobileOpen: true,
-      children: <NextCard />
-    })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       id: `${selectedStep?.id ?? ''}-next-block`

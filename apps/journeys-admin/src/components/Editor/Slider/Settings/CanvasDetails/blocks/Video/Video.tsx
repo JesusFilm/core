@@ -27,11 +27,6 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       id: `${id}-video-options`
     })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Video',
-      children: <VideoOptions />
-    })
   }, [id, videoId, dispatch])
 
   return (

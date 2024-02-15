@@ -22,11 +22,6 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       id: `${id}-form-action`
     })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Action',
-      children: <Action />
-    })
   }, [dispatch, id])
 
   return (

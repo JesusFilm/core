@@ -35,12 +35,6 @@ export function Attribute({
 
   const handleClick = (): void => {
     dispatch({ type: 'SetSelectedAttributeIdAction', id })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: drawerTitle,
-      children,
-      mobileOpen: true
-    })
     if (param != null) {
       router.query.param = param
       void router.push(router)

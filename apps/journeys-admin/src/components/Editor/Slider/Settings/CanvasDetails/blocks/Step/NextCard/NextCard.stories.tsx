@@ -126,10 +126,7 @@ const Template: Story = {
           <EditorProvider
             initialState={{
               ...args,
-              steps: [block0, block1, block2, block3],
-              drawerTitle: 'Next Card Properties',
-              drawerMobileOpen: true,
-              drawerChildren: <NextCard />
+              steps: [block0, block1, block2, block3]
             }}
           >
             <Drawer />

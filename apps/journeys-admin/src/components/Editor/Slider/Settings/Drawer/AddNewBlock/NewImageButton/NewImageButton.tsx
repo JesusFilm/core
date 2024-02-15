@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Image3Icon from '@core/shared/ui/icons/Image3'
@@ -70,10 +70,6 @@ export function NewImageButton(): ReactElement {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
           id: data.imageBlockCreate.id
-        })
-        dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
         })
       }
     }
