@@ -137,9 +137,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   const stepTheme = getStepTheme(activeBlock, journey)
 
-  console.log('showHeaderFooter', showHeaderFooter)
-  console.log('router.query.noi', router.query.noi)
-
   return (
     <ThemeProvider
       themeName={ThemeName.journeyUi}
