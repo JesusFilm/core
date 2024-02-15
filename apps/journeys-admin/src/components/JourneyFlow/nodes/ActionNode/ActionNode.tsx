@@ -88,7 +88,7 @@ export function ActionNode({
               textAlign: 'center',
               fontWeight: 'bold',
               fontSize: 10,
-              lineHeight: ACTION_NODE_HEIGHT,
+              lineHeight: ACTION_NODE_HEIGHT + 'px',
             }}
             variant="body2"
           >
