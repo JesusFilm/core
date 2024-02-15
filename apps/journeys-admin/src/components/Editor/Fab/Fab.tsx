@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
-  ActiveFab,
   ActiveContent,
+  ActiveFab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
