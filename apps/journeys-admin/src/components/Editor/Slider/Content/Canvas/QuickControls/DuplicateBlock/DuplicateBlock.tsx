@@ -106,14 +106,14 @@ export function DuplicateBlock({
           })
           dispatch({
             type: 'SetSelectedStepAction',
-            step: duplicatedStep
+            selectedStep: duplicatedStep
           })
         } else {
           const block = transformer(data.blockDuplicate as BlockFields[])
           const duplicatedBlock = block[parentOrder + 1]
           dispatch({
             type: 'SetSelectedBlockAction',
-            block: duplicatedBlock
+            selectedBlock: duplicatedBlock
           })
         }
       }

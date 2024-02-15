@@ -34,14 +34,14 @@ export default function getSelected({
       siblings[parentOrder]
     return {
       type: 'SetSelectedBlockByIdAction',
-      id: blockToSelect?.id
+      selectedBlockId: blockToSelect?.id
     }
   } else if (selectedStep != null && steps.length > 1) {
     const stepToSet =
       type !== 'StepBlock' ? selectedStep : findNextStep(steps, selectedStep)
     return {
       type: 'SetSelectedStepAction',
-      step: stepToSet
+      selectedStep: stepToSet
     }
   } else return null
 }

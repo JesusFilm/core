@@ -27,7 +27,7 @@ export function SignUp({
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
-      id: `${id}-signup-action`
+      selectedAttributeId: `${id}-signup-action`
     })
   }, [dispatch, id])
 

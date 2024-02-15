@@ -36,7 +36,10 @@ export function ActionsTable(): ReactElement {
       url,
       count
     })) as Actions[]
-    dispatch({ type: 'SetSelectedComponentAction', component: actions[0]?.url })
+    dispatch({
+      type: 'SetSelectedComponentAction',
+      selectedComponent: actions[0]?.url
+    })
     return actions
   }, [journey?.blocks, dispatch])
 

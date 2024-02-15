@@ -90,7 +90,7 @@ describe('updatedSelected', () => {
     }
     const expected: SetSelectedBlockByIdAction = {
       type: 'SetSelectedBlockByIdAction',
-      id: 'typography0.id'
+      selectedBlockId: 'typography0.id'
     }
     expect(getSelected(input)).toEqual(expected)
   })
@@ -104,7 +104,7 @@ describe('updatedSelected', () => {
     }
     const expected: SetSelectedBlockByIdAction = {
       type: 'SetSelectedBlockByIdAction',
-      id: 'typography0.id'
+      selectedBlockId: 'typography0.id'
     }
     expect(getSelected(input)).toEqual(expected)
   })
@@ -119,7 +119,7 @@ describe('updatedSelected', () => {
     }
     const expected: SetSelectedStepAction = {
       type: 'SetSelectedStepAction',
-      step: selectedStep
+      selectedStep
     }
     expect(getSelected(input)).toEqual(expected)
   })
@@ -134,7 +134,7 @@ describe('updatedSelected', () => {
     }
     const expected: SetSelectedStepAction = {
       type: 'SetSelectedStepAction',
-      step: step1
+      selectedStep: step1
     }
     expect(getSelected(input)).toEqual(expected)
   })
@@ -149,7 +149,7 @@ describe('updatedSelected', () => {
     }
     const expected: SetSelectedStepAction = {
       type: 'SetSelectedStepAction',
-      step: step1
+      selectedStep: step1
     }
     expect(getSelected(input)).toEqual(expected)
   })

@@ -77,7 +77,7 @@ export function CardPreview({
   const handleChange = (selectedId: string): void => {
     switch (selectedId) {
       case 'goals':
-        onSelect?.({ view: ActiveContent.Action })
+        onSelect?.({ view: ActiveContent.Goals })
         return
       case 'social':
         onSelect?.({ view: ActiveContent.SocialPreview })

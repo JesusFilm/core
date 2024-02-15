@@ -67,7 +67,7 @@ export function StepBlockNode({
   }
 
   function handleClick(): void {
-    dispatch({ type: 'SetSelectedStepAction', step })
+    dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
   }
 
   return (

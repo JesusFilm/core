@@ -15,8 +15,6 @@ import {
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
 
-import { Variant } from './Variant'
-
 import { Typography } from '.'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
@@ -98,7 +96,7 @@ describe('Typography properties', () => {
     render(<Typography {...block} />)
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
-      id: 'typography1.id-typography-variant'
+      selectedAttributeId: 'typography1.id-typography-variant'
     })
   })
 })

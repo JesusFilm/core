@@ -109,7 +109,7 @@ export function NewSignUpButton(): ReactElement {
       if (data?.signUpBlockUpdate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.signUpBlockCreate.id
+          selectedBlockId: data.signUpBlockCreate.id
         })
       }
     }

@@ -14,7 +14,6 @@ import {
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 
-import { VideoOptions } from './Options/VideoOptions'
 import { Video } from './Video'
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
@@ -99,7 +98,7 @@ describe('Video', () => {
     render(<Video {...video} />)
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
-      id: 'video1.id-video-options'
+      selectedAttributeId: 'video1.id-video-options'
     })
   })
 })

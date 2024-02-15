@@ -31,8 +31,11 @@ export function SelectableWrapper({
     block.__typename !== 'GridItemBlock'
 
   const updateEditor = (block: TreeBlock): void => {
-    dispatch({ type: 'SetSelectedBlockAction', block })
-    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      selectedAttributeId: undefined
+    })
   }
 
   const selectBlock = (block: TreeBlock): void => {
@@ -59,7 +62,7 @@ export function SelectableWrapper({
 
       if (selectedBlock?.id === block.id) {
         // Must override RadioQuestionBlock selected during event capture
-        dispatch({ type: 'SetSelectedBlockAction', block })
+        dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
         editBlock()
       } else if (parentSelected || siblingSelected) {
         selectBlock(block)

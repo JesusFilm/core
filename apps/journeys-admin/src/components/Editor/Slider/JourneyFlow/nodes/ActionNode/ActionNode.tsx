@@ -47,8 +47,8 @@ export function ActionNode({
   }
 
   function handleClick(): void {
-    dispatch({ type: 'SetSelectedStepAction', step })
-    dispatch({ type: 'SetSelectedBlockAction', block })
+    dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
+    dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
   }
 
   return (

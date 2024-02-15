@@ -31,7 +31,7 @@ export function SocialPreviewNode(): ReactElement {
   function handleClick(): void {
     dispatch({
       type: 'SetActiveContentAction',
-      component: ActiveContent.Social
+      activeContent: ActiveContent.Social
     })
   }
 

@@ -18,7 +18,6 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../../__generated__/globalTypes'
-import { Action } from '../../../Action'
 
 import { Button } from '.'
 
@@ -143,7 +142,7 @@ describe('Button attributes', () => {
     render(<Button {...block} />)
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
-      id: 'button.id-button-action'
+      selectedAttributeId: 'button.id-button-action'
     })
   })
 })

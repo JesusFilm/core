@@ -11,7 +11,6 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
-import { Drawer } from '../../..'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../../__generated__/GetJourney'
 import {
   IconColor,
@@ -19,7 +18,7 @@ import {
   IconSize
 } from '../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
-import { Action } from '../../../Action'
+import { Drawer } from '../../../Drawer'
 
 import { SignUp } from '.'
 
@@ -149,7 +148,7 @@ describe('SignUp Attributes', () => {
     render(<SignUp {...block} />)
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
-      id: 'signup.id-signup-action'
+      selectedAttributeId: 'signup.id-signup-action'
     })
   })
 })

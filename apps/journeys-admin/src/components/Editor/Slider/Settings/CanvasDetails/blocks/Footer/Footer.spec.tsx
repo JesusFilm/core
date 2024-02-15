@@ -143,7 +143,7 @@ describe('Footer', () => {
 
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
-      id: 'hosted-by'
+      selectedAttributeId: 'hosted-by'
     })
   })
 
@@ -159,5 +159,6 @@ describe('Footer', () => {
       </MockedProvider>
     )
     fireEvent.click(getByText('Chat Widget'))
+    expect(getByText('drawerTitle: Chat Widget')).toBeInTheDocument()
   })
 })

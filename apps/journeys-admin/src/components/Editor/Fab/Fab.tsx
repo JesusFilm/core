@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
-  ActiveFab,
   ActiveContent,
+  ActiveFab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
@@ -41,7 +41,7 @@ export function Fab(): ReactElement {
       })
       dispatch({
         type: 'SetSelectedBlockAction',
-        block: selectedStep
+        selectedBlock: selectedStep
       })
       if (!smUp) {
         dispatch({
@@ -52,7 +52,7 @@ export function Fab(): ReactElement {
     } else {
       dispatch({
         type: 'SetSelectedComponentAction',
-        component: 'AddBlock'
+        selectedComponent: 'AddBlock'
       })
       if (!smUp) {
         dispatch({

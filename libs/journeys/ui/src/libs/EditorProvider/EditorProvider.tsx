@@ -16,15 +16,15 @@ import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { searchBlocks } from '../searchBlocks'
 
+export enum ActiveContent {
+  Canvas = 'canvas',
+  Social = 'social',
+  Goals = 'goals'
+}
 export enum ActiveFab {
   Add = 0,
   Edit = 1,
   Save = 2
-}
-export enum ActiveContent {
-  Canvas = 'canvas',
-  Social = 'social',
-  Action = 'action'
 }
 export enum ActiveSlide {
   JourneyFlow = 0,
@@ -35,15 +35,15 @@ export interface EditorState {
   activeContent: ActiveContent
   activeFab: ActiveFab
   activeSlide: ActiveSlide
-  selectedStep?: TreeBlock<StepBlock>
   selectedAttributeId?: string
   selectedBlock?: TreeBlock
   selectedComponent?: 'Footer' | 'AddBlock' | string
+  selectedStep?: TreeBlock<StepBlock>
   steps?: Array<TreeBlock<StepBlock>>
 }
 interface SetActiveContentAction {
   type: 'SetActiveContentAction'
-  component: ActiveContent
+  activeContent: ActiveContent
 }
 interface SetActiveFabAction {
   type: 'SetActiveFabAction'
@@ -55,23 +55,23 @@ interface SetActiveSlideAction {
 }
 interface SetSelectedAttributeIdAction {
   type: 'SetSelectedAttributeIdAction'
-  id?: string
+  selectedAttributeId?: string
 }
 interface SetSelectedBlockAction {
   type: 'SetSelectedBlockAction'
-  block?: TreeBlock
+  selectedBlock?: TreeBlock
 }
 export interface SetSelectedBlockByIdAction {
   type: 'SetSelectedBlockByIdAction'
-  id?: string
+  selectedBlockId?: string
 }
 interface SetSelectedComponentAction {
   type: 'SetSelectedComponentAction'
-  component?: EditorState['selectedComponent']
+  selectedComponent?: EditorState['selectedComponent']
 }
 export interface SetSelectedStepAction {
   type: 'SetSelectedStepAction'
-  step?: TreeBlock<StepBlock>
+  selectedStep?: TreeBlock<StepBlock>
 }
 interface SetStepsAction {
   type: 'SetStepsAction'
@@ -98,14 +98,6 @@ export const reducer = (
         ...state,
         activeContent: action.component
       }
-    case 'SetSelectedStepAction':
-      return {
-        ...state,
-        selectedStep: action.step,
-        selectedBlock: action.step,
-        selectedComponent: undefined,
-        activeContent: ActiveContent.Canvas
-      }
     case 'SetActiveFabAction':
       return {
         ...state,
@@ -121,11 +113,11 @@ export const reducer = (
         activeSlide: action.activeSlide
       }
     case 'SetSelectedAttributeIdAction':
-      return { ...state, selectedAttributeId: action.id }
+      return { ...state, selectedAttributeId: action.selectedAttributeId }
     case 'SetSelectedBlockAction':
       return {
         ...state,
-        selectedBlock: action.block,
+        selectedBlock: action.selectedBlock,
         selectedComponent: undefined,
         activeContent: ActiveContent.Canvas,
         activeSlide: ActiveSlide.Content
@@ -134,8 +126,8 @@ export const reducer = (
       return {
         ...state,
         selectedBlock:
-          action.id != null
-            ? searchBlocks(state.steps ?? [], action.id)
+          action.selectedBlockId != null
+            ? searchBlocks(state.steps ?? [], action.selectedBlockId)
             : undefined,
         selectedComponent: undefined,
         activeContent: ActiveContent.Canvas
@@ -143,8 +135,16 @@ export const reducer = (
     case 'SetSelectedComponentAction':
       return {
         ...state,
-        selectedComponent: action.component,
+        selectedComponent: action.selectedComponent,
         selectedBlock: undefined
+      }
+    case 'SetSelectedStepAction':
+      return {
+        ...state,
+        selectedStep: action.selectedStep,
+        selectedBlock: action.selectedStep,
+        selectedComponent: undefined,
+        activeContent: ActiveContent.Canvas
       }
     case 'SetStepsAction':
       return {
@@ -213,14 +213,14 @@ export function EditorProvider({
     if (initialState?.selectedStep != null) {
       dispatch({
         type: 'SetSelectedStepAction',
-        step: initialState.selectedStep
+        selectedStep: initialState.selectedStep
       })
       stepRef.current = true
 
       if (initialState?.selectedBlock != null)
         dispatch({
           type: 'SetSelectedBlockAction',
-          block: initialState.selectedBlock
+          selectedBlock: initialState.selectedBlock
         })
     }
   }, [initialState?.selectedStep, initialState?.selectedBlock])

@@ -50,7 +50,7 @@ describe('ActionsList', () => {
   const state: EditorState = {
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Action
+    activeContent: ActiveContent.Goals
   }
 
   beforeEach(() => {
