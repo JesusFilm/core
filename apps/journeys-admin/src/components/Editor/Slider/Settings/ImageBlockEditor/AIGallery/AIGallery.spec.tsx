@@ -2,8 +2,8 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { CreateAiImage } from '../../../../../__generated__/CreateAiImage'
-import { SegmindModel } from '../../../../../__generated__/globalTypes'
+import { CreateAiImage } from '../../../../../../../__generated__/CreateAiImage'
+import { SegmindModel } from '../../../../../../../__generated__/globalTypes'
 
 import { AIGallery, CREATE_AI_IMAGE } from './AIGallery'
 

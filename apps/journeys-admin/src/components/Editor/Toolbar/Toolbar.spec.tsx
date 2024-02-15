@@ -6,10 +6,8 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  GetJourney_journey as Journey,
-  BlockFields_VideoBlock as VideoBlock
-} from '../../../../__generated__/GetJourney'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 
 import { Toolbar } from '.'
 
