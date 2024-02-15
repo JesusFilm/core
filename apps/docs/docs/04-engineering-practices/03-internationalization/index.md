@@ -136,4 +136,10 @@ export async function getStaticProps({ locale }) {
 
 ## Crowdin
 
-Once your files have been committed and your PR merged to main a Crowdin GitHub Action will run to upload any changes to `locales/en`. It will also propose a PR with newly minted translations automatically. New translation requests should be sent to the Jesus Film Project Translation Manager so that these strings can be localized.
+After your files have been committed and your pull request (PR) has been merged into production, our Crowdin GitHub integration will initiate. This process involves uploading any changes to the `locales/en` directory.
+
+### DeepL
+
+We have incorporated DeepL, an AI-powered machine translation engine, into our workflow. When Crowdin receives new texts for translation, DeepL automatically translates them. Upon detecting these new translations, Crowdin will automatically synchronize with GitHub and generate a new PR containing the translated texts.
+
+Developers are required to assign themselves to the PR created by Crowdin if it is relevant to their work. Additionally, developers should update the PR labels and seek a review from another team member as part of their responsibilities. Once the PR has been approved and reviewed successfully, developers are responsible for merging the changes into the production branch promptly.
