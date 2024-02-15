@@ -112,7 +112,6 @@ export function middleware(req: NextRequest): NextResponse | undefined {
 
   // Check if the NEXT_LOCALE cookie is set and does not match the current locale
   if (extractedLocale != null && extractedLocale !== nextLocale) {
-    const trimmedLocale = extractedLocale?.split('-')[0]
-    return handleRedirect(req, trimmedLocale)
+    return handleRedirect(req, extractedLocale)
   }
 }

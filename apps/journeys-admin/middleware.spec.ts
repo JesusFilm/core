@@ -115,9 +115,11 @@ describe('middleware', () => {
       expect(req.nextUrl.locale).toBe('en')
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBe('00001-zh-Hant-CN')
       expect(result?.status).toBe(307) // checks for temporary redirect
-      expect(result?.headers.get('location')).toBe('http://localhost:4200/zh/')
+      expect(result?.headers.get('location')).toBe(
+        'http://localhost:4200/zh-CN/'
+      )
       expect(result?.headers.get('set-cookie')).toBe(
-        'NEXT_LOCALE=00001-zh; Path=/'
+        'NEXT_LOCALE=00001-zh-CN; Path=/'
       )
     })
   })
