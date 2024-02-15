@@ -297,9 +297,46 @@ describe('Step', () => {
     expect(baseElement).toContainHTML('<body><div /></body>')
   })
 
-  // TODO (SWIPE): test activeStep
+  it('should not send stepViewEvent if not activeStep', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    blockHistoryVar([block, { ...block, id: 'Step2' }])
 
-  // TODO (SWIPE): test seo
+    const result = jest.fn(() => ({
+      data: {
+        stepViewEventCreate: {
+          id: 'uuid',
+          __typename: 'StepViewEvent'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: STEP_VIEW_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'Step1',
+                  value: 'Step {{number}}'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Step {...block} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
+
   it('should set seoTitle to [journey name (step name)] if activeStep and on first card', () => {
     treeBlocksVar([block])
     blockHistoryVar([block])
