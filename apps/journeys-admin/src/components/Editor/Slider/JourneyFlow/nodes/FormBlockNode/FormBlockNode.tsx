@@ -7,7 +7,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_FormBlock as FormBlock,
   BlockFields_StepBlock as StepBlock
-} from '../../../../../__generated__/BlockFields'
+} from '../../../../../../../__generated__/BlockFields'
 import { ActionNode } from '../ActionNode'
 
 export interface FormBlockNodeData extends TreeBlock<FormBlock> {
