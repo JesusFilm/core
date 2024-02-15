@@ -141,7 +141,6 @@ const Template: StoryObj<typeof SocialPreview> = {
         <JourneyProvider value={{ journey: args.journey }}>
           <EditorProvider
             initialState={{
-              ...args,
               activeSlide: ActiveSlide.Content
             }}
           >
