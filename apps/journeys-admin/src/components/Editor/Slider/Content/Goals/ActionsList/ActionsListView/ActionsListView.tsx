@@ -21,7 +21,7 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
 import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 
-import type { Actions } from '../../Strategy'
+import type { Actions } from '../../Goals'
 
 interface ActionsListViewProps {
   actions: Actions[]

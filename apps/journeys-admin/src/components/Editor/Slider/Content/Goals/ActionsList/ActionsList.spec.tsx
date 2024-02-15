@@ -10,7 +10,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
-import { Actions } from '../Strategy'
+import { Actions } from '../Goals'
 
 import { ActionsList } from './ActionsList'
 

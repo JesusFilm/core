@@ -15,7 +15,7 @@ import { ActionDetails } from '../ActionsTable/ActionDetails'
 
 import { CardTemplateDrawer } from './CardTemplates'
 import { Drawer } from './Drawer'
-import { SocialShareAppearance } from './SocialMediaAppearance'
+import { SocialShareAppearance } from './SocialDetails'
 
 const Footer = dynamic(
   async () =>

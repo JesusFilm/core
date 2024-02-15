@@ -1,2 +1,2 @@
-export { Attributes } from './Attributes'
+export { Attributes } from './Settings'
 export { Attribute } from './Attribute'
