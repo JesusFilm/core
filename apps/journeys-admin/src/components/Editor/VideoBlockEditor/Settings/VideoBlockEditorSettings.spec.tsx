@@ -137,7 +137,9 @@ describe('VideoBlockEditorSettings', () => {
     )
 
     expect(
-      queryByText(/Some mobile browsers may override this choice/i)
+      queryByText(
+        'Some mobile browsers may override this choice and default the video to play muted when autoplay is enabled'
+      )
     ).not.toBeInTheDocument()
 
     fireEvent.click(getByRole('checkbox', { name: 'Muted' }))
