@@ -155,6 +155,17 @@ export function Slider(): ReactElement {
             borderColor: 'divider',
             '&:hover': {
               backgroundColor: 'background.paper'
+            },
+            // Pseudo button covering larger area for better UX.
+            '&:before': {
+              width: '105px',
+              height: 'calc( 100vh - 90px)',
+              position: 'absolute',
+              left: '-33px',
+              top: 'calc( -50vh + 66px)',
+              display: 'block',
+              zIndex: -1,
+              content: ''
             }
           }}
         >
