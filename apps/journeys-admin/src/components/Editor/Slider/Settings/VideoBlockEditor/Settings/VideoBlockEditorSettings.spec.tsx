@@ -7,8 +7,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   VideoBlockObjectFit as ObjectFit,
   VideoBlockSource
-} from '../../../../../__generated__/globalTypes'
-import { ThemeProvider } from '../../../ThemeProvider'
+} from '../../../../../../../__generated__/globalTypes'
+import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { VideoBlockEditorSettings } from '.'
 

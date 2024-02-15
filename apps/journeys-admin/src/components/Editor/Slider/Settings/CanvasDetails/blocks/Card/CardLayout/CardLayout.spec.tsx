@@ -8,9 +8,9 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockFields_CardBlock as CardBlock,
-  GetJourney_journey as Journey,
   BlockFields_StepBlock as StepBlock
-} from '../../../../../../../../../__generated__/GetJourney'
+} from '../../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,

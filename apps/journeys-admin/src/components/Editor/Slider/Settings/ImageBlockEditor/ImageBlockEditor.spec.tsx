@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
-import { BlockFields_ImageBlock as ImageBlock } from '../../../../__generated__/BlockFields'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
 
 import { ImageBlockEditor } from '.'
 

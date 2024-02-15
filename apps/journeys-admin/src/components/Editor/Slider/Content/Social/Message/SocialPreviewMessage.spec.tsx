@@ -2,7 +2,7 @@ import { render } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
+import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 
 import { SocialPreviewMessage } from './SocialPreviewMessage'
 

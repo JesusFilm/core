@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 
 import { JOURNEY_SEO_TITLE_UPDATE, TitleEdit } from './TitleEdit'
 

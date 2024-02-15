@@ -6,7 +6,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock
-} from '../../../../../../__generated__/GetJourney'
+} from '../../../../../../__generated__/BlockFields'
 import { ThemeMode } from '../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../ThemeProvider'

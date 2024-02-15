@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 
-import { ThemeProvider } from '../../ThemeProvider'
+import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { SocialPreview } from './SocialPreview'
 

@@ -8,15 +8,15 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
-  GetJourney_journey as Journey,
   BlockFields_StepBlock as StepBlock,
   BlockFields_TypographyBlock as TypographyBlock
-} from '../../../../../../__generated__/GetJourney'
+} from '../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import {
   TypographyAlign,
   TypographyColor,
   TypographyVariant
-} from '../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../__generated__/globalTypes'
 
 import { BLOCK_DELETE, DeleteBlock } from './DeleteBlock'
 

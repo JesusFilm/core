@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ImageEdit } from '../../ImageEdit'
+import { ImageEdit } from '../ImageEdit'
 
 import { DescriptionEdit } from './DescriptionEdit'
 import { TitleEdit } from './TitleEdit'

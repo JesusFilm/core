@@ -7,12 +7,12 @@ import { ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { BlockFields_VideoBlock as VideoBlock } from '../../../../../__generated__/BlockFields'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
-} from '../../../../../__generated__/globalTypes'
-import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
+} from '../../../../../../../__generated__/globalTypes'
+import { setBeaconPageViewed } from '../../../../../../libs/setBeaconPageViewed'
 
 const VideoLibrary = dynamic(
   async () =>

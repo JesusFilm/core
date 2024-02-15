@@ -9,8 +9,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
-import { TextResponseBlockCreate } from '../../../../../__generated__/TextResponseBlockCreate'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import { TextResponseBlockCreate } from '../../../../../../../../__generated__/TextResponseBlockCreate'
 import { Button } from '../Button'
 
 export const TEXT_RESPONSE_BLOCK_CREATE = gql`

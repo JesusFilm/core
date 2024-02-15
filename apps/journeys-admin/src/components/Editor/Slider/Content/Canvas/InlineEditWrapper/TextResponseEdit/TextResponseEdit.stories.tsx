@@ -5,16 +5,14 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  GetJourney_journey as Journey,
-  BlockFields_StepBlock as StepBlock
-} from '../../../../../../__generated__/GetJourney'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,
   ThemeName
-} from '../../../../../../__generated__/globalTypes'
-import { TextResponseFields } from '../../../../../../__generated__/TextResponseFields'
-import { simpleComponentConfig } from '../../../../../libs/storybook'
+} from '../../../../../../../../__generated__/globalTypes'
+import { TextResponseFields } from '../../../../../../../../__generated__/TextResponseFields'
+import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 import { Canvas } from '../../Canvas'
 
 const TextResponseEditStory: Meta<typeof Canvas> = {

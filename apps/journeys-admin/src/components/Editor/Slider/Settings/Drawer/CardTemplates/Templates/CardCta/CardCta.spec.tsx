@@ -10,15 +10,15 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   CardCtaCreate,
   CardCtaCreateVariables
-} from '../../../../../../../../__generated__/CardCtaCreate'
+} from '../../../../../../../../../__generated__/CardCtaCreate'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
   IconName,
   TypographyVariant
-} from '../../../../../../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
+} from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 
 import { CARD_CTA_CREATE } from './CardCta'
 

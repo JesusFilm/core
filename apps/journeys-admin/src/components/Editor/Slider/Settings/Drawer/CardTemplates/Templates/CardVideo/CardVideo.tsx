@@ -11,8 +11,8 @@ import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 import {
   CardVideoCreate,
   CardVideoCreateVariables
-} from '../../../../../../../../__generated__/CardVideoCreate'
-import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/CardVideoCreate'
+import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 
 import cardVideoImage from './cardVideo.svg'
 

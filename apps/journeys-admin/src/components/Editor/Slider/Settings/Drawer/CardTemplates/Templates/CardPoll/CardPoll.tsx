@@ -17,11 +17,11 @@ import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields
 import {
   CardPollCreate,
   CardPollCreateVariables
-} from '../../../../../../../../__generated__/CardPollCreate'
+} from '../../../../../../../../../__generated__/CardPollCreate'
 import {
   TypographyColor,
   TypographyVariant
-} from '../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/globalTypes'
 
 import cardPollImage from './cardPoll.svg'
 

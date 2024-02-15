@@ -25,12 +25,12 @@ import {
 import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../__generated__/GetJourney'
+} from '../../../../../../../__generated__/BlockFields'
 import {
   VideoBlockObjectFit as ObjectFit,
   VideoBlockSource,
   VideoBlockUpdateInput
-} from '../../../../../__generated__/globalTypes'
+} from '../../../../../../../__generated__/globalTypes'
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 

@@ -5,17 +5,15 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { Drawer } from '../../../..'
-import {
-  BlockFields_CardBlock as CardBlock,
-  GetJourney_journey as Journey
-} from '../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { CardStyling } from '.'
 

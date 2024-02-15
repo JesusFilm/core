@@ -10,9 +10,11 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock,
-  GetJourney_journey as Journey,
   BlockFields_StepBlock as StepBlock,
   BlockFields_VideoBlock as VideoBlock
+} from '../../../../../../../../../__generated__/BlockFields'
+import {
+  GetJourney_journey as Journey,
 } from '../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,

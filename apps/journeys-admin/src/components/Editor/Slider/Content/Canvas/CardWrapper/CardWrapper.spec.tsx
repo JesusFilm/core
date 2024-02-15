@@ -7,8 +7,8 @@ import { WrappersProps } from '@core/journeys/ui/BlockRenderer'
 import { Card } from '@core/journeys/ui/Card'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
-import { TestEditorState } from '../../../../libs/TestEditorState'
+import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { CardWrapper } from '.'
 

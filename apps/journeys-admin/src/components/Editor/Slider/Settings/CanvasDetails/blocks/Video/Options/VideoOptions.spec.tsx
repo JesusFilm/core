@@ -8,10 +8,10 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
-  GetJourney_journey as Journey,
   BlockFields_StepBlock as StepBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../../../../__generated__/GetJourney'
+} from '../../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,
   ThemeName,
@@ -19,9 +19,9 @@ import {
   VideoLabel
 } from '../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
-import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
-import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
+import { videos } from '../../../../VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEO } from '../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { GET_VIDEOS } from '../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import {
   UPDATE_VIDEO_BLOCK_NEXT_STEP,

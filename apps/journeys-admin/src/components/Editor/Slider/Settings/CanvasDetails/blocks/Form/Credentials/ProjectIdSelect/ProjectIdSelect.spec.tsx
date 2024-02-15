@@ -4,8 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { FormBlockUpdateCredentials_formBlockUpdate as FormBlock } from '../../../../../../../../../../__generated__/FormBlockUpdateCredentials'
 import { BlockFields_FormBlock as JourneyFormBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import { FormBlockUpdateCredentials_formBlockUpdate as FormBlock } from '../../../../../../../../../../__generated__/FormBlockUpdateCredentials'
 import { FORM_BLOCK_UPDATE } from '../ApiTokenTextField/ApiTokenTextField'
 
 import { ProjectIdSelect } from '.'

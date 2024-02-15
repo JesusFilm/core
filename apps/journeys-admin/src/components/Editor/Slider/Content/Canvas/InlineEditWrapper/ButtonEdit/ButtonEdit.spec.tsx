@@ -5,9 +5,9 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
-import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { ButtonVariant } from '../../../../../../__generated__/globalTypes'
+import { ButtonFields } from '../../../../../../../../__generated__/ButtonFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
 
 import { BUTTON_BLOCK_UPDATE_CONTENT, ButtonEdit } from '.'
 

@@ -7,7 +7,7 @@ import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneySeoTitleUpdate } from '../../../../../../__generated__/JourneySeoTitleUpdate'
+import { JourneySeoTitleUpdate } from '../../../../../../../__generated__/JourneySeoTitleUpdate'
 
 export const JOURNEY_SEO_TITLE_UPDATE = gql`
   mutation JourneySeoTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {

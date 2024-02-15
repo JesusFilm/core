@@ -9,17 +9,17 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock,
-  GetJourney_journey as Journey,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../../../../../__generated__/GetJourney'
+} from '../../../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import {
   VideoBlockSource,
   VideoLabel
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
-import { videos } from '../../../../../../VideoLibrary/VideoFromLocal/data'
-import { GET_VIDEO } from '../../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { GET_VIDEOS } from '../../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
+import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import {
   BLOCK_DELETE_FOR_BACKGROUND_VIDEO,

@@ -10,12 +10,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   CardPollCreate,
   CardPollCreateVariables
-} from '../../../../../../../../__generated__/CardPollCreate'
+} from '../../../../../../../../../__generated__/CardPollCreate'
 import {
   TypographyColor,
   TypographyVariant
-} from '../../../../../../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
+} from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 
 import { CARD_POLL_CREATE } from './CardPoll'
 
