@@ -96,16 +96,7 @@ const Template: StoryObj<typeof PageWrapper> = {
           }
         ]}
       >
-        <EditorProvider
-          initialState={
-            args.sidePanelChildren === null
-              ? {
-                  drawerTitle: 'Custom drawer',
-                  drawerChildren: 'Custom drawer content'
-                }
-              : {}
-          }
-        >
+        <EditorProvider>
           <PageWrapper {...args} />
         </EditorProvider>
       </MockedProvider>

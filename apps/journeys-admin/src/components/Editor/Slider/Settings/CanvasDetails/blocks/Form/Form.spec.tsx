@@ -3,9 +3,8 @@ import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
+  ActiveContent,
   ActiveFab,
-  ActiveJourneyEditContent,
-  ActiveTab,
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
@@ -43,11 +42,9 @@ describe('Form', () => {
 
   const state: EditorState = {
     steps: [],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+    activeContent: ActiveContent.Canvas
   }
 
   beforeEach(() => {
@@ -104,11 +101,6 @@ describe('Form', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
       id: 'formBlock.id-form-action'
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      title: 'Action',
-      children: <Action />
     })
   })
 })

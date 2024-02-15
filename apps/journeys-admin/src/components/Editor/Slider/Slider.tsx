@@ -13,9 +13,10 @@ import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
-import { Attributes } from '../Drawer/Properties'
 
 import { Content } from './Content'
+import { JourneyFlow } from './JourneyFlow'
+import { Attributes } from './Settings'
 
 const StyledSwiper = styled(Swiper)(() => ({}))
 const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({

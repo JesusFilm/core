@@ -199,10 +199,7 @@ const Template: StoryObj<typeof BackgroundMedia> = {
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider
             initialState={{
-              ...args,
-              drawerChildren: <BackgroundMedia />,
-              drawerTitle: 'Background Media',
-              drawerMobileOpen: true
+              ...args
             }}
           >
             <Drawer />

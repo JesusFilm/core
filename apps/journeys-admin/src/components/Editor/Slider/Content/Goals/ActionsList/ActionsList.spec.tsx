@@ -2,9 +2,8 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
 
 import {
+  ActiveContent,
   ActiveFab,
-  ActiveJourneyEditContent,
-  ActiveTab,
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
@@ -49,11 +48,9 @@ describe('ActionsList', () => {
   const dispatch = jest.fn()
 
   const state: EditorState = {
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    journeyEditContentComponent: ActiveJourneyEditContent.Action
+    activeContent: ActiveContent.Action
   }
 
   beforeEach(() => {

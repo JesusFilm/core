@@ -18,13 +18,7 @@ const Template: StoryObj<typeof CardTemplateDrawer> = {
   render: () => {
     return (
       <MockedProvider>
-        <EditorProvider
-          initialState={{
-            drawerChildren: <CardTemplateDrawer />,
-            drawerTitle: 'Card Templates',
-            drawerMobileOpen: true
-          }}
-        >
+        <EditorProvider>
           <Drawer />
         </EditorProvider>
       </MockedProvider>

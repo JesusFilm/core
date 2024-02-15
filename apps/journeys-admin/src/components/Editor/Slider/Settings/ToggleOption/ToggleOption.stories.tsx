@@ -23,17 +23,7 @@ const Template: StoryObj<typeof ToggleOption> = {
   render: ({ ...args }: ToggleOptionProps) => {
     return (
       <MockedProvider>
-        <EditorProvider
-          initialState={{
-            drawerChildren: (
-              <Box sx={{ p: 4 }}>
-                <ToggleOption {...args} />
-              </Box>
-            ),
-            drawerTitle: 'Toggle Option',
-            drawerMobileOpen: true
-          }}
-        >
+        <EditorProvider>
           <Drawer />
         </EditorProvider>
       </MockedProvider>

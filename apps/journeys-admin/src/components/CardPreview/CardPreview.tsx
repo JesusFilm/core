@@ -7,7 +7,7 @@ import { ReactElement, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 
@@ -77,10 +77,10 @@ export function CardPreview({
   const handleChange = (selectedId: string): void => {
     switch (selectedId) {
       case 'goals':
-        onSelect?.({ view: ActiveJourneyEditContent.Action })
+        onSelect?.({ view: ActiveContent.Action })
         return
       case 'social':
-        onSelect?.({ view: ActiveJourneyEditContent.SocialPreview })
+        onSelect?.({ view: ActiveContent.SocialPreview })
         return
     }
     if (steps == null) return

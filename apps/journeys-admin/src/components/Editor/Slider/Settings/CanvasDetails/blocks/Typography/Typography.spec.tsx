@@ -2,9 +2,8 @@ import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
+  ActiveContent,
   ActiveFab,
-  ActiveJourneyEditContent,
-  ActiveTab,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
@@ -45,11 +44,9 @@ describe('Typography properties', () => {
   }
   const state = {
     steps: [],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+    activeContent: ActiveContent.Canvas
   }
 
   beforeEach(() => {
@@ -102,11 +99,6 @@ describe('Typography properties', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',
       id: 'typography1.id-typography-variant'
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      title: 'Text Variant',
-      children: <Variant />
     })
   })
 })

@@ -1,10 +1,7 @@
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveJourneyEditContent,
-  EditorProvider
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 
@@ -18,7 +15,7 @@ import { EditToolbar } from './Toolbar'
 interface EditorProps {
   journey?: Journey
   selectedStepId?: string
-  view?: ActiveJourneyEditContent
+  view?: ActiveContent
 }
 
 export function Editor({
@@ -41,8 +38,7 @@ export function Editor({
         initialState={{
           steps,
           selectedStep,
-          drawerTitle: 'Properties',
-          journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
+          activeContent: view ?? ActiveContent.Canvas
         }}
       >
         <EditToolbar />

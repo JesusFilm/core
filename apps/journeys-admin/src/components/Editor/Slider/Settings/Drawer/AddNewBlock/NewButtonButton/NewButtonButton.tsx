@@ -4,11 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
-import {
-  ActiveFab,
-  ActiveTab,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
@@ -141,10 +137,6 @@ export function NewButtonButton(): ReactElement {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
           id: data.buttonBlockCreate.id
-        })
-        dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
         })
         dispatch({
           type: 'SetActiveFabAction',

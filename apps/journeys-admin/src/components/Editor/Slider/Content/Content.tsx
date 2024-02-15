@@ -2,10 +2,7 @@ import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
-import {
-  ActiveJourneyEditContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { Canvas } from './Canvas'
 import { SocialPreview } from './Social'
@@ -13,14 +10,14 @@ import { ActionsTable } from './Goals'
 
 export function Content(): ReactElement {
   const {
-    state: { journeyEditContentComponent }
+    state: { activeContent }
   } = useEditor()
   let content: ReactElement
-  switch (journeyEditContentComponent) {
-    case ActiveJourneyEditContent.SocialPreview:
+  switch (activeContent) {
+    case ActiveContent.Social:
       content = <SocialPreview />
       break
-    case ActiveJourneyEditContent.Action:
+    case ActiveContent.Goals:
       content = <ActionsTable />
       break
     default:
@@ -52,7 +49,7 @@ export function Content(): ReactElement {
       }}
     >
       <CSSTransition
-        key={journeyEditContentComponent}
+        key={activeContent}
         timeout={600}
         classNames="journey-edit-content-component"
       >

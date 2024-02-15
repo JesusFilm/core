@@ -31,12 +31,6 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
       block: selectedStep
     })
     dispatch({
-      type: 'SetDrawerPropsAction',
-      mobileOpen: true,
-      title: t('Card Templates'),
-      children: <CardTemplateDrawer />
-    })
-    dispatch({
       type: 'SetSelectedAttributeIdAction',
       id: undefined
     })

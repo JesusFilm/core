@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RADIO_OPTION_FIELDS } from '@core/journeys/ui/RadioOption/radioOptionFields'
 import { RADIO_QUESTION_FIELDS } from '@core/journeys/ui/RadioQuestion/radioQuestionFields'
@@ -123,10 +123,6 @@ export function NewRadioQuestionButton(): ReactElement {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
           id: data.radioQuestionBlockCreate.id
-        })
-        dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
         })
       }
     }

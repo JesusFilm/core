@@ -89,10 +89,7 @@ export const Default: StoryObj<typeof CardStyling> = {
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider
             initialState={{
-              selectedBlock: block,
-              drawerChildren: <CardStyling />,
-              drawerTitle: 'Card Style Property',
-              drawerMobileOpen: true
+              selectedBlock: block
             }}
           >
             <Drawer />
@@ -123,10 +120,7 @@ export const Light: StoryObj<typeof CardStyling> = {
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider
             initialState={{
-              selectedBlock: block,
-              drawerChildren: <CardStyling />,
-              drawerTitle: 'Card Style Property',
-              drawerMobileOpen: true
+              selectedBlock: block
             }}
           >
             <Drawer />
@@ -157,10 +151,7 @@ export const Dark: StoryObj<typeof CardStyling> = {
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider
             initialState={{
-              selectedBlock: block,
-              drawerChildren: <CardStyling />,
-              drawerTitle: 'Card Style Property',
-              drawerMobileOpen: true
+              selectedBlock: block
             }}
           >
             <Drawer />

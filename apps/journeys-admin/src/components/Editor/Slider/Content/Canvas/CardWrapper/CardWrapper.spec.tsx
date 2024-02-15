@@ -319,7 +319,6 @@ describe('CardWrapper', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Select Card Template' }))
       expect(getByText('selectedBlock: stepId')).toBeInTheDocument()
-      expect(getByText('drawerTitle: Card Templates')).toBeInTheDocument()
       expect(getByText('selectedAttributeId:')).toBeInTheDocument()
     })
 

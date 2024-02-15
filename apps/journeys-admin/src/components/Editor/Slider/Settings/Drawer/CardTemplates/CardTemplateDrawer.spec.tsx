@@ -81,9 +81,8 @@ describe('CardTemplateDrawer', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Card Video Template' }))
     await waitFor(() =>
-      expect(getByText('drawerTitle: Properties')).toBeInTheDocument()
+      expect(getByText('selectedBlock: stepId')).toBeInTheDocument()
     )
-    expect(getByText('selectedBlock: stepId')).toBeInTheDocument()
     expect(getByText('selectedAttributeId:')).toBeInTheDocument()
   })
 })

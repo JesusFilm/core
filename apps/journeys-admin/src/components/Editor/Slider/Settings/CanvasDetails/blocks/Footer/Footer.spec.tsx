@@ -3,9 +3,8 @@ import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
+  ActiveContent,
   ActiveFab,
-  ActiveJourneyEditContent,
-  ActiveTab,
   EditorProvider,
   EditorState,
   useEditor
@@ -41,11 +40,9 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('Footer', () => {
   const state: EditorState = {
     steps: [],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+    activeContent: ActiveContent.Canvas
   }
 
   beforeEach(() => {
@@ -156,12 +153,11 @@ describe('Footer', () => {
         <SnackbarProvider>
           <EditorProvider initialState={state}>
             <Footer />
-            <TestEditorState renderChildren />
+            <TestEditorState />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByText('Chat Widget'))
-    expect(getByText('drawerTitle: Chat Widget')).toBeInTheDocument()
   })
 })

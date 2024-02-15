@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
@@ -123,10 +123,6 @@ export function NewTextResponseButton(): ReactElement {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
           id: data.textResponseBlockCreate.id
-        })
-        dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
         })
       }
     }

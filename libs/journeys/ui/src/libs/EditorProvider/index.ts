@@ -1,9 +1,8 @@
 export {
   useEditor,
   EditorProvider,
-  ActiveTab,
   ActiveFab,
-  ActiveJourneyEditContent
+  ActiveContent
 } from './EditorProvider'
 export type {
   EditorState,
