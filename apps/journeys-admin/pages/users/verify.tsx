@@ -118,7 +118,7 @@ function ValidateEmail({
               <Typography variant="body1">
                 {t('To start making NextSteps journeys')}
               </Typography>
-              <Paper sx={{ padding: '30px', mt: 7 }}>
+              <Paper sx={{ padding: '30px', mt: 7, borderRadius: '8px' }}>
                 <Stack textAlign="left" spacing={4}>
                   <Typography variant="subtitle2">{email}</Typography>
                   <Typography variant="body1">
@@ -140,24 +140,22 @@ function ValidateEmail({
               <Accordion
                 sx={{
                   mt: 7,
-                  backgroundColor: 'transparent',
+                  bgcolor: 'transparent',
+                  boxShadow: 'none',
                   border: '1px solid',
+                  borderRadius: '8px !important',
                   borderColor: 'divider',
-                  borderRadius: 1,
-                  '&:before': {
-                    display: 'none'
-                  }
+                  '&:before': { opacity: 0 }
                 }}
                 elevation={0}
               >
-                <AccordionSummary
-                  sx={{ pl: '30px' }}
-                  expandIcon={<ExpandMoreIcon />}
-                >
-                  {t('Verify With Code Instead')}
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography px={4}>
+                    {t('Verify With Code Instead')}
+                  </Typography>
                 </AccordionSummary>
                 <AccordionDetails sx={{ textAlign: 'left' }}>
-                  <Stack spacing={4} padding={5}>
+                  <Stack spacing={4} px={4}>
                     <Typography variant="body1">
                       {t('Enter verification code from email')}
                     </Typography>
@@ -197,16 +195,8 @@ function ValidateEmail({
               </Typography>
               <Button
                 onClick={handleLogout}
-                variant="contained"
-                sx={{
-                  mt: 7,
-                  backgroundColor: 'transparent',
-                  color: 'primary.main',
-                  '&:hover': {
-                    backgroundColor: 'transparent',
-                    boxShadow: 'none'
-                  }
-                }}
+                sx={{ mt: 7 }}
+                variant="text"
                 fullWidth
               >
                 {t('Logout')}
