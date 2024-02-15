@@ -154,7 +154,9 @@ describe('VideoBlockEditorSettings', () => {
     })
 
     expect(
-      getByText(/Some mobile browsers may override this choice/i)
+      getByText(
+        'Some mobile browsers may override this choice and default the video to play muted when autoplay is enabled'
+      )
     ).toBeInTheDocument()
   })
 
