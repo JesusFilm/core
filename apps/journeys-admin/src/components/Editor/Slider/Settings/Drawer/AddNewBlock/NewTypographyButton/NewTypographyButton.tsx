@@ -7,8 +7,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 import Type3Icon from '@core/shared/ui/icons/Type3'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
-import { TypographyBlockCreate } from '../../../../../__generated__/TypographyBlockCreate'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import { TypographyBlockCreate } from '../../../../../../../../__generated__/TypographyBlockCreate'
 import { Button } from '../Button'
 
 export const TYPOGRAPHY_BLOCK_CREATE = gql`

@@ -7,8 +7,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
-import { VideoBlockCreate } from '../../../../../__generated__/VideoBlockCreate'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import { VideoBlockCreate } from '../../../../../../../../__generated__/VideoBlockCreate'
 import { Button } from '../Button'
 
 interface NewVideoButtonProps {

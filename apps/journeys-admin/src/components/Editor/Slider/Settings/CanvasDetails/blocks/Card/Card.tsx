@@ -13,11 +13,7 @@ import PaletteIcon from '@core/shared/ui/icons/Palette'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
-import {
-  BlockFields_CardBlock as CardBlock,
-  BlockFields_ImageBlock as ImageBlock,
-  BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../../../__generated__/GetJourney'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import { Attribute } from '../../../Attribute'
 
 const BackgroundColor = dynamic(

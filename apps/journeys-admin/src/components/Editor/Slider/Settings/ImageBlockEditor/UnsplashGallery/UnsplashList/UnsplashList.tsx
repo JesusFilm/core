@@ -4,8 +4,8 @@ import ImageListItem from '@mui/material/ImageListItem'
 import Image from 'next/image'
 import { ReactElement, useState } from 'react'
 
-import { ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos as UnsplashCollectionPhotos } from '../../../../../../__generated__/ListUnsplashCollectionPhotos'
-import { SearchUnsplashPhotos_searchUnsplashPhotos_results as UnsplashSearchPhotos } from '../../../../../../__generated__/SearchUnsplashPhotos'
+import { ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos as UnsplashCollectionPhotos } from '../../../../../../../../__generated__/ListUnsplashCollectionPhotos'
+import { SearchUnsplashPhotos_searchUnsplashPhotos_results as UnsplashSearchPhotos } from '../../../../../../../../__generated__/SearchUnsplashPhotos'
 import type { UnsplashAuthor } from '../UnsplashGallery'
 
 interface UnsplashListProps {

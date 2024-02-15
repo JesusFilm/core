@@ -10,7 +10,7 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 
 import { Fab } from './Fab'
 import { Slider } from './Slider'
-import { EditToolbar } from './Toolbar'
+import { Toolbar } from './Toolbar'
 
 interface EditorProps {
   journey?: Journey
@@ -41,7 +41,7 @@ export function Editor({
           activeContent: view ?? ActiveContent.Canvas
         }}
       >
-        <EditToolbar />
+        <Toolbar />
         <Slider />
         <Fab />
       </EditorProvider>
