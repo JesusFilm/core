@@ -32,12 +32,40 @@ export enum ActiveSlide {
   Drawer = 2
 }
 export interface EditorState {
+  /**
+   * activeContent indicates which content is visible on the Content Slide and
+   * the Settings Slide (the content and settings slides correspond to each
+   * other).
+   */
   activeContent: ActiveContent
+  /**
+   * activeFab indicates which Fab to display. If the user is currently editing
+   * a text field this should be set to “Save”. If the user based on the
+   * selected block can edit a text field the field should be set to “Edit”.
+   * Otherwise this should be set to “Add”.
+   */
   activeFab: ActiveFab
+  /**
+   * activeSlide indicates which slide is primarily in view of the user.
+   * Note that Settings should only be set as active when on a mobile device.
+   * */
   activeSlide: ActiveSlide
+  /**
+   * selectedAttributeId indicates which attribute is current expanded on
+   * CanvasDetails. Each attribute is in a collapsible accordion.
+   */
   selectedAttributeId?: string
+  /**
+   * SelectedBlock indicates which block is currently selected on the Canvas
+   * and the JourneyFlow. It also indicates which attributes should be
+   * displayed in relation to the SelectedBlock.
+   */
   selectedBlock?: TreeBlock
   selectedComponent?: 'Footer' | 'AddBlock' | string
+  /**
+   * selectedStep indicates which step is currently displayed by the Canvas and
+   * the JourneyFlow.
+   */
   selectedStep?: TreeBlock<StepBlock>
   steps?: Array<TreeBlock<StepBlock>>
 }
@@ -96,7 +124,7 @@ export const reducer = (
     case 'SetActiveContentAction':
       return {
         ...state,
-        activeContent: action.component
+        activeContent: action.activeContent
       }
     case 'SetActiveFabAction':
       return {
