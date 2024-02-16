@@ -268,7 +268,6 @@ extend type Mutation {
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   journeyProfileOnboardingFormComplete: JourneyProfile!
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
-  findOrCreateJourneysEmailPreference(email: String!): JourneysEmailPreference
   teamCreate(input: TeamCreateInput): Team!
   teamUpdate(id: ID!, input: TeamUpdateInput): Team!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
@@ -387,6 +386,7 @@ extend type Query {
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
+  journeysEmailPreference(email: String!): JourneysEmailPreference
   teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
@@ -2102,8 +2102,8 @@ type JourneysEmailPreference {
 
 input JourneysEmailPreferenceUpdateInput {
   email: String!
-  unsubscribeAll: Boolean!
-  accountNotifications: Boolean!
+  preference: String!
+  value: Boolean!
 }
 
 type Team

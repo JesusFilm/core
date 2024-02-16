@@ -397,8 +397,8 @@ export interface JourneyVisitorFilter {
 
 export interface JourneysEmailPreferenceUpdateInput {
   email: string;
-  unsubscribeAll: boolean;
-  accountNotifications: boolean;
+  preference: string;
+  value: boolean;
 }
 
 export interface JourneysFilter {

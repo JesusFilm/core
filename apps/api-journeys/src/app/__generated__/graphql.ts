@@ -668,8 +668,8 @@ export class JourneyVisitorFilter {
 
 export class JourneysEmailPreferenceUpdateInput {
     email: string;
-    unsubscribeAll: boolean;
-    accountNotifications: boolean;
+    preference: string;
+    value: boolean;
 }
 
 export class TeamCreateInput {
@@ -818,6 +818,8 @@ export abstract class IQuery {
     abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
 
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
+
+    abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
 
     abstract teams(): Team[] | Promise<Team[]>;
 
@@ -1545,8 +1547,6 @@ export abstract class IMutation {
     abstract journeyProfileOnboardingFormComplete(): JourneyProfile | Promise<JourneyProfile>;
 
     abstract updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
-
-    abstract findOrCreateJourneysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 

@@ -2,17 +2,19 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
+import Link from '@mui/material/Link'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
+import NextLink from 'next/link'
 import { withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
-  FindOrCreateJourneysEmailPreference,
-  FindOrCreateJourneysEmailPreferenceVariables
-} from '../../__generated__/FindOrCreateJourneysEmailPreference'
+  JourneysEmailPreference,
+  JourneysEmailPreferenceVariables
+} from '../../__generated__/JourneysEmailPreference'
 import {
   UpdateJourneysEmailPreference,
   UpdateJourneysEmailPreferenceVariables,
@@ -20,9 +22,9 @@ import {
 } from '../../__generated__/UpdateJourneysEmailPreference'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
-const FIND_OR_CREATE_EMAIL_PREFERENCE = gql`
-  mutation FindOrCreateJourneysEmailPreference($email: String!) {
-    findOrCreateJourneysEmailPreference(email: $email) {
+const GET_EMAIL_PREFERENCE = gql`
+  query JourneysEmailPreference($email: String!) {
+    journeysEmailPreference(email: $email) {
       email
       unsubscribeAll
       accountNotifications
@@ -42,11 +44,6 @@ const UPDATE_EMAIL_PREFERENCE = gql`
   }
 `
 
-type JourneysEmailPreference = Omit<
-  UpdateJourneysEmailPreference_updateJourneysEmailPreference,
-  '__typename'
->
-
 function EmailPreferencesPage({
   journeysEmailPreferenceData,
   updatePrefs
@@ -57,65 +54,38 @@ function EmailPreferencesPage({
     useMutation<UpdateJourneysEmailPreference>(UPDATE_EMAIL_PREFERENCE)
 
   const [journeysEmailPreference, setJourneysEmailPreference] = useState<
-    JourneysEmailPreference | null | undefined
+    | UpdateJourneysEmailPreference_updateJourneysEmailPreference
+    | null
+    | undefined
   >(
     updatePrefs?.updateJourneysEmailPreference ??
-      journeysEmailPreferenceData?.findOrCreateJourneysEmailPreference
+      journeysEmailPreferenceData?.journeysEmailPreference
   )
 
   const handlePreferenceChange =
-    (preference: keyof JourneysEmailPreference) => async () => {
+    (
+      preference: keyof UpdateJourneysEmailPreference_updateJourneysEmailPreference
+    ) =>
+    async () => {
       if (journeysEmailPreference != null) {
-        const updatedPreferences: JourneysEmailPreference = {
+        const updatedPreferences = {
           ...journeysEmailPreference,
           [preference]: !(journeysEmailPreference[preference] as boolean)
         }
         setJourneysEmailPreference(updatedPreferences)
-      }
-    }
-
-  const handleSubmit = async (): Promise<void> => {
-    if (journeysEmailPreference != null) {
-      await updateJourneysEmailPreference({
-        variables: {
-          input: {
+        await updateJourneysEmailPreference({
+          variables: {
             email: journeysEmailPreference.email,
-            unsubscribeAll: false,
-            accountNotifications: journeysEmailPreference.accountNotifications
+            [preference]: !(journeysEmailPreference[preference] as boolean)
           }
-        }
-      }).then(() => {
-        enqueueSnackbar(t(`Email Preferences Updated.`), {
-          variant: 'success',
-          preventDuplicate: true
+        }).then(() => {
+          enqueueSnackbar(t(`Email Preferences Updated.`), {
+            variant: 'success',
+            preventDuplicate: true
+          })
         })
-      })
-    }
-  }
-
-  const handleUnsubscribeAll = async (): Promise<void> => {
-    if (journeysEmailPreference != null) {
-      const updatedPreferences: JourneysEmailPreference = {
-        email: journeysEmailPreference.email,
-        unsubscribeAll: true,
-        accountNotifications: false
       }
-      await updateJourneysEmailPreference({
-        variables: {
-          input: {
-            ...updatedPreferences
-          }
-        }
-      }).then(() => {
-        enqueueSnackbar(t(`Email Preferences Updated. Unsubscribed to all`), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      })
-
-      setJourneysEmailPreference(updatedPreferences)
     }
-  }
 
   return (
     <Box
@@ -136,6 +106,20 @@ function EmailPreferencesPage({
       {journeysEmailPreference != null && (
         <Grid container spacing={12}>
           <Grid item xs={10} md={10}>
+            <Typography variant="h5">{t('All Notifications')}</Typography>
+            <Typography variant="body2">
+              {t('All current and future email notifications.')}
+            </Typography>
+          </Grid>
+          <Grid item xs={2} md={2}>
+            <Switch
+              checked={journeysEmailPreference.unsubscribeAll}
+              onChange={handlePreferenceChange('unsubscribeAll')}
+              name="journeyNotifications"
+              inputProps={{ 'aria-label': 'Team Invites' }}
+            />
+          </Grid>
+          <Grid item xs={10} md={10}>
             <Typography variant="h5">{t('Account Notifications')}</Typography>
             <Typography variant="body2">
               {t(
@@ -148,32 +132,16 @@ function EmailPreferencesPage({
               checked={journeysEmailPreference.accountNotifications}
               onChange={handlePreferenceChange('accountNotifications')}
               name="journeyNotifications"
+              disabled={journeysEmailPreference.unsubscribeAll}
               inputProps={{ 'aria-label': 'Team Invites' }}
             />
           </Grid>
-          <Grid item xs={12} md={12}>
-            <Button
-              variant="contained"
-              onClick={handleUnsubscribeAll}
-              sx={{
-                display: 'flex',
-                margin: 'auto',
-                marginBottom: 5
-              }}
-            >
-              {t('Unsubscribe All')}
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleSubmit}
-              disabled={loading}
-              sx={{
-                display: 'flex',
-                margin: 'auto'
-              }}
-            >
-              {t('Submit Changes')}
-            </Button>
+          <Grid item xs={12} md={12} textAlign="center">
+            <NextLink href="/" passHref legacyBehavior>
+              <Button variant="contained" disabled={loading}>
+                {t('Done')}
+              </Button>
+            </NextLink>
           </Grid>
         </Grid>
       )}
@@ -182,7 +150,7 @@ function EmailPreferencesPage({
 }
 
 export const getServerSideProps = withUserTokenSSR()(
-  async ({ user, locale, resolvedUrl, params, query }) => {
+  async ({ user, locale, resolvedUrl, query }) => {
     const { apolloClient, translations } = await initAndAuthApp({
       user,
       locale,
@@ -192,15 +160,26 @@ export const getServerSideProps = withUserTokenSSR()(
     let updatePrefs: UpdateJourneysEmailPreference | null | undefined
 
     // TemplateDetailsPage
-    const { data: journeysEmailPreferenceData } = await apolloClient.mutate<
-      FindOrCreateJourneysEmailPreference,
-      FindOrCreateJourneysEmailPreferenceVariables
+    let { data: journeysEmailPreferenceData } = await apolloClient.query<
+      JourneysEmailPreference,
+      JourneysEmailPreferenceVariables
     >({
-      mutation: FIND_OR_CREATE_EMAIL_PREFERENCE,
+      query: GET_EMAIL_PREFERENCE,
       variables: {
         email: query?.email as string
       }
     })
+
+    if (journeysEmailPreferenceData == null) {
+      journeysEmailPreferenceData = {
+        journeysEmailPreference: {
+          email: query?.email as string,
+          unsubscribeAll: false,
+          accountNotifications: false,
+          __typename: 'JourneysEmailPreference'
+        }
+      }
+    }
 
     if (query?.unsubscribeAll != null) {
       const { data: updatePrefsData } = await apolloClient.mutate<
@@ -210,10 +189,10 @@ export const getServerSideProps = withUserTokenSSR()(
         mutation: UPDATE_EMAIL_PREFERENCE,
         variables: {
           input: {
-            email: journeysEmailPreferenceData
-              ?.findOrCreateJourneysEmailPreference?.email as string,
-            unsubscribeAll: true,
-            accountNotifications: false
+            email: journeysEmailPreferenceData?.journeysEmailPreference
+              ?.email as string,
+            preference: 'unsubscribeAll',
+            value: true
           }
         }
       })
