@@ -9,9 +9,9 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
-import { Actions } from '../Goals'
+import { Goal } from '../Goals'
 
-import { ActionsList } from './ActionsList'
+import { GoalsList } from './GoalsList'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -29,8 +29,8 @@ jest.mock('@core/journeys/ui/EditorProvider', () => {
 
 const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
-describe('ActionsList', () => {
-  const actions: Actions[] = [
+describe('GoalsList', () => {
+  const goals: Goal[] = [
     {
       url: 'https://www.google.com/',
       count: 2
@@ -66,36 +66,34 @@ describe('ActionsList', () => {
     )
 
     it('should render the information drawer on the right', () => {
-      const { getByTestId, getByRole } = render(
-        <ActionsList actions={actions} />
-      )
+      const { getByTestId, getByRole } = render(<GoalsList goals={goals} />)
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
-      expect(getByTestId('ActionInformation').parentElement).toHaveClass(
+      expect(getByTestId('GoalInformation').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorRight'
       )
     })
 
     it('should close information drawer on close icon click', () => {
       const { getByTestId, getByText, getByRole } = render(
-        <ActionsList actions={actions} />
+        <GoalsList goals={goals} />
       )
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
       expect(getByText('Information')).toBeInTheDocument()
       fireEvent.click(getByTestId('X2Icon'))
-      expect(getByTestId('ActionInformation').parentElement).not.toHaveClass(
+      expect(getByTestId('GoalInformation').parentElement).not.toHaveClass(
         'MuiDrawer-parentAnchorRight'
       )
     })
 
-    it('should render a list of actions', () => {
-      const { getAllByText } = render(<ActionsList actions={actions} />)
+    it('should render a list of goals', () => {
+      const { getAllByText } = render(<GoalsList goals={goals} />)
       expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
       expect(getAllByText('Visit a website')[0]).toBeInTheDocument()
       expect(getAllByText(2)[0]).toBeInTheDocument()
     })
 
     it('should open the drawer or dispatch on click', () => {
-      const { getAllByTestId } = render(<ActionsList actions={actions} />)
+      const { getAllByTestId } = render(<GoalsList goals={goals} />)
       fireEvent.click(getAllByTestId('Edit2Icon')[0])
       expect(dispatch).toHaveBeenCalled()
     })
@@ -108,18 +106,18 @@ describe('ActionsList', () => {
 
     it('should render the information drawer from the bottom', () => {
       const { getByTestId, getByText, getByRole } = render(
-        <ActionsList actions={actions} />
+        <GoalsList goals={goals} />
       )
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
       expect(getByText('Information')).toBeInTheDocument()
-      expect(getByTestId('ActionInformation').parentElement).toHaveClass(
+      expect(getByTestId('GoalInformation').parentElement).toHaveClass(
         'MuiPaper-root MuiPaper-elevation MuiPaper-elevation0 MuiDrawer-paper MuiDrawer-paperAnchorBottom css-1mdfdy2-MuiPaper-root-MuiDrawer-paper'
       )
     })
 
-    it('should render the actions list in mobile view', () => {
-      const { getAllByText } = render(<ActionsList actions={actions} />)
-      expect(getAllByText('Target and Action')[0]).toBeInTheDocument()
+    it('should render the goals list in mobile view', () => {
+      const { getAllByText } = render(<GoalsList goals={goals} />)
+      expect(getAllByText('Target and Goal')[0]).toBeInTheDocument()
       expect(getAllByText('Appears on')).not.toHaveLength(2)
     })
   })

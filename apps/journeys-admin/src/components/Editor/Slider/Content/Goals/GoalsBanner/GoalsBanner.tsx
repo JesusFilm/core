@@ -4,68 +4,64 @@ import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import {
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import goal from './assets/goal.svg'
 
-export function ActionsBanner(): ReactElement {
-  const theme = useTheme()
-  const { t } = useTranslation('apps-journeys-admin')
+interface ListItemProps {
+  children: string
+}
 
-  const ActionPoint = ({
-    description
-  }: {
-    description: string
-  }): ReactElement => (
+function ListItem({ children }: ListItemProps): ReactElement {
+  return (
     <Stack direction="row" gap={1} alignItems="center">
       <Typography variant="subtitle2" color="secondary.light">
         &#x2022;
       </Typography>
       <Typography variant="subtitle2" color="secondary.light">
-        {description}
+        {children}
       </Typography>
     </Stack>
   )
+}
 
-  useEffect(() => {
-    function handleResize(): void {
-      if (window.innerWidth > 768) {
-        // openActionDetails()
-      }
-    }
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-    // runs the useEffect once
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+export function GoalsBanner(): ReactElement {
+  const theme = useTheme()
+  const { t } = useTranslation('apps-journeys-admin')
+  const { dispatch } = useEditor()
+
+  function handleClick(): void {
+    dispatch({ type: 'SetActiveSlideAction', activeSlide: ActiveSlide.Drawer })
+  }
 
   return (
     <Box
       sx={{
         mx: 8,
         gap: 10,
-        display: 'flex',
-        flexDirection: 'row',
-        [theme.breakpoints.down('md')]: {
-          flexDirection: 'column-reverse'
-        }
+        display: 'flex'
       }}
       data-testid="ActionsBanner"
     >
-      <Image
-        src={goal}
-        alt="goal"
-        height={504}
-        width={464}
-        style={{
-          maxWidth: '100%',
-          height: 'auto'
-        }}
-      />
+      <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+        <Image
+          src={goal}
+          alt="goal"
+          height={504}
+          width={464}
+          style={{
+            maxWidth: '100%',
+            height: 'auto'
+          }}
+        />
+      </Box>
       <Stack gap={3} justifyContent="center">
         <Stack
           direction="row"
@@ -76,22 +72,6 @@ export function ActionsBanner(): ReactElement {
           <Typography variant="overline" color="secondary.light">
             {t('Goals')}
           </Typography>
-          <Button
-            variant="outlined"
-            startIcon={
-              <InformationCircleContainedIcon
-                sx={{ color: 'secondary.light' }}
-              />
-            }
-            sx={{
-              [theme.breakpoints.up('md')]: { display: 'none' },
-              color: 'secondary.main',
-              borderColor: 'secondary.main',
-              borderRadius: 2
-            }}
-          >
-            <Typography variant="subtitle2">{t('Learn More')}</Typography>
-          </Button>
         </Stack>
         <Box pb={6}>
           <Typography variant="h1" gutterBottom>
@@ -113,9 +93,26 @@ export function ActionsBanner(): ReactElement {
             )}
           </Typography>
         </Box>
-        <ActionPoint description="Check all URLs and actions used in the journey" />
-        <ActionPoint description="Assign a goal to each action and monitor it" />
-        <ActionPoint description="Change all URLs in a single place" />
+        <ListItem>
+          {t('Check all URLs and actions used in the journey')}
+        </ListItem>
+        <ListItem>{t('Assign a goal to each action and monitor it')}</ListItem>
+        <ListItem>{t('Change all URLs in a single place')}</ListItem>
+        <Button
+          variant="outlined"
+          startIcon={
+            <InformationCircleContainedIcon sx={{ color: 'secondary.light' }} />
+          }
+          sx={{
+            display: { xs: 'block', sm: 'none' },
+            color: 'secondary.main',
+            borderColor: 'secondary.main',
+            borderRadius: 2
+          }}
+          onClick={handleClick}
+        >
+          <Typography variant="subtitle2">{t('Learn More')}</Typography>
+        </Button>
       </Stack>
     </Box>
   )
