@@ -8,8 +8,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockUpdateColor } from '../../../../../../../../../../__generated__/TypographyBlockUpdateColor'
-import { ColorDisplayIcon } from '../../../variants/ColorDisplayIcon'
-import { ToggleButtonGroup } from '../../../variants/ToggleButtonGroup'
+import { ColorDisplayIcon } from '../../../controls/ColorDisplayIcon'
+import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
   mutation TypographyBlockUpdateColor(
