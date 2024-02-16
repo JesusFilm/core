@@ -100,8 +100,22 @@ export class UserResolver {
         userId
       }
     })
+    if (existingUser != null && existingUser.emailVerified == null) {
+      console.log(existingUser)
+      const user = await this.prismaService.user.update({
+        where: {
+          id: userId
+        },
+        data: {
+          emailVerified: false
+        }
+      })
+      console.log(user)
+      return user
+    }
 
-    if (existingUser != null) return existingUser
+    if (existingUser != null && existingUser.emailVerified != null)
+      return existingUser
 
     const {
       displayName,
