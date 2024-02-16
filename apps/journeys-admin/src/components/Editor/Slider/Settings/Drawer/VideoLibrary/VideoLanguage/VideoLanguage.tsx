@@ -8,7 +8,7 @@ import {
   LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
 
-import { GetLanguages_languages as Language } from '../../../../../../../__generated__/GetLanguages'
+import { GetLanguages_languages as Language } from '../../../../../../../../__generated__/GetLanguages'
 import { Drawer } from '../../Drawer'
 
 interface VideoLanguageProps {

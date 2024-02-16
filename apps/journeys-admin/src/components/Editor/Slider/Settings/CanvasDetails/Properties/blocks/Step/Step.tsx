@@ -9,7 +9,7 @@ import Lock1Icon from '@core/shared/ui/icons/Lock1'
 import LockOpen1Icon from '@core/shared/ui/icons/LockOpen1'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { Attribute } from '../../Properties/Attribute'
+import { Accordion } from '../../Accordion'
 
 const NextCard = dynamic(
   async () =>
@@ -43,16 +43,14 @@ export function Step({
       : 'None'
 
   return (
-    <Attribute
+    <Accordion
       id={`next-step-${id}`}
       icon={locked ? <Lock1Icon /> : <LockOpen1Icon />}
       name={t('Next Card')}
       value={heading}
-      description={locked ? t('Locked With Interaction') : t('Unlocked Card')}
-      drawerTitle={t('Next Card Properties')}
       testId={`Step-${id}`}
     >
       <NextCard />
-    </Attribute>
+    </Accordion>
   )
 }

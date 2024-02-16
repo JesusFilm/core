@@ -8,7 +8,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseMinRowsUpdate } from '../../../../../../../../../../../__generated__/TextResponseMinRowsUpdate'
-import { ToggleButtonGroup } from '../../../../ToggleButtonGroup'
+import { ToggleButtonGroup } from '../../../../variants/ToggleButtonGroup'
 
 export const TEXT_RESPONSE_MIN_ROWS_UPDATE = gql`
   mutation TextResponseMinRowsUpdate(

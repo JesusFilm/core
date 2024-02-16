@@ -6,8 +6,8 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { BlockFields_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { Accordion } from '../../Accordion'
 import { Action, actions } from '../../variants/Action/Action'
-import { Attribute } from '../../Properties/Attribute'
 
 export function RadioOption({
   id,
@@ -25,7 +25,7 @@ export function RadioOption({
 
   return (
     <>
-      <Attribute
+      <Accordion
         id={`${id}-radio-option-action`}
         icon={<LinkIcon />}
         name={t('Action')}
@@ -33,12 +33,10 @@ export function RadioOption({
           actions.find((act) => act.value === action?.__typename)?.label ??
           'None'
         }
-        description={t('Action')}
-        drawerTitle={t('Action')}
         testId="RadioOption"
       >
         <Action />
-      </Attribute>
+      </Accordion>
     </>
   )
 }

@@ -8,7 +8,7 @@ import { ReactElement, useState } from 'react'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
-} from '../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/globalTypes'
 
 const VideoDetails = dynamic(
   async () =>

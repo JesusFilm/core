@@ -7,8 +7,8 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { Accordion } from '../../Accordion'
 import { Action, actions } from '../../variants/Action/Action'
-import { Attribute } from '../../Properties/Attribute'
 
 import { Credentials } from './Credentials'
 
@@ -26,27 +26,23 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
 
   return (
     <>
-      <Attribute
+      <Accordion
         id={`${id}-form-action`}
         icon={<LinkIcon />}
         name={t('Action')}
         value={selectedAction?.label ?? 'None'}
-        description={t('Action')}
-        drawerTitle={t('Action')}
       >
         <Action />
-      </Attribute>
+      </Accordion>
 
-      <Attribute
+      <Accordion
         id={`${id}-form-credentials`}
         icon={<TextInput1Icon />}
         name={t('Credentials')}
         value={form != null && 'name' in form ? t('Complete') : t('Incomplete')}
-        description={t('Formium Credentials')}
-        drawerTitle={t('Credentials')}
       >
         <Credentials />
-      </Attribute>
+      </Accordion>
     </>
   )
 }
