@@ -21,6 +21,7 @@ import { ThemeName } from '@core/shared/ui/themes'
 
 import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../../../FramePortal'
+import { Fab } from '../../../Fab'
 
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
@@ -139,8 +140,9 @@ export function Canvas(): ReactElement {
     >
       {selectedStep != null && theme != null && (
         <Stack
-          direction="row"
+          direction="column"
           alignItems="flex-end"
+          gap={1.5}
           sx={{
             flexGrow: { xs: 1, sm: 0 },
             height: { xs: '100%', sm: 'auto' },
@@ -266,6 +268,9 @@ export function Canvas(): ReactElement {
               </CSSTransition>
             </Box>
           </TransitionGroup>
+          <Box sx={{ mr: 4 }}>
+            <Fab variant="canvas" />
+          </Box>
         </Stack>
       )}
     </Stack>

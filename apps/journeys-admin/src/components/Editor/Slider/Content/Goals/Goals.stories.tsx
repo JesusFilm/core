@@ -14,7 +14,7 @@ import { journey } from '../../Settings/GoalDetails/data'
 
 import { GoalsList } from './GoalsList'
 
-const ActionsTableStory: Meta<typeof GoalsList> = {
+const GoalsListStory: Meta<typeof GoalsList> = {
   ...journeysAdminConfig,
   component: GoalsList,
   title: 'Journeys-Admin/Editor/ActionsTable'
@@ -198,4 +198,4 @@ export const Placeholder = {
   }
 }
 
-export default ActionsTableStory
+export default GoalsListStory
