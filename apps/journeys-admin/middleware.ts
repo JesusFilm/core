@@ -37,7 +37,7 @@ function parseAcceptLanguageHeader(header: string): LanguagePriority[] {
     const [code, priority] = item.trim().split(';')
     const langPriority =
       priority != null ? parseFloat(priority.split('=')[1]) : 1
-    return { code, priority: langPriority != null ? 1 : langPriority }
+    return { code, priority: langPriority }
   })
 }
 
