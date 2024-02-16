@@ -5,10 +5,10 @@ import { ReactFlowProvider } from 'reactflow'
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
+import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
 
 import { VideoBlockNode, VideoBlockNodeData } from '.'
-import { VideoBlockSource } from 'libs/journeys/ui/__generated__/globalTypes'
 
 const VideoBlockNodeStory: Meta<typeof VideoBlockNode> = {
   ...journeysAdminConfig,
@@ -105,10 +105,10 @@ const VideoBlockNodeComponent = (): ReactElement => {
   return (
     <ReactFlowProvider>
       <VideoBlockNode
-        id={''}
+        id=""
         data={videoBlockNodeData}
         selected={false}
-        type={''}
+        type=""
         zIndex={0}
         isConnectable={false}
         xPos={0}

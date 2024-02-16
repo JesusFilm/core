@@ -1,10 +1,8 @@
-import { Meta, ReactRenderer, StoryObj } from '@storybook/react'
+import Box from '@mui/material/Box'
+import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
 import { ReactFlowProvider } from 'reactflow'
 
-import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
-
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
 
 import {
@@ -13,22 +11,11 @@ import {
   StepBlockNode,
   StepBlockNodeData
 } from '.'
-import Box from '@mui/material/Box'
 
 const StepBlockNodeStory: Meta<typeof StepBlockNode> = {
   ...journeysAdminConfig,
   component: StepBlockNode,
   title: 'Journeys-Admin/JourneyFlow/StepBlockNode'
-}
-
-const stepBlock: TreeBlock<StepBlock> = {
-  id: 'step.id',
-  __typename: 'StepBlock',
-  parentBlockId: null,
-  parentOrder: 0,
-  locked: false,
-  nextBlockId: 'step2.id',
-  children: []
 }
 
 const stepBlockNodeData: StepBlockNodeData = {
@@ -115,9 +102,9 @@ const StepBlockNodeComponent = (): ReactElement => {
       >
         <StepBlockNode
           data={stepBlockNodeData}
-          id={''}
+          id=""
           selected={false}
-          type={''}
+          type=""
           zIndex={0}
           isConnectable={false}
           xPos={0}
@@ -148,9 +135,9 @@ export const Empty: StoryObj<typeof StepBlockNode> = {
         >
           <StepBlockNode
             data={emptyStepBlockNodeData}
-            id={''}
+            id=""
             selected={false}
-            type={''}
+            type=""
             zIndex={0}
             isConnectable={false}
             xPos={0}
@@ -179,11 +166,11 @@ export const Selected: StoryObj<typeof StepBlockNode> = {
         >
           <StepBlockNode
             data={stepBlockNodeData}
-            id={'selectedId'}
-            selected={true}
-            type={''}
+            id="selectedId"
+            selected
+            type=""
             zIndex={0}
-            isConnectable={true}
+            isConnectable
             xPos={0}
             yPos={0}
             dragging={false}

@@ -1,18 +1,12 @@
-import {
-  getByDisplayValue,
-  getByLabelText,
-  getByText,
-  render
-} from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
+import { render } from '@testing-library/react'
+import { ReactFlowProvider } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 
 import { ActionNode } from '.'
-import { ReactFlowProvider } from 'reactflow'
-import { MockedProvider } from '@apollo/client/testing'
-import Box from '@mui/material/Box'
-import { getAllByPlaceholderText } from '@storybook/testing-library'
 
 describe('ActionNode', () => {
   const stepBlock: TreeBlock<StepBlock> = {
@@ -24,6 +18,7 @@ describe('ActionNode', () => {
     nextBlockId: 'step3.id',
     children: []
   }
+
   it('should display the correct title', () => {
     const { getByText } = render(
       <MockedProvider>

@@ -1,30 +1,11 @@
-import {
-  getByDisplayValue,
-  getByLabelText,
-  getByText,
-  render
-} from '@testing-library/react'
-
-import { TreeBlock } from '@core/journeys/ui/block'
-import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
-
-import { StepBlockNode, StepBlockNodeData } from '.'
-import { ReactFlowProvider } from 'reactflow'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import userEvent from '@testing-library/user-event'
+import { render } from '@testing-library/react'
+import { ReactFlowProvider } from 'reactflow'
+
+import { StepBlockNode, StepBlockNodeData } from '.'
 
 describe('StepBlockNode', () => {
-  const stepBlock: TreeBlock<StepBlock> = {
-    id: 'step2.id',
-    __typename: 'StepBlock',
-    parentBlockId: null,
-    parentOrder: 0,
-    locked: false,
-    nextBlockId: 'step3.id',
-    children: []
-  }
-
   const stepBlockNodeData: StepBlockNodeData = {
     steps: [],
     locked: false,
@@ -91,9 +72,9 @@ describe('StepBlockNode', () => {
           <Box>
             <StepBlockNode
               data={stepBlockNodeData}
-              id={''}
+              id=""
               selected={false}
-              type={''}
+              type=""
               zIndex={0}
               isConnectable={false}
               xPos={0}

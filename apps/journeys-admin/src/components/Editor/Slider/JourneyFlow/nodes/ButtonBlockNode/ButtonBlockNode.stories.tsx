@@ -46,9 +46,9 @@ const ButtonBlockNodeComponent = (): ReactElement => {
     <ReactFlowProvider>
       <ButtonBlockNode
         data={buttonBlockNodeData}
-        id={''}
+        id=""
         selected={false}
-        type={''}
+        type=""
         zIndex={0}
         isConnectable={false}
         xPos={0}
