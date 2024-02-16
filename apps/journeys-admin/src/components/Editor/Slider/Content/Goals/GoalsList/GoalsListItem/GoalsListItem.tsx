@@ -28,10 +28,10 @@ export function GoalsListItem({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
     dispatch,
-    state: { selectedComponent }
+    state: { selectedGoalUrl }
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
-  const selected = selectedComponent === url
+  const selected = selectedGoalUrl === url
 
   let goalLabel: string, goalIcon: ReactElement
 
@@ -73,8 +73,8 @@ export function GoalsListItem({
 
   function handleClick(): void {
     dispatch({
-      type: 'SetSelectedComponentAction',
-      selectedComponent: url
+      type: 'SetSelectedGoalUrlAction',
+      selectedGoalUrl: url
     })
     if (!smUp) {
       dispatch({

@@ -7,11 +7,12 @@ import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
+  ActiveCanvasDetailsDrawer,
   ActiveContent,
   ActiveFab,
+  ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -23,7 +24,7 @@ export function Fab(): ReactElement {
   const {
     state: {
       activeFab,
-      selectedComponent,
+      activeCanvasDetailsDrawer,
       selectedStep,
       steps,
       activeSlide,
@@ -35,9 +36,10 @@ export function Fab(): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   function handleAddFab(): void {
-    if (selectedComponent === 'AddBlock') {
+    if (activeCanvasDetailsDrawer === ActiveCanvasDetailsDrawer.AddBlock) {
       dispatch({
-        type: 'SetSelectedComponentAction'
+        type: 'SetActiveCanvasDetailsDrawerAction',
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
       })
       dispatch({
         type: 'SetSelectedBlockAction',
@@ -51,8 +53,8 @@ export function Fab(): ReactElement {
       }
     } else {
       dispatch({
-        type: 'SetSelectedComponentAction',
-        selectedComponent: 'AddBlock'
+        type: 'SetActiveCanvasDetailsDrawerAction',
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
       })
       if (!smUp) {
         dispatch({

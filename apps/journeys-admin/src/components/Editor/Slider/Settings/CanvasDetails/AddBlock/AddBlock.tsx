@@ -1,11 +1,13 @@
 import Grid from '@mui/material/Grid'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
+import { Drawer } from '../../Drawer'
 
 import { NewButtonButton } from './NewButtonButton'
 import { NewFormButton } from './NewFormButton'
@@ -17,6 +19,7 @@ import { NewTypographyButton } from './NewTypographyButton'
 import { NewVideoButton } from './NewVideoButton'
 
 export function AddBlock(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { formiumForm } = useFlags()
   const {
     state: { selectedStep }
@@ -31,7 +34,7 @@ export function AddBlock(): ReactElement {
   )
 
   return (
-    <>
+    <Drawer title={t('Add a block')}>
       <Grid p={5} container spacing={4}>
         <Grid item xs={6} sm={12}>
           <NewTypographyButton />
@@ -60,6 +63,6 @@ export function AddBlock(): ReactElement {
           </Grid>
         )}
       </Grid>
-    </>
+    </Drawer>
   )
 }

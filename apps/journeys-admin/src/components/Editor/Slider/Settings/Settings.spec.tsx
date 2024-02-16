@@ -15,6 +15,7 @@ import {
 } from '../../../../../__generated__/globalTypes'
 
 import { Attributes } from '.'
+import { ActiveCanvasDetailsDrawer } from '@core/journeys/ui/EditorProvider'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -354,7 +355,7 @@ describe('Attributes', () => {
         <EditorProvider
           initialState={{
             selectedStep: step,
-            selectedComponent: 'Footer'
+            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
           }}
         >
           <Attributes />

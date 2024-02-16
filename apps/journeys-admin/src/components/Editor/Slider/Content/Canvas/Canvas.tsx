@@ -5,8 +5,12 @@ import { ReactElement, useMemo, useRef } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import {
+  ActiveCanvasDetailsDrawer,
+  ActiveFab,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
@@ -30,7 +34,12 @@ export function Canvas(): ReactElement {
   // this ref handles if the mouseDown event of the onClick event's target is the card component
   const selectionRef = useRef(false)
   const {
-    state: { selectedStep, selectedBlock, activeSlide, selectedComponent },
+    state: {
+      selectedStep,
+      selectedBlock,
+      activeSlide,
+      activeCanvasDetailsDrawer
+    },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -39,8 +48,8 @@ export function Canvas(): ReactElement {
 
   function handleFooterClick(): void {
     dispatch({
-      type: 'SetSelectedComponentAction',
-      selectedComponent: 'Footer'
+      type: 'SetActiveCanvasDetailsDrawerAction',
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
     })
     dispatch({
       type: 'SetActiveSlideAction',
@@ -239,7 +248,8 @@ export function Canvas(): ReactElement {
                           <StepFooter
                             sx={{
                               outline:
-                                selectedComponent === 'Footer'
+                                activeCanvasDetailsDrawer ===
+                                ActiveCanvasDetailsDrawer.Footer
                                   ? '2px solid #C52D3A'
                                   : 'none',
                               outlineOffset: -4,
