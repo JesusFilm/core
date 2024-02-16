@@ -8,15 +8,15 @@ import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 
-import { Attributes } from '.'
+import { Settings } from '.'
 
-const AttributesStory: Meta<typeof Attributes> = {
+const SettingsStory: Meta<typeof Settings> = {
   ...journeysAdminConfig,
-  component: Attributes,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes'
+  component: Settings,
+  title: 'Journeys-Admin/Editor/Slider/Settings'
 }
 
-export const Default: StoryObj<typeof Attributes> = {
+export const Default: StoryObj<typeof Settings> = {
   render: () => {
     const selected: TreeBlock<StepBlock> = {
       id: 'step1.id',
@@ -45,13 +45,13 @@ export const Default: StoryObj<typeof Attributes> = {
       <EditorProvider
         initialState={{ selectedStep: selected, selectedBlock: selected }}
       >
-        <Attributes />
+        <Settings />
       </EditorProvider>
     )
   }
 }
 
-export const WithMove: StoryObj<typeof Attributes> = {
+export const WithMove: StoryObj<typeof Settings> = {
   render: () => {
     const block: TreeBlock = {
       id: 'typographyBlockId1',
@@ -104,11 +104,11 @@ export const WithMove: StoryObj<typeof Attributes> = {
             }
           }}
         >
-          <Attributes />
+          <Settings />
         </EditorProvider>
       </MockedProvider>
     )
   }
 }
 
-export default AttributesStory
+export default SettingsStory

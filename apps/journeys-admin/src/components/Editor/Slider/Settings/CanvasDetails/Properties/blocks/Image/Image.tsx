@@ -7,7 +7,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { Attribute } from '../../Properties/Attribute'
+import { Accordion } from '../../Accordion'
 
 const ImageOptions = dynamic(
   async () =>
@@ -31,16 +31,14 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
 
   return (
     <>
-      <Attribute
+      <Accordion
         id={`${id}-image-options`}
         icon={<Image3Icon />}
         name={t('Image Source')}
         value={block?.alt ?? ''}
-        description={t('Image Options')}
-        drawerTitle={t('Image')}
       >
         <ImageOptions />
-      </Attribute>
+      </Accordion>
     </>
   )
 }

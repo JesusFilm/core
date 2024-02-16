@@ -1,12 +1,12 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
   TypographyVariant
-} from '../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/globalTypes'
 
 export const steps: Array<TreeBlock<StepBlock>> = [
   {

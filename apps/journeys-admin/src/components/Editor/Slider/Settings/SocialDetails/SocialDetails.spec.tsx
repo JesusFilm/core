@@ -7,7 +7,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 
-import { SocialShareAppearance } from '.'
+import { SocialDetails } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -23,10 +23,10 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-describe('SocialShareAppearance', () => {
+describe('SocialDetails', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
-  it('should render SocialShareAppearance', () => {
+  it('should render SocialDetails', () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
         <JourneyProvider
@@ -35,7 +35,7 @@ describe('SocialShareAppearance', () => {
             variant: 'admin'
           }}
         >
-          <SocialShareAppearance />
+          <SocialDetails />
         </JourneyProvider>
       </MockedProvider>
     )

@@ -9,8 +9,8 @@ import useSWRInfinite from 'swr/infinite'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
-} from '../../../../../../../__generated__/globalTypes'
-import { parseISO8601Duration } from '../../../../../../libs/parseISO8601Duration'
+} from '../../../../../../../../__generated__/globalTypes'
+import { parseISO8601Duration } from '../../../../../../../libs/parseISO8601Duration'
 import { VideoList } from '../VideoList'
 import { VideoListProps } from '../VideoList/VideoList'
 import { VideoSearch } from '../VideoSearch'

@@ -4,26 +4,19 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
-import { Attribute } from '.'
+import { Accordion } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-describe('Attribute', () => {
-  it('should render attribute', () => {
+describe('accordion', () => {
+  it('should render accordion', () => {
     const { getByText } = render(
-      <Attribute
-        id="custom-id"
-        icon={<>test</>}
-        name="name"
-        value="value"
-        description="description"
-        drawerTitle="drawerTitle"
-      >
+      <Accordion id="custom-id" icon={<>test</>} name="name" value="value">
         test
-      </Attribute>
+      </Accordion>
     )
     expect(getByText('test')).toBeInTheDocument()
     expect(getByText('name')).toBeInTheDocument()
@@ -31,21 +24,14 @@ describe('Attribute', () => {
     expect(getByText('description')).toBeInTheDocument()
   })
 
-  it('selects attribute', () => {
+  it('selects accordion', () => {
     const handleClick = jest.fn()
     const { getByRole, baseElement } = render(
       <ThemeProvider>
         <EditorProvider>
-          <Attribute
-            id="custom-id"
-            icon={<>test</>}
-            name="name"
-            value="value"
-            description="description"
-            drawerTitle="drawerTitle"
-          >
+          <Accordion id="custom-id" icon={<>test</>} name="name" value="value">
             test
-          </Attribute>
+          </Accordion>
         </EditorProvider>
       </ThemeProvider>
     )

@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 
 import { VideoListItem } from '.'
 

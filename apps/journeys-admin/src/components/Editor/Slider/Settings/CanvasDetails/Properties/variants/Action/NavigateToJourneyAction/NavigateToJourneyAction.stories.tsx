@@ -8,13 +8,13 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+} from '../../../../../../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../../../../../libs/storybook'
 import { steps } from '../data'
 
 import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction'

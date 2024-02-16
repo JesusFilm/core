@@ -12,9 +12,9 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 import YoutubeIcon from '@core/shared/ui/icons/Youtube'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
-import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../__generated__/BlockFields'
-import { VideoBlockUpdateInput } from '../../../../../../__generated__/globalTypes'
-import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
+import { VideoBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
+import { setBeaconPageViewed } from '../../../../../../libs/setBeaconPageViewed'
 import { Drawer } from '../Drawer'
 
 import { VideoFromLocal } from './VideoFromLocal'

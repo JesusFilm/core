@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 
-import { GetVideo_video_variantLanguages as Language } from '../../../../../../../__generated__/GetVideo'
+import { GetVideo_video_variantLanguages as Language } from '../../../../../../../../__generated__/GetVideo'
 
 import { VideoLanguage } from '.'
 

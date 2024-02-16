@@ -5,12 +5,12 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import {
   IconColor,
   IconName
-} from '../../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../../__generated__/globalTypes'
 
 import { Color, ICON_BLOCK_COLOR_UPDATE } from './Color'
 

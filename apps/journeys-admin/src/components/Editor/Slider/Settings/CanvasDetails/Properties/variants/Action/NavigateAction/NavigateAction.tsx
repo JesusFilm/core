@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
-import { CardPreview } from '../../../../../CardPreview'
+import { CardPreview } from '../../../../../../../../CardPreview'
 import { getNextStep } from '../utils/getNextStep'
 
 export function NavigateAction(): ReactElement {

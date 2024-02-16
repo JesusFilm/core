@@ -5,7 +5,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import { steps } from '../data'
 
 import { LINK_ACTION_UPDATE, LinkAction } from './LinkAction'

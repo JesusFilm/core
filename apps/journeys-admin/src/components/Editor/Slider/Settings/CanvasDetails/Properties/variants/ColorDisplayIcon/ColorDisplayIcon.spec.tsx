@@ -4,14 +4,14 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { getTheme } from '@core/shared/ui/themes'
 
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
   ThemeMode,
   ThemeName,
   TypographyAlign,
   TypographyColor,
   TypographyVariant
-} from '../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/globalTypes'
 
 import { ColorDisplayIcon } from '.'
 

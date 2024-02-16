@@ -1,6 +1,7 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
 
+import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import {
   ActiveContent,
   ActiveFab,
@@ -33,15 +34,18 @@ describe('GoalsList', () => {
   const goals: Goal[] = [
     {
       url: 'https://www.google.com/',
-      count: 2
+      count: 2,
+      goalType: GoalType.Website
     },
     {
       url: 'https://www.biblegateway.com/versions/',
-      count: 1
+      count: 1,
+      goalType: GoalType.Bible
     },
     {
       url: 'https://www.messenger.com/t/',
-      count: 1
+      count: 1,
+      goalType: GoalType.Chat
     }
   ]
 

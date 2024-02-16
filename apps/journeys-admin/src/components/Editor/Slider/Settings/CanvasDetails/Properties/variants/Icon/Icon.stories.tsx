@@ -4,14 +4,14 @@ import { Meta, StoryObj } from '@storybook/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/BlockFields'
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
   IconColor,
   IconName,
   IconSize
-} from '../../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
-import { Drawer } from '../../../Drawer'
+} from '../../../../../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { Icon } from '.'
 

@@ -3,7 +3,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SWRConfig } from 'swr'
 
-import { mswServer } from '../../../../../../../test/mswServer'
+import { mswServer } from '../../../../../../../../test/mswServer'
 
 import {
   getPlaylistItems,

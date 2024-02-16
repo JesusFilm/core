@@ -4,14 +4,14 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { ActionDetails } from './GoalDetails'
 import { journey } from './data'
+import { GoalDetails } from './GoalDetails'
 
-describe('ActionDetails', () => {
+describe('GoalDetails', () => {
   it('should return placeholder text', () => {
     const { getByText } = render(
       <MockedProvider>
-        <ActionDetails />
+        <GoalDetails />
       </MockedProvider>
     )
     expect(getByText('What are Goals?')).toBeInTheDocument()
@@ -23,7 +23,7 @@ describe('ActionDetails', () => {
   it('should return action editor', () => {
     const { getByDisplayValue, getByText } = render(
       <MockedProvider>
-        <ActionDetails />
+        <GoalDetails />
       </MockedProvider>
     )
     expect(getByDisplayValue('https://www.google.com/')).toBeInTheDocument()
@@ -35,7 +35,7 @@ describe('ActionDetails', () => {
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <ActionDetails />
+            <GoalDetails />
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>

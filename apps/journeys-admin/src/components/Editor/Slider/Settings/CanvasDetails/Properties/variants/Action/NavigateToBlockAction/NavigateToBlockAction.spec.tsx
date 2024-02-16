@@ -5,12 +5,12 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,
   ThemeName
-} from '../../../../../../../__generated__/globalTypes'
-import { NAVIGATE_TO_BLOCK_ACTION_UPDATE } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation/useNavigateToBlockActionUpdateMutation'
+} from '../../../../../../../../../../__generated__/globalTypes'
+import { NAVIGATE_TO_BLOCK_ACTION_UPDATE } from '../../../../../../../../../libs/useNavigateToBlockActionUpdateMutation/useNavigateToBlockActionUpdateMutation'
 import { steps } from '../data'
 
 import { NavigateToBlockAction } from './NavigateToBlockAction'

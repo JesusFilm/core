@@ -7,14 +7,14 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../__generated__/BlockFields'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
   ButtonColor,
   IconColor,
   ThemeMode,
   ThemeName,
   TypographyColor
-} from '../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/globalTypes'
 
 interface ColorDisplayIconProps {
   color: TypographyColor | ButtonColor | IconColor | null

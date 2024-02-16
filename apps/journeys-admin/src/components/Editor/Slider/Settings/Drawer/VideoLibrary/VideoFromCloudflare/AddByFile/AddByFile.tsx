@@ -19,8 +19,8 @@ import {
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
-import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
-import { GetMyCloudflareVideoQuery } from '../../../../../../../../__generated__/GetMyCloudflareVideoQuery'
+import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
+import { GetMyCloudflareVideoQuery } from '../../../../../../../../../__generated__/GetMyCloudflareVideoQuery'
 
 export const CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
   mutation CreateCloudflareVideoUploadByFileMutation(

@@ -9,23 +9,23 @@ import { journeysAdminConfig } from '../../../../../libs/storybook'
 
 import { journey } from './data'
 
-import { ActionDetails } from '.'
+import { GoalDetails } from '.'
 
-const ActionDetailsStory: Meta<typeof ActionDetails> = {
+const GoalDetailsStory: Meta<typeof GoalDetails> = {
   ...journeysAdminConfig,
-  component: ActionDetails,
-  title: 'Journeys-Admin/Editor/ActionDetails',
+  component: GoalDetails,
+  title: 'Journeys-Admin/Editor/GoalDetails',
   parameters: {
     layout: 'fullscreen'
   }
 }
 
-const Template: StoryObj<ComponentProps<typeof ActionDetails>> = {
+const Template: StoryObj<ComponentProps<typeof GoalDetails>> = {
   render: (args) => (
     <MockedProvider>
       <JourneyProvider value={{ journey, variant: 'admin' }}>
         <Box sx={{ backgroundColor: 'background.paper' }}>
-          <ActionDetails />
+          <GoalDetails />
         </Box>
       </JourneyProvider>
     </MockedProvider>
@@ -46,4 +46,4 @@ export const Placeholder = {
   }
 }
 
-export default ActionDetailsStory
+export default GoalDetailsStory

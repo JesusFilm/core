@@ -10,8 +10,8 @@ import DashIcon from '@core/shared/ui/icons/Dash'
 import {
   TypographyAlign,
   TypographyVariant
-} from '../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+} from '../../../../../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
 
 import { ToggleButtonGroup } from '.'
 
