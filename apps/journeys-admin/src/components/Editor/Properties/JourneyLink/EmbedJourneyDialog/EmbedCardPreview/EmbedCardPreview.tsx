@@ -61,7 +61,12 @@ export function EmbedCardPreview(): ReactElement {
               borderRadius: '16px 16px 0 0'
             }}
           />
-          <FramePortal width={340} height={520} dir={rtl ? 'rtl' : 'ltr'}>
+          <FramePortal
+            width={340}
+            height={520}
+            dir={rtl ? 'rtl' : 'ltr'}
+            sx={{ borderRadius: 5 }}
+          >
             <ThemeProvider
               themeName={journey?.themeName ?? ThemeName.base}
               themeMode={journey?.themeMode ?? ThemeMode.light}

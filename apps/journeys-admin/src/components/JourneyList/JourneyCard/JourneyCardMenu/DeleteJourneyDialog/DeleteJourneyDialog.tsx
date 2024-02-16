@@ -2,6 +2,7 @@ import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -32,6 +33,7 @@ export function DeleteJourneyDialog({
   refetch
 }: DeleteJourneyDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const [deleteJourney] = useMutation<JourneyDelete>(JOURNEY_DELETE, {
     variables: {
@@ -78,8 +80,10 @@ export function DeleteJourneyDialog({
       testId="DeleteJourneyDialog"
     >
       <Typography>
-        Are you sure you would like to delete the journey immediately? You will
-        not be able to undo or restore these journeys.
+        {t(
+          'Are you sure you would like to delete the journey immediately? You will ' +
+            'not be able to undo or restore these journeys.'
+        )}
       </Typography>
     </Dialog>
   )

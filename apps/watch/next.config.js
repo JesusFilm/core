@@ -3,6 +3,9 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 })
 const { composePlugins, withNx } = require('@nx/next')
+
+const { i18n } = require('./next-i18next.config')
+
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
@@ -12,6 +15,7 @@ const nextConfig = {
     domains: ['localhost', 'd1wl257kev7hsz.cloudfront.net'],
     minimumCacheTTL: 31536000
   },
+  i18n,
   modularizeImports: {
     lodash: {
       transform: 'lodash/{{member}}'

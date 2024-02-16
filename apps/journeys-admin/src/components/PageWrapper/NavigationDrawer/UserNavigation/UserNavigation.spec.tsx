@@ -44,6 +44,7 @@ describe('UserNavigation', () => {
           imageUrl: 'https://bit.ly/3Gth4Yf',
           email: 'amin@email.com',
           superAdmin: true,
+          emailVerified: true,
           __typename: 'User'
         }
       }

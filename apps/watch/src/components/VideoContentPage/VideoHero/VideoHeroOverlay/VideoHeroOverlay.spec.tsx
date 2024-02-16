@@ -11,6 +11,15 @@ import { VideoProvider } from '../../../../libs/videoContext'
 
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('VideoHeroOverlay', () => {
   const video: VideoContentFields = {
     id: '1_cl-0-0',
@@ -82,7 +91,7 @@ describe('VideoHeroOverlay', () => {
       </MockedProvider>
     )
     expect(getByText('The Story of Jesus for Children')).toBeInTheDocument()
-    expect(getByText('61 min')).toBeInTheDocument()
+    expect(getByText('{{ duration }} min')).toBeInTheDocument()
     expect(getByRole('button', { name: 'Play Video' })).toBeInTheDocument()
   })
 

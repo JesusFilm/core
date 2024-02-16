@@ -4,6 +4,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
@@ -12,7 +13,7 @@ import { useVideo } from '../../../libs/videoContext'
 export function VideoContent(): ReactElement {
   const { description, studyQuestions } = useVideo()
   const [tabValue, setTabValue] = useState(0)
-
+  const { t } = useTranslation('apps-watch')
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
@@ -59,7 +60,9 @@ export function VideoContent(): ReactElement {
         }}
       >
         <Tab
-          label={<Typography variant="overline1">Description</Typography>}
+          label={
+            <Typography variant="overline1">{t('Description')}</Typography>
+          }
           {...tabA11yProps('description', 0)}
         />
         {studyQuestions?.length !== 0 && (
@@ -71,13 +74,13 @@ export function VideoContent(): ReactElement {
                   variant="overline1"
                   sx={{ display: { xs: 'flex', md: 'none' } }}
                 >
-                  Discussion
+                  {t('Discussion')}
                 </Typography>
                 <Typography
                   variant="overline1"
                   sx={{ display: { xs: 'none', md: 'flex' } }}
                 >
-                  Discussion Questions
+                  {t('Discussion Questions')}
                 </Typography>
               </>
             }

@@ -1,6 +1,7 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import BibleIcon from '@core/shared/ui/icons/Bible'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
@@ -13,6 +14,8 @@ interface GoalDescriptionProps {
 }
 
 export function ActionInformation(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   const GoalDescription = ({
     label,
     description,
@@ -34,11 +37,12 @@ export function ActionInformation(): ReactElement {
   return (
     <Stack gap={2} sx={{ p: 6 }} data-testid="ActionInformation">
       <Typography variant="subtitle2" color="secondary.dark">
-        What are Goals?
+        {t('What are Goals?')}
       </Typography>
       <Typography variant="body1" color="secondary.light" sx={{ mb: 6 }}>
-        Depending on the link you provide for the actions, the target of your
-        Journey will be determined automatically from the following list:
+        {t(
+          'Depending on the link you provide for the actions, the target of your Journey will be determined automatically from the following list:'
+        )}
       </Typography>
       <GoalDescription
         label="Start a Conversation"

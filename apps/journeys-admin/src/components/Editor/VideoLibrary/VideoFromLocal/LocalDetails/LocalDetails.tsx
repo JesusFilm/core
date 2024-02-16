@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import { ReactElement, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
@@ -155,7 +156,7 @@ export function LocalDetails({
       void loadVideo()
     }
   }, [open, loadVideo])
-
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Stack spacing={4} sx={{ p: 6 }}>
       {loading ? (
@@ -244,7 +245,7 @@ export function LocalDetails({
           size="small"
           sx={{ backgroundColor: 'secondary.dark' }}
         >
-          Select
+          {t('Select')}
         </Button>
       </Stack>
       <VideoLanguage
