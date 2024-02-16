@@ -2,8 +2,8 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
-import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
-import { StepFields } from '@core/journeys/ui/Step/__generated__/StepFields'
+import { TreeBlock, useBlocks } from '../../../libs/block'
+import { StepFields } from '../../Step/__generated__/StepFields'
 
 import { Bullet } from './Bullet'
 

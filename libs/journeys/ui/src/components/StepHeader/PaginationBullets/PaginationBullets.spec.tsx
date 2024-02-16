@@ -1,11 +1,7 @@
 import { render } from '@testing-library/react'
 
-import {
-  TreeBlock,
-  blockHistoryVar,
-  treeBlocksVar
-} from '@core/journeys/ui/block'
-import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
+import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../../libs/block'
+import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 
 import { PaginationBullets } from './PaginationBullets'
 
