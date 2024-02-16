@@ -81,7 +81,23 @@ export function Fab({ variant }: fabProp): ReactElement {
   }
   function handleEditFab(event: MouseEvent): void {
     event.stopPropagation()
-    if (activeSlide === ActiveSlide.JourneyFlow) {
+    if (
+      activeSlide === ActiveSlide.JourneyFlow &&
+      activeContent === ActiveContent.Canvas
+    ) {
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: selectedStep
+      })
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
+      })
+    } else if (
+      activeSlide === ActiveSlide.JourneyFlow &&
+      activeContent === ActiveContent.Social
+    ) {
       dispatch({
         type: 'SetActiveSlideAction',
         activeSlide: ActiveSlide.Content
