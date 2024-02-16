@@ -1,1 +1,1 @@
-export { ActionsTable } from './Goals'
+export { Goals } from './Goals'

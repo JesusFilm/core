@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react'
 
-import { ActionsBanner } from './ActionsBanner'
+import { GoalsBanner } from './GoalsBanner'
 
-describe('ActionsBanner', () => {
+describe('GoalsBanner', () => {
   it('should show actions banner', () => {
-    const { getByText } = render(<ActionsBanner />)
+    const { getByText } = render(<GoalsBanner />)
     expect(getByText('Every Journey has a goal')).toBeInTheDocument()
     expect(
       getByText(

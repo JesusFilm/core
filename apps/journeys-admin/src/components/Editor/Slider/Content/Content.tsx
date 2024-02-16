@@ -5,7 +5,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { Canvas } from './Canvas'
-import { ActionsTable } from './Goals'
+import { Goals } from './Goals'
 import { SocialPreview } from './Social'
 
 export function Content(): ReactElement {
@@ -18,7 +18,7 @@ export function Content(): ReactElement {
       content = <SocialPreview />
       break
     case ActiveContent.Goals:
-      content = <ActionsTable />
+      content = <Goals />
       break
     default:
       content = <Canvas />
