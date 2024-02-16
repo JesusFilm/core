@@ -1,6 +1,6 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { steps } from '../../data'
 
 import { getNextStep } from '.'

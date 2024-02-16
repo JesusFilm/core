@@ -1,4 +1,4 @@
-import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 
 import { VideoListProps } from './VideoList'
 
