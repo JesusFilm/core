@@ -8,7 +8,10 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import {
+  ActiveCanvasDetailsDrawer,
+  ActiveSlide
+} from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../__generated__/BlockFields'
 
@@ -46,7 +49,8 @@ describe('Step', () => {
     steps: [],
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas
+    activeContent: ActiveContent.Canvas,
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
   beforeEach(() => {
@@ -110,7 +114,8 @@ describe('Step', () => {
           steps: [step1, step2],
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
         },
         dispatch
       })
@@ -184,7 +189,8 @@ describe('Step', () => {
           steps: [step1, step2, step5],
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
         },
         dispatch
       })
@@ -249,7 +255,8 @@ describe('Step', () => {
           steps: [step1, step2],
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
         },
         dispatch
       })

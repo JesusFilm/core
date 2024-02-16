@@ -7,6 +7,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import {
+  ActiveCanvasDetailsDrawer,
   ActiveSlide,
   EditorState
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
@@ -72,7 +73,8 @@ describe('Video', () => {
     steps: [],
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas
+    activeContent: ActiveContent.Canvas,
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
   beforeEach(() => {
