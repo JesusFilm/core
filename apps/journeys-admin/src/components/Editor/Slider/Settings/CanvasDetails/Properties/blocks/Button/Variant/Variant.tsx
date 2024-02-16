@@ -8,7 +8,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ButtonBlockUpdateVariant } from '../../../../../../../../../../__generated__/ButtonBlockUpdateVariant'
 import { ButtonVariant } from '../../../../../../../../../../__generated__/globalTypes'
-import { ToggleButtonGroup } from '../../../variants/ToggleButtonGroup'
+import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateVariant(

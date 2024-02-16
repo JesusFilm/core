@@ -10,8 +10,8 @@ import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import { Accordion } from '../../Accordion'
-import { Action, actions } from '../../variants/Action/Action'
-import { Icon, icons } from '../../variants/Icon'
+import { Action, actions } from '../../controls/Action/Action'
+import { Icon, icons } from '../../controls/Icon'
 
 import { TextResponseFields } from './TextResponseFields'
 
