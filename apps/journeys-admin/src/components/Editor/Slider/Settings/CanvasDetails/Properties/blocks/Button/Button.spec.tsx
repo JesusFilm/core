@@ -7,7 +7,10 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import {
+  ActiveCanvasDetailsDrawer,
+  ActiveSlide
+} from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -51,7 +54,8 @@ describe('Button attributes', () => {
     steps: [],
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas
+    activeContent: ActiveContent.Canvas,
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
   beforeEach(() => {

@@ -17,7 +17,7 @@ import {
   TypographyVariant
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockUpdateVariant } from '../../../../../../../../../../__generated__/TypographyBlockUpdateVariant'
-import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { ToggleButtonGroup } from '../../../variants/ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_VARIANT = gql`
   mutation TypographyBlockUpdateVariant(

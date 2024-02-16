@@ -8,7 +8,10 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import {
+  ActiveCanvasDetailsDrawer,
+  ActiveSlide
+} from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { Goal } from '../Goals'
 
@@ -54,7 +57,8 @@ describe('GoalsList', () => {
   const state: EditorState = {
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Goals
+    activeContent: ActiveContent.Goals,
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
   beforeEach(() => {

@@ -9,9 +9,9 @@ import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
-import { Action, actions } from '../../Action/Action'
-import { Icon, icons } from '../../Icon'
-import { Attribute } from '../../Properties/Attribute'
+import { Accordion } from '../../Accordion'
+import { Action, actions } from '../../variants/Action/Action'
+import { Icon, icons } from '../../variants/Icon'
 
 import { TextResponseFields } from './TextResponseFields'
 
@@ -29,20 +29,18 @@ export function TextResponse({
 
   return (
     <>
-      <Attribute
+      <Accordion
         id={`${id}-text-field-options`}
         icon={<TextInput1Icon />}
         name={t('Feedback')}
         value={label}
-        description={t('Feedback Properties')}
-        drawerTitle={t('Feedback Properties')}
       >
         <TextResponseFields />
-      </Attribute>
+      </Accordion>
 
       <Divider orientation="vertical" variant="middle" flexItem />
 
-      <Attribute
+      <Accordion
         id={`${id}-text-field-action`}
         icon={<LinkIcon />}
         name={t('Action')}
@@ -50,13 +48,11 @@ export function TextResponse({
           actions.find((act) => act.value === action?.__typename)?.label ??
           'None'
         }
-        description={t('Form Submission')}
-        drawerTitle={t('Action')}
       >
         <Action />
-      </Attribute>
+      </Accordion>
 
-      <Attribute
+      <Accordion
         id={`${id}-text-field-icon`}
         icon={<InformationCircleContainedIcon />}
         name={t('Button Icon')}
@@ -64,11 +60,9 @@ export function TextResponse({
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
           'None'
         }
-        description={t('Button Icon')}
-        drawerTitle={t('Button Icon')}
       >
         <Icon id={submitIcon.id} />
-      </Attribute>
+      </Accordion>
     </>
   )
 }

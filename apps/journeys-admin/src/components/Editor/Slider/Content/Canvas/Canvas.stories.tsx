@@ -3,7 +3,11 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveCanvasDetailsDrawer,
+  EditorProvider,
+  EditorState
+} from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
@@ -700,7 +704,7 @@ export const FooterEdit = {
     ...Template.args,
     state: {
       selectedBlock: {},
-      selectedComponent: 'Footer'
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
     },
     journey: {
       chatButtons: [

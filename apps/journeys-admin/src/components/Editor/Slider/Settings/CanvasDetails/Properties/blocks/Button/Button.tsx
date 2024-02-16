@@ -16,10 +16,10 @@ import {
   ButtonVariant
 } from '../../../../../../../../../__generated__/globalTypes'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
-import { Action, actions } from '../../Action/Action'
-import { Attribute } from '../../Properties/Attribute'
-import { ColorDisplayIcon } from '../../ColorDisplayIcon'
-import { Icon, icons } from '../../Icon'
+import { Accordion } from '../../Accordion'
+import { Action, actions } from '../../variants/Action/Action'
+import { ColorDisplayIcon } from '../../variants/ColorDisplayIcon'
+import { Icon, icons } from '../../variants/Icon'
 
 import { Color } from './Color'
 import { Size } from './Size'
@@ -57,51 +57,43 @@ export function Button({
 
   return (
     <>
-      <Attribute
+      <Accordion
         id={`${id}-button-action`}
         icon={<LinkIcon />}
         name={t('Action')}
         value={selectedAction?.label ?? 'None'}
-        description={t('Action')}
-        drawerTitle={t('Action')}
       >
         <Action />
-      </Attribute>
+      </Accordion>
 
-      <Attribute
+      <Accordion
         id={`${id}-button-color`}
         icon={<ColorDisplayIcon color={buttonColor} />}
         name={t('Color')}
         value={capitalize(buttonColor?.toString() ?? ButtonColor.primary)}
-        description={t('Background Color')}
-        drawerTitle={t('Button Color')}
       >
         <Color />
-      </Attribute>
+      </Accordion>
 
-      <Attribute
+      <Accordion
         id={`${id}-button-size`}
         icon={<SpaceHorizontalIcon />}
         name={t('Button Size')}
         value={capitalize(size?.toString() ?? ButtonSize.medium)}
-        description={t('Button Size')}
-        drawerTitle={t('Button Size')}
       >
         <Size />
-      </Attribute>
+      </Accordion>
 
-      <Attribute
+      <Accordion
         id={`${id}-button-variant`}
         icon={<TransformIcon />}
         name={t('Variant')}
         value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
-        description={t('Button Variant')}
-        drawerTitle="Button Variant "
       >
         <Variant />
-      </Attribute>
+      </Accordion>
 
-      <Attribute
+      <Accordion
         id={`${id}-button-leading-icon`}
         icon={<AlertCircleIcon />}
         name={t('Leading Icon')}
@@ -109,13 +101,11 @@ export function Button({
           icons.find(({ value }) => value === startIcon?.iconName)?.label ??
           'None'
         }
-        description={t('Leading Icon')}
-        drawerTitle="Leading Icon "
       >
         <Icon id={startIcon?.id} />
-      </Attribute>
+      </Accordion>
 
-      <Attribute
+      <Accordion
         id={`${id}-button-trailing-icon`}
         icon={<AlertCircleIcon />}
         name={t('Trailing Icon')}
@@ -123,11 +113,9 @@ export function Button({
           icons.find(({ value }) => value === endIcon?.iconName)?.label ??
           'None'
         }
-        description={t('Trailing Icon')}
-        drawerTitle="Trailing Icon "
       >
         <Icon id={endIcon?.id} />
-      </Attribute>
+      </Accordion>
     </>
   )
 }

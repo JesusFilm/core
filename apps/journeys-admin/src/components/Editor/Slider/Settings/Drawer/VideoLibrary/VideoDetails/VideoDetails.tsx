@@ -11,12 +11,12 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
-import { BlockDeleteForCoverImage } from '../../../../../../../__generated__/BlockDeleteForCoverImage'
-import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
+import { BlockDeleteForCoverImage } from '../../../../../../../../__generated__/BlockDeleteForCoverImage'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
-} from '../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../__generated__/globalTypes'
 import { Drawer } from '../../Drawer'
 import { CloudflareDetails } from '../VideoFromCloudflare/CloudflareDetails'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'

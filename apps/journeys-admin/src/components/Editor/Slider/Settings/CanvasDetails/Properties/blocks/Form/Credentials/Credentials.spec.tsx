@@ -9,7 +9,10 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import {
+  ActiveCanvasDetailsDrawer,
+  ActiveSlide
+} from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../../__generated__/BlockFields'
 
@@ -41,7 +44,8 @@ const state: EditorState = {
   selectedBlock: block,
   activeFab: ActiveFab.Add,
   activeSlide: ActiveSlide.JourneyFlow,
-  activeContent: ActiveContent.Canvas
+  activeContent: ActiveContent.Canvas,
+  activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
 }
 
 describe('Credentials', () => {

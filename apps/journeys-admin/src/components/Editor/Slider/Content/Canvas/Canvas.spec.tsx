@@ -5,12 +5,13 @@ import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
+  ActiveCanvasDetailsDrawer,
   ActiveContent,
   ActiveFab,
+  ActiveSlide,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
@@ -64,7 +65,8 @@ describe('Canvas', () => {
     selectedBlock: step0,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas
+    activeContent: ActiveContent.Canvas,
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
   it('should show border around selected step', () => {
@@ -225,7 +227,11 @@ describe('Canvas', () => {
     expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
     expect(getByText('activeFab: Add')).toBeInTheDocument()
     expect(getByText('selectedAttributeId: hosted-by')).toBeInTheDocument()
-    expect(getByText('selectedComponent: Footer')).toBeInTheDocument()
+    expect(
+      getByText(
+        `activeCanvasDetailsDrawerAction: ${ActiveCanvasDetailsDrawer.Footer}`
+      )
+    ).toBeInTheDocument()
     expect(getByTestId('stepFooter')).toHaveStyle({
       outline: '2px solid #C52D3A'
     })

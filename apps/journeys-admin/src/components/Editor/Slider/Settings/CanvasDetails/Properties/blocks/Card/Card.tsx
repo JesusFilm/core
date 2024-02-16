@@ -14,7 +14,7 @@ import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { Attribute } from '../../Properties/Attribute'
+import { Accordion } from '../../Accordion'
 
 const BackgroundColor = dynamic(
   async () =>
@@ -74,7 +74,7 @@ export function Card({
 
   return (
     <>
-      <Attribute
+      <Accordion
         id={`${id}-background-color`}
         icon={
           <Paper sx={{ borderRadius: 1000, flexShrink: 0 }}>
@@ -92,14 +92,12 @@ export function Card({
         }
         name={t('Color')}
         value={selectedCardColor.toUpperCase()}
-        description={t('Background Color')}
-        drawerTitle="Background Color Properties"
       >
         <BackgroundColor />
-      </Attribute>
+      </Accordion>
 
       {coverBlock?.__typename === 'ImageBlock' && coverBlock.src != null && (
-        <Attribute
+        <Accordion
           id={`${id}-cover-block`}
           icon={<Image3Icon />}
           name={t('Background')}
@@ -107,40 +105,34 @@ export function Card({
             coverBlock.src.lastIndexOf('/') + 1,
             coverBlock.src.length
           )}
-          description={t('Background Image')}
-          drawerTitle={t('Background Media Properties')}
           param="background-image"
         >
           <BackgroundMedia />
-        </Attribute>
+        </Accordion>
       )}
       {coverBlock?.__typename === 'VideoBlock' && (
-        <Attribute
+        <Accordion
           id={`${id}-cover-block`}
           icon={<VideoOnIcon />}
           name={t('Background')}
           value={coverBlock.video?.title?.[0]?.value ?? coverBlock.title ?? ''}
-          description={t('Background Video')}
-          drawerTitle={t('Background Media Properties')}
           param="background-video"
         >
           <BackgroundMedia />
-        </Attribute>
+        </Accordion>
       )}
       {coverBlock == null && (
-        <Attribute
+        <Accordion
           id={`${id}-cover-block`}
           icon={<Image3Icon />}
           name={t('Background')}
           value="None"
-          description={t('Background Media')}
-          drawerTitle={t('Background Media Properties')}
           param="background-video"
         >
           <BackgroundMedia />
-        </Attribute>
+        </Accordion>
       )}
-      <Attribute
+      <Accordion
         icon={<PaletteIcon />}
         id={`${id}-theme-mode`}
         name={t('Style')}
@@ -151,21 +143,17 @@ export function Card({
             ? 'Light'
             : 'Dark'
         }
-        description={t('Card Styling')}
-        drawerTitle={t('Card Style Property')}
       >
         <CardStyling />
-      </Attribute>
-      <Attribute
+      </Accordion>
+      <Accordion
         icon={<FlexAlignBottom1Icon />}
         id={`${id}-fullscreen`}
         name={t('Layout')}
         value={fullscreen ? 'Expanded' : 'Contained'}
-        description={t('Content Appearance')}
-        drawerTitle={t('Card Layout Property')}
       >
         <CardLayout />
-      </Attribute>
+      </Accordion>
     </>
   )
 }

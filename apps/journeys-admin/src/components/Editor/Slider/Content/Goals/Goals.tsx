@@ -46,8 +46,8 @@ export function Goals(): ReactElement {
       }, [])
     if (smUp)
       dispatch({
-        type: 'SetSelectedComponentAction',
-        selectedComponent: goals[0]?.url
+        type: 'SetSelectedGoalUrlAction',
+        selectedGoalUrl: goals[0]?.url
       })
     return goals
   }, [journey?.blocks, dispatch, smUp])

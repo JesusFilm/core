@@ -17,9 +17,9 @@ import {
   VideoLabel
 } from '../../../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../../../ThemeProvider'
-import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
-import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
+import { videos } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEO } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { GET_VIDEOS } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import {
   BLOCK_DELETE_FOR_BACKGROUND_VIDEO,

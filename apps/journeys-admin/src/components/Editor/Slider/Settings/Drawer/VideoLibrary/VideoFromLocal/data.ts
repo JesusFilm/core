@@ -1,4 +1,4 @@
-import { GetVideos_videos as Video } from '../../../../../../../__generated__/GetVideos'
+import { GetVideos_videos as Video } from '../../../../../../../../__generated__/GetVideos'
 
 export const videos: Video[] = [
   {

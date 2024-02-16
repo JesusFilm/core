@@ -11,9 +11,9 @@ import { VideoBlockSource } from '../../../../../../../../../../__generated__/gl
 import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
-import { videos } from '../../../../VideoLibrary/VideoFromLocal/data'
-import { GET_VIDEO } from '../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { GET_VIDEOS } from '../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
+import { videos } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { GET_VIDEOS } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import { VideoOptions } from './VideoOptions'
 

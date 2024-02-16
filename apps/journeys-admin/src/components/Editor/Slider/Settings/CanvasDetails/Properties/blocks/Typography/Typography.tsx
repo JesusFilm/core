@@ -9,8 +9,8 @@ import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
 import Type2Icon from '@core/shared/ui/icons/Type2'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { Attribute } from '../../Properties/Attribute'
-import { ColorDisplayIcon } from '../../ColorDisplayIcon'
+import { Accordion } from '../../Accordion'
+import { ColorDisplayIcon } from '../../variants/ColorDisplayIcon'
 
 import { Align } from './Align'
 import { Color } from './Color'
@@ -31,40 +31,34 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
 
   return (
     <>
-      <Attribute
+      <Accordion
         id={`${id}-typography-variant`}
         icon={<Type2Icon />}
         name={t('Text Variant')}
         value={capitalize(
           lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
         )}
-        description={t('Text Variant')}
-        drawerTitle={t('Text Variant')}
       >
         <Variant />
-      </Attribute>
+      </Accordion>
 
-      <Attribute
+      <Accordion
         id={`${id}-typography-color`}
         icon={<ColorDisplayIcon color={color} />}
         name={t('Color')}
         value={capitalize(color?.toString() ?? 'primary')}
-        description={t('Text Color')}
-        drawerTitle={t('Text Color')}
       >
         <Color />
-      </Attribute>
+      </Accordion>
 
-      <Attribute
+      <Accordion
         id={`${id}-typography-alignment`}
         icon={<AlignLeftIcon />}
         name={t('Text Alignment')}
         value={capitalize(align?.toString() ?? 'Left')}
-        description={t('Text Alignment')}
-        drawerTitle={t('Text Alignment')}
       >
         <Align />
-      </Attribute>
+      </Accordion>
     </>
   )
 }

@@ -29,7 +29,17 @@ export enum ActiveSlide {
   Content = 1,
   Drawer = 2
 }
+export enum ActiveCanvasDetailsDrawer {
+  Properties = 0,
+  Footer = 1,
+  AddBlock = 2
+}
 export interface EditorState {
+  /**
+   * activeCanvasDetailsDrawer indicates which drawer is currently visible on
+   * CanvasDetails.
+   */
+  activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer
   /**
    * activeContent indicates which content is visible on the Content Slide and
    * the Settings Slide (the content and settings slides correspond to each
@@ -50,16 +60,20 @@ export interface EditorState {
   activeSlide: ActiveSlide
   /**
    * selectedAttributeId indicates which attribute is current expanded on
-   * CanvasDetails. Each attribute is in a collapsible accordion.
+   * Properties. Each attribute is in a collapsible accordion.
    */
   selectedAttributeId?: string
   /**
-   * SelectedBlock indicates which block is currently selected on the Canvas
+   * selectedBlock indicates which block is currently selected on the Canvas
    * and the JourneyFlow. It also indicates which attributes should be
    * displayed in relation to the SelectedBlock.
    */
   selectedBlock?: TreeBlock
-  selectedComponent?: 'Footer' | 'AddBlock' | string
+  /**
+   * selectedGoalUrl indicates which Goal to show on GoalDetails for editing.
+   * If SelectedGoalUrl is unset then the information about goals will be shown.
+   */
+  selectedGoalUrl?: string
   /**
    * selectedStep indicates which step is currently displayed by the Canvas and
    * the JourneyFlow.
@@ -91,9 +105,13 @@ export interface SetSelectedBlockByIdAction {
   type: 'SetSelectedBlockByIdAction'
   selectedBlockId?: string
 }
-interface SetSelectedComponentAction {
-  type: 'SetSelectedComponentAction'
-  selectedComponent?: EditorState['selectedComponent']
+interface SetActiveCanvasDetailsDrawerAction {
+  type: 'SetActiveCanvasDetailsDrawerAction'
+  activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer
+}
+interface SetSelectedGoalUrlAction {
+  type: 'SetSelectedGoalUrlAction'
+  selectedGoalUrl?: string
 }
 export interface SetSelectedStepAction {
   type: 'SetSelectedStepAction'
@@ -104,13 +122,14 @@ interface SetStepsAction {
   steps: Array<TreeBlock<StepBlock>>
 }
 type EditorAction =
+  | SetActiveCanvasDetailsDrawerAction
   | SetActiveContentAction
   | SetActiveFabAction
   | SetActiveSlideAction
   | SetSelectedAttributeIdAction
   | SetSelectedBlockAction
   | SetSelectedBlockByIdAction
-  | SetSelectedComponentAction
+  | SetSelectedGoalUrlAction
   | SetSelectedStepAction
   | SetStepsAction
 
@@ -119,6 +138,12 @@ export const reducer = (
   action: EditorAction
 ): EditorState => {
   switch (action.type) {
+    case 'SetActiveCanvasDetailsDrawerAction':
+      return {
+        ...state,
+        activeCanvasDetailsDrawer: action.activeCanvasDetailsDrawer,
+        selectedBlock: undefined
+      }
     case 'SetActiveContentAction':
       return {
         ...state,
@@ -144,7 +169,7 @@ export const reducer = (
       return {
         ...state,
         selectedBlock: action.selectedBlock,
-        selectedComponent: undefined,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas,
         activeSlide: ActiveSlide.Content
       }
@@ -155,21 +180,20 @@ export const reducer = (
           action.selectedBlockId != null
             ? searchBlocks(state.steps ?? [], action.selectedBlockId)
             : undefined,
-        selectedComponent: undefined,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas
       }
-    case 'SetSelectedComponentAction':
+    case 'SetSelectedGoalUrlAction':
       return {
         ...state,
-        selectedComponent: action.selectedComponent,
-        selectedBlock: undefined
+        selectedGoalUrl: action.selectedGoalUrl
       }
     case 'SetSelectedStepAction':
       return {
         ...state,
         selectedStep: action.selectedStep,
         selectedBlock: action.selectedStep,
-        selectedComponent: undefined,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas
       }
     case 'SetStepsAction':
@@ -194,6 +218,7 @@ export const EditorContext = createContext<{
 }>({
   state: {
     steps: [],
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas
@@ -219,6 +244,7 @@ export function EditorProvider({
     steps: [],
     selectedStep: initialState?.steps?.[0],
     selectedBlock: initialState?.steps?.[0],
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,

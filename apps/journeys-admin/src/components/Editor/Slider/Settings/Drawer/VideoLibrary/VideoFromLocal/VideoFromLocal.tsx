@@ -4,12 +4,12 @@ import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { GetVideos } from '../../../../../../../__generated__/GetVideos'
+import { GetVideos } from '../../../../../../../../__generated__/GetVideos'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput,
   VideoLabel
-} from '../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../__generated__/globalTypes'
 import { VideoList } from '../VideoList'
 import { VideoListProps } from '../VideoList/VideoList'
 import { VideoSearch } from '../VideoSearch'

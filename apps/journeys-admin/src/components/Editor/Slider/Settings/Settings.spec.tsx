@@ -2,7 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveCanvasDetailsDrawer,
+  EditorProvider
+} from '@core/journeys/ui/EditorProvider'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -14,7 +17,7 @@ import {
   VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
 
-import { Attributes } from '.'
+import { Settings } from '.'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,
@@ -25,7 +28,7 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-describe('Attributes', () => {
+describe('Settings', () => {
   const card: TreeBlock<CardBlock> = {
     id: 'card0.id',
     __typename: 'CardBlock',
@@ -54,7 +57,7 @@ describe('Attributes', () => {
       <EditorProvider
         initialState={{ selectedStep: step, selectedBlock: card }}
       >
-        <Attributes />
+        <Settings />
       </EditorProvider>
     )
 
@@ -71,7 +74,7 @@ describe('Attributes', () => {
       <EditorProvider
         initialState={{ selectedStep: stepOnly, selectedBlock: stepOnly }}
       >
-        <Attributes />
+        <Settings />
       </EditorProvider>
     )
     await waitFor(() => expect(getByText('Unlocked Card')).toBeInTheDocument())
@@ -84,7 +87,7 @@ describe('Attributes', () => {
       <EditorProvider
         initialState={{ selectedStep: step, selectedBlock: step }}
       >
-        <Attributes />
+        <Settings />
       </EditorProvider>
     )
 
@@ -145,7 +148,7 @@ describe('Attributes', () => {
             selectedBlock: stepWithVideoOnly
           }}
         >
-          <Attributes />
+          <Settings />
         </EditorProvider>
       </MockedProvider>
     )
@@ -168,7 +171,7 @@ describe('Attributes', () => {
             selectedBlock: video
           }}
         >
-          <Attributes />
+          <Settings />
         </EditorProvider>
       </MockedProvider>
     )
@@ -201,7 +204,7 @@ describe('Attributes', () => {
             selectedBlock: block
           }}
         >
-          <Attributes />
+          <Settings />
         </EditorProvider>
       </MockedProvider>
     )
@@ -241,7 +244,7 @@ describe('Attributes', () => {
             selectedBlock: block
           }}
         >
-          <Attributes />
+          <Settings />
         </EditorProvider>
       </MockedProvider>
     )
@@ -273,7 +276,7 @@ describe('Attributes', () => {
             selectedBlock: block
           }}
         >
-          <Attributes />
+          <Settings />
         </EditorProvider>
       </MockedProvider>
     )
@@ -304,7 +307,7 @@ describe('Attributes', () => {
             selectedBlock: block
           }}
         >
-          <Attributes />
+          <Settings />
         </EditorProvider>
       </MockedProvider>
     )
@@ -337,7 +340,7 @@ describe('Attributes', () => {
             selectedBlock: block
           }}
         >
-          <Attributes />
+          <Settings />
         </EditorProvider>
       </MockedProvider>
     )
@@ -354,10 +357,10 @@ describe('Attributes', () => {
         <EditorProvider
           initialState={{
             selectedStep: step,
-            selectedComponent: 'Footer'
+            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
           }}
         >
-          <Attributes />
+          <Settings />
         </EditorProvider>
       </MockedProvider>
     )
@@ -392,7 +395,7 @@ describe('Attributes', () => {
             selectedBlock: block
           }}
         >
-          <Attributes />
+          <Settings />
         </EditorProvider>
       </MockedProvider>
     )

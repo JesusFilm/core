@@ -8,9 +8,9 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { BlockFields_SignUpBlock as SignUpBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
-import { Action, actions } from '../../Action/Action'
-import { Icon, icons } from '../../Icon'
-import { Attribute } from '../../Properties/Attribute'
+import { Accordion } from '../../Accordion'
+import { Action, actions } from '../../variants/Action/Action'
+import { Icon, icons } from '../../variants/Icon'
 
 export function SignUp({
   id,
@@ -33,7 +33,7 @@ export function SignUp({
 
   return (
     <>
-      <Attribute
+      <Accordion
         id={`${id}-signup-action`}
         icon={<LinkIcon />}
         name={t('Action')}
@@ -41,13 +41,11 @@ export function SignUp({
           actions.find((act) => act.value === action?.__typename)?.label ??
           'None'
         }
-        description={t('Form Submission')}
-        drawerTitle={t('Form Submission')}
       >
         <Action />
-      </Attribute>
+      </Accordion>
 
-      <Attribute
+      <Accordion
         id={`${id}-signup-icon`}
         icon={<InformationCircleContained />}
         name={t('Button Icon')}
@@ -55,11 +53,9 @@ export function SignUp({
           icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
           'None'
         }
-        description={t('Button Icon')}
-        drawerTitle={t('Button Icon')}
       >
         <Icon id={submitIcon.id} />
-      </Attribute>
+      </Accordion>
     </>
   )
 }

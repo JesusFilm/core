@@ -9,7 +9,10 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import {
+  ActiveCanvasDetailsDrawer,
+  ActiveSlide
+} from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { BlockFields_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
@@ -47,7 +50,8 @@ describe('RadioOption Attribute', () => {
     steps: [],
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas
+    activeContent: ActiveContent.Canvas,
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
   beforeEach(() => {

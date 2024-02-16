@@ -10,6 +10,8 @@ import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
+import { Drawer } from '../../Drawer'
+
 const HostDrawer = dynamic(
   async () =>
     await import(
@@ -47,7 +49,7 @@ export function Footer(): ReactElement {
   }, [dispatch])
 
   return (
-    <>
+    <Drawer title={t('Footer Properties')}>
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
@@ -82,6 +84,6 @@ export function Footer(): ReactElement {
       >
         <Chat />
       </TabPanel>
-    </>
+    </Drawer>
   )
 }

@@ -5,28 +5,27 @@ import PaletteIcon from '@core/shared/ui/icons/Palette'
 
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 
-import { Attribute } from '.'
+import { Accordion } from '.'
 
-const AttributeStory: Meta<typeof Attribute> = {
+const AttributeStory: Meta<typeof Accordion> = {
   ...simpleComponentConfig,
-  component: Attribute,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Attribute'
+  component: Accordion,
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/Accordion'
 }
 
-export const Default: StoryObj<typeof Attribute> = {
+export const Default: StoryObj<typeof Accordion> = {
   render: () => {
     return (
       <EditorProvider>
-        <Attribute
+        <Accordion
           id="custom-id"
           icon={<PaletteIcon />}
           name="Style"
           value="Dark"
-          description="Card Styling"
-          drawerTitle="drawerTitle"
         >
           test
-        </Attribute>
+        </Accordion>
       </EditorProvider>
     )
   }
