@@ -12,22 +12,20 @@ import {
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { journey } from '../../Settings/GoalDetails/data'
 
-import { ActionsTable } from '.'
+import { GoalsList } from './GoalsList'
 
-const ActionsTableStory: Meta<typeof ActionsTable> = {
+const GoalsListStory: Meta<typeof GoalsList> = {
   ...journeysAdminConfig,
-  component: ActionsTable,
+  component: GoalsList,
   title: 'Journeys-Admin/Editor/ActionsTable'
 }
 
-type Story = StoryObj<
-  ComponentProps<typeof ActionsTable> & { journey: Journey }
->
+type Story = StoryObj<ComponentProps<typeof GoalsList> & { journey: Journey }>
 
 const Template: Story = {
   render: (args) => (
     <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-      <ActionsTable />
+      <GoalsList goals={[]} />
     </JourneyProvider>
   )
 }
@@ -200,4 +198,4 @@ export const Placeholder = {
   }
 }
 
-export default ActionsTableStory
+export default GoalsListStory

@@ -13,7 +13,7 @@ import {
   ThemeName
 } from '../../../../../../__generated__/globalTypes'
 
-import { ActionsTable } from './Goals'
+import { GoalsList } from './GoalsList'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -114,7 +114,7 @@ const blocks: Blocks[] = [
   }
 ]
 
-describe('ActionsTable', () => {
+describe('GoalsList', () => {
   const journey: Journey = {
     __typename: 'Journey',
     id: 'journeyId',
@@ -158,7 +158,7 @@ describe('ActionsTable', () => {
   it('should render placeholder', () => {
     const { getByText } = render(
       <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <ActionsTable />
+        <GoalsList goals={[]} />
       </JourneyProvider>
     )
     expect(getByText('Every Journey has a goal')).toBeInTheDocument()
@@ -175,7 +175,7 @@ describe('ActionsTable', () => {
           variant: 'admin'
         }}
       >
-        <ActionsTable />
+        <GoalsList goals={[]} />
       </JourneyProvider>
     )
     expect(getByText('The Journey Goals')).toBeInTheDocument()
