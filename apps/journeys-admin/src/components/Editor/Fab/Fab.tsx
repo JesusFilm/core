@@ -37,6 +37,13 @@ export function Fab({ variant }: fabProp): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
+  if (activeContent == null) {
+    dispatch({
+      type: 'SetActiveContentAction',
+      activeContent: ActiveContent.Canvas
+    })
+  }
+
   function handleAddFab(event: MouseEvent): void {
     event.stopPropagation()
     if (activeSlide !== ActiveSlide.Content) {
