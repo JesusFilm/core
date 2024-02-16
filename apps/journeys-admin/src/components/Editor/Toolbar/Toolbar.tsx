@@ -8,15 +8,12 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
-import Play3Icon from '@core/shared/ui/icons/Play3'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 
-import { AnalyticsItem } from './Items/AnalyticsItem'
-import { ShareButtonItem } from './Items/ShareButtonItem'
-import { StrategyItem } from './Items/StrategyItem'
+import { Items } from './Items'
 import { Menu } from './Menu'
 
 export function Toolbar(): ReactElement {
@@ -96,36 +93,7 @@ export function Toolbar(): ReactElement {
               {journey.description}
             </Typography>
           </Stack>
-          <AnalyticsItem journey={journey} variant="button" />
-          <StrategyItem variant="button" />
-          <ShareButtonItem />
-          <IconButton
-            component="a"
-            href={`/api/preview?slug=${journey.slug}`}
-            target="_blank"
-            color="secondary"
-            sx={{
-              display: {
-                xs: 'none',
-                md: 'flex'
-              }
-            }}
-          >
-            <Play3Icon />
-          </IconButton>
-          <IconButton
-            aria-label="Preview"
-            href={`/api/preview?slug=${journey.slug}`}
-            target="_blank"
-            sx={{
-              display: {
-                xs: 'flex',
-                md: 'none'
-              }
-            }}
-          >
-            <Play3Icon />
-          </IconButton>
+          <Items />
         </>
       )}
       <Menu />

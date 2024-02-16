@@ -1,16 +1,14 @@
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { ComponentProps, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import BulbIcon from '@core/shared/ui/icons/Bulb'
 
-import { MenuItem } from '../../../../MenuItem'
+import { Item } from '../Item/Item'
 
 interface StrategyItemProps {
-  variant: 'button' | 'list-item'
+  variant: ComponentProps<typeof Item>['variant']
   closeMenu?: () => void
 }
 
@@ -34,31 +32,11 @@ export function StrategyItem({
   }
 
   return (
-    <>
-      {variant === 'button' ? (
-        <Button
-          variant="outlined"
-          color="secondary"
-          startIcon={<BulbIcon />}
-          sx={{
-            display: {
-              xs: 'none',
-              md: 'flex'
-            }
-          }}
-          onClick={handleGoalsClick}
-        >
-          <Typography variant="subtitle2" sx={{ py: 1 }}>
-            {t('Strategy')}
-          </Typography>
-        </Button>
-      ) : (
-        <MenuItem
-          label="StrategyItem"
-          icon={<BulbIcon />}
-          onClick={handleGoalsClick}
-        />
-      )}
-    </>
+    <Item
+      variant={variant}
+      label={t('Strategy')}
+      icon={<BulbIcon />}
+      onClick={handleGoalsClick}
+    />
   )
 }

@@ -116,7 +116,8 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
   const blocks: Array<Array<TreeBlock<StepBlock>>> = []
   const visitedStepIds: string[] = []
 
-  function getStepFromId(id): TreeBlock<StepBlock> | undefined {
+  function getStepFromId(id?: string): TreeBlock<StepBlock> | undefined {
+    if (id == null) return
     if (visitedStepIds.includes(id)) return
     visitedStepIds.push(id)
     return steps.find((step) => step.id === id)
@@ -267,7 +268,7 @@ function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
     }
   }
 
-  const step = getStepFromId(steps[0].id)
+  const step = getStepFromId(steps[0]?.id)
   if (step != null) processSteps([step])
 
   blocks.forEach((row, index) => {
