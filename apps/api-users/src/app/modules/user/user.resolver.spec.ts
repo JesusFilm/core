@@ -12,7 +12,8 @@ jest.mock('@core/nest/common/firebaseClient', () => ({
     getUser: jest.fn().mockResolvedValue({
       displayName: 'fo sho',
       email: 'tho@no.co',
-      photoURL: 'p'
+      photoURL: 'p',
+      emailVerified: true
     })
   },
   impersonateUser: jest.fn().mockResolvedValue('impersonationToken')
@@ -26,7 +27,8 @@ describe('UserResolver', () => {
     firstName: 'fo',
     lastName: 'sho',
     email: 'tho@no.co',
-    imageUrl: 'po'
+    imageUrl: 'po',
+    emailVerified: true
   } as unknown as User
 
   beforeEach(async () => {
@@ -64,14 +66,16 @@ describe('UserResolver', () => {
           firstName: 'fo',
           imageUrl: 'p',
           lastName: 'sho',
-          userId: 'userId'
+          userId: 'userId',
+          emailVerified: true
         },
         update: {
           email: 'tho@no.co',
           firstName: 'fo',
           imageUrl: 'p',
           lastName: 'sho',
-          userId: 'userId'
+          userId: 'userId',
+          emailVerified: true
         },
         where: { userId: 'userId' }
       })
@@ -140,14 +144,16 @@ describe('UserResolver', () => {
           firstName: 'fo',
           imageUrl: 'p',
           lastName: 'sho',
-          userId: 'userId'
+          userId: 'userId',
+          emailVerified: true
         },
         update: {
           email: 'tho@no.co',
           firstName: 'fo',
           imageUrl: 'p',
           lastName: 'sho',
-          userId: 'userId'
+          userId: 'userId',
+          emailVerified: true
         },
         where: { userId: 'userId' }
       })
