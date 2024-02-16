@@ -16,12 +16,12 @@ import {
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { Drawer } from '../Drawer'
 
-import { SocialShareAppearance } from './SocialDetails'
+import { SocialDetails } from './SocialDetails'
 
-const SocialShareAppearanceStory: Meta<typeof SocialShareAppearance> = {
+const SocialDetailsStory: Meta<typeof SocialDetails> = {
   ...journeysAdminConfig,
-  component: SocialShareAppearance,
-  title: 'Journeys-Admin/Editor/Drawer/SocialShareAppearance',
+  component: SocialDetails,
+  title: 'Journeys-Admin/Editor/Drawer/SocialDetails',
   // do not remove these parameters for this story, see: https://github.com/storybookjs/storybook/issues/17025
   parameters: {
     docs: {
@@ -82,7 +82,7 @@ const image: ImageBlock = {
   blurhash: ''
 }
 
-const Template: StoryObj<typeof SocialShareAppearance> = {
+const Template: StoryObj<typeof SocialDetails> = {
   render: ({ ...args }) => {
     return (
       <MockedProvider>
@@ -152,4 +152,4 @@ export const ImageDialog = {
   }
 }
 
-export default SocialShareAppearanceStory
+export default SocialDetailsStory

@@ -6,7 +6,7 @@ import { NextRouter, useRouter } from 'next/router'
 import {
   VideoBlockSource,
   VideoLabel
-} from '../../../../../../__generated__/globalTypes'
+} from '../../../../../../../__generated__/globalTypes'
 
 import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'
 

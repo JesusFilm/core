@@ -7,11 +7,11 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../../__generated__/BlockFields'
-import { GetVideo_video_variantLanguages as Language } from '../../../../../../../__generated__/GetVideo'
-import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
-import { ApolloLoadingProvider } from '../../../../../../../test/ApolloLoadingProvider'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+} from '../../../../../../../../__generated__/BlockFields'
+import { GetVideo_video_variantLanguages as Language } from '../../../../../../../../__generated__/GetVideo'
+import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
+import { ApolloLoadingProvider } from '../../../../../../../../test/ApolloLoadingProvider'
+import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
 
 import { VideoDetails } from '.'

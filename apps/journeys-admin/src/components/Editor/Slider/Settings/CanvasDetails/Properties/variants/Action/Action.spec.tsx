@@ -5,11 +5,11 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,
   ThemeName
-} from '../../../../../../__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/globalTypes'
 
 import { ACTION_DELETE, Action, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
