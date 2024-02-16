@@ -147,3 +147,5 @@ We have incorporated [DeepL](https://www.deepl.com/en/translator), an AI-powered
 <img src={CrowdinTranslations} height="650" width="900"/>
 
 Developers are required to assign themselves to the PR created by Crowdin if it is relevant to their work. Additionally, developers should update the PR labels and seek a review from another team member as part of their responsibilities. Once the PR has been approved and reviewed successfully, developers are responsible for merging the changes into the production branch promptly.
+
+Translations from DeepL may not accurately capture the intended context. DeepL is unable to discern context until a local user provides clarification. For now translations from DeepL will undergo verification by the users of our app.
