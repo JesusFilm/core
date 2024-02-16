@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import omit from 'lodash/omit'
 
 import { User } from '.prisma/api-users-client'
 
@@ -50,6 +51,17 @@ describe('UserResolver', () => {
   describe('me', () => {
     it('returns User', async () => {
       prismaService.user.findUnique.mockResolvedValueOnce(user)
+      expect(await resolver.me('userId')).toEqual(user)
+      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { userId: user.id }
+      })
+    })
+
+    it('returns email verified status always', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(
+        omit(user, ['emailVerified']) as User
+      )
+      prismaService.user.update.mockResolvedValue(user)
       expect(await resolver.me('userId')).toEqual(user)
       expect(prismaService.user.findUnique).toHaveBeenCalledWith({
         where: { userId: user.id }
