@@ -1,5 +1,4 @@
 import { ReactElement, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -18,15 +17,10 @@ export function SignUp({
   submitIconId,
   children
 }: TreeBlock<SignUpBlock>): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
-  const selectedAction = actions.find((act) => act.value === action?.__typename)
   const submitIcon = children.find(
     (block) => block.id === submitIconId
   ) as TreeBlock<IconFields>
-  const submitLabel = icons.find(
-    ({ value }) => value === submitIcon?.iconName
-  )?.label
 
   useEffect(() => {
     dispatch({
@@ -35,23 +29,26 @@ export function SignUp({
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: t('Form Submission'),
+      title: 'Form Submission',
       children: <Action />
     })
-  }, [dispatch, id, t])
+  }, [dispatch, id])
 
   return (
     <>
       <Attribute
         id={`${id}-signup-action`}
         icon={<LinkIcon />}
-        name={t('Action')}
-        value={t(selectedAction?.label ?? 'None')}
-        description={t('Form Submission')}
+        name="Action"
+        value={
+          actions.find((act) => act.value === action?.__typename)?.label ??
+          'None'
+        }
+        description="Form Submission"
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: t('Form Submission'),
+            title: 'Form Submission',
             mobileOpen: true,
             children: <Action />
           })
@@ -61,13 +58,16 @@ export function SignUp({
       <Attribute
         id={`${id}-signup-icon`}
         icon={<InformationCircleContained />}
-        name={t('Button Icon')}
-        value={t(submitLabel ?? 'None')}
-        description={t('Button Icon')}
+        name="Button Icon"
+        value={
+          icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
+          'None'
+        }
+        description="Button Icon"
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: t('Button Icon'),
+            title: 'Button Icon',
             mobileOpen: true,
             children: <Icon id={submitIcon.id} />
           })

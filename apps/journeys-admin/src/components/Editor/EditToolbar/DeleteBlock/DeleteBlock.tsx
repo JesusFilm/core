@@ -36,7 +36,6 @@ export function DeleteBlock({
   closeMenu,
   disabled = false
 }: DeleteBlockProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
   const { enqueueSnackbar } = useSnackbar()
 
@@ -46,7 +45,7 @@ export function DeleteBlock({
     dispatch
   } = useEditor()
 
-  const blockType = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
+  const label = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const [openDialog, setOpenDialog] = useState(false)
   const handleOpenDialog = (): void => setOpenDialog(true)
   const handleCloseDialog = (): void => {
@@ -89,26 +88,28 @@ export function DeleteBlock({
     handleCloseDialog()
 
     deletedBlockType !== 'StepBlock'
-      ? enqueueSnackbar(t('Block Deleted'), {
+      ? enqueueSnackbar('Block Deleted', {
           variant: 'success',
           preventDuplicate: true
         })
-      : enqueueSnackbar(t('Card Deleted'), {
+      : enqueueSnackbar('Card Deleted', {
           variant: 'success',
           preventDuplicate: true
         })
   }
+
+  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <>
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
-        dialogTitle={{ title: t('Delete Card?') }}
+        dialogTitle={{ title: 'Delete Card?' }}
         dialogAction={{
           onSubmit: handleDeleteBlock,
-          submitLabel: t('Delete'),
-          closeLabel: t('Cancel')
+          submitLabel: 'Delete',
+          closeLabel: 'Cancel'
         }}
       >
         <Typography>
@@ -123,18 +124,16 @@ export function DeleteBlock({
           aria-haspopup="true"
           aria-expanded="true"
           disabled={disableAction}
-          onClick={blockType === 'Card' ? handleOpenDialog : handleDeleteBlock}
+          onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         >
           <Trash2Icon />
         </IconButton>
       ) : (
         <MenuItem
-          label={t('Delete {{ label }}', {
-            label: blockType === 'Card' ? t('Card') : t('Block')
-          })}
+          label={`Delete ${label}`}
           icon={<Trash2Icon />}
           disabled={disableAction}
-          onClick={blockType === 'Card' ? handleOpenDialog : handleDeleteBlock}
+          onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
         />
       )}
     </>

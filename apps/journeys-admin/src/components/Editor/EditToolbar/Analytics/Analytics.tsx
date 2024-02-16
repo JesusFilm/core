@@ -2,7 +2,6 @@ import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
 
@@ -15,8 +14,6 @@ interface AnalyticsProps {
 }
 
 export function Analytics({ journey, variant }: AnalyticsProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-
   return (
     <NextLink
       href={`/journeys/${journey.id}/reports`}
@@ -26,7 +23,7 @@ export function Analytics({ journey, variant }: AnalyticsProps): ReactElement {
     >
       {variant === 'button' ? (
         <Tooltip
-          title={t('Analytics')}
+          title="Analytics"
           arrow
           sx={{
             display: {
@@ -40,7 +37,7 @@ export function Analytics({ journey, variant }: AnalyticsProps): ReactElement {
           </IconButton>
         </Tooltip>
       ) : (
-        <MenuItem label={t('Analytics')} icon={<BarChartSquare3Icon />} />
+        <MenuItem label="Analytics" icon={<BarChartSquare3Icon />} />
       )}
     </NextLink>
   )

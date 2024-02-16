@@ -72,7 +72,7 @@ export function Label(): ReactElement {
                 id="textResponseLabel"
                 name="textResponseLabel"
                 variant="filled"
-                label={t('Label')}
+                label="Label"
                 fullWidth
                 value={values.textResponseLabel}
                 placeholder={t('Your answer here')}
@@ -95,7 +95,7 @@ export function Label(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label={t('Label')}
+          label="Label"
           fullWidth
           disabled
           sx={{

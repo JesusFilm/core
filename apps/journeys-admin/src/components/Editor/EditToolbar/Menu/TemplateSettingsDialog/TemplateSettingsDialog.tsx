@@ -116,7 +116,7 @@ export function TemplateSettingsDialog({
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
           enqueueSnackbar(
-            t('Field update failed. Reload the page or try again.'),
+            'Field update failed. Reload the page or try again.',
             {
               variant: 'error',
               preventDuplicate: true

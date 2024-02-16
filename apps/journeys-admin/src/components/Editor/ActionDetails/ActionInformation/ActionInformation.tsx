@@ -45,20 +45,18 @@ export function ActionInformation(): ReactElement {
         )}
       </Typography>
       <GoalDescription
-        label={t('Start a Conversation')}
-        description={t('If the goal is to go any chat platform')}
+        label="Start a Conversation"
+        description="If the goal is to go any chat platform"
         icon={<MessageChat1Icon />}
       />
       <GoalDescription
-        label={t('Visit a Website')}
-        description={t(
-          'This could be your church or ministry website, or whatever you want to redirect the viewer to.'
-        )}
+        label="Visit a Website"
+        description="This could be your church or ministry website, or whatever you want to redirect the viewer to."
         icon={<LinkAngledIcon />}
       />
       <GoalDescription
-        label={t('Link to Bible')}
-        description={t('If the target of the journey is to download the Bible')}
+        label="Link to Bible"
+        description="If the target of the journey is to download the Bible"
         icon={<BibleIcon />}
       />
     </Stack>

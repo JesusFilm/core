@@ -113,9 +113,9 @@ export function HostSidePanel(): ReactElement {
                   <Typography variant="subtitle2">
                     {data?.userTeams.length === 0
                       ? t('Cannot edit hosts for this old journey')
-                      : t('Only {{ title }} members can edit this', {
-                          title: team.title
-                        })}
+                      : `${t('Only')} ${team.title} ${t(
+                          'members can edit this'
+                        )}`}
                   </Typography>
                 </Stack>
               </SidePanelContainer>

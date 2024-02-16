@@ -2,7 +2,6 @@ import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import {
   ActiveJourneyEditContent,
@@ -17,7 +16,6 @@ import { DuplicateBlock } from './DuplicateBlock'
 import { Menu } from './Menu'
 
 export function EditToolbar(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { state } = useEditor()
 
@@ -33,7 +31,7 @@ export function EditToolbar(): ReactElement {
           <Analytics journey={journey} variant="button" />
           <Chip
             icon={<EyeOpenIcon />}
-            label={t('Preview')}
+            label="Preview"
             component="a"
             href={`/api/preview?slug=${journey.slug}`}
             target="_blank"

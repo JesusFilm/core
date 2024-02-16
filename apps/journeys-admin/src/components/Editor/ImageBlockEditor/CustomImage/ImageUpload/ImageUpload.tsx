@@ -150,12 +150,12 @@ export function ImageUpload({
           sx={{ pb: 4 }}
         >
           {loading === true
-            ? t('Uploading...')
+            ? 'Uploading...'
             : uploadSuccess
-            ? t('Upload successful!')
+            ? 'Upload successful!'
             : uploadError
-            ? t('Upload Failed!')
-            : t('Drop an image here')}
+            ? 'Upload Failed!'
+            : 'Drop an image here'}
         </Typography>
       </Box>
       <Stack
@@ -171,8 +171,8 @@ export function ImageUpload({
         />
         <Typography variant="caption">
           {uploadError
-            ? t('Something went wrong, try again')
-            : t('Max file size: 10 MB')}
+            ? 'Something went wrong, try again'
+            : 'Max file size: 10 MB'}
         </Typography>
       </Stack>
       <Button

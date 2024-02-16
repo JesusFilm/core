@@ -37,7 +37,7 @@ export function ActionsBanner(): ReactElement {
     dispatch({
       type: 'SetDrawerPropsAction',
       mobileOpen: true,
-      title: t('Information'),
+      title: 'Information',
       children: <ActionDetails />
     })
   }
@@ -126,13 +126,9 @@ export function ActionsBanner(): ReactElement {
             )}
           </Typography>
         </Box>
-        <ActionPoint
-          description={t('Check all URLs and actions used in the journey')}
-        />
-        <ActionPoint
-          description={t('Assign a goal to each action and monitor it')}
-        />
-        <ActionPoint description={t('Change all URLs in a single place')} />
+        <ActionPoint description="Check all URLs and actions used in the journey" />
+        <ActionPoint description="Assign a goal to each action and monitor it" />
+        <ActionPoint description="Change all URLs in a single place" />
       </Stack>
     </Box>
   )

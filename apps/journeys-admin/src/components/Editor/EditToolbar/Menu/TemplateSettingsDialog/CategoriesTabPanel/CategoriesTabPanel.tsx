@@ -97,9 +97,9 @@ export function CategoriesTabPanel(): ReactElement {
                   label={!smUp ? t(orderedTagLabels[index]) : undefined}
                   placeholder={
                     smUp
-                      ? t('Add {{ tagLabel }}', {
-                          tagLabel: orderedTagLabels[index].toLowerCase()
-                        })
+                      ? `${t('Add')} ${t(
+                          orderedTagLabels[index]
+                        ).toLowerCase()}`
                       : undefined
                   }
                 />

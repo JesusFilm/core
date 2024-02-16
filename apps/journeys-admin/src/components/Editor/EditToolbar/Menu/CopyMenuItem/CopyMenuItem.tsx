@@ -1,6 +1,5 @@
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import LingAngledIcon from '@core/shared/ui/icons/LinkAngled'
 
@@ -16,7 +15,6 @@ export function CopyMenuItem({
   journey,
   onClose
 }: CopyMenuItemProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
 
   const handleCopyLink = async (): Promise<void> => {
@@ -28,7 +26,7 @@ export function CopyMenuItem({
       }`
     )
     onClose?.()
-    enqueueSnackbar(t('Link Copied'), {
+    enqueueSnackbar('Link Copied', {
       variant: 'success',
       preventDuplicate: true
     })
@@ -36,7 +34,7 @@ export function CopyMenuItem({
 
   return (
     <MenuItem
-      label={t('Copy Link')}
+      label="Copy Link"
       icon={<LingAngledIcon />}
       onClick={handleCopyLink}
       testId="Copy"

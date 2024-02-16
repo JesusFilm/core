@@ -3,7 +3,6 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -28,7 +27,6 @@ export function DescriptionDialog({
   open,
   onClose
 }: DescriptionDialogProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneyDescUpdate>(JOURNEY_DESC_UPDATE)
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
@@ -57,7 +55,7 @@ export function DescriptionDialog({
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
           enqueueSnackbar(
-            t('Field update failed. Reload the page or try again.'),
+            'Field update failed. Reload the page or try again.',
             {
               variant: 'error',
               preventDuplicate: true
@@ -94,10 +92,10 @@ export function DescriptionDialog({
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
-              dialogTitle={{ title: t('Edit Description') }}
+              dialogTitle={{ title: 'Edit Description' }}
               dialogAction={{
                 onSubmit: handleSubmit,
-                closeLabel: t('Cancel')
+                closeLabel: 'Cancel'
               }}
               testId="DescriptionDialog"
             >

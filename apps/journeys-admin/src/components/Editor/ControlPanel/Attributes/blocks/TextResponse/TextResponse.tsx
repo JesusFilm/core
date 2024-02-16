@@ -1,6 +1,5 @@
 import Divider from '@mui/material/Divider'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -23,28 +22,23 @@ export function TextResponse({
   submitIconId,
   label
 }: TreeBlock<TextResponseBlock>): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
-  const selectedAction = actions.find((act) => act.value === action?.__typename)
   const submitIcon = children.find(
     (block) => block.id === submitIconId
   ) as TreeBlock<IconFields>
-  const submitLabel = icons.find(
-    ({ value }) => value === submitIcon?.iconName
-  )?.label
 
   return (
     <>
       <Attribute
         id={`${id}-text-field-options`}
         icon={<TextInput1Icon />}
-        name={t('Feedback')}
-        value={t(label)}
-        description={t('Feedback Properties')}
+        name="Feedback"
+        value={label}
+        description="Feedback Properties"
         onClick={(): void =>
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: t('Feedback Properties'),
+            title: 'Feedback Properties',
             mobileOpen: true,
             children: <TextResponseFields />
           })
@@ -56,13 +50,16 @@ export function TextResponse({
       <Attribute
         id={`${id}-text-field-action`}
         icon={<LinkIcon />}
-        name={t('Action')}
-        value={t(selectedAction?.label ?? 'None')}
-        description={t('Form Submission')}
+        name="Action"
+        value={
+          actions.find((act) => act.value === action?.__typename)?.label ??
+          'None'
+        }
+        description="Form Submission"
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: t('Action'),
+            title: 'Action',
             mobileOpen: true,
             children: <Action />
           })
@@ -72,13 +69,16 @@ export function TextResponse({
       <Attribute
         id={`${id}-text-field-icon`}
         icon={<InformationCircleContainedIcon />}
-        name={t('Button Icon')}
-        value={t(submitLabel ?? 'None')}
-        description={t('Button Icon')}
+        name="Button Icon"
+        value={
+          icons.find(({ value }) => value === submitIcon?.iconName)?.label ??
+          'None'
+        }
+        description="Button Icon"
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: t('Button Icon'),
+            title: 'Button Icon',
             mobileOpen: true,
             children: <Icon id={submitIcon.id} />
           })

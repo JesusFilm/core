@@ -3,7 +3,6 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -26,12 +25,11 @@ interface TitleDialogProps {
 }
 
 export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneyTitleUpdate>(JOURNEY_TITLE_UPDATE)
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const titleSchema = object().shape({
-    title: string().required(t('Required'))
+    title: string().required('Required')
   })
 
   const handleUpdateTitle = async (values: FormikValues): Promise<void> => {
@@ -53,7 +51,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
           enqueueSnackbar(
-            t('Field update failed. Reload the page or try again.'),
+            'Field update failed. Reload the page or try again.',
             {
               variant: 'error',
               preventDuplicate: true
@@ -89,10 +87,10 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
-              dialogTitle={{ title: t('Edit Title') }}
+              dialogTitle={{ title: 'Edit Title' }}
               dialogAction={{
                 onSubmit: handleSubmit,
-                closeLabel: t('Cancel')
+                closeLabel: 'Cancel'
               }}
               testId="TitleDialog"
             >

@@ -1,7 +1,6 @@
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
@@ -23,7 +22,6 @@ interface LanguageMenuItemProps {
 export function LanguageMenuItem({
   onClose
 }: LanguageMenuItemProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [showLanguageDialog, setShowLanguageDialog] = useState<
     boolean | undefined
@@ -50,7 +48,7 @@ export function LanguageMenuItem({
   return (
     <>
       <MenuItem
-        label={t('Language')}
+        label="Language"
         icon={<Globe1Icon />}
         onClick={handleUpdateLanguage}
         testId="Language"

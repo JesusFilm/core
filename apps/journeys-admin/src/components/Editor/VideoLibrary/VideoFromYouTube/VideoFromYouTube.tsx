@@ -120,7 +120,7 @@ export function VideoFromYouTube({
       <VideoSearch
         value={url}
         onChange={setUrl}
-        label={t('Paste any YouTube Link')}
+        label="Paste any YouTube Link"
         icon="link"
       />
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>

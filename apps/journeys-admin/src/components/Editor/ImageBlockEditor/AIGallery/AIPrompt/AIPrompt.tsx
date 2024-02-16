@@ -52,7 +52,7 @@ export function AIPrompt({
               variant="filled"
               onChange={handleChange}
               disabled={isSubmitting}
-              label={t('Prompt')}
+              label="Prompt"
               error={Boolean(errors.prompt)}
               value={values.prompt}
               helperText={<>{errors.prompt}</>}

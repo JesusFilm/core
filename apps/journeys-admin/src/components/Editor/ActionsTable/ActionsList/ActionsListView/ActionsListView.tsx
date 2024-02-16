@@ -10,7 +10,7 @@ import TableRow, { TableRowProps } from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
-import { Trans, useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 
 import BibleIcon from '@core/shared/ui/icons/Bible'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -118,7 +118,7 @@ export function ActionsListView({
                 <TableCell align="center" width={100}>
                   <Typography variant="subtitle2">{count}</Typography>
                   <Typography variant="body2">
-                    {count > 1 ? t('cards') : t('card')}
+                    {count > 1 ? 'cards' : 'card'}
                   </Typography>
                 </TableCell>
                 <TableCell width={40} sx={{ pl: 0, pr: 5 }}>
@@ -190,15 +190,11 @@ export function ActionsListView({
                         {goalLabel(url)}
                       </Typography>
                     </Stack>
-                    <Trans t={t} count={count}>
-                      <Typography variant="body2" color="secondary.light">
-                        Appears on{' '}
-                        <span style={{ fontWeight: 'bold' }}>
-                          {'{{ count }}'}
-                        </span>{' '}
-                        card
-                      </Typography>
-                    </Trans>
+                    <Typography variant="body2" color="secondary.light">
+                      {t('Appears on')}
+                      <span style={{ fontWeight: 'bold' }}>{count}</span>{' '}
+                      {count > 1 ? t('cards') : t('card')}
+                    </Typography>
                   </Stack>
                 </TableCell>
               </StyledTableRow>

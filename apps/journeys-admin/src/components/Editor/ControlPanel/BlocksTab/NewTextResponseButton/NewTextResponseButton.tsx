@@ -1,6 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -46,7 +45,6 @@ export const TEXT_RESPONSE_BLOCK_CREATE = gql`
 `
 
 export function NewTextResponseButton(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [textResponseBlockCreate] = useMutation<TextResponseBlockCreate>(
     TEXT_RESPONSE_BLOCK_CREATE
   )
@@ -70,8 +68,8 @@ export function NewTextResponseButton(): ReactElement {
             id,
             journeyId: journey.id,
             parentBlockId: card.id,
-            label: t('Your answer here'),
-            submitLabel: t('Submit')
+            label: 'Your answer here',
+            submitLabel: 'Submit'
           },
           iconBlockCreateInput: {
             id: submitIconId,
@@ -136,7 +134,7 @@ export function NewTextResponseButton(): ReactElement {
   return (
     <Button
       icon={<TextInput1Icon />}
-      value={t('Feedback')}
+      value="Feedback"
       onClick={handleClick}
       testId="NewTextResponseButton"
     />

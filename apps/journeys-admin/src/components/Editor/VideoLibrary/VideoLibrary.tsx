@@ -168,19 +168,19 @@ export function VideoLibrary({
           >
             <Tab
               icon={<MediaStrip1Icon />}
-              label={t('Library')}
+              label="Library"
               {...tabA11yProps('video-from-local', 0)}
               sx={{ flexGrow: 1 }}
             />
             <Tab
               icon={<YoutubeIcon />}
-              label={t('YouTube')}
+              label="YouTube"
               {...tabA11yProps('video-from-youtube', 1)}
               sx={{ flexGrow: 1 }}
             />
             <Tab
               icon={<Upload1Icon />}
-              label={t('Upload')}
+              label="Upload"
               {...tabA11yProps('video-from-cloudflare', 2)}
               sx={{ flexGrow: 1 }}
             />

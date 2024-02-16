@@ -41,15 +41,15 @@ export function Step({
   const heading =
     nextStep != null && steps != null
       ? getStepHeading(nextStep.id, nextStep.children, steps, t)
-      : t('None')
+      : 'None'
 
   return (
     <Attribute
       id={`next-step-${id}`}
       icon={locked ? <Lock1Icon /> : <LockOpen1Icon />}
-      name={t('Next Card')}
+      name="Next Card"
       value={heading}
-      description={locked ? t('Locked With Interaction') : t('Unlocked Card')}
+      description={locked ? 'Locked With Interaction' : 'Unlocked Card'}
       onClick={() => {
         dispatch({
           type: 'SetDrawerPropsAction',

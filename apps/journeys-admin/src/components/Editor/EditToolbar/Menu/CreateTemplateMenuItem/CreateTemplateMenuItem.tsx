@@ -1,7 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
@@ -29,7 +28,6 @@ export const CREATE_TEMPLATE = gql`
 `
 
 export function CreateTemplateMenuItem(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
 
@@ -94,7 +92,7 @@ export function CreateTemplateMenuItem(): ReactElement {
 
   return (
     <MenuItem
-      label={t('Create Template')}
+      label="Create Template"
       icon={<Bag5Icon />}
       onClick={handleCreateTemplate}
       testId="CreateTemplate"

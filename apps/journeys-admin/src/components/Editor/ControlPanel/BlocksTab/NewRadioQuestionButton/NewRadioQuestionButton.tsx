@@ -1,6 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -44,7 +43,6 @@ export const RADIO_QUESTION_BLOCK_CREATE = gql`
 `
 
 export function NewRadioQuestionButton(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
     RADIO_QUESTION_BLOCK_CREATE
   )
@@ -71,12 +69,12 @@ export function NewRadioQuestionButton(): ReactElement {
           radioOptionBlockCreateInput1: {
             journeyId: journey.id,
             parentBlockId: id,
-            label: t('Option 1')
+            label: 'Option 1'
           },
           radioOptionBlockCreateInput2: {
             journeyId: journey.id,
             parentBlockId: id,
-            label: t('Option 2')
+            label: 'Option 2'
           }
         },
         update(cache, { data }) {
@@ -137,7 +135,7 @@ export function NewRadioQuestionButton(): ReactElement {
   return (
     <Button
       icon={<CheckContainedIcon />}
-      value={t('Poll')}
+      value="Poll"
       onClick={handleClick}
       testId="NewRadioQuestionButton"
     />

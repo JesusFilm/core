@@ -1,6 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -50,7 +49,6 @@ export const BUTTON_BLOCK_CREATE = gql`
 `
 
 export function NewButtonButton(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [buttonBlockCreate] =
     useMutation<ButtonBlockCreate>(BUTTON_BLOCK_CREATE)
   const { journey } = useJourney()
@@ -159,7 +157,7 @@ export function NewButtonButton(): ReactElement {
   return (
     <Button
       icon={<Cursor6Icon />}
-      value={t('Button')}
+      value="Button"
       onClick={handleClick}
       testId="NewButton"
     />

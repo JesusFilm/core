@@ -6,7 +6,6 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Skeleton from '@mui/material/Skeleton'
 import { Fragment, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
@@ -35,8 +34,6 @@ export function VideoList({
   fetchMore,
   hasMore
 }: VideoListProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-
   return (
     <>
       <Divider sx={{ mx: 6 }} />
@@ -80,7 +77,7 @@ export function VideoList({
         {videos?.length === 0 && !loading && (
           <>
             <ListItem sx={{ py: 4, px: 6 }}>
-              <ListItemText primary={t('No Results Found')} />
+              <ListItemText primary="No Results Found" />
             </ListItem>
             <Divider sx={{ mx: 6 }} />
           </>
@@ -97,9 +94,7 @@ export function VideoList({
           size="medium"
           disabled={(videos?.length === 0 && !loading) || !hasMore}
         >
-          {videos?.length === 0 || !hasMore
-            ? t('No More Videos')
-            : t('Load More')}
+          {videos?.length === 0 || !hasMore ? 'No More Videos' : 'Load More'}
         </LoadingButton>
       </Box>
     </>

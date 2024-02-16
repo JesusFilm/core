@@ -1,6 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -27,7 +26,6 @@ export const ICON_BLOCK_COLOR_UPDATE = gql`
 interface ColorProps extends Pick<TreeBlock<IconFields>, 'id' | 'iconColor'> {}
 
 export function Color({ id, iconColor }: ColorProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [iconBlockColorUpdate] = useMutation<IconBlockColorUpdate>(
     ICON_BLOCK_COLOR_UPDATE
   )
@@ -57,22 +55,22 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
   const options = [
     {
       value: IconColor.inherit,
-      label: t('Default'),
+      label: 'Default',
       icon: <ColorDisplayIcon color={IconColor.inherit} />
     },
     {
       value: IconColor.primary,
-      label: t('Primary'),
+      label: 'Primary',
       icon: <ColorDisplayIcon color={IconColor.primary} />
     },
     {
       value: IconColor.secondary,
-      label: t('Secondary'),
+      label: 'Secondary',
       icon: <ColorDisplayIcon color={IconColor.secondary} />
     },
     {
       value: IconColor.error,
-      label: t('Error'),
+      label: 'Error',
       icon: <ColorDisplayIcon color={IconColor.error} />
     }
   ]

@@ -1,7 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -70,7 +69,6 @@ interface BackgroundMediaVideoProps {
 export function BackgroundMediaVideo({
   cardBlock
 }: BackgroundMediaVideoProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const coverBlock =
     (cardBlock?.children.find(
       (child) => child.id === cardBlock?.coverBlockId
@@ -174,7 +172,7 @@ export function BackgroundMediaVideo({
       } else {
         await updateVideoBlock(block)
       }
-      enqueueSnackbar(t('Video Updated'), {
+      enqueueSnackbar('Video Updated', {
         variant: 'success',
         preventDuplicate: true
       })

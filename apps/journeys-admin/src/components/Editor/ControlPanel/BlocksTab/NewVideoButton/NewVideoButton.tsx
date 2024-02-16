@@ -1,6 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -22,7 +21,6 @@ export const VIDEO_BLOCK_CREATE = gql`
 `
 
 export function NewVideoButton(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
@@ -82,7 +80,7 @@ export function NewVideoButton(): ReactElement {
   return (
     <Button
       icon={<VideoOnIcon />}
-      value={t('Video')}
+      value="Video"
       onClick={handleClick}
       testId="NewVideoButton"
     />

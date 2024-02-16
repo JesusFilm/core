@@ -1,7 +1,6 @@
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
 import { ReactElement, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -19,7 +18,6 @@ import { Variant } from './Variant'
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   const { id, align, color, variant } = block
 
-  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
 
   useEffect(() => {
@@ -29,27 +27,25 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: t('Text Variant'),
+      title: 'Text Variant',
       children: <Variant />
     })
-  }, [dispatch, id, t])
+  }, [dispatch, id])
 
   return (
     <>
       <Attribute
         id={`${id}-typography-variant`}
         icon={<Type2Icon />}
-        name={t('Text Variant')}
-        value={t(
-          capitalize(
-            lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
-          )
+        name="Text Variant"
+        value={capitalize(
+          lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
         )}
-        description={t('Text Variant')}
+        description="Text Variant"
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: t('Text Variant'),
+            title: 'Text Variant',
             mobileOpen: true,
             children: <Variant />
           })
@@ -59,13 +55,13 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
       <Attribute
         id={`${id}-typography-color`}
         icon={<ColorDisplayIcon color={color} />}
-        name={t('Color')}
-        value={t(capitalize(color?.toString() ?? 'primary'))}
-        description={t('Text Color')}
+        name="Color"
+        value={capitalize(color?.toString() ?? 'primary')}
+        description="Text Color"
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: t('Text Color'),
+            title: 'Text Color',
             mobileOpen: true,
             children: <Color />
           })
@@ -75,13 +71,13 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
       <Attribute
         id={`${id}-typography-alignment`}
         icon={<AlignLeftIcon />}
-        name={t('Text Alignment')}
-        value={t(capitalize(align?.toString() ?? 'Left'))}
-        description={t('Text Alignment')}
+        name="Text Alignment"
+        value={capitalize(align?.toString() ?? 'Left')}
+        description="Text Alignment"
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: t('Text Alignment'),
+            title: 'Text Alignment',
             mobileOpen: true,
             children: <Align />
           })

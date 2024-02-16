@@ -28,8 +28,6 @@ import {
   CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE
 } from './BackgroundMediaVideo'
 
-import '../../../../../../../../../test/i18n'
-
 const card: TreeBlock<CardBlock> = {
   id: 'cardId',
   __typename: 'CardBlock',

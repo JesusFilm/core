@@ -3,7 +3,6 @@ import IconButton from '@mui/material/IconButton'
 import last from 'lodash/last'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -37,7 +36,6 @@ export function DuplicateBlock({
   handleClick,
   disabled = false
 }: DuplicateBlockProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
 
   const {
@@ -46,7 +44,8 @@ export function DuplicateBlock({
   } = useEditor()
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
-  const blockType = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
+  const blockLabel =
+    selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const disableAction = selectedBlock == null || disabled
 
   const handleDuplicateBlock = async (): Promise<void> => {
@@ -119,38 +118,31 @@ export function DuplicateBlock({
         }
       }
     }
-    enqueueSnackbar(
-      t('{{ blockLabel }} Duplicated', {
-        blockLabel: blockType === 'Card' ? t('Card') : t('Block')
-      }),
-      {
-        variant: 'success',
-        preventDuplicate: true
-      }
-    )
+    enqueueSnackbar(`${blockLabel} Duplicated`, {
+      variant: 'success',
+      preventDuplicate: true
+    })
   }
 
   return (
     <>
       {variant === 'button' ? (
         <IconButton
-          id={`duplicate-${blockType}-actions`}
-          aria-label={`Duplicate ${blockType} Actions`}
+          id={`duplicate-${blockLabel}-actions`}
+          aria-label={`Duplicate ${blockLabel} Actions`}
           disabled={disableAction}
           onClick={handleDuplicateBlock}
-          data-testId={`Duplicate-${blockType}`}
+          data-testId={`Duplicate-${blockLabel}`}
         >
           <CopyLeftIcon />
         </IconButton>
       ) : (
         <MenuItem
-          label={t('Duplicate {{ blockLabel }}', {
-            blockLabel: blockType === 'Card' ? t('Card') : t('Block')
-          })}
+          label={`Duplicate ${blockLabel}`}
           icon={<CopyLeftIcon color="inherit" />}
           disabled={disableAction}
           onClick={handleDuplicateBlock}
-          testId={`Duplicate-${blockType}`}
+          testId={`Duplicate-${blockLabel}`}
         />
       )}
     </>

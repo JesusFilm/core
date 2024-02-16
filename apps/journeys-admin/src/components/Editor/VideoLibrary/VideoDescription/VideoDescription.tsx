@@ -2,7 +2,6 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import { Dispatch, ReactElement, SetStateAction, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 interface ShowMoreButtonProps {
   displayMore: boolean
@@ -17,8 +16,6 @@ export const ShowMoreButton = ({
   displayMore,
   setDisplayMore
 }: ShowMoreButtonProps): ReactElement => {
-  const { t } = useTranslation('apps-journeys-admin')
-
   return (
     <Button
       disableRipple
@@ -38,7 +35,7 @@ export const ShowMoreButton = ({
       }}
       onClick={() => setDisplayMore(!displayMore)}
     >
-      {displayMore ? t('Less') : t('More')}
+      {displayMore ? 'Less' : 'More'}
     </Button>
   )
 }

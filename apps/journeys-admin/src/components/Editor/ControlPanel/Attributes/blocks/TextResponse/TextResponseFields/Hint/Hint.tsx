@@ -4,7 +4,6 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
 import { FocusEvent, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -27,7 +26,6 @@ export const TEXT_RESPONSE_HINT_UPDATE = gql`
 `
 
 export function Hint(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [textResponseHintUpdate] = useMutation<TextResponseHintUpdate>(
     TEXT_RESPONSE_HINT_UPDATE
   )
@@ -75,7 +73,7 @@ export function Hint(): ReactElement {
                 id="textResponseHint"
                 name="textResponseHint"
                 variant="filled"
-                label={t('Hint')}
+                label="Hint"
                 fullWidth
                 value={values.textResponseHint}
                 inputProps={{ maxLength: 250 }}
@@ -91,7 +89,7 @@ export function Hint(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label={t('Hint')}
+          label="Hint"
           fullWidth
           disabled
           sx={{

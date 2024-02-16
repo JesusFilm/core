@@ -6,7 +6,6 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 interface ButtonProps {
   icon: ReactElement
@@ -27,7 +26,6 @@ export function Button({
   onClick,
   testId
 }: ButtonProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const handleClick = (): void => {
     onClick?.()
   }
@@ -58,9 +56,7 @@ export function Button({
                     {name}
                   </Typography>
                 )}
-                <Typography noWrap>
-                  {value !== '' ? value : t('None')}
-                </Typography>
+                <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
               </Box>
             </Stack>
           </CardContent>

@@ -5,7 +5,6 @@ import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { init, t } from 'i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -50,29 +49,26 @@ export const ACTION_DELETE = gql`
     }
   }
 `
-
-void init({ defaultNS: 'apps-journeys-admin', fallbackLng: 'en' })
-
 export const actions = [
   {
     value: 'none',
-    label: t('None')
+    label: 'None'
   },
   {
     value: 'NavigateAction',
-    label: t('Next Step')
+    label: 'Next Step'
   },
   {
     value: 'NavigateToBlockAction',
-    label: t('Selected Card')
+    label: 'Selected Card'
   },
   {
     value: 'LinkAction',
-    label: t('URL/Website')
+    label: 'URL/Website'
   },
   {
     value: 'EmailAction',
-    label: t('Email')
+    label: 'Email'
   }
 ]
 
@@ -196,7 +192,7 @@ export function Action(): ReactElement {
                     nextStep == null && action.value === 'NavigateAction'
                   }
                 >
-                  {t(action.label)}
+                  {action.label}
                 </MenuItem>
               )
             })}

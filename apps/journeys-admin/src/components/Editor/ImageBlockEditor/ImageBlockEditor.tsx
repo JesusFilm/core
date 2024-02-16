@@ -60,7 +60,6 @@ export function ImageBlockEditor({
   showAdd,
   error
 }: ImageBlockEditorProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [tabValue, setTabValue] = useState(0)
   const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
@@ -86,7 +85,7 @@ export function ImageBlockEditor({
   }
 
   const srcSchema = object().shape({
-    src: string().url(t('Please enter a valid url')).required(t('Required'))
+    src: string().url('Please enter a valid url').required('Required')
   })
 
   const handleSrcChange = async (
@@ -126,6 +125,8 @@ export function ImageBlockEditor({
     await handleSrcChange(src, blurHash, width, height)
     setUnsplashAuthor(unsplashAuthor)
   }
+
+  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <>
@@ -167,7 +168,7 @@ export function ImageBlockEditor({
           />
           <Tab
             icon={<StarsIcon />}
-            label={<Typography variant="subtitle2">{t('AI')}</Typography>}
+            label={<Typography variant="subtitle2">AI</Typography>}
             {...tabA11yProps('custom', 3)}
           />
         </Tabs>

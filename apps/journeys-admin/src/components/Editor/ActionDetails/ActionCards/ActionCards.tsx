@@ -118,7 +118,6 @@ function ActionCardsDetail({
   block,
   url
 }: ActionCardsDetailProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   function findBlockWithAction(block): TreeBlock | null {
     if (((block as ButtonBlock).action as LinkAction)?.url === url) return block
     if (block.children != null) {
@@ -138,15 +137,15 @@ function ActionCardsDetail({
 
   switch (actionBlock?.__typename) {
     case 'TextResponseBlock':
-      blockType = t('Feedback')
+      blockType = 'Feedback'
       label = actionBlock?.submitLabel ?? ''
       break
     case 'RadioOptionBlock':
-      blockType = t('Poll')
+      blockType = 'Poll'
       label = actionBlock?.label ?? ''
       break
     case 'SignUpBlock':
-      blockType = t('Subscribe')
+      blockType = 'Subscribe'
       label = actionBlock?.submitLabel ?? ''
       break
     default:

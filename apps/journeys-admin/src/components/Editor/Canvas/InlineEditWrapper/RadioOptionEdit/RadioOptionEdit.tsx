@@ -1,6 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -30,7 +29,6 @@ export function RadioOptionEdit({
   label,
   ...radioOptionProps
 }: RadioOptionEditProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [radioOptionBlockUpdate] = useMutation<RadioOptionBlockUpdateContent>(
     RADIO_OPTION_BLOCK_UPDATE_CONTENT
   )
@@ -69,7 +67,7 @@ export function RadioOptionEdit({
       autoFocus
       onBlur={handleSaveBlock}
       value={value}
-      placeholder={t('Type your text here...')}
+      placeholder="Type your text here..."
       onChange={(e) => {
         setValue(e.currentTarget.value)
       }}

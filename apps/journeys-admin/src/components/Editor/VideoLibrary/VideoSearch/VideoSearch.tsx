@@ -3,7 +3,6 @@ import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import debounce from 'lodash/debounce'
 import { ChangeEvent, ReactElement, useEffect, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import LinkIcon from '@core/shared/ui/icons/Link'
 import Search1Icon from '@core/shared/ui/icons/Search1'
@@ -21,7 +20,6 @@ export function VideoSearch({
   onChange,
   icon
 }: VideoSearchProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const handleChange = useMemo(() => debounce(onChange, 500), [onChange])
   const [search, setSearch] = useState(value ?? '')
 
@@ -47,7 +45,7 @@ export function VideoSearch({
       data-testid="VideoSearch"
     >
       <TextField
-        label={label ?? t('Search by title in JF Library')}
+        label={label ?? 'Search by title in JF Library'}
         variant="filled"
         fullWidth
         value={search}
