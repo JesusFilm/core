@@ -1,15 +1,6 @@
-import { render } from '@testing-library/react'
-import { ReactElement } from 'react'
-
 import type { TreeBlock } from '../block'
 
-import {
-  ActiveContent,
-  ActiveSlide,
-  EditorProvider,
-  reducer,
-  useEditor
-} from './EditorProvider'
+import { ActiveContent, ActiveSlide, reducer } from './EditorProvider'
 
 import { ActiveFab } from '.'
 

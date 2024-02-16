@@ -136,9 +136,9 @@ export function BaseNode({
             onClick={handleClick}
             style={{
               position: 'fixed',
-              width: 40,
-              height: 40,
-              top: 60,
+              width: 35,
+              height: 35,
+              bottom: -20,
               background: 'transparent',
               borderColor: 'transparent',
               borderRadius: 20,
