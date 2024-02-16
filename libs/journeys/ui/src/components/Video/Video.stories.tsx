@@ -42,7 +42,8 @@ const emptyVideo: Omit<ComponentProps<typeof Video>, 'source'> = {
   fullsize: null,
   action: null,
   objectFit: null,
-  children: []
+  children: [],
+  activeStep: true
 }
 
 const startVideoMock = {
