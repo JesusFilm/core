@@ -16,7 +16,7 @@ import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Content } from './Content'
 import { JourneyFlow } from './JourneyFlow'
-import { Attributes } from './Settings'
+import { Settings } from './Settings'
 
 const StyledSwiper = styled(Swiper)(() => ({}))
 const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
@@ -222,7 +222,7 @@ export function Slider(): ReactElement {
           }
         }}
       >
-        <Attributes />
+        <Settings />
       </StyledSwiperSlide>
     </StyledSwiper>
   )

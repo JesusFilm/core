@@ -1,1 +1,1 @@
-export { SocialShareAppearance } from './SocialShareAppearance'
+export { SocialDetails } from './SocialDetails'

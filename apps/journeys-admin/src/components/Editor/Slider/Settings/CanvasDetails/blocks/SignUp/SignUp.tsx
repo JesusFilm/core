@@ -9,8 +9,8 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 import { BlockFields_SignUpBlock as SignUpBlock } from '../../../../../../../../__generated__/BlockFields'
 import { IconFields } from '../../../../../../../../__generated__/IconFields'
 import { Action, actions } from '../../../Action/Action'
-import { Attribute } from '../../../Attribute'
-import { Icon, icons } from '../../../Icon'
+import { Icon, icons } from '../../Properties/Icon'
+import { Attribute } from '../../Properties/Attribute'
 
 export function SignUp({
   id,

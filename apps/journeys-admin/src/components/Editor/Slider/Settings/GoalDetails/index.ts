@@ -1,1 +1,1 @@
-export { ActionDetails } from './ActionDetails'
+export { GoalDetails } from './GoalDetails'

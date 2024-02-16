@@ -9,7 +9,7 @@ import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../.
 import { TypographyColor } from '../../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockUpdateColor } from '../../../../../../../../../__generated__/TypographyBlockUpdateColor'
 import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
-import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { ToggleButtonGroup } from '../../../Properties/ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
   mutation TypographyBlockUpdateColor(

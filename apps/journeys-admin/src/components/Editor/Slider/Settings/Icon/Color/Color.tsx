@@ -7,7 +7,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { IconColor } from '../../../../../../../__generated__/globalTypes'
 import { IconBlockColorUpdate } from '../../../../../../../__generated__/IconBlockColorUpdate'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
-import { ToggleButtonGroup } from '../../CanvasDetails/ToggleButtonGroup'
+import { ToggleButtonGroup } from '../../CanvasDetails/Properties/ToggleButtonGroup'
 import { ColorDisplayIcon } from '../../ColorDisplayIcon'
 
 export const ICON_BLOCK_COLOR_UPDATE = gql`

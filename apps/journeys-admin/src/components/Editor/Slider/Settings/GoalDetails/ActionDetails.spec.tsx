@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { ActionDetails } from './ActionDetails'
+import { ActionDetails } from './GoalDetails'
 import { journey } from './data'
 
 describe('ActionDetails', () => {

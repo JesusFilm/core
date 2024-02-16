@@ -17,9 +17,9 @@ import {
 } from '../../../../../../../../__generated__/globalTypes'
 import { IconFields } from '../../../../../../../../__generated__/IconFields'
 import { Action, actions } from '../../../Action/Action'
-import { Attribute } from '../../../Attribute'
+import { Attribute } from '../../Properties/Attribute'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
-import { Icon, icons } from '../../../Icon'
+import { Icon, icons } from '../../Properties/Icon'
 
 import { Color } from './Color'
 import { Size } from './Size'
