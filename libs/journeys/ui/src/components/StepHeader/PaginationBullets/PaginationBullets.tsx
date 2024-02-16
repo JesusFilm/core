@@ -28,7 +28,7 @@ export function PaginationBullets(): ReactElement {
     <Box
       sx={{
         position: 'absolute',
-        top: { xs: 13, lg: 36 },
+        top: 13,
         width: '100%',
         zIndex: 1
       }}

@@ -24,7 +24,6 @@ import { StepFields } from '../../../__generated__/StepFields'
 
 import { JourneyRenderer } from './JourneyRenderer'
 import { NavigationButton } from './NavigationButton'
-import { PaginationBullets } from './PaginationBullets'
 import { SwipeNavigation } from './SwipeNavigation'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
@@ -158,7 +157,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         {showHeaderFooter && router.query.noi == null && (
           <StepHeader sx={{ ...mobileNotchStyling }} />
         )}
-        <PaginationBullets />
         <Stack sx={{ height: '100%' }}>
           <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
             <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>

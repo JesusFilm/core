@@ -10,7 +10,7 @@ import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__ge
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { journeyUiConfig } from '../../../../../../libs/journeys/ui/src/libs/journeyUiConfig'
+import { journeyUiConfig } from '../../../libs/journeyUiConfig'
 
 import { PaginationBullets } from './PaginationBullets'
 
