@@ -7,7 +7,7 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { Action, actions } from '../../Action/Action'
+import { Action, actions } from '../../variants/Action/Action'
 import { Attribute } from '../../Properties/Attribute'
 
 import { VideoOptions } from './Options/VideoOptions'

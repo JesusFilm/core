@@ -7,7 +7,7 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { Action, actions } from '../../Action/Action'
+import { Action, actions } from '../../variants/Action/Action'
 import { Attribute } from '../../Properties/Attribute'
 
 import { Credentials } from './Credentials'

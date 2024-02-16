@@ -6,7 +6,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { BlockFields_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { Action, actions } from '../../Action/Action'
+import { Action, actions } from '../../variants/Action/Action'
 import { Attribute } from '../../Properties/Attribute'
 
 export function RadioOption({

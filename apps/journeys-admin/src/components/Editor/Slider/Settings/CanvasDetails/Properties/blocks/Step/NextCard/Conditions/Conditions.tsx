@@ -12,7 +12,7 @@ import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCir
 
 import { StepBlockLockUpdate } from '../../../../../../../../../../../__generated__/StepBlockLockUpdate'
 import { StepFields } from '../../../../../../../../../../../__generated__/StepFields'
-import { ToggleOption } from '../../../../ToggleOption'
+import { ToggleOption } from '../../../../variants/ToggleOption'
 
 export const STEP_BLOCK_LOCK_UPDATE = gql`
   mutation StepBlockLockUpdate(

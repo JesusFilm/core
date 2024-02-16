@@ -4,11 +4,11 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { IconColor } from '../../../../../../../../../__generated__/globalTypes'
-import { IconBlockColorUpdate } from '../../../../../../../../../__generated__/IconBlockColorUpdate'
-import { IconFields } from '../../../../../../../../../__generated__/IconFields'
-import { ToggleButtonGroup } from '../../ToggleButtonGroup'
+import { IconColor } from '../../../../../../../../../../__generated__/globalTypes'
+import { IconBlockColorUpdate } from '../../../../../../../../../../__generated__/IconBlockColorUpdate'
+import { IconFields } from '../../../../../../../../../../__generated__/IconFields'
 import { ColorDisplayIcon } from '../../ColorDisplayIcon'
+import { ToggleButtonGroup } from '../../ToggleButtonGroup'
 
 export const ICON_BLOCK_COLOR_UPDATE = gql`
   mutation IconBlockColorUpdate(

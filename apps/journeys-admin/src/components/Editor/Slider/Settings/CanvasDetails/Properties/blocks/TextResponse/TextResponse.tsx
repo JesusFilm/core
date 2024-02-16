@@ -9,7 +9,7 @@ import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
-import { Action, actions } from '../../Action/Action'
+import { Action, actions } from '../../variants/Action/Action'
 import { Icon, icons } from '../../Icon'
 import { Attribute } from '../../Properties/Attribute'
 
