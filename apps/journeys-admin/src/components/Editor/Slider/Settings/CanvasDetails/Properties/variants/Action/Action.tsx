@@ -13,15 +13,15 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { ActionDelete } from '../../../../../../__generated__/ActionDelete'
+import { ActionDelete } from '../../../../../../../../../__generated__/ActionDelete'
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_FormBlock as FormBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_TextResponseBlock as TextResponseBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../__generated__/BlockFields'
-import { NavigateActionUpdate } from '../../../../../../__generated__/NavigateActionUpdate'
+} from '../../../../../../../../../__generated__/BlockFields'
+import { NavigateActionUpdate } from '../../../../../../../../../__generated__/NavigateActionUpdate'
 
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'

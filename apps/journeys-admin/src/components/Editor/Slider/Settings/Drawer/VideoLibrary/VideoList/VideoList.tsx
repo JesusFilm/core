@@ -9,7 +9,7 @@ import { Fragment, ReactElement } from 'react'
 
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
-import { VideoBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
+import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 
 import { VideoListItem } from './VideoListItem'
 import { VideoListItemProps } from './VideoListItem/VideoListItem'

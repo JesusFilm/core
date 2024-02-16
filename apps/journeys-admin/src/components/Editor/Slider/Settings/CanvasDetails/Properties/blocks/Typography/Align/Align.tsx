@@ -11,7 +11,7 @@ import AlignRightIcon from '@core/shared/ui/icons/AlignRight'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TypographyAlign } from '../../../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockUpdateAlign } from '../../../../../../../../../../__generated__/TypographyBlockUpdateAlign'
-import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { ToggleButtonGroup } from '../../../variants/ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_ALIGN = gql`
   mutation TypographyBlockUpdateAlign(
