@@ -20,6 +20,7 @@ const StepBlockNodeStory: Meta<typeof StepBlockNode> = {
   component: StepBlockNode,
   title: 'Journeys-Admin/JourneyFlow/StepBlockNode'
 }
+
 const stepBlock: TreeBlock<StepBlock> = {
   id: 'step.id',
   __typename: 'StepBlock',
@@ -91,6 +92,17 @@ const stepBlockNodeData: StepBlockNodeData = {
   ]
 }
 
+const emptyStepBlockNodeData: StepBlockNodeData = {
+  steps: [],
+  locked: false,
+  nextBlockId: null,
+  __typename: 'StepBlock',
+  id: 'StepBlockId',
+  parentBlockId: null,
+  parentOrder: null,
+  children: []
+}
+
 const StepBlockNodeComponent = (): ReactElement => {
   return (
     <ReactFlowProvider>
@@ -135,7 +147,7 @@ export const Empty: StoryObj<typeof StepBlockNode> = {
           }}
         >
           <StepBlockNode
-            data={stepBlockNodeData}
+            data={emptyStepBlockNodeData}
             id={''}
             selected={false}
             type={''}
@@ -159,16 +171,19 @@ export const Selected: StoryObj<typeof StepBlockNode> = {
           sx={{
             width: STEP_NODE_WIDTH,
             height: STEP_NODE_HEIGHT,
-            position: 'relative'
+            position: 'relative',
+            borderRadius: 2,
+            outline: (theme) => `2px solid ${theme.palette.primary.main}`,
+            outlineOffset: '5px'
           }}
         >
           <StepBlockNode
             data={stepBlockNodeData}
             id={'selectedId'}
             selected={true}
-            type={'SetSelectedStepAction'}
+            type={''}
             zIndex={0}
-            isConnectable={false}
+            isConnectable={true}
             xPos={0}
             yPos={0}
             dragging={false}
