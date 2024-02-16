@@ -10,7 +10,7 @@ import Type2Icon from '@core/shared/ui/icons/Type2'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
-import { ColorDisplayIcon } from '../../variants/ColorDisplayIcon'
+import { ColorDisplayIcon } from '../../controls/ColorDisplayIcon'
 
 import { Align } from './Align'
 import { Color } from './Color'

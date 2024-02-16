@@ -17,9 +17,9 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import { Accordion } from '../../Accordion'
-import { Action, actions } from '../../variants/Action/Action'
-import { ColorDisplayIcon } from '../../variants/ColorDisplayIcon'
-import { Icon, icons } from '../../variants/Icon'
+import { Action, actions } from '../../controls/Action/Action'
+import { ColorDisplayIcon } from '../../controls/ColorDisplayIcon'
+import { Icon, icons } from '../../controls/Icon'
 
 import { Color } from './Color'
 import { Size } from './Size'

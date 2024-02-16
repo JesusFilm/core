@@ -7,7 +7,7 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { BlockFields_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
-import { Action, actions } from '../../variants/Action/Action'
+import { Action, actions } from '../../controls/Action/Action'
 
 export function RadioOption({
   id,
