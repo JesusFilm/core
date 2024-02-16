@@ -2,7 +2,7 @@ locals {
   port = 4007
   environment_variables = [
     "FIREBASE_API_KEY",
-    "PG_DATABASE_URL",
+    "PG_DATABASE_URL_NEXUS",
     "GOOGLE_APPLICATION_JSON",
     "GOOGLE_CLIENT_ID",
     "GOOGLE_CLIENT_SECRET"
