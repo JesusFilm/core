@@ -1,8 +1,10 @@
 export {
   useEditor,
   EditorProvider,
+  ActiveCanvasDetailsDrawer,
+  ActiveContent,
   ActiveFab,
-  ActiveContent
+  ActiveSlide
 } from './EditorProvider'
 export type {
   EditorState,

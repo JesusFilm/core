@@ -1,14 +1,11 @@
-import { render } from '@testing-library/react'
-import { ReactElement } from 'react'
-
 import type { TreeBlock } from '../block'
 
 import {
+  ActiveCanvasDetailsDrawer,
   ActiveContent,
   ActiveSlide,
-  EditorProvider,
-  reducer,
-  useEditor
+  EditorState,
+  reducer
 } from './EditorProvider'
 
 import { ActiveFab } from '.'
@@ -31,8 +28,9 @@ describe('EditorContext', () => {
           nextBlockId: null,
           children: []
         }
-        const state = {
+        const state: EditorState = {
           steps: [step],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
@@ -46,12 +44,12 @@ describe('EditorContext', () => {
           ...state,
           selectedStep: step,
           selectedBlock: step,
-          selectedComponent: undefined
+          active: undefined
         })
       })
     })
 
-    describe('SetSelectedComponentAction', () => {
+    describe('SetactiveCanvasDetailsDrawerAction', () => {
       it('should set selected component', () => {
         const block: TreeBlock = {
           id: 'step0.id',
@@ -63,20 +61,21 @@ describe('EditorContext', () => {
           children: []
         }
 
-        const state = {
+        const state: EditorState = {
           steps: [block],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Edit,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
         expect(
           reducer(state, {
-            type: 'SetSelectedComponentAction',
-            selectedComponent: 'Footer'
+            type: 'SetActiveCanvasDetailsDrawerAction',
+            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
           })
         ).toEqual({
           ...state,
-          selectedComponent: 'Footer',
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
           selectedBlock: undefined
         })
       })
@@ -93,8 +92,9 @@ describe('EditorContext', () => {
           nextBlockId: null,
           children: []
         }
-        const state = {
+        const state: EditorState = {
           steps: [block],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Edit,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
@@ -106,8 +106,7 @@ describe('EditorContext', () => {
           })
         ).toEqual({
           ...state,
-          selectedBlock: block,
-          selectedComponent: undefined
+          selectedBlock: block
         })
       })
     })
@@ -135,8 +134,9 @@ describe('EditorContext', () => {
           nextBlockId: null,
           children: [block]
         }
-        const state = {
+        const state: EditorState = {
           steps: [step],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
           activeFab: ActiveFab.Edit,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
@@ -149,7 +149,7 @@ describe('EditorContext', () => {
         ).toEqual({
           ...state,
           selectedBlock: block,
-          selectedComponent: undefined
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
         })
       })
 
@@ -175,8 +175,9 @@ describe('EditorContext', () => {
           nextBlockId: null,
           children: [block]
         }
-        const state = {
+        const state: EditorState = {
           steps: [step],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
@@ -193,12 +194,12 @@ describe('EditorContext', () => {
       })
 
       it('should set selected block to undefined when id is undefined', () => {
-        const state = {
+        const state: EditorState = {
           steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeContent: ActiveContent.Canvas,
           activeFab: ActiveFab.Add,
-          activeSlide: ActiveSlide.JourneyFlow,
-
-          activeContent: ActiveContent.Canvas
+          activeSlide: ActiveSlide.JourneyFlow
         }
         expect(
           reducer(state, {
@@ -213,8 +214,9 @@ describe('EditorContext', () => {
 
     describe('SetSelectedAttributeIdAction', () => {
       it('should set selected attribute id', () => {
-        const state = {
+        const state: EditorState = {
           steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
@@ -233,8 +235,9 @@ describe('EditorContext', () => {
 
     describe('SetActiveFabAction', () => {
       it('should set active fab', () => {
-        const state = {
+        const state: EditorState = {
           steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
@@ -262,8 +265,9 @@ describe('EditorContext', () => {
           nextBlockId: null,
           children: []
         }
-        const state = {
+        const state: EditorState = {
           steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
@@ -311,8 +315,9 @@ describe('EditorContext', () => {
           ...step,
           children: [updatedBlock]
         }
-        const state = {
+        const state: EditorState = {
           steps: [step],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           selectedBlock: block,
@@ -335,8 +340,9 @@ describe('EditorContext', () => {
 
     describe('SetJourneyEditContentComponentAction', () => {
       it('should set journey edit content component', () => {
-        const state = {
+        const state: EditorState = {
           steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas

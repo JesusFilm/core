@@ -29,7 +29,7 @@ export function GoalsList({ goals }: GoalsListProps): ReactElement {
   const { dispatch } = useEditor()
 
   function handleClick(): void {
-    dispatch({ type: 'SetSelectedComponentAction' })
+    dispatch({ type: 'SetSelectedGoalUrlAction' })
   }
 
   return (

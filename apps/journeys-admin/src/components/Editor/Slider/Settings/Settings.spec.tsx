@@ -2,7 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveCanvasDetailsDrawer,
+  EditorProvider
+} from '@core/journeys/ui/EditorProvider'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -354,7 +357,7 @@ describe('Settings', () => {
         <EditorProvider
           initialState={{
             selectedStep: step,
-            selectedComponent: 'Footer'
+            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
           }}
         >
           <Settings />
