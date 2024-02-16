@@ -2,7 +2,7 @@ import MuiFab, { FabProps } from '@mui/material/Fab'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Zoom from '@mui/material/Zoom'
-import { ReactElement } from 'react'
+import { MouseEvent, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -17,9 +17,12 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'
-import { DRAWER_WIDTH } from '../constants'
 
-export function Fab(): ReactElement {
+interface fabProp {
+  variant?: 'social' | 'mobile' | 'canvas'
+}
+
+export function Fab({ variant }: fabProp): ReactElement {
   const {
     state: {
       activeFab,
@@ -34,7 +37,14 @@ export function Fab(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  function handleAddFab(): void {
+  function handleAddFab(event: MouseEvent): void {
+    event.stopPropagation()
+    if (activeSlide !== ActiveSlide.Content) {
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.Content
+      })
+    }
     if (selectedComponent === 'AddBlock') {
       dispatch({
         type: 'SetSelectedComponentAction'
@@ -62,10 +72,19 @@ export function Fab(): ReactElement {
       }
     }
   }
-  function handleEditFab(): void {
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
+  function handleEditFab(event: MouseEvent): void {
+    event.stopPropagation()
+    if (activeSlide === ActiveSlide.JourneyFlow) {
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.Content
+      })
+    } else {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
+    }
   }
-  function handleSaveFab(): void {
+  function handleSaveFab(event: MouseEvent): void {
+    event.stopPropagation()
     dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
   }
 
@@ -85,30 +104,38 @@ export function Fab(): ReactElement {
           cardBlock.coverBlockId !== block.id
       ) != null,
     sx: {
-      position: 'absolute',
-      bottom: { xs: 16, sm: 73 },
-      right: { xs: 16, sm: DRAWER_WIDTH + 84 }
+      position: { xs: 'absolute', sm: 'relative' },
+      bottom: { xs: 16, sm: 'auto' },
+      right: { xs: 16, sm: 'auto' },
+      fontWeight: 'bold'
     }
   }
 
   return (
     <Zoom
       in={
-        activeContent === ActiveContent.Canvas &&
-        activeSlide === ActiveSlide.Content
+        variant === 'mobile'
+          ? !smUp &&
+            activeContent === ActiveContent.Canvas &&
+            activeSlide === ActiveSlide.Content
+          : variant === 'canvas'
+          ? smUp && activeContent === ActiveContent.Canvas
+          : activeSlide === ActiveSlide.JourneyFlow &&
+            activeContent === ActiveContent.Social
       }
       unmountOnExit
       data-testid="Fab"
     >
-      {activeFab === ActiveFab.Add ? (
-        <MuiFab {...props} onClick={handleAddFab}>
-          <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
-          {smUp ? t('Add') : ''}
-        </MuiFab>
-      ) : activeFab === ActiveFab.Edit ? (
+      {activeFab === ActiveFab.Edit ||
+      activeSlide === ActiveSlide.JourneyFlow ? (
         <MuiFab {...props} onClick={handleEditFab}>
           <Edit2Icon sx={{ mr: smUp ? 3 : 0 }} />
           {smUp ? t('Edit') : ''}
+        </MuiFab>
+      ) : activeFab === ActiveFab.Add ? (
+        <MuiFab {...props} onClick={handleAddFab}>
+          <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
+          {smUp ? t(variant === 'canvas' ? 'Add Block' : 'Add') : ''}
         </MuiFab>
       ) : (
         <MuiFab {...props} onClick={handleSaveFab}>
