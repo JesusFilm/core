@@ -23,10 +23,10 @@ export function Fab(): ReactElement {
   const {
     state: {
       activeFab,
-      activeSlide,
       selectedComponent,
       selectedStep,
       steps,
+      activeSlide,
       activeContent
     },
     dispatch
@@ -73,63 +73,48 @@ export function Fab(): ReactElement {
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
 
-  function StyledFab({ onClick }: FabProps): ReactElement {
-    return (
-      <MuiFab
-        variant={smUp ? 'extended' : 'circular'}
-        size="large"
-        color="primary"
-        disabled={
-          steps == null ||
-          cardBlock?.children?.find(
-            (block) =>
-              block.__typename === 'VideoBlock' &&
-              cardBlock.coverBlockId !== block.id
-          ) != null
-        }
-        sx={{
-          position: 'absolute',
-          bottom: { xs: 16, sm: 73 },
-          right: { xs: 16, sm: DRAWER_WIDTH + 84 }
-        }}
-        onClick={onClick}
-      />
-    )
+  const props: FabProps = {
+    variant: smUp ? 'extended' : 'circular',
+    size: 'large',
+    color: 'primary',
+    disabled:
+      steps == null ||
+      cardBlock?.children?.find(
+        (block) =>
+          block.__typename === 'VideoBlock' &&
+          cardBlock.coverBlockId !== block.id
+      ) != null,
+    sx: {
+      position: 'absolute',
+      bottom: { xs: 16, sm: 73 },
+      right: { xs: 16, sm: DRAWER_WIDTH + 84 }
+    }
   }
 
   return (
     <Zoom
       in={
         activeContent === ActiveContent.Canvas &&
-        activeSlide > ActiveSlide.JourneyFlow
+        activeSlide === ActiveSlide.Content
       }
       unmountOnExit
       data-testid="Fab"
     >
       {activeFab === ActiveFab.Add ? (
-        <StyledFab onClick={handleAddFab}>
-          {selectedComponent === 'AddBlock' ? (
-            <>
-              <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
-              {smUp ? t('Done') : ''}
-            </>
-          ) : (
-            <>
-              <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
-              {smUp ? t('Add') : ''}
-            </>
-          )}
-        </StyledFab>
+        <MuiFab {...props} onClick={handleAddFab}>
+          <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
+          {smUp ? t('Add') : ''}
+        </MuiFab>
       ) : activeFab === ActiveFab.Edit ? (
-        <StyledFab onClick={handleEditFab}>
+        <MuiFab {...props} onClick={handleEditFab}>
           <Edit2Icon sx={{ mr: smUp ? 3 : 0 }} />
           {smUp ? t('Edit') : ''}
-        </StyledFab>
+        </MuiFab>
       ) : (
-        <StyledFab onClick={handleSaveFab}>
+        <MuiFab {...props} onClick={handleSaveFab}>
           <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
           {smUp ? t('Done') : ''}
-        </StyledFab>
+        </MuiFab>
       )}
     </Zoom>
   )

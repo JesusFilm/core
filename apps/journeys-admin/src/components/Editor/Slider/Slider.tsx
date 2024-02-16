@@ -113,12 +113,11 @@ export function Slider(): ReactElement {
         slot="container-start"
         onClick={handlePrev}
         sx={{
-          position: 'absolute',
-          top: '50%',
-          height: 42,
-          marginTop: '-21px',
-          left: activeSlide > ActiveSlide.JourneyFlow ? 33 : -42,
-          width: 42,
+          position: 'fixed',
+          top: EDIT_TOOLBAR_HEIGHT,
+          bottom: 0,
+          left: activeSlide > ActiveSlide.JourneyFlow ? 0 : -103,
+          width: 103,
           zIndex: 2,
           cursor: 'pointer',
           display: {
@@ -127,7 +126,8 @@ export function Slider(): ReactElement {
           },
           alignItems: 'center',
           justifyContent: 'center',
-          transition: (theme) => theme.transitions.create('left')
+          transition: (theme) =>
+            theme.transitions.create('left', { duration: 300, delay: 300 })
         }}
       >
         <IconButton
@@ -135,10 +135,7 @@ export function Slider(): ReactElement {
             backgroundColor: 'background.paper',
             borderWidth: 1,
             borderStyle: 'solid',
-            borderColor: 'divider',
-            '&:hover': {
-              backgroundColor: 'background.paper'
-            }
+            borderColor: 'divider'
           }}
         >
           <ChevronLeftIcon />

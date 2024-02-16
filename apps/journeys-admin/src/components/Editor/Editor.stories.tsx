@@ -2,8 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
-import { ActiveContent } from '@core/journeys/ui/EditorProvider'
-
 import { BlockFields as Block } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
@@ -643,10 +641,7 @@ const Template: StoryObj<typeof Editor> = {
   render: (args) => {
     return (
       <MockedProvider>
-        <Editor
-          journey={args.journey}
-          view={args.view ?? ActiveContent.Canvas}
-        />
+        <Editor journey={args.journey} initialState={args.initialState} />
       </MockedProvider>
     )
   }
