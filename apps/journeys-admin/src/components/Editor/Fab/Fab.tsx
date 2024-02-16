@@ -98,11 +98,12 @@ export function Fab({ variant }: fabProp): ReactElement {
     color: 'primary',
     disabled:
       steps == null ||
-      cardBlock?.children?.find(
+      (cardBlock?.children?.find(
         (block) =>
           block.__typename === 'VideoBlock' &&
           cardBlock.coverBlockId !== block.id
-      ) != null,
+      ) != null &&
+        activeSlide !== ActiveSlide.JourneyFlow),
     sx: {
       position: { xs: 'absolute', sm: 'relative' },
       bottom: { xs: 16, sm: 'auto' },
