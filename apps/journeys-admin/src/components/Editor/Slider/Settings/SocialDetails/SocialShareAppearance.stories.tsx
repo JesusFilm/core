@@ -16,7 +16,7 @@ import {
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { Drawer } from '../Drawer'
 
-import { SocialShareAppearance } from './SocialShareAppearance'
+import { SocialShareAppearance } from './SocialDetails'
 
 const SocialShareAppearanceStory: Meta<typeof SocialShareAppearance> = {
   ...journeysAdminConfig,
