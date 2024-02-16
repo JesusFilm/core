@@ -13,9 +13,7 @@ import {
   BlockFields_StepBlock as StepBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
-import {
-  GetJourney_journey as Journey,
-} from '../../../../../../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
