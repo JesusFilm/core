@@ -1,10 +1,11 @@
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { ComponentProps, MouseEvent, ReactElement, ReactNode } from 'react'
-
-import { MenuItem } from '../../../../MenuItem'
 
 interface ItemProps {
   variant: 'icon-button' | 'button' | 'menu-item'
@@ -28,7 +29,7 @@ export function Item({
       return (
         <Tooltip title={label} arrow>
           <IconButton
-            component={href != null ? 'a' : undefined}
+            component={href != null ? 'a' : 'button'}
             target={href != null ? '_blank' : undefined}
             href={href}
             onClick={onClick}
@@ -43,7 +44,7 @@ export function Item({
           variant="outlined"
           color="secondary"
           startIcon={icon}
-          component={href != null ? 'a' : undefined}
+          component={href != null ? 'a' : 'button'}
           target={href != null ? '_blank' : undefined}
           href={href}
           onClick={onClick}
@@ -57,13 +58,14 @@ export function Item({
     case 'menu-item':
       return (
         <MenuItem
-          component={href != null ? 'a' : undefined}
+          component={href != null ? 'a' : 'li'}
           target={href != null ? '_blank' : undefined}
           href={href}
           onClick={onClick}
-          label={label}
-          icon={icon}
-        />
+        >
+          <ListItemIcon>{icon}</ListItemIcon>
+          <ListItemText>{label}</ListItemText>
+        </MenuItem>
       )
   }
 }

@@ -85,7 +85,7 @@ describe('ShareItem', () => {
               variant: 'admin'
             }}
           >
-            <ShareItem />
+            <ShareItem variant="button" />
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>

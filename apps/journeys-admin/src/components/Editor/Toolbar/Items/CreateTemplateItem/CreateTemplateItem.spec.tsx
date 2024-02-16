@@ -88,7 +88,7 @@ describe('CreateTemplateItem', () => {
             variant: 'admin'
           }}
         >
-          <CreateTemplateItem />
+          <CreateTemplateItem variant="button" />
         </JourneyProvider>
       </MockedProvider>
     )

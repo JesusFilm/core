@@ -21,7 +21,7 @@ describe('AnalyticsItem', () => {
                 variant: 'admin'
               }}
             >
-              <AnalyticsItem journey={defaultJourney} variant="list-item" />
+              <AnalyticsItem variant="menu-item" />
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>
@@ -45,7 +45,7 @@ describe('AnalyticsItem', () => {
                 variant: 'admin'
               }}
             >
-              <AnalyticsItem journey={defaultJourney} variant="button" />
+              <AnalyticsItem variant="button" />
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>

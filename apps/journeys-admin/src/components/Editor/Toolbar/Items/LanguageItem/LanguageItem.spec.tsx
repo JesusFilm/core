@@ -40,7 +40,7 @@ describe('LanguageItem', () => {
                 variant: 'admin'
               }}
             >
-              <LanguageItem onClose={onClose} />
+              <LanguageItem variant="button" onClose={onClose} />
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>

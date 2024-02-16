@@ -1,9 +1,9 @@
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import MuiMenuItem from '@mui/material/MenuItem'
-import { MouseEvent, ReactElement, ReactNode } from 'react'
+import { ComponentProps, MouseEvent, ReactElement, ReactNode } from 'react'
 
-interface MenuItemProps {
+interface MenuItemProps extends ComponentProps<typeof MuiMenuItem> {
   label: string
   icon: ReactNode
   disabled?: boolean
