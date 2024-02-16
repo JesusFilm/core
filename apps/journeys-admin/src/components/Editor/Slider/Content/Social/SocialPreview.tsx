@@ -10,6 +10,8 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
+import { Fab } from '../../../Fab'
+
 import { SocialPreviewMessage } from './Message/SocialPreviewMessage'
 import { SocialPreviewPost } from './Post/SocialPreviewPost'
 
@@ -31,40 +33,56 @@ export function SocialPreview(): ReactElement {
     <>
       {smUp ? (
         <Stack
-          onClick={handleSelect}
-          direction="row"
-          alignItems="center"
-          data-testid="SocialPreview"
-          sx={{ width: '100%' }}
+          height={736}
+          width={activeSlide === ActiveSlide.JourneyFlow ? 387 : '100%'}
+          data-testid="OuterStack"
+          justifyContent="space-between"
+          alignSelf="center"
         >
           <Stack
-            flexGrow={1}
+            onClick={handleSelect}
+            direction="row"
             alignItems="center"
-            sx={{
-              cursor:
-                activeSlide === ActiveSlide.JourneyFlow ? 'pointer' : undefined,
-              flexGrow: activeSlide === ActiveSlide.Content ? 1 : 0,
-              minWidth: 387,
-              transition: (theme) =>
-                theme.transitions.create('flex-grow', { duration: 300 })
-            }}
+            data-testid="SocialPreview"
+            height={682}
+            width="100%"
           >
-            <SocialPreviewPost />
+            <Stack
+              flexGrow={1}
+              alignItems="center"
+              sx={{
+                cursor:
+                  activeSlide === ActiveSlide.JourneyFlow
+                    ? 'pointer'
+                    : undefined,
+                flexGrow: activeSlide === ActiveSlide.Content ? 1 : 0,
+                minWidth: 387,
+                transition: (theme) =>
+                  theme.transitions.create('flex-grow', { duration: 300 })
+              }}
+            >
+              <SocialPreviewPost />
+            </Stack>
+            <Divider orientation="vertical" sx={{ height: 300 }} />
+            <Stack
+              flexGrow={1}
+              alignItems="center"
+              sx={{
+                flexGrow: 1,
+                opacity: activeSlide === ActiveSlide.Content ? 1 : 0,
+                transition: (theme) =>
+                  theme.transitions.create(['flex-grow', 'opacity'], {
+                    duration: 300
+                  })
+              }}
+            >
+              <SocialPreviewMessage />
+            </Stack>
           </Stack>
-          <Divider orientation="vertical" sx={{ height: 300 }} />
-          <Stack
-            flexGrow={1}
-            alignItems="center"
-            sx={{
-              flexGrow: 1,
-              opacity: activeSlide === ActiveSlide.Content ? 1 : 0,
-              transition: (theme) =>
-                theme.transitions.create(['flex-grow', 'opacity'], {
-                  duration: 300
-                })
-            }}
-          >
-            <SocialPreviewMessage />
+          <Stack width="100%" direction="row-reverse">
+            <Stack maxWidth={102} sx={{ mr: 4 }}>
+              <Fab />
+            </Stack>
           </Stack>
         </Stack>
       ) : (
