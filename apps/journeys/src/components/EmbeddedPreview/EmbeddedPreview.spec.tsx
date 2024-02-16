@@ -3,7 +3,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
-import { treeBlocksVar } from '@core/journeys/ui/block'
 import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import { ThemeMode } from '@core/shared/ui/themes'
 
@@ -43,7 +42,6 @@ describe('EmbeddedPreview', () => {
 
   it('renders first block', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    treeBlocksVar(basic)
     const { getByText } = render(
       <MockedProvider
         mocks={[
@@ -88,7 +86,6 @@ describe('EmbeddedPreview', () => {
 
   it('should toggle fullscreen', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    treeBlocksVar(basic)
     const { getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
