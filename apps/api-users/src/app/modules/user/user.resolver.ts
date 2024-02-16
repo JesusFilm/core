@@ -101,7 +101,6 @@ export class UserResolver {
       }
     })
     if (existingUser != null && existingUser.emailVerified == null) {
-      console.log(existingUser)
       const user = await this.prismaService.user.update({
         where: {
           id: userId
@@ -110,7 +109,6 @@ export class UserResolver {
           emailVerified: false
         }
       })
-      console.log(user)
       return user
     }
 
