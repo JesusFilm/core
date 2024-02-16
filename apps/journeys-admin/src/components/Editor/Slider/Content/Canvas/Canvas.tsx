@@ -15,7 +15,6 @@ import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
-import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
@@ -187,19 +186,24 @@ export function Canvas(): ReactElement {
                       backgroundColor: 'background.default',
                       borderRadius: 5,
                       '& .card-enter': {
+                        zIndex: 1,
                         opacity: 0
                       },
                       '& .card-enter-active': {
+                        zIndex: 1,
                         opacity: 1
                       },
                       '& .card-enter-done': {
+                        zIndex: 1,
                         opacity: 1
                       },
                       '& .card-exit': {
+                        zIndex: 0,
                         opacity: 1
                       },
                       '& .card-exit-active': {
-                        opacity: 0
+                        opacity: 1,
+                        zIndex: 0
                       },
                       position: 'relative',
                       width: 'calc(100% - 8px)',
@@ -225,15 +229,6 @@ export function Canvas(): ReactElement {
                         }}
                         data-testid={`step-${selectedStep.id}`}
                       >
-                        <ThemeProvider
-                          themeName={ThemeName.journeyUi}
-                          themeMode={theme.themeMode}
-                          rtl={rtl}
-                          locale={locale}
-                          nested
-                        >
-                          <StepHeader />
-                        </ThemeProvider>
                         <BlockRenderer
                           block={selectedStep}
                           wrappers={{
