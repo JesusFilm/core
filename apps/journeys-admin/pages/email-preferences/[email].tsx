@@ -109,9 +109,9 @@ function EmailPreferencesPage({
       {journeysEmailPreference != null && (
         <Grid container spacing={12}>
           <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('All Notifications')}</Typography>
+            <Typography variant="h5">{t('Stop All Notifications')}</Typography>
             <Typography variant="body2">
-              {t('All current and future email notifications.')}
+              {t('Stop all current and future email notifications.')}
             </Typography>
           </Grid>
           <Grid item xs={2} md={2}>
