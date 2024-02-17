@@ -67,15 +67,14 @@ function EmailPreferencesPage({
     ) =>
     async () => {
       if (journeysEmailPreference != null) {
-        const updatedPreferences = {
-          ...journeysEmailPreference,
-          [preference]: !(journeysEmailPreference[preference] as boolean)
-        }
-        setJourneysEmailPreference(updatedPreferences)
+        const value = !(journeysEmailPreference[preference] as boolean)
         await updateJourneysEmailPreference({
           variables: {
-            email: journeysEmailPreference.email,
-            [preference]: !(journeysEmailPreference[preference] as boolean)
+            input: {
+              email: journeysEmailPreference.email,
+              preference,
+              value
+            }
           }
         }).then(() => {
           enqueueSnackbar(t(`Email Preferences Updated.`), {
@@ -83,6 +82,11 @@ function EmailPreferencesPage({
             preventDuplicate: true
           })
         })
+        const updatedPreferences = {
+          ...journeysEmailPreference,
+          [preference]: value
+        }
+        setJourneysEmailPreference(updatedPreferences)
       }
     }
 
@@ -169,12 +173,12 @@ export const getServerSideProps = withUserTokenSSR()(
       }
     })
 
-    if (journeysEmailPreferenceData == null) {
+    if (journeysEmailPreferenceData.journeysEmailPreference == null) {
       journeysEmailPreferenceData = {
         journeysEmailPreference: {
           email: query?.email as string,
           unsubscribeAll: false,
-          accountNotifications: false,
+          accountNotifications: true,
           __typename: 'JourneysEmailPreference'
         }
       }
