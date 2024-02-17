@@ -6,13 +6,16 @@ type JourneysEmailPreference {
 
 input JourneysEmailPreferenceUpdateInput {
   email: String!
-  unsubscribeAll: Boolean!
-  accountNotifications: Boolean!
+  preference: String!
+  value: Boolean!
 }
 
 extend type Mutation {
   updateJourneysEmailPreference(
     input: JourneysEmailPreferenceUpdateInput!
   ): JourneysEmailPreference
-  findOrCreateJourneysEmailPreference(email: String!): JourneysEmailPreference
+}
+
+extend type Query {
+  journeysEmailPreference(email: String!): JourneysEmailPreference
 }

@@ -1,5 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { GraphQLError } from 'graphql'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
 import { JourneysEmailPreference } from '.prisma/api-journeys-client'
 
@@ -14,54 +13,29 @@ export class JourneysEmailPreferenceResolver {
   async updateJourneysEmailPreference(
     @Args('input') input: JourneysEmailPreferenceUpdateInput
   ): Promise<JourneysEmailPreference> {
-    const { email, ...rest } = input
-    const journeysEmailPreference =
-      await this.prismaService.journeysEmailPreference.findUnique({
-        where: { email }
-      })
-
-    console.log('journeysEmailPreference', journeysEmailPreference)
-    console.log('rest', rest)
+    const { email, preference, value } = input
 
     const updatedJourneysEmailPreference =
-      await this.prismaService.journeysEmailPreference.update({
+      await this.prismaService.journeysEmailPreference.upsert({
         where: { email },
-        data: input
+        update: {
+          [preference]: value
+        },
+        create: {
+          email,
+          [preference]: value
+        }
       })
-
-    console.log(
-      'updatedJourneysEmailPreference',
-      updatedJourneysEmailPreference
-    )
 
     return updatedJourneysEmailPreference
   }
 
-  @Mutation()
-  async findOrCreateJourneysEmailPreference(
+  @Query()
+  async journeysEmailPreference(
     @Args('email') email: string
-  ): Promise<JourneysEmailPreference> {
-    let result: JourneysEmailPreference | null = null
-
-    try {
-      result = await this.prismaService.journeysEmailPreference.findUnique({
-        where: { email }
-      })
-
-      if (result === null) {
-        result = await this.prismaService.journeysEmailPreference.create({
-          data: {
-            email,
-            unsubscribeAll: false,
-            accountNotifications: true
-          }
-        })
-      }
-    } catch (error) {
-      console.error('Error in findOrCreateJourneysEmailPreference:', error)
-      throw new GraphQLError('Error in findOrCreateJourneysEmailPreference')
-    }
-
-    return result
+  ): Promise<JourneysEmailPreference | null> {
+    return await this.prismaService.journeysEmailPreference.findUnique({
+      where: { email }
+    })
   }
 }
