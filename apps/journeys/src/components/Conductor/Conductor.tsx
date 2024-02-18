@@ -1,6 +1,7 @@
 // TODO (SWIPE): Fix spacing between card and edge of screen
 
 import { gql, useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
@@ -154,31 +155,44 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           overflow: 'hidden'
         }}
       >
-        {showHeaderFooter && router.query.noi == null && (
-          <StepHeader sx={{ ...mobileNotchStyling }} />
-        )}
-        <Stack sx={{ height: '100%' }}>
-          <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
-            <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
-              <JourneyRenderer />
-            </SwipeNavigation>
-          </ThemeProvider>
-
-          <NavigationButton
-            variant={rtl ? 'next' : 'previous'}
-            alignment="left"
-          />
-          <NavigationButton
-            variant={rtl ? 'previous' : 'next'}
-            alignment="right"
-          />
-        </Stack>
-        <StepFooter
+        <Box
+          justifyContent="center"
           sx={{
-            visibility: showHeaderFooter ? 'visible' : 'hidden',
-            ...mobileNotchStyling
+            maxHeight: {
+              xs: '100svh',
+              lg: 'calc(100vh - 80px)'
+            },
+            height: {
+              xs: 'inherit',
+              lg: 'calc(54.25vw + 102px)'
+            }
           }}
-        />
+        >
+          <Stack sx={{ height: '100%' }}>
+            {showHeaderFooter && router.query.noi == null && (
+              <StepHeader sx={{ ...mobileNotchStyling }} />
+            )}
+            <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+              <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
+                <JourneyRenderer />
+              </SwipeNavigation>
+            </ThemeProvider>
+            <NavigationButton
+              variant={rtl ? 'next' : 'previous'}
+              alignment="left"
+            />
+            <NavigationButton
+              variant={rtl ? 'previous' : 'next'}
+              alignment="right"
+            />
+            <StepFooter
+              sx={{
+                visibility: showHeaderFooter ? 'visible' : 'hidden',
+                ...mobileNotchStyling
+              }}
+            />
+          </Stack>
+        </Box>
       </Stack>
     </ThemeProvider>
   )
