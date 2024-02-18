@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 
 import { Dialog as SharedUiDialog } from '@core/shared/ui/Dialog'
 
-import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { Drawer } from '..'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { ImageBlockEditor } from '../ImageBlockEditor'
 
 interface DialogProps {

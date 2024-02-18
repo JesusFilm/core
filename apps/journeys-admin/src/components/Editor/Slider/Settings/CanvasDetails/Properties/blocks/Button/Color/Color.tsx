@@ -8,8 +8,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ButtonBlockUpdateColor } from '../../../../../../../../../../__generated__/ButtonBlockUpdateColor'
 import { ButtonColor } from '../../../../../../../../../../__generated__/globalTypes'
-import { ColorDisplayIcon } from '../../../variants/ColorDisplayIcon'
-import { ToggleButtonGroup } from '../../../variants/ToggleButtonGroup'
+import { ColorDisplayIcon } from '../../../controls/ColorDisplayIcon'
+import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateColor(

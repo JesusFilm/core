@@ -8,7 +8,7 @@ import Play1Icon from '@core/shared/ui/icons/Play1'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
-import { Action, actions } from '../../variants/Action/Action'
+import { Action, actions } from '../../controls/Action/Action'
 
 import { VideoOptions } from './Options/VideoOptions'
 

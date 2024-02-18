@@ -48,7 +48,7 @@ export function Editor({
       >
         <Toolbar />
         <Slider />
-        <Fab />
+        <Fab variant="mobile" />
       </EditorProvider>
     </JourneyProvider>
   )

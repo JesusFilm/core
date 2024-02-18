@@ -15,12 +15,12 @@ import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
-import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
 import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../../../FramePortal'
+import { Fab } from '../../../Fab'
 
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
@@ -139,8 +139,9 @@ export function Canvas(): ReactElement {
     >
       {selectedStep != null && theme != null && (
         <Stack
-          direction="row"
+          direction="column"
           alignItems="flex-end"
+          gap={1.5}
           sx={{
             flexGrow: { xs: 1, sm: 0 },
             height: { xs: '100%', sm: 'auto' },
@@ -148,81 +149,86 @@ export function Canvas(): ReactElement {
             justifyContent: 'center'
           }}
         >
-          <TransitionGroup
-            component={Box}
-            data-testid={`step-${selectedStep.id}`}
+          <Box
+            ref={containerRef}
             sx={{
-              '& .card-enter': {
-                opacity: 0
-              },
-              '& .card-enter-active': {
-                opacity: 1
-              },
-              '& .card-enter-done': {
-                opacity: 1
-              },
-              '& .card-exit': {
-                opacity: 1
-              },
-              '& .card-exit-active': {
-                opacity: 0
-              },
               width: { xs: '100%', sm: 387 },
               height: { xs: '100%', sm: 682 },
               display: 'flex'
             }}
           >
-            <Box ref={containerRef}>
-              <CSSTransition
-                key={selectedStep.id}
-                timeout={300}
-                classNames="card"
-              >
-                <Box
-                  sx={{
-                    position: 'relative',
-                    left: '50%',
-                    top: '50%',
-                    width: 375,
-                    height: 670,
-                    transform: `translate(-50%, -50%) scale(${scale})`,
-                    borderRadius: 5,
-                    transition: (theme) =>
-                      theme.transitions.create('border-color', {
-                        duration: 200,
-                        delay: 100,
-                        easing: 'ease-out'
-                      }),
-                    border: (theme) =>
-                      selectedStep.id === selectedBlock?.id
-                        ? `2px solid ${theme.palette.primary.main}`
-                        : `2px solid ${theme.palette.background.default}`,
-                    p: 1
-                  }}
-                >
-                  <FramePortal
-                    width="100%"
-                    height="100%"
-                    dir={rtl ? 'rtl' : 'ltr'}
+            <Box
+              sx={{
+                position: 'relative',
+                left: '50%',
+                top: '50%',
+                width: 375,
+                height: 670,
+                transform: `translate(-50%, -50%) scale(${scale})`,
+                borderRadius: 6,
+                transition: (theme) =>
+                  theme.transitions.create('border-color', {
+                    duration: 200,
+                    delay: 100,
+                    easing: 'ease-out'
+                  }),
+                border: (theme) =>
+                  selectedStep.id === selectedBlock?.id
+                    ? `2px solid ${theme.palette.primary.main}`
+                    : `2px solid ${theme.palette.background.default}`
+              }}
+            >
+              <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
+                <ThemeProvider {...theme} rtl={rtl} locale={locale}>
+                  <TransitionGroup
+                    component={Box}
+                    sx={{
+                      backgroundColor: 'background.default',
+                      borderRadius: 5,
+                      '& .card-enter': {
+                        zIndex: 1,
+                        opacity: 0
+                      },
+                      '& .card-enter-active': {
+                        zIndex: 1,
+                        opacity: 1
+                      },
+                      '& .card-enter-done': {
+                        zIndex: 1,
+                        opacity: 1
+                      },
+                      '& .card-exit': {
+                        zIndex: 0,
+                        opacity: 1
+                      },
+                      '& .card-exit-active': {
+                        opacity: 1,
+                        zIndex: 0
+                      },
+                      position: 'relative',
+                      width: 'calc(100% - 8px)',
+                      height: 'calc(100% - 8px)',
+                      m: '4px'
+                    }}
                   >
-                    <ThemeProvider {...theme} rtl={rtl} locale={locale}>
+                    <CSSTransition
+                      key={selectedStep.id}
+                      timeout={300}
+                      classNames="card"
+                    >
                       <Stack
                         justifyContent="center"
                         sx={{
-                          width: '100%',
-                          height: '100%',
-                          borderRadius: 5
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          bottom: 0,
+                          left: 0,
+                          transition: (theme) =>
+                            theme.transitions.create('opacity')
                         }}
+                        data-testid={`step-${selectedStep.id}`}
                       >
-                        <ThemeProvider
-                          themeName={ThemeName.journeyUi}
-                          themeMode={theme.themeMode}
-                          rtl={rtl}
-                          locale={locale}
-                          nested
-                        >
-                          <StepHeader />
-                        </ThemeProvider>
                         <BlockRenderer
                           block={selectedStep}
                           wrappers={{
@@ -260,12 +266,15 @@ export function Canvas(): ReactElement {
                           />
                         </ThemeProvider>
                       </Stack>
-                    </ThemeProvider>
-                  </FramePortal>
-                </Box>
-              </CSSTransition>
+                    </CSSTransition>
+                  </TransitionGroup>
+                </ThemeProvider>
+              </FramePortal>
             </Box>
-          </TransitionGroup>
+          </Box>
+          <Box sx={{ mr: 4 }}>
+            <Fab variant="canvas" />
+          </Box>
         </Stack>
       )}
     </Stack>
