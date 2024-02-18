@@ -75,7 +75,7 @@ export function MessageBubble({
     </Box>
   )
 }
-export function SocialPreviewMessage(): ReactElement {
+export function Message(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   return (

@@ -4,10 +4,10 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 
-import { SocialPreviewPost } from './SocialPreviewPost'
+import { Message } from './Message'
 
-describe('SocialPreviewPost', () => {
-  it('should display blank socialpreviewpost', () => {
+describe('Message', () => {
+  it('should display blank socialpreviewmessage', () => {
     const { getByTestId } = render(
       <JourneyProvider
         value={{
@@ -16,13 +16,13 @@ describe('SocialPreviewPost', () => {
           } as unknown as Journey
         }}
       >
-        <SocialPreviewPost />
+        <Message />
       </JourneyProvider>
     )
-    expect(getByTestId('social-preview-post-empty')).toBeInTheDocument()
+    expect(getByTestId('social-preview-message-empty')).toBeInTheDocument()
   })
 
-  it('should display socialpreviewpost', () => {
+  it('should display socialpreviewmessage', () => {
     const { getByRole, getByText } = render(
       <JourneyProvider
         value={{
@@ -36,7 +36,7 @@ describe('SocialPreviewPost', () => {
           } as unknown as Journey
         }}
       >
-        <SocialPreviewPost />
+        <Message />
       </JourneyProvider>
     )
     expect(getByRole('img')).toHaveAttribute(

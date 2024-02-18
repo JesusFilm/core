@@ -15,7 +15,7 @@ import Share from '@core/shared/ui/icons/Share'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
-export function SocialPreviewPost(): ReactElement {
+export function Post(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
 

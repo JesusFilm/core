@@ -10,8 +10,8 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
-import { SocialPreviewMessage } from './Message/SocialPreviewMessage'
-import { SocialPreviewPost } from './Post/SocialPreviewPost'
+import { SocialPreviewMessage } from './Message/Message'
+import { SocialPreviewPost } from './Post/Post'
 
 export function SocialPreview(): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
