@@ -3,7 +3,8 @@ import {
   ReactElement,
   RefObject,
   SetStateAction,
-  useEffect
+  useEffect,
+  useState
 } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -52,6 +53,7 @@ export function InitAndPlay({
 }: InitAndPlayProps): ReactElement {
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
+  const [error, setError] = useState(false)
 
   // Initiate video player
   useEffect(() => {
@@ -184,11 +186,15 @@ export function InitAndPlay({
       if (playPromise != null) {
         playPromise.catch(() => {
           player.muted(true)
-          void playPromise
+          setError(true)
         })
       }
+
+      if (error) {
+        void playPromise
+      }
     }
-  }, [activeStep, activeBlock, autoplay, blockId, player])
+  }, [activeStep, activeBlock, autoplay, blockId, player, setError, error])
 
   // Pause video when inactive or admin
   useEffect(() => {
