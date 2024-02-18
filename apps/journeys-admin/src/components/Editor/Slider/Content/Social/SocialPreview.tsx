@@ -12,8 +12,8 @@ import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { Fab } from '../../../Fab'
 
-import { SocialPreviewMessage } from './Message/SocialPreviewMessage'
-import { SocialPreviewPost } from './Post/SocialPreviewPost'
+import { Message } from './Message/Message'
+import { Post } from './Post/Post'
 
 export function SocialPreview(): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -61,7 +61,7 @@ export function SocialPreview(): ReactElement {
                   theme.transitions.create('flex-grow', { duration: 300 })
               }}
             >
-              <SocialPreviewPost />
+              <Post />
             </Stack>
             <Divider orientation="vertical" sx={{ height: 300 }} />
             <Stack
@@ -76,7 +76,7 @@ export function SocialPreview(): ReactElement {
                   })
               }}
             >
-              <SocialPreviewMessage />
+              <Message />
             </Stack>
           </Stack>
           <Stack width="100%" direction="row-reverse">
@@ -110,7 +110,7 @@ export function SocialPreview(): ReactElement {
                 justifyContent: 'center'
               }}
             >
-              <SocialPreviewPost />
+              <Post />
             </SwiperSlide>
             <SwiperSlide
               key={1}
@@ -120,7 +120,7 @@ export function SocialPreview(): ReactElement {
                 justifyContent: 'center'
               }}
             >
-              <SocialPreviewMessage />
+              <Message />
             </SwiperSlide>
           </Swiper>
         </Box>
