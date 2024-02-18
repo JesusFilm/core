@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -27,6 +28,7 @@ export const TYPOGRAPHY_BLOCK_CREATE = gql`
 `
 
 export function NewTypographyButton(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
     TYPOGRAPHY_BLOCK_CREATE
   )
@@ -94,7 +96,7 @@ export function NewTypographyButton(): ReactElement {
   return (
     <Button
       icon={<Type3Icon />}
-      value="Text"
+      value={t('Text')}
       onClick={handleClick}
       testId="NewTypographyButton"
     />

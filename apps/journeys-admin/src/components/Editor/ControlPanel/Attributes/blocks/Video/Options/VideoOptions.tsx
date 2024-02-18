@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -44,6 +45,7 @@ export const UPDATE_VIDEO_BLOCK_NEXT_STEP = gql`
 `
 
 export function VideoOptions(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedStep, selectedBlock }
   } = useEditor()
@@ -95,7 +97,7 @@ export function VideoOptions(): ReactElement {
         }
       })
       await updateDefaultNextStep()
-      enqueueSnackbar('Video Updated', {
+      enqueueSnackbar(t('Video Updated'), {
         variant: 'success',
         preventDuplicate: true
       })

@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -27,6 +28,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE_ALIGN = gql`
 `
 
 export function Align(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateAlign>(
     TYPOGRAPHY_BLOCK_UPDATE_ALIGN
   )
@@ -39,17 +41,17 @@ export function Align(): ReactElement {
   const options = [
     {
       value: TypographyAlign.left,
-      label: 'Left',
+      label: t('Left'),
       icon: <AlignLeftIcon />
     },
     {
       value: TypographyAlign.center,
-      label: 'Center',
+      label: t('Center'),
       icon: <AlignCenterIcon />
     },
     {
       value: TypographyAlign.right,
-      label: 'Right',
+      label: t('Right'),
       icon: <AlignRightIcon />
     }
   ]
