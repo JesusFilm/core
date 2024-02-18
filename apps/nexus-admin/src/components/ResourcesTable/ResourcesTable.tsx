@@ -1,8 +1,6 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
@@ -10,20 +8,13 @@ import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { DataGrid, GridCellParams } from '@mui/x-data-grid'
+import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 
-import { Channels } from '../../../__generated__/Channels'
 import { Resources_resources } from '../../../__generated__/Resources'
-import { GET_CHANNELS } from '../../../pages/channels'
 import { ViewResourceTableModal } from '../ViewResourceTableModal/ViewResourceTableModal'
 
 import { ResourcesTableHeader } from './ResourcesTableHeader'
-
-const UPLOAD_TO_YOUTUBE = gql`
-  mutation UploadToYoutube($channelId: String!, $resourceId: String!) {
-    uploadToYoutube(channelId: $channelId, resourceId: $resourceId)
-  }
-`
 
 interface ResourcesTableProps {
   data: Resources_resources[] | []
@@ -45,9 +36,7 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
     page: 0,
     pageSize: 10
   })
-  const [uploadToYoutube] = useMutation(UPLOAD_TO_YOUTUBE)
-  const nexusId =
-    typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
+  const router = useRouter()
 
   const defaultColumnsVisibility = {
     status: true,
@@ -71,14 +60,16 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
       action: true
     })
 
-  const toggleColumnVisibility = (column: string, value: boolean) =>
+  const toggleColumnVisibility = (column: string, value: boolean): void => {
     setColumnsVisibility((prevState) => ({
       ...prevState,
       [column]: value
     }))
+  }
 
-  const resetColumnsVisibility = () =>
+  const resetColumnsVisibility = (): void => {
     setColumnsVisibility(defaultColumnsVisibility)
+  }
 
   const statusColor = {
     published: 'success',
@@ -165,6 +156,9 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
           }
         }}
         columnVisibilityModel={columnsVisibility}
+        onRowClick={({ row }) => {
+          void router.push(`/resources/${row.id}`)
+        }}
       />
       <Popover
         open={Boolean(morePopup)}

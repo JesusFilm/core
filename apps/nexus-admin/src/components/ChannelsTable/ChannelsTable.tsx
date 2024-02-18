@@ -11,6 +11,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { DataGrid, GridCellParams } from '@mui/x-data-grid'
 import { useGoogleLogin } from '@react-oauth/google'
+import { useSnackbar } from 'notistack'
 import { FC, useState } from 'react'
 
 import { Channels_channels } from '../../../__generated__/Channels'
@@ -23,8 +24,6 @@ const CHANNEL_CONNECT = gql`
   mutation ConnectChannel($input: ConnectYoutubeChannelInput!) {
     connectYoutubeChannel(input: $input) {
       id
-      platform
-      connected
     }
   }
 `
@@ -51,6 +50,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
     page: 0,
     pageSize: 10
   })
+  const { enqueueSnackbar } = useSnackbar()
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
@@ -64,6 +64,12 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
               process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI ??
               'http://localhost:5357'
           }
+        },
+        onCompleted: () => {
+          enqueueSnackbar('Channel Connected', {
+            variant: 'success',
+            preventDuplicate: true
+          })
         }
       })
     },
