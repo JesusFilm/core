@@ -56,6 +56,7 @@ export function SocialPreviewNode(): ReactElement {
             outlineOffset: '5px'
           }}
           onClick={() => handleClick()}
+          data-testid="SocialPreviewNode"
         >
           <Stack
             direction="row"
@@ -131,6 +132,7 @@ export function SocialPreviewNode(): ReactElement {
                   height={9}
                   bgcolor="#EFEFEF"
                   borderRadius="4px"
+                  data-testid="social-preview-title-empty"
                 />
               ) : (
                 <Typography
@@ -150,6 +152,7 @@ export function SocialPreviewNode(): ReactElement {
                   height={9}
                   bgcolor="#EFEFEF"
                   borderRadius="4px"
+                  data-testid="social-preview-description-empty"
                 />
               ) : (
                 <Typography
