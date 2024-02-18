@@ -774,8 +774,8 @@ input JourneysEmailPreferenceUpdateInput
   @join__type(graph: JOURNEYS)
 {
   email: String!
-  unsubscribeAll: Boolean!
-  accountNotifications: Boolean!
+  preference: String!
+  value: Boolean!
 }
 
 input JourneysFilter
@@ -1265,7 +1265,6 @@ type Mutation
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference @join__field(graph: JOURNEYS)
-  findOrCreateJourneysEmailPreference(email: String!): JourneysEmailPreference @join__field(graph: JOURNEYS)
   teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
   teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
@@ -1450,6 +1449,7 @@ type Query
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
+  journeysEmailPreference(email: String!): JourneysEmailPreference @join__field(graph: JOURNEYS)
   teams: [Team!]! @join__field(graph: JOURNEYS)
   team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
