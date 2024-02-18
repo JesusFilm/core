@@ -211,7 +211,7 @@ export function CardPreview({
             py: 5,
             px: 6
           }}
-          data-testId={`CardPreview${testId ?? ''}`}
+          data-testid={`CardPreview${testId ?? ''}`}
         >
           <Box
             sx={{

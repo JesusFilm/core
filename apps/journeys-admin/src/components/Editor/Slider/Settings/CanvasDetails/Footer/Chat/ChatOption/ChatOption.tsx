@@ -50,7 +50,7 @@ export function ChatOption({
         borderLeft: 0,
         borderRight: 0
       }}
-      data-testId="ChatOption"
+      data-testid="ChatOption"
     >
       <Summary
         title={title}
