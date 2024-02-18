@@ -4,7 +4,6 @@ import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { EmailService } from '@core/nest/common/email/emailService'
-import { User } from '@core/nest/common/firebaseClient'
 
 import EmailVerifyEmail from '../../emails/templates/EmailVerify/EmailVerify'
 import { PrismaService } from '../../lib/prisma.service'
