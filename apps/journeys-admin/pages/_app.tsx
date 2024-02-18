@@ -4,7 +4,7 @@ import { CacheProvider } from '@emotion/react'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
-import { SSRConfig, appWithTranslation } from 'next-i18next'
+import { SSRConfig, appWithTranslation, i18n } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
@@ -29,7 +30,6 @@ import 'swiper/css/pagination'
 import '../public/swiper-pagination-override.css'
 
 initAuth()
-const clientSideEmotionCache = createEmotionCache({})
 
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
@@ -43,9 +43,16 @@ type JourneysAdminAppProps = NextJsAppProps<{
 function JourneysAdminApp({
   Component,
   pageProps,
-  emotionCache = clientSideEmotionCache
+  emotionCache = createEmotionCache({
+    rtl: i18n !== null ? getLocaleRTL(i18n.language) : false
+  })
 }: JourneysAdminAppProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const {
+    t,
+    i18n: { dir }
+  } = useTranslation('apps-journeys-admin')
+
+  const rtl = i18n !== null ? getLocaleRTL(i18n.language) : false
 
   const user =
     pageProps.userSerialized != null
@@ -58,6 +65,7 @@ function JourneysAdminApp({
   })
 
   useEffect(() => {
+    document.dir = dir(i18n?.language)
     if (process.env.NEXT_PUBLIC_GTM_ID != null)
       TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
 
@@ -68,12 +76,12 @@ function JourneysAdminApp({
     }
 
     TagManager.dataLayer({ dataLayer: { userId: user?.id } })
-  }, [user])
+  }, [user, dir])
 
   return (
     <FlagsProvider flags={pageProps.flags}>
       <CacheProvider value={emotionCache}>
-        <ThemeProvider>
+        <ThemeProvider rtl={rtl}>
           <DefaultSeo
             titleTemplate={t('%s | Next Steps')}
             defaultTitle={t('Admin | Next Steps')}

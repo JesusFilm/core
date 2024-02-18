@@ -1,5 +1,6 @@
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
+import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -22,6 +23,7 @@ export function JourneyListMenu({
 }: JourneyListMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
+  const theme = useTheme()
 
   const activeTab = router?.query.tab?.toString() ?? 'active'
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -58,11 +60,11 @@ export function JourneyListMenu({
             }}
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'right'
+              horizontal: `${theme.direction === 'rtl' ? 'left' : 'right'}`
             }}
             transformOrigin={{
               vertical: 'top',
-              horizontal: 'right'
+              horizontal: `${theme.direction === 'rtl' ? 'left' : 'right'}`
             }}
             data-testid="JourneyListMenu"
           >

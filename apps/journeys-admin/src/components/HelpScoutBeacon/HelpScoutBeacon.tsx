@@ -18,6 +18,11 @@ interface FormObject {
   name: string
   email: string
 }
+
+interface DisplayObject {
+  display: { style: string; position: 'left' | 'right'; zIndex: number }
+}
+
 declare global {
   interface Window {
     Beacon?: ((fn: 'init', id: string) => void) &
@@ -31,7 +36,9 @@ declare global {
       ((fn: 'toggle') => void) &
       ((fn: 'search', value: string) => void) &
       ((fn: 'on', eventType: string, callback: () => void) => void) &
-      ((fn: 'prefill', formObject: FormObject) => void)
+      ((fn: 'prefill', formObject: FormObject) => void) &
+      ((fn: 'destroy') => void) &
+      ((fn: 'config', displayObject: DisplayObject) => void)
   }
 }
 
@@ -42,12 +49,15 @@ interface HelpScoutBeaconProps {
 export function HelpScoutBeacon({
   userInfo
 }: HelpScoutBeaconProps): ReactElement {
-  const { breakpoints, zIndex } = useTheme()
+  const { breakpoints, zIndex, direction } = useTheme()
   const router = useRouter()
   const previousUrlRef = useRef(router.asPath)
   const mdUp = useMediaQuery(breakpoints.up('md'))
   const [hasLoaded, setHasLoaded] = useState(false)
   const [beaconOpen, setBeaconOpen] = useState(false)
+  const [previousDirection, setPreviousDirection] = useState<'ltr' | 'rtl'>(
+    'ltr'
+  )
 
   const newUserPaths = [
     '/users/sign-in',
@@ -79,10 +89,28 @@ export function HelpScoutBeacon({
         })
       })
     }
+    const remountBeacon = (): void => {
+      if (hasLoaded && window.Beacon != null) {
+        window.Beacon('destroy')
+        window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8')
+        window.Beacon('config', {
+          display: {
+            style: 'manual',
+            position: direction === 'rtl' ? 'left' : 'right',
+            zIndex: zIndex.modal + 2
+          }
+        })
+        setPreviousDirection(direction)
+      }
+    }
     // close the beacon when the url changes if it's still open
     const handleRouteChange = (url): void => {
       if (url !== previousUrlRef.current) {
-        window.Beacon?.('close')
+        if (direction === previousDirection) {
+          window.Beacon?.('close')
+        } else {
+          remountBeacon()
+        }
         previousUrlRef.current = url
       }
     }
@@ -90,7 +118,7 @@ export function HelpScoutBeacon({
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange)
     }
-  }, [hasLoaded, router, userInfo])
+  }, [hasLoaded, router, userInfo, direction, previousDirection, zIndex])
 
   return (
     <>
@@ -108,7 +136,7 @@ export function HelpScoutBeacon({
         window.Beacon('config', {
           display: {
             style: 'manual',
-            position: 'right',
+            position: '${direction === 'rtl' ? 'left' : 'right'}',
             zIndex: ${zIndex.modal + 2},
           },
         });
@@ -151,6 +179,13 @@ export function HelpScoutBeacon({
         .hsds-beacon .BeaconContainer.is-configDisplayRight {
           top: 47px;
           right: 0px;
+          width: 327px;
+          max-height: none;
+          height: calc(100vh - 47px);
+        }
+        .hsds-beacon .BeaconContainer.is-configDisplayLeft {
+          top: 47px;
+          left: 0px;
           width: 327px;
           max-height: none;
           height: calc(100vh - 47px);

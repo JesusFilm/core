@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import Stack from '@mui/system/Stack'
 import { getApp } from 'firebase/app'
 import {
   EmailAuthProvider,
@@ -14,8 +16,11 @@ import { useTranslation } from 'react-i18next'
 import { StyledFirebaseAuth } from '@core/shared/ui/StyledFirebaseAuth'
 
 import logo from '../../../public/logo.svg'
+import { LanguageSwitcher } from '../LanguageSwitcher'
 
 export function SignIn(): ReactElement {
+  const [open, setOpen] = useState(false)
+
   // Do not SSR FirebaseUI, because it is not supported.
   // https://github.com/firebase/firebaseui-web/issues/213
   const [renderAuth, setRenderAuth] = useState(false)
@@ -79,14 +84,22 @@ export function SignIn(): ReactElement {
             uiConfig={firebaseAuthConfig}
             firebaseAuth={getAuth(getApp())}
           />
-          <Typography
-            variant="body2"
-            sx={{ mt: 20, color: 'primary.main', cursor: 'pointer' }}
-            component="a"
-            href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
-          >
-            {t('Feedback & Support')}
-          </Typography>
+          <Stack direction="row" alignItems="center" gap={4} mt={20}>
+            <Typography
+              variant="body2"
+              sx={{ color: 'primary.main', cursor: 'pointer' }}
+              component="a"
+              href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
+            >
+              {t('Feedback & Support')}
+            </Typography>
+            <Button size="small" onClick={() => setOpen(true)}>
+              {t('Language')}
+            </Button>
+          </Stack>
+          {open && (
+            <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
+          )}
         </Box>
       ) : null}
     </div>

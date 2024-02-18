@@ -1,12 +1,14 @@
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
 import { ReactElement, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 
@@ -26,6 +28,8 @@ const DynamicOnboardingList = dynamic(
 
 export function OnboardingPanel(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const theme = useTheme()
+
   return (
     <>
       <CreateJourneyButton />
@@ -39,7 +43,11 @@ export function OnboardingPanel(): ReactElement {
               sx={{ display: 'flex', alignItems: 'center' }}
             >
               {t('See all')}
-              <ChevronRightIcon />
+              {theme.direction === 'rtl' ? (
+                <ChevronLeftIcon />
+              ) : (
+                <ChevronRightIcon />
+              )}
             </Link>
           </NextLink>
         </Stack>

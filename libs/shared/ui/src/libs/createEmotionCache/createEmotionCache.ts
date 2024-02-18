@@ -13,7 +13,7 @@ export function createEmotionCache({
   prepend = false
 }: EmotionCacheProps): EmotionCache {
   return createCache({
-    key: 'css',
+    key: rtl === true ? 'muirtl' : 'css',
     prepend,
     stylisPlugins: rtl === true ? [prefixer, rtlPlugin] : []
   })

@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
+import { useTheme } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
@@ -45,6 +46,7 @@ export function TeamMenu(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
+  const theme = useTheme()
   const [teamCreateOpen, setTeamCreateOpen] = useState<boolean | undefined>()
   const [teamUpdateOpen, setTeamUpdateOpen] = useState<boolean | undefined>()
   const [teamManageOpen, setTeamManageOpen] = useState<boolean | undefined>()
@@ -112,11 +114,11 @@ export function TeamMenu(): ReactElement {
         }}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right'
+          horizontal: `${theme.direction === 'rtl' ? 'left' : 'right'}`
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right'
+          horizontal: `${theme.direction === 'rtl' ? 'left' : 'right'}`
         }}
         data-testid="TeamMenu"
       >

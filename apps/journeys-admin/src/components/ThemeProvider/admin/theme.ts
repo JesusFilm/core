@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material/styles'
+import { Theme, createTheme } from '@mui/material/styles'
 
 import { adminColorsLight } from './tokens/colors'
 import { adminComponents } from './tokens/components'
@@ -12,5 +12,11 @@ export const adminTheme = {
   ...adminSpacing
 }
 
+interface ThemeProps {
+  rtl: boolean
+}
+
 // admin only available in light mode
-export const adminLight = createTheme(adminTheme)
+export const getTheme = ({ rtl }: ThemeProps): Theme => {
+  return createTheme({ ...adminTheme, direction: rtl ? 'rtl' : 'ltr' })
+}

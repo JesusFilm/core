@@ -6,6 +6,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Popover from '@mui/material/Popover'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
+import { useTheme } from '@mui/material/styles'
 import {
   ChangeEvent,
   MouseEvent,
@@ -42,6 +43,7 @@ export function JourneySort({
   disabled
 }: JourneySortProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const theme = useTheme()
   const [showSortOrder, setShowSortOrder] = useState(open ?? false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const breakpoints = useBreakpoints()
@@ -119,11 +121,11 @@ export function JourneySort({
           onClose={handleClose}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'right'
+            horizontal: `${theme.direction === 'rtl' ? 'left' : 'right'}`
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: 'right'
+            horizontal: `${theme.direction === 'rtl' ? 'left' : 'right'}`
           }}
         >
           <Form />

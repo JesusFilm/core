@@ -2,18 +2,21 @@ import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
-import { adminLight } from './admin/theme'
+import { getTheme } from './admin/theme'
 
 interface ThemeProviderProps {
   children?: ReactNode
+  rtl?: boolean
 }
 
-export function ThemeProvider({ children }: ThemeProviderProps): ReactElement {
+export function ThemeProvider({
+  children,
+  rtl = false
+}: ThemeProviderProps): ReactElement {
+  const theme = getTheme({ rtl })
+
   return (
-    <MuiThemeProvider
-      theme={adminLight}
-      data-testid="JourneysAdminThemeProvider"
-    >
+    <MuiThemeProvider theme={theme} data-testid="JourneysAdminThemeProvider">
       <CssBaseline />
       {children}
     </MuiThemeProvider>
