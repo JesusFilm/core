@@ -33,9 +33,13 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async verifyUser(job: Job<VerifyUserJob>): Promise<void> {
+    let emailAlias: string | undefined
+    if (job.data.email.includes('+'))
+      emailAlias = job.data.email.replace('+', '%2B')
+
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${
       job.data.token
-    }&email=${job.data.email}`
+    }&email=${emailAlias ?? job.data.email}`
 
     const user = await this.prismaService.user.findUnique({
       where: { userId: job.data.userId }
