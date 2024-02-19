@@ -21,15 +21,7 @@ import {
 } from '../../utils/data'
 
 import { TimelineEvent } from '.'
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
+import '../../../../../../test/i18n'
 
 describe('TimelineEvent', () => {
   it('shows journeyViewEvent', () => {
@@ -45,7 +37,7 @@ describe('TimelineEvent', () => {
       <TimelineEvent timelineItem={chatOpenedEvent} />
     )
     expect(getByText('Chat Opened:')).toBeInTheDocument()
-    expect(getByText('{{messagePlatform}}')).toBeInTheDocument()
+    expect(getByText('Facebook')).toBeInTheDocument()
     expect(getByText('Nov 2, 3:20 AM')).toBeInTheDocument()
   })
 

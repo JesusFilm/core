@@ -23,11 +23,6 @@ export enum SortOrder {
   TITLE = 'title'
 }
 
-const sortOrderLabel = {
-  createdAt: 'Date Created',
-  title: 'Name'
-}
-
 interface JourneySortProps {
   sortOrder?: SortOrder
   onChange: (value: SortOrder) => void
@@ -46,6 +41,11 @@ export function JourneySort({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const breakpoints = useBreakpoints()
   const chipRef = useRef(null)
+
+  const sortOrderLabel = {
+    createdAt: t('Date Created'),
+    title: t('Name')
+  }
 
   useEffect(() => {
     setAnchorEl(chipRef.current)

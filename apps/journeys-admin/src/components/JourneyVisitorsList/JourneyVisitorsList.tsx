@@ -71,9 +71,13 @@ export function JourneyVisitorsList({
 
         {hasVisitors && visitorsCount != null && (
           <Typography>
-            {`${t('Showing')} ${visitorEdges?.length as unknown as string} ${t(
-              'visitors out of'
-            )} ${visitorsCount}`}
+            {t(
+              'Showing {{ shownVisitors }} visitors out of {{ visitorsCount }}',
+              {
+                shownVisitors: visitorEdges?.length as unknown as string,
+                visitorsCount
+              }
+            )}
           </Typography>
         )}
 
