@@ -2,13 +2,13 @@ const isBrowser = typeof window !== 'undefined'
 let localePath
 if (isBrowser) {
   // browser
-  localePath = '../../libs/locales'
+  localePath = './public/locales'
 } else if (process.env.VERCEL == null || process.env.CI != null) {
   // not vercel or vercel build time
   localePath = require('path').resolve('../../libs/locales')
 } else {
   // vercel run time
-  localePath = require('path').resolve('../../libs/locales')
+  localePath = require('path').resolve('./public/locales')
 }
 
 /**
