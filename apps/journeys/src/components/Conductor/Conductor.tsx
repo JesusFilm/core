@@ -151,7 +151,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           justifyContent: 'center',
           height: '100vh',
           background: theme.palette.grey[900],
-          p: { lg: 6 },
           overflow: 'hidden'
         }}
       >
@@ -164,7 +163,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             height: {
               xs: 'inherit',
               lg: 'calc(54.25vw + 102px)'
-            }
+            },
+            px: { lg: 6 }
           }}
         >
           <Stack sx={{ height: { xs: '100%' } }}>
