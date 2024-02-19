@@ -35,7 +35,7 @@ export class EmailConsumer extends WorkerHost {
   async verifyUser(job: Job<VerifyUserJob>): Promise<void> {
     let emailAlias: string | undefined
     if (job.data.email.includes('+'))
-      emailAlias = job.data.email.replace('+', '%2B')
+      emailAlias = job.data.email.replace(/\+/g, '%2B')
 
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${
       job.data.token
