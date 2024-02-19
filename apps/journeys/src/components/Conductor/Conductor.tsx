@@ -156,7 +156,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }}
       >
         <Box
-          justifyContent="center"
           sx={{
             maxHeight: {
               xs: '100svh',
