@@ -73,11 +73,12 @@ export function InitAndPlay({
           },
           responsive: true,
           muted: muted === true,
+          autoplay,
           preload: 'auto'
         })
       )
     }
-  }, [startAt, endAt, muted, posterBlock, setPlayer, videoRef])
+  }, [startAt, endAt, muted, posterBlock, setPlayer, videoRef, autoplay])
 
   // Initiate video player listeners
   useEffect(() => {
