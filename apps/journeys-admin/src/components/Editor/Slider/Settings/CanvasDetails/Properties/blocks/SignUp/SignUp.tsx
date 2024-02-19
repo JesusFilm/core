@@ -54,7 +54,7 @@ export function SignUp({
           'None'
         }
       >
-        <Icon id={submitIcon.id} />
+        <Icon id={submitIcon?.id} />
       </Accordion>
     </>
   )

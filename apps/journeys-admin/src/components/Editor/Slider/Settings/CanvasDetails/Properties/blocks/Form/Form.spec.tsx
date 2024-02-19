@@ -1,35 +1,18 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { Form as FormiumFormType } from '@formium/types'
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveContent,
-  ActiveFab,
-  EditorState,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
-import {
-  ActiveCanvasDetailsDrawer,
-  ActiveSlide
-} from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import {
   BlockFields_FormBlock_action as FormAction,
   BlockFields_FormBlock as FormBlock
 } from '../../../../../../../../../__generated__/BlockFields'
+import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 
 import { Form } from '.'
-
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 describe('Form', () => {
   const block: TreeBlock<FormBlock> = {
@@ -42,23 +25,16 @@ describe('Form', () => {
     children: []
   }
 
-  const state: EditorState = {
-    steps: [],
-    activeFab: ActiveFab.Add,
-    activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-  }
-
-  beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch: jest.fn()
-    })
-  })
-
   it('should show default values', () => {
-    const { getByRole } = render(<Form {...block} />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider>
+            <Form {...block} />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
 
     expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
     expect(
@@ -83,7 +59,15 @@ describe('Form', () => {
       action
     }
 
-    const { getByRole } = render(<Form {...filledBlock} />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider>
+            <Form {...filledBlock} />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
 
     expect(
       getByRole('button', { name: 'Action Selected Card' })
@@ -93,17 +77,42 @@ describe('Form', () => {
     ).toBeInTheDocument()
   })
 
-  it('should properties tab for Form', () => {
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-    render(<Form {...block} />)
+  it('action accordion should be open', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider>
+            <Form {...block} />
+            <TestEditorState />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
 
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedAttributeIdAction',
-      selectedAttributeId: 'formBlock.id-form-action'
-    })
+    expect(
+      getByText('selectedAttributeId: formBlock.id-form-action')
+    ).toBeInTheDocument()
+    // expect(dispatch).toHaveBeenCalledWith({
+    //   type: 'SetSelectedAttributeIdAction',
+    //   selectedAttributeId: 'formBlock.id-form-action'
+    // })
+  })
+
+  it('should open credentials accordion when clicked', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider>
+            <Form {...block} />
+            <TestEditorState />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByText('Credentials'))
+    expect(
+      getByText('selectedAttributeId: formBlock.id-form-credentials')
+    ).toBeInTheDocument()
   })
 })
