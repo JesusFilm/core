@@ -85,7 +85,7 @@ export function ExpandedCover({
                   variant === 'default'
                     ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
                     : 'calc(100% - 48px)',
-                sm: 360,
+                sm: 408,
                 md: 580
               },
               pb: 4
