@@ -27,12 +27,6 @@ export const LocalizationTable: FC<LocalizationTableProps> = ({
 
   const columns = [
     {
-      field: 'title',
-      headerName: 'Title',
-      flex: 1,
-      sortable: false
-    },
-    {
       field: 'language',
       headerName: 'Language',
       flex: 1,
