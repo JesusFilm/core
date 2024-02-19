@@ -159,7 +159,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           sx={{
             maxHeight: {
               xs: '100svh',
-              lg: 'calc(100vh - 80px)'
+              lg: 'calc(100svh - 80px)'
             },
             height: {
               xs: 'inherit',
@@ -167,7 +167,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             }
           }}
         >
-          <Stack sx={{ height: '100%' }}>
+          <Stack sx={{ height: { xs: '100%' } }}>
             {showHeaderFooter && router.query.noi == null && (
               <StepHeader sx={{ ...mobileNotchStyling }} />
             )}
