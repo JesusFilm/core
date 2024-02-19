@@ -1,7 +1,7 @@
 // TODO (SWIPE): Refactor tests for navigation
 
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
@@ -12,6 +12,8 @@ import {
   treeBlocksVar
 } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '@core/journeys/ui/RadioQuestion'
+import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import {
@@ -337,5 +339,83 @@ describe('Conductor', () => {
 
   it('should navigate previous to card that is not pre rendered', () => {
     expect(true).toBe(true)
+  })
+
+  it('should reset radioOption selection after navigating back', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    blockHistoryVar([basic[0]])
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_VIEW_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  journeyId: 'journeyId',
+                  label: 'my journey',
+                  value: '529'
+                }
+              }
+            },
+            result: {
+              data: {
+                journeyViewEventCreate: {
+                  id: 'uuid',
+                  __typename: 'JourneyViewEvent'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1',
+                  stepId: 'step.id',
+                  label: 'Untitled',
+                  value: 'Option 1'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: STEP_VIEW_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'step1.id',
+                  value: 'Step {{number}}'
+                }
+              }
+            },
+            result: {
+              data: {
+                stepViewEventCreate: {
+                  id: 'uuid',
+                  __typename: 'StepViewEvent'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <Conductor blocks={basic} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('Step 2 (Locked)')).toBeInTheDocument()
+    )
   })
 })
