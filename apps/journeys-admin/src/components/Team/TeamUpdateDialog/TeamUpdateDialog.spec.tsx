@@ -13,15 +13,7 @@ import {
 import { TEAM_UPDATE } from './TeamUpdateDialog'
 
 import { TeamUpdateDialog } from '.'
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
+import '../../../../test/i18n'
 
 describe('TeamUpdateDialog', () => {
   const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
@@ -41,6 +33,7 @@ describe('TeamUpdateDialog', () => {
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: 'teamId'
         }
       }
@@ -133,7 +126,7 @@ describe('TeamUpdateDialog', () => {
       target: { value: '12345678901234567890123456789012345678901' }
     })
     await waitFor(() =>
-      expect(getByText('Max {{ count }} Characters')).toBeInTheDocument()
+      expect(getByText('Max 40 Characters')).toBeInTheDocument()
     )
     fireEvent.change(getAllByRole('textbox')[0], {
       target: { value: 'Team Title' }
@@ -161,7 +154,7 @@ describe('TeamUpdateDialog', () => {
       target: { value: '12345678901234567890123456789012345678901' }
     })
     await waitFor(() =>
-      expect(getByText('Max {{ count }} Characters')).toBeInTheDocument()
+      expect(getByText('Max 40 Characters')).toBeInTheDocument()
     )
   })
 })

@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import MinusCircleContainedIcon from '@core/shared/ui/icons/MinusCircleContained'
 
@@ -25,6 +26,7 @@ export function UserTeamInviteRemoveMenuItem({
   onClick,
   disabled
 }: UserTeamInviteRemoveMenuItemProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [userInviteRemove, { loading }] = useMutation<UserTeamInviteRemove>(
     USER_TEAM_INVITE_REMOVE,
     {
@@ -48,7 +50,7 @@ export function UserTeamInviteRemoveMenuItem({
 
   return (
     <MenuItem
-      label="Remove"
+      label={t('Remove')}
       icon={<MinusCircleContainedIcon />}
       onClick={handleClick}
       disabled={disabled === true || loading}

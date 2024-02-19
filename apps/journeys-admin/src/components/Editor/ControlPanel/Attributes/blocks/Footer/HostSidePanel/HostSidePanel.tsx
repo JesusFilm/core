@@ -113,9 +113,9 @@ export function HostSidePanel(): ReactElement {
                   <Typography variant="subtitle2">
                     {data?.userTeams.length === 0
                       ? t('Cannot edit hosts for this old journey')
-                      : `${t('Only')} ${team.title} ${t(
-                          'members can edit this'
-                        )}`}
+                      : t('Only {{ title }} members can edit this', {
+                          title: team.title
+                        })}
                   </Typography>
                 </Stack>
               </SidePanelContainer>
@@ -130,6 +130,7 @@ export function HostSidePanel(): ReactElement {
         open={openSelect}
         withAdminDrawer
         onClose={() => setOpenSelect(false)}
+        selectHostPanel
       >
         {openSelect && !openCreateHost && !openInfo && (
           <>

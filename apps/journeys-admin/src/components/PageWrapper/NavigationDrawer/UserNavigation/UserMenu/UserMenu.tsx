@@ -77,7 +77,7 @@ export function UserMenu({
       </Stack>
       <Divider />
       <MenuItem
-        label="Logout"
+        label={t('Logout')}
         icon={<Logout2Icon fontSize="small" />}
         onClick={async () => {
           handleProfileClose()

@@ -37,8 +37,16 @@ export class EventService {
     }
     const journeyId = block.journeyId
 
-    const { visitor, journeyVisitor } =
+    const visitorAndJourneyVisitor =
       await this.visitorService.getByUserIdAndJourneyId(userId, journeyId)
+
+    if (visitorAndJourneyVisitor == null) {
+      throw new GraphQLError('Visitor does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+
+    const { visitor, journeyVisitor } = visitorAndJourneyVisitor
 
     const validStep = await this.blockService.validateBlock(
       stepId,

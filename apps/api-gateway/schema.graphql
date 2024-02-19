@@ -762,6 +762,22 @@ input JourneyProfileUpdateInput
   lastActiveTeamId: String
 }
 
+type JourneysEmailPreference
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
+  unsubscribeAll: Boolean!
+  accountNotifications: Boolean!
+}
+
+input JourneysEmailPreferenceUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
+  preference: String!
+  value: Boolean!
+}
+
 input JourneysFilter
   @join__type(graph: JOURNEYS)
 {
@@ -1248,6 +1264,7 @@ type Mutation
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference @join__field(graph: JOURNEYS)
   teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
   teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
@@ -1430,6 +1447,7 @@ type Query
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
+  journeysEmailPreference(email: String!): JourneysEmailPreference @join__field(graph: JOURNEYS)
   teams: [Team!]! @join__field(graph: JOURNEYS)
   team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
@@ -2148,6 +2166,7 @@ type User
   email: String! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   superAdmin: Boolean @join__field(graph: USERS)
+  emailVerified: Boolean! @join__field(graph: USERS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""

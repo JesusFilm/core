@@ -2,6 +2,7 @@ import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -47,11 +48,12 @@ export function TrashJourneyDialog({
   })
 
   const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation('apps-journeys-admin')
 
   async function handleTrash(): Promise<void> {
     try {
       await trashJourney()
-      enqueueSnackbar('Journey trashed', {
+      enqueueSnackbar(t('Journey trashed'), {
         variant: 'success',
         preventDuplicate: true
       })
@@ -69,18 +71,20 @@ export function TrashJourneyDialog({
     <Dialog
       open={open}
       onClose={handleClose}
-      dialogTitle={{ title: 'Trash Journey?', closeButton: true }}
+      dialogTitle={{ title: t('Trash Journey?'), closeButton: true }}
       dialogAction={{
         onSubmit: handleTrash,
-        submitLabel: 'Delete',
-        closeLabel: 'Cancel'
+        submitLabel: t('Delete'),
+        closeLabel: t('Cancel')
       }}
       testId="TrashJourneyDialog"
     >
       <Typography>
-        By selecting “delete”, this journey will be moved to the trash. It will
-        remain there for 40 days, before being automatically and permanently
-        deleted.
+        {t(
+          'By selecting “delete”, this journey will be moved to the trash. It will ' +
+            'remain there for 40 days, before being automatically and permanently ' +
+            'deleted.'
+        )}
       </Typography>
     </Dialog>
   )

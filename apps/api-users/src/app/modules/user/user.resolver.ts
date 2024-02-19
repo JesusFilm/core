@@ -77,6 +77,7 @@ export class UserResolver {
     const {
       displayName,
       email,
+      emailVerified,
       photoURL: imageUrl
     } = await auth.getUser(userId)
 
@@ -88,7 +89,8 @@ export class UserResolver {
       firstName,
       lastName,
       email: email ?? '',
-      imageUrl
+      imageUrl,
+      emailVerified
     }
 
     // this function can run in parallel as such it is possible for multiple

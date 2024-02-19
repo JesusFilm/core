@@ -43,7 +43,7 @@ export function JourneyListMenu({
           <IconButton
             edge="end"
             color="inherit"
-            sx={{ mx: 1 }}
+            sx={{ mx: 3 }}
             onClick={handleShowMenu}
           >
             <MoreIcon />
