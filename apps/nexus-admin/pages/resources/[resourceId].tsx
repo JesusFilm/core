@@ -1,3 +1,4 @@
+import { gql, useQuery } from '@apollo/client'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -7,15 +8,48 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
-import { FC, SyntheticEvent, useState } from 'react'
+import { FC, SyntheticEvent, useEffect, useState } from 'react'
 
 import { ChannelTable } from '../../src/components/ChannelTable'
 import { LocalizationTable } from '../../src/components/LocalizationTable/LocalizationTable'
 import { MainLayout } from '../../src/components/MainLayout'
 
+const GET_RESOURCE = gql`
+  query Resource($resourceID: ID!) {
+    resource(id: $resourceID) {
+      id
+      name
+      localizations {
+        id
+        title
+        description
+        keywords
+        language
+      }
+    }
+  }
+`
+
 const ResourceDetailsPage: FC = () => {
   const [tabIndex, setTabIndex] = useState(0)
+  const router = useRouter()
+  const resourceId = router.query
+  const [localizations, setLocalizations] = useState([])
+
+  const { data, loading } = useQuery(GET_RESOURCE, {
+    skip: String(resourceId) === '',
+    variables: {
+      resourceID: resourceId
+    }
+  })
+
+  useEffect(() => {
+    if (data !== undefined) {
+      setLocalizations(data?.resource?.localizations)
+    }
+  }, [data])
 
   const handleChangeTab = (
     event: SyntheticEvent,
@@ -83,7 +117,9 @@ const ResourceDetailsPage: FC = () => {
               <Tab label="Channel" />
             </Tabs>
           </Box>
-          {tabIndex === 0 && <LocalizationTable loading={false} data={[]} />}
+          {tabIndex === 0 && (
+            <LocalizationTable loading={loading} data={localizations} />
+          )}
           {tabIndex === 1 && <ChannelTable loading={false} data={[]} />}
         </Paper>
       </Stack>

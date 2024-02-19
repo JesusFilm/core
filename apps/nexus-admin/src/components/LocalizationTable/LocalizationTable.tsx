@@ -2,8 +2,17 @@ import Paper from '@mui/material/Paper'
 import { DataGrid } from '@mui/x-data-grid'
 import { FC, useState } from 'react'
 
+interface Localization {
+  id: string
+  resourceId: string
+  title: string
+  description: string
+  keywords: string
+  language: string
+}
+
 interface LocalizationTableProps {
-  data: []
+  data: Localization[] | []
   loading: boolean
 }
 
@@ -17,6 +26,12 @@ export const LocalizationTable: FC<LocalizationTableProps> = ({
   })
 
   const columns = [
+    {
+      field: 'title',
+      headerName: 'Title',
+      flex: 1,
+      sortable: false
+    },
     {
       field: 'language',
       headerName: 'Language',
@@ -36,14 +51,8 @@ export const LocalizationTable: FC<LocalizationTableProps> = ({
       sortable: false
     },
     {
-      field: 'keyword',
-      headerName: 'Keyword',
-      flex: 1,
-      sortable: false
-    },
-    {
-      field: 'caption',
-      headerName: 'Caption',
+      field: 'keywords',
+      headerName: 'Keywords',
       flex: 1,
       sortable: false
     }
