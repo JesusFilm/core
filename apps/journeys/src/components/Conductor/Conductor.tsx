@@ -149,7 +149,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         data-testid="Conductor"
         sx={{
           justifyContent: 'center',
-          height: '100vh',
+          height: '100svh',
           background: theme.palette.grey[900],
           overflow: 'hidden'
         }}
@@ -158,7 +158,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           sx={{
             maxHeight: {
               xs: '100svh',
-              lg: 'calc(100vh - 80px)'
+              lg: 'calc(100svh - 80px)'
             },
             height: {
               xs: 'inherit',
