@@ -4,7 +4,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 
-import { SocialPreviewPost } from './Post'
+import { Post } from './Post'
 
 describe('SocialPreviewPost', () => {
   it('should display blank socialpreviewpost', () => {
@@ -16,7 +16,7 @@ describe('SocialPreviewPost', () => {
           } as unknown as Journey
         }}
       >
-        <SocialPreviewPost />
+        <Post />
       </JourneyProvider>
     )
     expect(getByTestId('social-preview-post-empty')).toBeInTheDocument()
@@ -36,7 +36,7 @@ describe('SocialPreviewPost', () => {
           } as unknown as Journey
         }}
       >
-        <SocialPreviewPost />
+        <Post />
       </JourneyProvider>
     )
     expect(getByRole('img')).toHaveAttribute(
