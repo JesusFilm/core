@@ -1,17 +1,23 @@
-// TODO (SWIPE): Fix types
-
-import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import {
   ThemeMode,
   ThemeName,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import type { TreeBlock } from '../../libs/block'
+import {
+  type TreeBlock,
+  blockHistoryVar,
+  treeBlocksVar
+} from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
+
+import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
+import { StepPreviousEventCreate } from './__generated__/StepPreviousEventCreate'
+import { STEP_NEXT_EVENT_CREATE, STEP_PREVIOUS_EVENT_CREATE } from './Card'
 
 import { Card } from '.'
 
@@ -113,10 +119,54 @@ describe('CardBlock', () => {
     ]
   }
 
+  const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate> = {
+    request: {
+      query: STEP_PREVIOUS_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          blockId: 'block.id',
+          value: 'step.name',
+          nextStepId: 'targetBlock.id'
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        stepPreviousEventCreate: {
+          __typename: 'StepPreviousEvent',
+          id: 'uuid'
+        }
+      }
+    }))
+  }
+
+  const mockStepNextEventCreate: MockedResponse<StepNextEventCreate> = {
+    request: {
+      query: STEP_NEXT_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          blockId: 'block.id',
+          value: 'step.name',
+          nextStepId: 'targetBlock.id'
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        stepNextEventCreate: {
+          __typename: 'StepNextEvent',
+          id: 'uuid'
+        }
+      }
+    }))
+  }
+
   it('should render card with theme background color', async () => {
     const { getByTestId, getByText } = render(
       <MockedProvider>
-        <Card {...block} />
+        <Card {...block} activeStep />
       </MockedProvider>
     )
 
@@ -137,6 +187,7 @@ describe('CardBlock', () => {
           themeMode={ThemeMode.dark}
           themeName={ThemeName.base}
           backgroundColor="#F1A025"
+          activeStep
         />
       </MockedProvider>
     )
@@ -150,7 +201,7 @@ describe('CardBlock', () => {
   it('should render expanded cover if no coverBlockId', () => {
     const { queryByText, getByTestId } = render(
       <MockedProvider>
-        <Card {...block} coverBlockId={null} />
+        <Card {...block} coverBlockId={null} activeStep />
       </MockedProvider>
     )
 
@@ -162,7 +213,7 @@ describe('CardBlock', () => {
   it('should render expanded cover if invalid coverBlockId', () => {
     const { queryByText, getByTestId } = render(
       <MockedProvider>
-        <Card {...block} coverBlockId="fakeId" />
+        <Card {...block} coverBlockId="" activeStep />
       </MockedProvider>
     )
 
@@ -178,6 +229,7 @@ describe('CardBlock', () => {
           {...{ ...block, children: [...block.children, imageBlock] }}
           fullscreen
           coverBlockId="imageBlockId"
+          activeStep
         />
       </MockedProvider>
     )
@@ -196,6 +248,7 @@ describe('CardBlock', () => {
         <Card
           {...{ ...block, children: [...block.children, imageBlock] }}
           coverBlockId="imageBlockId"
+          activeStep
         />
       </MockedProvider>
     )
@@ -216,6 +269,7 @@ describe('CardBlock', () => {
         <Card
           {...{ ...block, children: [...block.children, videoBlock] }}
           coverBlockId="videoBlockId"
+          activeStep
         />
       </MockedProvider>
     )
@@ -229,12 +283,41 @@ describe('CardBlock', () => {
     expect(queryAllByText('How did we get here?')[0]).toBeInTheDocument()
   })
 
-  // TODO (SWIPE): Add tests for navigation
-  it('should block navigate previous on the first card', () => {
-    expect(true).toBe(true)
+  it('should block navigate previous on the first card', async () => {
+    treeBlocksVar([block])
+    blockHistoryVar([block])
+
+    const { getByTestId } = render(
+      <MockedProvider mocks={[mockStepPreviousEventCreate]}>
+        <Card {...block} activeStep />
+      </MockedProvider>
+    )
+
+    const card = getByTestId('JourneysCard-card')
+
+    fireEvent.click(card, { clientX: 0 })
+
+    await waitFor(() =>
+      expect(mockStepPreviousEventCreate.result).not.toHaveBeenCalled()
+    )
   })
 
-  it('should block navigate next on the last card', () => {
-    expect(true).toBe(true)
+  it('should block navigate next on the last card', async () => {
+    treeBlocksVar([block])
+    blockHistoryVar([block])
+
+    const { getByTestId } = render(
+      <MockedProvider mocks={[mockStepNextEventCreate]}>
+        <Card {...block} activeStep />
+      </MockedProvider>
+    )
+
+    const card = getByTestId('JourneysCard-card')
+
+    fireEvent.click(card, { clientX: 500 })
+
+    await waitFor(() =>
+      expect(mockStepNextEventCreate.result).not.toHaveBeenCalled()
+    )
   })
 })
