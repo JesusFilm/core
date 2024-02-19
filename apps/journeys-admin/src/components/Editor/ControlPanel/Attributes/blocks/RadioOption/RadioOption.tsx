@@ -1,4 +1,5 @@
 import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -12,7 +13,9 @@ export function RadioOption({
   id,
   action
 }: TreeBlock<RadioOptionBlock>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
+  const selectedAction = actions.find((act) => act.value === action?.__typename)
 
   useEffect(() => {
     dispatch({
@@ -21,26 +24,23 @@ export function RadioOption({
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Action',
+      title: t('Action'),
       children: <Action />
     })
-  }, [dispatch, id])
+  }, [dispatch, id, t])
 
   return (
     <>
       <Attribute
         id={`${id}-radio-option-action`}
         icon={<LinkIcon />}
-        name="Action"
-        value={
-          actions.find((act) => act.value === action?.__typename)?.label ??
-          'None'
-        }
-        description="Action"
+        name={t('Action')}
+        value={t(selectedAction?.label ?? 'None')}
+        description={t('Action')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Action',
+            title: t('Action'),
             mobileOpen: true,
             children: <Action />
           })

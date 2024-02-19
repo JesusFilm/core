@@ -1,6 +1,7 @@
 import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import FolderDown1Icon from '@core/shared/ui/icons/FolderDown1'
 import FolderUp1Icon from '@core/shared/ui/icons/FolderUp1'
@@ -44,6 +45,7 @@ export function ArchiveJourney({
   handleClose,
   refetch
 }: ArchiveJourneyProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const previousStatus = published
     ? JourneyStatus.published
     : JourneyStatus.draft
@@ -82,13 +84,13 @@ export function ArchiveJourney({
     try {
       if (status !== JourneyStatus.archived) {
         await archiveJourney()
-        enqueueSnackbar('Journey Archived', {
+        enqueueSnackbar(t('Journey Archived'), {
           variant: 'success',
           preventDuplicate: true
         })
       } else {
         await unarchiveJourney()
-        enqueueSnackbar('Journey Unarchived', {
+        enqueueSnackbar(t('Journey Unarchived'), {
           variant: 'success',
           preventDuplicate: true
         })
@@ -107,14 +109,14 @@ export function ArchiveJourney({
     <>
       {status !== JourneyStatus.archived ? (
         <MenuItem
-          label="Archive"
+          label={t('Archive')}
           icon={<FolderUp1Icon color="secondary" />}
           onClick={handleClick}
           testId="Archive"
         />
       ) : (
         <MenuItem
-          label="Unarchive"
+          label={t('Unarchive')}
           icon={<FolderDown1Icon color="secondary" />}
           onClick={handleClick}
           testId="Unarchive"

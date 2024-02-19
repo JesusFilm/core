@@ -15,20 +15,13 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 
+import '../../../../test/i18n'
+
 import { ActionsTable } from './ActionsTable'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
-}))
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
 }))
 
 const blocks: Blocks[] = [

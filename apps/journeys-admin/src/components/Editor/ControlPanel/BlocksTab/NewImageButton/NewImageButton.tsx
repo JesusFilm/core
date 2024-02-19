@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -24,6 +25,7 @@ export const IMAGE_BLOCK_CREATE = gql`
 `
 
 export function NewImageButton(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [imageBlockCreate] = useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
@@ -82,7 +84,7 @@ export function NewImageButton(): ReactElement {
   return (
     <Button
       icon={<Image3Icon />}
-      value="Image"
+      value={t('Image')}
       onClick={handleClick}
       testId="NewImageButton"
     />
