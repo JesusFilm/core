@@ -18,6 +18,7 @@ import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'
+import { JourneysEmailPreferenceModule } from './modules/journeysEmailPreference/journeysEmailPreference.module'
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 import { TeamModule } from './modules/team/team.module'
 import { UserInviteModule } from './modules/userInvite/userInvite.module'
@@ -33,6 +34,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     BlockModule,
     EmailModule,
     EventModule,
+    JourneysEmailPreferenceModule,
     HostModule,
     JourneyModule,
     JourneyVisitorModule,
