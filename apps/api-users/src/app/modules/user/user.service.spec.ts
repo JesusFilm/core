@@ -105,7 +105,10 @@ describe('UserService', () => {
         .mockResolvedValue({} as unknown as UserRecord)
       emailQueue.getJob.mockResolvedValue({ data: { token: 'token' } })
 
-      const validateEmailRes = await userService.validateEmail(user.userId, token)
+      const validateEmailRes = await userService.validateEmail(
+        user.userId,
+        token
+      )
 
       expect(prismaService.user.update).toHaveBeenCalledWith({
         where: { userId: user.userId },
@@ -121,7 +124,10 @@ describe('UserService', () => {
       const token = 'token'
       const user = { userId: 'userId' } as unknown as User
       emailQueue.getJob.mockResolvedValue({ data: { token: 'newtoken' } })
-      const validateEmailRes = await userService.validateEmail(user.userId, token)
+      const validateEmailRes = await userService.validateEmail(
+        user.userId,
+        token
+      )
 
       expect(validateEmailRes).toBe(false)
     })
