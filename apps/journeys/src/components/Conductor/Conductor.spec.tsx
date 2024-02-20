@@ -1,6 +1,8 @@
 // TODO (SWIPE): Refactor tests for navigation
 
-import { MockedProvider } from '@apollo/client/testing'
+import { mock } from 'node:test'
+
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
@@ -25,6 +27,9 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
+import { RadioQuestionSubmissionEventCreate } from '../../../__generated__/RadioQuestionSubmissionEventCreate'
+import { StepViewEventCreate } from '../../../__generated__/StepViewEventCreate'
 import { basic } from '../../libs/testData/storyData'
 
 import { JOURNEY_VIEW_EVENT_CREATE, JOURNEY_VISITOR_UPDATE } from './Conductor'
@@ -123,6 +128,77 @@ describe('Conductor', () => {
     }
   }
 
+  const mockJourneyViewEventCreate: MockedResponse<JourneyViewEventCreate> = {
+    request: {
+      query: JOURNEY_VIEW_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          journeyId: 'journeyId',
+          label: 'my journey',
+          value: '529'
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        journeyViewEventCreate: {
+          id: 'uuid',
+          __typename: 'JourneyViewEvent'
+        }
+      }
+    }))
+  }
+
+  const mockStepViewEventCreate = (
+    input = {
+      id: 'uuid',
+      blockId: 'step1.id',
+      value: 'Step 1'
+    }
+  ): MockedResponse<StepViewEventCreate> => ({
+    request: {
+      query: STEP_VIEW_EVENT_CREATE,
+      variables: {
+        input
+      }
+    },
+    result: {
+      data: {
+        stepViewEventCreate: {
+          id: input.id,
+          __typename: 'StepViewEvent'
+        }
+      }
+    }
+  })
+
+  const mockRadioQuestionSubmissionEvent = (
+    input = {
+      id: 'uuid',
+      blockId: 'RadioQuestion1',
+      radioOptionBlockId: 'RadioOption1',
+      stepId: 'step.id',
+      label: 'Untitled',
+      value: 'Option 1'
+    }
+  ): MockedResponse<RadioQuestionSubmissionEventCreate> => ({
+    request: {
+      query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+      variables: {
+        input
+      }
+    },
+    result: {
+      data: {
+        radioQuestionSubmissionEventCreate: {
+          id: input.id,
+          __typename: 'RadioQuestionSubmissionEvent'
+        }
+      }
+    }
+  })
+
   const defaultJourney: Journey = {
     __typename: 'Journey',
     id: 'journeyId',
@@ -166,35 +242,8 @@ describe('Conductor', () => {
   it('should create a journeyViewEvent', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 
-    const result = jest.fn(() => ({
-      data: {
-        journeyViewEventCreate: {
-          id: 'uuid',
-          __typename: 'JourneyViewEvent'
-        }
-      }
-    }))
-
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  journeyId: 'journeyId',
-                  label: 'my journey',
-                  value: '529'
-                }
-              }
-            },
-            result
-          },
-          visitorUpdateMock
-        ]}
-      >
+      <MockedProvider mocks={[mockJourneyViewEventCreate, visitorUpdateMock]}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey: defaultJourney }}>
             <Conductor blocks={[]} />
@@ -202,39 +251,16 @@ describe('Conductor', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockJourneyViewEventCreate.result).toHaveBeenCalled()
+    )
   })
 
   it('should add journeyViewEvent to dataLayer', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  journeyId: 'journeyId',
-                  label: 'my journey',
-                  value: '529'
-                }
-              }
-            },
-            result: {
-              data: {
-                journeyViewEventCreate: {
-                  id: 'uuid',
-                  __typename: 'JourneyViewEvent'
-                }
-              }
-            }
-          },
-          visitorUpdateMock
-        ]}
-      >
+      <MockedProvider mocks={[mockJourneyViewEventCreate, visitorUpdateMock]}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey: defaultJourney }}>
             <Conductor blocks={[]} />
@@ -333,12 +359,94 @@ describe('Conductor', () => {
     })
   })
 
-  it('should navigate next to card that is not pre rendered', () => {
-    expect(true).toBe(true)
+  it('should navigate next to card that is not pre rendered', async () => {
+    mockUuidv4.mockReturnValue('uuid')
+    blockHistoryVar([basic[0]])
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockJourneyViewEventCreate,
+          visitorUpdateMock,
+          mockStepViewEventCreate(),
+          mockRadioQuestionSubmissionEvent({
+            id: 'uuid',
+            blockId: 'radioQuestion1.id',
+            radioOptionBlockId: 'radioOption4.id',
+            stepId: 'step1.id',
+            label: 'Step 1',
+            value: 'Step 4 (End)'
+          }),
+          mockStepViewEventCreate({
+            id: 'uuid',
+            blockId: 'step4.id',
+            value: 'Step 4'
+          })
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <Conductor blocks={basic} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      fireEvent.click(screen.queryAllByText('Step 4 (End)')[0])
+    )
+
+    expect(blockHistoryVar().at(-1)?.id).toBe('step4.id')
   })
 
-  it('should navigate previous to card that is not pre rendered', () => {
-    expect(true).toBe(true)
+  it('should navigate previous to card that is not pre rendered', async () => {
+    mockUuidv4.mockReturnValue('uuid')
+    blockHistoryVar(basic)
+
+    console.log('block history', blockHistoryVar())
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockJourneyViewEventCreate,
+          visitorUpdateMock,
+          mockStepViewEventCreate(),
+          // mockRadioQuestionSubmissionEvent({
+          //   id: 'uuid',
+          //   blockId: 'radioQuestion1.id',
+          //   radioOptionBlockId: 'radioOption4.id',
+          //   stepId: 'step1.id',
+          //   label: 'Step 1',
+          //   value: 'Step 4 (End)'
+          // }),
+          mockRadioQuestionSubmissionEvent({
+            id: 'uuid',
+            blockId: 'radioQuestion1.id',
+            radioOptionBlockId: 'radioOption1.id',
+            stepId: 'step4.id',
+            label: 'Step 4 (End)',
+            value: 'Step 1'
+          }),
+          mockStepViewEventCreate({
+            id: 'uuid',
+            blockId: 'step1.id',
+            value: 'Step 1'
+          })
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <Conductor blocks={basic} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      fireEvent.click(screen.queryAllByText('Step 1 (Start)')?.at(-1))
+    )
+
+    expect(blockHistoryVar().at(-1)?.id).toBe('step1.id')
   })
 
   it('should reset radioOption selection after navigating back', async () => {
@@ -348,62 +456,13 @@ describe('Conductor', () => {
     render(
       <MockedProvider
         mocks={[
-          {
-            request: {
-              query: JOURNEY_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  journeyId: 'journeyId',
-                  label: 'my journey',
-                  value: '529'
-                }
-              }
-            },
-            result: {
-              data: {
-                journeyViewEventCreate: {
-                  id: 'uuid',
-                  __typename: 'JourneyViewEvent'
-                }
-              }
-            }
-          },
-          {
-            request: {
-              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'RadioQuestion1',
-                  radioOptionBlockId: 'RadioOption1',
-                  stepId: 'step.id',
-                  label: 'Untitled',
-                  value: 'Option 1'
-                }
-              }
-            }
-          },
-          {
-            request: {
-              query: STEP_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'step1.id',
-                  value: 'Step {{number}}'
-                }
-              }
-            },
-            result: {
-              data: {
-                stepViewEventCreate: {
-                  id: 'uuid',
-                  __typename: 'StepViewEvent'
-                }
-              }
-            }
-          }
+          mockJourneyViewEventCreate,
+          mockRadioQuestionSubmissionEvent(),
+          mockStepViewEventCreate({
+            id: 'uuid',
+            blockId: 'step1.id',
+            value: 'Step {{number}}'
+          })
         ]}
       >
         <SnackbarProvider>
