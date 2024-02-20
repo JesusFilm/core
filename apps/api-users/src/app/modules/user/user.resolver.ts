@@ -144,6 +144,10 @@ export class UserResolver {
       user = await this.prismaService.user.create({
         data
       })
+      // after user create so it is ony sent once
+      if (!emailVerified && email != null) {
+        await this.userService.verifyUser(userId, email)
+      }
     } catch (e) {
       do {
         user = await this.prismaService.user.update({
