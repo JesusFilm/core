@@ -1,64 +1,92 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
-import { Job } from 'bullmq'
 import { UserRecord, getAuth } from 'firebase-admin/auth'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { User } from '@core/nest/common/firebaseClient'
+import { User } from '.prisma/api-users-client'
 
 import { PrismaService } from '../../lib/prisma.service'
-import { VerifyUserJob } from '../email/email.consumer'
 
-import { UserModule } from './user.module'
 import { UserService } from './user.service'
 
-const user = {
-  id: 'userId',
-  firstName: 'fo',
-  lastName: 'sho',
-  email: 'test@example.com',
-  emailVerified: true
-}
-
 describe('UserService', () => {
-  let userService: UserService
-  const emailQueue = {
-    add: jest.fn(),
-    getJob: jest.fn()
-  }
-  let prismaService: PrismaService
+  let userService: UserService, prismaService: PrismaService
+  let emailQueue
+  const removeJob = jest.fn()
 
   beforeEach(async () => {
+    emailQueue = {
+      add: jest.fn(),
+      getJob: jest.fn(() => ({
+        remove: removeJob
+      }))
+    }
     const module: TestingModule = await Test.createTestingModule({
-      imports: [UserModule]
+      providers: [
+        UserService,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        },
+        { provide: getQueueToken('api-users-email'), useValue: emailQueue }
+      ]
     })
       .overrideProvider(getQueueToken('api-users-email'))
       .useValue(emailQueue)
       .compile()
 
     userService = module.get<UserService>(UserService)
-    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+  })
+
+  afterEach(() => {
+    removeJob.mockClear()
+    jest.clearAllMocks()
   })
 
   describe('verifyUser', () => {
-    it('should add a job to the email queue', async () => {
-      const addSpy = jest.spyOn(emailQueue, 'add')
-
-      const userId = '123'
-      const email = 'test@example.com'
-
+    it('should send an email with the correct subject and body', async () => {
+      const email = 'tav@example.com'
+      const userId = 'userId'
       await userService.verifyUser(userId, email)
-
-      expect(addSpy).toHaveBeenCalledWith(
+      expect(emailQueue.add).toHaveBeenCalledWith(
         'verifyUser',
         {
-          userId,
           email,
-          token: expect.any(String)
+          token: expect.any(String),
+          userId: 'userId'
         },
         {
-          jobId: expect.stringContaining(`${userId}-`),
+          jobId: expect.any(String),
           removeOnComplete: {
+            age: 24 * 3600 // keep up to 24 hours
+          },
+          removeOnFail: {
             age: 24 * 3600
+          }
+        }
+      )
+    })
+
+    it('should create new job if none exists', async () => {
+      const email = 'tav@example.com'
+      const userId = 'userId'
+      emailQueue.getJob.mockResolvedValue(null)
+      await userService.verifyUser(userId, email)
+      expect(removeJob).not.toHaveBeenCalled()
+      expect(emailQueue.add).toHaveBeenCalledWith(
+        'verifyUser',
+        {
+          email,
+          token: expect.any(String),
+          userId: 'userId'
+        },
+        {
+          jobId: expect.any(String),
+          removeOnComplete: {
+            age: 24 * 3600 // keep up to 24 hours
           },
           removeOnFail: {
             age: 24 * 3600
@@ -69,47 +97,33 @@ describe('UserService', () => {
   })
 
   describe('validateEmail', () => {
-    it('should update user emailVerified status and return true if job exists', async () => {
-      const getJobSpy = jest
-        .spyOn(emailQueue, 'getJob')
-        .mockResolvedValue({} as unknown as Job<VerifyUserJob>)
-
-      prismaService.user.update = jest
-        .fn()
-        .mockResolvedValue({ user } as unknown as User)
-
+    it('should validate email if token is correct', async () => {
+      const token = 'token'
+      const user = { userId: 'userId' } as unknown as User
       const updateUserSpy = jest
         .spyOn(getAuth(), 'updateUser')
         .mockResolvedValue({} as unknown as UserRecord)
+      emailQueue.getJob.mockResolvedValue({ data: { token: 'token' } })
 
-      const userId = '123'
-      const token = 'abc'
+      const validateEmailRes = await userService.validateEmail(user, token)
 
-      const result = await userService.validateEmail(userId, token)
-
-      expect(getJobSpy).toHaveBeenCalledWith(`${userId}-${token}`)
       expect(prismaService.user.update).toHaveBeenCalledWith({
-        where: { userId },
+        where: { userId: user.userId },
         data: { emailVerified: true }
       })
-      expect(updateUserSpy).toHaveBeenCalledWith(userId, {
+      expect(updateUserSpy).toHaveBeenCalledWith(user.userId, {
         emailVerified: true
       })
-      expect(result).toBe(true)
+      expect(validateEmailRes).toBe(true)
     })
 
-    it('should return false if job does not exist', async () => {
-      const getJobSpy = jest
-        .spyOn(emailQueue, 'getJob')
-        .mockResolvedValue(undefined)
+    it('should not validate email if token is wrong', async () => {
+      const token = 'token'
+      const user = { userId: 'userId' } as unknown as User
+      emailQueue.getJob.mockResolvedValue({ data: { token: 'newtoken' } })
+      const validateEmailRes = await userService.validateEmail(user, token)
 
-      const userId = '123'
-      const token = 'abc'
-
-      const result = await userService.validateEmail(userId, token)
-
-      expect(getJobSpy).toHaveBeenCalledWith(`${userId}-${token}`)
-      expect(result).toBe(false)
+      expect(validateEmailRes).toBe(false)
     })
   })
 })
