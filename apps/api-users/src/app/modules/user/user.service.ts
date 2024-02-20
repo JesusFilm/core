@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 import { getAuth } from 'firebase-admin/auth'
 
+import { User } from '.prisma/api-users-client'
 import { firebaseClient } from '@core/nest/common/firebaseClient'
 
 import { PrismaService } from '../../lib/prisma.service'
@@ -18,28 +19,50 @@ export class UserService {
 
   async verifyUser(userId: string, email: string): Promise<void> {
     const token = Math.floor(100000 + Math.random() * 900000).toString() // six digit, first is not 0
-    await this.emailQueue.add(
-      'verifyUser',
-      {
-        userId,
-        email,
-        token
-      },
-      {
-        jobId: `${userId}-${token}`,
-        removeOnComplete: {
-          age: 24 * 3600 // keep up to 24 hours
+    const job = await this.emailQueue.getJob(userId)
+    if (job != null) {
+      await job.remove()
+      await this.emailQueue.add(
+        'verifyUser',
+        {
+          userId,
+          email,
+          token
         },
-        removeOnFail: {
-          age: 24 * 3600 // keep up to 24 hours
+        {
+          jobId: userId,
+          removeOnComplete: {
+            age: 24 * 3600 // keep up to 24 hours
+          },
+          removeOnFail: {
+            age: 24 * 3600 // keep up to 24 hours
+          }
         }
-      }
-    )
+      )
+    } else {
+      await this.emailQueue.add(
+        'verifyUser',
+        {
+          userId,
+          email,
+          token
+        },
+        {
+          jobId: userId,
+          removeOnComplete: {
+            age: 24 * 3600 // keep up to 24 hours
+          },
+          removeOnFail: {
+            age: 24 * 3600 // keep up to 24 hours
+          }
+        }
+      )
+    }
   }
 
   async validateEmail(userId: string, token: string): Promise<boolean> {
-    const job = await this.emailQueue.getJob(`${userId}-${token}`)
-    if (job != null) {
+    const job = await this.emailQueue.getJob(`${userId}`)
+    if (job != null && job.data.token === token) {
       await this.prismaService.user.update({
         where: { userId },
         data: { emailVerified: true }
