@@ -37,7 +37,9 @@ export function JourneyRenderer(): ReactElement {
         const cardSx: SxProps = {
           height: 'inherit',
           width: 'inherit',
-          position: 'absolute'
+          position: 'absolute',
+          top: 0,
+          left: 0
         }
 
         const isCurrent = block.id === currentBlock?.id
