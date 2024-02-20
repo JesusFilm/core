@@ -65,10 +65,6 @@ function ValidateEmail({
     variables: { email, token },
     onError(error) {
       setError(error)
-      setDisableValidationButton(false)
-    },
-    onCompleted: () => {
-      setDisableValidationButton(false)
     }
   })
 
@@ -88,6 +84,9 @@ function ValidateEmail({
         await router.push('/')
       }
     })
+    setTimeout(() => {
+      setDisableValidationButton(false)
+    }, 10000)
   }
 
   const handleResendValidationEmail = async (): Promise<void> => {
