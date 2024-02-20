@@ -199,7 +199,8 @@ export function ContainedCover({
           width: '100%',
           height: { xs: hasFullscreenVideo ? '100%' : undefined, sm: '100%' },
           justifyContent: { xs: 'flex-end', sm: 'center' },
-          alignItems: { sm: rtl ? 'flex-start' : 'flex-end' }
+          alignItems: { sm: rtl ? 'flex-start' : 'flex-end' },
+          boxSizing: 'content-box'
         }}
       >
         {children.length !== 0 ? (
@@ -267,7 +268,7 @@ export function ContainedCover({
               hasFullscreenVideo={hasFullscreenVideo}
               sx={{
                 // This should match width of journey card content in admin
-                width: { sm: '360px' },
+                width: { sm: '360px', md: '312px' },
                 maxHeight: { xs: '55vh', sm: '65%', md: '100%' },
                 mb: { xs: 28, sm: 10 }
               }}

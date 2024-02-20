@@ -63,7 +63,8 @@ export function ExpandedCover({
           backdropFilter: 'blur(20px)',
           background,
           borderRadius: 'inherit',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          boxSizing: 'content-box'
         }}
       >
         <Stack
@@ -83,10 +84,10 @@ export function ExpandedCover({
               width: {
                 xs:
                   variant === 'default'
-                    ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
+                    ? 'calc(100% - 48px - env(safe-area-inset-left) - env(safe-area-inset-right))'
                     : 'calc(100% - 48px)',
-                sm: 408,
-                md: 580
+                sm: 360,
+                md: 500
               },
               pb: 4
             }}
