@@ -1,5 +1,6 @@
+import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
-import { Job, Queue } from 'bullmq'
+import { Job } from 'bullmq'
 import { UserRecord, getAuth } from 'firebase-admin/auth'
 
 import { User } from '@core/nest/common/firebaseClient'
@@ -7,6 +8,7 @@ import { User } from '@core/nest/common/firebaseClient'
 import { PrismaService } from '../../lib/prisma.service'
 import { VerifyUserJob } from '../email/email.consumer'
 
+import { UserModule } from './user.module'
 import { UserService } from './user.service'
 
 const user = {
@@ -19,33 +21,21 @@ const user = {
 
 describe('UserService', () => {
   let userService: UserService
-  let emailQueue: Queue<VerifyUserJob>
+  const emailQueue = {
+    add: jest.fn(),
+    getJob: jest.fn()
+  }
   let prismaService: PrismaService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UserService,
-        {
-          provide: 'api-users-email',
-          useValue: {
-            add: jest.fn(),
-            getJob: jest.fn()
-          }
-        },
-        {
-          provide: PrismaService,
-          useValue: {
-            user: {
-              update: jest.fn()
-            }
-          }
-        }
-      ]
-    }).compile()
+      imports: [UserModule]
+    })
+      .overrideProvider(getQueueToken('api-users-email'))
+      .useValue(emailQueue)
+      .compile()
 
     userService = module.get<UserService>(UserService)
-    emailQueue = module.get<Queue<VerifyUserJob>>('api-users-email')
     prismaService = module.get<PrismaService>(PrismaService)
   })
 
@@ -66,7 +56,7 @@ describe('UserService', () => {
           token: expect.any(String)
         },
         {
-          jobId: `${userId}-${expect.any(String)}`,
+          jobId: expect.stringContaining(`${userId}-`),
           removeOnComplete: {
             age: 24 * 3600
           },

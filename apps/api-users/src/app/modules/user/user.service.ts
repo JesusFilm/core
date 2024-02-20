@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 import { getAuth } from 'firebase-admin/auth'
 
-import { User } from '.prisma/api-users-client'
 import { firebaseClient } from '@core/nest/common/firebaseClient'
 
 import { PrismaService } from '../../lib/prisma.service'
