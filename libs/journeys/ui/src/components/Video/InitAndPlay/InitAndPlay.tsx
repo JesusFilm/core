@@ -11,6 +11,7 @@ import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 
@@ -28,6 +29,7 @@ interface InitAndPlayProps {
   endAt: number | null
   autoplay: boolean | null
   posterBlock: TreeBlock<ImageFields> | undefined
+  source: VideoBlockSource
   setLoading: Dispatch<SetStateAction<boolean>>
   setShowPoster: Dispatch<SetStateAction<boolean>>
   setVideoEndTime: Dispatch<SetStateAction<number>>
@@ -47,6 +49,7 @@ export function InitAndPlay({
   endAt,
   autoplay,
   posterBlock,
+  source,
   setLoading,
   setShowPoster,
   setVideoEndTime
@@ -73,8 +76,11 @@ export function InitAndPlay({
           },
           responsive: true,
           muted: muted === true,
-          autoplay: autoplay === true && activeStep,
-          preload: 'auto'
+          autoplay:
+            autoplay === true &&
+            activeStep &&
+            source === VideoBlockSource.youTube
+          // preload: 'auto'
         })
       )
     }
@@ -86,7 +92,8 @@ export function InitAndPlay({
     setPlayer,
     videoRef,
     autoplay,
-    activeStep
+    activeStep,
+    source
   ])
 
   // Initiate video player listeners
