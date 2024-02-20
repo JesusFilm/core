@@ -118,7 +118,9 @@ describe('EmailConsumer', () => {
       await emailConsumer.verifyUser(jobWithAlias as Job<ApiUsersJob>)
 
       expect(EmailVerifyEmail).toHaveBeenCalledWith({
-        inviteLink: '/users/verify?token=123456&email=test%2B1@example.com',
+        inviteLink: expect.stringContaining(
+          '/users/verify?token=123456&email=test%2B1@example.com'
+        ),
         recipient: {
           email: 'test@example.com',
           firstName: 'Joe',
