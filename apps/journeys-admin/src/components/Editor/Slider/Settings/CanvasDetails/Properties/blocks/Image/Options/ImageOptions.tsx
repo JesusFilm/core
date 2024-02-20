@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -84,12 +85,14 @@ export function ImageOptions(): ReactElement {
   }
 
   return (
-    <ImageSource
-      selectedBlock={imageBlock}
-      onChange={updateImageBlock}
-      onDelete={handleImageDelete}
-      loading={loading}
-      error={error != null}
-    />
+    <Box sx={{ px: 4, pb: 4 }}>
+      <ImageSource
+        selectedBlock={imageBlock}
+        onChange={updateImageBlock}
+        onDelete={handleImageDelete}
+        loading={loading}
+        error={error != null}
+      />
+    </Box>
   )
 }
