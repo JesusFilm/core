@@ -4,7 +4,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 
-import { Message } from './Message'
+import { Message } from '.'
 
 describe('Message', () => {
   it('should display blank socialpreviewmessage', () => {

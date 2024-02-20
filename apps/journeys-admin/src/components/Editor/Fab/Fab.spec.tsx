@@ -29,11 +29,6 @@ describe('Fab', () => {
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
-  const editState: EditorState = {
-    ...state,
-    activeFab: ActiveFab.Edit
-  }
-
   describe('smUp', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
@@ -51,7 +46,12 @@ describe('Fab', () => {
 
     it('should toggle fab edit and save states', () => {
       const { getByTestId, getByText } = render(
-        <EditorProvider initialState={editState}>
+        <EditorProvider
+          initialState={{
+            ...state,
+            activeFab: ActiveFab.Edit
+          }}
+        >
           <TestEditorState />
           <Fab variant="canvas" />
         </EditorProvider>
@@ -104,7 +104,12 @@ describe('Fab', () => {
 
     it('should toggle mobile fab edit and save states', () => {
       const { getByTestId, getByText } = render(
-        <EditorProvider initialState={editState}>
+        <EditorProvider
+          initialState={{
+            ...state,
+            activeFab: ActiveFab.Edit
+          }}
+        >
           <TestEditorState />
           <Fab variant="mobile" />
         </EditorProvider>

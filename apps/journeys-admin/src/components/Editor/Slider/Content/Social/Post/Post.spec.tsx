@@ -4,7 +4,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 
-import { Post } from './Post'
+import { Post } from '.'
 
 describe('SocialPreviewPost', () => {
   it('should display blank socialpreviewpost', () => {
