@@ -36,6 +36,7 @@
     "journeys-ui",
     "journeys",
     "journeys-admin",
-    "api-journeys"
+    "api-journeys",
+    "api-users"
   ]
 }
