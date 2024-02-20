@@ -65,6 +65,7 @@ function ValidateEmail({
     variables: { email, token },
     onError(error) {
       setError(error)
+      setDisableValidationButton(false)
     },
     onCompleted: () => {
       setDisableValidationButton(false)
@@ -80,16 +81,13 @@ function ValidateEmail({
   })
 
   const handleReValidateEmail = async (values: FormikValues): Promise<void> => {
+    setDisableValidationButton(true)
     await validateEmail({
       variables: { email, token: values.token },
       onCompleted: async () => {
         await router.push('/')
       }
     })
-    setDisableValidationButton(true)
-    setTimeout(() => {
-      setDisableValidationButton(false)
-    }, 30000)
   }
 
   const handleResendValidationEmail = async (): Promise<void> => {
