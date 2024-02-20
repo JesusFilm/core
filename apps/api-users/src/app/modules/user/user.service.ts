@@ -19,6 +19,11 @@ export class UserService {
 
   async verifyUser(userId: string, email: string): Promise<void> {
     const token = Math.floor(100000 + Math.random() * 900000).toString() // six digit, first is not 0
+    await this.prismaService.userToken.upsert({
+      where: { userId },
+      update: { token },
+      create: { userId, token }
+    })
     await this.emailQueue.add(
       'verifyUser',
       {
@@ -39,8 +44,11 @@ export class UserService {
   }
 
   async validateEmail(user: User, token: string): Promise<boolean> {
-    const job = await this.emailQueue.getJob(`${user.userId}-${token}`)
-    if (job != null) {
+    const userToken = await this.prismaService.userToken.findFirst({
+      where: { AND: [{ userId: user.userId }, { token }] }
+    })
+
+    if (userToken != null) {
       await this.prismaService.user.update({
         where: { userId: user.userId },
         data: { emailVerified: true }

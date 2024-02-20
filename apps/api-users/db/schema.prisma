@@ -22,3 +22,9 @@ model User {
   superAdmin    Boolean  @default(false)
   emailVerified Boolean  @default(true)
 }
+
+model UserToken {
+  id     String @id() @default(uuid())
+  userId String @unique
+  token  String
+}
