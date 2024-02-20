@@ -65,6 +65,9 @@ function ValidateEmail({
     variables: { email, token },
     onError(error) {
       setError(error)
+    },
+    onCompleted: () => {
+      setDisableValidationButton(false)
     }
   })
 
