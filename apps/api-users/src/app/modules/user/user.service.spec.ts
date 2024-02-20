@@ -1,6 +1,7 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
-import { mockDeep } from 'jest-mock-extended'
+import { UserRecord, getAuth } from 'firebase-admin/auth'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { User } from '.prisma/api-users-client'
 
@@ -8,12 +9,8 @@ import { PrismaService } from '../../lib/prisma.service'
 
 import { UserService } from './user.service'
 
-jest.mock('firebase-admin/auth', () => ({
-  getAuth: jest.fn(() => ({ updateUser: jest.fn }))
-}))
-
 describe('UserService', () => {
-  let userService: UserService
+  let userService: UserService, prismaService: PrismaService
   let emailQueue
   const removeJob = jest.fn()
 
@@ -39,6 +36,9 @@ describe('UserService', () => {
       .compile()
 
     userService = module.get<UserService>(UserService)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
 
   afterEach(() => {
@@ -100,9 +100,20 @@ describe('UserService', () => {
     it('should validate email if token is correct', async () => {
       const token = 'token'
       const user = { userId: 'userId' } as unknown as User
+      const updateUserSpy = jest
+        .spyOn(getAuth(), 'updateUser')
+        .mockResolvedValue({} as unknown as UserRecord)
       emailQueue.getJob.mockResolvedValue({ data: { token: 'token' } })
+
       const validateEmailRes = await userService.validateEmail(user, token)
 
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { userId: user.userId },
+        data: { emailVerified: true }
+      })
+      expect(updateUserSpy).toHaveBeenCalledWith(user.userId, {
+        emailVerified: true
+      })
       expect(validateEmailRes).toBe(true)
     })
 
