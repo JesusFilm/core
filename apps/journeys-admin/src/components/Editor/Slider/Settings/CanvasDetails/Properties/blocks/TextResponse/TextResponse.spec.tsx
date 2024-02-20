@@ -61,7 +61,11 @@ describe('TextResponse', () => {
   }
 
   it('should show default attributes', () => {
-    const { getByRole } = render(<TextResponse {...defaultBlock} />)
+    const { getByRole } = render(
+      <EditorProvider>
+        <TextResponse {...defaultBlock} />
+      </EditorProvider>
+    )
 
     expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
     expect(
