@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix spacing between card and edge of screen
-
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
