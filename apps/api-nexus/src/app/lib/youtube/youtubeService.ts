@@ -2,8 +2,11 @@
 import { createReadStream, statSync } from 'fs';
 
 import { Injectable } from '@nestjs/common';
-import { google } from 'googleapis';
+import { google, youtube_v3 } from 'googleapis';
 import { OAuth2Client } from 'googleapis-common';
+
+import { UpdateVideoLocalization } from '../../modules/bullMQ/bullMQ.service';
+import { GoogleOAuthService } from '../googleOAuth/googleOAuth';
 
 interface Credential {
   client_secret: string;
@@ -15,7 +18,7 @@ interface Credential {
 export class YoutubeService {
   private readonly credential: Credential;
 
-  constructor() {
+  constructor(private readonly googleService: GoogleOAuthService) {
     this.credential = {
       client_secret: process.env.CLIENT_SECRET ?? '',
       client_id: process.env.CLIENT_ID ?? '',
@@ -77,5 +80,110 @@ export class YoutubeService {
         },
       },
     );
+  }
+
+  async updateVideoThumbnail(youtubeData: {
+    token: string;
+    videoId: string;
+    thumbnailPath: string;
+  }): Promise<unknown> {
+    const service = google.youtube('v3');
+
+    return await service.thumbnails.set({
+      auth: this.authorize(youtubeData.token),
+      videoId: youtubeData.videoId,
+      media: {
+        mimeType: 'image/jpeg',
+        body: createReadStream(youtubeData.thumbnailPath),
+      },
+    });
+  }
+
+  async addLocalizedMetadataAndUpdateTags(
+    youtubeData: UpdateVideoLocalization,
+  ): Promise<unknown> {
+    const service = google.youtube('v3');
+    const token = await this.googleService.getNewAccessToken(
+      youtubeData.channel.refreshToken,
+    );
+    const auth = this.authorize(token);
+
+    const fetchResponse = await service.videos.list({
+      auth,
+      part: ['snippet', 'localizations'],
+      id: [youtubeData.resource.videoId],
+    });
+
+    if (
+      fetchResponse.data.items == null ||
+      fetchResponse.data.items.length === 0
+    ) {
+      throw new Error('Video not found');
+    }
+
+    const videoItem: youtube_v3.Schema$Video = fetchResponse.data.items[0];
+    let existingTags: string[];
+    if (
+      videoItem.snippet != null &&
+      videoItem.snippet.tags !== undefined &&
+      videoItem.snippet.tags !== null
+    ) {
+      existingTags = videoItem.snippet.tags;
+    } else {
+      existingTags = [];
+    }
+
+    const updatedTags = [...existingTags, ...youtubeData.resource.tags];
+
+    const updatedLocalizations =
+      videoItem.localizations != null ? { ...videoItem.localizations } : {};
+    updatedLocalizations[youtubeData.resource.language] = {
+      title: youtubeData.resource.title,
+      description: youtubeData.resource.description,
+    };
+
+    return await service.videos.update({
+      auth,
+      part: ['snippet', 'localizations'],
+      requestBody: {
+        id: youtubeData.resource.videoId,
+        snippet: {
+          ...videoItem.snippet,
+          tags: updatedTags,
+        },
+        localizations: updatedLocalizations,
+      },
+    });
+  }
+
+  async uploadCaption(youtubeData: {
+    token: string;
+    videoId: string;
+    language: string;
+    name: string;
+    captionFile: string;
+    isDraft: boolean;
+  }): Promise<unknown> {
+    const service = google.youtube('v3');
+    const auth = this.authorize(youtubeData.token);
+
+    const captionData = {
+      auth,
+      part: ['snippet'],
+      requestBody: {
+        snippet: {
+          videoId: youtubeData.videoId,
+          language: youtubeData.language,
+          name: youtubeData.name,
+          isDraft: youtubeData.isDraft,
+        },
+      },
+      media: {
+        mimeType: 'text/vtt',
+        body: createReadStream(youtubeData.captionFile),
+      },
+    };
+
+    return await service.captions.insert(captionData);
   }
 }

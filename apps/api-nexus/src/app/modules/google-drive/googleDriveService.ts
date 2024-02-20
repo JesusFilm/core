@@ -33,10 +33,17 @@ interface SpreadsheetRow {
   filename?: string;
   title?: string;
   description?: string;
+  custom_thumbnail?: string;
   keywords?: string;
   category?: string;
   privacy?: string;
   spoken_language?: string;
+  video_id?: string;
+  caption_file?: string;
+  captionDriveFile?: drive_v3.Schema$File;
+  audio_track_file?: string;
+  audioTrackDriveFile?: drive_v3.Schema$File;
+  language?: string;
 }
 
 @Injectable()
@@ -209,14 +216,43 @@ export class GoogleDriveService {
 
     console.log('Authorize spreadsheetRows');
     for (const spreadsheetRow of spreadsheetRows) {
-      spreadsheetRow.driveFile = files?.find((file) => {
-        return file.name === spreadsheetRow.filename;
-      });
-      console.log('spreadsheetRow.driveFile', spreadsheetRow.driveFile);
-      spreadsheetRow.channelData = (await this.prismaService.channel.findFirst({
-        where: { youtube: { youtubeId: spreadsheetRow.channel as string } },
-        include: { youtube: true },
-      })) as Channel | undefined;
+      if (spreadsheetRow.filename != null) {
+        spreadsheetRow.driveFile = files?.find(
+          (file) => file.name === spreadsheetRow.filename,
+        );
+      }
+
+      if (spreadsheetRow.caption_file != null) {
+        spreadsheetRow.captionDriveFile = files?.find(
+          (file) => file.name === spreadsheetRow.caption_file,
+        );
+      }
+
+      if (spreadsheetRow.audio_track_file != null) {
+        spreadsheetRow.audioTrackDriveFile = files?.find(
+          (file) => file.name === spreadsheetRow.audio_track_file,
+        );
+      }
+
+      if (spreadsheetRow.channel != null) {
+        spreadsheetRow.channelData =
+          (await this.prismaService.channel.findFirst({
+            where: { youtube: { youtubeId: spreadsheetRow.channel } },
+            include: { youtube: true },
+          })) as unknown as Channel | undefined;
+      }
+
+      if (spreadsheetRow.video_id != null) {
+        spreadsheetRow.channelData =
+          (await this.prismaService.channel.findFirst({
+            where: {
+              resourceYoutubeChannel: {
+                every: { youtubeId: spreadsheetRow.video_id },
+              },
+            },
+            include: { youtube: true },
+          })) as unknown as Channel | undefined;
+      }
     }
 
     return spreadsheetRows;

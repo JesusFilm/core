@@ -3,25 +3,23 @@ import { Job } from 'bull';
 
 import { BucketService } from '../../../lib/bucket/bucketService';
 import { GoogleOAuthService } from '../../../lib/googleOAuth/googleOAuth';
-import { PrismaService } from '../../../lib/prisma.service';
 import { YoutubeService } from '../../../lib/youtube/youtubeService';
 import { GoogleDriveService } from '../../google-drive/googleDriveService';
-import { UploadToBucketToYoutube } from '../bullMQ.service';
+import { UpdateVideoThumbnail } from '../bullMQ.service';
 
 @Processor('nexus-bucket')
-export class UploadToBucket {
+export class UpdateThumbnail {
   constructor(
     private readonly googleDriveService: GoogleDriveService,
     private readonly googleOAuthService: GoogleOAuthService,
     private readonly bucketService: BucketService,
     private readonly youtubeService: YoutubeService,
-    private readonly prismaService: PrismaService,
   ) {}
 
   @Process('process')
   async process(
-    job: Job<UploadToBucketToYoutube>,
-  ): Promise<UploadToBucketToYoutube> {
+    job: Job<UpdateVideoThumbnail>,
+  ): Promise<UpdateVideoThumbnail> {
     const driveToken = await this.googleOAuthService.getNewAccessToken(
       job.data.resource.refreshToken,
     );
@@ -48,31 +46,12 @@ export class UploadToBucket {
       job.data.channel.refreshToken,
     );
 
-    const youtubeData = await this.youtubeService.uploadVideo(
-      {
-        token: youtubeToken,
-        filePath,
-        channelId: job.data.channel.channelId,
-        title: job.data.resource.title ?? '',
-        description: job.data.resource.description ?? '',
-      },
-      async (progress) => {
-        progress = 66 + progress / 3;
-        await job.progress(progress);
-        return await Promise.resolve();
-      },
-    );
-    console.log('YOUTUBE DATA: ', youtubeData);
-    const { videoId } = youtubeData as { videoId: string };
-    if (videoId != null) {
-      await this.prismaService.resourceYoutubeChannel.create({
-        data: {
-          resourceId: job.data.resource.id,
-          channelId: job.data.channel.id,
-          youtubeId: videoId,
-        },
-      });
-    }
+    const youtubeResponse = await this.youtubeService.updateVideoThumbnail({
+      token: youtubeToken,
+      videoId: job.data.resource.videoId,
+      thumbnailPath: filePath,
+    });
+    console.log('YOUTUBE RESPONSE UPDATE THUMBNAIL: ', youtubeResponse);
     await job.progress(100);
     return job.returnvalue;
   }

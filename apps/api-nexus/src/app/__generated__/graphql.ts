@@ -169,6 +169,7 @@ export class Batch {
     name: string;
     status: BatchStatus;
     averagePercent?: Nullable<number>;
+    createdAt: DateTime;
 }
 
 export class BatchResource {
@@ -216,6 +217,7 @@ export class Channel {
     connected?: Nullable<boolean>;
     youtube?: Nullable<ChannelYoutube>;
     status: ChannelStatus;
+    createdAt: DateTime;
 }
 
 export class ChannelYoutube {

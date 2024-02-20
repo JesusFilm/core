@@ -19,9 +19,11 @@ type Batch
   nexusId: String!
   channelId: String!
   channel: Channel
-  resources: [Resource]
+  resources: [BatchResource]
   name: String!
   status: BatchStatus!
+  averagePercent: Float
+  createdAt: DateTime!
 }
 
 enum BatchStatus {
@@ -34,6 +36,17 @@ enum BatchStatus {
   error
   warning
   scheduled
+}
+
+type BatchResource
+  @key(fields: "id")
+{
+  id: ID!
+  batchId: String!
+  resourceId: String!
+  isCompleted: Boolean
+  error: String
+  percent: Float
 }
 
 input BatchFilter {
@@ -74,6 +87,7 @@ type Channel
   connected: Boolean
   youtube: ChannelYoutube
   status: ChannelStatus!
+  createdAt: DateTime!
 }
 
 enum ChannelStatus {
@@ -291,4 +305,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Batch | Channel | Nexus | Resource | ResourceLocalization
+union _Entity = Batch | BatchResource | Channel | Nexus | Resource | ResourceLocalization
