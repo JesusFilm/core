@@ -37,9 +37,7 @@ export function TextResponse({
       >
         <TextResponseFields />
       </Accordion>
-
       <Divider orientation="vertical" variant="middle" flexItem />
-
       <Accordion
         id={`${id}-text-field-action`}
         icon={<LinkIcon />}
@@ -51,7 +49,6 @@ export function TextResponse({
       >
         <Action />
       </Accordion>
-
       <Accordion
         id={`${id}-text-field-icon`}
         icon={<InformationCircleContainedIcon />}
@@ -61,7 +58,7 @@ export function TextResponse({
           'None'
         }
       >
-        <Icon id={submitIcon.id} />
+        <Icon id={submitIcon?.id} />
       </Accordion>
     </>
   )
