@@ -88,10 +88,12 @@ export function LanguageSwitcher({
     const supportedLanguages = (
       i18n.options as unknown as { locales: string[] }
     )?.locales
+
     if (supportedLanguages == null) return
     const formattedLanguages = supportedLanguages.map(getCurrentLanguage)
     setLanguages(formattedLanguages)
-  }, [i18n, getCurrentLanguage])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <>
@@ -105,7 +107,7 @@ export function LanguageSwitcher({
           closeButton: true
         }}
       >
-        <FormControl sx={{ width: '100%' }}>
+        <FormControl fullWidth>
           <Select
             value={currentLanguage.localName}
             IconComponent={ChevronDownIcon}
