@@ -175,7 +175,10 @@ export class UserResolver {
     if (user == null)
       throw new GraphQLError('User not found', { extensions: { code: '404' } })
 
-    const validateEmail = await this.userService.validateEmail(user, token)
+    const validateEmail = await this.userService.validateEmail(
+      user.userId,
+      token
+    )
     if (!validateEmail)
       throw new GraphQLError('Invalid token', { extensions: { code: '403' } })
     return { ...user, emailVerified: true }
