@@ -69,7 +69,7 @@ describe('UserService', () => {
   })
 
   describe('validateEmail', () => {
-    it('should update user emailVerified status and return true if job exists', async () => {
+    it('should update user emailVerified status and return true if the job exists', async () => {
       const getJobSpy = jest
         .spyOn(emailQueue, 'getJob')
         .mockResolvedValue({} as unknown as Job<VerifyUserJob>)
