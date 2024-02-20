@@ -36,9 +36,7 @@ describe('Button attributes', () => {
   it('shows default button', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <EditorProvider>
-          <Button {...block} />
-        </EditorProvider>
+        <Button {...block} />
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()

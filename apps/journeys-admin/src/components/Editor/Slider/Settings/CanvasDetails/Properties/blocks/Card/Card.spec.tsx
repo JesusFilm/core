@@ -1,21 +1,17 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, getByTestId, render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import {
-  JourneyStatus,
   ThemeMode,
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
-import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
 import { Card } from '.'
 
@@ -36,9 +32,7 @@ describe('Card', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider>
-            <Card {...card} />
-          </EditorProvider>
+          <Card {...card} />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -65,53 +59,11 @@ describe('Card', () => {
       children: []
     }
 
-    const journey: Journey = {
-      __typename: 'Journey',
-      id: 'journeyId',
-      themeName: ThemeName.base,
-      themeMode: ThemeMode.dark,
-      strategySlug: null,
-      featuredAt: null,
-      title: 'my journey',
-      slug: 'my-journey',
-      language: {
-        __typename: 'Language',
-        id: '529',
-        bcp47: 'en',
-        iso3: 'eng',
-        name: [
-          {
-            __typename: 'Translation',
-            value: 'English',
-            primary: true
-          }
-        ]
-      },
-      description: 'my cool journey',
-      status: JourneyStatus.draft,
-      createdAt: '2021-11-19T12:34:56.647Z',
-      publishedAt: null,
-      blocks: [] as TreeBlock[],
-      primaryImageBlock: null,
-      creatorDescription: null,
-      creatorImageBlock: null,
-      userJourneys: [],
-      template: null,
-      seoTitle: null,
-      seoDescription: null,
-      chatButtons: [],
-      host: null,
-      team: null,
-      tags: []
-    }
-
     it('shows background color from prop', () => {
       const { getByRole } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
-              <Card {...card} backgroundColor="#00FFCC" />
-            </JourneyProvider>
+            <Card {...card} backgroundColor="#00FFCC" />
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -123,13 +75,11 @@ describe('Card', () => {
       const { getByRole } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
-              <Card
-                {...card}
-                themeName={ThemeName.base}
-                themeMode={ThemeMode.light}
-              />
-            </JourneyProvider>
+            <Card
+              {...card}
+              themeName={ThemeName.base}
+              themeMode={ThemeMode.light}
+            />
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -141,9 +91,7 @@ describe('Card', () => {
       const { getByRole } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
-              <Card {...card} />
-            </JourneyProvider>
+            <Card {...card} />
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -155,14 +103,10 @@ describe('Card', () => {
       const { getByText } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <ThemeProvider>
-              <JourneyProvider value={{ journey, variant: 'admin' }}>
-                <EditorProvider>
-                  <Card {...card} backgroundColor="#00FFCC" />
-                  <TestEditorState />
-                </EditorProvider>
-              </JourneyProvider>
-            </ThemeProvider>
+            <EditorProvider>
+              <Card {...card} backgroundColor="#00FFCC" />
+              <TestEditorState />
+            </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -203,11 +147,7 @@ describe('Card', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <ThemeProvider>
-              <EditorProvider>
-                <Card {...card} />
-              </EditorProvider>
-            </ThemeProvider>
+            <Card {...card} />
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -276,11 +216,7 @@ describe('Card', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <ThemeProvider>
-              <EditorProvider>
-                <Card {...card} />
-              </EditorProvider>
-            </ThemeProvider>
+            <Card {...card} />
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -347,14 +283,12 @@ describe('Card', () => {
       }
       const { getByText } = render(
         <MockedProvider>
-          <ThemeProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <SnackbarProvider>
-                <Card {...card} />
-                <TestEditorState />
-              </SnackbarProvider>
-            </EditorProvider>
-          </ThemeProvider>
+          <EditorProvider initialState={{ selectedBlock: card }}>
+            <SnackbarProvider>
+              <Card {...card} />
+              <TestEditorState />
+            </SnackbarProvider>
+          </EditorProvider>
         </MockedProvider>
       )
       fireEvent.click(getByText('FallingPlates'))
@@ -427,12 +361,10 @@ describe('Card', () => {
       const { getByText } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <ThemeProvider>
-              <EditorProvider>
-                <Card {...card} />
-                <TestEditorState />
-              </EditorProvider>
-            </ThemeProvider>
+            <EditorProvider>
+              <Card {...card} />
+              <TestEditorState />
+            </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -480,15 +412,13 @@ describe('Card', () => {
         fullscreen: false,
         children: []
       }
-      const { getByText, getByTestId } = render(
+      const { getByText } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <ThemeProvider>
-              <EditorProvider>
-                <Card {...card} />
-                <TestEditorState />
-              </EditorProvider>
-            </ThemeProvider>
+            <EditorProvider>
+              <Card {...card} />
+              <TestEditorState />
+            </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )

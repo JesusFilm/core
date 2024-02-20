@@ -29,9 +29,7 @@ describe('Form', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider>
-            <Form {...block} />
-          </EditorProvider>
+          <Form {...block} />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -62,9 +60,7 @@ describe('Form', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider>
-            <Form {...filledBlock} />
-          </EditorProvider>
+          <Form {...filledBlock} />
         </SnackbarProvider>
       </MockedProvider>
     )
