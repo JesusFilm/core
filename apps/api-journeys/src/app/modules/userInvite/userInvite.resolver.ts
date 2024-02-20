@@ -2,6 +2,7 @@ import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+import omit from 'lodash/omit'
 
 import {
   Prisma,
@@ -11,16 +12,20 @@ import {
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import { UserInviteCreateInput } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
+import { UserInviteService } from './userInvite.service'
+
 @Resolver('UserInvite')
 export class UserInviteResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly userInviteService: UserInviteService
+  ) {}
 
   @Query()
   @UseGuards(AppCaslGuard)
@@ -41,7 +46,7 @@ export class UserInviteResolver {
   @UseGuards(AppCaslGuard)
   async userInviteCreate(
     @CaslAbility() ability: AppAbility,
-    @CurrentUserId() senderId: string,
+    @CurrentUser() sender: User,
     @Args('journeyId') journeyId: string,
     @Args('input') input: UserInviteCreateInput
   ): Promise<UserInvite> {
@@ -50,11 +55,11 @@ export class UserInviteResolver {
         where: { journeyId_email: { journeyId, email: input.email } },
         create: {
           journey: { connect: { id: journeyId } },
-          senderId,
+          senderId: sender.id,
           email: input.email
         },
         update: {
-          senderId,
+          senderId: sender.id,
           acceptedAt: null,
           removedAt: null
         },
@@ -64,7 +69,8 @@ export class UserInviteResolver {
               team: {
                 include: { userTeams: true }
               },
-              userJourneys: true
+              userJourneys: true,
+              primaryImageBlock: true
             }
           }
         }
@@ -73,6 +79,11 @@ export class UserInviteResolver {
         throw new GraphQLError('user is not allowed to create userInvite', {
           extensions: { code: 'FORBIDDEN' }
         })
+      await this.userInviteService.sendEmail(
+        userInvite.journey,
+        input.email,
+        omit(sender, ['id'])
+      )
       return userInvite
     })
   }
