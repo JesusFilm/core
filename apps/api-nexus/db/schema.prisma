@@ -35,17 +35,23 @@ model UserNexus {
 }
 
 model Channel {
-    id        String          @id @default(uuid())
-    nexusId   String
-    name      String
-    platform  String
-    connected Boolean         @default(false)
-    nexus     Nexus           @relation(fields: [nexusId], references: [id])
-    youtube   ChannelYoutube?
-    status    NexusStatus     @default(published)
-    createdAt DateTime        @default(now())
-    deletedAt DateTime?
-    Batch     Batch[]
+    id                     String                   @id @default(uuid())
+    nexusId                String
+    name                   String
+    platform               String
+    connected              Boolean                  @default(false)
+    nexus                  Nexus                    @relation(fields: [nexusId], references: [id])
+    youtube                ChannelYoutube?
+    status                 ChannelStatus            @default(published)
+    createdAt              DateTime                 @default(now())
+    deletedAt              DateTime?
+    Batch                  Batch[]
+    resourceYoutubeChannel ResourceYoutubeChannel[]
+}
+
+enum ChannelStatus {
+    deleted
+    published
 }
 
 model ChannelYoutube {
@@ -60,20 +66,32 @@ model ChannelYoutube {
 }
 
 model Resource {
-    id            String                 @id @default(uuid())
-    nexusId       String
-    name          String
-    nexus         Nexus                  @relation(fields: [nexusId], references: [id])
-    status        ResourceStatus         @default(published)
-    createdAt     DateTime               @default(now())
-    updatedAt     DateTime               @updatedAt
-    deletedAt     DateTime?
-    category      String?
-    privacy       PrivacyStatus?
-    sourceType    SourceType
-    localizations ResourceLocalization[]
-    googleDrive   GoogleDriveResource?
-    batches       BatchResource[]
+    id                     String                   @id @default(uuid())
+    nexusId                String
+    name                   String
+    nexus                  Nexus                    @relation(fields: [nexusId], references: [id])
+    status                 ResourceStatus           @default(published)
+    createdAt              DateTime                 @default(now())
+    updatedAt              DateTime                 @updatedAt
+    deletedAt              DateTime?
+    category               String?
+    spokenLanguage         String?
+    customThumbnail        String?
+    privacy                PrivacyStatus?
+    sourceType             SourceType
+    localizations          ResourceLocalization[]
+    googleDrive            GoogleDriveResource?
+    batches                BatchResource[]
+    resourceYoutubeChannel ResourceYoutubeChannel[]
+}
+
+model ResourceYoutubeChannel {
+    id         String   @id @default(uuid())
+    resourceId String
+    channelId  String
+    youtubeId  String
+    resource   Resource @relation(fields: [resourceId], references: [id])
+    channel    Channel  @relation(fields: [channelId], references: [id])
 }
 
 model GoogleDriveResource {
@@ -86,13 +104,26 @@ model GoogleDriveResource {
 }
 
 model ResourceLocalization {
-    id          String   @id @default(uuid())
-    resourceId  String
-    title       String
-    description String
-    keywords    String
-    language    String
-    resource    Resource @relation(fields: [resourceId], references: [id])
+    id                    String                 @id @default(uuid())
+    resourceId            String
+    title                 String
+    description           String
+    keywords              String
+    captionFile           String?
+    audioTrackFile        String?
+    language              String
+    resource              Resource               @relation(fields: [resourceId], references: [id])
+    localizedResourceFile LocalizedResourceFile?
+}
+
+model LocalizedResourceFile {
+    id             String               @id @default(uuid())
+    localizationId String               @unique
+    captionDriveId String
+    audioDriveId   String
+    mimeType       String
+    refreshToken   String?
+    localization   ResourceLocalization @relation(fields: [localizationId], references: [id])
 }
 
 enum ResourceStatus {

@@ -144,12 +144,42 @@ export class GoogleAuthInput {
     url: string;
 }
 
+export class BatchJobBatch {
+    id: string;
+    batchName: string;
+}
+
+export class BatchJobResource {
+    resource: string;
+    channel: string;
+}
+
+export class BatchJobInput {
+    batch: BatchJobBatch;
+    resources: Nullable<BatchJobResource>[];
+}
+
 export class Batch {
     __typename?: 'Batch';
     id: string;
-    resourceId: string;
+    nexusId: string;
+    channelId: string;
+    channel?: Nullable<Channel>;
+    resources?: Nullable<Nullable<BatchResource>[]>;
     name: string;
     status: BatchStatus;
+    averagePercent?: Nullable<number>;
+    createdAt: DateTime;
+}
+
+export class BatchResource {
+    __typename?: 'BatchResource';
+    id: string;
+    batchId: string;
+    resourceId: string;
+    isCompleted?: Nullable<boolean>;
+    error?: Nullable<string>;
+    percent?: Nullable<number>;
 }
 
 export abstract class IQuery {
@@ -172,6 +202,12 @@ export abstract class IQuery {
     abstract resource(id: string): Resource | Promise<Resource>;
 }
 
+export abstract class ISubscription {
+    __typename?: 'ISubscription';
+
+    abstract batchStatusChanged(id: string): Nullable<Batch> | Promise<Nullable<Batch>>;
+}
+
 export class Channel {
     __typename?: 'Channel';
     id: string;
@@ -181,6 +217,7 @@ export class Channel {
     connected?: Nullable<boolean>;
     youtube?: Nullable<ChannelYoutube>;
     status: ChannelStatus;
+    createdAt: DateTime;
 }
 
 export class ChannelYoutube {
@@ -215,7 +252,7 @@ export class Resource {
     createdAt: DateTime;
     updatedAt?: Nullable<DateTime>;
     deletedAt?: Nullable<DateTime>;
-    googleDriveLink: string;
+    googleDriveLink?: Nullable<string>;
     category: string;
     privacy: PrivacyStatus;
     sourceType: SourceType;
@@ -273,6 +310,8 @@ export abstract class IMutation {
     abstract getGoogleAccessToken(input: GoogleAuthInput): GoogleAuthResponse | Promise<GoogleAuthResponse>;
 
     abstract uploadToYoutube(channelId: string, resourceId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+
+    abstract resourceBatchJob(input: BatchJobInput): Nullable<string> | Promise<Nullable<string>>;
 }
 
 export class Language {

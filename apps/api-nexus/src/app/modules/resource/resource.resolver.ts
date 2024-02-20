@@ -236,6 +236,7 @@ export class ResourceResolver {
     if (googleAccessToken === null) {
       throw new Error('Invalid tokenId');
     }
+
     console.log('Downloading Template . . .');
     const rows = await this.googleDriveService.handleGoogleDriveOperations(
       tokenId,
@@ -244,38 +245,101 @@ export class ResourceResolver {
     );
     console.log('Total Data', rows.length);
 
-    const batchResources: Array<{ resource: Resource; channel?: Channel }> = [];
+    const batchResources: Array<{ resource: Resource; channel: Channel }> = [];
+    const localizationBatch: Array<{ resource: Resource; channel: Channel }> =
+      [];
 
     for (const row of rows) {
-      const resource = await this.prismaService.resource.create({
-        data: {
-          id: uuidv4(),
-          name: row.filename ?? '',
-          nexusId: nexus.id,
-          status: row.channelData?.id !== null ? 'processing' : 'published',
-          sourceType: 'template',
-          createdAt: new Date(),
-          category: row.category,
-          privacy: row.privacy as PrivacyStatus,
-          localizations: {
-            create: {
-              title: row.title ?? '',
-              description: row.description ?? '',
-              keywords: row.keywords ?? '',
-              language: row.spoken_language ?? '',
+      if (row.video_id != null) {
+        const resourceYoutubeChannel =
+          await this.prismaService.resourceYoutubeChannel.findFirst({
+            where: { youtubeId: row.video_id },
+          });
+
+        if (resourceYoutubeChannel != null) {
+          const existingLocalization =
+            await this.prismaService.resourceLocalization.findFirst({
+              where: {
+                resourceId: resourceYoutubeChannel.resourceId,
+                language: row.language,
+              },
+            });
+
+          if (existingLocalization != null) {
+            await this.prismaService.resourceLocalization.update({
+              where: { id: existingLocalization.id },
+              data: {
+                title: row.title ?? existingLocalization.title,
+                description:
+                  row.description ?? existingLocalization.description,
+                keywords: row.keywords ?? existingLocalization.keywords,
+                captionFile:
+                  row.caption_file ?? existingLocalization.captionFile,
+                audioTrackFile:
+                  row.audio_track_file ?? existingLocalization.audioTrackFile,
+              },
+            });
+          } else {
+            await this.prismaService.resourceLocalization.create({
+              data: {
+                resourceId: resourceYoutubeChannel.resourceId,
+                title: row.title ?? '',
+                description: row.description ?? '',
+                keywords: row.keywords ?? '',
+                language: row.language ?? '',
+                captionFile: row.caption_file ?? '',
+                audioTrackFile: row.audio_track_file ?? '',
+                localizedResourceFile: {
+                  create: {
+                    mimeType: row.driveFile?.mimeType ?? '',
+                    captionDriveId: row.captionDriveFile?.id ?? '',
+                    audioDriveId: row.audioTrackDriveFile?.id ?? '',
+                    refreshToken: googleAccessToken.refreshToken,
+                  },
+                },
+              },
+            });
+          }
+        }
+        const resource = await this.prismaService.resource.findUnique({
+          where: { id: resourceYoutubeChannel?.resourceId },
+        });
+
+        if (resource != null && row.channelData != null) {
+          localizationBatch.push({ resource, channel: row.channelData });
+        }
+      } else {
+        const resource = await this.prismaService.resource.create({
+          data: {
+            id: uuidv4(),
+            name: row.filename ?? '',
+            nexusId: nexus.id,
+            status: row.channelData?.id !== null ? 'processing' : 'published',
+            sourceType: 'template',
+            createdAt: new Date(),
+            customThumbnail: row.custom_thumbnail,
+            category: row.category,
+            privacy: row.privacy as PrivacyStatus,
+            localizations: {
+              create: {
+                title: row.title ?? '',
+                description: row.description ?? '',
+                keywords: row.keywords ?? '',
+                language: row.spoken_language ?? '',
+              },
+            },
+            googleDrive: {
+              create: {
+                mimeType: row.driveFile?.mimeType ?? '',
+                driveId: row.driveFile?.id ?? '',
+                refreshToken: googleAccessToken.refreshToken,
+              },
             },
           },
-          googleDrive: {
-            create: {
-              mimeType: row.driveFile?.mimeType ?? '',
-              driveId: row.driveFile?.id ?? '',
-              refreshToken: googleAccessToken.refreshToken,
-            },
-          },
-        },
-      });
-      if (row.channelData?.id !== undefined) {
-        batchResources.push({ resource, channel: row.channelData });
+        });
+        if (row.channelData?.id !== undefined) {
+          batchResources.push({ resource, channel: row.channelData });
+        }
       }
     }
 
@@ -297,8 +361,35 @@ export class ResourceResolver {
           return item.channel?.id === channel.id;
         })
         .map((item) => item.resource);
-      console.log('Batche Count: ', resources.length);
+      console.log('Batch Count: ', resources.length);
       await this.bullMQService.createBatch(
+        uuidv4(),
+        nexusId,
+        channel,
+        resources,
+      );
+    }
+
+    const localizationUniqueChannels = localizationBatch
+      .filter((item, index, self) => {
+        return (
+          index === self.findIndex((t) => t.channel?.id === item.channel?.id) &&
+          item.channel !== undefined
+        );
+      })
+      .map((item) => item.channel);
+
+    console.log('Localization Batches', localizationUniqueChannels.length);
+
+    for (const channel of localizationUniqueChannels) {
+      if (channel === undefined) continue;
+      const resources = localizationBatch
+        .filter((item) => {
+          return item.channel?.id === channel.id;
+        })
+        .map((item) => item.resource);
+      console.log('Localization Batch Count: ', resources.length);
+      await this.bullMQService.createLocalizationBatch(
         uuidv4(),
         nexusId,
         channel,
