@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Iphone1Icon from '@core/shared/ui/icons/Iphone1'
 import Marker2Icon from '@core/shared/ui/icons/Marker2'
@@ -31,6 +32,7 @@ interface VisitorDetailsProps {
 }
 
 export function VisitorDetails({ id }: VisitorDetailsProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetVisitorForDetails>(GET_VISITOR_FOR_DETAILS, {
     variables: { id }
   })
@@ -85,7 +87,9 @@ export function VisitorDetails({ id }: VisitorDetailsProps): ReactElement {
           sx={{ display: { xs: 'none', md: 'flex' } }}
         >
           <UserProfile2Icon />
-          <Typography>{`#${data?.visitor.id.slice(-12)}`}</Typography>
+          <Typography>
+            {t('#{{ id }}', { id: data?.visitor.id.slice(-12) })}
+          </Typography>
         </Stack>
       )}
     </Stack>

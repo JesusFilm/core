@@ -1,0 +1,1 @@
+export { getLocaleLanguage } from './getLocaleLanguage'

@@ -34,17 +34,16 @@ export function EmbedJourneyDialog({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   // this should match apps/journeys/pages/api/oembed.ts
-  const providerUrl = `https://${
-    process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'your.nextstep.is'
-  }`
+  const providerUrl =
+    process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
   const embedUrl = `${providerUrl}/embed/${journey?.slug as string}`
 
   // Self-closing iframe tag breaks embed on WordPress
-  const iframeLink = `<iframe src="${embedUrl}" style="border: 0" allow="fullscreen; autoplay" allowfullscreen></iframe>`
+  const iframeLink = `<iframe src="${embedUrl}" style="border: 0; width: 360px; height: 640px;" allow="fullscreen; autoplay" allowfullscreen></iframe>`
 
   const handleSubmit = async (): Promise<void> => {
     await navigator.clipboard.writeText(iframeLink ?? '')
-    enqueueSnackbar('Code Copied', {
+    enqueueSnackbar(t('Code Copied'), {
       variant: 'success',
       preventDuplicate: true
     })
@@ -55,12 +54,12 @@ export function EmbedJourneyDialog({
       open={open}
       onClose={onClose}
       dialogTitle={{
-        title: 'Embed journey'
+        title: t('Embed journey')
       }}
       dialogAction={{
         onSubmit: handleSubmit,
-        submitLabel: 'Copy Code',
-        closeLabel: 'Cancel'
+        submitLabel: t('Copy Code'),
+        closeLabel: t('Cancel')
       }}
       divider={!smUp}
       testId="EmbedJourneyDialog"

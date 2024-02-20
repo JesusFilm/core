@@ -109,8 +109,8 @@ export function CreateJourneyButton({
       </Button>
       {openTeamDialog != null && (
         <DynamicCopyToTeamDialog
-          submitLabel="Add"
-          title="Add Journey to Team"
+          submitLabel={t('Add')}
+          title={t('Add Journey to Team')}
           open={openTeamDialog}
           loading={loadingJourney}
           onClose={() => setOpenTeamDialog(false)}

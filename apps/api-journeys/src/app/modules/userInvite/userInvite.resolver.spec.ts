@@ -190,7 +190,8 @@ describe('UserInviteResolver', () => {
       const user = {
         id: 'userId',
         firstName: 'Robert',
-        email: 'robert.smith@example.com'
+        email: 'robert.smith@example.com',
+        emailVerified: true
       }
       const userInvite: UserInvite = {
         id: 'inviteId1',

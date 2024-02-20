@@ -5,7 +5,7 @@ on:
       - stage
 jobs:
   journeys-admin:
-    uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-worker.yml@stage
+    uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-stage-worker.yml@stage
     with:
       name: journeys-admin
       env: stage

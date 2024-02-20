@@ -1,15 +1,15 @@
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Divider from '@mui/material/Divider'
-import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
+import Stack from '@mui/system/Stack'
 import Image from 'next/image'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import logo from '../../../public/logo.svg'
+import { LanguageSwitcher } from '../LanguageSwitcher'
 
 import { EmailUsedPage } from './EmailUsedPage'
 import { HomePage } from './HomePage'
@@ -20,10 +20,11 @@ import { ResetPasswordSentPage } from './ResetPasswordSentPage'
 import { ActivePage, PageProps } from './types'
 
 export function SignIn(): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const [activePage, setActivePage] = useState<ActivePage>('home')
   const [userEmail, setUserEmail] = useState<string>('')
   const [userPassword, setUserPassword] = useState<string>('')
+  const [open, setOpen] = useState(false)
 
   let page: ReactElement<PageProps>
   const props: PageProps = {
@@ -61,7 +62,6 @@ export function SignIn(): ReactElement {
       page = <></>
       break
   }
-
   return (
     <Box
       sx={{
@@ -82,27 +82,34 @@ export function SignIn(): ReactElement {
         }}
       >
         <CardContent
-          sx={{ display: 'flex', flexDirection: 'column', gap: 4, p: 6, pt: 7 }}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
+            p: 6,
+            pt: 7
+          }}
         >
+          <Typography variant="h5" sx={{ mt: 20, mb: 3 }}>
+            {t('Sign In')}
+          </Typography>
           {page}
-          <Divider sx={{ width: 397 }} />
-          <Typography
-            variant="body2"
-            color="primary"
-            textAlign="center"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            sx={{ gap: 3 }}
-          >
-            <HelpOutlineIcon color="secondary" />
-            <Link
-              sx={{ textDecoration: 'none' }}
+          <Stack direction="row" alignItems="center" gap={4} mt={20}>
+            <Typography
+              variant="body2"
+              sx={{ color: 'primary.main', cursor: 'pointer' }}
+              component="a"
               href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
             >
-              {t('Need help?')}
-            </Link>
-          </Typography>
+              {t('Feedback & Support')}
+            </Typography>
+            <Button size="small" onClick={() => setOpen(true)}>
+              <Typography variant="body2">{t('Language')}</Typography>
+            </Button>
+          </Stack>
+          {open && (
+            <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
+          )}
         </CardContent>
       </Card>
     </Box>

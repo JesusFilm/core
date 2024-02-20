@@ -16,6 +16,8 @@ import {
 
 import { ActiveTemplateList } from '.'
 
+import '../../../../test/i18n'
+
 const ActiveTemplateListStory: Meta<typeof ActiveTemplateList> = {
   component: ActiveTemplateList,
   title: 'Journeys-Admin/TemplateList/ActiveTemplateList',

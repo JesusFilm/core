@@ -19,6 +19,7 @@ type User
   email: String!
   imageUrl: String
   superAdmin: Boolean
+  emailVerified: Boolean!
 }
 
 type Query {

@@ -63,7 +63,7 @@ export function PublisherInvite(): ReactElement {
         </CardContent>
         <CardActions>
           <NextLink href="/" passHref legacyBehavior prefetch={false}>
-            <Button variant="contained">Back to the Admin Panel</Button>
+            <Button variant="contained">{t('Back to the Admin Panel')}</Button>
           </NextLink>
         </CardActions>
       </Card>

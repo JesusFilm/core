@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import 'isomorphic-fetch'
 import './test/createMatchMedia'
 import crypto from 'crypto'
 
