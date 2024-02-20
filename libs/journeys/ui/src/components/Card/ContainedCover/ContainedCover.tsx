@@ -249,7 +249,7 @@ export function ContainedCover({
                 position: 'absolute',
                 width: '100%',
                 height: { xs: '100%', sm: '100%' },
-                maxWidth: { xs: '100%', sm: '580px' },
+                maxWidth: { xs: '100%', sm: '380px' },
                 pt: { xs: videoBlock != null ? 40 : 5, sm: 0 },
                 pb: { xs: 10, sm: 0 },
                 pl: { sm: 50 },
