@@ -154,20 +154,20 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           overflow: 'hidden'
         }}
       >
-        <Box
-          sx={{
-            maxHeight: {
-              xs: '100svh',
-              lg: 'calc(100svh - 80px)'
-            },
-            height: {
-              xs: 'inherit',
-              lg: 'calc(54.25vw + 102px)'
-            },
-            px: { lg: 6 }
-          }}
-        >
-          <Stack sx={{ height: { xs: '100%' } }}>
+        <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
+          <Stack
+            sx={{
+              maxHeight: {
+                xs: '100svh',
+                lg: 'calc(100svh - 80px)'
+              },
+              height: {
+                xs: 'inherit',
+                lg: 'calc(54.25vw + 102px)'
+              },
+              px: { lg: 6 }
+            }}
+          >
             {showHeaderFooter && router.query.noi == null && (
               <StepHeader sx={{ ...mobileNotchStyling }} />
             )}
