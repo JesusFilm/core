@@ -149,7 +149,10 @@ export function NavigationDrawer({
                   <JourneysIcon />
                 </Badge>
               </ListItemIcon>
-              <ListItemText primary={t('Discover')} />
+              <ListItemText
+                primary={t('Discover')}
+                primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+              />
             </ListItemButton>
           </Tooltip>
         </NextLink>
@@ -161,7 +164,10 @@ export function NavigationDrawer({
             <ListItemIcon>
               <Bag5Icon />
             </ListItemIcon>
-            <ListItemText primary={t('Templates')} />
+            <ListItemText
+              primary={t('Templates')}
+              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            />
           </ListItemButton>
         </NextLink>
         {user?.id != null && (

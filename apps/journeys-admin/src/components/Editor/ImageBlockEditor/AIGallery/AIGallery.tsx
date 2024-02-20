@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { CreateAiImage } from '../../../../../__generated__/CreateAiImage'
 import { SegmindModel } from '../../../../../__generated__/globalTypes'
@@ -27,6 +28,7 @@ export function AIGallery({
   setUploading,
   loading
 }: AIGalleryProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const [createAiImage] = useMutation<CreateAiImage>(CREATE_AI_IMAGE)
 
@@ -46,7 +48,7 @@ export function AIGallery({
         }/${data?.createImageBySegmindPrompt?.id}/public`
         await onChange(src)
       } else {
-        enqueueSnackbar('Something went wrong, please try again!', {
+        enqueueSnackbar(t('Something went wrong, please try again!'), {
           variant: 'error',
           preventDuplicate: true
         })

@@ -24,10 +24,10 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Action',
+      title: t('Action'),
       children: <Action />
     })
-  }, [dispatch, id])
+  }, [dispatch, id, t])
 
   return (
     <>
@@ -35,7 +35,7 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
         id={`${id}-form-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={selectedAction?.label ?? 'None'}
+        value={t(selectedAction?.label ?? 'None')}
         description={t('Action')}
         onClick={() => {
           dispatch({
