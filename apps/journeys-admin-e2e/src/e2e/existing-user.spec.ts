@@ -6,10 +6,7 @@ import { LeftNav } from '../pages/left-nav'
 import { LoginPage } from '../pages/login-page'
 
 // Already created user should be able to login successfully
-// eslint-disable-next-line playwright/no-skipped-test
-test.skip('Existing user can login and logout successfully', async ({
-  page
-}) => {
+test('Existing user can login and logout successfully', async ({ page }) => {
   const landingPage = new LandingPage(page)
   const leftNav = new LeftNav(page)
   const loginPage = new LoginPage(page)
