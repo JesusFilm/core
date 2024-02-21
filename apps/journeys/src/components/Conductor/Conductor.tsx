@@ -154,8 +154,14 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           overflow: 'hidden'
         }}
       >
-        {showHeaderFooter && router.query.noi == null && (
-          <StepHeader sx={{ ...mobileNotchStyling }} />
+        {router.query.noi == null && (
+          <StepHeader
+            sx={{
+              ...mobileNotchStyling,
+              opacity: { xs: showHeaderFooter ? '1' : '0', sm: '1' },
+              transition: theme.transitions.create('opacity')
+            }}
+          />
         )}
         <Stack sx={{ height: '100%' }}>
           <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
