@@ -21,9 +21,14 @@ import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
+import { UserTeamService } from './userTeam.service'
+
 @Resolver('UserTeam')
 export class UserTeamResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly userTeamService: UserTeamService
+  ) {}
 
   @Query()
   @UseGuards(AppCaslGuard)
@@ -99,10 +104,19 @@ export class UserTeamResolver {
       throw new GraphQLError('userTeam not found', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (ability.can(Action.Delete, subject('UserTeam', userTeam)))
-      return await this.prismaService.userTeam.delete({
+    if (ability.can(Action.Delete, subject('UserTeam', userTeam))) {
+      const userTeamDelete = await this.prismaService.userTeam.delete({
         where: { id }
       })
+
+      await this.userTeamService.sendTeamRemovedEmail(
+        userTeam.team.title,
+        userTeam.userId
+      )
+
+      return userTeamDelete
+    }
+
     throw new GraphQLError('user is not allowed to delete userTeam', {
       extensions: { code: 'FORBIDDEN' }
     })
