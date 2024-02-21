@@ -6,25 +6,15 @@ const PUBLIC_FILE_REGEX = /\.(.*)$/
 const COOKIE_FINGERPRINT = '00001'
 
 const supportedLocales = [
-  'am', // Amharic
-  'ar', // Arabic
-  'bn', // Bengali
   'en', // English
   'es', // Spanish
   'fr', // French
-  'hi', // Hindi
   'id', // Indonesian
   'ja', // Japanese
-  'my', // Burmese
   'ru', // Russian
-  'th', // Thai
-  'tl', // Tagalog
   'tr', // Turkish
-  'ur', // Urdu (Pakistan)
-  'vi', // Vietnamese,
   'zh', // Chinese
-  'zh-CN', // Chinese, Simplified
-  'zh-TW' // Chinese, Traditional
+  'zh-CN' // Chinese, Simplified
 ]
 
 interface LanguagePriority {
