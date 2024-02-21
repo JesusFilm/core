@@ -17,9 +17,9 @@ interface LanguageSwitcherProps {
   handleClose: () => void
 }
 
-interface LanguageOption {
-  localeCode: string
-  localName?: string
+interface Language {
+  languageCode: string
+  localName: string
   nativeName?: string
 }
 
@@ -30,53 +30,51 @@ export function LanguageSwitcher({
   const router = useRouter()
   const { t, i18n } = useTranslation('apps-journeys-admin')
 
-  const [languages, setLanguages] = useState<LanguageOption[]>([])
-  const [previousLanguageId, setPreviousLanguageId] = useState<string>()
+  const [languages, setLanguages] = useState<Language[]>([])
+  const [previousLanguageCode, setPreviousLanguageCode] = useState<string>()
 
-  const currentLanguage = i18n?.language ?? 'en'
-
-  const getCurrentLanguage = useCallback(
-    (localeCode: string): LanguageOption => {
-      const nativeName = new Intl.DisplayNames([currentLanguage], {
-        type: 'language'
-      }).of(localeCode)
-      const localName = new Intl.DisplayNames([localeCode], {
-        type: 'language'
-      }).of(localeCode)
-
-      return {
-        localeCode,
-        nativeName: nativeName === localName ? undefined : nativeName,
-        localName
-      }
-    },
-    [currentLanguage]
-  )
+  const currentLanguageCode = i18n?.language ?? 'en'
 
   const handleLocaleSwitch = useCallback(
-    (localeCode: string | undefined) => {
-      if (currentLanguage != null) setPreviousLanguageId(currentLanguage)
+    (languageCode: string | undefined) => {
+      if (currentLanguageCode != null)
+        setPreviousLanguageCode(currentLanguageCode)
 
       const cookieFingerprint = '00001'
-      document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${localeCode}; path=/`
+      document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${languageCode}; path=/`
       const path = router.asPath
-      void router.push(path, path, { locale: localeCode })
+      void router.push(path, path, { locale: languageCode })
     },
-    [router, currentLanguage]
+    [router, currentLanguageCode]
   )
 
   function handleCancelLanguageChange(): void {
-    handleLocaleSwitch(previousLanguageId)
+    handleLocaleSwitch(previousLanguageCode)
     handleClose()
   }
 
   useEffect(() => {
-    const supportedLanguages = (
+    const supportedLanguageCodes = (
       i18n.options as unknown as { locales: string[] }
     )?.locales
 
-    if (supportedLanguages == null) return
-    const formattedLanguages = supportedLanguages.map(getCurrentLanguage)
+    if (supportedLanguageCodes == null) return
+    const formattedLanguages = supportedLanguageCodes.map(
+      (languageCode): Language => {
+        const nativeName = new Intl.DisplayNames([currentLanguageCode], {
+          type: 'language'
+        }).of(languageCode)
+        const localName = new Intl.DisplayNames([languageCode], {
+          type: 'language'
+        }).of(languageCode)
+
+        return {
+          languageCode,
+          nativeName: nativeName === localName ? undefined : nativeName,
+          localName: localName ?? ''
+        }
+      }
+    )
     setLanguages(formattedLanguages)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -88,22 +86,22 @@ export function LanguageSwitcher({
         onClose={handleClose}
         dialogTitle={{
           title: t('Change Language', {
-            lng: previousLanguageId
+            lng: previousLanguageCode
           }),
           closeButton: true
         }}
       >
         <FormControl fullWidth>
           <Select
-            value={currentLanguage}
+            value={currentLanguageCode}
             IconComponent={ChevronDownIcon}
             disabled={languages.length === 0}
           >
-            {languages.map(({ localeCode, nativeName, localName }, index) => (
+            {languages.map(({ languageCode, nativeName, localName }, index) => (
               <MenuItem
                 key={`language-option-${index}`}
-                value={localeCode}
-                onClick={() => handleLocaleSwitch(localeCode)}
+                value={languageCode}
+                onClick={() => handleLocaleSwitch(languageCode)}
               >
                 <Stack>
                   <Typography>{localName ?? nativeName}</Typography>
@@ -118,7 +116,7 @@ export function LanguageSwitcher({
           </Select>
         </FormControl>
         <Stack gap={2} sx={{ pt: 2 }}>
-          {previousLanguageId != null && (
+          {previousLanguageCode != null && (
             <Alert
               severity="warning"
               action={
@@ -128,13 +126,13 @@ export function LanguageSwitcher({
                   size="small"
                 >
                   {t('Revert', {
-                    lng: previousLanguageId
+                    lng: previousLanguageCode
                   })}
                 </Button>
               }
             >
               {t('Are you sure you want to change language?', {
-                lng: previousLanguageId
+                lng: previousLanguageCode
               })}
             </Alert>
           )}
