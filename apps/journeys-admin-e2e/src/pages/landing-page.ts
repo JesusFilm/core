@@ -19,7 +19,7 @@ export class LandingPage {
   }
 
   async clickSignInWithEmail(): Promise<void> {
-    await this.page.locator('button[data-provider-id="password"]').click()
+    await this.page.locator('button[type="submit"]').click()
 
     // If the email input is not visible, click the 'Sign in with email' button again
     // as sometimes landing page load was still in flight even after clicking the button
@@ -29,7 +29,7 @@ export class LandingPage {
         .locator('input[name="email"]')
         .isVisible({ timeout: 8000 }))
     ) {
-      await this.page.locator('button[data-provider-id="password"]').click()
+      await this.page.locator('button[type="submit"]').click()
     }
   }
 
