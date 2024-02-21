@@ -7,12 +7,14 @@ import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
+import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import Logout2Icon from '@core/shared/ui/icons/Logout2'
+import Mail1 from '@core/shared/ui/icons/Mail1'
 
 import { GetMe_me as ApiUser } from '../../../../../../__generated__/GetMe'
 import { LanguageSwitcher } from '../../../../LanguageSwitcher'
@@ -39,6 +41,7 @@ export function UserMenu({
   const client = useApolloClient()
   const { setActiveTeam } = useTeam()
   const [open, setOpen] = useState(false)
+  const router = useRouter()
 
   return (
     <>
@@ -80,6 +83,14 @@ export function UserMenu({
           </Box>
         </Stack>
         <Divider />
+        <MenuItem
+          label={t('Email Preferences')}
+          icon={<Mail1 />}
+          onClick={async () =>
+            await router.push(`/email-preferences/${apiUser.email}`)
+          }
+          testId="EmailPreferences"
+        />
         <MenuItem
           label={t('Language')}
           icon={<LanguageIcon />}
