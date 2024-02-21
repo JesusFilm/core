@@ -78,7 +78,7 @@ export function LanguageSwitcher({
     )
     setLanguages(formattedLanguages)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [currentLanguageCode])
 
   return (
     <>
@@ -106,11 +106,13 @@ export function LanguageSwitcher({
               >
                 <Stack>
                   <Typography>{localName ?? nativeName}</Typography>
-                  {localName != null && nativeName != null && (
-                    <Typography variant="body2" color="text.secondary">
-                      {nativeName}
-                    </Typography>
-                  )}
+                  {languageCode !== currentLanguageCode &&
+                    localName != null &&
+                    nativeName != null && (
+                      <Typography variant="body2" color="text.secondary">
+                        {nativeName}
+                      </Typography>
+                    )}
                 </Stack>
               </MenuItem>
             ))}
