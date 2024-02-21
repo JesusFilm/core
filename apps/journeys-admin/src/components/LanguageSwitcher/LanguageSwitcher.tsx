@@ -12,11 +12,6 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-interface languageState {
-  confirmLanguageChange: boolean
-  prevLanguageId?: string
-}
-
 interface LanguageSwitcherProps {
   open: boolean
   handleClose: () => void
@@ -36,10 +31,7 @@ export function LanguageSwitcher({
   const { t, i18n } = useTranslation('apps-journeys-admin')
 
   const [languages, setLanguages] = useState<LanguageOption[]>([])
-  const [languageState, setLanguageState] = useState<languageState>({
-    confirmLanguageChange: false,
-    prevLanguageId: undefined
-  })
+  const [previousLanguageId, setPreviousLanguageId] = useState<string>()
 
   const currentLocale = i18n?.language ?? 'en'
 
@@ -65,11 +57,7 @@ export function LanguageSwitcher({
 
   const handleLocaleSwitch = useCallback(
     (localeCode: string | undefined) => {
-      if (currentLanguage != null)
-        setLanguageState({
-          confirmLanguageChange: true,
-          prevLanguageId: currentLanguage.id
-        })
+      if (currentLanguage != null) setPreviousLanguageId(currentLanguage.id)
 
       const cookieFingerprint = '00001'
       document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${localeCode}; path=/`
@@ -80,8 +68,7 @@ export function LanguageSwitcher({
   )
 
   function handleCancelLanguageChange(): void {
-    const { prevLanguageId } = languageState
-    handleLocaleSwitch(prevLanguageId)
+    handleLocaleSwitch(previousLanguageId)
     handleClose()
   }
 
@@ -103,7 +90,7 @@ export function LanguageSwitcher({
         onClose={handleClose}
         dialogTitle={{
           title: t('Change Language', {
-            lng: languageState.prevLanguageId
+            lng: previousLanguageId
           }),
           closeButton: true
         }}
@@ -136,7 +123,7 @@ export function LanguageSwitcher({
           </Select>
         </FormControl>
         <Stack gap={2} sx={{ pt: 2 }}>
-          {languageState.confirmLanguageChange && (
+          {previousLanguageId != null && (
             <Alert
               severity="warning"
               action={
@@ -146,13 +133,13 @@ export function LanguageSwitcher({
                   size="small"
                 >
                   {t('Revert', {
-                    lng: languageState.prevLanguageId
+                    lng: previousLanguageId
                   })}
                 </Button>
               }
             >
               {t('Are you sure you want to change language?', {
-                lng: languageState.prevLanguageId
+                lng: previousLanguageId
               })}
             </Alert>
           )}
