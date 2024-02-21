@@ -1,29 +1,26 @@
-import { TranslationStatus } from '@crowdin/crowdin-api-client'
 import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
+import FormControl from '@mui/material/FormControl'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-import {
-  LanguageAutocomplete,
-  LanguageOption
-} from '@core/shared/ui/LanguageAutocomplete'
-
-import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
-import { getLocaleLanguage } from '../../libs/getLocaleLanguage'
-import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
-
-interface languageState {
-  confirmLanguageChange: boolean
-  prevLanguageId?: string
-}
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 interface LanguageSwitcherProps {
   open: boolean
   handleClose: () => void
+}
+
+interface Language {
+  languageCode: string
+  localName: string
+  nativeName?: string
 }
 
 export function LanguageSwitcher({
@@ -34,95 +31,54 @@ export function LanguageSwitcher({
   const { t, i18n } = useTranslation('apps-journeys-admin')
 
   const [languages, setLanguages] = useState<Language[]>([])
-  const [languageState, setLanguageState] = useState<languageState>({
-    confirmLanguageChange: false,
-    prevLanguageId: undefined
-  })
-
-  const { data, loading } = useLanguagesQuery({
-    languageId: '529'
-  })
-
-  function getCurrentLanguage(): LanguageOption {
-    const currentLocale = getLocaleLanguage('locale', i18n?.language ?? '')
-    const language = data?.languages.find(
-      (language) => language.id === currentLocale?.id
-    )
-    return {
-      id: language?.id ?? '',
-      nativeName: language?.name.find(({ primary }) => !primary)?.value,
-      localName: language?.name.find(({ primary }) => primary)?.value
-    }
-  }
-  const currentLanguage = getCurrentLanguage()
-
-  const handleLocaleSwitch = useCallback(
-    (localeId: string | undefined) => {
-      if (currentLanguage != null)
-        setLanguageState({
-          confirmLanguageChange: true,
-          prevLanguageId: currentLanguage.id
-        })
-      const language = data?.languages.find(
-        (language) => language.id === localeId
-      )
-      const locale = getLocaleLanguage('id', language?.id ?? '')?.twoLettersCode
-
-      const cookieFingerprint = '00001'
-      document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${locale}; path=/`
-      const path = router.asPath
-      void router.push(path, path, { locale })
-    },
-    [router, data, currentLanguage]
+  const [previousLanguageCode, setPreviousLanguageCode] = useState<string>()
+  const [currentLanguageCode, setCurrentLanguageCode] = useState(
+    i18n?.language ?? 'en'
   )
 
-  function handleCancelLanguageChange(): void {
-    const { prevLanguageId } = languageState
-    handleLocaleSwitch(prevLanguageId)
+  function handleChange(languageCode: string): void {
+    setPreviousLanguageCode(currentLanguageCode)
+    setCurrentLanguageCode(languageCode)
+
+    const cookieFingerprint = '00001'
+    document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${languageCode}; path=/`
+    const path = router.asPath
+    void router.push(path, path, { locale: languageCode })
+  }
+
+  function handleRevert(): void {
+    if (previousLanguageCode == null) return
+
+    handleChange(previousLanguageCode)
+    setPreviousLanguageCode(undefined)
     handleClose()
   }
 
-  function getPreviousLanguage(): string {
-    const { prevLanguageId } = languageState
-    let prevLanguage
-    if (prevLanguageId != null)
-      prevLanguage = getLocaleLanguage('id', prevLanguageId)?.locale
-    return prevLanguage ?? i18n?.language
-  }
-
-  function filterAvailableLanguages(languages, crowdinData): Language[] {
-    return languages.filter((language) => {
-      const crowdinLocale = getLocaleLanguage('id', language.id)?.locale
-      const crowdinLanguages = crowdinData.data.find(
-        (crowdinLanguage) =>
-          crowdinLanguage.data.language.locale === crowdinLocale
-      )
-      return (
-        (language.id === '529' || // always display English
-          crowdinLanguages?.data.translationProgress === 100) &&
-        language.id !== '22658' // show arabic as an option when RTL working
-      )
-    })
-  }
-
   useEffect(() => {
-    const translationStatus = new TranslationStatus({
-      token: process.env.NEXT_PUBLIC_CROWDIN_ACCESS_TOKEN ?? ''
-    })
+    const supportedLanguageCodes = (
+      i18n.options as unknown as { locales: string[] }
+    )?.locales
 
-    if (data != null) {
-      translationStatus
-        .getFileProgress(518286, 570)
-        .then((crowdinData) => {
-          const availableLanguages = filterAvailableLanguages(
-            data.languages,
-            crowdinData
-          )
-          setLanguages(availableLanguages)
-        })
-        .catch((error) => console.error(error))
-    }
-  }, [data])
+    if (supportedLanguageCodes == null) return
+    const formattedLanguages = supportedLanguageCodes.map(
+      (languageCode): Language => {
+        const nativeName = new Intl.DisplayNames([currentLanguageCode], {
+          type: 'language'
+        }).of(languageCode)
+        const localName = new Intl.DisplayNames([languageCode], {
+          type: 'language'
+        }).of(languageCode)
+
+        return {
+          languageCode,
+          nativeName: nativeName === localName ? undefined : nativeName,
+          localName: localName ?? ''
+        }
+      }
+    )
+    setLanguages(formattedLanguages)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentLanguageCode])
 
   return (
     <>
@@ -131,35 +87,51 @@ export function LanguageSwitcher({
         onClose={handleClose}
         dialogTitle={{
           title: t('Change Language', {
-            lng: getPreviousLanguage()
+            lng: previousLanguageCode
           }),
           closeButton: true
         }}
       >
-        <Stack gap={2}>
-          <LanguageAutocomplete
-            onChange={(value) => handleLocaleSwitch(value?.id)}
-            value={currentLanguage}
-            languages={languages}
-            loading={loading || languages.length === 0}
-          />
-          {languageState.confirmLanguageChange && (
+        <FormControl fullWidth>
+          <Select
+            value={currentLanguageCode}
+            IconComponent={ChevronDownIcon}
+            disabled={languages.length === 0}
+          >
+            {languages.map(({ languageCode, nativeName, localName }, index) => (
+              <MenuItem
+                key={`language-option-${index}`}
+                value={languageCode}
+                onClick={() => handleChange(languageCode)}
+              >
+                <Stack>
+                  <Typography>{localName ?? nativeName}</Typography>
+                  {languageCode !== currentLanguageCode &&
+                    localName != null &&
+                    nativeName != null && (
+                      <Typography variant="body2" color="text.secondary">
+                        {nativeName}
+                      </Typography>
+                    )}
+                </Stack>
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Stack gap={2} sx={{ pt: 2 }}>
+          {previousLanguageCode != null && (
             <Alert
               severity="warning"
               action={
-                <Button
-                  onClick={handleCancelLanguageChange}
-                  color="inherit"
-                  size="small"
-                >
+                <Button onClick={handleRevert} color="inherit" size="small">
                   {t('Revert', {
-                    lng: getPreviousLanguage()
+                    lng: previousLanguageCode
                   })}
                 </Button>
               }
             >
               {t('Are you sure you want to change language?', {
-                lng: getPreviousLanguage()
+                lng: previousLanguageCode
               })}
             </Alert>
           )}
