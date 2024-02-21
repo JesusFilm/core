@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix spacing card edge and content
-
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import { SxProps } from '@mui/material/styles'
@@ -36,7 +34,7 @@ export function JourneyRenderer(): ReactElement {
       {treeBlocks.map((block) => {
         const cardSx: SxProps = {
           height: 'inherit',
-          width: 'inherit',
+          width: '-webkit-fill-available;',
           position: 'absolute',
           top: 0,
           left: 0
@@ -47,8 +45,10 @@ export function JourneyRenderer(): ReactElement {
           block.id === nextBlock?.id || block.id === previousBlock?.id
 
         if (isCurrent) {
+          cardSx.height = '100%'
+          cardSx.width = 'inherit'
           cardSx.position = 'relative'
-          cardSx.display = 'inherit'
+          cardSx.display = 'block'
         }
 
         return (
@@ -61,7 +61,9 @@ export function JourneyRenderer(): ReactElement {
               className={isCurrent ? 'active-card' : ''}
               data-testid={`journey-card-${block.id}`}
               onClick={() => setShowNavigation(true)}
-              sx={{ ...cardSx }}
+              sx={{
+                ...cardSx
+              }}
             >
               {isCurrent || isPreRender ? (
                 <BlockRenderer block={block} />
@@ -75,3 +77,14 @@ export function JourneyRenderer(): ReactElement {
     </>
   )
 }
+
+/* 
+<Box
+  data-testid={`journey-card-${block.id}`}
+  sx={{
+    height: '100%'
+  }}
+>
+  <BlockRenderer block={block} />
+</Box> 
+*/

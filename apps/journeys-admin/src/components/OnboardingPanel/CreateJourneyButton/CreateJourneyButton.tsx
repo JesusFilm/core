@@ -21,7 +21,7 @@ export function CreateJourneyButton(): ReactElement {
   async function handleCreateJourneyClick(): Promise<void> {
     const journey = await createJourney()
     if (journey != null) {
-      void router.push(`/journeys/${journey.id}/edit`, undefined, {
+      void router.push(`/journeys/${journey.id}`, undefined, {
         shallow: true
       })
     }

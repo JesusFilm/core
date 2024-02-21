@@ -8,14 +8,21 @@ import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserTeamResolver } from './userTeam.resolver'
+import { UserTeamService } from './userTeam.service'
 
 describe('UserTeamResolver', () => {
   let userTeamResolver: UserTeamResolver, prismaService: PrismaService
+  const userTeamService = {
+    provide: UserTeamService,
+    useFactory: () => ({
+      sendTeamRemovedEmail: jest.fn().mockResolvedValue(null)
+    })
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
-      providers: [UserTeamResolver, PrismaService]
+      providers: [UserTeamResolver, PrismaService, userTeamService]
     }).compile()
     userTeamResolver = module.get<UserTeamResolver>(UserTeamResolver)
     prismaService = module.get<PrismaService>(PrismaService)

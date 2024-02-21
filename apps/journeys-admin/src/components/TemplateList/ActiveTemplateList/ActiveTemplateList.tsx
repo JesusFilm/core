@@ -167,13 +167,13 @@ export function ActiveTemplateList({
           open={archiveDialogOpen}
           onClose={handleClose}
           dialogTitle={{
-            title: 'Archive Templates',
+            title: t('Archive Templates'),
             closeButton: true
           }}
           dialogAction={{
             onSubmit: handleArchiveSubmit,
-            submitLabel: 'Archive',
-            closeLabel: 'Cancel'
+            submitLabel: t('Archive'),
+            closeLabel: t('Cancel')
           }}
         >
           <Typography>

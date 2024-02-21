@@ -31,7 +31,7 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const slugSchema = object().shape({
-    slug: string().required('Required')
+    slug: string().required(t('Required'))
   })
 
   const handleUpdateSlug = async (

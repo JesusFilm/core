@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -38,6 +39,7 @@ export const SIGN_UP_BLOCK_CREATE = gql`
 `
 
 export function NewSignUpButton(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [signUpBlockCreate] =
     useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
   const { journey } = useJourney()
@@ -59,7 +61,7 @@ export function NewSignUpButton(): ReactElement {
             id,
             journeyId: journey.id,
             parentBlockId: card.id,
-            submitLabel: 'Submit'
+            submitLabel: t('Submit')
           },
           iconBlockCreateInput: {
             id: submitId,
@@ -122,7 +124,7 @@ export function NewSignUpButton(): ReactElement {
   return (
     <Button
       icon={<Mail2Icon />}
-      value="Subscribe"
+      value={t('Subscribe')}
       onClick={handleClick}
       testId="NewSignUpButton"
     />
