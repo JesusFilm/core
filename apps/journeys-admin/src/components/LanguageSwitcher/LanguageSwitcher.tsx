@@ -6,7 +6,7 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -18,7 +18,7 @@ interface LanguageSwitcherProps {
 }
 
 interface LanguageOption {
-  id: string
+  localeCode: string
   localName?: string
   nativeName?: string
 }
@@ -33,31 +33,29 @@ export function LanguageSwitcher({
   const [languages, setLanguages] = useState<LanguageOption[]>([])
   const [previousLanguageId, setPreviousLanguageId] = useState<string>()
 
-  const currentLocale = i18n?.language ?? 'en'
+  const currentLanguage = i18n?.language ?? 'en'
 
-  const getCurrentLanguage = useMemo(
-    () =>
-      (language: string): LanguageOption => {
-        const nativeName = new Intl.DisplayNames([currentLocale], {
-          type: 'language'
-        }).of(language)
-        const localName = new Intl.DisplayNames([language], {
-          type: 'language'
-        }).of(language)
+  const getCurrentLanguage = useCallback(
+    (localeCode: string): LanguageOption => {
+      const nativeName = new Intl.DisplayNames([currentLanguage], {
+        type: 'language'
+      }).of(localeCode)
+      const localName = new Intl.DisplayNames([localeCode], {
+        type: 'language'
+      }).of(localeCode)
 
-        return {
-          id: language,
-          nativeName: nativeName === localName ? undefined : nativeName,
-          localName
-        }
-      },
-    [currentLocale]
+      return {
+        localeCode,
+        nativeName: nativeName === localName ? undefined : nativeName,
+        localName
+      }
+    },
+    [currentLanguage]
   )
-  const currentLanguage = getCurrentLanguage(currentLocale)
 
   const handleLocaleSwitch = useCallback(
     (localeCode: string | undefined) => {
-      if (currentLanguage != null) setPreviousLanguageId(currentLanguage.id)
+      if (currentLanguage != null) setPreviousLanguageId(currentLanguage)
 
       const cookieFingerprint = '00001'
       document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${localeCode}; path=/`
@@ -97,26 +95,23 @@ export function LanguageSwitcher({
       >
         <FormControl fullWidth>
           <Select
-            value={currentLanguage.localName}
+            value={currentLanguage}
             IconComponent={ChevronDownIcon}
             disabled={languages.length === 0}
           >
-            {languages.map((language, index) => (
+            {languages.map(({ localeCode, nativeName, localName }, index) => (
               <MenuItem
                 key={`language-option-${index}`}
-                value={language.localName}
-                onClick={() => handleLocaleSwitch(language.id)}
+                value={localeCode}
+                onClick={() => handleLocaleSwitch(localeCode)}
               >
                 <Stack>
-                  <Typography>
-                    {language.localName ?? language.nativeName}
-                  </Typography>
-                  {language.localName != null &&
-                    language.nativeName != null && (
-                      <Typography variant="body2" color="text.secondary">
-                        {language.nativeName}
-                      </Typography>
-                    )}
+                  <Typography>{localName ?? nativeName}</Typography>
+                  {localName != null && nativeName != null && (
+                    <Typography variant="body2" color="text.secondary">
+                      {nativeName}
+                    </Typography>
+                  )}
                 </Stack>
               </MenuItem>
             ))}
