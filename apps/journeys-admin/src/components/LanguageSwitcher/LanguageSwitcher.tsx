@@ -6,7 +6,7 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -32,24 +32,25 @@ export function LanguageSwitcher({
 
   const [languages, setLanguages] = useState<Language[]>([])
   const [previousLanguageCode, setPreviousLanguageCode] = useState<string>()
-
-  const currentLanguageCode = i18n?.language ?? 'en'
-
-  const handleLocaleSwitch = useCallback(
-    (languageCode: string | undefined) => {
-      if (currentLanguageCode != null)
-        setPreviousLanguageCode(currentLanguageCode)
-
-      const cookieFingerprint = '00001'
-      document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${languageCode}; path=/`
-      const path = router.asPath
-      void router.push(path, path, { locale: languageCode })
-    },
-    [router, currentLanguageCode]
+  const [currentLanguageCode, setCurrentLanguageCode] = useState(
+    i18n?.language ?? 'en'
   )
 
-  function handleCancelLanguageChange(): void {
-    handleLocaleSwitch(previousLanguageCode)
+  function handleChange(languageCode: string): void {
+    setPreviousLanguageCode(currentLanguageCode)
+    setCurrentLanguageCode(languageCode)
+
+    const cookieFingerprint = '00001'
+    document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${languageCode}; path=/`
+    const path = router.asPath
+    void router.push(path, path, { locale: languageCode })
+  }
+
+  function handleRevert(): void {
+    if (previousLanguageCode == null) return
+
+    handleChange(previousLanguageCode)
+    setPreviousLanguageCode(undefined)
     handleClose()
   }
 
@@ -101,7 +102,7 @@ export function LanguageSwitcher({
               <MenuItem
                 key={`language-option-${index}`}
                 value={languageCode}
-                onClick={() => handleLocaleSwitch(languageCode)}
+                onClick={() => handleChange(languageCode)}
               >
                 <Stack>
                   <Typography>{localName ?? nativeName}</Typography>
@@ -120,11 +121,7 @@ export function LanguageSwitcher({
             <Alert
               severity="warning"
               action={
-                <Button
-                  onClick={handleCancelLanguageChange}
-                  color="inherit"
-                  size="small"
-                >
+                <Button onClick={handleRevert} color="inherit" size="small">
                   {t('Revert', {
                     lng: previousLanguageCode
                   })}
