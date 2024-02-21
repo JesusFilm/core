@@ -3,7 +3,6 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
-import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -126,17 +125,16 @@ export function PasswordPage({
                   )
                 }}
               />
-              <Typography variant="caption" textAlign="right">
-                <Link
-                  onClick={() => setActivePage?.('help')}
-                  sx={{ textDecoration: 'none' }}
-                >
+              <Button
+                onClick={() => setActivePage?.('help')}
+                sx={{ alignSelf: 'flex-end', p: 1.5 }}
+              >
+                <Typography variant="caption">
                   {t('Forgot your password?')}
-                </Link>
-              </Typography>
+                </Typography>
+              </Button>
               <Stack direction="row" spacing={2}>
                 <Button
-                  variant="text"
                   size="large"
                   fullWidth
                   onClick={() => setActivePage?.('home')}
@@ -146,8 +144,8 @@ export function PasswordPage({
                 <Button
                   variant="contained"
                   size="large"
-                  color="secondary"
                   type="submit"
+                  color="secondary"
                   fullWidth
                 >
                   {t('Sign In')}

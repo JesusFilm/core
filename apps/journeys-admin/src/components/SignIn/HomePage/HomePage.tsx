@@ -65,7 +65,7 @@ export function HomePage({
       </Box>
       <SignInServiceButton service="google.com" />
       <SignInServiceButton service="facebook.com" />
-      <Divider>{t('OR')}</Divider>
+      <Divider sx={{ my: 3 }}>{t('OR')}</Divider>
       <Formik
         initialValues={{ email: '' }}
         onSubmit={handleEmailSignIn}

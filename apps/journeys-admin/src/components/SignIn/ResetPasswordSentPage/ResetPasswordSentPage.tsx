@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -21,9 +20,7 @@ export function ResetPasswordSentPage({
         <Stack>
           <Typography>
             {t('Follow the instructions sent to ')}
-            <Box sx={{ fontWeight: 'bold', display: 'inline' }}>
-              {userEmail}
-            </Box>
+            <b>{userEmail}</b>
             {t(' to recover your password')}
           </Typography>
         </Stack>

@@ -90,19 +90,23 @@ export function SignIn(): ReactElement {
             pt: 7
           }}
         >
-          <Typography variant="h5" sx={{ mt: 20, mb: 3 }}>
-            {t('Sign In')}
-          </Typography>
           {page}
-          <Stack direction="row" alignItems="center" gap={4} mt={20}>
-            <Typography
-              variant="body2"
-              sx={{ color: 'primary.main', cursor: 'pointer' }}
-              component="a"
-              href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
-            >
-              {t('Feedback & Support')}
-            </Typography>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="center"
+            gap={4}
+          >
+            <Button size="small">
+              <Typography
+                variant="body2"
+                sx={{ color: 'primary.main', cursor: 'pointer' }}
+                component="a"
+                href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
+              >
+                {t('Feedback & Support')}
+              </Typography>
+            </Button>
             <Button size="small" onClick={() => setOpen(true)}>
               <Typography variant="body2">{t('Language')}</Typography>
             </Button>
