@@ -60,8 +60,8 @@ export class UserService {
     }
   }
 
-  async validateEmail(user: User, token: string): Promise<boolean> {
-    const job = await this.emailQueue.getJob(`${user.userId}`)
+  async validateEmail(userId: string, token: string): Promise<boolean> {
+    const job = await this.emailQueue.getJob(`${userId}`)
     if (job != null && job.data.token === token) {
       await this.prismaService.user.update({
         where: { userId: user.userId },
