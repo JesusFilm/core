@@ -59,7 +59,7 @@ export function HomePage({
         <Typography variant="h6" textAlign="center" gutterBottom>
           {t('Log in or Sign up')}
         </Typography>
-        <Typography variant="body2" textAlign="center">
+        <Typography variant="body2" textAlign="center" sx={{ mb: 3 }}>
           {t("No account? We'll create one for you automatically.")}
         </Typography>
       </Box>
