@@ -21,7 +21,7 @@ test.skip('Create a new user', async ({ page }) => {
   const legalName = `Legal Name-${epochTime}`
 
   await landingPage.goToAdminUrl()
-  await landingPage.clickSignInWithEmail()
+  // await landingPage.clickSignInWithEmail()
 
   await onboardingPages.createUser(email, firstAndLastName, password)
   await onboardingPages.fillOnboardingForm(teamName, legalName)
