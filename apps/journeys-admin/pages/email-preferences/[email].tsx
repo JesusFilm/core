@@ -1,9 +1,11 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
+import Box from '@mui/system/Box'
 import NextLink from 'next/link'
 import { withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
@@ -79,7 +81,7 @@ function EmailPreferencesPage({
         }).then(() => {
           enqueueSnackbar(t(`Email Preferences Updated.`), {
             variant: 'success',
-            preventDuplicate: true
+            preventDuplicate: false
           })
         })
         const updatedPreferences = {
@@ -91,64 +93,66 @@ function EmailPreferencesPage({
     }
 
   return (
-    <Box
+    <Stack
+      justifyContent="center"
+      alignItems="center"
       sx={{
-        backgroundColor: 'background.default',
-        paddingLeft: '10%',
-        paddingRight: '10%'
+        height: '100vh'
       }}
     >
-      <Typography
-        variant="h1"
-        align="center"
-        sx={{ marginBottom: 5, marginTop: 5 }}
+      <Stack
+        sx={{
+          maxWidth: '400px'
+        }}
       >
-        {t('Email Preferences')}
-      </Typography>
-
-      {journeysEmailPreference != null && (
-        <Grid container spacing={12}>
-          <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Stop All Notifications')}</Typography>
-            <Typography variant="body2">
-              {t('Stop all current and future email notifications.')}
+        <Typography variant="h4" align="center">
+          {t('Email Preferences')}
+        </Typography>
+        <Typography variant="body1" align="center" sx={{ mt: 1 }}>
+          {t(
+            'Select the types of email notifications you want to receive from NextSteps.'
+          )}
+        </Typography>
+        <Card sx={{ my: 8, borderRadius: 2 }}>
+          <CardContent sx={{ px: 7, py: '30px' }}>
+            <Typography variant="subtitle2">
+              {t('Account Notifications')}
             </Typography>
-          </Grid>
-          <Grid item xs={2} md={2}>
-            <Switch
-              checked={journeysEmailPreference.unsubscribeAll}
-              onChange={handlePreferenceChange('unsubscribeAll')}
-              name="journeyNotifications"
-              inputProps={{ 'aria-label': 'Team Invites' }}
-            />
-          </Grid>
-          <Grid item xs={10} md={10}>
-            <Typography variant="h5">{t('Account Notifications')}</Typography>
-            <Typography variant="body2">
-              {t(
-                'Email updates about new members to your teams, invited to a team, journey shared with you, journey access requests, and removed from a team.'
-              )}
-            </Typography>
-          </Grid>
-          <Grid item xs={2} md={2}>
-            <Switch
-              checked={journeysEmailPreference.accountNotifications}
-              onChange={handlePreferenceChange('accountNotifications')}
-              name="journeyNotifications"
-              disabled={journeysEmailPreference.unsubscribeAll}
-              inputProps={{ 'aria-label': 'Team Invites' }}
-            />
-          </Grid>
-          <Grid item xs={12} md={12} textAlign="center">
-            <NextLink href="/" passHref legacyBehavior>
-              <Button variant="contained" disabled={loading}>
-                {t('Done')}
-              </Button>
-            </NextLink>
-          </Grid>
-        </Grid>
-      )}
-    </Box>
+            <Stack direction="row">
+              <Typography variant="caption">
+                {t(
+                  'Email updates about new members to your teams, invited to a team, journey shared with you, journey access requests, and removed from a team.'
+                )}
+              </Typography>
+              <Switch
+                checked={journeysEmailPreference?.accountNotifications}
+                onChange={handlePreferenceChange('accountNotifications')}
+                name="accountNotifications"
+                disabled={loading}
+              />
+            </Stack>
+          </CardContent>
+        </Card>
+        <NextLink href="/" passHref legacyBehavior>
+          <Button
+            variant="contained"
+            disabled={loading}
+            sx={{ backgroundColor: 'secondary.dark' }}
+          >
+            {t('Done')}
+          </Button>
+        </NextLink>
+      </Stack>
+      <Box sx={{ mt: 40 }}>
+        <Button
+          variant="text"
+          component="a"
+          href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
+        >
+          {t('Feedback & Support')}
+        </Button>
+      </Box>
+    </Stack>
   )
 }
 
@@ -194,8 +198,8 @@ export const getServerSideProps = withUserTokenSSR()(
           input: {
             email: journeysEmailPreferenceData?.journeysEmailPreference
               ?.email as string,
-            preference: 'unsubscribeAll',
-            value: true
+            preference: 'accountNotifications',
+            value: false
           }
         }
       })
