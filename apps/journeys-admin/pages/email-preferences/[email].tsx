@@ -143,15 +143,11 @@ function EmailPreferencesPage({
           </Button>
         </NextLink>
       </Stack>
-      <Box sx={{ mt: 20 }}>
+      <Box sx={{ mt: 40 }}>
         <Button
-          variant="contained"
-          disabled={loading}
-          sx={{
-            backgroundColor: 'transparent',
-            color: 'primary.main',
-            '&:hover': { backgroundColor: 'transparent' }
-          }}
+          variant="text"
+          component="a"
+          href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
         >
           {t('Feedback & Support')}
         </Button>
