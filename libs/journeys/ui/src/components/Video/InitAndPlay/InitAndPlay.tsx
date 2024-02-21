@@ -80,7 +80,6 @@ export function InitAndPlay({
             autoplay === true &&
             activeStep &&
             source === VideoBlockSource.youTube
-          // preload: 'auto'
         })
       )
     }

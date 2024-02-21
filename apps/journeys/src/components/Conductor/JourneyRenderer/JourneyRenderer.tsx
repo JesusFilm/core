@@ -77,14 +77,3 @@ export function JourneyRenderer(): ReactElement {
     </>
   )
 }
-
-/* 
-<Box
-  data-testid={`journey-card-${block.id}`}
-  sx={{
-    height: '100%'
-  }}
->
-  <BlockRenderer block={block} />
-</Box> 
-*/
