@@ -204,8 +204,8 @@ export function BackgroundColor(): ReactElement {
           variant="fullWidth"
           centered
         >
-          <Tab label="Palette" {...tabA11yProps('background-color', 0)} />
-          <Tab label="Custom" {...tabA11yProps('background-color', 1)} />
+          <Tab label={t('Palette')} {...tabA11yProps('background-color', 0)} />
+          <Tab label={t('Custom')} {...tabA11yProps('background-color', 1)} />
         </Tabs>
         <Divider />
         <TabPanel name="background-color" value={tabValue} index={0}>

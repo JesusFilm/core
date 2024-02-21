@@ -34,15 +34,11 @@ import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypo
 import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
 
 import { ControlPanel } from '.'
+import '../../../../test/i18n'
 
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'uuid'
-}))
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => ({ t: (str: string) => str })
 }))
 
 jest.mock('@mui/material/useMediaQuery', () => ({
