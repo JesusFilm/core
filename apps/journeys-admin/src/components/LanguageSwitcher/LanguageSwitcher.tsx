@@ -6,7 +6,7 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -43,27 +43,28 @@ export function LanguageSwitcher({
 
   const currentLocale = i18n?.language ?? 'en'
 
-  const getCurrentLanguage = useCallback(
-    (language: string): LanguageOption => {
-      const nativeName = new Intl.DisplayNames([currentLocale], {
-        type: 'language'
-      }).of(language)
-      const localName = new Intl.DisplayNames([language], {
-        type: 'language'
-      }).of(language)
+  const getCurrentLanguage = useMemo(
+    () =>
+      (language: string): LanguageOption => {
+        const nativeName = new Intl.DisplayNames([currentLocale], {
+          type: 'language'
+        }).of(language)
+        const localName = new Intl.DisplayNames([language], {
+          type: 'language'
+        }).of(language)
 
-      return {
-        id: language,
-        nativeName: nativeName === localName ? undefined : nativeName,
-        localName
-      }
-    },
+        return {
+          id: language,
+          nativeName: nativeName === localName ? undefined : nativeName,
+          localName
+        }
+      },
     [currentLocale]
   )
   const currentLanguage = getCurrentLanguage(currentLocale)
 
   const handleLocaleSwitch = useCallback(
-    (localeId: string | undefined) => {
+    (localeCode: string | undefined) => {
       if (currentLanguage != null)
         setLanguageState({
           confirmLanguageChange: true,
@@ -71,9 +72,9 @@ export function LanguageSwitcher({
         })
 
       const cookieFingerprint = '00001'
-      document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${localeId}; path=/`
+      document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${localeCode}; path=/`
       const path = router.asPath
-      void router.push(path, path, { locale: localeId })
+      void router.push(path, path, { locale: localeCode })
     },
     [router, currentLanguage]
   )
