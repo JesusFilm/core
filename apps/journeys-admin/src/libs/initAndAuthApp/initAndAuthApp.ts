@@ -76,17 +76,18 @@ export async function initAndAuthApp({
     return { apolloClient, flags, redirect: undefined, translations }
   }
 
-  const [, redirect] = await Promise.all([
-    apolloClient.mutate<AcceptAllInvites>({
-      mutation: ACCEPT_ALL_INVITES
-    }),
+  const redirect =
     resolvedUrl != null
-      ? checkConditionalRedirect({
+      ? await checkConditionalRedirect({
           apolloClient,
           resolvedUrl
         })
       : undefined
-  ])
+
+  if (!(redirect?.destination.startsWith('/users/verify') ?? false))
+    await apolloClient.mutate<AcceptAllInvites>({
+      mutation: ACCEPT_ALL_INVITES
+    })
 
   return { apolloClient, flags, redirect, translations }
 }
