@@ -59,14 +59,20 @@ export function JourneyRenderer(): ReactElement {
           >
             <Box
               className={isCurrent ? 'active-card' : ''}
-              data-testid={`journey-card-${block.id}`}
               onClick={() => setShowNavigation(true)}
               sx={{
                 ...cardSx
               }}
             >
               {isCurrent || isPreRender ? (
-                <BlockRenderer block={block} />
+                <Box
+                  data-testid={`journey-card-${block.id}`}
+                  sx={{
+                    height: '100%'
+                  }}
+                >
+                  <BlockRenderer block={block} />
+                </Box>
               ) : (
                 <></>
               )}
