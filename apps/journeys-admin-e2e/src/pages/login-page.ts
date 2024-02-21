@@ -18,11 +18,11 @@ export class LoginPage {
   }
 
   async clickNextButton(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Next' }).click()
+    await this.page.locator('button[type="submit"]').click()
   }
 
   async fillExistingPassword(password: string): Promise<void> {
-    await this.page.getByLabel('Password').fill(password)
+    await this.page.locator('input[type="password"]').fill(password)
   }
 
   async clickSubmitButton(): Promise<void> {
