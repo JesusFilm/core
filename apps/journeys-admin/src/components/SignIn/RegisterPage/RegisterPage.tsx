@@ -101,11 +101,7 @@ export function RegisterPage({
         }) => (
           <Form data-testid="RegisterForm">
             <Stack gap={4} data-testid="RegisterPage">
-              <Typography
-                variant="h6"
-                textAlign="left"
-                sx={{ fontWeight: 'bold' }}
-              >
+              <Typography variant="h6" textAlign="left" sx={{ mb: 2 }}>
                 {t('Create account')}
               </Typography>
               <TextField

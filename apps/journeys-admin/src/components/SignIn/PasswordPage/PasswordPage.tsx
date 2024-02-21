@@ -73,7 +73,7 @@ export function PasswordPage({
         {({ values, handleChange, handleBlur, errors, touched }) => (
           <Form>
             <Stack gap={4} data-testid="PasswordPage">
-              <Typography variant="h6" textAlign="left">
+              <Typography variant="h6" textAlign="left" sx={{ mb: 2 }}>
                 {t('Sign in')}
               </Typography>
               <TextField

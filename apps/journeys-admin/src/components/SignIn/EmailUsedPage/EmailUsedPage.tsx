@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -22,7 +21,7 @@ export function EmailUsedPage({
       </Typography>
       <Typography>
         {t("You've already used ")}
-        <Box sx={{ fontWeight: 'bold', display: 'inline' }}>{userEmail}</Box>
+        <b>{userEmail}</b>
         {t(` Sign in with {{service}} to continue`, {
           service: activePage === 'google.com' ? t('Google') : t('Facebook')
         })}
