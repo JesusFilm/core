@@ -43,7 +43,7 @@ export function EmbedJourneyDialog({
 
   const handleSubmit = async (): Promise<void> => {
     await navigator.clipboard.writeText(iframeLink ?? '')
-    enqueueSnackbar('Code Copied', {
+    enqueueSnackbar(t('Code Copied'), {
       variant: 'success',
       preventDuplicate: true
     })
@@ -54,12 +54,12 @@ export function EmbedJourneyDialog({
       open={open}
       onClose={onClose}
       dialogTitle={{
-        title: t('Embed Journey')
+        title: t('Embed journey')
       }}
       dialogAction={{
         onSubmit: handleSubmit,
-        submitLabel: 'Copy Code',
-        closeLabel: 'Cancel'
+        submitLabel: t('Copy Code'),
+        closeLabel: t('Cancel')
       }}
       divider={!smUp}
       testId="EmbedJourneyDialog"
