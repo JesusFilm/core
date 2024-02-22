@@ -60,8 +60,9 @@ export function LanguageSwitcher({
     )?.locales
 
     if (supportedLanguageCodes == null) return
-    const formattedLanguages = supportedLanguageCodes.map(
-      (languageCode): Language => {
+    const formattedLanguages = supportedLanguageCodes
+      .filter((languageCode) => languageCode.toLocaleLowerCase() !== 'zh-cn')
+      .map((languageCode): Language => {
         const nativeName = new Intl.DisplayNames([currentLanguageCode], {
           type: 'language'
         }).of(languageCode)
@@ -74,8 +75,7 @@ export function LanguageSwitcher({
           nativeName: nativeName === localName ? undefined : nativeName,
           localName: localName ?? ''
         }
-      }
-    )
+      })
     setLanguages(formattedLanguages)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLanguageCode])
