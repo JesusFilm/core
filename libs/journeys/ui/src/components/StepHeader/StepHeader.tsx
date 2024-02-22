@@ -9,6 +9,7 @@ import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -26,6 +27,7 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
+  const router = useRouter()
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>): void => {
     if (variant === 'default' || variant === 'embed')
@@ -41,6 +43,7 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
       sx={{
         position: { xs: 'absolute', lg: 'relative' },
         mt: { xs: 1, lg: 0 },
+        height: { lg: 44 },
         zIndex: 1,
         top: 0,
         alignItems: 'flex-end',
@@ -49,23 +52,26 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
       }}
     >
       <PaginationBullets />
-      <IconButton
-        id="more-info"
-        aria-controls="more-info"
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : 'false'}
-        sx={{ mx: 2, mt: 1 }}
-        onClick={handleClick}
-      >
-        <InfoOutlinedIcon
-          sx={{
-            color: theme.palette.primary.main,
-            [theme.breakpoints.up('lg')]: {
-              color: theme.palette.common.white
-            }
-          }}
-        />
-      </IconButton>
+      {router.query.noi == null && (
+        <IconButton
+          data-testid="more-info"
+          id="more-info"
+          aria-controls="more-info"
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : 'false'}
+          sx={{ mx: 2, mt: 1 }}
+          onClick={handleClick}
+        >
+          <InfoOutlinedIcon
+            sx={{
+              color: theme.palette.primary.main,
+              [theme.breakpoints.up('lg')]: {
+                color: theme.palette.common.white
+              }
+            }}
+          />
+        </IconButton>
+      )}
       <Menu
         id="basic-menu"
         anchorEl={anchorEl}
