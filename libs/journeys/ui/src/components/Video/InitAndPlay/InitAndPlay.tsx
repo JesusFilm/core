@@ -3,13 +3,15 @@ import {
   ReactElement,
   RefObject,
   SetStateAction,
-  useEffect
+  useEffect,
+  useState
 } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 
@@ -27,6 +29,7 @@ interface InitAndPlayProps {
   endAt: number | null
   autoplay: boolean | null
   posterBlock: TreeBlock<ImageFields> | undefined
+  source: VideoBlockSource
   setLoading: Dispatch<SetStateAction<boolean>>
   setShowPoster: Dispatch<SetStateAction<boolean>>
   setVideoEndTime: Dispatch<SetStateAction<number>>
@@ -46,12 +49,14 @@ export function InitAndPlay({
   endAt,
   autoplay,
   posterBlock,
+  source,
   setLoading,
   setShowPoster,
   setVideoEndTime
 }: InitAndPlayProps): ReactElement {
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
+  const [error, setError] = useState(false)
 
   // Initiate video player
   useEffect(() => {
@@ -70,11 +75,25 @@ export function InitAndPlay({
             doubleClick: true
           },
           responsive: true,
-          muted: muted === true
+          muted: muted === true,
+          autoplay:
+            autoplay === true &&
+            activeStep &&
+            source === VideoBlockSource.youTube
         })
       )
     }
-  }, [startAt, endAt, muted, posterBlock, setPlayer, videoRef])
+  }, [
+    startAt,
+    endAt,
+    muted,
+    posterBlock,
+    setPlayer,
+    videoRef,
+    autoplay,
+    activeStep,
+    source
+  ])
 
   // Initiate video player listeners
   useEffect(() => {
@@ -177,16 +196,21 @@ export function InitAndPlay({
       if (onFirstStep) {
         player.muted(true)
       }
+
       // Tries to autoplay, fallback to muted autoplay if not allowed
-      void player.play()?.catch((error) => {
-        // if (error.name === 'NotAllowedError') {
-        // }
-        player.muted(true)
-        console.log(error)
-      })
-      void player.play()
+      const playPromise = player.play()
+      if (playPromise != null) {
+        playPromise.catch(() => {
+          player.muted(true)
+          setError(true)
+        })
+      }
+
+      if (error) {
+        void playPromise
+      }
     }
-  }, [activeStep, activeBlock, autoplay, blockId, player])
+  }, [activeStep, activeBlock, autoplay, blockId, player, setError, error])
 
   // Pause video when inactive or admin
   useEffect(() => {

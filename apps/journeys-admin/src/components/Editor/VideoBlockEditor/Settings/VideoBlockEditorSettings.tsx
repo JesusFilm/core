@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 import Play2Icon from '@core/shared/ui/icons/Play2'
 import StopCircleContainedIcon from '@core/shared/ui/icons/StopCircleContained'
 import {
@@ -45,6 +46,7 @@ export function VideoBlockEditorSettings({
   posterBlock,
   onChange
 }: VideoBlockEditorSettingsProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { values, errors, handleChange, setFieldValue } = useFormik({
     initialValues: {
@@ -59,8 +61,9 @@ export function VideoBlockEditorSettings({
       const convertedStartAt = timeFormatToSeconds(values.startAt)
       const convertedEndAt = timeFormatToSeconds(values.endAt)
       if (convertedStartAt > convertedEndAt - 3) {
-        errors.startAt =
+        errors.startAt = t(
           'Start time has to be at least 3 seconds less than end time'
+        )
         enqueueSnackbar(errors.startAt, {
           variant: 'error',
           preventDuplicate: true
@@ -69,9 +72,10 @@ export function VideoBlockEditorSettings({
         selectedBlock?.duration != null &&
         convertedStartAt > selectedBlock?.duration - 3
       ) {
-        errors.startAt = `Start time has to be at least 3 seconds less than video duration ${secondsToTimeFormat(
-          selectedBlock?.duration
-        )}`
+        errors.startAt = t(
+          'Start time has to be at least 3 seconds less than video duration {{ time }}',
+          { time: secondsToTimeFormat(selectedBlock?.duration) }
+        )
         enqueueSnackbar(errors.startAt, {
           variant: 'error',
           preventDuplicate: true
@@ -80,9 +84,10 @@ export function VideoBlockEditorSettings({
         selectedBlock?.duration != null &&
         convertedEndAt > selectedBlock?.duration
       ) {
-        errors.endAt = `End time has to be no more than video duration ${secondsToTimeFormat(
-          selectedBlock?.duration
-        )}`
+        errors.endAt = t(
+          'End time has to be no more than video duration {{ time }}',
+          { time: secondsToTimeFormat(selectedBlock?.duration) }
+        )
         enqueueSnackbar(errors.endAt, {
           variant: 'error',
           preventDuplicate: true
@@ -98,7 +103,6 @@ export function VideoBlockEditorSettings({
     },
     onSubmit: noop
   })
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Box sx={{ px: 6, width: '100%' }} data-testid="VideoBlockEditorSettings">
@@ -123,7 +127,7 @@ export function VideoBlockEditorSettings({
               style={{ width: '100%' }}
               input={
                 <TextField
-                  label="Starts At"
+                  label={t('Starts At')}
                   name="startAt"
                   value={values.startAt}
                   variant="filled"
@@ -145,7 +149,7 @@ export function VideoBlockEditorSettings({
               style={{ width: '100%' }}
               input={
                 <TextField
-                  label="Ends At"
+                  label={t('Ends At')}
                   name="endAt"
                   value={values.endAt}
                   variant="filled"
@@ -305,6 +309,16 @@ export function VideoBlockEditorSettings({
               }}
             />
           </Stack>
+          {values.autoplay === true && values.muted === false && (
+            <Stack direction="row" alignItems="center" color="text.secondary">
+              <InformationCircleContainedIcon sx={{ mr: 4 }} />
+              <Typography variant="caption">
+                {t(
+                  'Some mobile browsers may override this choice and default the video to play muted when autoplay is enabled'
+                )}
+              </Typography>
+            </Stack>
+          )}
           <Divider />
           <VideoBlockEditorSettingsPoster
             selectedBlock={posterBlock}

@@ -40,6 +40,7 @@ const iconNames: IconName[] = [
   'Bible',
   'Book',
   'Box',
+  'Bulb',
   'Calendar1',
   'Calendar4',
   'CheckBroken',

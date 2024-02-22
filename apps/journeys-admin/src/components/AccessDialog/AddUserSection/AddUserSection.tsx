@@ -86,7 +86,7 @@ export function AddUserSection({
           }}
           onClick={handleClick}
         >
-          <Typography variant="body2">{selectedInviteMethod}</Typography>
+          <Typography variant="body2">{t(selectedInviteMethod)}</Typography>
         </Button>
         <Menu
           id="menu"
@@ -96,12 +96,12 @@ export function AddUserSection({
         >
           <MenuItem
             icon={<EmailIcon fontSize="small" />}
-            label="Email"
+            label={t('Email')}
             onClick={() => handleMenuItemClick('Email')}
           />
           <MenuItem
             icon={<LinkIcon fontSize="small" />}
-            label="Link"
+            label={t('Link')}
             onClick={() => handleMenuItemClick('Link')}
           />
         </Menu>

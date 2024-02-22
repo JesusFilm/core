@@ -47,7 +47,11 @@ export function Step({
     (variant === 'default' || variant === 'embed') && activeStep
 
   useEffect(() => {
-    if (activeJourneyStep && isActiveBlockOrDescendant(blockId)) {
+    if (
+      activeJourneyStep &&
+      isActiveBlockOrDescendant(blockId) &&
+      wrappers === undefined
+    ) {
       const id = uuidv4()
       void stepViewEventCreate({
         variables: { input: { id, blockId, value: heading } }
@@ -61,7 +65,14 @@ export function Step({
         }
       })
     }
-  }, [blockId, stepViewEventCreate, variant, heading, activeJourneyStep])
+  }, [
+    blockId,
+    stepViewEventCreate,
+    variant,
+    heading,
+    activeJourneyStep,
+    wrappers
+  ])
 
   return (
     <>

@@ -6,6 +6,8 @@ import { journey } from '../utils/data'
 
 import { EventsCard } from '.'
 
+import '../../../../../test/i18n'
+
 const EventsCardStory: Meta<typeof EventsCard> = {
   ...journeysAdminConfig,
   title: 'Journeys-Admin/VisitorInfo/VisitorJourneysList/EventsCard',

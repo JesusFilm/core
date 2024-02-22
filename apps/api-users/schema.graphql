@@ -19,6 +19,7 @@ type User
   email: String!
   imageUrl: String
   superAdmin: Boolean
+  emailVerified: Boolean!
 }
 
 type Query {
@@ -28,10 +29,14 @@ type Query {
 
 extend type Query {
   me: User
+  user(id: ID!): User
+  userByEmail(email: String!): User
 }
 
 extend type Mutation {
   userImpersonate(email: String!): String
+  createVerificationRequest: Boolean
+  validateEmail(email: String!, token: String!): User
 }
 
 extend type Language
