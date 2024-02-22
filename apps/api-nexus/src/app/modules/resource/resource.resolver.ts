@@ -8,22 +8,23 @@ import { CurrentUser } from '@core/nest/decorators/CurrentUser';
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId';
 
 import {
-  Channel,
   GoogleAuthInput,
   GoogleAuthResponse,
-  PrivacyStatus,
   ResourceCreateInput,
   ResourceFilter,
   ResourceFromGoogleDriveInput,
   ResourceUpdateInput,
 } from '../../__generated__/graphql';
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
-import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
 import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
 import { PrismaService } from '../../lib/prisma.service';
 import { YoutubeService } from '../../lib/youtube/youtubeService';
+import { BatchService } from '../batch/batchService';
 import { BullMQService } from '../bullMQ/bullMQ.service';
-import { GoogleDriveService } from '../google-drive/googleDriveService';
+import {
+  GoogleDriveService,
+  SpreadsheetTemplateType,
+} from '../google-drive/googleDriveService';
 
 @Resolver('Resource')
 export class ResourceResolver {
@@ -34,7 +35,7 @@ export class ResourceResolver {
     private readonly cloudFlareService: CloudFlareService,
     private readonly youtubeService: YoutubeService,
     private readonly bullMQService: BullMQService,
-    private readonly googleSheetsService: GoogleSheetsService,
+    private readonly batchService: BatchService,
   ) {}
 
   @Query()
@@ -81,6 +82,7 @@ export class ResourceResolver {
         id,
         AND: [filter, { nexus: { userNexuses: { every: { userId } } } }],
       },
+      include: { localizations: true },
     });
     return resource;
   }
@@ -237,167 +239,55 @@ export class ResourceResolver {
       throw new Error('Invalid tokenId');
     }
 
-    console.log('Downloading Template . . .');
-    const rows = await this.googleDriveService.handleGoogleDriveOperations(
-      tokenId,
-      spreadsheetId,
-      drivefolderId,
-    );
-    console.log('Total Data', rows.length);
+    const { accessToken, data } =
+      await this.googleDriveService.getSpreadsheetData(tokenId, spreadsheetId);
 
-    const batchResources: Array<{ resource: Resource; channel: Channel }> = [];
-    const localizationBatch: Array<{ resource: Resource; channel: Channel }> =
-      [];
+    const { templateType, spreadsheetData } =
+      await this.googleDriveService.populateSpreadsheetData(
+        accessToken,
+        drivefolderId,
+        data,
+      );
 
-    for (const row of rows) {
-      if (row.video_id != null) {
-        const resourceYoutubeChannel =
-          await this.prismaService.resourceYoutubeChannel.findFirst({
-            where: { youtubeId: row.video_id },
-          });
-
-        if (resourceYoutubeChannel != null) {
-          const existingLocalization =
-            await this.prismaService.resourceLocalization.findFirst({
-              where: {
-                resourceId: resourceYoutubeChannel.resourceId,
-                language: row.language,
-              },
-            });
-
-          if (existingLocalization != null) {
-            await this.prismaService.resourceLocalization.update({
-              where: { id: existingLocalization.id },
-              data: {
-                title: row.title ?? existingLocalization.title,
-                description:
-                  row.description ?? existingLocalization.description,
-                keywords: row.keywords ?? existingLocalization.keywords,
-                captionFile:
-                  row.caption_file ?? existingLocalization.captionFile,
-                audioTrackFile:
-                  row.audio_track_file ?? existingLocalization.audioTrackFile,
-              },
-            });
-          } else {
-            await this.prismaService.resourceLocalization.create({
-              data: {
-                resourceId: resourceYoutubeChannel.resourceId,
-                title: row.title ?? '',
-                description: row.description ?? '',
-                keywords: row.keywords ?? '',
-                language: row.language ?? '',
-                captionFile: row.caption_file ?? '',
-                audioTrackFile: row.audio_track_file ?? '',
-                localizedResourceFile: {
-                  create: {
-                    mimeType: row.driveFile?.mimeType ?? '',
-                    captionDriveId: row.captionDriveFile?.id ?? '',
-                    audioDriveId: row.audioTrackDriveFile?.id ?? '',
-                    refreshToken: googleAccessToken.refreshToken,
-                  },
-                },
-              },
-            });
-          }
-        }
-        const resource = await this.prismaService.resource.findUnique({
-          where: { id: resourceYoutubeChannel?.resourceId },
-        });
-
-        if (resource != null && row.channelData != null) {
-          localizationBatch.push({ resource, channel: row.channelData });
-        }
-      } else {
-        const resource = await this.prismaService.resource.create({
-          data: {
-            id: uuidv4(),
-            name: row.filename ?? '',
-            nexusId: nexus.id,
-            status: row.channelData?.id !== null ? 'processing' : 'published',
-            sourceType: 'template',
-            createdAt: new Date(),
-            customThumbnail: row.custom_thumbnail,
-            category: row.category,
-            privacy: row.privacy as PrivacyStatus,
-            localizations: {
-              create: {
-                title: row.title ?? '',
-                description: row.description ?? '',
-                keywords: row.keywords ?? '',
-                language: row.spoken_language ?? '',
-              },
-            },
-            googleDrive: {
-              create: {
-                mimeType: row.driveFile?.mimeType ?? '',
-                driveId: row.driveFile?.id ?? '',
-                refreshToken: googleAccessToken.refreshToken,
-              },
-            },
-          },
-        });
-        if (row.channelData?.id !== undefined) {
-          batchResources.push({ resource, channel: row.channelData });
-        }
+    if (templateType === SpreadsheetTemplateType.UPLOAD) {
+      const batchResources =
+        await this.batchService.createResourcesFromSpreadsheet(
+          nexus.id,
+          googleAccessToken.refreshToken,
+          spreadsheetData,
+        );
+      const preparedBatchJobs =
+        this.batchService.prepareBatchResourcesForBatchJob(batchResources);
+      for (const preparedBatchJob of preparedBatchJobs) {
+        await this.bullMQService.createResourcesBatchJob(
+          uuidv4(),
+          nexusId,
+          preparedBatchJob.channel,
+          preparedBatchJob.resources,
+        );
       }
-    }
-
-    const channels = batchResources
-      .filter((item, index, self) => {
-        return (
-          index === self.findIndex((t) => t.channel?.id === item.channel?.id) &&
-          item.channel !== undefined
+      return batchResources.map((item) => item.resource);
+    } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
+      const batchLocalizations =
+        await this.batchService.createResourcesLocalization(
+          googleAccessToken.refreshToken,
+          spreadsheetData,
         );
-      })
-      .map((item) => item.channel);
-
-    console.log('Batches', channels.length);
-
-    for (const channel of channels) {
-      if (channel === undefined) continue;
-      const resources = batchResources
-        .filter((item) => {
-          return item.channel?.id === channel.id;
-        })
-        .map((item) => item.resource);
-      console.log('Batch Count: ', resources.length);
-      await this.bullMQService.createBatch(
-        uuidv4(),
-        nexusId,
-        channel,
-        resources,
-      );
-    }
-
-    const localizationUniqueChannels = localizationBatch
-      .filter((item, index, self) => {
-        return (
-          index === self.findIndex((t) => t.channel?.id === item.channel?.id) &&
-          item.channel !== undefined
+      const preparedBatchJobs =
+        this.batchService.prepareBatchResourceLocalizationsForBatchJob(
+          batchLocalizations,
         );
-      })
-      .map((item) => item.channel);
-
-    console.log('Localization Batches', localizationUniqueChannels.length);
-
-    for (const channel of localizationUniqueChannels) {
-      if (channel === undefined) continue;
-      const resources = localizationBatch
-        .filter((item) => {
-          return item.channel?.id === channel.id;
-        })
-        .map((item) => item.resource);
-      console.log('Localization Batch Count: ', resources.length);
-      await this.bullMQService.createLocalizationBatch(
-        uuidv4(),
-        nexusId,
-        channel,
-        resources,
-      );
+      for (const preparedBatchJob of preparedBatchJobs) {
+        await this.bullMQService.createLocalizationBatch(
+          uuidv4(),
+          nexusId,
+          preparedBatchJob.channel,
+          preparedBatchJob.localizations,
+        );
+      }
+      return [];
     }
-
-    return batchResources.map((item) => item.resource);
+    return [];
   }
 
   @Mutation()

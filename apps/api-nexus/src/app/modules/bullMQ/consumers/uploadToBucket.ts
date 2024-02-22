@@ -1,5 +1,6 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
+import { youtube_v3 } from 'googleapis';
 
 import { BucketService } from '../../../lib/bucket/bucketService';
 import { GoogleOAuthService } from '../../../lib/googleOAuth/googleOAuth';
@@ -22,6 +23,7 @@ export class UploadToBucket {
   async process(
     job: Job<UploadToBucketToYoutube>,
   ): Promise<UploadToBucketToYoutube> {
+    console.log('BUCKET JOB DATA: ', job.data);
     const driveToken = await this.googleOAuthService.getNewAccessToken(
       job.data.resource.refreshToken,
     );
@@ -55,6 +57,7 @@ export class UploadToBucket {
         channelId: job.data.channel.channelId,
         title: job.data.resource.title ?? '',
         description: job.data.resource.description ?? '',
+        defaultLanguage: job.data.resource.language ?? 'en',
       },
       async (progress) => {
         progress = 66 + progress / 3;
@@ -62,18 +65,17 @@ export class UploadToBucket {
         return await Promise.resolve();
       },
     );
-    console.log('YOUTUBE DATA: ', youtubeData);
-    const { videoId } = youtubeData as { videoId: string };
-    if (videoId != null) {
-      await this.prismaService.resourceYoutubeChannel.create({
-        data: {
-          resourceId: job.data.resource.id,
-          channelId: job.data.channel.id,
-          youtubeId: videoId,
-        },
-      });
-    }
+    console.log('YOUTUBE DATA: ', youtubeData.data.id);
+    // if (youtubeData.data.id != null) {
+    //   await this.prismaService.resourceYoutubeChannel.create({
+    //     data: {
+    //       resourceId: job.data.resource.id,
+    //       channelId: job.data.channel.id,
+    //       youtubeId: youtubeData.data.id,
+    //     },
+    //   });
+    // }
     await job.progress(100);
-    return job.returnvalue;
+    return {...job.returnvalue, 'youtubeId':youtubeData?.data?.id};
   }
 }

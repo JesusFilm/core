@@ -2,7 +2,8 @@ import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import Bull, { Queue } from 'bull';
 
-import { Batch, Channel } from '../../__generated__/graphql';
+import { Batch, Channel, ResourceLocalization } from '.prisma/api-nexus-client';
+
 import { PrismaService } from '../../lib/prisma.service';
 
 export interface UploadToYoutbeTask {
@@ -34,6 +35,7 @@ export interface UploadToBucketToYoutube {
     refreshToken: string;
     title: string;
     description: string;
+    language: string;
   };
   channel: {
     id: string;
@@ -61,7 +63,7 @@ export interface UpdateVideoLocalization {
   batchId: string;
   resource: {
     id: string;
-    videoId: string;
+    videoId: string | null;
     title: string;
     description: string;
     tags: string[];
@@ -87,6 +89,23 @@ export interface UpdateVideoCaption {
     id: string;
     channelId: string;
     refreshToken: string;
+  };
+}
+
+export interface ResourceLocalizationJobData {
+  batchId: string;
+  localization: {
+    resourceId: string;
+    youtubeId: string | null;
+    title: string;
+    description: string;
+    tags: string[];
+    language: string;
+  };
+  channel: {
+    id: string;
+    channelId: string | undefined;
+    refreshToken: string | undefined;
   };
 }
 
@@ -137,47 +156,45 @@ export class BullMQService {
     return await this.bucketQueue.addBulk(jobs ?? []);
   }
 
-  async createLocalizationBatchJob(batchJobId: string): Promise<Array<Bull.Job<unknown>>> {
-    const batch = await this.prismaService.batch.findUnique({
-      where: {
-        id: batchJobId,
-      },
-      include: {
-        resources: {
-          include: {
-            resource: { include: { googleDrive: true, localizations: true } },
-          },
-        },
-        channel: { include: { youtube: true } },
-      },
+  async createLocalizationBatchJob(
+    batchJobId: string,
+    localizations: ResourceLocalization[],
+    channel: Channel,
+  ): Promise<Array<Bull.Job<unknown>>> {
+    console.log('createLocalizationBatchJob');
+    const channelData = await this.prismaService.channel.findUnique({
+      where: { id: channel.id },
+      include: { youtube: true },
     });
-
-    const jobs = batch?.resources.map((batchResource) => {
-      return {
-        name: 'localizationprocess',
+    const jobs = localizations?.map((localization) => {
+      const localizationJob: {
+        name: string;
+        data: ResourceLocalizationJobData;
+      } = {
+        name: 'processLocalization',
         data: {
-          batchId: batch.id,
+          batchId: batchJobId,
           localization: {
-            id: batchResource.resource.id ?? '',
-            driveId: batchResource.resource.googleDrive?.driveId ?? '',
-            refreshToken:
-              batchResource.resource?.googleDrive?.refreshToken ?? '',
-            title: batchResource?.resource?.localizations[0]?.title ?? '',
-            description:
-              batchResource?.resource?.localizations[0]?.description ?? '',
+            resourceId: localization.id,
+            title: localization.title,
+            description: localization.description,
+            youtubeId: '',
+            tags: [],
+            language: localization.language,
           },
           channel: {
-            id: batch.channel?.id ?? '',
-            channelId: batch.channel?.youtube?.youtubeId ?? '',
-            refreshToken: batch.channel?.youtube?.refreshToken ?? '',
+            id: channel.id,
+            channelId: channelData?.youtube?.youtubeId,
+            refreshToken: channelData?.youtube?.refreshToken,
           },
         },
       };
+      return localizationJob;
     });
     return await this.bucketQueue.addBulk(jobs ?? []);
   }
 
-  async createBatch(
+  async createResourcesBatchJob(
     batchName: string,
     nexusId: string,
     channel: Channel,
@@ -209,7 +226,7 @@ export class BullMQService {
     batchName: string,
     nexusId: string,
     channel: Channel,
-    resources: Array<{ id: string }>,
+    localizations: ResourceLocalization[],
   ): Promise<Batch> {
     const batch = await this.prismaService.batch.create({
       data: {
@@ -220,15 +237,15 @@ export class BullMQService {
     });
 
     await this.prismaService.batchResource.createMany({
-      data: resources.map((resource) => {
+      data: localizations.map((localization) => {
         return {
           batchId: batch.id,
-          resourceId: resource.id,
+          resourceId: localization.resourceId,
         };
       }),
     });
 
-    await this.createLocalizationBatchJob(batch.id);
+    await this.createLocalizationBatchJob(batch.id, localizations, channel);
 
     return batch as unknown as Batch;
   }

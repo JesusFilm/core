@@ -3,7 +3,7 @@ import { createReadStream, statSync } from 'fs';
 
 import { Injectable } from '@nestjs/common';
 import { google, youtube_v3 } from 'googleapis';
-import { OAuth2Client } from 'googleapis-common';
+import { GaxiosPromise, OAuth2Client } from 'googleapis-common';
 
 import { UpdateVideoLocalization } from '../../modules/bullMQ/bullMQ.service';
 import { GoogleOAuthService } from '../googleOAuth/googleOAuth';
@@ -46,9 +46,10 @@ export class YoutubeService {
       channelId: string;
       title: string;
       description: string;
+      defaultLanguage: string;
     },
     progressCallback?: (progress: number) => Promise<void>,
-  ): Promise<unknown> {
+  ): GaxiosPromise<youtube_v3.Schema$Video> {
     const service = google.youtube('v3');
     const fileSize = statSync(youtubeData.filePath).size;
 
@@ -62,6 +63,7 @@ export class YoutubeService {
             title: youtubeData.title,
             description: youtubeData.description,
             channelId: youtubeData.channelId,
+            defaultLanguage: youtubeData.defaultLanguage ?? 'en',
           },
           status: {
             privacyStatus: 'private',
@@ -102,16 +104,16 @@ export class YoutubeService {
   async addLocalizedMetadataAndUpdateTags(
     youtubeData: UpdateVideoLocalization,
   ): Promise<unknown> {
-    const service = google.youtube('v3');
     const token = await this.googleService.getNewAccessToken(
       youtubeData.channel.refreshToken,
     );
     const auth = this.authorize(token);
 
-    const fetchResponse = await service.videos.list({
+    // console.log('YOUTUBE DATA: ', youtubeData.resource);
+    const fetchResponse = await google.youtube('v3').videos.list({
       auth,
       part: ['snippet', 'localizations'],
-      id: [youtubeData.resource.videoId],
+      id: [youtubeData.resource.videoId ?? ''],
     });
 
     if (
@@ -122,18 +124,7 @@ export class YoutubeService {
     }
 
     const videoItem: youtube_v3.Schema$Video = fetchResponse.data.items[0];
-    let existingTags: string[];
-    if (
-      videoItem.snippet != null &&
-      videoItem.snippet.tags !== undefined &&
-      videoItem.snippet.tags !== null
-    ) {
-      existingTags = videoItem.snippet.tags;
-    } else {
-      existingTags = [];
-    }
-
-    const updatedTags = [...existingTags, ...youtubeData.resource.tags];
+    console.log('VIDEO ITEM: ', videoItem);
 
     const updatedLocalizations =
       videoItem.localizations != null ? { ...videoItem.localizations } : {};
@@ -141,19 +132,24 @@ export class YoutubeService {
       title: youtubeData.resource.title,
       description: youtubeData.resource.description,
     };
+    console.log('UPDATED LOCALIZATIONS: ', updatedLocalizations);
 
-    return await service.videos.update({
+    const res = await google.youtube('v3').videos.insert({
       auth,
       part: ['snippet', 'localizations'],
       requestBody: {
         id: youtubeData.resource.videoId,
         snippet: {
-          ...videoItem.snippet,
-          tags: updatedTags,
+          categoryId: videoItem.snippet?.categoryId,
+          defaultLanguage: videoItem.snippet?.defaultLanguage,
+          title: videoItem.snippet?.title,
+          description: videoItem.snippet?.description,
         },
         localizations: updatedLocalizations,
       },
     });
+    console.log('UPDATE LOCALIZATION RESPONSE: ', res);
+    return res;
   }
 
   async uploadCaption(youtubeData: {
