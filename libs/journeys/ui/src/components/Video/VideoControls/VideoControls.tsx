@@ -113,7 +113,7 @@ export function VideoControls({
   useEffect(() => {
     const handleVideoPause = (): void => {
       setPlaying(false)
-      const videoHasClashingUI = isYoutube && (player.userActive() ?? false)
+      const videoHasClashingUI = isYoutube
       if (videoHasClashingUI && activeStep) {
         setShowHeaderFooter(false)
       }

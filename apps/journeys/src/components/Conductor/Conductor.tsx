@@ -167,17 +167,18 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             }}
           >
             {router.query.noi == null && (
-              <StepHeader
-                sx={{
-                  ...mobileNotchStyling,
-                  display: {
-                    xs: showHeaderFooter ? 'flex' : 'none',
-                    sm: showHeaderFooter ? 'flex' : 'none',
-                    md: showHeaderFooter ? 'flex' : 'none',
-                    lg: 'flex'
-                  }
-                }}
-              />
+              <>
+                {console.log('showHeaderFooter', showHeaderFooter)}
+                <StepHeader
+                  sx={{
+                    ...mobileNotchStyling,
+                    display: {
+                      xs: showHeaderFooter ? 'flex' : 'none',
+                      lg: 'flex'
+                    }
+                  }}
+                />
+              </>
             )}
             <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
               <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
@@ -194,8 +195,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             />
             <StepFooter
               sx={{
-                visibility: showHeaderFooter ? 'visible' : 'hidden',
-                ...mobileNotchStyling
+                ...mobileNotchStyling,
+                display: {
+                  xs: showHeaderFooter ? 'flex' : 'none',
+                  lg: 'flex'
+                }
               }}
             />
           </Stack>
