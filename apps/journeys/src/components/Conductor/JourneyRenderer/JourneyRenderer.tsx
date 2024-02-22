@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix spacing card edge and content
-
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import { SxProps } from '@mui/material/styles'
@@ -19,13 +17,12 @@ export function JourneyRenderer(): ReactElement {
     setShowHeaderFooter
   } = useBlocks()
 
-  const getCurrentActiveBlock = (): TreeBlock<StepFields> | undefined =>
-    blockHistory[blockHistory.length - 1] as TreeBlock<StepFields> | undefined
-  const getPreviousBlock = (): TreeBlock<StepFields> | undefined =>
-    blockHistory[blockHistory.length - 2] as TreeBlock<StepFields> | undefined
-
-  const currentBlock = getCurrentActiveBlock()
-  const previousBlock = getPreviousBlock()
+  const currentBlock = blockHistory[blockHistory.length - 1] as
+    | TreeBlock<StepFields>
+    | undefined
+  const previousBlock = blockHistory[blockHistory.length - 2] as
+    | TreeBlock<StepFields>
+    | undefined
   const nextBlock = getNextBlock({ activeBlock: currentBlock })
 
   useEffect(() => {
@@ -36,10 +33,11 @@ export function JourneyRenderer(): ReactElement {
     <>
       {treeBlocks.map((block) => {
         const cardSx: SxProps = {
-          height: 0,
-          width: 0,
+          height: 'inherit',
+          width: '-webkit-fill-available;',
           position: 'absolute',
-          display: 'none'
+          top: 0,
+          left: 0
         }
 
         const isCurrent = block.id === currentBlock?.id
@@ -51,8 +49,6 @@ export function JourneyRenderer(): ReactElement {
           cardSx.width = 'inherit'
           cardSx.position = 'relative'
           cardSx.display = 'block'
-        } else if (isPreRender) {
-          cardSx.width = '-webkit-fill-available;'
         }
 
         return (

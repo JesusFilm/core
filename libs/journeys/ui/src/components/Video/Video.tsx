@@ -167,6 +167,7 @@ export function Video({
         setLoading={setLoading}
         setShowPoster={setShowPoster}
         setVideoEndTime={setVideoEndTime}
+        source={source}
       />
 
       {activeStep &&
