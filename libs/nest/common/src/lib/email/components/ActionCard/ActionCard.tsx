@@ -4,6 +4,7 @@ import {
   Container,
   Hr,
   Img,
+  Link,
   Row,
   Section,
   Text
@@ -22,7 +23,8 @@ interface ActionCardProps {
   recipient?: Omit<User, 'id' | 'emailVerified'>
   sender?: Omit<User, 'id' | 'emailVerified'>
   journey?: JourneyForEmails
-  variant?: 'accessRequest' | 'sharedWithYou'
+  variant?: 'accessRequest' | 'sharedWithYou' | 'emailVerify'
+  token?: string
 }
 
 export function ActionCard({
@@ -34,27 +36,28 @@ export function ActionCard({
   sender,
   recipient,
   journey,
-  variant
+  variant,
+  token
 }: ActionCardProps): ReactElement {
   return (
-    <Section className="mt-[60px] mb-[15px]">
+    <Section className="mt-[60px] mb-[15px] max-w-[500px] ">
       <Container
         align="center"
-        className="w-full bg-[#FFFFFF] py-[20px] rounded-lg"
+        className="w-full bg-[#FFFFFF] pt-[20px] pb-[40px] rounded-lg"
       >
-        <Section align="center">
+        <Section align="center" className="px-[28px]">
           <Row align="center" style={{ marginTop: '-50px' }}>
             <Column align="center">
               {recipient?.imageUrl != null ? (
                 <Img
                   src={recipient.imageUrl ?? ''}
                   alt={recipient?.firstName ?? ''}
-                  width={60}
-                  height={60}
-                  className="rounded-full border-solid border-2 border-[#FFFFFF] shadow-md"
+                  width={64}
+                  height={64}
+                  className="rounded-full border-solid border-4 border-[#FFFFFF] shadow-md"
                 />
               ) : (
-                <div className="bg-[#FFFFFF] h-[60px] w-[60px] rounded-full border-solid border-2 border-[#FFFFFF] shadow-md">
+                <div className="bg-[#FFFFFF] h-[64px] w-[64px] rounded-full border-solid border-4 border-[#FFFFFF] shadow-md">
                   <Text className="font-sans font-bold text-[#FFFFFF] text-3xl mt-[14px] mr-[2px]">
                     👋
                   </Text>
@@ -64,11 +67,17 @@ export function ActionCard({
           </Row>
           <Row>
             <th>
-              <Text className="font-semibold text-[16px] leading-[28px] mt-[20px] mb-[0px] text-center">
+              <Text className="font-semibold text-[16px] leading-[28px] mt-[12px] mb-[0px] text-center">
                 {variant === 'accessRequest'
                   ? `Hi ${recipient?.firstName ?? ''}, do you want to`
                   : `Hi ${recipient?.firstName ?? ''},`}
               </Text>
+              {variant === 'emailVerify' && (
+                <Text className="font-semibold text-[16px] leading-[28px] mt-0 mb-[24px] text-center">
+                  Verify your email address to start making interactive
+                  Journeys!
+                </Text>
+              )}
               {variant != null && headerText != null && (
                 <Text className="font-semibold text-[20px] leading-[28px] mt-[0px] mb-[20px] text-center">
                   {headerText}
@@ -89,26 +98,47 @@ export function ActionCard({
                   {bodyText}
                 </Text>
               )}
-              {variant == null && (
+              {variant !== 'accessRequest' && variant !== 'sharedWithYou' && (
                 <Button
-                  className="bg-[#26262D] rounded-lg text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
+                  className="bg-[#26262D] rounded-lg text-white text-[16px] font-semibold no-underline text-center px-5 py-3"
+                  style={{
+                    font: '16px "Open Sans", sans-serif'
+                  }}
                   href={url}
                 >
                   {buttonText}
                 </Button>
               )}
+              {variant === 'emailVerify' && token != null && (
+                <Text className="text-[14px] font-[400] leading-[24px] mt-[24px] mb-[0px] text-center">
+                  If the link above does not work, enter the following code at
+                  the link below:
+                </Text>
+              )}
+              {variant === 'emailVerify' && token != null && (
+                <Text className="text-[14px] font-[400] leading-[24px] my-0 text-center">
+                  {token}
+                </Text>
+              )}
+              {variant === 'emailVerify' && token != null && (
+                <Link href={url} style={{ textDecoration: 'none' }}>
+                  <Text className="text-center mt-[24px] text-[#C52D3A] font-[400] text-[12px] leading-[16px]">
+                    {url}
+                  </Text>
+                </Link>
+              )}
             </th>
           </Row>
           {variant != null && sender != null && (
-            <Row className="px-[40px] mt-[20px]">
+            <Row className="mt-[20px] mb-[20px]">
               <Column align="right" className="pr-[10px]">
                 {sender?.imageUrl != null ? (
                   <Img
                     src={sender.imageUrl ?? ''}
                     alt={sender?.firstName}
-                    width={48}
-                    height={48}
-                    className="rounded-full shadow-md"
+                    width={60}
+                    height={60}
+                    className="rounded-full shadow-md border-[#FFFFFF]"
                   />
                 ) : (
                   <div className="bg-zinc-400 h-[60px] w-[60px] rounded-full border-solid border-2 border-[#FFFFFF] shadow-md">
@@ -141,7 +171,7 @@ export function ActionCard({
         {variant != null && journey != null && (
           <Section align="center">
             <Hr className="mt-[20px]" />
-            <Row>
+            <Row className="px-[28px]">
               <Column align="center">
                 {journey.primaryImageBlock?.src != null ? (
                   <Img
@@ -161,7 +191,7 @@ export function ActionCard({
               </Column>
             </Row>
             {variant === 'accessRequest' && (
-              <Row>
+              <Row className="px-[28px]">
                 <Column align="center">
                   <Text className="font-sans font-semibold text-[12px] leading-[16px] text-[#ABADB7] mb-[0px]">
                     {journey?.team?.title.toUpperCase()}
@@ -169,17 +199,20 @@ export function ActionCard({
                 </Column>
               </Row>
             )}
-            <Row>
+            <Row className="px-[28px]">
               <Column align="center">
                 <Text className="font-sans font-semibold text-[20px] leading-[28px]">
                   {journey.title}
                 </Text>
               </Column>
             </Row>
-            <Row>
+            <Row className="px-[28px]">
               <Column align="center">
                 <Button
-                  className="bg-[#26262D] rounded-lg text-white text-[12px] font-semibold no-underline text-center my-[20px] px-5 py-3"
+                  className="bg-[#26262D] rounded-lg text-white text-[16px] font-semibold no-underline text-center mt-[20px] px-5 py-3"
+                  style={{
+                    font: '16px "Open Sans", sans-serif'
+                  }}
                   href={url}
                 >
                   {buttonText}
