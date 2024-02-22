@@ -122,7 +122,7 @@ export function ActionCard({
               )}
               {variant === 'emailVerify' && token != null && (
                 <Link href={url} style={{ textDecoration: 'none' }}>
-                  <Text className="text-center mt-[24px] mb-[20px] text-[#C52D3A] font-[400] text-[12px] leading-[16px]">
+                  <Text className="text-center mt-[24px] text-[#C52D3A] font-[400] text-[12px] leading-[16px]">
                     {url}
                   </Text>
                 </Link>
