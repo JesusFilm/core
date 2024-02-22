@@ -18,7 +18,7 @@ import { Footer } from './Footer'
 const Demo: Meta<typeof Footer> = {
   ...simpleComponentConfig,
   component: Footer,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer'
+  title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer'
 }
 
 const Template: StoryObj<
@@ -76,6 +76,11 @@ export const Filled = {
         id: '1',
         link: 'https://m.me/user',
         platform: ChatPlatform.facebook
+      },
+      {
+        id: '2',
+        link: 'viber://',
+        platform: ChatPlatform.viber
       }
     ]
   }

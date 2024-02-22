@@ -14,7 +14,6 @@ import {
   ThemeName
 } from '../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
-import { Drawer } from '../Drawer'
 
 import { SocialDetails } from './SocialDetails'
 
@@ -88,7 +87,7 @@ const Template: StoryObj<typeof SocialDetails> = {
       <MockedProvider>
         <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
           <EditorProvider>
-            <Drawer />
+            <SocialDetails />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
