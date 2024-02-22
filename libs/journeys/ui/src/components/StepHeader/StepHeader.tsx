@@ -54,6 +54,7 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
       <PaginationBullets />
       {router.query.noi == null && (
         <IconButton
+          data-testid="more-info"
           id="more-info"
           aria-controls="more-info"
           aria-haspopup="true"

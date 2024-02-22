@@ -26,6 +26,7 @@ export function PaginationBullets(): ReactElement {
 
   return (
     <Box
+      data-testid="pagination-bullets"
       sx={{
         position: 'absolute',
         top: 13,
