@@ -591,6 +591,7 @@
   "Sign Up": "Sign Up",
   "Check your email": "Check your email",
   "Follow the instructions sent to {{userEmail}} to recover your password": "Follow the instructions sent to {{userEmail}} to recover your password",
+  "Sign in with {{service}}": "Sign in with {{service}}",
   "Active": "Active",
   "Archived": "Archived",
   "Strategy": "Strategy",
