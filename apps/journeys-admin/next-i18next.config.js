@@ -26,7 +26,7 @@ const i18nConfig = {
       'ru', // Russian
       'tr', // Turkish
       'zh', // Chinese
-      'zh-hans-CN' // Chinese, Simplified
+      'zh-Hans-CN' // Chinese, Simplified
     ],
     localeDetection: false
   },
@@ -38,7 +38,7 @@ const i18nConfig = {
     ja: ['ja-JP'],
     ru: ['ru-RU'],
     tr: ['tr-TR'],
-    zh: ['zh-hans-CN']
+    zh: ['zh-Hans-CN']
   },
   localePath
 }

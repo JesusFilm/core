@@ -14,7 +14,7 @@ const supportedLocales = [
   'ru', // Russian
   'tr', // Turkish
   'zh', // Chinese
-  'zh-CN' // Chinese, Simplified
+  'zh-Hans-CN' // Chinese, Simplified
 ]
 
 interface LanguagePriority {
@@ -46,15 +46,11 @@ function getPreferredLanguage(
 
 function getSupportedLocale(input: string): string {
   const languageCode = input.split('-')[0]
-  const regionCode = input.split('-').slice(2).join('-')
-  const regionalCode = `${languageCode}-${regionCode}`
 
   const isSupported = (code: string): boolean => supportedLocales.includes(code)
 
   return isSupported(input)
     ? input
-    : isSupported(regionalCode)
-    ? regionalCode
     : isSupported(languageCode)
     ? languageCode
     : 'en'
