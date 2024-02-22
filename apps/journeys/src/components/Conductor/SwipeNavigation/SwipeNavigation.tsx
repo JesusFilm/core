@@ -186,7 +186,14 @@ export function SwipeNavigation({
   })
 
   return (
-    <Box {...swipeHandlers} sx={{ height: 'inherit', width: 'inherit' }}>
+    <Box
+      sx={{
+        height: 'inherit',
+        maxHeight: 'inherit',
+        overflow: 'hidden'
+      }}
+      {...swipeHandlers}
+    >
       {children}
     </Box>
   )

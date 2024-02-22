@@ -17,6 +17,8 @@ import {
 
 import { TrashedTemplateList } from '.'
 
+import '../../../../test/i18n'
+
 const TrashedTemplateListStory: Meta<typeof TrashedTemplateList> = {
   component: TrashedTemplateList,
   title: 'Journeys-Admin/TemplateList/TrashedTemplateList',

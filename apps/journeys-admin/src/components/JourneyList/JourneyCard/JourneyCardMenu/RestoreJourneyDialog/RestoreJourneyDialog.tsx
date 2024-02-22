@@ -60,7 +60,7 @@ export function RestoreJourneyDialog({
     try {
       await restoreJourney()
       handleClose()
-      enqueueSnackbar('Journey Restored', {
+      enqueueSnackbar(t('Journey Restored'), {
         variant: 'success',
         preventDuplicate: true
       })
@@ -77,11 +77,11 @@ export function RestoreJourneyDialog({
     <Dialog
       open={open}
       onClose={handleClose}
-      dialogTitle={{ title: 'Restore Journey?', closeButton: true }}
+      dialogTitle={{ title: t('Restore Journey?'), closeButton: true }}
       dialogAction={{
         onSubmit: handleRestore,
-        submitLabel: 'Restore',
-        closeLabel: 'Cancel'
+        submitLabel: t('Restore'),
+        closeLabel: t('Cancel')
       }}
       testId="RestoreJourneyDialog"
     >

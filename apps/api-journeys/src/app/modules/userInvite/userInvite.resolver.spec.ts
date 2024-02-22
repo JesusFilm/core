@@ -9,6 +9,7 @@ import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserInviteResolver } from './userInvite.resolver'
+import { UserInviteService } from './userInvite.service'
 
 describe('UserInviteResolver', () => {
   let resolver: UserInviteResolver,
@@ -41,11 +42,19 @@ describe('UserInviteResolver', () => {
     journey
   }
 
+  const userInviteService = {
+    provide: UserInviteService,
+    useFactory: () => ({
+      sendEmail: jest.fn().mockResolvedValue(null)
+    })
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         UserInviteResolver,
+        userInviteService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -106,6 +115,14 @@ describe('UserInviteResolver', () => {
       email: 'brian.smith@example.com'
     }
 
+    const user = {
+      id: 'userId',
+      firstName: 'Joe',
+      lastName: 'Smith',
+      email: 'jsmith@example.com',
+      emailVerified: true
+    }
+
     it('creates a user team invite', async () => {
       prismaService.$transaction.mockImplementationOnce(
         async (cb) => await cb(prismaService)
@@ -113,7 +130,7 @@ describe('UserInviteResolver', () => {
       prismaService.userInvite.upsert.mockResolvedValueOnce(
         userInviteWithUserTeam
       )
-      await resolver.userInviteCreate(ability, 'userId', 'journeyId', input)
+      await resolver.userInviteCreate(ability, user, 'journeyId', input)
       expect(prismaService.userInvite.upsert).toHaveBeenCalledWith({
         where: {
           journeyId_email: {
@@ -134,6 +151,7 @@ describe('UserInviteResolver', () => {
         include: {
           journey: {
             include: {
+              primaryImageBlock: true,
               team: {
                 include: { userTeams: true }
               },
@@ -150,7 +168,7 @@ describe('UserInviteResolver', () => {
       )
       prismaService.userInvite.upsert.mockResolvedValueOnce(userInvite)
       await expect(
-        resolver.userInviteCreate(ability, 'userId', 'journeyId', input)
+        resolver.userInviteCreate(ability, user, 'journeyId', input)
       ).rejects.toThrow('user is not allowed to create userInvite')
     })
   })
@@ -190,7 +208,8 @@ describe('UserInviteResolver', () => {
       const user = {
         id: 'userId',
         firstName: 'Robert',
-        email: 'robert.smith@example.com'
+        email: 'robert.smith@example.com',
+        emailVerified: true
       }
       const userInvite: UserInvite = {
         id: 'inviteId1',

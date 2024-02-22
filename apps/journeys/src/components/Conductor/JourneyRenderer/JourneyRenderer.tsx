@@ -47,12 +47,11 @@ export function JourneyRenderer(): ReactElement {
           block.id === nextBlock?.id || block.id === previousBlock?.id
 
         if (isCurrent) {
-          cardSx.height = 'inherit'
+          cardSx.height = '100%'
           cardSx.width = 'inherit'
           cardSx.position = 'relative'
           cardSx.display = 'block'
         } else if (isPreRender) {
-          cardSx.height = '-webkit-fill-available;'
           cardSx.width = '-webkit-fill-available;'
         }
 
@@ -65,12 +64,16 @@ export function JourneyRenderer(): ReactElement {
             <Box
               className={isCurrent ? 'active-card' : ''}
               onClick={() => setShowNavigation(true)}
-              sx={{ ...cardSx }}
+              sx={{
+                ...cardSx
+              }}
             >
               {isCurrent || isPreRender ? (
                 <Box
                   data-testid={`journey-card-${block.id}`}
-                  sx={{ height: 'inherit', width: 'inherit' }}
+                  sx={{
+                    height: '100%'
+                  }}
                 >
                   <BlockRenderer block={block} />
                 </Box>

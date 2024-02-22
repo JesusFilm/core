@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
@@ -20,6 +21,7 @@ interface EventsCardProps {
 }
 
 export function EventsCard({ journey }: EventsCardProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [open, setOpen] = useState(false)
 
   function handleOpen(): void {
@@ -82,8 +84,12 @@ export function EventsCard({ journey }: EventsCardProps): ReactElement {
                     handleClick={handleOpen}
                     value={
                       timelineItem.length === 1
-                        ? `${timelineItem.length} more event`
-                        : `${timelineItem.length} more events`
+                        ? t('{{ length }} more event', {
+                            length: timelineItem.length
+                          })
+                        : t('{{ length }} more events', {
+                            length: timelineItem.length
+                          })
                     }
                   />
                 </Collapse>
@@ -104,7 +110,7 @@ export function EventsCard({ journey }: EventsCardProps): ReactElement {
                   timelineItem.event.__typename === 'JourneyViewEvent' && (
                     <GenericEvent
                       icon={<AlertCircleIcon />}
-                      value="User left journey with no actions"
+                      value={t('User left journey with no actions')}
                     />
                   )}
                 <TimelineEvent

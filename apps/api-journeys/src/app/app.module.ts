@@ -4,6 +4,7 @@ import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
+import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
@@ -11,11 +12,13 @@ import { LoggerModule } from 'nestjs-pino'
 
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
+import { EmailModule } from './modules/email/email.module'
 import { EventModule } from './modules/event/event.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'
+import { JourneysEmailPreferenceModule } from './modules/journeysEmailPreference/journeysEmailPreference.module'
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 import { TeamModule } from './modules/team/team.module'
 import { UserInviteModule } from './modules/userInvite/userInvite.module'
@@ -29,6 +32,8 @@ import { VisitorModule } from './modules/visitor/visitor.module'
   imports: [
     ActionModule,
     BlockModule,
+    EmailModule,
+    JourneysEmailPreferenceModule,
     EventModule,
     HostModule,
     JourneyModule,
@@ -42,6 +47,12 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     UserTeamModule,
     UserTeamInviteModule,
     VisitorModule,
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_URL ?? 'redis',
+        port: 6379
+      }
+    }),
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths:

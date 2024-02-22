@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -24,6 +25,7 @@ export const BUTTON_BLOCK_UPDATE = gql`
 `
 
 export function Size(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [buttonBlockUpdate] =
     useMutation<ButtonBlockUpdateSize>(BUTTON_BLOCK_UPDATE)
 
@@ -55,15 +57,15 @@ export function Size(): ReactElement {
   const options = [
     {
       value: ButtonSize.small,
-      label: 'Small'
+      label: t('Small')
     },
     {
       value: ButtonSize.medium,
-      label: 'Medium'
+      label: t('Medium')
     },
     {
       value: ButtonSize.large,
-      label: 'Large'
+      label: t('Large')
     }
   ]
 
