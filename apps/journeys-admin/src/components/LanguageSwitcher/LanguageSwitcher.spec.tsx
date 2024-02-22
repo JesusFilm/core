@@ -16,7 +16,17 @@ jest.mock('react-i18next', () => ({
       i18n: {
         language: 'en',
         options: {
-          locales: ['en', 'es', 'fr', 'id', 'ja', 'ru', 'tr', 'zh', 'zh-CN']
+          locales: [
+            'en',
+            'es',
+            'fr',
+            'id',
+            'ja',
+            'ru',
+            'tr',
+            'zh',
+            'zh-hans-CN'
+          ]
         }
       }
     }
@@ -43,9 +53,9 @@ describe('LanguageSwitcher', () => {
     expect(getByText('Change Language')).toBeInTheDocument()
     fireEvent.mouseDown(getByRole('button', { name: 'English' }))
     await waitFor(() => {
-      fireEvent.click(getByText('Chinese (China)'))
+      fireEvent.click(getByText('Simplified Chinese (China)'))
     })
-    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'zh-CN' })
+    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'zh-hans-CN' })
   })
 
   it('should revert back to previous language', async () => {
@@ -61,8 +71,10 @@ describe('LanguageSwitcher', () => {
 
     expect(getByText('Change Language')).toBeInTheDocument()
     fireEvent.mouseDown(getByRole('button', { name: 'English' }))
-    await waitFor(() => fireEvent.click(getByText('Chinese (China)')))
-    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'zh-CN' })
+    await waitFor(() =>
+      fireEvent.click(getByText('Simplified Chinese (China)'))
+    )
+    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'zh-hans-CN' })
     expect(
       getByText('Are you sure you want to change language?')
     ).toBeInTheDocument()
