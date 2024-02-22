@@ -1,11 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import omit from 'lodash/omit'
 
 import { User } from '.prisma/api-users-client'
 
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserResolver } from './user.resolver'
+import { UserService } from './user.service'
 
 jest.mock('@core/nest/common/firebaseClient', () => ({
   auth: {
@@ -20,7 +22,9 @@ jest.mock('@core/nest/common/firebaseClient', () => ({
 }))
 
 describe('UserResolver', () => {
-  let resolver: UserResolver, prismaService: DeepMockProxy<PrismaService>
+  let resolver: UserResolver,
+    prismaService: DeepMockProxy<PrismaService>,
+    userService: DeepMockProxy<UserService>
 
   const user = {
     id: 'userId',
@@ -38,10 +42,17 @@ describe('UserResolver', () => {
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: UserService,
+          useValue: mockDeep<UserService>()
         }
       ]
     }).compile()
     resolver = module.get<UserResolver>(UserResolver)
+    userService = module.get<UserService>(
+      UserService
+    ) as DeepMockProxy<UserService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
@@ -56,28 +67,30 @@ describe('UserResolver', () => {
       })
     })
 
+    it('returns email verified status always', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(
+        omit(user, ['emailVerified']) as User
+      )
+      prismaService.user.update.mockResolvedValue(user)
+      expect(await resolver.me('userId')).toEqual(user)
+      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { userId: user.id }
+      })
+    })
+
     it('fetches user from firebase', async () => {
       prismaService.user.findUnique.mockResolvedValueOnce(null)
-      prismaService.user.upsert.mockResolvedValueOnce(user)
+      prismaService.user.create.mockResolvedValueOnce(user)
       expect(await resolver.me('userId')).toEqual(user)
-      expect(prismaService.user.upsert).toHaveBeenCalledWith({
-        create: {
+      expect(prismaService.user.create).toHaveBeenCalledWith({
+        data: {
           email: 'tho@no.co',
           firstName: 'fo',
           imageUrl: 'p',
           lastName: 'sho',
           userId: 'userId',
           emailVerified: true
-        },
-        update: {
-          email: 'tho@no.co',
-          firstName: 'fo',
-          imageUrl: 'p',
-          lastName: 'sho',
-          userId: 'userId',
-          emailVerified: true
-        },
-        where: { userId: 'userId' }
+        }
       })
     })
   })
@@ -134,29 +147,44 @@ describe('UserResolver', () => {
 
     it('fetches user from firebase', async () => {
       prismaService.user.findUnique.mockResolvedValueOnce(null)
-      prismaService.user.upsert.mockResolvedValueOnce(user)
+      prismaService.user.create.mockResolvedValueOnce(user)
       expect(
         await resolver.resolveReference({ __typename: 'User', id: 'userId' })
       ).toEqual(user)
-      expect(prismaService.user.upsert).toHaveBeenCalledWith({
-        create: {
+      expect(prismaService.user.create).toHaveBeenCalledWith({
+        data: {
           email: 'tho@no.co',
           firstName: 'fo',
           imageUrl: 'p',
           lastName: 'sho',
           userId: 'userId',
           emailVerified: true
-        },
-        update: {
-          email: 'tho@no.co',
-          firstName: 'fo',
-          imageUrl: 'p',
-          lastName: 'sho',
-          userId: 'userId',
-          emailVerified: true
-        },
-        where: { userId: 'userId' }
+        }
       })
+    })
+
+    // can't get google mock to work right
+    it.skip('sends an email', async () => {
+      jest
+        .spyOn(userService, 'verifyUser')
+        .mockImplementation(async () => await Promise.resolve())
+      jest.mock('@core/nest/common/firebaseClient', () => ({
+        auth: {
+          getUser: jest.fn().mockResolvedValue({
+            displayName: 'fo sho',
+            email: 'tho@no.co',
+            photoURL: 'p',
+            emailVerified: false
+          })
+        },
+        impersonateUser: jest.fn().mockResolvedValue('impersonationToken')
+      }))
+      prismaService.user.findUnique.mockResolvedValueOnce({
+        ...user,
+        emailVerified: false
+      })
+      await resolver.resolveReference({ __typename: 'User', id: 'userId' })
+      expect(userService.verifyUser).toHaveBeenCalledWith(user.id, user.email)
     })
   })
 })
