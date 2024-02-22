@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix types
-
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
 

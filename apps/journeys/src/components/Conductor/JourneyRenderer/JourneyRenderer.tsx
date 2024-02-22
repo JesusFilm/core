@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix spacing card edge and content
-
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import { SxProps } from '@mui/material/styles'

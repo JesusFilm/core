@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix types
-
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
