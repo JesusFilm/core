@@ -13,9 +13,10 @@ describe('ResetPasswordSentPage', () => {
 
     expect(getByText('Check your email')).toBeInTheDocument()
     expect(
-      getByText('Follow the instructions sent to', { exact: false })
+      getByText('Follow the instructions sent to test@exampleemail.com', {
+        exact: false
+      })
     ).toBeInTheDocument()
-    expect(getByText('test@exampleemail.com')).toBeInTheDocument()
     expect(
       getByText('to recover your password', { exact: false })
     ).toBeInTheDocument()
