@@ -54,7 +54,7 @@ describe('VideoControls', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
+        <VideoControls player={player} startAt={0} endAt={10} activeStep />
       </MockedProvider>
     )
 
@@ -76,7 +76,7 @@ describe('VideoControls', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
+        <VideoControls player={player} startAt={0} endAt={10} activeStep />
       </MockedProvider>
     )
 
@@ -100,7 +100,7 @@ describe('VideoControls', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
+        <VideoControls player={player} startAt={0} endAt={10} activeStep />
       </MockedProvider>
     )
 
@@ -123,7 +123,7 @@ describe('VideoControls', () => {
       .mockImplementationOnce(() => player)
     const { getByRole } = render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
+        <VideoControls player={player} startAt={0} endAt={10} activeStep />
       </MockedProvider>
     )
 
@@ -143,7 +143,7 @@ describe('VideoControls', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
+        <VideoControls player={player} startAt={0} endAt={10} activeStep />
       </MockedProvider>
     )
 
@@ -163,7 +163,7 @@ describe('VideoControls', () => {
 
       const { getByRole } = render(
         <MockedProvider>
-          <VideoControls player={player} startAt={0} endAt={10} />
+          <VideoControls player={player} startAt={0} endAt={10} activeStep />
         </MockedProvider>
       )
 
@@ -184,7 +184,7 @@ describe('VideoControls', () => {
 
       const { getByRole } = render(
         <MockedProvider>
-          <VideoControls player={player} startAt={0} endAt={10} />
+          <VideoControls player={player} startAt={0} endAt={10} activeStep />
         </MockedProvider>
       )
 
@@ -205,7 +205,7 @@ describe('VideoControls', () => {
 
       const { getByRole } = render(
         <MockedProvider>
-          <VideoControls player={player} startAt={0} endAt={10} />
+          <VideoControls player={player} startAt={0} endAt={10} activeStep />
         </MockedProvider>
       )
 
@@ -222,7 +222,7 @@ describe('VideoControls', () => {
 
       const { getByRole } = render(
         <MockedProvider>
-          <VideoControls player={player} startAt={0} endAt={10} />
+          <VideoControls player={player} startAt={0} endAt={10} activeStep />
         </MockedProvider>
       )
 
@@ -246,7 +246,12 @@ describe('VideoControls', () => {
         <MockedProvider>
           <div className="step active-card">
             <div className="card MuiPaper-root">
-              <VideoControls player={player} startAt={0} endAt={10} />
+              <VideoControls
+                player={player}
+                startAt={0}
+                endAt={10}
+                activeStep
+              />
             </div>
           </div>
         </MockedProvider>
@@ -266,7 +271,7 @@ describe('VideoControls', () => {
 
       const { getByRole } = render(
         <MockedProvider>
-          <VideoControls player={player} startAt={0} endAt={10} />
+          <VideoControls player={player} startAt={0} endAt={10} activeStep />
         </MockedProvider>
       )
 

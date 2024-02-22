@@ -265,6 +265,7 @@ export function Video({
                 loading={loading}
                 autoplay={autoplay ?? false}
                 muted={muted ?? false}
+                activeStep={activeStep}
               />
             </ThemeProvider>
           )}
