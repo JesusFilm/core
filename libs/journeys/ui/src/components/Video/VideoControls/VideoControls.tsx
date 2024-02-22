@@ -189,6 +189,14 @@ export function VideoControls({
       } else {
         setShowHeaderFooter(!fullscreen)
       }
+
+      if (!fullscreen && variant === 'embed') {
+        player.pause()
+      }
+
+      if (fullscreen && variant === 'embed') {
+        void player.play()
+      }
     }
 
     if (fscreen.fullscreenEnabled) {
@@ -203,7 +211,14 @@ export function VideoControls({
         player.off('fullscreenchange', handleFullscreenChange)
       }
     }
-  }, [player, isYoutube, playing, setShowHeaderFooter, setShowNavigation])
+  }, [
+    player,
+    isYoutube,
+    playing,
+    setShowHeaderFooter,
+    setShowNavigation,
+    variant
+  ])
 
   function handlePlay(): void {
     if (!playing) {
