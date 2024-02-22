@@ -19,9 +19,10 @@ export function ResetPasswordSentPage({
       <Stack gap={4}>
         <Stack>
           <Typography>
-            {t('Follow the instructions sent to ')}
-            <b>{userEmail}</b>
-            {t(' to recover your password')}
+            {t(
+              'Follow the instructions sent to {{ userEmail }} to recover your password',
+              { userEmail }
+            )}
           </Typography>
         </Stack>
         <Button
