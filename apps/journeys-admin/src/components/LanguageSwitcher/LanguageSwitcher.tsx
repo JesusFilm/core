@@ -61,7 +61,7 @@ export function LanguageSwitcher({
 
     if (supportedLanguageCodes == null) return
     const formattedLanguages = supportedLanguageCodes
-      .filter((languageCode) => languageCode.toLocaleLowerCase() !== 'zh-cn')
+      .filter((languageCode) => languageCode !== 'zh')
       .map((languageCode): Language => {
         const nativeName = new Intl.DisplayNames([currentLanguageCode], {
           type: 'language'

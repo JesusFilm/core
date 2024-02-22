@@ -43,9 +43,9 @@ describe('LanguageSwitcher', () => {
     expect(getByText('Change Language')).toBeInTheDocument()
     fireEvent.mouseDown(getByRole('button', { name: 'English' }))
     await waitFor(() => {
-      fireEvent.click(getByText('Chinese'))
+      fireEvent.click(getByText('Chinese (China)'))
     })
-    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'zh' })
+    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'zh-CN' })
   })
 
   it('should revert back to previous language', async () => {
@@ -61,8 +61,8 @@ describe('LanguageSwitcher', () => {
 
     expect(getByText('Change Language')).toBeInTheDocument()
     fireEvent.mouseDown(getByRole('button', { name: 'English' }))
-    await waitFor(() => fireEvent.click(getByText('Chinese')))
-    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'zh' })
+    await waitFor(() => fireEvent.click(getByText('Chinese (China)')))
+    expect(push).toHaveBeenCalledWith('/', '/', { locale: 'zh-CN' })
     expect(
       getByText('Are you sure you want to change language?')
     ).toBeInTheDocument()
