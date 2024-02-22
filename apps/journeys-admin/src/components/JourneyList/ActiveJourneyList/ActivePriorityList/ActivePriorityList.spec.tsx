@@ -13,15 +13,7 @@ import {
   pendingActionJourney
 } from './ActiveJourneyListData'
 import { ActivePriorityList } from './ActivePriorityList'
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
+import '../../../../../test/i18n'
 
 describe('ActivePriorityList', () => {
   it('should show journeyCard in default priority for owners', () => {

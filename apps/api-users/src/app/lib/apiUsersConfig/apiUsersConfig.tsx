@@ -11,7 +11,7 @@ export const apiUsersConfig = {
   decorators: [
     (Story: Parameters<Decorator>[0]) => (
       <SnackbarProvider>
-        <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.dark}>
+        <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
           <Story />
         </ThemeProvider>
       </SnackbarProvider>
@@ -19,7 +19,7 @@ export const apiUsersConfig = {
   ],
   parameters: {
     ...sharedUiConfig.parameters,
-    theme: 'light'
+    layout: 'fullscreen'
   }
 }
 

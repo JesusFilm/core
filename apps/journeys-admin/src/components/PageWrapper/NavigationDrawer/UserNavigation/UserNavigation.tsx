@@ -119,7 +119,10 @@ export function UserNavigation({
             <ListItemIcon>
               <BoxIcon />
             </ListItemIcon>
-            <ListItemText primary={t('Publisher')} />
+            <ListItemText
+              primary={t('Publisher')}
+              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            />
           </ListItemButton>
         </NextLink>
       )}
@@ -131,7 +134,10 @@ export function UserNavigation({
           <ListItemIcon>
             <UserProfile3Icon />
           </ListItemIcon>
-          <ListItemText primary={t('Impersonate')} />
+          <ListItemText
+            primary={t('Impersonate')}
+            primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+          />
         </ListItemButton>
       )}
       <ListItemButton
@@ -145,7 +151,10 @@ export function UserNavigation({
             sx={{ width: 24, height: 24 }}
           />
         </ListItemIcon>
-        <ListItemText primary={t('Profile')} />
+        <ListItemText
+          primary={t('Profile')}
+          primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+        />
       </ListItemButton>
       {profileAnchorEl !== undefined && (
         <UserMenu

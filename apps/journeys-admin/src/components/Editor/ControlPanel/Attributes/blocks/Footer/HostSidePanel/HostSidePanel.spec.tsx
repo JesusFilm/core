@@ -15,17 +15,9 @@ import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { UPDATE_JOURNEY_HOST } from './HostForm/HostTitleFieldForm/HostTitleFieldForm'
 import { GET_ALL_TEAM_HOSTS, HostSidePanel } from './HostSidePanel'
+import '../../../../../../../../test/i18n'
 
 const user1 = { id: 'userId', email: 'admin@email.com' }
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
 
 jest.mock('../../../../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,

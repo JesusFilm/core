@@ -30,6 +30,7 @@ export function ActionsList({
   actions,
   goalLabel
 }: ActionsListProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
@@ -42,7 +43,7 @@ export function ActionsList({
     dispatch({
       type: 'SetDrawerPropsAction',
       mobileOpen: true,
-      title: 'Goal Details',
+      title: t('Goal Details'),
       children: (
         <ActionDetails
           url={url}
@@ -73,8 +74,6 @@ export function ActionsList({
     return () => window.removeEventListener('resize', handleResize)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAction])
-
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <>
