@@ -24,7 +24,7 @@ locals {
       port = local.port
     })
     auto_scaling = {
-      max_capacity = 4
+      max_capacity = 2
       min_capacity = 1
       cpu = {
         target_value = 75

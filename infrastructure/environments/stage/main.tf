@@ -138,7 +138,7 @@ module "api-nexus" {
   source                = "../../../apps/api-nexus/infrastructure"
   ecs_config            = local.internal_ecs_config
   env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_media_stage_token.value
+  doppler_token         = data.aws_ssm_parameter.doppler_api_nexus_stage_token.value
   subnet_group_name     = module.stage.vpc.db_subnet_group_name
   vpc_security_group_id = module.stage.private_rds_security_group_id
 }
