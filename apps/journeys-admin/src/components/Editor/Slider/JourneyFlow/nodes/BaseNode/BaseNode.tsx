@@ -13,6 +13,8 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 
+import { HoverMenu } from './HoverMenu'
+
 interface BaseNodeProps {
   isTargetConnectable?: boolean
   isSourceConnectable?: 'arrow' | boolean
@@ -20,6 +22,8 @@ interface BaseNodeProps {
     params: { target: string } | Parameters<OnConnect>[0]
   ) => void
   selected?: 'descendant' | boolean
+  isStepBlock?: boolean
+  setSelectedStep?: () => void
   children?:
     | ((context: { selected: 'descendant' | boolean }) => ReactNode)
     | ReactNode
@@ -30,10 +34,22 @@ export function BaseNode({
   isSourceConnectable = false,
   onSourceConnect,
   selected = false,
+  isStepBlock = false,
+  setSelectedStep,
   children
 }: BaseNodeProps): ReactElement {
+  console.log({
+    isTargetConnectable,
+    isSourceConnectable,
+    onSourceConnect,
+    selected,
+    isStepBlock,
+    children
+  })
   const { journey } = useJourney()
   const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
+
+  // console.log()
 
   const handleClick = async (): Promise<void> => {
     if (journey == null) return
@@ -163,6 +179,11 @@ export function BaseNode({
             />
           )}
         </>
+      )}
+      {isStepBlock && (
+        <Box className="show-on-hover">
+          <HoverMenu handleClick={setSelectedStep} />
+        </Box>
       )}
     </Box>
   )

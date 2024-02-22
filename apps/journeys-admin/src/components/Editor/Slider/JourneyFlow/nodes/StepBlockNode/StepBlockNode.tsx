@@ -77,6 +77,8 @@ export function StepBlockNode({
       selected={
         activeContent === ActiveContent.Canvas && selectedStep?.id === step.id
       }
+      isStepBlock
+      setSelectedStep={handleClick}
       onSourceConnect={handleSourceConnect}
     >
       {({ selected }) => (
@@ -96,6 +98,7 @@ export function StepBlockNode({
           onClick={handleClick}
         >
           <CardContent
+            data-testid="Step block"
             sx={{
               display: 'flex',
               flexDirection: 'row',
