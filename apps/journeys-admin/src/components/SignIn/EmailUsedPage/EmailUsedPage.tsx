@@ -20,7 +20,7 @@ export function EmailUsedPage({
         {t('You already have an account')}
       </Typography>
       <Typography>
-        {t("You've already used {{ userEmail }}.", { userEmail })}{' '}
+        {t("You've already used {{userEmail}}.", { userEmail })}{' '}
         {t('Sign in with {{service}} to continue', {
           service: activePage === 'google.com' ? t('Google') : t('Facebook')
         })}

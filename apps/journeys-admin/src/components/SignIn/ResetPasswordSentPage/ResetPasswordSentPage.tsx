@@ -20,7 +20,7 @@ export function ResetPasswordSentPage({
         <Stack>
           <Typography>
             {t(
-              'Follow the instructions sent to {{ userEmail }} to recover your password',
+              'Follow the instructions sent to {{userEmail}} to recover your password',
               { userEmail }
             )}
           </Typography>
