@@ -172,7 +172,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   ...mobileNotchStyling,
                   display: {
                     xs: showHeaderFooter ? 'flex' : 'none',
-                    sm: 'flex'
+                    sm: showHeaderFooter ? 'flex' : 'none',
+                    md: showHeaderFooter ? 'flex' : 'none',
+                    lg: 'flex'
                   }
                 }}
               />
