@@ -6,33 +6,18 @@ import { ReactElement, useEffect, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { JourneyProvider, useJourney } from '@core/journeys/ui/JourneyProvider'
-import { StepFooter } from '@core/journeys/ui/StepFooter'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Conductor } from '../Conductor'
 
-import { ButtonWrapper } from './ButtonWrapper/ButtonWrapper'
-import { RadioOptionWrapper } from './RadioOptionWrapper/RadioOptionWrapper'
-import { VideoWrapper } from './VideoWrapper/VideoWrapper'
+import { ClickableCard } from './ClickableCard'
 
 interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
-  themeMode: ThemeMode
-  rtl: boolean
-  locale: string
 }
 
 export function EmbeddedPreview({
-  blocks,
-  themeMode,
-  rtl,
-  locale
+  blocks
 }: EmbeddedPreviewProps): ReactElement {
-  const { journey, variant } = useJourney()
-
   const viewportHeight = use100vh()
   const [isFullWindow, setIsFullWindow] = useState(false)
 
@@ -80,72 +65,6 @@ export function EmbeddedPreview({
     }
   }
 
-  const ClickableCard = (): ReactElement => (
-    <Box
-      data-testid="clickable-card-embed"
-      sx={{
-        flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        cursor: 'pointer',
-        zIndex: 10,
-        height: '100%'
-      }}
-      onClick={requestFullscreen}
-    >
-      <Box
-        sx={{
-          mx: 'auto',
-          mb: 0,
-          height: 6.5,
-          width: '82.5%',
-          backgroundColor: '#AAACBB',
-          borderRadius: '16px 16px 0 0',
-          opacity: 0.3
-        }}
-      />
-      <Box
-        sx={{
-          mx: 'auto',
-          mb: 0,
-          height: 6.5,
-          width: '90%',
-          backgroundColor: '#AAACBB',
-          borderRadius: '16px 16px 0 0',
-          opacity: 0.6
-        }}
-      />
-      <Box
-        sx={{
-          height: '100%',
-          width: '100%',
-          borderRadius: '16px',
-          overflow: 'hidden',
-          position: 'relative'
-        }}
-      >
-        <BlockRenderer
-          data-testid="embedded-preview-block-renderer"
-          block={blocks?.[0]}
-          wrappers={{
-            ButtonWrapper,
-            RadioOptionWrapper,
-            VideoWrapper
-          }}
-        />
-        <ThemeProvider
-          themeName={ThemeName.journeyUi}
-          themeMode={themeMode}
-          rtl={rtl}
-          locale={locale}
-          nested
-        >
-          <StepFooter />
-        </ThemeProvider>
-      </Box>
-    </Box>
-  )
-
   return (
     <>
       <style jsx global>{`
@@ -165,16 +84,14 @@ export function EmbeddedPreview({
           minHeight: '-webkit-fill-available'
         }}
       >
-        {!isFullWindow ? (
-          <ClickableCard />
-        ) : (
-          <>
+        <ClickableCard onClick={requestFullscreen} fullscreen={isFullWindow}>
+          {isFullWindow && (
             <IconButton
               data-testid="CloseIconButton"
               sx={{
                 position: 'absolute',
                 top: 0,
-                left: variant === 'default' ? 'env(safe-area-inset-left)' : 0,
+                left: 'env(safe-area-inset-left)',
                 zIndex: 1000,
                 color: 'text.primary'
               }}
@@ -182,11 +99,9 @@ export function EmbeddedPreview({
             >
               <Close />
             </IconButton>
-            <JourneyProvider value={{ journey, variant: 'default' }}>
-              <Conductor blocks={blocks} />
-            </JourneyProvider>
-          </>
-        )}
+          )}
+          <Conductor blocks={blocks} />
+        </ClickableCard>
       </Box>
     </>
   )
