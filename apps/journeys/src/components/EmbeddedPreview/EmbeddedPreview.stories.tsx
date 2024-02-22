@@ -111,20 +111,14 @@ const Template: StoryObj<typeof EmbeddedPreview> = {
 export const Default = {
   ...Template,
   args: {
-    blocks: basic,
-    themeMode: ThemeMode.light,
-    rtl: false,
-    locale: 'locale'
+    blocks: basic
   }
 }
 
 export const Opened = {
   ...Template,
   args: {
-    blocks: imageBlocks,
-    themeMode: ThemeMode.light,
-    rtl: false,
-    locale: 'locale'
+    blocks: imageBlocks
   },
   play: async () => {
     await waitFor(
@@ -141,50 +135,35 @@ export const Opened = {
 export const WithContent = {
   ...Template,
   args: {
-    blocks: imageBlocks,
-    themeMode: ThemeMode.light,
-    rtl: false,
-    locale: 'locale'
+    blocks: imageBlocks
   }
 }
 
 export const WithVideo = {
   ...Template,
   args: {
-    blocks: videoBlocks,
-    themeMode: ThemeMode.light,
-    rtl: false,
-    locale: 'locale'
+    blocks: videoBlocks
   }
 }
 
 export const WithVideoNoPoster = {
   ...Template,
   args: {
-    blocks: videoBlocksNoPoster,
-    themeMode: ThemeMode.light,
-    rtl: false,
-    locale: 'locale'
+    blocks: videoBlocksNoPoster
   }
 }
 
 export const WithVideoNoVideo = {
   ...Template,
   args: {
-    blocks: videoBlocksNoVideo,
-    themeMode: ThemeMode.light,
-    rtl: false,
-    locale: 'locale'
+    blocks: videoBlocksNoVideo
   }
 }
 
 export const WithVideoLoop = {
   ...Template,
   args: {
-    blocks: videoLoop,
-    themeMode: ThemeMode.light,
-    rtl: false,
-    locale: 'locale'
+    blocks: videoLoop
   },
   parameters: {
     chromatic: { disableSnapshot: true }
