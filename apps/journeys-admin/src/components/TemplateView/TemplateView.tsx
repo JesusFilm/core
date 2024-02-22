@@ -124,7 +124,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
               sx={{ display: { xs: 'flex', sm: 'none' } }}
             />
           )}
-          {journey?.strategySlug != null && (
+          {journey?.strategySlug != null && journey?.strategySlug !== '' && (
             <StrategySection
               strategySlug={journey?.strategySlug}
               variant="full"

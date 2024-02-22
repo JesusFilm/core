@@ -72,7 +72,7 @@ async function main(): Promise<void> {
     'Ramadan',
     'Halloween',
     'Festivals',
-    'Sport Events',
+    'Sports Events',
     'World Youth Day',
     "Valentine's Day",
     "Mother's & Women's Day",

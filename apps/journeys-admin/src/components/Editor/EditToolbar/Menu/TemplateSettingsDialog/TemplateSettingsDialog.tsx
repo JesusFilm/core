@@ -55,7 +55,7 @@ export function TemplateSettingsDialog({
       .test('valid-embed-url', t('Invalid embed link'), (value) => {
         if (value == null) return true
         const canvaRegex =
-          /^https:\/\/www\.canva\.com\/design\/[A-Za-z0-9]+\/(view|watch)$/
+          /^https:\/\/www\.canva\.com\/design\/[a-zA-Z0-9/-]+\/(view|watch)$/
 
         const googleSlidesRegex =
           /^https:\/\/docs\.google\.com\/presentation\/d\/e\/[A-Za-z0-9-_]+\/pub\?(start=true|start=false)&(loop=true|loop=false)&delayms=\d+$/
