@@ -12,6 +12,7 @@ export function VideoWrapper({ block }: WrapperProps): ReactElement {
         ...block,
         videoId: null
       }}
+      activeStep
     />
   ) : (
     <></>

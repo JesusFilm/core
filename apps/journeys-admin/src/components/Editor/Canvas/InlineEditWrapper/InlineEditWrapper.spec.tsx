@@ -264,6 +264,7 @@ describe('InlineEditWrapper', () => {
               Wrapper: SelectableWrapper,
               RadioOptionWrapper: InlineEditWrapper
             }}
+            activeStep
           />
         </InlineEditWrapper>
       </SelectableWrapper>
