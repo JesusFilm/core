@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix spacing between card and edge of screen
-
 import { gql, useMutation } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
@@ -158,8 +156,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           <StepHeader
             sx={{
               ...mobileNotchStyling,
-              opacity: { xs: showHeaderFooter ? '1' : '0', sm: '1' },
-              transition: theme.transitions.create('opacity')
+              display: { xs: showHeaderFooter ? 'flex' : 'none', sm: 'flex' }
             }}
           />
         )}
