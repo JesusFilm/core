@@ -1,0 +1,22 @@
+{
+  "Form": "形式",
+  "Name must be 2 characters or more": "姓名必须为 2 个字符或更多",
+  "Name must be 50 characters or less": "姓名必须少于或等于 50 个字符",
+  "Required": "必需的",
+  "Please enter a valid email address": "请输入有效的电子邮件地址",
+  "Name": "姓名",
+  "Email": "电子邮件",
+  "Submit": "提交",
+  "Journey": "旅行",
+  "Copied to clipboard": "复制到剪贴板",
+  "Share": "分享",
+  "Copy Link": "复制链接",
+  "Facebook": "Facebook",
+  "Twitter": "推特",
+  "Report this content": "报告此内容",
+  "Terms & Conditions": "条款和条件",
+  "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "在本网站注册的所有个人身份信息将由旅程创建者处理：\"{{ teamTitle }}\"。",
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Untitled": "无标题",
+  "Step {{number}}": "步骤 {{number}}"
+}
