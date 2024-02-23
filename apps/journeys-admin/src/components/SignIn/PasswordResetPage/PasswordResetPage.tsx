@@ -16,7 +16,7 @@ export function PasswordResetPage({
   setActivePage
 }: PageProps): ReactElement {
   const auth = getAuth()
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const validationSchema = object().shape({
     email: string()
       .trim()

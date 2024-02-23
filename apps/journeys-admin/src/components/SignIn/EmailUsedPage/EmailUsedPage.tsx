@@ -13,7 +13,7 @@ export function EmailUsedPage({
   activePage,
   userEmail
 }: EmailUsedPageProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <Typography variant="h6" textAlign="left">

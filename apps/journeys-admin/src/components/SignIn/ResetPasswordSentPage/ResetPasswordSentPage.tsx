@@ -10,7 +10,7 @@ export function ResetPasswordSentPage({
   userEmail,
   setActivePage
 }: PageProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <Typography variant="h6" textAlign="left">

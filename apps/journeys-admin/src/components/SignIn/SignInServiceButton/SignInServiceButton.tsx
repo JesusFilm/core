@@ -19,7 +19,7 @@ interface SignInServiceButtonProps {
 export function SignInServiceButton({
   service
 }: SignInServiceButtonProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   async function handleSignIn(): Promise<void> {
     const auth = getAuth()
