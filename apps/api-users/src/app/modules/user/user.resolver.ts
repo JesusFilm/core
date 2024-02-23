@@ -51,7 +51,7 @@ export class UserResolver {
     @Args('id') id: string,
     @CurrentIPAddress() ipAddress: string,
     @Context()
-    context: { headers: Record<string, string>; req: { ip: string } }
+    context: { headers: Record<string, string> }
   ): Promise<User | null> {
     if (!isValidInterOp(context.headers['interop-token'], ipAddress)) {
       throw new GraphQLError('Invalid Interop Token')
@@ -62,10 +62,11 @@ export class UserResolver {
   @Query()
   async userByEmail(
     @Args('email') email: string,
+    @CurrentIPAddress() ipAddress: string,
     @Context()
-    context: { headers: Record<string, string>; req: { ip: string } }
+    context: { headers: Record<string, string> }
   ): Promise<User | null> {
-    if (!isValidInterOp(context.headers['interop-token'], context.req.ip)) {
+    if (!isValidInterOp(context.headers['interop-token'], ipAddress)) {
       throw new GraphQLError('Invalid Interop Token')
     }
     return await this.prismaService.user.findUnique({ where: { email } })
