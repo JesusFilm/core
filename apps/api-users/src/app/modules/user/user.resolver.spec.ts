@@ -6,7 +6,7 @@ import { User } from '.prisma/api-users-client'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-import { UserResolver } from './user.resolver'
+import { UserResolver, isValidInterOp, validateIpV4 } from './user.resolver'
 import { UserService } from './user.service'
 
 jest.mock('@core/nest/common/firebaseClient', () => ({
@@ -185,6 +185,32 @@ describe('UserResolver', () => {
       })
       await resolver.resolveReference({ __typename: 'User', id: 'userId' })
       expect(userService.verifyUser).toHaveBeenCalledWith(user.id, user.email)
+    })
+  })
+
+  describe('validateIpV4', () => {
+    it('is localhost', () => {
+      expect(validateIpV4(null)).toBe(true)
+    })
+
+    it('is internal ip', () => {
+      expect(validateIpV4('10.11.1.1')).toBe(true)
+    })
+
+    it('is proxied external ip', () => {
+      expect(validateIpV4('1.2.3.4, 10.1.1.1')).toBe(false)
+    })
+  })
+
+  describe('isValidInterOp', () => {
+    it('should be false', () => {
+      process.env.INTEROP_TOKEN = '123'
+      expect(isValidInterOp('1234', '10.1.2.3')).toBe(false)
+    })
+
+    it('should be true', () => {
+      process.env.INTEROP_TOKEN = '1234'
+      expect(isValidInterOp('1234', '10.1.2.3')).toBe(true)
     })
   })
 })

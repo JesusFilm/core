@@ -11,6 +11,7 @@ import { GraphQLError } from 'graphql'
 
 import { User } from '.prisma/api-users-client'
 import { auth, impersonateUser } from '@core/nest/common/firebaseClient'
+import { CurrentIPAddress } from '@core/nest/decorators/CurrentIPAddress'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
@@ -18,6 +19,19 @@ import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserService } from './user.service'
+
+export function validateIpV4(s: string | null): boolean {
+  if (s == null) return true // localhost
+
+  const match = s.match(/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/g)
+  const ip = match?.[0] ?? ''
+  return ip.startsWith('10.') || ip.startsWith('127.')
+}
+
+export function isValidInterOp(token: string, address: string): boolean {
+  const validIp = validateIpV4(address)
+  return token === process.env.INTEROP_TOKEN && validIp
+}
 
 @Resolver('User')
 export class UserResolver {
@@ -35,9 +49,11 @@ export class UserResolver {
   @Query()
   async user(
     @Args('id') id: string,
-    @Context() context: { headers: Record<string, string> }
+    @CurrentIPAddress() ipAddress: string,
+    @Context()
+    context: { headers: Record<string, string>; req: { ip: string } }
   ): Promise<User | null> {
-    if (context.headers['interop-token'] !== process.env.INTEROP_TOKEN) {
+    if (!isValidInterOp(context.headers['interop-token'], ipAddress)) {
       throw new GraphQLError('Invalid Interop Token')
     }
     return await this.prismaService.user.findUnique({ where: { userId: id } })
@@ -46,9 +62,10 @@ export class UserResolver {
   @Query()
   async userByEmail(
     @Args('email') email: string,
-    @Context() context: { headers: Record<string, string> }
+    @Context()
+    context: { headers: Record<string, string>; req: { ip: string } }
   ): Promise<User | null> {
-    if (context.headers['interop-token'] !== process.env.INTEROP_TOKEN) {
+    if (!isValidInterOp(context.headers['interop-token'], context.req.ip)) {
       throw new GraphQLError('Invalid Interop Token')
     }
     return await this.prismaService.user.findUnique({ where: { email } })
