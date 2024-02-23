@@ -18,33 +18,13 @@ export class LandingPage {
     await this.page.waitForTimeout(2000)
   }
 
-  async clickSignInWithEmail(): Promise<void> {
-    await this.page.locator('button[data-provider-id="password"]').click()
-
-    // If the email input is not visible, click the 'Sign in with email' button again
-    // as sometimes landing page load was still in flight even after clicking the button
-    // and landing page is loading again even after clicking the button
-    if (
-      !(await this.page
-        .locator('input[name="email"]')
-        .isVisible({ timeout: 8000 }))
-    ) {
-      await this.page.locator('button[data-provider-id="password"]').click()
-    }
-  }
-
   async signInWithEmailVisible(): Promise<void> {
-    await expect(
-      this.page.locator(
-        'button[data-provider-id="password"] span.firebaseui-idp-text-long'
-      )
-    ).toHaveText('Sign in with email')
+    await expect(this.page.locator('button[type="submit"]')).toHaveText(
+      'Sign in with email'
+    )
   }
 
   async isLandingPage(): Promise<boolean> {
-    return await isVisible(
-      this.page,
-      'button[data-provider-id="password"] span.firebaseui-idp-text-long'
-    )
+    return await isVisible(this.page, 'button[type="submit"]')
   }
 }

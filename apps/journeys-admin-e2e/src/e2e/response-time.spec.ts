@@ -12,7 +12,6 @@ test('Home page - response time test', async ({ page, browser }) => {
   const topNav = new TopNav(page)
   await browser.startTracing()
   await landingPage.goToAdminUrl()
-  await landingPage.clickSignInWithEmail()
 
   await loginPage.login()
 
