@@ -34,8 +34,21 @@ interface VideoControlProps {
 }
 
 function isIOS(): boolean {
+  if (typeof navigator === 'undefined') return false
+
   const userAgent = navigator.userAgent
   return /iPad|iPhone|Macintosh|iPod/.test(userAgent)
+}
+
+function iPhone(): boolean {
+  if (
+    typeof navigator === 'undefined' ||
+    typeof navigator.userAgent === 'undefined'
+  )
+    return false
+
+  const userAgent = navigator.userAgent
+  return userAgent.includes('iPhone')
 }
 
 export function VideoControls({
@@ -190,11 +203,11 @@ export function VideoControls({
         setShowHeaderFooter(!fullscreen)
       }
 
-      if (!fullscreen && variant === 'embed') {
+      if (!fullscreen && variant === 'embed' && !iPhone()) {
         player.pause()
       }
 
-      if (fullscreen && variant === 'embed') {
+      if (fullscreen && variant === 'embed' && !iPhone()) {
         void player.play()
       }
     }
@@ -233,7 +246,7 @@ export function VideoControls({
   }
 
   function handleFullscreen(): void {
-    if (variant === 'embed') return
+    if (variant === 'embed' && !iPhone()) return
     if (fullscreen) {
       if (fscreen.fullscreenEnabled) {
         void fscreen.exitFullscreen()
@@ -508,7 +521,7 @@ export function VideoControls({
                     }}
                   />
                 </Stack>
-                {variant !== 'embed' && (
+                {(variant !== 'embed' || iPhone()) && (
                   <IconButton
                     aria-label="fullscreen"
                     onClick={handleFullscreen}
