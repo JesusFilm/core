@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
 
 import { LandingPage } from '../pages/landing-page'
 
@@ -6,6 +6,7 @@ import { LandingPage } from '../pages/landing-page'
 This is just a sample test
 Test that 'journeys-admin' part of the URL
 */
+// eslint-disable-next-line playwright/expect-expect
 test('journeys-admin landing page vr test', async ({ page }) => {
   const landingPage = new LandingPage(page)
   await landingPage.goToAdminUrl()
