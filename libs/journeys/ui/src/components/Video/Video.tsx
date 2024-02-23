@@ -24,6 +24,7 @@ import {
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { useEditor } from '../../libs/EditorProvider'
+import { useJourney } from '../../libs/JourneyProvider'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoEvents } from '../VideoEvents'
 import { VideoTrigger } from '../VideoTrigger'
@@ -71,6 +72,7 @@ export function Video({
   action,
   objectFit
 }: TreeBlock<VideoFields>): ReactElement {
+  const { variant } = useJourney()
   const [loading, setLoading] = useState(true)
   const [showPoster, setShowPoster] = useState(true)
   const theme = useTheme()
@@ -175,7 +177,11 @@ export function Video({
 
     const handleVideoEnd = (): void => {
       setLoading(false)
-      if (player?.isFullscreen() === true && player != null) {
+      if (
+        player?.isFullscreen() === true &&
+        player != null &&
+        variant !== 'embed'
+      ) {
         void player.exitFullscreen()
       }
     }
@@ -199,7 +205,7 @@ export function Video({
         player.off('ended', handleVideoEnd)
       }
     }
-  }, [player, selectedBlock, startAt, autoplay, activeBlock, blockId])
+  }, [player, selectedBlock, startAt, autoplay, activeBlock, blockId, variant])
 
   // player.duration() can change after play
   useEffect(() => {

@@ -21,6 +21,7 @@ import Player from 'video.js/dist/types/player'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useBlocks } from '../../../libs/block'
+import { useJourney } from '../../../libs/JourneyProvider'
 
 interface VideoControlProps {
   player: Player
@@ -46,6 +47,7 @@ export function VideoControls({
   autoplay = false,
   muted: mute = false
 }: VideoControlProps): ReactElement {
+  const { variant } = useJourney()
   const [playing, setPlaying] = useState(false)
   const [active, setActive] = useState(true)
   const [displayTime, setDisplayTime] = useState('0:00')
@@ -187,6 +189,14 @@ export function VideoControls({
       } else {
         setShowHeaderFooter(!fullscreen)
       }
+
+      if (!fullscreen && variant === 'embed') {
+        player.pause()
+      }
+
+      if (fullscreen && variant === 'embed') {
+        void player.play()
+      }
     }
 
     if (fscreen.fullscreenEnabled) {
@@ -201,7 +211,14 @@ export function VideoControls({
         player.off('fullscreenchange', handleFullscreenChange)
       }
     }
-  }, [player, isYoutube, playing, setShowHeaderFooter, setShowNavigation])
+  }, [
+    player,
+    isYoutube,
+    playing,
+    setShowHeaderFooter,
+    setShowNavigation,
+    variant
+  ])
 
   function handlePlay(): void {
     if (!playing) {
@@ -216,6 +233,7 @@ export function VideoControls({
   }
 
   function handleFullscreen(): void {
+    if (variant === 'embed') return
     if (fullscreen) {
       if (fscreen.fullscreenEnabled) {
         void fscreen.exitFullscreen()
@@ -490,17 +508,19 @@ export function VideoControls({
                     }}
                   />
                 </Stack>
-                <IconButton
-                  aria-label="fullscreen"
-                  onClick={handleFullscreen}
-                  sx={{ py: 0, px: 2 }}
-                >
-                  {fullscreen ? (
-                    <FullscreenExitRounded />
-                  ) : (
-                    <FullscreenRounded />
-                  )}
-                </IconButton>
+                {variant !== 'embed' && (
+                  <IconButton
+                    aria-label="fullscreen"
+                    onClick={handleFullscreen}
+                    sx={{ py: 0, px: 2 }}
+                  >
+                    {fullscreen ? (
+                      <FullscreenExitRounded />
+                    ) : (
+                      <FullscreenRounded />
+                    )}
+                  </IconButton>
+                )}
               </Stack>
             </Stack>
             <Slider
