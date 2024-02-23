@@ -16,6 +16,17 @@ type VideoTriggerProps = (
   player?: Player
 }
 
+function iPhone(): boolean {
+  if (
+    typeof navigator === 'undefined' ||
+    typeof navigator.userAgent === 'undefined'
+  )
+    return false
+
+  const userAgent = navigator.userAgent
+  return userAgent.includes('iPhone')
+}
+
 export function VideoTrigger({
   player,
   triggerAction,
@@ -35,7 +46,7 @@ export function VideoTrigger({
           setTriggered(true)
           player.pause()
 
-          if (variant === 'embed') {
+          if (variant === 'embed' && !iPhone()) {
             handleAction(router, triggerAction)
             return
           }
