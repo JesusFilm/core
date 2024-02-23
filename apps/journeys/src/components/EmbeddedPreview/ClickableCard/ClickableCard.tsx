@@ -1,10 +1,22 @@
 import Box from '@mui/material/Box'
+import NoSsr from '@mui/material/NoSsr'
 import { ReactElement, ReactNode } from 'react'
 
 interface ClickableCardProps {
   children: ReactNode
   onClick?: () => void
   fullscreen?: boolean
+}
+
+function iPhone(): boolean {
+  if (
+    typeof navigator === 'undefined' ||
+    typeof navigator.userAgent === 'undefined'
+  )
+    return false
+
+  const userAgent = navigator.userAgent
+  return userAgent.includes('iPhone')
 }
 
 export function ClickableCard({
@@ -14,20 +26,24 @@ export function ClickableCard({
 }: ClickableCardProps): ReactElement {
   return (
     <>
-      <Box
-        data-testid="clickable-card-embed"
-        onClick={onClick}
-        sx={{
-          display: fullscreen === true ? 'none' : 'block',
-          cursor: 'pointer',
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          zIndex: 11
-        }}
-      />
+      <NoSsr>
+        {!iPhone() && (
+          <Box
+            data-testid="clickable-card-embed"
+            onClick={onClick}
+            sx={{
+              display: fullscreen === true ? 'none' : 'block',
+              cursor: 'pointer',
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              zIndex: 11
+            }}
+          />
+        )}
+      </NoSsr>
       <Box
         sx={{
           flexGrow: 1,
