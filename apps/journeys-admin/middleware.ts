@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 const PUBLIC_FILE_REGEX = /\.(.*)$/
 
 // update the fingerprint when updating cookies logic
-const COOKIE_FINGERPRINT = '00001'
+const COOKIE_FINGERPRINT = '00002'
 
 const supportedLocales = [
   'en', // English
@@ -14,7 +14,7 @@ const supportedLocales = [
   'ru', // Russian
   'tr', // Turkish
   'zh', // Chinese
-  'zh-CN' // Chinese, Simplified
+  'zh-Hans-CN' // Chinese, Simplified
 ]
 
 interface LanguagePriority {
@@ -46,15 +46,11 @@ function getPreferredLanguage(
 
 function getSupportedLocale(input: string): string {
   const languageCode = input.split('-')[0]
-  const regionCode = input.split('-').slice(2).join('-')
-  const regionalCode = `${languageCode}-${regionCode}`
 
   const isSupported = (code: string): boolean => supportedLocales.includes(code)
 
   return isSupported(input)
     ? input
-    : isSupported(regionalCode)
-    ? regionalCode
     : isSupported(languageCode)
     ? languageCode
     : 'en'
