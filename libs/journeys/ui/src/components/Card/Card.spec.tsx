@@ -116,7 +116,7 @@ describe('CardBlock', () => {
   it('should render card with theme background color', async () => {
     const { getByTestId, getByText } = render(
       <MockedProvider>
-        <Card {...block} />
+        <Card {...block} activeStep />
       </MockedProvider>
     )
 
@@ -137,6 +137,7 @@ describe('CardBlock', () => {
           themeMode={ThemeMode.dark}
           themeName={ThemeName.base}
           backgroundColor="#F1A025"
+          activeStep
         />
       </MockedProvider>
     )
@@ -150,7 +151,7 @@ describe('CardBlock', () => {
   it('should render expanded cover if no coverBlockId', () => {
     const { queryByText, getByTestId } = render(
       <MockedProvider>
-        <Card {...block} coverBlockId={null} />
+        <Card {...block} coverBlockId={null} activeStep />
       </MockedProvider>
     )
 
@@ -162,7 +163,7 @@ describe('CardBlock', () => {
   it('should render expanded cover if invalid coverBlockId', () => {
     const { queryByText, getByTestId } = render(
       <MockedProvider>
-        <Card {...block} coverBlockId="fakeId" />
+        <Card {...block} coverBlockId="fakeId" activeStep />
       </MockedProvider>
     )
 
@@ -178,6 +179,7 @@ describe('CardBlock', () => {
           {...{ ...block, children: [...block.children, imageBlock] }}
           fullscreen
           coverBlockId="imageBlockId"
+          activeStep
         />
       </MockedProvider>
     )
@@ -196,6 +198,7 @@ describe('CardBlock', () => {
         <Card
           {...{ ...block, children: [...block.children, imageBlock] }}
           coverBlockId="imageBlockId"
+          activeStep
         />
       </MockedProvider>
     )
@@ -216,6 +219,7 @@ describe('CardBlock', () => {
         <Card
           {...{ ...block, children: [...block.children, videoBlock] }}
           coverBlockId="videoBlockId"
+          activeStep
         />
       </MockedProvider>
     )

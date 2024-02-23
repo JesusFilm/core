@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix types
-
 import { ReactElement } from 'react'
 
 import type { WrapperProps } from '@core/journeys/ui/BlockRenderer'
@@ -26,6 +24,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
       <Card
         {...{ ...block, children: blocks }}
         wrappers={children.props.wrappers}
+        activeStep
       />
     )
   }

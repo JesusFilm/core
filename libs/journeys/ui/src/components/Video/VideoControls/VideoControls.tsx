@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix play button not showing up in stories
-
 import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
 import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import PauseRounded from '@mui/icons-material/PauseRounded'

@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix types
-
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -264,6 +262,7 @@ describe('InlineEditWrapper', () => {
               Wrapper: SelectableWrapper,
               RadioOptionWrapper: InlineEditWrapper
             }}
+            activeStep
           />
         </InlineEditWrapper>
       </SelectableWrapper>
