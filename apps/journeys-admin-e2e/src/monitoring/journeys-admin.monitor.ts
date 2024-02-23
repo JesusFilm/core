@@ -11,6 +11,8 @@ test('NS Admin: Homepage monitoring', async ({ page }) => {
   expect(response?.status()).toEqual(200)
   await expect(page).toHaveTitle(/Sign In|Next Steps/)
 
-  const emailSignInButton = await page.getByRole('button', { name: 'Sign in with email' })
+  const emailSignInButton = await page.getByRole('button', {
+    name: 'Sign in with email'
+  })
   expect(emailSignInButton).toBeVisible()
 })
