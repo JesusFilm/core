@@ -23,7 +23,7 @@ describe('middleware', () => {
       expect(result?.status).toBe(307) // checks for temporary redirect
       expect(result?.headers.get('location')).toBe('http://localhost:4200/zh/')
       expect(result?.headers.get('set-cookie')).toBe(
-        'NEXT_LOCALE=00001-zh; Path=/'
+        'NEXT_LOCALE=00002-zh; Path=/'
       )
     })
 
@@ -41,14 +41,14 @@ describe('middleware', () => {
       expect(result?.status).toBe(307) // checks for temporary redirect
       expect(result?.headers.get('location')).toBe('http://localhost:4200/ja/')
       expect(result?.headers.get('set-cookie')).toBe(
-        'NEXT_LOCALE=00001-ja; Path=/'
+        'NEXT_LOCALE=00002-ja; Path=/'
       )
     })
 
-    it('should check if browsers language has script and reqion and is supported', async () => {
+    it('should check if browsers language has script and region and is supported', async () => {
       const request = new Request(url, {
         headers: new Headers({
-          'accept-language': 'af,zh-Hant-CN,ja-JP;q=0.9',
+          'accept-language': 'af,zh-Hans-CN,ja-JP;q=0.9',
           cookie: ''
         })
       })
@@ -58,10 +58,10 @@ describe('middleware', () => {
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBeUndefined()
       expect(result?.status).toBe(307) // checks for temporary redirect
       expect(result?.headers.get('location')).toBe(
-        'http://localhost:4200/zh-CN/'
+        'http://localhost:4200/zh-Hans-CN/'
       )
       expect(result?.headers.get('set-cookie')).toBe(
-        'NEXT_LOCALE=00001-zh-CN; Path=/'
+        'NEXT_LOCALE=00002-zh-Hans-CN; Path=/'
       )
     })
   })
@@ -71,14 +71,14 @@ describe('middleware', () => {
       const request = new Request(url, {
         headers: new Headers({
           'accept-language': 'af,zh;q=0.9',
-          cookie: 'NEXT_LOCALE=00001-ja'
+          cookie: 'NEXT_LOCALE=00002-ja'
         })
       })
       const req = new NextRequest(request, requestInit)
       const result = await middleware(req)
 
       expect(req.nextUrl.locale).toBe('en')
-      expect(req.cookies.get('NEXT_LOCALE')?.value).toBe('00001-ja')
+      expect(req.cookies.get('NEXT_LOCALE')?.value).toBe('00002-ja')
       expect(result?.status).toBe(307) // checks for temporary redirect
       expect(result?.headers.get('location')).toBe('http://localhost:4200/ja/')
     })
@@ -87,18 +87,18 @@ describe('middleware', () => {
       const request = new Request(url, {
         headers: new Headers({
           'accept-language': 'af,zh;q=0.9',
-          cookie: 'NEXT_LOCALE=00001-es-CO'
+          cookie: 'NEXT_LOCALE=00002-es-CO'
         })
       })
       const req = new NextRequest(request, requestInit)
       const result = await middleware(req)
 
       expect(req.nextUrl.locale).toBe('en')
-      expect(req.cookies.get('NEXT_LOCALE')?.value).toBe('00001-es-CO')
+      expect(req.cookies.get('NEXT_LOCALE')?.value).toBe('00002-es-CO')
       expect(result?.status).toBe(307) // checks for temporary redirect
       expect(result?.headers.get('location')).toBe('http://localhost:4200/es/')
       expect(result?.headers.get('set-cookie')).toBe(
-        'NEXT_LOCALE=00001-es; Path=/'
+        'NEXT_LOCALE=00002-es; Path=/'
       )
     })
 
@@ -106,20 +106,20 @@ describe('middleware', () => {
       const request = new Request(url, {
         headers: new Headers({
           'accept-language': 'af,zh;q=0.9',
-          cookie: 'NEXT_LOCALE=00001-zh-Hant-CN'
+          cookie: 'NEXT_LOCALE=00002-zh-Hans-CN'
         })
       })
       const req = new NextRequest(request, requestInit)
       const result = await middleware(req)
 
       expect(req.nextUrl.locale).toBe('en')
-      expect(req.cookies.get('NEXT_LOCALE')?.value).toBe('00001-zh-Hant-CN')
+      expect(req.cookies.get('NEXT_LOCALE')?.value).toBe('00002-zh-Hans-CN')
       expect(result?.status).toBe(307) // checks for temporary redirect
       expect(result?.headers.get('location')).toBe(
-        'http://localhost:4200/zh-CN/'
+        'http://localhost:4200/zh-Hans-CN/'
       )
       expect(result?.headers.get('set-cookie')).toBe(
-        'NEXT_LOCALE=00001-zh-CN; Path=/'
+        'NEXT_LOCALE=00002-zh-Hans-CN; Path=/'
       )
     })
   })
