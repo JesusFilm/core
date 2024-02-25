@@ -214,9 +214,9 @@ export function Card({
   }
   const handleNavigation = (e: MouseEvent): void => {
     if (variant === 'admin') return
-    const view = e.view as unknown as Window
+    const screenWidth = window.innerWidth
     if (rtl) {
-      const divide = view.innerWidth * 0.66
+      const divide = screenWidth * 0.66
       if (e.clientX <= divide) {
         if (!activeBlock?.locked && !onLastStep) {
           handleNextNavigationEventCreate()
@@ -229,7 +229,7 @@ export function Card({
         }
       }
     } else {
-      const divide = view.innerWidth * 0.33
+      const divide = screenWidth * 0.33
       if (e.clientX >= divide) {
         if (!activeBlock?.locked && !onLastStep) {
           handleNextNavigationEventCreate()
