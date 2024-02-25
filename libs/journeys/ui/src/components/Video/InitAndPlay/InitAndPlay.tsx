@@ -58,6 +58,9 @@ export function InitAndPlay({
   const activeBlock = blockHistory[blockHistory.length - 1]
   const [error, setError] = useState(false)
 
+  const videoBlock = activeBlock.children[0].children[0]
+  const current = blockId === videoBlock.id
+
   // Initiate video player
   useEffect(() => {
     if (videoRef.current != null) {
@@ -191,7 +194,7 @@ export function InitAndPlay({
   useEffect(() => {
     if (player == null || autoplay !== true) return
 
-    if (activeStep) {
+    if (current) {
       const onFirstStep = activeBlock?.parentOrder === 0
       if (onFirstStep) {
         player.muted(true)
@@ -210,15 +213,15 @@ export function InitAndPlay({
         void playPromise
       }
     }
-  }, [activeStep, activeBlock, autoplay, blockId, player, setError, error])
+  }, [current, activeBlock, autoplay, blockId, player, setError, error])
 
   // Pause video when inactive or admin
   useEffect(() => {
     if (player == null) return
-    if (!activeStep || selectedBlock !== undefined) {
+    if (!current || selectedBlock !== undefined) {
       player.pause()
     }
-  }, [activeStep, player, selectedBlock])
+  }, [current, player, selectedBlock])
 
   return <></>
 }
