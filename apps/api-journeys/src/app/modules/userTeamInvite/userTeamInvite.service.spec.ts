@@ -47,7 +47,7 @@ describe('UserTeamService', () => {
         'team-invite',
         {
           email,
-          teamName: team.title,
+          team,
           sender
         },
         {
@@ -74,7 +74,6 @@ describe('UserTeamService', () => {
           }
         ]
       } as unknown as TeamWithUserTeam
-      const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
       const sender = {
         id: 'userId',
         email: 'joRoNimo@example.com',
@@ -90,8 +89,7 @@ describe('UserTeamService', () => {
         'team-invite-accepted',
         {
           team,
-          sender,
-          url
+          sender
         },
         {
           removeOnComplete: true,
