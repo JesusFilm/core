@@ -75,7 +75,6 @@ export type TeamWithUserTeam = Prisma.TeamGetPayload<{
 export interface TeamInviteAccepted {
   team: TeamWithUserTeam
   sender: OmittedUser
-  url: string
 }
 
 export interface TeamRemoved {
@@ -276,6 +275,9 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async teamInviteAcceptedEmail(job: Job<TeamInviteAccepted>): Promise<void> {
+    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/?activeTeam=${
+      job.data.team.id
+    }`
     const receipientUserTeams = job.data.team.userTeams.filter(
       (userTeam) => userTeam.role === UserTeamRole.manager
     )
@@ -321,7 +323,7 @@ export class EmailConsumer extends WorkerHost {
       const html = render(
         TeamInviteAcceptedEmail({
           teamName: job.data.team.title,
-          inviteLink: job.data.url,
+          inviteLink: url,
           sender: job.data.sender,
           recipient: recipient.user
         }),
@@ -333,7 +335,7 @@ export class EmailConsumer extends WorkerHost {
       const text = render(
         TeamInviteAcceptedEmail({
           teamName: job.data.team.title,
-          inviteLink: job.data.url,
+          inviteLink: url,
           sender: job.data.sender,
           recipient: recipient.user
         }),
