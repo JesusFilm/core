@@ -121,7 +121,8 @@ describe('CardWrapper', () => {
         parentOrder: 0,
         themeMode: null,
         themeName: null,
-        wrappers: {}
+        wrappers: {},
+        activeStep: true
       },
       {}
     )
@@ -234,7 +235,8 @@ describe('CardWrapper', () => {
         parentOrder: 0,
         themeMode: null,
         themeName: null,
-        wrappers: {}
+        wrappers: {},
+        activeStep: true
       },
       {}
     )

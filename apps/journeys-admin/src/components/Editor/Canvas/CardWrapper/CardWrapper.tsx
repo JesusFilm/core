@@ -72,6 +72,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
           <Card
             {...{ ...block, children: blocks }}
             wrappers={children.props.wrappers}
+            activeStep={false}
           />
           {blocks.length === 0 && smUp === false && (
             <Stack

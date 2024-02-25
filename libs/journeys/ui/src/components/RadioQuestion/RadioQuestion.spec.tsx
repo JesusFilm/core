@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix types
-
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import TagManager from 'react-gtm-module'

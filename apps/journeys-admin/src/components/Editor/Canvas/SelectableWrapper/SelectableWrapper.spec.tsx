@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix types
-
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
@@ -166,6 +164,7 @@ describe('SelectableWrapper', () => {
               <RadioQuestion
                 {...radioQuestionBlock}
                 wrappers={{ Wrapper: SelectableWrapper }}
+                activeStep
               />
             </SelectableWrapper>
           </EditorProvider>
@@ -222,6 +221,7 @@ describe('SelectableWrapper', () => {
             <RadioQuestion
               {...radioQuestionBlock}
               wrappers={{ Wrapper: SelectableWrapper }}
+              activeStep
             />
           </SelectableWrapper>
         </EditorProvider>
@@ -251,6 +251,7 @@ describe('SelectableWrapper', () => {
             <RadioQuestion
               {...radioQuestionBlock}
               wrappers={{ Wrapper: SelectableWrapper }}
+              activeStep
             />
           </SelectableWrapper>
         </EditorProvider>
@@ -279,6 +280,7 @@ describe('SelectableWrapper', () => {
             <RadioQuestion
               {...radioQuestionBlock}
               wrappers={{ Wrapper: SelectableWrapper }}
+              activeStep
             />
           </SelectableWrapper>
         </EditorProvider>

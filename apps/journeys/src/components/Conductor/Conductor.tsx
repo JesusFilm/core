@@ -2,7 +2,6 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
-import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
@@ -47,7 +46,6 @@ interface ConductorProps {
 export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { setTreeBlocks, blockHistory, showHeaderFooter } = useBlocks()
   const theme = useTheme()
-  const router = useRouter()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const activeBlock = blockHistory[
@@ -166,9 +164,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               px: { lg: 6 }
             }}
           >
-            {showHeaderFooter && router.query.noi == null && (
-              <StepHeader sx={{ ...mobileNotchStyling }} />
-            )}
+            <StepHeader
+              sx={{
+                ...mobileNotchStyling,
+                display: {
+                  xs: showHeaderFooter ? 'flex' : 'none',
+                  lg: 'flex'
+                }
+              }}
+            />
             <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
               <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
                 <JourneyRenderer />
@@ -184,8 +188,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             />
             <StepFooter
               sx={{
-                visibility: showHeaderFooter ? 'visible' : 'hidden',
-                ...mobileNotchStyling
+                ...mobileNotchStyling,
+                display: {
+                  xs: showHeaderFooter ? 'flex' : 'none',
+                  lg: 'flex'
+                }
               }}
             />
           </Stack>

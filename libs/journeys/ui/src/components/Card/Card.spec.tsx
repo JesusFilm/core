@@ -349,7 +349,7 @@ describe('CardBlock', () => {
   it('should render expanded cover if invalid coverBlockId', () => {
     const { queryByText, getByTestId } = render(
       <MockedProvider>
-        <Card {...block} coverBlockId="" activeStep />
+        <Card {...block} coverBlockId="fakeId" activeStep />
       </MockedProvider>
     )
 

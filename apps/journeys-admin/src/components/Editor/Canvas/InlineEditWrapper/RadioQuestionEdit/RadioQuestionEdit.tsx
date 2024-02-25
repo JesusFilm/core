@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix types
-
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
@@ -104,6 +102,7 @@ export function RadioQuestionEdit({
       id={id}
       addOption={props.children.length < 12 ? addRadioOption : undefined}
       wrappers={wrappers}
+      activeStep
     />
   )
 }

@@ -41,6 +41,7 @@ export function JourneyRenderer(): ReactElement {
         }
 
         const isCurrent = block.id === currentBlock?.id
+        // test via e2e: navigation to and from non-pre-rendered cards
         const isPreRender =
           block.id === nextBlock?.id || block.id === previousBlock?.id
 

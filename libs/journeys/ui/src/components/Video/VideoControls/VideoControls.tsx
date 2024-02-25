@@ -1,5 +1,3 @@
-// TODO (SWIPE): Fix play button not showing up in stories
-
 import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
 import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import PauseRounded from '@mui/icons-material/PauseRounded'
@@ -32,6 +30,7 @@ interface VideoControlProps {
   loading?: boolean
   autoplay?: boolean
   muted?: boolean
+  activeStep: boolean
 }
 
 function isIOS(): boolean {
@@ -45,7 +44,8 @@ export function VideoControls({
   endAt,
   isYoutube = false,
   loading = false,
-  muted: mute = false
+  muted: mute = false,
+  activeStep
 }: VideoControlProps): ReactElement {
   const [playing, setPlaying] = useState(false)
   const [active, setActive] = useState(true)
@@ -111,9 +111,8 @@ export function VideoControls({
   useEffect(() => {
     const handleVideoPause = (): void => {
       setPlaying(false)
-
-      const videoHasClashingUI = isYoutube && (player.userActive() ?? true)
-      if (videoHasClashingUI) {
+      const videoHasClashingUI = isYoutube
+      if (videoHasClashingUI && activeStep) {
         setShowHeaderFooter(false)
       }
     }
@@ -121,7 +120,7 @@ export function VideoControls({
     return () => {
       player.off('pause', handleVideoPause)
     }
-  }, [player, isYoutube, setShowHeaderFooter])
+  }, [player, isYoutube, setShowHeaderFooter, activeStep])
 
   // Handle time update event
   useEffect(() => {
