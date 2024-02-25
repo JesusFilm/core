@@ -90,8 +90,7 @@ describe('UserTeamService', () => {
         'team-invite-accepted',
         {
           team,
-          sender,
-          url
+          sender
         },
         {
           removeOnComplete: true,
