@@ -59,7 +59,7 @@ export function InitAndPlay({
   const [error, setError] = useState(false)
 
   const videoBlock = activeBlock.children[0].children[0]
-  const current = blockId === videoBlock.id
+  const current = blockId === videoBlock?.id
 
   // Initiate video player
   useEffect(() => {
