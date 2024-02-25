@@ -82,17 +82,20 @@ As long as your sentence doesn't involve the integration of React/HTML nodes int
 
 ### Basic Usage with Parameterized `Trans`
 
+When using the Trans component with JSX, especially in conjunction with components like Material-UI Typography, it's advisable to employ {'{{ variable }}'} to prevent potential JSX interpretation issues. This ensures correct placeholder interpretation within JSX. Alternatively, you can use the literal string as is: {{ variable }}.
+
 ```jsx
 import { useTranslation, Trans } from 'next-i18next'
 
 function MyComponent() {
   const { t } = useTranslation('app-journeys-admin')
+  const count = 4
   return (
-    <div>
-      <Trans i18nKey="complexTranslation">
-        this is <strong>special</strong> test
-      </Trans>
-    </div>
+    <Trans t={t} count={count}>
+      <Typography variant="body2" color="secondary.light">
+        Appears on <span style={{ fontWeight: 'bold' }}>{'{{ count }}'}</span> card
+      </Typography>
+    </Trans>
   )
 }
 ```
@@ -101,11 +104,11 @@ function MyComponent() {
 
 ```json
 {
-  "this is <strong>special</strong> test": "this is <strong>special</strong> test"
+  "<0>Appears on <2>{{ count }}</2> card</0>_one": "<0>Appears on <2>{{ count }}</2> card</0>"
   // other translations...
 }
 ```
 
-In this modified example, the `Trans` component is used for a parameterized translation without the t function. The translation file includes the complex translation string for reference. This approach ensures better organization and easier maintenance of translations within your React component.
+In this modified example, the `Trans` component is used for a parameterized translation without the t function. The translation file includes the complex translation string for reference.
 
 The `t` function and `Trans` component are powerful tools for handling translations in your project. Understanding how to use them effectively will enhance your ability to create a multilingual and user-friendly application. Do refer to the actual documentation of [useTranslations](https://react.i18next.com/latest/usetranslation-hook) and [Trans component](https://react.i18next.com/latest/trans-component) for a deeper understanding.
