@@ -26,7 +26,7 @@ export class UserTeamInviteService {
     await this.emailQueue.add(
       'team-invite',
       {
-        teamName: team.title,
+        team,
         email,
         sender
       },

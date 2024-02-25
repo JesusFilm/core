@@ -47,7 +47,7 @@ describe('UserTeamService', () => {
         'team-invite',
         {
           email,
-          teamName: team.title,
+          team,
           sender
         },
         {

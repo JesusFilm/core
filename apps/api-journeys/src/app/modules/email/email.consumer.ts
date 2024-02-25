@@ -9,7 +9,11 @@ import { Prisma } from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
 import { User } from '@core/nest/common/firebaseClient'
 
-import { UserJourneyRole, UserTeamRole } from '../../__generated__/graphql'
+import {
+  Team,
+  UserJourneyRole,
+  UserTeamRole
+} from '../../__generated__/graphql'
 import { JourneyAccessRequestEmail } from '../../emails/templates/JourneyAccessRequest'
 import { JourneySharedEmail } from '../../emails/templates/JourneyShared'
 import { JourneySharedNoAccountEmail } from '../../emails/templates/JourneyShared/JourneySharedNoAccount'
@@ -58,7 +62,7 @@ export interface JourneyAccessRequest {
 }
 
 export interface TeamInviteJob {
-  teamName: string
+  team: Team
   email: string
   sender: OmittedUser
 }
@@ -177,6 +181,9 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
+    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/?activeTeam=${
+      job.data.team.id
+    }`
     // check recipient preferences
     const preferences =
       await this.prismaService.journeysEmailPreference.findFirst({
@@ -206,10 +213,9 @@ export class EmailConsumer extends WorkerHost {
     })
 
     if (data.userByEmail == null) {
-      const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
       const html = render(
         TeamInviteNoAccountEmail({
-          teamName: job.data.teamName,
+          teamName: job.data.team.title,
           inviteLink: url,
           sender: job.data.sender,
           recipientEmail: job.data.email
@@ -220,7 +226,7 @@ export class EmailConsumer extends WorkerHost {
       )
       const text = render(
         TeamInviteNoAccountEmail({
-          teamName: job.data.teamName,
+          teamName: job.data.team.title,
           inviteLink: url,
           sender: job.data.sender,
           recipientEmail: job.data.email
@@ -231,15 +237,14 @@ export class EmailConsumer extends WorkerHost {
       )
       await this.emailService.sendEmail({
         to: job.data.email,
-        subject: `Invitation to join team: ${job.data.teamName}`,
+        subject: `Invitation to join team: ${job.data.team.title}`,
         text,
         html
       })
     } else {
-      const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
       const html = render(
         TeamInviteEmail({
-          teamName: job.data.teamName,
+          teamName: job.data.team.title,
           recipient: data.userByEmail,
           inviteLink: url,
           sender: job.data.sender
@@ -251,7 +256,7 @@ export class EmailConsumer extends WorkerHost {
 
       const text = render(
         TeamInviteEmail({
-          teamName: job.data.teamName,
+          teamName: job.data.team.title,
           recipient: data.userByEmail,
           inviteLink: url,
           sender: job.data.sender
@@ -263,7 +268,7 @@ export class EmailConsumer extends WorkerHost {
 
       await this.emailService.sendEmail({
         to: job.data.email,
-        subject: `Invitation to join team: ${job.data.teamName}`,
+        subject: `Invitation to join team: ${job.data.team.title}`,
         text,
         html
       })
