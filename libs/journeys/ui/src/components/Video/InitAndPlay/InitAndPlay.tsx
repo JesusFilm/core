@@ -30,6 +30,7 @@ interface InitAndPlayProps {
   autoplay: boolean | null
   posterBlock: TreeBlock<ImageFields> | undefined
   source: VideoBlockSource
+  loading: boolean
   setLoading: Dispatch<SetStateAction<boolean>>
   setShowPoster: Dispatch<SetStateAction<boolean>>
   setVideoEndTime: Dispatch<SetStateAction<number>>
@@ -50,6 +51,7 @@ export function InitAndPlay({
   autoplay,
   posterBlock,
   source,
+  loading,
   setLoading,
   setShowPoster,
   setVideoEndTime
@@ -192,7 +194,7 @@ export function InitAndPlay({
 
   // Play the video when active
   useEffect(() => {
-    if (player == null || autoplay !== true) return
+    if (player == null || autoplay !== true || loading) return
 
     if (current) {
       const onFirstStep = activeBlock?.parentOrder === 0
@@ -213,7 +215,16 @@ export function InitAndPlay({
         void playPromise
       }
     }
-  }, [current, activeBlock, autoplay, blockId, player, setError, error])
+  }, [
+    current,
+    activeBlock,
+    autoplay,
+    blockId,
+    player,
+    setError,
+    error,
+    loading
+  ])
 
   // Pause video when inactive or admin
   useEffect(() => {
