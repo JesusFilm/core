@@ -65,7 +65,7 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
 
 describe('CardBlock', () => {
   const leftSide = { clientX: 0 }
-  const rightSide = { clientX: 500 }
+  const rightSide = { clientX: 1000 }
 
   beforeEach(() => {
     mockUuidv4.mockReturnValue('uuid')
@@ -73,10 +73,6 @@ describe('CardBlock', () => {
     blurImageMock.mockReturnValue(
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAYAAAA7KqwyAAAABmJLR0QA/wD/AP+gvaeTAAABA0lEQVQokV2RMY4cQQwDi5S69x7hwP9/ngMfPDstOpiFAwcVECAqIPXz60fUxq9F7UWtRlUgmBzuuXnfF3+ui+/r4tcVcgumQIUFiHyA/7OTB0IRXgwk/2h7kEwBxVNWHpMIEMIQDskNOSjFdwQR3Q0YymCLspCFFAJYIAVxkN/IN9JCMr8R7W1k4/WhC7uQgIhocAq30Qh6gMNkCEPr1ciFeuG18VrUR6A55AhrEAdyCHBKdERJNHuBC9ZGe6NeqJoSaAZuM3pGJcNI1ARjpKKzFlTBWrAX6o26EcJzwEKEZPAcDDiDgNh0usFFqqEb1kJVjyB+XjgL1xvXwjMoNxKMzF9Ukn10nay9yQAAAABJRU5ErkJggg=='
     )
-  })
-
-  afterEach(() => {
-    jest.resetAllMocks()
   })
 
   const step1: TreeBlock<StepBlock> = {
@@ -419,7 +415,7 @@ describe('CardBlock', () => {
     expect(queryAllByText('How did we get here?')[0]).toBeInTheDocument()
   })
 
-  it('should navigate to next card', () => {
+  it('should navigate to next card', async () => {
     mockUuidv4.mockReturnValue('uuid')
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
@@ -434,9 +430,24 @@ describe('CardBlock', () => {
 
     expect(blockHistoryVar()).toHaveLength(2)
     expect(blockHistoryVar()[1].id).toBe('step2.id')
+
+    await waitFor(() =>
+      expect(mockStepNextEventCreate.result).toHaveBeenCalled()
+    )
+
+    expect(mockedDataLayer).toHaveBeenCalledWith({
+      dataLayer: {
+        event: 'step_next',
+        eventId: 'uuid',
+        blockId: 'step1.id',
+        stepName: 'Step {{number}}',
+        targetStepId: 'step2.id',
+        targetStepName: 'Step {{number}}'
+      }
+    })
   })
 
-  it('should navigate to previous card', () => {
+  it('should navigate to previous card', async () => {
     mockUuidv4.mockReturnValue('uuid')
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1, step2])
@@ -453,6 +464,21 @@ describe('CardBlock', () => {
 
     expect(blockHistoryVar()).toHaveLength(1)
     expect(blockHistoryVar()[0].id).toBe('step1.id')
+
+    await waitFor(() =>
+      expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
+    )
+
+    expect(mockedDataLayer).toHaveBeenCalledWith({
+      dataLayer: {
+        event: 'step_prev',
+        eventId: 'uuid',
+        blockId: 'step2.id',
+        stepName: 'Step {{number}}',
+        targetStepId: 'step1.id',
+        targetStepName: 'Step {{number}}'
+      }
+    })
   })
 
   it('should block navigate next for locked cards', () => {
@@ -534,7 +560,7 @@ describe('CardBlock', () => {
     expect(blockHistoryVar()[1].id).toBe('step2.id')
   })
 
-  it.skip('should navigate previous on rtl', () => {
+  it('should navigate previous on rtl', () => {
     const journey = {
       language: {
         bcp47: 'ar'
@@ -556,99 +582,5 @@ describe('CardBlock', () => {
 
     expect(blockHistoryVar()).toHaveLength(1)
     expect(blockHistoryVar()[0].id).toBe('step1.id')
-  })
-
-  it.skip('should create navigateNextEvent', async () => {
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1])
-
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[getStepViewEventMock(step1.id), mockStepNextEventCreate]}
-      >
-        <Card {...card1} activeStep />
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card1.id'), rightSide)
-
-    await waitFor(() =>
-      expect(mockStepNextEventCreate.result).toHaveBeenCalled()
-    )
-  })
-
-  it.skip('should createNavigatePreviousEvent', async () => {
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1, step2])
-
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[getStepViewEventMock(step2.id), mockStepPreviousEventCreate]}
-      >
-        <Card {...card2} activeStep />
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card2.id'), leftSide)
-
-    await waitFor(() =>
-      expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
-    )
-  })
-
-  it.skip('should add navigateNextEvent to dataLayer', async () => {
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1])
-
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[getStepViewEventMock(step1.id), mockStepNextEventCreate]}
-      >
-        <Card {...card1} activeStep />
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card1.id'), rightSide)
-
-    await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'step_next',
-          eventId: 'uuid',
-          blockId: 'step1.id',
-          stepName: 'Step {{number}}',
-          targetStepId: 'step2.id',
-          targetStepName: 'Step {{number}}'
-        }
-      })
-    )
-  })
-
-  it.skip('should add navigatePreviousEvent to dataLayer', async () => {
-    treeBlocksVar([step1, step2, step3])
-    blockHistoryVar([step1, step2])
-
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[getStepViewEventMock(step2.id), mockStepPreviousEventCreate]}
-      >
-        <Card {...card2} activeStep />
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('JourneysCard-card2.id'), leftSide)
-
-    await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'step_prev',
-          eventId: 'uuid',
-          blockId: 'step2.id',
-          stepName: 'Step {{number}}',
-          targetStepId: 'step1.id',
-          targetStepName: 'Step {{number}}'
-        }
-      })
-    )
   })
 })
