@@ -20,6 +20,7 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName } from '@core/shared/ui/themes'
 
 // Used to resolve dynamic viewport height on Safari
 
@@ -171,13 +172,19 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const mobileNotchStyling: SxProps = {
     width: {
       xs:
-        variant === 'default'
+        variant === 'default' || variant === 'embed'
           ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
           : '100%',
       lg: 'auto'
     },
-    left: variant === 'default' ? 'env(safe-area-inset-left)' : undefined,
-    right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
+    left:
+      variant === 'default' || variant === 'embed'
+        ? 'env(safe-area-inset-left)'
+        : undefined,
+    right:
+      variant === 'default' || variant === 'embed'
+        ? 'env(safe-area-inset-right)'
+        : undefined
   }
 
   const currentTheme = getStepTheme(activeBlock, journey)
@@ -245,17 +252,33 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                           }}
                         >
                           {showHeaderFooter && router.query.noi == null && (
-                            <StepHeader sx={{ ...mobileNotchStyling }} />
+                            <ThemeProvider
+                              themeName={ThemeName.journeyUi}
+                              themeMode={currentTheme.themeMode}
+                              locale={locale}
+                              rtl={rtl}
+                              nested
+                            >
+                              <StepHeader sx={{ ...mobileNotchStyling }} />
+                            </ThemeProvider>
                           )}
                           <BlockRenderer block={block} />
-                          <StepFooter
-                            sx={{
-                              visibility: showHeaderFooter
-                                ? 'visible'
-                                : 'hidden',
-                              ...mobileNotchStyling
-                            }}
-                          />
+                          <ThemeProvider
+                            themeName={ThemeName.journeyUi}
+                            themeMode={currentTheme.themeMode}
+                            locale={locale}
+                            rtl={rtl}
+                            nested
+                          >
+                            <StepFooter
+                              sx={{
+                                visibility: showHeaderFooter
+                                  ? 'visible'
+                                  : 'hidden',
+                                ...mobileNotchStyling
+                              }}
+                            />
+                          </ThemeProvider>
                         </Stack>
                       </Fade>
                     )

@@ -10,6 +10,7 @@ import {
   SyntheticEvent,
   useState
 } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
@@ -40,21 +41,22 @@ export function StatusTabPanel({
   setSortOrder,
   sortOrder
 }: StatusTabPanelProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const journeyStatusTabs: StatusOptions[] = [
     {
       queryParam: 'active',
-      displayValue: 'Active',
+      displayValue: t('Active'),
       tabIndex: 0
     },
     {
       queryParam: 'archived',
-      displayValue: 'Archived',
+      displayValue: t('Archived'),
       tabIndex: 1
     },
     {
       queryParam: 'trashed',
-      displayValue: 'Trash',
+      displayValue: t('Trash'),
       tabIndex: 2
     }
   ]

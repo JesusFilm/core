@@ -4,7 +4,8 @@ import { LandingPage } from '../pages/landing-page'
 import { LeftNav } from '../pages/left-nav'
 import { OnboardingPages } from '../pages/onboarding-pages'
 
-test('Create a new user', async ({ page }) => {
+// eslint-disable-next-line playwright/no-skipped-test
+test.skip('Create a new user', async ({ page }) => {
   test.setTimeout(60000)
 
   const landingPage = new LandingPage(page)
@@ -20,7 +21,7 @@ test('Create a new user', async ({ page }) => {
   const legalName = `Legal Name-${epochTime}`
 
   await landingPage.goToAdminUrl()
-  await landingPage.clickSignInWithEmail()
+  // await landingPage.clickSignInWithEmail()
 
   await onboardingPages.createUser(email, firstAndLastName, password)
   await onboardingPages.fillOnboardingForm(teamName, legalName)

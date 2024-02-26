@@ -127,7 +127,7 @@ export function Menu(): ReactElement {
       <IconButton
         id="edit-journey-actions"
         edge="end"
-        aria-label={t('Edit Journey Actions')}
+        aria-label="Edit Journey Actions"
         aria-controls="edit-journey-actions"
         aria-haspopup="true"
         aria-expanded={anchorEl != null ? 'true' : undefined}
@@ -161,6 +161,7 @@ export function Menu(): ReactElement {
         <DuplicateBlock
           variant="list-item"
           disabled={selectedBlock?.__typename === 'VideoBlock'}
+          handleClick={handleCloseMenu}
         />
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
         <Divider />

@@ -1,0 +1,1 @@
+export { ResetPasswordSentPage } from './ResetPasswordSentPage'

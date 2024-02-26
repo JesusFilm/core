@@ -16,6 +16,8 @@ import {
 
 import { ArchivedTemplateList } from '.'
 
+import '../../../../test/i18n'
+
 const ArchivedTemplatesStory: Meta<typeof ArchivedTemplateList> = {
   component: ArchivedTemplateList,
   title: 'Journeys-Admin/TemplateList/ArchivedTemplateList',

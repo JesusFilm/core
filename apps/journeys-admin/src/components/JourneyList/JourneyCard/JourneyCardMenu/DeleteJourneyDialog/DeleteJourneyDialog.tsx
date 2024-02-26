@@ -54,7 +54,7 @@ export function DeleteJourneyDialog({
     try {
       await deleteJourney()
       handleClose()
-      enqueueSnackbar('Journey Deleted', {
+      enqueueSnackbar(t('Journey Deleted'), {
         variant: 'success',
         preventDuplicate: true
       })
@@ -71,11 +71,11 @@ export function DeleteJourneyDialog({
     <Dialog
       open={open}
       onClose={handleClose}
-      dialogTitle={{ title: 'Delete Forever?', closeButton: true }}
+      dialogTitle={{ title: t('Delete Forever?'), closeButton: true }}
       dialogAction={{
         onSubmit: handleDelete,
-        submitLabel: 'Delete',
-        closeLabel: 'Cancel'
+        submitLabel: t('Delete'),
+        closeLabel: t('Cancel')
       }}
       testId="DeleteJourneyDialog"
     >

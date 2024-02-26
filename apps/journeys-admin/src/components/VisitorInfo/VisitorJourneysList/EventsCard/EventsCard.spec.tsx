@@ -3,15 +3,7 @@ import { fireEvent, render } from '@testing-library/react'
 import { journey } from '../utils/data'
 
 import { EventsCard } from '.'
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
+import '../../../../../test/i18n'
 
 describe('EventsCard', () => {
   it('should show card header', () => {

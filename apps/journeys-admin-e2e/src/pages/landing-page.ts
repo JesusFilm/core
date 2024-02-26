@@ -12,24 +12,19 @@ export class LandingPage {
 
   async goToAdminUrl(): Promise<void> {
     await this.page.goto('/')
-  }
-
-  async clickSignInWithEmail(): Promise<void> {
-    await this.page.locator('button[data-provider-id="password"]').click()
+    // Wait for two seconds as the landing page showing 'Sign in with email' button second time
+    // even after clicking the 'Sign in with email' button
+    // eslint-disable-next-line
+    await this.page.waitForTimeout(2000)
   }
 
   async signInWithEmailVisible(): Promise<void> {
-    await expect(
-      this.page.locator(
-        'button[data-provider-id="password"] span.firebaseui-idp-text-long'
-      )
-    ).toHaveText('Sign in with email')
+    await expect(this.page.locator('button[type="submit"]')).toHaveText(
+      'Sign in with email'
+    )
   }
 
   async isLandingPage(): Promise<boolean> {
-    return await isVisible(
-      this.page,
-      'button[data-provider-id="password"] span.firebaseui-idp-text-long'
-    )
+    return await isVisible(this.page, 'button[type="submit"]')
   }
 }
