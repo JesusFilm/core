@@ -7,7 +7,11 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { UserJourney } from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
 
-import { UserJourneyRole, UserTeamRole } from '../../__generated__/graphql'
+import {
+  Team,
+  UserJourneyRole,
+  UserTeamRole
+} from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import {
@@ -38,7 +42,10 @@ const teamRemoved: Job<TeamRemoved, unknown, string> = {
 const teamInviteJob: Job<TeamInviteJob, unknown, string> = {
   name: 'team-invite',
   data: {
-    teamName: 'test-team',
+    team: {
+      id: 'teamId',
+      title: 'test-team'
+    } as unknown as Team,
     email: 'abc@example.com',
     sender: {
       firstName: 'Joe',
