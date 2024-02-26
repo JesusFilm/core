@@ -1,8 +1,19 @@
-import { Body, Head, Html, Preview } from '@react-email/components'
+import {
+  Body,
+  Column,
+  Head,
+  Html,
+  Link,
+  Preview,
+  Row,
+  Section,
+  Text
+} from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
 import {
+  ActionButton,
   ActionCard,
   BodyWrapper,
   EmailContainer,
@@ -47,13 +58,40 @@ export const EmailVerifyEmail = ({
       <Header />
       <EmailContainer>
         <BodyWrapper>
-          <ActionCard
-            url={inviteLink}
-            token={token}
-            buttonText="Verify Email Address"
-            recipient={recipient}
-            variant="emailVerify"
-          />
+          <ActionCard recipient={recipient}>
+            <Section align="center" className="px-[28px]">
+              <Row>
+                <th>
+                  <Text className="font-semibold text-[16px] leading-[28px] mt-0 mb-[24px] text-center">
+                    Verify your email address to start making interactive
+                    Journeys!
+                  </Text>
+                </th>
+              </Row>
+              <Row className="px-[28px]">
+                <Column align="center">
+                  <ActionButton
+                    buttonText="Verify Email Address"
+                    url={inviteLink}
+                  />
+                </Column>
+              </Row>
+              <Row>
+                <Text className="text-[14px] font-[400] leading-[24px] mt-[24px] mb-[0px] text-center">
+                  If the link above does not work, enter the following code at
+                  the link below:
+                </Text>
+                <Text className="text-[14px] font-[400] leading-[24px] my-0 text-center">
+                  {token}
+                </Text>
+                <Link href={inviteLink} style={{ textDecoration: 'none' }}>
+                  <Text className="text-center mt-[24px] text-[#C52D3A] font-[400] text-[12px] leading-[16px]">
+                    {inviteLink}
+                  </Text>
+                </Link>
+              </Row>
+            </Section>
+          </ActionCard>
         </BodyWrapper>
         <Footer />
         <UnsubscribeLink recipientEmail={recipient.email} />
