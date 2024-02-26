@@ -1,4 +1,7 @@
 import { ActionCard } from './ActionCard'
+import { ActionButton } from './ActionCard/ActionButton'
+import { ActionJourneyView } from './ActionCard/ActionJourneyView'
+import { ActionSender } from './ActionCard/ActionSender'
 import { BodyText } from './BodyText'
 import { BodyTitle } from './BodyTitle'
 import { BodyWrapper } from './BodyWrapper'
@@ -17,5 +20,8 @@ export {
   EmailLogo,
   Footer,
   Header,
-  UnsubscribeLink
+  UnsubscribeLink,
+  ActionButton,
+  ActionJourneyView,
+  ActionSender
 }
