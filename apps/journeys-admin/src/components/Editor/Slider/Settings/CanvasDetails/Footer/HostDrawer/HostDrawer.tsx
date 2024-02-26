@@ -105,7 +105,13 @@ export function HostDrawer(): ReactElement {
     await journeyHostUpdate({
       variables: { id: journey?.id, input: { hostId: null } }
     })
+    setOpenSelect(false)
     setOpenCreateHost(true)
+  }
+
+  function handleCloseInfo(): void {
+    setOpenInfo(false)
+    setOpenSelect(true)
   }
 
   return (
@@ -162,11 +168,11 @@ export function HostDrawer(): ReactElement {
         handleOpenCreateHost={handleOpenCreateHost}
         handleSelectHost={() => setOpenSelect(false)}
       />
-      <HostInfoDrawer openInfo={openInfo} onClose={() => setOpenInfo(false)} />
+      <HostInfoDrawer openInfo={openInfo} onClose={handleCloseInfo} />
       <HostFormDrawer
         onClear={handleClear}
         open={openCreateHost}
-        onClose={() => setOpenCreateHost(false)}
+        back={() => setOpenCreateHost(false)}
       />
     </>
   )

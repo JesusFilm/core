@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { GetAllTeamHosts } from '../../../../../../../../../__generated__/GetAllTeamHosts'
-import { Drawer } from '../../../../Drawer'
 import { HostList } from '../HostList'
 
 interface HostListDrawerProps {
@@ -30,35 +29,41 @@ export function HostListDrawer({
 }: HostListDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
+  function handleOpenInfo(): void {
+    setOpenInfo()
+    onClose()
+  }
+
   return (
     <>
-      <Drawer title={t('Select a Host')} open={openSelect} onClose={onClose}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ p: 4, pb: 0 }}
-        >
-          <Stack direction="row" alignItems="center">
-            <Typography variant="subtitle2">{t('Hosts')}</Typography>
-            <IconButton data-testid="info" onClick={setOpenInfo}>
-              <InformationCircleContainedIcon />
-            </IconButton>
-          </Stack>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={handleOpenCreateHost}
+      {openSelect && (
+        <>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ p: 4, pb: 0 }}
           >
-            {t('Create New')}
-          </Button>
-        </Stack>
-
-        <HostList
-          hosts={teamHosts?.hosts ?? []}
-          onItemClick={handleSelectHost}
-        />
-      </Drawer>
+            <Stack direction="row" alignItems="center">
+              <Typography variant="subtitle2">{t('Hosts')}</Typography>
+              <IconButton data-testid="info" onClick={handleOpenInfo}>
+                <InformationCircleContainedIcon />
+              </IconButton>
+            </Stack>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={handleOpenCreateHost}
+            >
+              {t('Create New')}
+            </Button>
+          </Stack>
+          <HostList
+            hosts={teamHosts?.hosts ?? []}
+            onItemClick={handleSelectHost}
+          />
+        </>
+      )}
     </>
   )
 }

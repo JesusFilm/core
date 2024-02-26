@@ -9,8 +9,6 @@ import { useTranslation } from 'react-i18next'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
-import { Drawer } from '../../../../Drawer'
-
 import { HostAvatarsButton } from './HostAvatarsButton'
 import { HostLocationFieldForm } from './HostLocationFieldForm'
 import { HostTitleFieldForm } from './HostTitleFieldForm'
@@ -25,14 +23,14 @@ export const DELETE_HOST = gql`
 
 interface HostFormDrawerProps {
   onClear: () => void
-  open?: boolean
-  onClose: () => void
+  open: boolean
+  back: () => void
 }
 
 export function HostFormDrawer({
   onClear,
   open,
-  onClose
+  back
 }: HostFormDrawerProps): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
@@ -42,38 +40,49 @@ export function HostFormDrawer({
   }
 
   return (
-    <Drawer
-      title={journey?.host != null ? t('Edit Host') : t('Create Host')}
-      open={open}
-      onClose={onClose}
-    >
-      {journey?.host != null && (
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ p: 4 }}
-        >
-          <Button variant="outlined" size="small" onClick={handleClear}>
-            {t('Clear')}
-          </Button>
-        </Stack>
-      )}
-      <Stack sx={{ p: 4 }} gap={6}>
-        <HostTitleFieldForm />
-        <HostLocationFieldForm />
-        <HostAvatarsButton />
-      </Stack>
-      <Divider />
-      <Stack sx={{ p: 4 }} direction="row" alignItems="center" gap={3}>
-        <AlertCircleIcon />
-        <Typography variant="subtitle2">
-          {t(
-            'Edits: Making changes here will apply to all journeys that share this Host.'
+    <>
+      {open && (
+        <>
+          {journey?.host != null ? (
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ p: 4 }}
+            >
+              <Button variant="outlined" size="small" onClick={handleClear}>
+                {t('Clear')}
+              </Button>
+            </Stack>
+          ) : (
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ p: 4 }}
+            >
+              <Button variant="outlined" size="small" onClick={back}>
+                {t('Back')}
+              </Button>
+            </Stack>
           )}
-        </Typography>
-      </Stack>
-      <Divider />
-    </Drawer>
+          <Stack sx={{ p: 4 }} gap={6}>
+            <HostTitleFieldForm />
+            <HostLocationFieldForm />
+            <HostAvatarsButton />
+          </Stack>
+          <Divider />
+          <Stack sx={{ p: 4 }} direction="row" alignItems="center" gap={3}>
+            <AlertCircleIcon />
+            <Typography variant="subtitle2">
+              {t(
+                'Edits: Making changes here will apply to all journeys that share this Host.'
+              )}
+            </Typography>
+          </Stack>
+          <Divider />
+        </>
+      )}
+    </>
   )
 }
