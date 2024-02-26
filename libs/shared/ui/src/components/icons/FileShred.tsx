@@ -2,8 +2,8 @@ import { createSvgIcon } from '@mui/material/utils'
 
 export default createSvgIcon(
   <path
-    fill-rule="evenodd"
-    clip-rule="evenodd"
+    fillRule="evenodd"
+    clipRule="evenodd"
     d="M3.2 4.8c0-1.9 1.5-3.4 3.4-3.4h9c.7 0 1.3.3 1.7.7l1.4 1.4A35 35 0 0 1 20.2 5c.4.4.6 1 .6 1.5v3.7a1 1 0 0 1-2 0v-2h-2.6C15 8.2 14 7.2 14 6V3.4H6.6c-.8 0-1.4.6-1.4 1.4v5.4a1 1 0 1 1-2 0V4.8ZM16 3.6V6c0 .1 0 .2.2.2h2.4A30.5 30.5 0 0 0 16 3.6ZM1.4 15c0-.6.4-1 1-1h19.2a1 1 0 1 1 0 2H2.4a1 1 0 0 1-1-1Zm2.8 3.2c.6 0 1 .4 1 1v2.4a1 1 0 1 1-2 0v-2.4c0-.6.4-1 1-1Zm4.2 0c.6 0 1 .4 1 1v1.2a1 1 0 1 1-2 0v-1.2c0-.6.4-1 1-1Zm4.2 0c.6 0 1 .4 1 1v2.4a1 1 0 1 1-2 0v-2.4c0-.6.4-1 1-1Zm4.2 0c.6 0 1 .4 1 1v1.2a1 1 0 1 1-2 0v-1.2c0-.6.4-1 1-1Zm4.2 0c.6 0 1 .4 1 1v2.4a1 1 0 1 1-2 0v-2.4c0-.6.4-1 1-1Z"
   />,
   'FileShred'

@@ -17,7 +17,12 @@
         "project": ["libs/journeys/ui/tsconfig.*?.json"]
       },
       "rules": {
-        "no-void": ["error", { "allowAsStatement": true }],
+        "no-void": [
+          "error",
+          {
+            "allowAsStatement": true
+          }
+        ],
         "@typescript-eslint/no-misused-promises": "off"
       }
     },

@@ -1,20 +1,15 @@
 import Close from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { useRouter } from 'next/router'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import isFunction from 'lodash/isFunction'
+import { ReactElement, useEffect, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { JourneyProvider, useJourney } from '@core/journeys/ui/JourneyProvider'
-import { StepFooter } from '@core/journeys/ui/StepFooter'
 
 import { Conductor } from '../Conductor'
 
-import { ButtonWrapper } from './ButtonWrapper/ButtonWrapper'
-import { RadioOptionWrapper } from './RadioOptionWrapper/RadioOptionWrapper'
-import { VideoWrapper } from './VideoWrapper/VideoWrapper'
+import { ClickableCard } from './ClickableCard'
 
 interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
@@ -23,99 +18,52 @@ interface EmbeddedPreviewProps {
 export function EmbeddedPreview({
   blocks
 }: EmbeddedPreviewProps): ReactElement {
-  const { journey, variant } = useJourney()
-  const maximizableElement = useRef(null)
   const viewportHeight = use100vh()
-  const [allowFullWindow, setAllowFullWindow] = useState(true)
-  // Use full container / fullWindow mode over fullScreen to avoid video playback issues
   const [isFullWindow, setIsFullWindow] = useState(false)
 
-  const maximizeView = useCallback(
-    (value: boolean) => {
-      setIsFullWindow(value)
-      window.parent.postMessage(value, '*')
-    },
-    [setIsFullWindow]
-  )
-
-  // use router internally on this component as it does not function properly when passed as prop
-  const router = useRouter()
-  const once = useRef(false)
-
-  const handleClick = useCallback((): void => {
-    if (allowFullWindow) maximizeView(true)
-  }, [allowFullWindow, maximizeView])
-
   useEffect(() => {
-    if (!once.current) {
-      if (router?.query?.preview === 'true') {
-        setAllowFullWindow(false)
-        once.current = true
-      }
-      if (router?.query?.autoexpand === 'true') {
-        handleClick()
-        once.current = true
-      }
+    function onFullscreenChange(): void {
+      setIsFullWindow(Boolean(document.fullscreenElement))
     }
-  }, [setAllowFullWindow, handleClick, router?.query])
+    document.addEventListener('fullscreenchange', onFullscreenChange)
+    return () =>
+      document.removeEventListener('fullscreenchange', onFullscreenChange)
+  }, [])
 
-  const ClickableCard = (): ReactElement => (
-    <Box
-      sx={{
-        p: 8,
-        flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        cursor: allowFullWindow ? 'pointer' : 'default',
-        zindex: 10,
-        height: '100%'
-      }}
-      onClick={() => handleClick()}
-    >
-      <Box
-        sx={{
-          mx: 'auto',
-          mb: 0,
-          height: 6.5,
-          width: '82.5%',
-          backgroundColor: '#AAACBB',
-          borderRadius: '16px 16px 0 0',
-          opacity: 0.3
-        }}
-      />
-      <Box
-        sx={{
-          mx: 'auto',
-          mb: 0,
-          height: 6.5,
-          width: '90%',
-          backgroundColor: '#AAACBB',
-          borderRadius: '16px 16px 0 0',
-          opacity: 0.6
-        }}
-      />
-      <Box
-        sx={{
-          height: '100%',
-          width: '100%',
-          borderRadius: '16px',
-          overflow: 'hidden',
-          position: 'relative'
-        }}
-      >
-        <BlockRenderer
-          data-testid="embedded-preview-block-renderer"
-          block={blocks?.[0]}
-          wrappers={{
-            ButtonWrapper,
-            RadioOptionWrapper,
-            VideoWrapper
-          }}
-        />
-        <StepFooter />
-      </Box>
-    </Box>
-  )
+  async function requestFullscreen(): Promise<void> {
+    const elem = document.documentElement
+
+    /* View in fullscreen */
+    if (isFunction(elem.requestFullscreen)) {
+      await elem.requestFullscreen()
+      setIsFullWindow(true)
+    } else if (isFunction(elem.webkitRequestFullscreen)) {
+      /* Safari */
+      await elem.webkitRequestFullscreen()
+      setIsFullWindow(true)
+    } else if (isFunction(elem.msRequestFullscreen)) {
+      /* IE11 */
+      await elem.msRequestFullscreen()
+      setIsFullWindow(true)
+    }
+  }
+
+  async function exitFullscreen(): Promise<void> {
+    /* View in fullscreen */
+    if (isFunction(document.exitFullscreen)) {
+      await document.exitFullscreen()
+      setIsFullWindow(false)
+    } else if (isFunction(document.mozCancelFullScreen)) {
+      await document.mozCancelFullScreen()
+      setIsFullWindow(false)
+    } else if (isFunction(document.webkitExitFullscreen)) {
+      await document.webkitExitFullscreen()
+      setIsFullWindow(false)
+    } else if (isFunction(document.msExitFullscreen)) {
+      await document.msExitFullscreen()
+      setIsFullWindow(false)
+    }
+  }
 
   return (
     <>
@@ -136,37 +84,24 @@ export function EmbeddedPreview({
           minHeight: '-webkit-fill-available'
         }}
       >
-        {!isFullWindow && <ClickableCard />}
-        <Box
-          id="embed-fullscreen-container"
-          ref={maximizableElement}
-          sx={{
-            backgroundColor: 'background.default',
-            overflow: 'hidden'
-          }}
-        >
+        <ClickableCard onClick={requestFullscreen} fullscreen={isFullWindow}>
           {isFullWindow && (
-            <>
-              <IconButton
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: variant === 'default' ? 'env(safe-area-inset-left)' : 0,
-                  zIndex: 1000,
-                  color: 'text.primary'
-                }}
-                onClick={() => {
-                  maximizeView(false)
-                }}
-              >
-                <Close />
-              </IconButton>
-              <JourneyProvider value={{ journey, variant: 'default' }}>
-                <Conductor blocks={blocks} />
-              </JourneyProvider>
-            </>
+            <IconButton
+              data-testid="CloseIconButton"
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 'env(safe-area-inset-left)',
+                zIndex: 1000,
+                color: 'text.primary'
+              }}
+              onClick={exitFullscreen}
+            >
+              <Close />
+            </IconButton>
           )}
-        </Box>
+          <Conductor blocks={blocks} />
+        </ClickableCard>
       </Box>
     </>
   )

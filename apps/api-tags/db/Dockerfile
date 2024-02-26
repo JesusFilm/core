@@ -1,6 +1,6 @@
-FROM node:18-alpine
+FROM node:18-alpine3.18
 
-ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-tags-client
+ENV PRISMA_LOCATION_TAGS=/app/node_modules/.prisma/api-tags-client
 
 RUN apk upgrade --update-cache --available && \
     apk add openssl1.1-compat && \

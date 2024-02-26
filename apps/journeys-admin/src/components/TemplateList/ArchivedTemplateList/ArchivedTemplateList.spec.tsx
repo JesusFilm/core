@@ -98,7 +98,7 @@ describe('ArchivedTemplateList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1English'
+        'a lower case titleJanuary 1, 2021English'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(

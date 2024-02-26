@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Box from '@mui/system/Box'
 import { ReactElement, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
@@ -29,6 +30,7 @@ export function ActionsList({
   actions,
   goalLabel
 }: ActionsListProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
@@ -41,7 +43,7 @@ export function ActionsList({
     dispatch({
       type: 'SetDrawerPropsAction',
       mobileOpen: true,
-      title: 'Goal Details',
+      title: t('Goal Details'),
       children: (
         <ActionDetails
           url={url}
@@ -95,7 +97,7 @@ export function ActionsList({
               justifyContent: 'space-between'
             }}
           >
-            <Typography variant="h1">The Journey Goals</Typography>
+            <Typography variant="h1">{t('The Journey Goals')}</Typography>
             <Button
               variant="outlined"
               startIcon={
@@ -113,11 +115,13 @@ export function ActionsList({
               }}
               onClick={() => setOpen(true)}
             >
-              <Typography variant="subtitle2">Learn More</Typography>
+              <Typography variant="subtitle2">{t('Learn More')}</Typography>
             </Button>
           </Box>
           <Typography>
-            You can change them to your own clicking on the rows of this table
+            {t(
+              'You can change them to your own clicking on the rows of this table'
+            )}
           </Typography>
         </Stack>
         <ActionsListView
@@ -154,7 +158,7 @@ export function ActionsList({
               component="div"
               sx={{ flexGrow: 1 }}
             >
-              Information
+              {t('Information')}
             </Typography>
             <IconButton
               onClick={() => setOpen(false)}

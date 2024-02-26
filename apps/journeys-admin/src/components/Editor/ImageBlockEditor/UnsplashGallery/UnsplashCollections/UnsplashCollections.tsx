@@ -3,6 +3,7 @@ import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
@@ -16,28 +17,29 @@ interface Collection {
   collectionId: string
 }
 
-const collections: Collection[] = [
-  { label: 'Christ', collectionId: '5TziIavS84o' },
-  { label: 'Church', collectionId: 'uOF0tIcPnUA' },
-  { label: 'Prayer', collectionId: 'Ni0miBH9Kq4' },
-  { label: 'Bible', collectionId: 'sio7jwScQ3Y' },
-  { label: 'Freedom', collectionId: 'suOnfoiJA28' },
-  { label: 'Help', collectionId: 'tOLIIS0f-cs' },
-  { label: 'Love', collectionId: '5CVp4N4NJJY' },
-  { label: 'Friendship', collectionId: 'lVT6hMR5sgw' },
-  { label: 'Loneliness', collectionId: 'ZkncIJm2hEg' },
-  { label: 'Nature', collectionId: '5Eg2lXLW_a4' },
-  { label: 'Joy', collectionId: 'PLkk_lWhzw8' },
-  { label: 'Depression', collectionId: 'Jd3YjXnNetw' }
-]
-
 export function UnsplashCollections({
   onClick
 }: UnsplashCollectionsProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const scrollRef = useRef<HTMLDivElement>(null)
   const [showLeftButton, setShowLeftButton] = useState(false)
   const [showRightButton, setShowRightButton] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
+
+  const collections: Collection[] = [
+    { label: t('Christ'), collectionId: '5TziIavS84o' },
+    { label: t('Church'), collectionId: 'uOF0tIcPnUA' },
+    { label: t('Prayer'), collectionId: 'Ni0miBH9Kq4' },
+    { label: t('Bible'), collectionId: 'sio7jwScQ3Y' },
+    { label: t('Freedom'), collectionId: 'suOnfoiJA28' },
+    { label: t('Help'), collectionId: 'tOLIIS0f-cs' },
+    { label: t('Love'), collectionId: '5CVp4N4NJJY' },
+    { label: t('Friendship'), collectionId: 'lVT6hMR5sgw' },
+    { label: t('Loneliness'), collectionId: 'ZkncIJm2hEg' },
+    { label: t('Nature'), collectionId: '5Eg2lXLW_a4' },
+    { label: t('Joy'), collectionId: 'PLkk_lWhzw8' },
+    { label: t('Depression'), collectionId: 'Jd3YjXnNetw' }
+  ]
 
   useEffect(() => {
     const node = scrollRef.current

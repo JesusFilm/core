@@ -19,8 +19,6 @@ import { Editor } from '../../src/components/Editor'
 import { ControlPanel } from '../../src/components/Editor/ControlPanel'
 import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
-import { JourneyEdit } from '../../src/components/Editor/JourneyEdit'
-import { PageWrapper } from '../../src/components/PageWrapper'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
@@ -71,19 +69,16 @@ function TemplateEditPage(): ReactElement {
           <Editor
             journey={data?.publisherTemplate ?? undefined}
             selectedStepId={router.query.stepId as string | undefined}
-          >
-            <PageWrapper
-              title={data?.publisherTemplate?.title ?? t('Edit Template')}
-              backHref="/publisher"
-              mainHeaderChildren={<EditToolbar />}
-              mainBodyPadding={false}
-              bottomPanelChildren={<ControlPanel />}
-              customSidePanel={<Drawer />}
-              user={user}
-            >
-              <JourneyEdit />
-            </PageWrapper>
-          </Editor>
+            PageWrapperProps={{
+              title: data?.publisherTemplate?.title ?? t('Edit Template'),
+              backHref: '/publisher',
+              mainHeaderChildren: <EditToolbar />,
+              mainBodyPadding: false,
+              bottomPanelChildren: <ControlPanel />,
+              customSidePanel: <Drawer />,
+              user
+            }}
+          />
         </>
       )}
       {data?.publisherTemplate != null && isPublisher !== true && (

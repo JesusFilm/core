@@ -9,6 +9,7 @@ import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserTeamInviteResolver } from './userTeamInvite.resolver'
+import { UserTeamInviteService } from './userTeamInvite.service'
 
 describe('UserTeamInviteResolver', () => {
   let resolver: UserTeamInviteResolver,
@@ -42,11 +43,20 @@ describe('UserTeamInviteResolver', () => {
     team
   }
 
+  const userTeamInviteService = {
+    provide: UserTeamInviteService,
+    useFactory: () => ({
+      sendTeamInviteEmail: jest.fn().mockResolvedValue(null),
+      sendTeamInviteAcceptedEmail: jest.fn().mockResolvedValue(null)
+    })
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         UserTeamInviteResolver,
+        userTeamInviteService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -99,6 +109,14 @@ describe('UserTeamInviteResolver', () => {
       email: 'brian.smith@example.com'
     }
 
+    const user = {
+      id: 'userId',
+      firstName: 'Robert',
+      lastName: 'Smith',
+      email: 'robert.smith@example.com',
+      emailVerified: true
+    }
+
     it('creates a user team invite', async () => {
       prismaService.$transaction.mockImplementationOnce(
         async (cb) => await cb(prismaService)
@@ -106,7 +124,8 @@ describe('UserTeamInviteResolver', () => {
       prismaService.userTeamInvite.upsert.mockResolvedValueOnce(
         userTeamInviteWithUserTeam
       )
-      await resolver.userTeamInviteCreate(ability, 'userId', 'teamId', input)
+
+      await resolver.userTeamInviteCreate(ability, user, 'teamId', input)
       expect(prismaService.userTeamInvite.upsert).toHaveBeenCalledWith({
         where: {
           teamId_email: {
@@ -116,14 +135,14 @@ describe('UserTeamInviteResolver', () => {
         },
         create: {
           email: 'brian.smith@example.com',
-          senderId: 'userId',
+          senderId: user.id,
           team: { connect: { id: 'teamId' } }
         },
         update: {
           acceptedAt: null,
           receipientId: null,
           removedAt: null,
-          senderId: 'userId'
+          senderId: user.id
         },
         include: {
           team: {
@@ -139,7 +158,7 @@ describe('UserTeamInviteResolver', () => {
       )
       prismaService.userTeamInvite.upsert.mockResolvedValueOnce(userTeamInvite)
       await expect(
-        resolver.userTeamInviteCreate(ability, 'userId', 'teamId', input)
+        resolver.userTeamInviteCreate(ability, user, 'teamId', input)
       ).rejects.toThrow('user is not allowed to create userTeamInvite')
     })
   })
@@ -179,7 +198,8 @@ describe('UserTeamInviteResolver', () => {
       const user = {
         id: 'userId',
         firstName: 'Robert',
-        email: 'robert.smith@example.com'
+        email: 'robert.smith@example.com',
+        emailVerified: true
       }
       const userTeamInvite: UserTeamInvite = {
         id: 'inviteId1',
@@ -193,6 +213,12 @@ describe('UserTeamInviteResolver', () => {
         updatedAt: new Date()
       }
 
+      const userTeamInviteWithTeam = {
+        ...userTeamInvite,
+        acceptedAt: expect.any(Date),
+        receipientId: user.id
+      }
+
       const redeemedUserTeamInvite = {
         ...userTeamInvite,
         acceptedAt: expect.any(Date),
@@ -204,7 +230,7 @@ describe('UserTeamInviteResolver', () => {
         async (promises) => promises
       )
       prismaService.userTeamInvite.update.mockResolvedValueOnce(
-        redeemedUserTeamInvite
+        userTeamInviteWithTeam
       )
       expect(await resolver.userTeamInviteAcceptAll(user)).toEqual([
         redeemedUserTeamInvite

@@ -6,9 +6,6 @@
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["libs/shared/ui/**/*.{ts,tsx,js,jsx}"]
-      },
       "outputs": ["{options.outputFile}"]
     },
     "type-check": {
@@ -21,8 +18,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/shared/ui"],
       "options": {
-        "jestConfig": "libs/shared/ui/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/shared/ui/jest.config.ts"
       }
     },
     "demo": {

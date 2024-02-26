@@ -5,13 +5,9 @@ import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { JourneyFields } from '../../../../../__generated__/JourneyFields'
-import { useSocialPreview } from '../../SocialProvider'
-
-interface SocialPreviewMessageProps {
-  journey?: JourneyFields
-}
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 interface MessageBubbleProps {
   height?: number
@@ -79,10 +75,9 @@ export function MessageBubble({
     </Box>
   )
 }
-export function SocialPreviewMessage({
-  journey
-}: SocialPreviewMessageProps): ReactElement {
-  const { seoTitle, seoDescription, primaryImageBlock } = useSocialPreview()
+export function SocialPreviewMessage(): ReactElement {
+  const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Box
       width={256}
@@ -92,7 +87,7 @@ export function SocialPreviewMessage({
     >
       <Stack direction="column" justifyContent="start">
         <Typography variant="caption" pb={4} textAlign="center">
-          Messaging App View
+          {t('Messaging App View')}
         </Typography>
         <Box>
           <MessageBubble width={200} height={40} direction="left" />
@@ -100,7 +95,7 @@ export function SocialPreviewMessage({
             <MessageBubble width={240} direction="right">
               <Stack direction="column">
                 <Stack direction="row" gap={2}>
-                  {primaryImageBlock?.src == null ? (
+                  {journey?.primaryImageBlock?.src == null ? (
                     <Box
                       width={60}
                       height={60}
@@ -109,23 +104,20 @@ export function SocialPreviewMessage({
                       borderRadius="6px"
                     />
                   ) : (
-                    primaryImageBlock?.src != null && (
-                      <Image
-                        src={primaryImageBlock.src}
-                        alt={primaryImageBlock.alt ?? ''}
-                        width="60"
-                        height="60"
-                        style={{
-                          borderRadius: '4px',
-                          maxWidth: '100%',
-                          height: 'auto',
-                          objectFit: 'cover'
-                        }}
-                      />
-                    )
+                    <Image
+                      src={journey.primaryImageBlock.src}
+                      alt={journey.primaryImageBlock.alt ?? ''}
+                      width="60"
+                      height="60"
+                      style={{
+                        borderRadius: '4px',
+                        maxWidth: '100%',
+                        objectFit: 'cover'
+                      }}
+                    />
                   )}
                   <Stack width={164} flexGrow={1} justifyContent="center">
-                    {isEmpty(seoTitle) ? (
+                    {isEmpty(journey?.seoTitle) ? (
                       <Box
                         width={156}
                         height={12}
@@ -140,10 +132,10 @@ export function SocialPreviewMessage({
                         fontSize={9}
                         lineHeight="12px"
                       >
-                        {seoTitle}
+                        {journey.seoTitle}
                       </Typography>
                     )}
-                    {isEmpty(seoDescription) ? (
+                    {isEmpty(journey?.seoDescription) ? (
                       <Box
                         width={110}
                         height={12}
@@ -157,7 +149,7 @@ export function SocialPreviewMessage({
                         fontSize={7}
                         lineHeight="11px"
                       >
-                        {seoDescription}
+                        {journey.seoDescription}
                       </Typography>
                     )}
                   </Stack>
@@ -169,6 +161,7 @@ export function SocialPreviewMessage({
                     lineHeight="12px"
                     mt={1}
                     color="#C52D3A"
+                    // eslint-disable-next-line i18next/no-literal-string
                   >
                     https://your.nextstep.is/{journey.slug}
                   </Typography>

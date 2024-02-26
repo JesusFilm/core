@@ -44,7 +44,7 @@ describe('MetadataTabPanel', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('textbox', { name: '' })).toHaveValue('01/01/2023')
+    expect(getByRole('textbox', { name: '' })).toHaveValue('01/01/2021')
   })
 
   it('should handle form change', () => {

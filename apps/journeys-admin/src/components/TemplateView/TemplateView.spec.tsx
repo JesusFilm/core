@@ -113,6 +113,28 @@ describe('TemplateView', () => {
     expect(queryByText('Strategy')).not.toBeInTheDocument()
   })
 
+  it('should not render Strategy section if journey strategy slug is empty string', () => {
+    const journeyWithoutStrategySlug: Journey = {
+      ...defaultJourney,
+      strategySlug: '',
+      tags: [tag]
+    }
+    const { queryByText } = render(
+      <MockedProvider mocks={[getJourneyMock]}>
+        <JourneyProvider
+          value={{
+            journey: journeyWithoutStrategySlug,
+            variant: 'admin'
+          }}
+        >
+          <TemplateView authUser={{} as unknown as User} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(queryByText('Strategy')).not.toBeInTheDocument()
+  })
+
   it('should show creator details if provided', async () => {
     const journeyWithCreatorDetails: Journey = {
       ...defaultJourney,

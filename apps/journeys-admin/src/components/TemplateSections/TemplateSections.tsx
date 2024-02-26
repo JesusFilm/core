@@ -100,22 +100,23 @@ export function TemplateSections({
 
   return (
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
-      {(loading || (collection != null && collection.length > 0)) && (
-        <TemplateGalleryCarousel
-          priority
-          heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
-          items={collection}
-          renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
-          breakpoints={swiperBreakpoints}
-          loading={loading}
-          slidesOffsetBefore={-8}
-          cardSpacing={{
-            xs: 1,
-            md: 8,
-            xl: 11
-          }}
-        />
-      )}
+      {tagIds?.length !== 1 &&
+        (loading || (collection != null && collection.length > 0)) && (
+          <TemplateGalleryCarousel
+            priority
+            heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
+            items={collection}
+            renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+            breakpoints={swiperBreakpoints}
+            loading={loading}
+            slidesOffsetBefore={-8}
+            cardSpacing={{
+              xs: 1,
+              md: 8,
+              xl: 11
+            }}
+          />
+        )}
       {!loading && collection != null && collection.length === 0 && (
         <Paper
           elevation={0}

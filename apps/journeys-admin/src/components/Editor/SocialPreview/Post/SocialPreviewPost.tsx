@@ -9,23 +9,17 @@ import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MessageCircleIcon from '@core/shared/ui/icons/MessageCircle'
 import ShareIcon from '@core/shared/ui/icons/Share'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
-import { JourneyFields } from '../../../../../__generated__/JourneyFields'
-import { useSocialPreview } from '../../SocialProvider'
-
-interface SocialPreviewPostProps {
-  journey?: JourneyFields
-}
-
-export function SocialPreviewPost({
-  journey
-}: SocialPreviewPostProps): ReactElement {
-  const { seoTitle, seoDescription, primaryImageBlock } = useSocialPreview()
+export function SocialPreviewPost(): ReactElement {
+  const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Box
       width={256}
@@ -35,7 +29,7 @@ export function SocialPreviewPost({
     >
       <Stack direction="column" justifyContent="start" alignContent="center">
         <Typography variant="caption" pb={4} textAlign="center">
-          Social App View
+          {t('Social App View')}
         </Typography>
         {journey != null && (
           <Card
@@ -94,7 +88,7 @@ export function SocialPreviewPost({
                 flexDirection: 'column'
               }}
             >
-              {primaryImageBlock?.src == null ? (
+              {journey?.primaryImageBlock?.src == null ? (
                 <Box
                   data-testid="social-preview-post-empty"
                   display="block"
@@ -105,14 +99,13 @@ export function SocialPreviewPost({
                 />
               ) : (
                 <Image
-                  src={primaryImageBlock.src}
-                  alt={primaryImageBlock.alt ?? ''}
+                  src={journey.primaryImageBlock.src}
+                  alt={journey.primaryImageBlock.alt ?? ''}
                   width={224}
                   height={120}
                   style={{
                     borderRadius: '4px',
                     maxWidth: '100%',
-                    height: 'auto',
                     objectFit: 'cover'
                   }}
                 />
@@ -129,7 +122,7 @@ export function SocialPreviewPost({
               >
                 YOUR.NEXTSTEP.IS
               </Typography>
-              {isEmpty(seoTitle) ? (
+              {isEmpty(journey?.seoTitle) ? (
                 <Box
                   width={224}
                   height={12}
@@ -144,10 +137,10 @@ export function SocialPreviewPost({
                   lineHeight="12px"
                   color="#26262E"
                 >
-                  {seoTitle}
+                  {journey.seoTitle}
                 </Typography>
               )}
-              {isEmpty(seoDescription) ? (
+              {isEmpty(journey?.seoDescription) ? (
                 <Box
                   width={158}
                   height={12}
@@ -161,7 +154,7 @@ export function SocialPreviewPost({
                   lineHeight="12px"
                   color="#6D6D7D"
                 >
-                  {seoDescription}
+                  {journey.seoDescription}
                 </Typography>
               )}
               <Stack

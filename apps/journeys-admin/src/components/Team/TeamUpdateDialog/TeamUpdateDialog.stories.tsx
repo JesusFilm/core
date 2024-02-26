@@ -40,6 +40,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
       ],
       getJourneyProfile: {
         __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
         lastActiveTeamId: 'teamId'
       }
     }

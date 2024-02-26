@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
@@ -33,6 +34,7 @@ export function TemplateListItem({
   journey,
   refetch
 }: TemplateListItemProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const nativeLanguage =
     journey?.language.name.find(({ primary }) => primary)?.value ?? ''
   const localLanguage = journey?.language.name.find(
@@ -41,14 +43,17 @@ export function TemplateListItem({
   const displayLanguage =
     nativeLanguage === localLanguage || localLanguage == null
       ? nativeLanguage
-      : `${nativeLanguage} (${localLanguage})`
+      : t('{{ nativeLanguage }} ({{ localLanguage }})', {
+          nativeLanguage,
+          localLanguage
+        })
 
   const date =
     journey != null
       ? intlFormat(parseISO(journey.createdAt), {
           day: 'numeric',
           month: 'long',
-          year: isThisYear(parseISO(journey?.createdAt)) ? undefined : 'numeric'
+          year: isThisYear(parseISO(journey.createdAt)) ? undefined : 'numeric'
         })
       : ''
 
@@ -130,7 +135,9 @@ export function TemplateListItem({
                   >
                     {date}
                     {journey?.description != null
-                      ? ` - ${journey.description}`
+                      ? t(' - {{ description }}', {
+                          description: journey.description
+                        })
                       : ''}
                   </Typography>
                 </>
