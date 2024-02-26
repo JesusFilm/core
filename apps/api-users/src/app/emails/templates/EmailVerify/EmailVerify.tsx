@@ -58,7 +58,7 @@ export const EmailVerifyEmail = ({
       <Header />
       <EmailContainer>
         <BodyWrapper>
-          <ActionCard token={token} recipient={recipient}>
+          <ActionCard recipient={recipient}>
             <Section align="center" className="px-[28px]">
               <Row>
                 <th>

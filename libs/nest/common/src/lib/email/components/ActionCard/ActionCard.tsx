@@ -16,8 +16,6 @@ interface ActionCardProps {
   subHeaderText?: string
   bodyText?: string
   recipient?: Omit<User, 'id' | 'emailVerified'>
-  variant?: 'accessRequest' | 'sharedWithYou' | 'emailVerify'
-  token?: string
   children?: ReactNode
 }
 
@@ -27,8 +25,6 @@ export function ActionCard({
   subHeaderText,
   bodyText,
   recipient,
-  variant,
-  token,
   children
 }: ActionCardProps): ReactElement {
   return (
@@ -79,12 +75,12 @@ export function ActionCard({
                   {headerText}
                 </Text>
               )}
-              {variant == null && subHeaderText != null && (
+              {subHeaderText != null && (
                 <Text className="font-semibold text-[20px] leading-[24px] mt-[0px] mb-[20px] text-center">
                   {subHeaderText}
                 </Text>
               )}
-              {variant == null && bodyText != null && (
+              {bodyText != null && (
                 <Text className="font-[400] text-[16px] leading-[24px] mt-[0px] mb-[20px] text-center">
                   {bodyText}
                 </Text>
