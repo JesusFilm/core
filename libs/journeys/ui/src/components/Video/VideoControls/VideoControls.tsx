@@ -445,12 +445,12 @@ export function VideoControls({
       }}
       data-testid="JourneysVideoControls"
     >
-      <Fade
-        in={visible}
-        style={{ transitionDuration: '500ms' }}
-        timeout={{ exit: 3000 }}
-      >
-        <Stack justifyContent="flex-end" sx={{ height: '100%' }}>
+      <Stack justifyContent="flex-end" sx={{ height: '100%' }}>
+        <Fade
+          in={state.action === 'unmute' || visible}
+          style={{ transitionDuration: '500ms' }}
+          timeout={{ exit: 3000 }}
+        >
           {/* Mobile Play/Pause/Mute */}
           <Stack flexGrow={1} alignItems="center" justifyContent="center">
             {!loading ? (
@@ -468,6 +468,12 @@ export function VideoControls({
               <CircularProgress size={65} />
             )}
           </Stack>
+        </Fade>
+        <Fade
+          in={visible}
+          style={{ transitionDuration: '500ms' }}
+          timeout={{ exit: 3000 }}
+        >
           {/* Progress Bar */}
           <Container
             data-testid="vjs-jfp-custom-controls"
@@ -645,8 +651,8 @@ export function VideoControls({
               }}
             />
           </Container>
-        </Stack>
-      </Fade>
+        </Fade>
+      </Stack>
     </Box>
   )
 }
