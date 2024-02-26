@@ -164,6 +164,15 @@ export function SwipeNavigation({
   )
 
   const swipeHandlers = useSwipeable({
+    onSwiped: (eventData) => {
+      console.log(eventData)
+      const initialPos = eventData.initial
+      console.log(initialPos)
+      if (initialPos[0] < 5) {
+        console.log('here')
+        eventData.event.preventDefault()
+      }
+    },
     onSwipedLeft: (eventData) => {
       const targetElement = eventData.event.target as HTMLElement
       if (targetElement.classList.contains('MuiSlider-thumb')) return
@@ -187,6 +196,7 @@ export function SwipeNavigation({
 
   return (
     <Box
+      className="swipe-area"
       sx={{
         height: 'inherit',
         maxHeight: 'inherit',
