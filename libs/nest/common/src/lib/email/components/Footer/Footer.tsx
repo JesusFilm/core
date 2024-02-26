@@ -11,7 +11,12 @@ import { ReactElement } from 'react'
 export function Footer(): ReactElement {
   return (
     <Container className="h-[72px] px-[60px]" align="center">
-      <Text className="font-sans text-center font-bold text-[14px] leading-[20px] tracking-[2px]">
+      <Text
+        className="text-center font-bold text-[14px] leading-[20px] tracking-[2px]"
+        style={{
+          font: '14px "Open Sans", sans-serif'
+        }}
+      >
         WHAT IS NEXTSTEPS?
       </Text>
       <Text className="font-sans text-center font-semibold text-[16px] leading-[24px]">
@@ -22,8 +27,11 @@ export function Footer(): ReactElement {
         <Row>
           <Column align="center">
             <Button
-              className="rounded-lg text-[#26262D] text-[12px] font-semibold no-underline text-center px-5 py-3 border-2 border-solid border-[#26262D4D]"
+              className="rounded-lg text-[#26262D] text-[16px] font-semibold no-underline text-center px-5 py-3 border-2 border-solid border-[#26262D4D] mb-[12px]"
               href="https://support.nextstep.is/article/1347-discover-nextsteps"
+              style={{
+                font: '16px "Open Sans", sans-serif'
+              }}
             >
               Learn More
             </Button>

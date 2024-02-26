@@ -49,10 +49,10 @@ export const EmailVerifyEmail = ({
         <BodyWrapper>
           <ActionCard
             url={inviteLink}
-            headerText="Verify your email address to start making interactive Journeys!"
-            subHeaderText={token}
+            token={token}
             buttonText="Verify Email Address"
             recipient={recipient}
+            variant="emailVerify"
           />
         </BodyWrapper>
         <Footer />

@@ -122,13 +122,19 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const mobileNotchStyling: SxProps = {
     width: {
       xs:
-        variant === 'default'
+        variant === 'default' || variant === 'embed'
           ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
           : '100%',
       lg: 'auto'
     },
-    left: variant === 'default' ? 'env(safe-area-inset-left)' : undefined,
-    right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
+    left:
+      variant === 'default' || variant === 'embed'
+        ? 'env(safe-area-inset-left)'
+        : undefined,
+    right:
+      variant === 'default' || variant === 'embed'
+        ? 'env(safe-area-inset-right)'
+        : undefined
   }
 
   const stepTheme = getStepTheme(activeBlock, journey)

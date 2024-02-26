@@ -26,7 +26,7 @@ export class UserTeamInviteService {
     await this.emailQueue.add(
       'team-invite',
       {
-        teamName: team.title,
+        team,
         email,
         sender
       },
@@ -43,14 +43,11 @@ export class UserTeamInviteService {
     team: TeamWithUserTeam,
     sender: Omit<User, 'id' | 'emailVerified'>
   ): Promise<void> {
-    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
-
     await this.emailQueue.add(
       'team-invite-accepted',
       {
         team,
-        sender,
-        url
+        sender
       },
       {
         removeOnComplete: true,

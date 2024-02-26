@@ -12,6 +12,8 @@ import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
+import { JourneyProvider } from '../../../libs/JourneyProvider'
+
 import { VideoControls } from './VideoControls'
 
 describe('VideoControls', () => {
@@ -277,6 +279,22 @@ describe('VideoControls', () => {
 
       fireEvent.click(getByRole('button', { name: 'fullscreen' }))
       await waitFor(() => expect(exitMock).toHaveBeenCalled())
+    })
+
+    it('hides fullscreen on embed', async () => {
+      const { getByRole, queryByRole } = render(
+        <MockedProvider>
+          <JourneyProvider value={{ variant: 'embed' }}>
+            <VideoControls player={player} startAt={0} endAt={10} activeStep />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+      expect(
+        getByRole('region', { name: 'video-controls' })
+      ).toBeInTheDocument()
+      expect(
+        queryByRole('button', { name: 'fullscreen' })
+      ).not.toBeInTheDocument()
     })
   })
 })

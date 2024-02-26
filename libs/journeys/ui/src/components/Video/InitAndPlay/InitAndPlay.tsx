@@ -13,6 +13,7 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../../libs/block'
+import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 
 interface InitAndPlayProps {
@@ -54,6 +55,7 @@ export function InitAndPlay({
   setShowPoster,
   setVideoEndTime
 }: InitAndPlayProps): ReactElement {
+  const { variant } = useJourney()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const [error, setError] = useState(false)
@@ -118,7 +120,11 @@ export function InitAndPlay({
     }
     const handleVideoEnd = (): void => {
       setLoading(false)
-      if (player?.isFullscreen() === true && player != null) {
+      if (
+        player?.isFullscreen() === true &&
+        player != null &&
+        variant !== 'embed'
+      ) {
         void player.exitFullscreen()
       }
     }
@@ -151,6 +157,7 @@ export function InitAndPlay({
     activeBlock,
     blockId,
     activeStep,
+    variant,
     setLoading,
     setShowPoster
   ])
