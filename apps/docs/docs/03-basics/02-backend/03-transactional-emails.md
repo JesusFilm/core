@@ -85,7 +85,7 @@ In our backend, we use redis and bullmq to create a job - that at a later time, 
 
 To set up a transactional email, you will need to add a job to the queue
 
-#### 1. Make sure that the module you are working in has bull pointing towards the email queue. We will use api-journeys as an example:
+#### 1. Make sure that the module you are working in has the correct bull queue registered. We will use api-journeys as an example:
 
 ```
 import { BullModule } from '@nestjs/bullmq'
@@ -152,7 +152,7 @@ export class SomeService {
 - make sure `@Injectable()` decorator wraps the whole class
 - in the `this.emailQueue.add`, the first argument should be a string with the name of the email job. we will configure a consumer for this in the next step.
 - the second argument is an object with the data you want to pass to the consumer. the data you want to pass should come from the arguments of the parent method (which in thise case is `sendEmail`)
-- the third argument is the configuration settings for this job in the queue. You won't have to worry too much about this, just use the default settings provided in the code snippet above.
+- the third argument is the configuration settings for this job in the queue.
 
 #### 3. configure your job to be consumed in the `email.consumer.ts`
 
