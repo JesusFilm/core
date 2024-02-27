@@ -35,7 +35,7 @@ const GET_RESOURCE = gql`
 const ResourceDetailsPage: FC = () => {
   const [tabIndex, setTabIndex] = useState(0)
   const router = useRouter()
-  const resourceId = router.query
+  const { resourceId } = router.query
   const [localizations, setLocalizations] = useState([])
 
   const { data, loading } = useQuery(GET_RESOURCE, {
