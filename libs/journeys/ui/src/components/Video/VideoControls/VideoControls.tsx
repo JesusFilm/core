@@ -32,20 +32,7 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 
-enum PlaybackEvent {
-  PLAY,
-  PAUSE,
-  MUTE,
-  UNMUTE
-}
-
-type MobileAction = 'play' | 'pause' | 'unmute'
-
-interface PlaybackState {
-  playing: boolean
-  muted: boolean
-  action: MobileAction
-}
+import { PlaybackEvent, playbackReducer } from './playbackReducer'
 
 interface VideoControlProps {
   player: Player
@@ -76,38 +63,6 @@ function iPhone(): boolean {
   return userAgent.includes('iPhone')
 }
 
-function playbackMachine(
-  state: PlaybackState,
-  event: { type: PlaybackEvent }
-): PlaybackState {
-  switch (event.type) {
-    case PlaybackEvent.PLAY:
-      return {
-        ...state,
-        playing: true,
-        action: state.muted ? 'unmute' : 'pause'
-      }
-    case PlaybackEvent.PAUSE:
-      return {
-        ...state,
-        playing: false,
-        action: 'play'
-      }
-    case PlaybackEvent.MUTE:
-      return {
-        ...state,
-        muted: true,
-        action: state.playing ? 'unmute' : 'play'
-      }
-    case PlaybackEvent.UNMUTE:
-      return {
-        ...state,
-        muted: false,
-        action: state.playing ? 'pause' : 'play'
-      }
-  }
-}
-
 export function VideoControls({
   player,
   startAt,
@@ -122,7 +77,7 @@ export function VideoControls({
   const [displayTime, setDisplayTime] = useState('0:00')
   const [progress, setProgress] = useState(0)
   const [volume, setVolume] = useState((player.volume() ?? 1) * 100)
-  const [state, dispatch] = useReducer(playbackMachine, {
+  const [state, dispatch] = useReducer(playbackReducer, {
     // Explicit muted state since player.muted state lags when video paused
     muted: initialMuted,
     playing: false,
