@@ -34,7 +34,7 @@ export function ActionCard({
         className="w-full bg-[#FFFFFF] pt-[20px] pb-[40px] rounded-lg"
       >
         <Section align="center" className="px-[28px]">
-          <Row align="center" style={{ marginTop: '-50px' }}>
+          <Row align="center" style={{ marginTop: '-44px' }}>
             <Column align="center">
               {recipient?.imageUrl != null ? (
                 <Img
@@ -67,7 +67,7 @@ export function ActionCard({
               </Text>
               {headerText != null && (
                 <Text
-                  className="font-semibold text-[16px] leading-[24px] mt-[0px] mb-[20px] text-center"
+                  className="font-semibold text-[16px] leading-[24px] mt-[0px] mb-[8px] text-center"
                   style={{
                     font: '16px "Open Sans", sans-serif'
                   }}
@@ -76,12 +76,12 @@ export function ActionCard({
                 </Text>
               )}
               {subHeaderText != null && (
-                <Text className="font-semibold text-[20px] leading-[24px] mt-[0px] mb-[20px] text-center">
+                <Text className="font-semibold text-[20px] leading-[24px] mt-[0px] mb-[16px] text-center">
                   {subHeaderText}
                 </Text>
               )}
               {bodyText != null && (
-                <Text className="font-[400] text-[16px] leading-[24px] mt-[0px] mb-[20px] text-center">
+                <Text className="font-[400] text-[16px] leading-[24px] mt-[0px] mb-[16px] text-center">
                   {bodyText}
                 </Text>
               )}
