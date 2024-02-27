@@ -1,16 +1,17 @@
 import { MockedProvider } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   act,
   cleanup,
   fireEvent,
   render,
   screen,
-  waitFor
+  waitFor,
+  within
 } from '@testing-library/react'
 import fscreen from 'fscreen'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
-import { useMediaQuery } from '@mui/material'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -277,13 +278,17 @@ describe('VideoControls', () => {
         .spyOn(player, 'requestFullscreen')
         .mockImplementationOnce(async () => player)
 
-      const { getByRole } = render(
+      render(
         <MockedProvider>
           <VideoControls player={player} startAt={0} endAt={10} activeStep />
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'fullscreen' }))
+      fireEvent.click(
+        within(screen.getByTestId('desktop-controls')).getByRole('button', {
+          name: 'fullscreen'
+        })
+      )
       expect(fullscreenStub).toHaveBeenCalled()
     })
 
@@ -294,13 +299,17 @@ describe('VideoControls', () => {
         .spyOn(player, 'exitFullscreen')
         .mockImplementationOnce(async () => player)
 
-      const { getByRole } = render(
+      render(
         <MockedProvider>
           <VideoControls player={player} startAt={0} endAt={10} activeStep />
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'fullscreen' }))
+      fireEvent.click(
+        within(screen.getByTestId('desktop-controls')).getByRole('button', {
+          name: 'fullscreen'
+        })
+      )
       expect(fullscreenStub).toHaveBeenCalled()
     })
   })
@@ -316,7 +325,7 @@ describe('VideoControls', () => {
     })
 
     it('maximises the entire card on fullscreen icon click', async () => {
-      const { getByRole } = render(
+      render(
         <MockedProvider>
           <div className="step active-card">
             <div className="card MuiPaper-root">
@@ -331,7 +340,12 @@ describe('VideoControls', () => {
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'fullscreen' }))
+      fireEvent.click(
+        within(screen.getByTestId('desktop-controls')).getByRole('button', {
+          name: 'fullscreen'
+        })
+      )
+
       await waitFor(() => expect(fscreen.requestFullscreen).toHaveBeenCalled())
     })
 
@@ -343,13 +357,17 @@ describe('VideoControls', () => {
         // @ts-expect-error: jest mock type conflicts with fscreen type
         .mockImplementation(() => jest.fn())
 
-      const { getByRole } = render(
+      render(
         <MockedProvider>
           <VideoControls player={player} startAt={0} endAt={10} activeStep />
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'fullscreen' }))
+      fireEvent.click(
+        within(screen.getByTestId('desktop-controls')).getByRole('button', {
+          name: 'fullscreen'
+        })
+      )
       await waitFor(() => expect(exitMock).toHaveBeenCalled())
     })
 
