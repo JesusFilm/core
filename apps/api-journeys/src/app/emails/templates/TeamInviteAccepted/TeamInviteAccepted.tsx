@@ -1,8 +1,17 @@
-import { Body, Head, Html, Preview } from '@react-email/components'
+import {
+  Body,
+  Column,
+  Head,
+  Html,
+  Preview,
+  Row,
+  Section
+} from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
 import {
+  ActionButton,
   ActionCard,
   BodyWrapper,
   EmailContainer,
@@ -47,13 +56,18 @@ export const TeamInviteAcceptedEmail = ({
       <EmailContainer>
         <BodyWrapper>
           <ActionCard
-            url={inviteLink}
             headerText={`${sender.firstName} accepted your invite to: `}
             subHeaderText={`${teamName}`}
-            buttonText="View Team"
-            sender={sender}
             recipient={recipient}
-          />
+          >
+            <Section align="center">
+              <Row className="px-[28px]">
+                <Column align="center">
+                  <ActionButton url={inviteLink} buttonText="View Team" />
+                </Column>
+              </Row>
+            </Section>
+          </ActionCard>
         </BodyWrapper>
         <Footer />
         <UnsubscribeLink recipientEmail={recipient.email} />
