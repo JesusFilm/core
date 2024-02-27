@@ -1,26 +1,13 @@
-import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
-import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
-import PauseRounded from '@mui/icons-material/PauseRounded'
-import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
-import VolumeDownOutlined from '@mui/icons-material/VolumeDownOutlined'
-import VolumeMuteOutlined from '@mui/icons-material/VolumeMuteOutlined'
-import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
-import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
 import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'
-import IconButton from '@mui/material/IconButton'
-import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import fscreen from 'fscreen'
 import {
   MouseEventHandler,
   ReactElement,
-  ReactNode,
   useEffect,
   useReducer,
   useState
@@ -32,6 +19,9 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 
+import { PlaybackIcon } from './components/PlaybackIcon'
+import { Desktop } from './Desktop'
+import { Mobile } from './Mobile'
 import { PlaybackEvent, playbackReducer } from './playbackReducer'
 
 interface VideoControlProps {
@@ -312,9 +302,13 @@ export function VideoControls({
 
   function handleMute(): void {
     player.muted(!state.muted)
-    state.muted
-      ? dispatch({ type: PlaybackEvent.UNMUTE })
-      : dispatch({ type: PlaybackEvent.MUTE })
+
+    if (state.muted) {
+      dispatch({ type: PlaybackEvent.UNMUTE })
+      player.volume(volume)
+    } else {
+      dispatch({ type: PlaybackEvent.MUTE })
+    }
   }
 
   function handleVolume(e: Event, value: number | number[]): void {
@@ -322,13 +316,14 @@ export function VideoControls({
       // Should handle unmuting when volume has a value, and muting when volume is zero
       if (value > 0) {
         player.muted(false)
-        dispatch({ type: PlaybackEvent.UNMUTE })
         setVolume(value)
         player.volume(value / 100)
+        dispatch({ type: PlaybackEvent.UNMUTE })
       } else {
         player.muted(true)
-        dispatch({ type: PlaybackEvent.MUTE })
+        player.volume(0)
         setVolume(0)
+        dispatch({ type: PlaybackEvent.MUTE })
       }
     }
   }
@@ -352,16 +347,6 @@ export function VideoControls({
         onDblClick(event)
       }
     }
-  }
-
-  function renderMobileControlButton(): ReactNode {
-    const icons = {
-      play: <PlayArrowRounded fontSize="inherit" />,
-      pause: <PauseRounded fontSize="inherit" />,
-      unmute: <VolumeOffOutlined fontSize="inherit" />
-    }
-
-    return icons[state.action]
   }
 
   return (
@@ -400,36 +385,19 @@ export function VideoControls({
       }}
       data-testid="JourneysVideoControls"
     >
-      <Stack justifyContent="flex-end" sx={{ height: '100%' }}>
+      <Stack
+        justifyContent="center"
+        sx={{ height: '100%' }}
+        flexGrow={1}
+        alignItems="center"
+      >
+        <PlaybackIcon state={state} loading={loading} visible={visible} />
         <Fade
-          in={state.action === 'unmute' || visible}
+          in
           style={{ transitionDuration: '500ms' }}
           timeout={{ exit: 3000 }}
         >
-          {/* Mobile Play/Pause/Mute */}
-          <Stack flexGrow={1} alignItems="center" justifyContent="center">
-            {!loading ? (
-              <IconButton
-                aria-label={`center-${state.action}-button`}
-                sx={{
-                  fontSize: 50,
-                  display: { xs: 'flex', lg: 'none' },
-                  p: { xs: 2, sm: 0, md: 2 }
-                }}
-              >
-                {renderMobileControlButton()}
-              </IconButton>
-            ) : (
-              <CircularProgress size={65} />
-            )}
-          </Stack>
-        </Fade>
-        <Fade
-          in={visible}
-          style={{ transitionDuration: '500ms' }}
-          timeout={{ exit: 3000 }}
-        >
-          {/* Progress Bar */}
+          {/* Mobile and Desktop Video Controls */}
           <Container
             data-testid="vjs-jfp-custom-controls"
             maxWidth="xxl"
@@ -440,171 +408,85 @@ export function VideoControls({
                 xs: showHeaderFooter || isYoutube ? 28 : 2,
                 sm: showHeaderFooter || isYoutube ? 15 : 2,
                 lg: 2
-              }
+              },
+              position: 'absolute',
+              bottom: 0
             }}
             onClick={(event) => event.stopPropagation()}
           >
-            <Stack
-              direction="row"
-              gap={5}
-              justifyContent={{ xs: 'space-between', lg: 'none' }}
-              alignItems="center"
-            >
-              <IconButton
-                aria-label={
-                  state.playing ? 'bar-pause-button' : 'bar-play-button'
-                }
-                onClick={handlePlay}
-                sx={{
-                  display: { xs: 'none', lg: 'flex' },
-                  ml: { xs: 0, lg: -1 }
-                }}
+            <Mobile.Root>
+              <Stack
+                direction="row"
+                gap={5}
+                justifyContent="space-between"
+                alignItems="center"
               >
-                {!state.playing ? <PlayArrowRounded /> : <PauseRounded />}
-              </IconButton>
-              <Slider
-                aria-label="desktop-progress-control"
+                {player != null && duration != null && (
+                  <Mobile.TimeLabel
+                    displayTime={displayTime}
+                    duration={duration}
+                  />
+                )}
+                {(variant !== 'embed' || iPhone()) && (
+                  <Mobile.FullscreenButton
+                    handleClick={handleFullscreen}
+                    fullscreen={fullscreen}
+                  />
+                )}
+              </Stack>
+              <Mobile.Progress
                 min={startAt}
                 max={endAt - 0.25}
                 value={progress}
                 valueLabelFormat={displayTime}
-                valueLabelDisplay="auto"
                 onChange={handleSeek}
-                sx={{
-                  height: 8,
-                  display: { xs: 'none', lg: 'flex' },
-                  '& .MuiSlider-thumb': {
-                    width: 13,
-                    height: 13,
-                    mr: -3
-                  },
-                  '& .MuiSlider-rail': {
-                    backgroundColor: 'secondary.main'
-                  },
-                  '& .MuiSlider-track': {
-                    border: 'none'
-                  }
-                }}
+                disabled={!player.hasStarted_}
+              />
+            </Mobile.Root>
+
+            <Desktop.Root>
+              <Desktop.PlayButton
+                playing={state.playing}
+                handleClick={handlePlay}
               />
               {player != null && duration != null && (
-                <Typography
-                  variant="caption"
-                  color="secondary.main"
-                  noWrap
-                  overflow="unset"
-                  sx={{ p: 2 }}
-                >
-                  {displayTime} / {duration}
-                </Typography>
+                <Desktop.TimeLabel
+                  displayTime={displayTime}
+                  duration={duration}
+                />
               )}
+              <Desktop.Progress
+                min={startAt}
+                max={endAt - 0.25}
+                value={progress}
+                valueLabelFormat={displayTime}
+                onChange={handleSeek}
+              />
+
               <Stack
                 direction="row"
                 alignItems="center"
                 justifyContent="flex-end"
-                sx={{ width: { xs: '100%', lg: 'unset' }, p: 1.5 }}
+                sx={{
+                  width: { xs: '100%', lg: 'unset' },
+                  p: 1.5
+                }}
+                gap={2}
               >
-                <Stack
-                  alignItems="center"
-                  spacing={2}
-                  direction="row"
-                  sx={{
-                    display: { xs: 'none', lg: 'flex' },
-                    '> .MuiSlider-root': {
-                      width: 0,
-                      opacity: 0,
-                      transition: 'all 0.2s ease-out'
-                    },
-                    '&:hover': {
-                      '> .MuiSlider-root': {
-                        width: 70,
-                        mx: 3,
-                        opacity: 1
-                      }
-                    }
-                  }}
-                >
-                  <Slider
-                    aria-label="volume-control"
-                    min={0}
-                    max={100}
-                    value={player.muted() ?? false ? 0 : volume}
-                    valueLabelFormat={(value) => {
-                      return `${Math.round(value)}%`
-                    }}
-                    valueLabelDisplay="auto"
-                    onChange={handleVolume}
-                    sx={{
-                      '& .MuiSlider-thumb': {
-                        width: 10,
-                        height: 10,
-                        mr: -3
-                      },
-                      '& .MuiSlider-rail': {
-                        backgroundColor: 'secondary.main'
-                      }
-                    }}
-                  />
-                  <IconButton
-                    aria-label={
-                      state.muted ? 'bar-unmute-button' : 'bar-mute-button'
-                    }
-                    onClick={handleMute}
-                    sx={{ p: 0 }}
-                  >
-                    {state.muted || volume === 0 ? (
-                      <VolumeOffOutlined />
-                    ) : volume > 60 ? (
-                      <VolumeUpOutlined />
-                    ) : volume > 30 ? (
-                      <VolumeDownOutlined />
-                    ) : (
-                      <VolumeMuteOutlined />
-                    )}
-                  </IconButton>
-                </Stack>
+                <Desktop.VolumeControls
+                  volume={volume}
+                  handleVolume={handleVolume}
+                  muted={state.muted}
+                  handleMute={handleMute}
+                />
                 {(variant !== 'embed' || iPhone()) && (
-                  <IconButton
-                    aria-label="fullscreen"
-                    onClick={handleFullscreen}
-                    sx={{ py: 0, px: 2 }}
-                  >
-                    {fullscreen ? (
-                      <FullscreenExitRounded />
-                    ) : (
-                      <FullscreenRounded />
-                    )}
-                  </IconButton>
+                  <Desktop.FullscreenButton
+                    handleClick={handleFullscreen}
+                    fullscreen={fullscreen}
+                  />
                 )}
               </Stack>
-            </Stack>
-            <Slider
-              aria-label="mobile-progress-control"
-              min={startAt}
-              max={endAt - 0.25}
-              value={progress}
-              valueLabelFormat={displayTime}
-              valueLabelDisplay="auto"
-              onChange={handleSeek}
-              disabled={!player.hasStarted_}
-              sx={{
-                width: 'initial',
-                height: 5,
-                mx: 2.5,
-                py: 2,
-                display: { xs: 'flex', lg: 'none' },
-                '& .MuiSlider-thumb': {
-                  width: 10,
-                  height: 10,
-                  mr: -3
-                },
-                '& .MuiSlider-rail': {
-                  backgroundColor: 'secondary.main'
-                },
-                '& .MuiSlider-track': {
-                  border: 'none'
-                }
-              }}
-            />
+            </Desktop.Root>
           </Container>
         </Fade>
       </Stack>
