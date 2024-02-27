@@ -234,7 +234,9 @@ export function Video({
                   src={`https://customer-${
                     process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
                     ''
-                  }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
+                  }.cloudflarestream.com/${
+                    videoId ?? ''
+                  }/manifest/video.m3u8?clientBandwidthHint=10`}
                   type="application/x-mpegURL"
                 />
               )}
