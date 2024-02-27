@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -35,6 +36,8 @@ export function ImageBlockHeader({
   unsplashAuthor,
   Icon
 }: ImageBlockHeaderProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <Stack
       data-testid="ImageBlockHeader"
@@ -66,16 +69,18 @@ export function ImageBlockHeader({
           <Stack>
             <Typography variant="subtitle2" color="text.secondary">
               {loading
-                ? 'Image is uploading...'
-                : selectedBlock != null
-                ? 'Selected Image'
+                ? t('Image is uploading...')
+                : selectedBlock?.src != null
+                ? t('Selected Image')
                 : showAdd
-                ? 'Select Image'
+                ? t('Select Image')
                 : error === true
-                ? 'Upload failed'
-                : 'No Image Selected'}
+                ? t('Upload failed')
+                : t('No Image Selected')}
             </Typography>
-            {unsplashAuthor != null ? (
+            {unsplashAuthor != null &&
+            selectedBlock?.src != null &&
+            !loading ? (
               <Link
                 href={`https://unsplash.com/@${
                   unsplashAuthor.username ?? ''
@@ -91,12 +96,15 @@ export function ImageBlockHeader({
             ) : (
               <Typography
                 variant="caption"
-                display={selectedBlock != null ? 'flex' : 'none'}
+                display={
+                  selectedBlock?.src != null && !loading ? 'flex' : 'none'
+                }
                 color="text.secondary"
               >
-                {selectedBlock != null
-                  ? `${selectedBlock.width} x ${selectedBlock.height} pixels`
-                  : ''}
+                {t('{{ width }} x {{ height }} pixels', {
+                  width: selectedBlock?.width,
+                  height: selectedBlock?.height
+                })}
               </Typography>
             )}
           </Stack>

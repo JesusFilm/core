@@ -118,6 +118,7 @@ describe('AddJourneyButton', () => {
         teams: [],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: null
         }
       }
@@ -176,7 +177,7 @@ describe('AddJourneyButton', () => {
 
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
-        `/journeys/${data.journeyCreate.id}/edit`,
+        `/journeys/${data.journeyCreate.id}`,
         undefined,
         { shallow: true }
       )

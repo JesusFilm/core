@@ -32,6 +32,7 @@ import Bell2 from './Bell2'
 import Bible from './Bible'
 import Book from './Book'
 import Box from './Box'
+import Bulb from './Bulb'
 import Calendar1 from './Calendar1'
 import Calendar4 from './Calendar4'
 import Check from './Check'
@@ -64,6 +65,7 @@ import Download2 from './Download2'
 import Drag from './Drag'
 import DuplicateCard from './DuplicateCard'
 import Edit2 from './Edit2'
+import Ellipsis from './Ellipsis'
 import Email from './Email'
 import Embed from './Embed'
 import Expand from './Expand'
@@ -224,6 +226,7 @@ export type IconName =
   | 'Bible'
   | 'Book'
   | 'Box'
+  | 'Bulb'
   | 'Calendar1'
   | 'Calendar4'
   | 'CheckBroken'
@@ -256,6 +259,7 @@ export type IconName =
   | 'Drag'
   | 'DuplicateCard'
   | 'Edit2'
+  | 'Ellipsis'
   | 'Email'
   | 'Embed'
   | 'Expand2'
@@ -420,6 +424,7 @@ const iconComponents: IconComponents = {
   Bible,
   Book,
   Box,
+  Bulb,
   Calendar1,
   Calendar4,
   CheckBroken,
@@ -452,6 +457,7 @@ const iconComponents: IconComponents = {
   Drag,
   DuplicateCard,
   Edit2,
+  Ellipsis,
   Email,
   Embed,
   Expand2,

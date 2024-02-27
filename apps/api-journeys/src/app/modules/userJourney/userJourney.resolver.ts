@@ -9,6 +9,7 @@ import {
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+import omit from 'lodash/omit'
 
 import {
   Journey,
@@ -17,15 +18,22 @@ import {
   UserJourneyRole
 } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { User } from '@core/nest/common/firebaseClient'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
+import { UserJourneyService } from './userJourney.service'
+
 @Resolver('UserJourney')
 export class UserJourneyResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly userJourneyService: UserJourneyService
+  ) {}
 
   @Query()
   @UseGuards(AppCaslGuard)
@@ -46,22 +54,32 @@ export class UserJourneyResolver {
   async userJourneyRequest(
     @CaslAbility() ability: AppAbility,
     @Args('journeyId') journeyId: string,
-    @CurrentUserId() userId: string
+    @CurrentUser() user: User
   ): Promise<UserJourney> {
     return await this.prismaService.$transaction(async (tx) => {
       const userJourney = await tx.userJourney.upsert({
-        where: { journeyId_userId: { journeyId, userId } },
+        where: { journeyId_userId: { journeyId, userId: user.id } },
         create: {
-          userId,
+          userId: user.id,
           journey: { connect: { id: journeyId } },
           role: UserJourneyRole.inviteRequested
         },
-        update: {}
+        update: {},
+        include: {
+          journey: {
+            include: { userJourneys: true, team: true, primaryImageBlock: true }
+          }
+        }
       })
       if (!ability.can(Action.Create, subject('UserJourney', userJourney)))
         throw new GraphQLError('user is not allowed to create userJourney', {
           extensions: { code: 'FORBIDDEN' }
         })
+
+      await this.userJourneyService.sendJourneyAccessRequest(
+        userJourney.journey,
+        omit(user, ['id', 'emailVerified'])
+      )
       return userJourney
     })
   }
@@ -70,6 +88,7 @@ export class UserJourneyResolver {
   @UseGuards(AppCaslGuard)
   async userJourneyApprove(
     @CaslAbility() ability: AppAbility,
+    @CurrentUser() user: User,
     @Args('id') id: string
   ): Promise<UserJourney> {
     const userJourney = await this.prismaService.userJourney.findUnique({
@@ -78,7 +97,8 @@ export class UserJourneyResolver {
         journey: {
           include: {
             team: { include: { userTeams: true } },
-            userJourneys: true
+            userJourneys: true,
+            primaryImageBlock: true
           }
         }
       }
@@ -93,10 +113,16 @@ export class UserJourneyResolver {
       throw new GraphQLError('user is not allowed to update userJourney', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.prismaService.userJourney.update({
+    const retVal = await this.prismaService.userJourney.update({
       where: { id },
       data: { role: UserJourneyRole.editor }
     })
+    await this.userJourneyService.sendJourneyApproveEmail(
+      userJourney.journey,
+      userJourney.userId,
+      omit(user, ['id', 'emailVerified'])
+    )
+    return retVal
   }
 
   @Mutation()

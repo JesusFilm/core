@@ -188,11 +188,15 @@ describe('DuplicateJourneys', () => {
     await waitFor(() => expect(result2).toHaveBeenCalled())
     await fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
     await waitFor(() => expect(result).not.toHaveBeenCalled())
-    expect(push).toHaveBeenCalledWith({
-      query: { param: 'duplicate-journey' },
-      push,
-      events
-    })
+    expect(push).toHaveBeenCalledWith(
+      {
+        query: { param: 'duplicate-journey' },
+        push,
+        events
+      },
+      undefined,
+      { shallow: true }
+    )
     expect(getByText('Copy to Another Team')).toBeInTheDocument()
     const muiSelect = getByTestId('team-duplicate-select')
     const muiSelectDropDownButton = await within(muiSelect).getByRole('button')

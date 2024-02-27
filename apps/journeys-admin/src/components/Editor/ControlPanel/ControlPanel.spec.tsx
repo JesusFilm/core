@@ -34,15 +34,11 @@ import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypo
 import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
 
 import { ControlPanel } from '.'
+import '../../../../test/i18n'
 
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'uuid'
-}))
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => ({ t: (str: string) => str })
 }))
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -226,37 +222,49 @@ describe('ControlPanel', () => {
     fireEvent.click(getByTestId('CardItem-step2.id'))
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        push,
-        events: {
-          on
+      expect(push).toHaveBeenCalledWith(
+        {
+          push,
+          events: {
+            on
+          },
+          query: { param: 'properties-tab' }
         },
-        query: { param: 'properties-tab' }
-      })
+        undefined,
+        { shallow: true }
+      )
     })
 
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('button', { name: 'Text' })).toBeInTheDocument()
-      expect(push).toHaveBeenCalledWith({
-        push,
-        events: {
-          on
+      expect(push).toHaveBeenCalledWith(
+        {
+          push,
+          events: {
+            on
+          },
+          query: { param: 'blocks-tab' }
         },
-        query: { param: 'blocks-tab' }
-      })
+        undefined,
+        { shallow: true }
+      )
     })
 
     fireEvent.click(getByRole('tab', { name: 'Journey' }))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        push,
-        events: {
-          on
+      expect(push).toHaveBeenCalledWith(
+        {
+          push,
+          events: {
+            on
+          },
+          query: { param: 'journeys-tab' }
         },
-        query: { param: 'journeys-tab' }
-      })
+        undefined,
+        { shallow: true }
+      )
     })
   })
 

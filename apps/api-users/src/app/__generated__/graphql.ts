@@ -16,12 +16,17 @@ export class User {
     email: string;
     imageUrl?: Nullable<string>;
     superAdmin?: Nullable<boolean>;
+    emailVerified: boolean;
 }
 
 export abstract class IQuery {
     __typename?: 'IQuery';
 
     abstract me(): Nullable<User> | Promise<Nullable<User>>;
+
+    abstract user(id: string): Nullable<User> | Promise<Nullable<User>>;
+
+    abstract userByEmail(email: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export class Translation {
@@ -33,6 +38,10 @@ export class Translation {
 
 export abstract class IMutation {
     abstract userImpersonate(email: string): Nullable<string> | Promise<Nullable<string>>;
+
+    abstract createVerificationRequest(): Nullable<boolean> | Promise<Nullable<boolean>>;
+
+    abstract validateEmail(email: string, token: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export class Language {

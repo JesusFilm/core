@@ -257,7 +257,7 @@ export function AddByFile({
         />
         {error != null ? (
           <Typography variant="caption">
-            Something went wrong, try again
+            {t('Something went wrong, try again')}
           </Typography>
         ) : fileRejected ? (
           <Typography variant="caption">

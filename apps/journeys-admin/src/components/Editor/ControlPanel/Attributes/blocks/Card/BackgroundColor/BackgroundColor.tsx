@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography'
 import debounce from 'lodash/debounce'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import { HexColorPicker } from 'react-colorful'
+import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -159,6 +160,8 @@ export function BackgroundColor(): ReactElement {
     </Box>
   )
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Stack
@@ -201,8 +204,8 @@ export function BackgroundColor(): ReactElement {
           variant="fullWidth"
           centered
         >
-          <Tab label="Palette" {...tabA11yProps('background-color', 0)} />
-          <Tab label="Custom" {...tabA11yProps('background-color', 1)} />
+          <Tab label={t('Palette')} {...tabA11yProps('background-color', 0)} />
+          <Tab label={t('Custom')} {...tabA11yProps('background-color', 1)} />
         </Tabs>
         <Divider />
         <TabPanel name="background-color" value={tabValue} index={0}>
@@ -215,12 +218,12 @@ export function BackgroundColor(): ReactElement {
       <Box sx={{ [cardTheme.breakpoints.down('sm')]: { display: 'none' } }}>
         <Divider />
         <Box sx={{ px: 6, pt: 4 }}>
-          <Typography variant="subtitle2">Palette</Typography>
+          <Typography variant="subtitle2">{t('Palette')}</Typography>
         </Box>
         {palettePicker}
         <Divider />
         <Box sx={{ px: 6, py: 4 }}>
-          <Typography variant="subtitle2">Custom</Typography>
+          <Typography variant="subtitle2">{t('Custom')}</Typography>
         </Box>
         {hexColorPicker}
       </Box>
