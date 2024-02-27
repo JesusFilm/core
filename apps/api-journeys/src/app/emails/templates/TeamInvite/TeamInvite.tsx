@@ -60,10 +60,10 @@ export const TeamInviteEmail = ({
             subHeaderText={`${teamName}`}
             recipient={recipient}
           >
-            <Section>
-              <Row>
+            <Section align="center">
+              <Row className="px-[28px]">
                 <Column align="center">
-                  <div />
+                  <ActionButton url={inviteLink} buttonText="Join Now" />
                 </Column>
               </Row>
             </Section>
