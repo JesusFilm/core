@@ -64,9 +64,7 @@ describe('accordion', () => {
         </EditorProvider>
       </ThemeProvider>
     )
-    expect(
-      queryByText('selectedAttributeId: custom-id')
-    ).not.toBeInTheDocument()
+
     fireEvent.click(getByRole('button'))
     expect(getByText('selectedAttributeId: custom-id')).toBeInTheDocument()
     expect(push).toHaveBeenCalledWith(
@@ -80,5 +78,9 @@ describe('accordion', () => {
       undefined,
       { shallow: true }
     )
+    fireEvent.click(getByRole('button'))
+    expect(
+      queryByText('selectedAttributeId: custom-id')
+    ).not.toBeInTheDocument()
   })
 })
