@@ -148,7 +148,7 @@ export function Card({
       </Accordion>
       <Accordion
         icon={<FlexAlignBottom1Icon />}
-        id={`${id}-fullscreen`}
+        id={`${id}-layout`}
         name={t('Layout')}
         value={fullscreen ? 'Expanded' : 'Contained'}
       >
