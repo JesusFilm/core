@@ -7,8 +7,7 @@ import {
   ActiveContent,
   ActiveFab,
   EditorProvider,
-  EditorState,
-  useEditor
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
@@ -34,20 +33,7 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
-
 describe('Step', () => {
-  const dispatch = jest.fn()
-
   const state: EditorState = {
     steps: [],
     activeFab: ActiveFab.Add,
@@ -55,13 +41,6 @@ describe('Step', () => {
     activeContent: ActiveContent.Canvas,
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
-
-  beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-  })
 
   it('shows default messages', () => {
     const step: TreeBlock<StepBlock> = {
@@ -73,6 +52,7 @@ describe('Step', () => {
       nextBlockId: null,
       children: []
     }
+
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -108,7 +88,9 @@ describe('Step', () => {
       }
       const { getByText } = render(
         <MockedProvider>
-          <Step {...step} />
+          <EditorProvider initialState={{ steps: [step] }}>
+            <Step {...step} />
+          </EditorProvider>
         </MockedProvider>
       )
       expect(getByText('Locked With Interaction')).toBeInTheDocument()
@@ -133,24 +115,21 @@ describe('Step', () => {
         nextBlockId: null,
         children: []
       }
-      mockUseEditor.mockReturnValue({
-        state: {
-          steps: [step1, step2],
-          activeFab: ActiveFab.Add,
-          activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas,
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-        },
-        dispatch
-      })
+
       const { getByText } = render(
-        <EditorProvider
-          initialState={{
-            steps: [step1, step2]
-          }}
-        >
-          <Step {...step1} />
-        </EditorProvider>
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2],
+              activeFab: ActiveFab.Add,
+              activeSlide: ActiveSlide.JourneyFlow,
+              activeContent: ActiveContent.Canvas,
+              activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+            }}
+          >
+            <Step {...step1} />
+          </EditorProvider>
+        </MockedProvider>
       )
       expect(getByText('Step {{number}}')).toBeInTheDocument()
     })
@@ -208,24 +187,21 @@ describe('Step', () => {
           }
         ]
       }
-      mockUseEditor.mockReturnValue({
-        state: {
-          steps: [step1, step2, step5],
-          activeFab: ActiveFab.Add,
-          activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas,
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-        },
-        dispatch
-      })
+
       const { getByText } = render(
-        <EditorProvider
-          initialState={{
-            steps: [step1, step2, step5]
-          }}
-        >
-          <Step {...step1} />
-        </EditorProvider>
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2, step5],
+              activeFab: ActiveFab.Add,
+              activeSlide: ActiveSlide.JourneyFlow,
+              activeContent: ActiveContent.Canvas,
+              activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+            }}
+          >
+            <Step {...step1} />
+          </EditorProvider>
+        </MockedProvider>
       )
       expect(getByText('my Title')).toBeInTheDocument()
     })
@@ -274,24 +250,21 @@ describe('Step', () => {
           }
         ]
       }
-      mockUseEditor.mockReturnValue({
-        state: {
-          steps: [step1, step2],
-          activeFab: ActiveFab.Add,
-          activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas,
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-        },
-        dispatch
-      })
+
       const { getByText } = render(
-        <EditorProvider
-          initialState={{
-            steps: [step1, step2]
-          }}
-        >
-          <Step {...step1} />
-        </EditorProvider>
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2],
+              activeFab: ActiveFab.Add,
+              activeSlide: ActiveSlide.JourneyFlow,
+              activeContent: ActiveContent.Canvas,
+              activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+            }}
+          >
+            <Step {...step1} />
+          </EditorProvider>
+        </MockedProvider>
       )
       expect(getByText('my Title')).toBeInTheDocument()
     })
@@ -316,13 +289,15 @@ describe('Step', () => {
         children: []
       }
       const { getByText } = render(
-        <EditorProvider
-          initialState={{
-            steps: [step1, step2]
-          }}
-        >
-          <Step {...step2} />
-        </EditorProvider>
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2]
+            }}
+          >
+            <Step {...step2} />
+          </EditorProvider>
+        </MockedProvider>
       )
       expect(getByText('None')).toBeInTheDocument()
     })
