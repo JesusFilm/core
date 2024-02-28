@@ -22,10 +22,7 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { DesktopControls } from './DesktopControls'
 import { MobileControls } from './MobileControls'
 import { PlaybackIcon } from './PlaybackIcon'
-import {
-  PlaybackEvent,
-  playbackReducer
-} from './utils/PlaybackReducer/playbackReducer'
+import { PlaybackEvent, playbackReducer } from './utils/playbackReducer'
 
 interface VideoControlProps {
   player: Player
