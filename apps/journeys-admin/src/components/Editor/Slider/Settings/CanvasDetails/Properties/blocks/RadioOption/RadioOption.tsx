@@ -33,6 +33,7 @@ export function RadioOption({
           actions.find((act) => act.value === action?.__typename)?.label ??
           'None'
         }
+        testId="RadioOption"
       >
         <Action />
       </Accordion>
