@@ -51,9 +51,10 @@ const HostInfoDrawer = dynamic(
 )
 
 export function HostDrawer(): ReactElement {
-  const [openSelect, setOpenSelect] = useState(false)
-  const [openCreateHost, setOpenCreateHost] = useState(false)
-  const [openInfo, setOpenInfo] = useState(false)
+  const [selectHostBox, setSelectHostBox] = useState(true)
+  const [openHostList, setopenHostList] = useState(false)
+  const [openHostForm, setOpenHostForm] = useState(false)
+  const [openHostInfo, setOpenHostInfo] = useState(false)
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   // Get all team members of journey team, check if user in team
@@ -93,86 +94,108 @@ export function HostDrawer(): ReactElement {
     if (journey?.id == null) return
     if (journey?.team != null)
       await getAllTeamHosts({ variables: { teamId: journey.team.id } })
-    setOpenSelect(false)
-    setOpenCreateHost(false)
+    setopenHostList(false)
+    setOpenHostForm(false)
     await journeyHostUpdate({
       variables: { id: journey?.id, input: { hostId: null } }
     })
+    setSelectHostBox(true)
   }
 
-  async function handleOpenCreateHost(): Promise<void> {
+  async function handleOpenHostForm(): Promise<void> {
     if (journey?.id == null) return
     await journeyHostUpdate({
       variables: { id: journey?.id, input: { hostId: null } }
     })
-    setOpenSelect(false)
-    setOpenCreateHost(true)
-  }
-
-  function handleCloseInfo(): void {
-    setOpenInfo(false)
-    setOpenSelect(true)
+    setopenHostList(false)
+    setOpenHostForm(true)
   }
 
   return (
     <>
-      {journey?.host != null ? (
-        <Stack sx={{ p: 4 }}>
-          <ContainedIconButton
-            label={journey.host.title}
-            description={journey.host.location ?? ''}
-            disabled={!userInTeam}
-            slots={{
-              ImageThumbnail: (
-                <HostAvatars
-                  size="small"
-                  avatarSrc1={journey.host.src1}
-                  avatarSrc2={journey.host.src2}
-                  hasPlaceholder
-                />
-              )
-            }}
-            onClick={() => setOpenCreateHost(true)}
-            actionIcon={<Edit2Icon />}
-          />
-        </Stack>
-      ) : (
-        <Stack sx={{ p: 4 }}>
-          <ContainedIconButton
-            label={t('Select a Host')}
-            disabled={!userInTeam}
-            slots={{
-              ImageThumbnail: <HostAvatars size="large" hasPlaceholder />
-            }}
-            onClick={() => setOpenSelect(true)}
-          />
-        </Stack>
-      )}
-      {!userInTeam && journey?.team != null && (
-        <Stack direction="row" alignItems="center" gap={3}>
-          <AlertCircleIcon />
-          <Typography variant="subtitle2">
-            {data?.userTeams.length === 0
-              ? t('Cannot edit hosts for this old journey')
-              : t('Only {{teamName} members can edit this', {
-                  teamName: journey.team.title
-                })}
-          </Typography>
-        </Stack>
+      {/* <Box sx={{ display: 'none' }}> */}
+      {selectHostBox && (
+        <>
+          {journey?.host != null ? (
+            <Stack sx={{ p: 4 }}>
+              <ContainedIconButton
+                label={journey.host.title}
+                description={journey.host.location ?? ''}
+                disabled={!userInTeam}
+                slots={{
+                  ImageThumbnail: (
+                    <HostAvatars
+                      size="small"
+                      avatarSrc1={journey.host.src1}
+                      avatarSrc2={journey.host.src2}
+                      hasPlaceholder
+                    />
+                  )
+                }}
+                onClick={() => {
+                  setSelectHostBox(false)
+                  setOpenHostForm(true)
+                }}
+                actionIcon={<Edit2Icon />}
+              />
+            </Stack>
+          ) : (
+            <Stack sx={{ p: 4 }}>
+              <ContainedIconButton
+                label={t('Select a Host')}
+                disabled={!userInTeam}
+                slots={{
+                  ImageThumbnail: <HostAvatars size="large" hasPlaceholder />
+                }}
+                onClick={() => {
+                  setSelectHostBox(false)
+                  setopenHostList(true)
+                }}
+              />
+            </Stack>
+          )}
+          {/* </Box> */}
+          {!userInTeam && journey?.team != null && (
+            <Stack direction="row" alignItems="center" gap={3}>
+              <AlertCircleIcon />
+              <Typography variant="subtitle2">
+                {data?.userTeams.length === 0
+                  ? t('Cannot edit hosts for this old journey')
+                  : t('Only {{teamName} members can edit this', {
+                      teamName: journey.team.title
+                    })}
+              </Typography>
+            </Stack>
+          )}
+        </>
       )}
       <HostListDrawer
-        openSelect={openSelect}
+        openHostList={openHostList}
         teamHosts={teamHosts}
-        onClose={() => setOpenSelect(false)}
-        setOpenInfo={() => setOpenInfo(true)}
-        handleOpenCreateHost={handleOpenCreateHost}
-        handleSelectHost={() => setOpenSelect(false)}
+        handleOpenHostInfo={() => {
+          setopenHostList(false)
+          setOpenHostInfo(true)
+        }}
+        handleOpenHostForm={handleOpenHostForm}
+        handleSelectHost={() => {
+          setopenHostList(false)
+          setSelectHostBox(true)
+        }}
       />
-      <HostInfoDrawer openInfo={openInfo} onClose={handleCloseInfo} />
+      <HostInfoDrawer
+        openHostInfo={openHostInfo}
+        onClose={() => {
+          setOpenHostInfo(false)
+          setopenHostList(true)
+        }}
+      />
       <HostFormDrawer
         onClear={handleClear}
-        open={openCreateHost}
-        back={() => setOpenCreateHost(false)}
+        openHostForm={openHostForm}
+        onBack={() => {
+          setOpenHostForm(false)
+          setopenHostList(true)
+        }}
       />
     </>
   )
