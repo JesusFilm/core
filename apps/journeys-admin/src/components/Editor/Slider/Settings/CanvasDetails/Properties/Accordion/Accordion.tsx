@@ -27,7 +27,6 @@ export function Accordion({
   icon,
   name,
   value,
-  testId,
   param,
   children
 }: AccordionProps): ReactElement {
@@ -46,7 +45,8 @@ export function Accordion({
       })
       if (param != null) {
         router.query.param = param
-        void router.push(router)
+        // shallow: true so cache doesn't get destroyed on reload
+        void router.push(router, undefined, { shallow: true })
         router.events.on('routeChangeComplete', () => {
           setBeaconPageViewed(param)
         })
@@ -65,8 +65,8 @@ export function Accordion({
       disableGutters
       expanded={expanded}
       onChange={handleClick}
+      onClick={(e) => e.stopPropagation()}
       sx={{ p: 0, '&.Mui-expanded:before': { opacity: 1 } }}
-      onMouseDown={(e) => e.preventDefault()}
       data-testid={`Accordion-${id ?? ''}`}
     >
       <AccordionSummary
