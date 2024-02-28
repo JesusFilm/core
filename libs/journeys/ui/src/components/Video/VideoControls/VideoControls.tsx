@@ -301,29 +301,26 @@ export function VideoControls({
   }
 
   function handleMute(): void {
-    player.muted(!state.muted)
+    state.muted
+      ? dispatch({ type: PlaybackEvent.UNMUTE })
+      : dispatch({ type: PlaybackEvent.MUTE })
 
-    if (state.muted) {
-      dispatch({ type: PlaybackEvent.UNMUTE })
-      player.volume(volume)
-    } else {
-      dispatch({ type: PlaybackEvent.MUTE })
-    }
+    player.muted(!state.muted)
   }
 
   function handleVolume(e: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
-      // Should handle unmuting when volume has a value, and muting when volume is zero
+      // Should mute when volume is zero to prevent extra click on unmute button when volume is dragged to zero
       if (value > 0) {
         player.muted(false)
         setVolume(value)
-        player.volume(value / 100)
         dispatch({ type: PlaybackEvent.UNMUTE })
+        player.volume(value / 100)
       } else {
         player.muted(true)
-        player.volume(0)
-        setVolume(0)
         dispatch({ type: PlaybackEvent.MUTE })
+        setVolume(0)
+        player.volume(0)
       }
     }
   }
