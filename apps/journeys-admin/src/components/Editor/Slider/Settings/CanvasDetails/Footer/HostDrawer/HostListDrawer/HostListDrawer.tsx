@@ -11,32 +11,25 @@ import { GetAllTeamHosts } from '../../../../../../../../../__generated__/GetAll
 import { HostList } from '../HostList'
 
 interface HostListDrawerProps {
-  openSelect: boolean
+  openHostList: boolean
   teamHosts?: GetAllTeamHosts
-  onClose: () => void
-  setOpenInfo: () => void
-  handleOpenCreateHost: () => void
+  handleOpenHostInfo: () => void
+  handleOpenHostForm: () => void
   handleSelectHost: () => void
 }
 
 export function HostListDrawer({
-  openSelect,
+  openHostList,
   teamHosts,
-  onClose,
-  setOpenInfo,
-  handleOpenCreateHost,
+  handleOpenHostInfo,
+  handleOpenHostForm,
   handleSelectHost
 }: HostListDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  function handleOpenInfo(): void {
-    setOpenInfo()
-    onClose()
-  }
-
   return (
     <>
-      {openSelect && (
+      {openHostList && (
         <>
           <Stack
             direction="row"
@@ -46,14 +39,14 @@ export function HostListDrawer({
           >
             <Stack direction="row" alignItems="center">
               <Typography variant="subtitle2">{t('Hosts')}</Typography>
-              <IconButton data-testid="info" onClick={handleOpenInfo}>
+              <IconButton data-testid="info" onClick={handleOpenHostInfo}>
                 <InformationCircleContainedIcon />
               </IconButton>
             </Stack>
             <Button
               variant="outlined"
               size="small"
-              onClick={handleOpenCreateHost}
+              onClick={handleOpenHostForm}
             >
               {t('Create New')}
             </Button>

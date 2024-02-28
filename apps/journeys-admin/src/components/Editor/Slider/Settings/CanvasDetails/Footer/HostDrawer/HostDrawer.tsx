@@ -52,7 +52,7 @@ const HostInfoDrawer = dynamic(
 
 export function HostDrawer(): ReactElement {
   const [selectHostBox, setSelectHostBox] = useState(true)
-  const [openHostList, setopenHostList] = useState(false)
+  const [openHostList, setOpenHostList] = useState(false)
   const [openHostForm, setOpenHostForm] = useState(false)
   const [openHostInfo, setOpenHostInfo] = useState(false)
   const { t } = useTranslation('apps-journeys-admin')
@@ -94,7 +94,7 @@ export function HostDrawer(): ReactElement {
     if (journey?.id == null) return
     if (journey?.team != null)
       await getAllTeamHosts({ variables: { teamId: journey.team.id } })
-    setopenHostList(false)
+    setOpenHostList(false)
     setOpenHostForm(false)
     await journeyHostUpdate({
       variables: { id: journey?.id, input: { hostId: null } }
@@ -107,7 +107,7 @@ export function HostDrawer(): ReactElement {
     await journeyHostUpdate({
       variables: { id: journey?.id, input: { hostId: null } }
     })
-    setopenHostList(false)
+    setOpenHostList(false)
     setOpenHostForm(true)
   }
 
@@ -149,7 +149,7 @@ export function HostDrawer(): ReactElement {
                 }}
                 onClick={() => {
                   setSelectHostBox(false)
-                  setopenHostList(true)
+                  setOpenHostList(true)
                 }}
               />
             </Stack>
@@ -173,12 +173,12 @@ export function HostDrawer(): ReactElement {
         openHostList={openHostList}
         teamHosts={teamHosts}
         handleOpenHostInfo={() => {
-          setopenHostList(false)
+          setOpenHostList(false)
           setOpenHostInfo(true)
         }}
         handleOpenHostForm={handleOpenHostForm}
         handleSelectHost={() => {
-          setopenHostList(false)
+          setOpenHostList(false)
           setSelectHostBox(true)
         }}
       />
@@ -186,7 +186,7 @@ export function HostDrawer(): ReactElement {
         openHostInfo={openHostInfo}
         onClose={() => {
           setOpenHostInfo(false)
-          setopenHostList(true)
+          setOpenHostList(true)
         }}
       />
       <HostFormDrawer
@@ -194,7 +194,7 @@ export function HostDrawer(): ReactElement {
         openHostForm={openHostForm}
         onBack={() => {
           setOpenHostForm(false)
-          setopenHostList(true)
+          setOpenHostList(true)
         }}
       />
     </>

@@ -7,18 +7,18 @@ import { useTranslation } from 'react-i18next'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 
 interface HostInfoDrawerProps {
-  openInfo: boolean
+  openHostInfo: boolean
   onClose: () => void
 }
 
 export function HostInfoDrawer({
-  openInfo,
+  openHostInfo,
   onClose
 }: HostInfoDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      {openInfo && (
+      {openHostInfo && (
         <>
           <Stack
             direction="row"
