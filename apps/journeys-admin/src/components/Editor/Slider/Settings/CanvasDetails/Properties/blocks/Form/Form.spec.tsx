@@ -88,10 +88,6 @@ describe('Form', () => {
     expect(
       getByText('selectedAttributeId: formBlock.id-form-action')
     ).toBeInTheDocument()
-    // expect(dispatch).toHaveBeenCalledWith({
-    //   type: 'SetSelectedAttributeIdAction',
-    //   selectedAttributeId: 'formBlock.id-form-action'
-    // })
   })
 
   it('should open credentials accordion when clicked', () => {

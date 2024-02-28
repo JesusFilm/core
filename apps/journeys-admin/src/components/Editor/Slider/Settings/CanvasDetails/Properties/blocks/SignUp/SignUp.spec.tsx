@@ -112,17 +112,4 @@ describe('SignUp Attributes', () => {
       getByText('selectedAttributeId: signup.id-signup-icon')
     ).toBeInTheDocument()
   })
-
-  // it('should open property drawr for variant', () => {
-  //   const dispatch = jest.fn()
-  //   mockUseEditor.mockReturnValue({
-  //     state,
-  //     dispatch
-  //   })
-  //   render(<SignUp {...block} />)
-  //   expect(dispatch).toHaveBeenCalledWith({
-  //     type: 'SetSelectedAttributeIdAction',
-  //     selectedAttributeId: 'signup.id-signup-action'
-  //   })
-  // })
 })

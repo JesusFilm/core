@@ -2,16 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveContent,
-  ActiveFab,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
-import {
-  ActiveCanvasDetailsDrawer,
-  ActiveSlide,
-  EditorProvider
-} from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -22,17 +13,6 @@ import {
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 
 import { Typography } from '.'
-
-// jest.mock('@core/journeys/ui/EditorProvider', () => {
-//   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-//   return {
-//     __esModule: true,
-//     ...originalModule,
-//     useEditor: jest.fn()
-//   }
-// })
-
-// const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 describe('Typography properties', () => {
   const block: TreeBlock<TypographyBlock> = {
@@ -46,20 +26,6 @@ describe('Typography properties', () => {
     variant: null,
     children: []
   }
-  // const state = {
-  //   steps: [],
-  //   activeFab: ActiveFab.Add,
-  //   activeSlide: ActiveSlide.JourneyFlow,
-  //   activeContent: ActiveContent.Canvas,
-  //   activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-  // }
-
-  // beforeEach(() => {
-  //   mockUseEditor.mockReturnValue({
-  //     state,
-  //     dispatch: jest.fn()
-  //   })
-  // })
 
   it('shows default attributes', () => {
     const { getByRole } = render(

@@ -399,7 +399,7 @@ describe('Card', () => {
       expect(getByText('Expanded')).toBeInTheDocument()
     })
 
-    it('shows card layout drawer', () => {
+    it('opens card layout accordion when clicked', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
@@ -422,9 +422,6 @@ describe('Card', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      // const LayoutAccordion = getByTestId('Accordion-card1.id-layout')
-      // const LayoutAccordionSummary = LayoutAccordion.querySelector('[data-testid="AccordionSummary"]')
-      // fireEvent.click(LayoutAccordion)
       fireEvent.click(getByText('Layout'))
       expect(
         getByText('selectedAttributeId: card1.id-layout')
