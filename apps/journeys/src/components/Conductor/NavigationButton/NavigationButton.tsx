@@ -214,16 +214,11 @@ export function NavigationButton({
       sx={{
         ...alignSx,
         position: 'absolute',
-        // StepFooter heights
-        bottom: { xs: '170px', sm: '133px', lg: '60.5px' },
+        top: 0,
         zIndex: 2,
         display: 'flex',
         width: { xs: 82, lg: 114 },
-        height: {
-          xs: 'calc(100vh - 275px)',
-          sm: 'calc(100vh - 238px)',
-          lg: 'calc(100% - 105px)'
-        },
+        height: '100svh',
         alignItems: 'center',
         pointerEvents: 'none'
       }}
