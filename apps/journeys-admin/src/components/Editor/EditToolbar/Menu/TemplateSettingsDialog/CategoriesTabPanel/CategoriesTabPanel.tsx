@@ -19,7 +19,7 @@ interface TagOptionsData {
 }
 
 export function CategoriesTabPanel(): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { parentTags, childTags } = useTagsQuery()
 

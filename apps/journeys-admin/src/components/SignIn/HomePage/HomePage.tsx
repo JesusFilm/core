@@ -19,7 +19,7 @@ export function HomePage({
   setUserEmail,
   setUserPassword
 }: PageProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const validationSchema = object().shape({
     email: string()
       .trim()

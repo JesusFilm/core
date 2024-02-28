@@ -33,7 +33,7 @@ export function RegisterPage({
   ): void => {
     event.preventDefault()
   }
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const validationSchema = object().shape({
     email: string()
