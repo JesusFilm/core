@@ -3,26 +3,12 @@ import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveContent,
-  ActiveFab,
-  EditorProvider,
-  EditorState
-} from '@core/journeys/ui/EditorProvider'
-import {
-  ActiveCanvasDetailsDrawer,
-  ActiveSlide
-} from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 
 import { Image } from './Image'
-
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
 
 describe('Image', () => {
   const block: TreeBlock<ImageBlock> = {
@@ -37,26 +23,27 @@ describe('Image', () => {
     blurhash: '',
     children: []
   }
-  const state: EditorState = {
-    steps: [],
-    activeFab: ActiveFab.Add,
-    activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-  }
 
   it('should display Image Options', () => {
-    const { getByText } = render(<Image {...block} alt={block.alt} />)
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider>
+            <Image {...block} alt={block.alt} />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
 
     expect(getByText('Image Source')).toBeInTheDocument()
     expect(getByText(block.alt)).toBeInTheDocument()
   })
 
-  it('should open property drawer for variant', async () => {
+  it('image options accordion should be open', async () => {
     const { getByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider initialState={state}>
+          <EditorProvider>
             <Image {...block} alt={block.alt} />
             <TestEditorState />
           </EditorProvider>
@@ -67,7 +54,7 @@ describe('Image', () => {
       getByText('selectedAttributeId: image1.id-image-options')
     ).toBeInTheDocument()
     await waitFor(() =>
-      expect(getByTestId('ImageBlockEditor')).toBeInTheDocument()
+      expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
     )
   })
 })

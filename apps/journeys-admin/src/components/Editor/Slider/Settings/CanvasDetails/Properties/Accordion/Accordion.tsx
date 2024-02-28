@@ -67,7 +67,7 @@ export function Accordion({
       onChange={handleClick}
       sx={{ p: 0, '&.Mui-expanded:before': { opacity: 1 } }}
       onMouseDown={(e) => e.preventDefault()}
-      data-testid={`JourneysAdminButton${testId ?? ''}`}
+      data-testid={`Accordion-${id ?? ''}`}
     >
       <AccordionSummary
         sx={{ p: 4, '.MuiAccordionSummary-content': { m: 0 } }}
