@@ -61,7 +61,7 @@ export function TextResponse({
           'None'
         }
       >
-        <Icon id={submitIcon.id} />
+        <Icon id={submitIcon?.id} />
       </Accordion>
     </>
   )

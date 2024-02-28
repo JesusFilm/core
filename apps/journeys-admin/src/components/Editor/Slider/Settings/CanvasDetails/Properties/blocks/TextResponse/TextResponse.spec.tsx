@@ -10,8 +10,8 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
-import { Drawer } from '../../../../Drawer'
 
 import { TextResponse } from './TextResponse'
 
@@ -62,79 +62,93 @@ describe('TextResponse', () => {
 
   it('should show default attributes', () => {
     const { getByRole } = render(
-      <EditorProvider>
-        <TextResponse {...defaultBlock} />
-      </EditorProvider>
+      <MockedProvider>
+        <EditorProvider>
+          <TextResponse {...defaultBlock} />
+        </EditorProvider>
+      </MockedProvider>
     )
 
+    expect(
+      getByRole('button', { name: 'Feedback default label' })
+    ).toBeInTheDocument()
     expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Button Icon None' })
     ).toBeInTheDocument()
-    expect(
-      getByRole('button', { name: 'Feedback default label' })
-    ).toBeInTheDocument()
   })
 
   it('should show filled attributes', () => {
-    const { getByRole } = render(<TextResponse {...completeBlock} />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <TextResponse {...completeBlock} />{' '}
+        </EditorProvider>
+      </MockedProvider>
+    )
 
+    expect(
+      getByRole('button', { name: 'Feedback complete label' })
+    ).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Action URL/Website' })
     ).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Button Icon Arrow Right' })
     ).toBeInTheDocument()
-    expect(
-      getByRole('button', { name: 'Feedback complete label' })
-    ).toBeInTheDocument()
   })
 
   it('should open feedback edit', () => {
-    const { getByRole, getByTestId } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <EditorProvider>
-            <Drawer />
             <TextResponse {...completeBlock} />
+            <TestEditorState />
           </EditorProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByRole('button', { name: 'Feedback complete label' }))
-    expect(getByTestId('drawer-title')).toHaveTextContent('Feedback Properties')
+    expect(
+      getByText('selectedAttributeId: textResponseBlock.id-text-field-options')
+    ).toBeInTheDocument()
   })
 
   it('should open button action edit', () => {
-    const { getByRole, getByTestId } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <EditorProvider>
-            <Drawer />
             <TextResponse {...completeBlock} />
+            <TestEditorState />
           </EditorProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByRole('button', { name: 'Action URL/Website' }))
-    expect(getByTestId('drawer-title')).toHaveTextContent('Action')
+    expect(
+      getByText('selectedAttributeId: textResponseBlock.id-text-field-action')
+    ).toBeInTheDocument()
   })
 
   it('should open button icon edit', () => {
-    const { getByRole, getByTestId } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <EditorProvider>
-            <Drawer />
             <TextResponse {...completeBlock} />
+            <TestEditorState />
           </EditorProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Right' }))
-    expect(getByTestId('drawer-title')).toHaveTextContent('Button Icon')
+    expect(
+      getByText('selectedAttributeId: textResponseBlock.id-text-field-icon')
+    ).toBeInTheDocument()
   })
 })
