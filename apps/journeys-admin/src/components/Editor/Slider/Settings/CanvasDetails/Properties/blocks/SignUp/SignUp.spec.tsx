@@ -2,17 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveContent,
-  ActiveFab,
-  EditorProvider,
-  EditorState,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
-import {
-  ActiveCanvasDetailsDrawer,
-  ActiveSlide
-} from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_SignUpBlock as SignUpBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -20,26 +10,10 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
-import { Drawer } from '../../../../Drawer'
 
 import { SignUp } from '.'
-
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 describe('SignUp Attributes', () => {
   const block: TreeBlock<SignUpBlock> = {
@@ -68,20 +42,6 @@ describe('SignUp Attributes', () => {
       }
     ]
   }
-  const state: EditorState = {
-    steps: [],
-    activeFab: ActiveFab.Add,
-    activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-  }
-
-  beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch: jest.fn()
-    })
-  })
 
   it('shows default attributes', () => {
     const emptyBlock: TreeBlock<SignUpBlock> = {
@@ -95,7 +55,11 @@ describe('SignUp Attributes', () => {
       children: []
     }
 
-    const { getByRole } = render(<SignUp {...emptyBlock} />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <SignUp {...emptyBlock} />
+      </MockedProvider>
+    )
     expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Button Icon None' })
@@ -103,7 +67,11 @@ describe('SignUp Attributes', () => {
   })
 
   it('shows filled attributes', () => {
-    const { getByRole } = render(<SignUp {...block} />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <SignUp {...block} />
+      </MockedProvider>
+    )
     expect(
       getByRole('button', { name: 'Action URL/Website' })
     ).toBeInTheDocument()
@@ -112,47 +80,36 @@ describe('SignUp Attributes', () => {
     ).toBeInTheDocument()
   })
 
-  it('clicking icon properties button should open icon editing drawer', () => {
-    const { getByRole, getAllByText } = render(
+  it('action accordion should be open', () => {
+    const { getByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <EditorProvider>
-            <Drawer />
             <SignUp {...block} />
+            <TestEditorState />
           </EditorProvider>
         </ThemeProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Right' }))
-    expect(getAllByText('Button Icon')).toHaveLength(2)
+    expect(
+      getByText('selectedAttributeId: signup.id-signup-action')
+    ).toBeInTheDocument()
   })
 
-  it('action property button should open action edit drawer', async () => {
-    const { getByRole, getByTestId, getByText } = render(
+  it('button icon accordion should open when clicked', async () => {
+    const { getByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <EditorProvider>
-            <Drawer />
             <SignUp {...block} />
+            <TestEditorState />
           </EditorProvider>
         </ThemeProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Action URL/Website' }))
-    expect(getByTestId('drawer-title')).toBeInTheDocument()
-    expect(getByText('Form Submission')).toBeInTheDocument()
-  })
-
-  it('should open property drawr for variant', () => {
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-    render(<SignUp {...block} />)
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedAttributeIdAction',
-      selectedAttributeId: 'signup.id-signup-action'
-    })
+    fireEvent.click(getByText('Button Icon'))
+    expect(
+      getByText('selectedAttributeId: signup.id-signup-icon')
+    ).toBeInTheDocument()
   })
 })

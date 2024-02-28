@@ -223,11 +223,9 @@ describe('SignUp', () => {
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole, getByLabelText } = render(
       <ApolloLoadingProvider>
-        <JourneyProvider>
-          <SnackbarProvider>
-            <SignUp {...block} uuid={() => 'uuid'} />
-          </SnackbarProvider>
-        </JourneyProvider>
+        <SnackbarProvider>
+          <SignUp {...block} uuid={() => 'uuid'} />
+        </SnackbarProvider>
       </ApolloLoadingProvider>
     )
     const name = getByLabelText('Name')
@@ -377,11 +375,9 @@ describe('SignUp', () => {
     ]
 
     const { getByRole, getByLabelText, getByText } = render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <SignUpMock mocks={mocks} />
-        </SnackbarProvider>
-      </JourneyProvider>
+      <SnackbarProvider>
+        <SignUpMock mocks={mocks} />
+      </SnackbarProvider>
     )
     const name = getByLabelText('Name')
     const email = getByLabelText('Email')
@@ -396,11 +392,9 @@ describe('SignUp', () => {
 
   it('should not allow selection in editor', () => {
     const { getAllByRole } = render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <SignUpMock />
-        </SnackbarProvider>
-      </JourneyProvider>
+      <SnackbarProvider>
+        <SignUpMock />
+      </SnackbarProvider>
     )
 
     const name = getAllByRole('textbox')[0]
