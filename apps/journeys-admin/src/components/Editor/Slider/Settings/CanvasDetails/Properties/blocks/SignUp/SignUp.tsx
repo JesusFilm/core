@@ -44,7 +44,6 @@ export function SignUp({
       >
         <Action />
       </Accordion>
-
       <Accordion
         id={`${id}-signup-icon`}
         icon={<InformationCircleContained />}
