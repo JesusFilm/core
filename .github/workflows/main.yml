@@ -54,7 +54,7 @@ jobs:
           all: true
           parallel: 1
       - name: NPM apollo and graphql for codegen
-        run: npm i -g apollo graphql @apollo/rover@0.16.2
+        run: npm i -g apollo graphql @apollo/rover@0.22.0
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:

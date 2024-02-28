@@ -133,7 +133,3 @@ export async function getStaticProps({ locale }) {
   };
 }
 ```
-
-## Crowdin
-
-Once your files have been committed and your PR merged to main a Crowdin GitHub Action will run to upload any changes to `locales/en`. It will also propose a PR with newly minted translations automatically. New translation requests should be sent to the Jesus Film Project Translation Manager so that these strings can be localized.

@@ -139,9 +139,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
     query: GET_JOURNEY_SLUGS
   })
 
-  const paths = data.journeys.map(({ slug: journeySlug }) => ({
-    params: { journeySlug }
-  }))
+  const paths = data.journeys
+    .filter(({ slug: journeySlug }) => journeySlug.length > 0)
+    .map(({ slug: journeySlug }) => ({
+      params: { journeySlug }
+    }))
 
   return {
     paths,

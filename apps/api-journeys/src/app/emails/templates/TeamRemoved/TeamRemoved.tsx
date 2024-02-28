@@ -1,8 +1,17 @@
-import { Body, Head, Html, Preview } from '@react-email/components'
+import {
+  Body,
+  Column,
+  Head,
+  Html,
+  Preview,
+  Row,
+  Section
+} from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
 import {
+  ActionButton,
   ActionCard,
   BodyWrapper,
   EmailContainer,
@@ -43,14 +52,22 @@ export const TeamRemovedEmail = ({
       <EmailContainer>
         <BodyWrapper>
           <ActionCard
-            url="https://admin.nextstep.is/"
             headerText="You were removed from:"
             subHeaderText={`${teamName}`}
             bodyText="If this is in error, please contact the team manager to be invited back."
-            buttonText="View Your Teams"
             recipient={recipient}
-            sender={undefined}
-          />
+          >
+            <Section align="center">
+              <Row className="px-[28px]">
+                <Column align="center">
+                  <ActionButton
+                    url={`${process.env.JOURNEYS_ADMIN_URL}`}
+                    buttonText="View Your Teams"
+                  />
+                </Column>
+              </Row>
+            </Section>
+          </ActionCard>
         </BodyWrapper>
         <Footer />
         <UnsubscribeLink recipientEmail={recipient.email} />

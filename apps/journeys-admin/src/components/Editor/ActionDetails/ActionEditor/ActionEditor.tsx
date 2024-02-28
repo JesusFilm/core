@@ -78,6 +78,7 @@ export function ActionEditor({
     if (journey == null) return
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     blocks.map(async (block) => {
       await linkActionUpdate({
         variables: {
