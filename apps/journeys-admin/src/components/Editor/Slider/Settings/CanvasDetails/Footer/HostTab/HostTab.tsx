@@ -20,7 +20,7 @@ import { useUpdateJourneyHostMutation } from '../../../../../../../libs/useUpdat
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
 import { ContainedIconButton } from '../../../../../../ContainedIconButton'
 
-import { HostFormDrawer } from './HostFormDrawer'
+import { HostFormTab } from './HostFormTab'
 
 export const GET_ALL_TEAM_HOSTS = gql`
   query GetAllTeamHosts($teamId: ID!) {
@@ -34,23 +34,23 @@ export const GET_ALL_TEAM_HOSTS = gql`
   }
 `
 
-const HostListDrawer = dynamic(
+const HostListTab = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Drawer/Attributes/blocks/Footer/HostDrawer/HostListDrawer/HostListDrawer" */ './HostListDrawer'
-    ).then((mod) => mod.HostListDrawer),
+      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostListTab/HostListTab" */ './HostListTab'
+    ).then((mod) => mod.HostListTab),
   { ssr: false }
 )
 
-const HostInfoDrawer = dynamic(
+const HostInfoTab = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Drawer/Attributes/blocks/Footer/HostDrawer/HostInfoDrawer/HostInfoDrawer" */ './HostInfoDrawer'
-    ).then((mod) => mod.HostInfoDrawer),
+      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostInfoTab/HostInfoTab" */ './HostInfoTab'
+    ).then((mod) => mod.HostInfoTab),
   { ssr: false }
 )
 
-export function HostDrawer(): ReactElement {
+export function HostTab(): ReactElement {
   const [selectHostBox, setSelectHostBox] = useState(true)
   const [openHostList, setOpenHostList] = useState(false)
   const [openHostForm, setOpenHostForm] = useState(false)
@@ -113,7 +113,6 @@ export function HostDrawer(): ReactElement {
 
   return (
     <>
-      {/* <Box sx={{ display: 'none' }}> */}
       {selectHostBox && (
         <>
           {journey?.host != null ? (
@@ -154,7 +153,6 @@ export function HostDrawer(): ReactElement {
               />
             </Stack>
           )}
-          {/* </Box> */}
           {!userInTeam && journey?.team != null && (
             <Stack direction="row" alignItems="center" gap={3}>
               <AlertCircleIcon />
@@ -169,7 +167,7 @@ export function HostDrawer(): ReactElement {
           )}
         </>
       )}
-      <HostListDrawer
+      <HostListTab
         openHostList={openHostList}
         teamHosts={teamHosts}
         handleOpenHostInfo={() => {
@@ -182,14 +180,14 @@ export function HostDrawer(): ReactElement {
           setSelectHostBox(true)
         }}
       />
-      <HostInfoDrawer
+      <HostInfoTab
         openHostInfo={openHostInfo}
         onClose={() => {
           setOpenHostInfo(false)
           setOpenHostList(true)
         }}
       />
-      <HostFormDrawer
+      <HostFormTab
         onClear={handleClear}
         openHostForm={openHostForm}
         onBack={() => {

@@ -13,12 +13,12 @@ import { GET_CURRENT_USER } from '../../../../../../../libs/useCurrentUserLazyQu
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
-import { GET_ALL_TEAM_HOSTS, HostDrawer } from './HostDrawer'
+import { GET_ALL_TEAM_HOSTS, HostTab } from './HostTab'
 
-const Demo: Meta<typeof HostDrawer> = {
+const Demo: Meta<typeof HostTab> = {
   ...journeysAdminConfig,
-  component: HostDrawer,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostDrawer'
+  component: HostTab,
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab'
 }
 
 const defaultHost = {
@@ -136,13 +136,13 @@ const teamHostsMock = {
 }
 
 const Template: StoryObj<
-  ComponentProps<typeof HostDrawer> & { mocks: MockedResponse[] }
+  ComponentProps<typeof HostTab> & { mocks: MockedResponse[] }
 > = {
   render: ({ mocks, ...args }) => (
     <MockedProvider mocks={mocks}>
       <ThemeProvider>
         <JourneyProvider value={{ ...args, variant: 'admin' }}>
-          <HostDrawer />
+          <HostTab />
         </JourneyProvider>
       </ThemeProvider>
     </MockedProvider>

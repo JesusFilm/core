@@ -14,7 +14,7 @@ import { UPDATE_JOURNEY_HOST } from '../../../../../../../libs/useUpdateJourneyH
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
-import { GET_ALL_TEAM_HOSTS, HostDrawer } from './HostDrawer'
+import { GET_ALL_TEAM_HOSTS, HostTab } from './HostTab'
 
 const user1 = { id: 'userId', email: 'admin@email.com' }
 
@@ -135,7 +135,7 @@ describe('HostSidePanel', () => {
               variant: 'admin'
             }}
           >
-            <HostDrawer />
+            <HostTab />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -158,7 +158,7 @@ describe('HostSidePanel', () => {
               variant: 'admin'
             }}
           >
-            <HostDrawer />
+            <HostTab />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -186,7 +186,7 @@ describe('HostSidePanel', () => {
               variant: 'admin'
             }}
           >
-            <HostDrawer />
+            <HostTab />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -219,7 +219,7 @@ describe('HostSidePanel', () => {
               variant: 'admin'
             }}
           >
-            <HostDrawer />
+            <HostTab />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -245,7 +245,7 @@ describe('HostSidePanel', () => {
               variant: 'admin'
             }}
           >
-            <HostDrawer />
+            <HostTab />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -274,7 +274,7 @@ describe('HostSidePanel', () => {
               variant: 'admin'
             }}
           >
-            <HostDrawer />
+            <HostTab />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -304,7 +304,7 @@ describe('HostSidePanel', () => {
       <MockedProvider mocks={[getUserTeamMock]}>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostDrawer />
+            <HostTab />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -350,7 +350,7 @@ describe('HostSidePanel', () => {
           <JourneyProvider
             value={{ journey: { ...journey, host: null }, variant: 'admin' }}
           >
-            <HostDrawer />
+            <HostTab />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -383,7 +383,7 @@ describe('HostSidePanel', () => {
               variant: 'admin'
             }}
           >
-            <HostDrawer />
+            <HostTab />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -452,7 +452,7 @@ describe('HostSidePanel', () => {
       >
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostDrawer />
+            <HostTab />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>

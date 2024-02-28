@@ -7,7 +7,7 @@ import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__ge
 import { UPDATE_JOURNEY_HOST } from '../../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
-import { DELETE_HOST, HostFormDrawer } from './HostFormDrawer'
+import { DELETE_HOST, HostFormTab } from './HostFormTab'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -23,7 +23,7 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-describe('HostFormDrawer', () => {
+describe('HostFormTab', () => {
   const defaultHost = {
     id: 'hostId',
     __typename: 'Host',
@@ -52,7 +52,7 @@ describe('HostFormDrawer', () => {
               variant: 'admin'
             }}
           >
-            <HostFormDrawer onClear={jest.fn()} onClose={jest.fn()} />
+            <HostFormTab onClear={jest.fn()} openHostForm onBack={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -81,7 +81,7 @@ describe('HostFormDrawer', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostFormDrawer onClear={jest.fn()} onClose={jest.fn()} />
+            <HostFormTab onClear={jest.fn()} openHostForm onBack={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -156,7 +156,7 @@ describe('HostFormDrawer', () => {
       >
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostFormDrawer onClear={onClear} onClose={jest.fn()} />
+            <HostFormTab onClear={jest.fn()} openHostForm onBack={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>

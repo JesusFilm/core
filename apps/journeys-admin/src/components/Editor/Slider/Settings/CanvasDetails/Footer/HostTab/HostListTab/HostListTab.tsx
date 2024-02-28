@@ -10,7 +10,7 @@ import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCir
 import { GetAllTeamHosts } from '../../../../../../../../../__generated__/GetAllTeamHosts'
 import { HostList } from '../HostList'
 
-interface HostListDrawerProps {
+interface HostListTabProps {
   openHostList: boolean
   teamHosts?: GetAllTeamHosts
   handleOpenHostInfo: () => void
@@ -18,13 +18,13 @@ interface HostListDrawerProps {
   handleSelectHost: () => void
 }
 
-export function HostListDrawer({
+export function HostListTab({
   openHostList,
   teamHosts,
   handleOpenHostInfo,
   handleOpenHostForm,
   handleSelectHost
-}: HostListDrawerProps): ReactElement {
+}: HostListTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (

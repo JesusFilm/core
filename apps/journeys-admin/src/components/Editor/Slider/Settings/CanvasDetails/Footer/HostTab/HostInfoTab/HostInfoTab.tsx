@@ -6,15 +6,15 @@ import { useTranslation } from 'react-i18next'
 
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 
-interface HostInfoDrawerProps {
+interface HostInfoTabProps {
   openHostInfo: boolean
   onClose: () => void
 }
 
-export function HostInfoDrawer({
+export function HostInfoTab({
   openHostInfo,
   onClose
-}: HostInfoDrawerProps): ReactElement {
+}: HostInfoTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>

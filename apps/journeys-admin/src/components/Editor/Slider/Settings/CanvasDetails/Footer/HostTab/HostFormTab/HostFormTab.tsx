@@ -21,23 +21,19 @@ export const DELETE_HOST = gql`
   }
 `
 
-interface HostFormDrawerProps {
+interface HostFormTabProps {
   onClear: () => void
   openHostForm: boolean
   onBack: () => void
 }
 
-export function HostFormDrawer({
+export function HostFormTab({
   onClear,
   openHostForm,
   onBack
-}: HostFormDrawerProps): ReactElement {
+}: HostFormTabProps): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
-
-  const handleClear = async (): Promise<void> => {
-    onClear()
-  }
 
   return (
     <>
@@ -50,7 +46,7 @@ export function HostFormDrawer({
               alignItems="center"
               sx={{ p: 4 }}
             >
-              <Button variant="outlined" size="small" onClick={handleClear}>
+              <Button variant="outlined" size="small" onClick={onClear}>
                 {t('Clear')}
               </Button>
             </Stack>
