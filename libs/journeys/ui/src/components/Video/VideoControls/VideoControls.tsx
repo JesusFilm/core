@@ -19,10 +19,13 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 
-import { PlaybackIcon } from './components/PlaybackIcon'
-import { Desktop } from './Desktop'
-import { Mobile } from './Mobile'
-import { PlaybackEvent, playbackReducer } from './playbackReducer'
+import { DesktopControls } from './DesktopControls'
+import { MobileControls } from './MobileControls'
+import { PlaybackIcon } from './PlaybackIcon'
+import {
+  PlaybackEvent,
+  playbackReducer
+} from './utils/PlaybackReducer/playbackReducer'
 
 interface VideoControlProps {
   player: Player
@@ -411,79 +414,38 @@ export function VideoControls({
             }}
             onClick={(event) => event.stopPropagation()}
           >
-            <Mobile.Root>
-              <Stack
-                direction="row"
-                gap={5}
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                {player != null && duration != null && (
-                  <Mobile.TimeLabel
-                    displayTime={displayTime}
-                    duration={duration}
-                  />
-                )}
-                {(variant !== 'embed' || iPhone()) && (
-                  <Mobile.FullscreenButton
-                    handleClick={handleFullscreen}
-                    fullscreen={fullscreen}
-                  />
-                )}
-              </Stack>
-              <Mobile.Progress
-                min={startAt}
-                max={endAt - 0.25}
-                value={progress}
-                valueLabelFormat={displayTime}
-                onChange={handleSeek}
-                disabled={!player.hasStarted_}
-              />
-            </Mobile.Root>
-
-            <Desktop.Root>
-              <Desktop.PlayButton
-                playing={state.playing}
-                handleClick={handlePlay}
-              />
-              {player != null && duration != null && (
-                <Desktop.TimeLabel
-                  displayTime={displayTime}
-                  duration={duration}
-                />
-              )}
-              <Desktop.Progress
-                min={startAt}
-                max={endAt - 0.25}
-                value={progress}
-                valueLabelFormat={displayTime}
-                onChange={handleSeek}
-              />
-
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="flex-end"
-                sx={{
-                  width: { xs: '100%', lg: 'unset' },
-                  p: 1.5
-                }}
-                gap={2}
-              >
-                <Desktop.VolumeControls
-                  volume={volume}
-                  handleVolume={handleVolume}
-                  muted={state.muted}
-                  handleMute={handleMute}
-                />
-                {(variant !== 'embed' || iPhone()) && (
-                  <Desktop.FullscreenButton
-                    handleClick={handleFullscreen}
-                    fullscreen={fullscreen}
-                  />
-                )}
-              </Stack>
-            </Desktop.Root>
+            <MobileControls
+              showTime={player != null && duration != null}
+              displayTime={displayTime}
+              duration={duration}
+              startAt={startAt}
+              endAt={endAt}
+              progress={progress}
+              handleSeek={handleSeek}
+              disableProgress={!player.hasStarted_}
+              showFullscreenButton={variant !== 'embed' || iPhone()}
+              fullscreen={fullscreen}
+              handleFullscreen={handleFullscreen}
+            />
+            <DesktopControls
+              playing={state.playing}
+              handlePlay={handlePlay}
+              showTime={player != null && duration != null}
+              displayTime={displayTime}
+              duration={duration}
+              startAt={startAt}
+              endAt={endAt}
+              progress={progress}
+              handleSeek={handleSeek}
+              volume={volume}
+              handleVolume={handleVolume}
+              muted={state.muted}
+              handleMute={handleMute}
+              playerMuted={player.muted() ?? false}
+              showFullscreenButton={variant !== 'embed' || iPhone()}
+              fullscreen={fullscreen}
+              handleFullscreen={handleFullscreen}
+            />
           </Container>
         </Fade>
       </Stack>

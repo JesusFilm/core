@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { ReactNode } from 'react'
 
-import { PlaybackState } from '../playbackReducer'
+import { PlaybackState } from '../utils/PlaybackReducer'
 
 interface PlaybackIconProps {
   state: PlaybackState
@@ -37,10 +37,8 @@ export function PlaybackIcon({
       style={{ transitionDuration: '500ms' }}
       timeout={{ exit: 3000 }}
     >
-      {/* Mobile Play/Pause/Mute */}
-      <Stack
-        justifyContent="center"
-      >
+      {/* Centered Play/Pause/Mute/Loading Icons */}
+      <Stack justifyContent="center">
         {!loading ? (
           <IconButton
             aria-label={`center-${state.action}-button`}
