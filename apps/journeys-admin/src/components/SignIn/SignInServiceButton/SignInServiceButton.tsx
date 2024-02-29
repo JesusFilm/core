@@ -33,7 +33,10 @@ export function SignInServiceButton({
     } catch (err) {
       console.error(err)
     }
-    await router.push('/')
+    await router.push({
+      pathname: '/',
+      query: { redirect: router.query.redirect }
+    })
   }
 
   return (

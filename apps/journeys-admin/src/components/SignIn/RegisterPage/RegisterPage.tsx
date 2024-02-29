@@ -70,7 +70,8 @@ export function RegisterPage({
     try {
       await createAccountAndSignIn(values.email, values.name, values.password)
       await router.push({
-        pathname: '/'
+        pathname: '/',
+        query: { redirect: router.query.redirect }
       })
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {

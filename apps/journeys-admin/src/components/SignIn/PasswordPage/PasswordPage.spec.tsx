@@ -44,7 +44,10 @@ describe('PasswordPage', () => {
 
     const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
     const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
 
     const { getByLabelText, getByRole } = render(
       <PasswordPage userEmail="example@example.com" />
@@ -58,10 +61,40 @@ describe('PasswordPage', () => {
     await waitFor(() => {
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
     })
+
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        pathname: '/'
-      })
+      expect(push).toHaveBeenCalledWith('/')
+    })
+  })
+
+  it('should sign user in and retain redirect', async () => {
+    const mockSignInWithEmailAndPassword =
+      signInWithEmailAndPassword as jest.MockedFunction<
+        typeof signInWithEmailAndPassword
+      >
+
+    const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: 'custom-url' }
+    } as unknown as NextRouter)
+
+    const { getByLabelText, getByRole } = render(
+      <PasswordPage userEmail="example@example.com" />
+    )
+
+    fireEvent.change(getByLabelText('Password'), {
+      target: { value: 'Password' }
+    })
+    fireEvent.click(getByRole('button', { name: 'Sign In' }))
+
+    await waitFor(() => {
+      expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith(new URL('http://localhostcustom-url/'))
     })
   })
 

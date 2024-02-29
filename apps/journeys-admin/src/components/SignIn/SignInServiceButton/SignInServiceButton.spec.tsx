@@ -31,25 +31,56 @@ describe('SignInServiceButton', () => {
     mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
 
     const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
 
     const { getByRole } = render(<SignInServiceButton service="google.com" />)
 
     fireEvent.click(getByRole('button', { name: 'Sign in with Google' }))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
-    expect(push).toHaveBeenCalledWith('/')
+    expect(push).toHaveBeenCalledWith({
+      pathname: '/',
+      query: { redirect: null }
+    })
   })
 
   it('should handle Facebook sign-in correctly', async () => {
     mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
 
     const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
 
     const { getByRole } = render(<SignInServiceButton service="facebook.com" />)
 
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
-    expect(push).toHaveBeenCalledWith('/')
+    expect(push).toHaveBeenCalledWith({
+      pathname: '/',
+      query: { redirect: null }
+    })
+  })
+
+  it('should retain redirect url on router redirect', async () => {
+    mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
+
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: '/custom-url' }
+    } as unknown as NextRouter)
+
+    const { getByRole } = render(<SignInServiceButton service="google.com" />)
+
+    fireEvent.click(getByRole('button', { name: 'Sign in with Google' }))
+    await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
+    expect(push).toHaveBeenCalledWith({
+      pathname: '/',
+      query: { redirect: '/custom-url' }
+    })
   })
 })

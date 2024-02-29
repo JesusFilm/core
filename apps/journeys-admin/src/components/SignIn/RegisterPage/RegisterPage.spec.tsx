@@ -57,7 +57,10 @@ describe('PasswordPage', () => {
 
     const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
     const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
     mockCreateUserWithEmailAndPassword.mockResolvedValue({
       user: {
         uid: '123'
@@ -85,7 +88,10 @@ describe('PasswordPage', () => {
     })
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith({
-        pathname: '/'
+        pathname: '/',
+        query: {
+          redirect: null
+        }
       })
     })
   })
