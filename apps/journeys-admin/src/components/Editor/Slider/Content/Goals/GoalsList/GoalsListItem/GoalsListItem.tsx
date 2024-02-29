@@ -149,11 +149,11 @@ export function GoalsListItem({
               {goalLabel}
             </Typography>
           </Stack>
-          <Typography variant="body2" color="secondary.light">
-            <Trans t={t} count={count}>
-              Appears on <strong>{{ count }}</strong> card
-            </Trans>
-          </Typography>
+          <Trans t={t} count={count}>
+            <Typography variant="body2" color="secondary.light">
+              Appears on <strong>{'{{ count }}'}</strong> card
+            </Typography>
+          </Trans>
         </TableCell>
         <TableCell
           align="center"
