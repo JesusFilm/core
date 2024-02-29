@@ -110,7 +110,8 @@ export const Youtube = {
   args: {
     ...Default.args,
     source: VideoBlockSource.youTube,
-    videoId: 'F7k5pqBVinA'
+    videoId: 'F7k5pqBVinA',
+    activeStep: true
   }
 }
 
@@ -118,7 +119,8 @@ export const Autoplay = {
   ...Template,
   args: {
     ...Arclight.args,
-    autoplay: true
+    autoplay: true,
+    activeStep: true
   },
   parameters: {
     chromatic: { disableSnapshot: true }
@@ -129,7 +131,8 @@ export const Muted = {
   ...Template,
   args: {
     ...Arclight.args,
-    muted: true
+    muted: true,
+    activeStep: true
   },
   parameters: {
     chromatic: { disableSnapshot: true }
