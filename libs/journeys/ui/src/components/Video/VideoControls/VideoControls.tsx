@@ -16,7 +16,7 @@ import Player from 'video.js/dist/types/player'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import { useBlocks } from '../../../libs/block'
+import { isActiveBlockOrDescendant, useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 
 import { DesktopControls } from './DesktopControls'
@@ -25,6 +25,7 @@ import { PlaybackIcon } from './PlaybackIcon'
 import { PlaybackEvent, playbackReducer } from './utils/playbackReducer'
 
 interface VideoControlProps {
+  blockId: string
   player: Player
   startAt: number
   endAt: number
@@ -32,7 +33,6 @@ interface VideoControlProps {
   loading?: boolean
   autoplay?: boolean
   muted?: boolean
-  activeStep: boolean
 }
 
 function isIOS(): boolean {
@@ -54,13 +54,13 @@ function iPhone(): boolean {
 }
 
 export function VideoControls({
+  blockId,
   player,
   startAt,
   endAt,
   isYoutube = false,
   loading = false,
-  muted: initialMuted = false,
-  activeStep
+  muted: initialMuted = false
 }: VideoControlProps): ReactElement {
   const { variant } = useJourney()
   const [active, setActive] = useState(true)
@@ -73,6 +73,7 @@ export function VideoControls({
     playing: false,
     action: 'play'
   })
+  const activeStep = isActiveBlockOrDescendant(blockId)
 
   // Explicit fullscreen state since player.fullscreen state lags when video paused
   const [fullscreen, setFullscreen] = useState(
@@ -132,6 +133,8 @@ export function VideoControls({
       player.off('play', handleVideoPlay)
     }
   }, [player, isYoutube, fullscreen, startAt, setShowHeaderFooter])
+
+  // TODO ACTIVE STEP
 
   // Handle pause event
   useEffect(() => {

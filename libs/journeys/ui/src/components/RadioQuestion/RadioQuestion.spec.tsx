@@ -81,11 +81,7 @@ describe('RadioQuestion', () => {
   it('should display the correct options', () => {
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <RadioQuestion
-          {...block}
-          addOption={<div>Add option</div>}
-          activeStep
-        />
+        <RadioQuestion {...block} addOption={<div>Add option</div>} />
       </MockedProvider>
     )
     expect(getByText('Option 1')).toBeInTheDocument()
@@ -126,7 +122,7 @@ describe('RadioQuestion', () => {
         ]}
       >
         <JourneyProvider>
-          <RadioQuestion {...block} uuid={() => 'uuid'} activeStep />
+          <RadioQuestion {...block} uuid={() => 'uuid'} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -170,7 +166,7 @@ describe('RadioQuestion', () => {
         ]}
         addTypename={false}
       >
-        <RadioQuestion {...block} uuid={() => 'uuid'} activeStep />
+        <RadioQuestion {...block} uuid={() => 'uuid'} />
       </MockedProvider>
     )
     const buttons = getAllByRole('button')
@@ -197,7 +193,7 @@ describe('RadioQuestion', () => {
               <div data-testid="radioOptionWrapper">{children}</div>
             )
           }}
-          activeStep
+          
         />
       </MockedProvider>
     )
@@ -243,7 +239,7 @@ describe('RadioQuestion', () => {
         ]}
       >
         <JourneyProvider>
-          <RadioQuestion {...block} uuid={() => 'uuid'} activeStep />
+          <RadioQuestion {...block} uuid={() => 'uuid'}  />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -263,7 +259,7 @@ describe('RadioQuestion', () => {
     )
   })
 
-  it('should set selectedId to null when activeStep is false', () => {
+  it('should set selectedId to null when  is false', () => {
     blockHistoryVar([activeBlock])
 
     const { getAllByRole } = render(
@@ -287,7 +283,7 @@ describe('RadioQuestion', () => {
         ]}
       >
         <JourneyProvider>
-          <RadioQuestion {...block} uuid={() => 'uuid'} activeStep={false} />
+          <RadioQuestion {...block} uuid={() => 'uuid'} ={false} />
         </JourneyProvider>
       </MockedProvider>
     )

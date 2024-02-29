@@ -12,7 +12,7 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import { TreeBlock } from '../../libs/block'
+import { TreeBlock, isActiveBlockOrDescendant } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { useEditor } from '../../libs/EditorProvider'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -60,9 +60,8 @@ export function Video({
   posterBlockId,
   children,
   action,
-  objectFit,
-  activeStep
-}: TreeBlock<VideoFields> & { activeStep: boolean }): ReactElement {
+  objectFit
+}: TreeBlock<VideoFields>): ReactElement {
   const [loading, setLoading] = useState(true)
   const [showPoster, setShowPoster] = useState(true)
   const theme = useTheme()
@@ -154,7 +153,6 @@ export function Video({
         videoRef={videoRef}
         player={player}
         setPlayer={setPlayer}
-        activeStep={activeStep}
         triggerTimes={triggerTimes}
         videoEndTime={videoEndTime}
         selectedBlock={selectedBlock}
@@ -169,8 +167,7 @@ export function Video({
         setVideoEndTime={setVideoEndTime}
         source={source}
       />
-
-      {activeStep &&
+      {isActiveBlockOrDescendant(blockId) &&
         player != null &&
         eventVideoTitle != null &&
         eventVideoId != null && (
@@ -260,6 +257,7 @@ export function Video({
           {player != null && (
             <ThemeProvider theme={{ ...theme, direction: 'ltr' }}>
               <VideoControls
+                blockId={blockId}
                 player={player}
                 startAt={startAt ?? 0}
                 endAt={videoEndTime}
@@ -267,7 +265,6 @@ export function Video({
                 loading={loading}
                 autoplay={autoplay ?? false}
                 muted={muted ?? false}
-                activeStep={activeStep}
               />
             </ThemeProvider>
           )}

@@ -71,7 +71,7 @@ describe('Video', () => {
   it('should render internal video', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <Video {...block} activeStep />
+        <Video {...block} />
       </MockedProvider>
     )
     const sourceTag = getByTestId('JourneysVideo-video0.id').querySelector(
@@ -92,7 +92,6 @@ describe('Video', () => {
             source: VideoBlockSource.cloudflare,
             videoId: 'videoId'
           }}
-          activeStep
         />
       </MockedProvider>
     )
@@ -108,7 +107,7 @@ describe('Video', () => {
   it('should render an image if videoId is null', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <Video {...block} videoId={null} activeStep />
+        <Video {...block} videoId={null} />
       </MockedProvider>
     )
     expect(getByTestId('VideocamRoundedIcon')).toHaveClass('MuiSvgIcon-root')
@@ -135,7 +134,7 @@ describe.skip('Admin Video', () => {
             }
           }}
         >
-          <Video {...block} activeStep />
+          <Video {...block} />
         </EditorProvider>
       </MockedProvider>
     )
@@ -149,7 +148,7 @@ describe.skip('Admin Video', () => {
   })
 
   it('should set container to 16:9', () => {
-    const { getByTestId } = render(<Video {...block} activeStep />)
+    const { getByTestId } = render(<Video {...block} />)
 
     // Expect container to have 16:9 aspect ratio
     expect(getByTestId('video-container')).toHaveStyle('position: absolute')

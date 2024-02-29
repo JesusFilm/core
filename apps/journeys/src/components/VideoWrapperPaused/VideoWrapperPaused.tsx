@@ -10,7 +10,6 @@ export function VideoWrapperPaused({ block }: WrapperProps): ReactElement {
         ...block,
         videoId: null
       }}
-      activeStep={false}
     />
   ) : (
     <></>

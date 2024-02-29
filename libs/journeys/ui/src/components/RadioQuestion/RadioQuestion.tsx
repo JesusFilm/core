@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '../../libs/block'
-import { useBlocks } from '../../libs/block'
+import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 // eslint-disable-next-line import/no-cycle
@@ -32,7 +32,6 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   uuid?: () => string
   wrappers?: WrappersProps
   addOption?: ReactElement
-  activeStep: boolean
 }
 
 const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
@@ -44,8 +43,7 @@ export function RadioQuestion({
   children,
   uuid = uuidv4,
   wrappers,
-  addOption,
-  activeStep
+  addOption
 }: RadioQuestionProps): ReactElement {
   const [radioQuestionSubmissionEventCreate] =
     useMutation<RadioQuestionSubmissionEventCreate>(
@@ -59,8 +57,8 @@ export function RadioQuestion({
 
   useEffect(() => {
     // test via e2e: radio selection is cleared when going back to card that is no longer rendered
-    if (!activeStep) setSelectedId(null)
-  }, [activeStep])
+    if (!isActiveBlockOrDescendant(blockId)) setSelectedId(null)
+  }, [blockId])
 
   const heading =
     activeBlock != null

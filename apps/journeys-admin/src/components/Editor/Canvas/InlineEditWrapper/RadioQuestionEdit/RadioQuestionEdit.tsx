@@ -102,7 +102,6 @@ export function RadioQuestionEdit({
       id={id}
       addOption={props.children.length < 12 ? addRadioOption : undefined}
       wrappers={wrappers}
-      activeStep={false}
     />
   )
 }

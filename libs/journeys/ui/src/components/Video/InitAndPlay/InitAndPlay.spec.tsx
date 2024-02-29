@@ -36,7 +36,7 @@ describe('InitAndPlay', () => {
       videoRef: { current: video },
       player,
       setPlayer: jest.fn(),
-      activeStep: true,
+
       triggerTimes: [0],
       videoEndTime: 100,
       selectedBlock: undefined,
@@ -154,8 +154,7 @@ describe('InitAndPlay', () => {
 
   it('should pause player when inactive', () => {
     const props = {
-      ...defaultProps,
-      activeStep: false
+      ...defaultProps
     }
 
     render(<InitAndPlay {...props} />)
