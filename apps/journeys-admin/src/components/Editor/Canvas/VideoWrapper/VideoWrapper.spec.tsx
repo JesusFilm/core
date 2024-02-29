@@ -91,7 +91,7 @@ describe('VideoWrapper', () => {
         video: null,
         videoId: null,
         videoVariantLanguageId: '529',
-        activeStep: true
+        activeStep: false
       },
       {}
     )
@@ -175,7 +175,7 @@ describe('VideoWrapper', () => {
         video: null,
         videoId: null,
         videoVariantLanguageId: '529',
-        activeStep: true
+        activeStep: false
       },
       {}
     )

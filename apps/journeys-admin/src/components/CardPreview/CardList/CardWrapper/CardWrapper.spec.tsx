@@ -122,7 +122,7 @@ describe('CardWrapper', () => {
         themeMode: null,
         themeName: null,
         wrappers: {},
-        activeStep: true
+        activeStep: false
       },
       {}
     )
@@ -236,7 +236,7 @@ describe('CardWrapper', () => {
         themeMode: null,
         themeName: null,
         wrappers: {},
-        activeStep: true
+        activeStep: false
       },
       {}
     )
