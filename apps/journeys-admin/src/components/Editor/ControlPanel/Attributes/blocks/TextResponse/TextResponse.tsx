@@ -1,5 +1,5 @@
 import Divider from '@mui/material/Divider'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -32,6 +32,19 @@ export function TextResponse({
   const submitLabel = icons.find(
     ({ value }) => value === submitIcon?.iconName
   )?.label
+
+  useEffect(() => {
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      id: `${id}-text-field-options`
+    })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: t('Feedback Properties'),
+      mobileOpen: true,
+      children: <TextResponseFields />
+    })
+  }, [dispatch, id, t])
 
   return (
     <>
