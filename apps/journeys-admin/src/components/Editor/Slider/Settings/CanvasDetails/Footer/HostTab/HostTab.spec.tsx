@@ -34,7 +34,7 @@ jest.mock('../../../../../../../libs/useCurrentUserLazyQuery', () => ({
 
 const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
 
-describe('HostSidePanel', () => {
+describe('HostTab', () => {
   beforeEach(() => {
     mockUseCurrentUserLazyQuery.mockReturnValue({
       loadUser: jest.fn(),

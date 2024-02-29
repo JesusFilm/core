@@ -8,7 +8,8 @@ import { HostListItem } from './HostListItem'
 const HostListItemDemo: Meta<typeof HostListItem> = {
   ...journeysAdminConfig,
   component: HostListItem,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/HostedBy/HostListItem',
+  title:
+    'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab/HostListItem',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'

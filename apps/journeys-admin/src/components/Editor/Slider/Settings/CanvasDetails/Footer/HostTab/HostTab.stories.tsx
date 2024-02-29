@@ -1,4 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
@@ -10,8 +11,10 @@ import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__ge
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { GET_CURRENT_USER } from '../../../../../../../libs/useCurrentUserLazyQuery'
+import { UPDATE_JOURNEY_HOST } from '../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
+import { DRAWER_WIDTH } from '../../../../../constants'
 
 import { GET_ALL_TEAM_HOSTS, HostTab } from './HostTab'
 
@@ -135,6 +138,28 @@ const teamHostsMock = {
   }
 }
 
+const journeyHostMock = {
+  request: {
+    query: UPDATE_JOURNEY_HOST,
+    variables: {
+      id: journey.id,
+      input: {
+        hostId: null
+      }
+    }
+  },
+  result: {
+    data: {
+      journeyUpdate: {
+        id: journey.id,
+        host: {
+          id: defaultHost.id
+        }
+      }
+    }
+  }
+}
+
 const Template: StoryObj<
   ComponentProps<typeof HostTab> & { mocks: MockedResponse[] }
 > = {
@@ -142,14 +167,16 @@ const Template: StoryObj<
     <MockedProvider mocks={mocks}>
       <ThemeProvider>
         <JourneyProvider value={{ ...args, variant: 'admin' }}>
-          <HostTab />
+          <Box sx={{ width: DRAWER_WIDTH }}>
+            <HostTab />
+          </Box>
         </JourneyProvider>
       </ThemeProvider>
     </MockedProvider>
   )
 }
 
-// Default side panels based on host availability
+// Default HostTabs based on host availability
 export const Default = {
   ...Template,
   args: {
@@ -174,8 +201,7 @@ export const EditHost = {
   }
 }
 
-// Popup side panels
-export const SelectHost = {
+export const HostListTab = {
   ...Template,
   args: {
     ...Default.args,
@@ -189,15 +215,15 @@ export const SelectHost = {
     })
     await userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
     await waitFor(async () => {
-      await expect(screen.getAllByText('Authors')).toHaveLength(2)
+      await expect(screen.getByText('Hosts')).toBeInTheDocument()
     })
   }
 }
 
-export const CreateHost = {
+export const HostFormTab = {
   ...Template,
   args: {
-    ...Default.args,
+    mocks: [...Default.args.mocks, journeyHostMock],
     journey: { ...journey, host: null }
   },
   play: async () => {
@@ -214,12 +240,12 @@ export const CreateHost = {
     })
     await userEvent.click(screen.getByRole('button', { name: 'Create New' }))
     await waitFor(async () => {
-      await expect(screen.getAllByText('Create Author')).toHaveLength(2)
+      await expect(screen.getByText('Host Name')).toBeInTheDocument()
     })
   }
 }
 
-export const Info = {
+export const HostInfoTab = {
   ...Template,
   args: {
     ...Default.args,
@@ -237,7 +263,9 @@ export const Info = {
     })
     await userEvent.click(screen.getAllByTestId('info')[0])
     await waitFor(async () => {
-      await expect(screen.getByText('Information')).toBeInTheDocument()
+      await expect(
+        screen.getByText('Why does your journey need a host?')
+      ).toBeInTheDocument()
     })
   }
 }

@@ -13,7 +13,7 @@ const Demo: Meta<typeof HostAvatarsButton> = {
   ...simpleComponentConfig,
   component: HostAvatarsButton,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostSidePanel/HostAvatarsButton'
+    'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab/HostAvatarsButton'
 }
 
 const defaultHost = {
