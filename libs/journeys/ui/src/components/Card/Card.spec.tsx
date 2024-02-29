@@ -36,15 +36,6 @@ jest.mock('../../libs/blurImage', () => ({
   blurImage: jest.fn()
 }))
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()

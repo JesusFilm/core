@@ -21,14 +21,10 @@ export function PlaybackIcon({
   visible,
   loading
 }: PlaybackIconProps): ReactNode {
-  function renderMobileControlButton(): ReactNode {
-    const icons = {
-      play: <PlayArrowRounded fontSize="inherit" />,
-      pause: <PauseRounded fontSize="inherit" />,
-      unmute: <VolumeOffOutlined fontSize="inherit" />
-    }
-
-    return icons[state.action]
+  const icons = {
+    play: <PlayArrowRounded fontSize="inherit" />,
+    pause: <PauseRounded fontSize="inherit" />,
+    unmute: <VolumeOffOutlined fontSize="inherit" />
   }
 
   return (
@@ -48,7 +44,7 @@ export function PlaybackIcon({
               p: { xs: 2, sm: 0, md: 2 }
             }}
           >
-            {renderMobileControlButton()}
+            {icons[state.action]}
           </IconButton>
         ) : (
           <CircularProgress size={65} />

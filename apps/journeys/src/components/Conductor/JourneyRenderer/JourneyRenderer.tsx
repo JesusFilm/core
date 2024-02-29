@@ -32,25 +32,25 @@ export function JourneyRenderer(): ReactElement {
   return (
     <>
       {treeBlocks.map((block) => {
-        const cardSx: SxProps = {
-          height: 'inherit',
-          width: '-webkit-fill-available;',
-          position: 'absolute',
-          top: 0,
-          left: 0
-        }
-
         const isCurrent = block.id === currentBlock?.id
         // test via e2e: navigation to and from non-pre-rendered cards
         const isPreRender =
           block.id === nextBlock?.id || block.id === previousBlock?.id
 
-        if (isCurrent) {
-          cardSx.height = '100%'
-          cardSx.width = 'inherit'
-          cardSx.position = 'relative'
-          cardSx.display = 'block'
-        }
+        const cardSx: SxProps = isCurrent
+          ? {
+              height: '100%',
+              width: 'inherit',
+              position: 'relative',
+              display: 'block'
+            }
+          : {
+              height: 'inherit',
+              width: '-webkit-fill-available;',
+              position: 'absolute',
+              top: 0,
+              left: 0
+            }
 
         return (
           <Fade
