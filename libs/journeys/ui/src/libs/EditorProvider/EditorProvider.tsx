@@ -141,8 +141,7 @@ export const reducer = (
     case 'SetActiveCanvasDetailsDrawerAction':
       return {
         ...state,
-        activeCanvasDetailsDrawer: action.activeCanvasDetailsDrawer,
-        selectedBlock: undefined
+        activeCanvasDetailsDrawer: action.activeCanvasDetailsDrawer
       }
     case 'SetActiveContentAction':
       return {
