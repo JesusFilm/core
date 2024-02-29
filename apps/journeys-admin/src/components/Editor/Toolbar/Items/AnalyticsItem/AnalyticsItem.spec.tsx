@@ -27,8 +27,8 @@ describe('AnalyticsItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('menuitem', { name: 'AnalyticsItem' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'AnalyticsItem' })).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Analytics' })).toHaveAttribute(
       'href',
       '/journeys/journey-id/reports'
     )
@@ -51,8 +51,8 @@ describe('AnalyticsItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('link', { name: 'AnalyticsItem' })).toBeInTheDocument()
-    expect(getByRole('link', { name: 'AnalyticsItem' })).toHaveAttribute(
+    expect(getByRole('link', { name: 'Analytics' })).toBeInTheDocument()
+    expect(getByRole('link', { name: 'Analytics' })).toHaveAttribute(
       'href',
       '/journeys/journey-id/reports'
     )
