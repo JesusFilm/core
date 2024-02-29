@@ -328,12 +328,4 @@ describe('Conductor', () => {
       expect(blockHistoryVar()[0].id).toBe('step1.id')
     })
   })
-
-  it('should navigate next to card that is not pre rendered', () => {
-    expect(true).toBe(true)
-  })
-
-  it('should navigate previous to card that is not pre rendered', () => {
-    expect(true).toBe(true)
-  })
 })
