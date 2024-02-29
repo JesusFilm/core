@@ -58,7 +58,7 @@ export function RadioQuestion({
   useEffect(() => {
     // test via e2e: radio selection is cleared when going back to card that is no longer rendered
     if (!isActiveBlockOrDescendant(blockId)) setSelectedId(null)
-  }, [blockId])
+  }, [blockId, blockHistory])
 
   const heading =
     activeBlock != null

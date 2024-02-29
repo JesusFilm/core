@@ -193,7 +193,6 @@ describe('RadioQuestion', () => {
               <div data-testid="radioOptionWrapper">{children}</div>
             )
           }}
-          
         />
       </MockedProvider>
     )
@@ -239,7 +238,7 @@ describe('RadioQuestion', () => {
         ]}
       >
         <JourneyProvider>
-          <RadioQuestion {...block} uuid={() => 'uuid'}  />
+          <RadioQuestion {...block} uuid={() => 'uuid'} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -283,7 +282,7 @@ describe('RadioQuestion', () => {
         ]}
       >
         <JourneyProvider>
-          <RadioQuestion {...block} uuid={() => 'uuid'} ={false} />
+          <RadioQuestion {...block} uuid={() => 'uuid'} />
         </JourneyProvider>
       </MockedProvider>
     )

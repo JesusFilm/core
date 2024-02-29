@@ -36,7 +36,7 @@ describe('InitAndPlay', () => {
       videoRef: { current: video },
       player,
       setPlayer: jest.fn(),
-
+      activeStep: true,
       triggerTimes: [0],
       videoEndTime: 100,
       selectedBlock: undefined,

@@ -12,11 +12,7 @@ import Player from 'video.js/dist/types/player'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-import {
-  TreeBlock,
-  isActiveBlockOrDescendant,
-  useBlocks
-} from '../../../libs/block'
+import { TreeBlock, useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 
@@ -37,6 +33,7 @@ interface InitAndPlayProps {
   setLoading: Dispatch<SetStateAction<boolean>>
   setShowPoster: Dispatch<SetStateAction<boolean>>
   setVideoEndTime: Dispatch<SetStateAction<number>>
+  activeStep?: boolean
 }
 
 export function InitAndPlay({
@@ -55,10 +52,10 @@ export function InitAndPlay({
   source,
   setLoading,
   setShowPoster,
-  setVideoEndTime
+  setVideoEndTime,
+  activeStep = false
 }: InitAndPlayProps): ReactElement {
   const { variant } = useJourney()
-  const activeStep = isActiveBlockOrDescendant(blockId)
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const [error, setError] = useState(false)
