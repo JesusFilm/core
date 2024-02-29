@@ -42,7 +42,7 @@ export function TemplateSettingsDialog({
   onClose
 }: TemplateSettingsFormProp): ReactElement {
   const [tab, setTab] = useState(0)
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey } = useJourney()
   const [journeySettingsUpdate] = useJourneyUpdateMutation()

@@ -20,7 +20,7 @@ export function MetadataTabPanel(): ReactElement {
   const { values, handleChange, setFieldValue } = useTemplateSettingsForm()
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
   const { journey } = useJourney()
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
 
   async function handleOnChange(value: LanguageOption): Promise<void> {
     const { id } = value

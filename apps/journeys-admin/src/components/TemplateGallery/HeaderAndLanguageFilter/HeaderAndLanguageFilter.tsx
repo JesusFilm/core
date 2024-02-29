@@ -180,7 +180,11 @@ export function HeaderAndLanguageFilter({
         '584', // Português, Portuguese, Brazil
         '21028', // Español, Spanish, Latin American
         '20615', // 普通話, Chinese, Mandarin
-        '3934' // Русский, Russian
+        '3934', // Русский, Russian
+        '22658', // Arabic Modern
+        '7083', // Japanese
+        '16639', // Bahasa Indonesia
+        '3887' // Vietnamese
       ]
     }
   })
