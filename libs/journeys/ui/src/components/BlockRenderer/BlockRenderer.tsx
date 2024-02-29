@@ -240,7 +240,9 @@ export function BlockRenderer({
     case 'VideoBlock':
       return (
         <Wrapper block={block}>
-          <VideoWrapper block={block} />
+          <VideoWrapper block={block}>
+            <Video {...block} />
+          </VideoWrapper>
         </Wrapper>
       )
     default:
