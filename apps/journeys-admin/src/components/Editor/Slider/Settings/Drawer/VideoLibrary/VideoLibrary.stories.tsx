@@ -14,7 +14,7 @@ import { VideoLibrary } from '.'
 const VideoLibraryStory: Meta<typeof VideoLibrary> = {
   ...journeysAdminConfig,
   component: VideoLibrary,
-  title: 'Journeys-Admin/Editor/VideoLibrary',
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 

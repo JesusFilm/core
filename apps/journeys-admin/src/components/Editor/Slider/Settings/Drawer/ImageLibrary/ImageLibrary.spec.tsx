@@ -63,7 +63,7 @@ describe('ImageLibrary', () => {
       )
       expect(getByText('Custom')).toBeInTheDocument()
       expect(getByTestId('ImageBlockEditor').parentElement).toHaveClass(
-        'MuiDrawer-paperAnchorRight'
+        'swiper-no-swiping MuiBox-root'
       )
     })
 
@@ -93,7 +93,7 @@ describe('ImageLibrary', () => {
       (useMediaQuery as jest.Mock).mockImplementation(() => false)
     )
 
-    it('should render the Image Library from the bottom', () => {
+    it('should render the Image Library from the slider', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
           <SnackbarProvider>
@@ -109,7 +109,7 @@ describe('ImageLibrary', () => {
       )
       expect(getByText('Custom')).toBeInTheDocument()
       expect(getByTestId('ImageBlockEditor').parentElement).toHaveClass(
-        'MuiDrawer-paperAnchorBottom'
+        'swiper-no-swiping MuiBox-root'
       )
     })
   })

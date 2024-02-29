@@ -1,17 +1,24 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { journey } from './data'
+import { ThemeProvider } from '../../../../ThemeProvider'
+
 import { GoalDetails } from './GoalDetails'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
 
 describe('GoalDetails', () => {
   it('should return placeholder text', () => {
     const { getByText } = render(
       <MockedProvider>
-        <GoalDetails />
+        <ThemeProvider>
+          <GoalDetails />
+        </ThemeProvider>
       </MockedProvider>
     )
     expect(getByText('What are Goals?')).toBeInTheDocument()
@@ -23,23 +30,17 @@ describe('GoalDetails', () => {
   it('should return action editor', () => {
     const { getByDisplayValue, getByText } = render(
       <MockedProvider>
-        <GoalDetails />
+        <ThemeProvider>
+          <EditorProvider
+            initialState={{ selectedGoalUrl: 'https://www.google.com/' }}
+          >
+            <GoalDetails />
+          </EditorProvider>
+        </ThemeProvider>
       </MockedProvider>
     )
     expect(getByDisplayValue('https://www.google.com/')).toBeInTheDocument()
-    expect(getByText('Visit a website')).toBeInTheDocument()
-  })
-
-  it('should return action cards', () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <GoalDetails />
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
+    expect(getByText('Visit a Website')).toBeInTheDocument()
     expect(getByText('Appears on the cards')).toBeInTheDocument()
   })
 })

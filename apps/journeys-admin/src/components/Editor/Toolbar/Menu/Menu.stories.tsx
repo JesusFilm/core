@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { screen, userEvent } from '@storybook/testing-library'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -26,7 +25,8 @@ const Template: StoryObj<typeof Menu> = {
           value={{
             journey: {
               status: JourneyStatus.draft,
-              tags: []
+              tags: [],
+              template: true
             } as unknown as Journey,
             variant: 'admin'
           }}
@@ -61,46 +61,24 @@ export const Block = {
   }
 }
 
-export const Card = {
+export const TemplateMenu = {
   ...Template,
   args: {
     selectedBlock: {
-      __typename: 'StepBlock',
-      id: 'stepId',
-      parentBlockId: 'journeyId',
+      id: 'typography0.id',
+      __typename: 'TypographyBlock',
+      parentBlockId: 'card1.id',
       parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
+      content: 'Title',
+      variant: null,
+      color: null,
+      align: null,
       children: []
     }
   },
   play: async () => {
     const menuButton = screen.getByRole('button')
     await userEvent.click(menuButton)
-  }
-}
-
-export const DeleteCardDialog = {
-  ...Template,
-  args: {
-    selectedBlock: {
-      __typename: 'StepBlock',
-      id: 'stepId',
-      parentBlockId: 'journeyId',
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
-  },
-  play: async () => {
-    await userEvent.click(screen.getByRole('button'))
-    await waitFor(async () => {
-      await expect(
-        screen.getByRole('menuitem', { name: 'Delete Card' })
-      ).toBeInTheDocument()
-    })
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
   }
 }
 

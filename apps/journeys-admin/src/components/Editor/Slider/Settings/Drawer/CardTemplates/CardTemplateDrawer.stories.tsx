@@ -11,7 +11,7 @@ import { CardTemplateDrawer } from '.'
 const CardTemplateDrawerStory: Meta<typeof CardTemplateDrawer> = {
   ...journeysAdminConfig,
   component: CardTemplateDrawer,
-  title: 'Journeys-Admin/Editor/CardTemplateDrawer'
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/CardTemplates'
 }
 
 const Template: StoryObj<typeof CardTemplateDrawer> = {
@@ -19,7 +19,9 @@ const Template: StoryObj<typeof CardTemplateDrawer> = {
     return (
       <MockedProvider>
         <EditorProvider>
-          <Drawer />
+          <Drawer>
+            <CardTemplateDrawer />
+          </Drawer>
         </EditorProvider>
       </MockedProvider>
     )

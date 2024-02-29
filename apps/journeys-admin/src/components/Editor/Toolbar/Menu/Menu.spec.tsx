@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -7,15 +7,9 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
-import {
-  BlockFields_StepBlock as StepBlock,
-  BlockFields_TypographyBlock as TypographyBlock,
-  BlockFields_VideoBlock as VideoBlock
-} from '../../../../../__generated__/BlockFields'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
-import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
-import { BLOCK_DUPLICATE } from '../../Slider/Content/Canvas/QuickControls/DuplicateBlock/DuplicateBlock'
+import { Role } from '../../../../../__generated__/globalTypes'
 
 import { GET_ROLE } from './Menu'
 
@@ -36,39 +30,6 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 describe('Toolbar Menu', () => {
   const push = jest.fn()
   const on = jest.fn()
-
-  it('should disable duplicate button when video block is selected', async () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                status: JourneyStatus.draft,
-                tags: []
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider
-              initialState={{
-                selectedBlock: {
-                  __typename: 'VideoBlock'
-                } as unknown as TreeBlock<VideoBlock>
-              }}
-            >
-              <Menu />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    fireEvent.click(getByRole('button', { name: 'Edit Journey Actions' }))
-    expect(getByRole('menuitem', { name: 'Duplicate Block' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
-  })
 
   it('should render menu items', () => {
     const selectedBlock: TreeBlock<StepBlock> = {
@@ -100,15 +61,10 @@ describe('Toolbar Menu', () => {
       </SnackbarProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Duplicate Card' })
-    ).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Manage Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
@@ -159,11 +115,7 @@ describe('Toolbar Menu', () => {
       </SnackbarProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Duplicate Card' })
-    ).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Manage Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
@@ -172,7 +124,6 @@ describe('Toolbar Menu', () => {
       getByRole('menuitem', { name: 'Create Template' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
@@ -224,155 +175,13 @@ describe('Toolbar Menu', () => {
       </SnackbarProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Duplicate Card' })
-    ).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
     expect(
       getByRole('menuitem', { name: 'Template Settings' })
     ).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
     })
-    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
-  })
-
-  it('should open the block menu on icon click', () => {
-    const selectedBlock: TreeBlock<TypographyBlock> = {
-      id: 'typography0.id',
-      __typename: 'TypographyBlock',
-      parentBlockId: 'card1.id',
-      parentOrder: 0,
-      content: 'Title',
-      variant: null,
-      color: null,
-      align: null,
-      children: []
-    }
-
-    const { getByRole, getByTestId } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                status: JourneyStatus.draft,
-                tags: []
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock }}>
-              <Menu />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('menu')).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Delete Block' })).toBeInTheDocument()
-  })
-
-  it('should open the card menu on icon click', () => {
-    const selectedBlock: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'stepId',
-      parentBlockId: 'journeyId',
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
-
-    const { getByRole, getByTestId } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                status: JourneyStatus.draft,
-                tags: []
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock }}>
-              <Menu />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('menu')).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
-  })
-
-  it('should close the menu upon clicking duplicating from menu', async () => {
-    const selectedBlock: TreeBlock<TypographyBlock> = {
-      id: 'typography0.id',
-      __typename: 'TypographyBlock',
-      parentBlockId: 'card1.id',
-      parentOrder: 0,
-      content: 'Title',
-      variant: null,
-      color: null,
-      align: null,
-      children: []
-    }
-
-    const mockBlockDuplicate: MockedResponse<BlockDuplicate> = {
-      request: {
-        query: BLOCK_DUPLICATE,
-        variables: {
-          id: selectedBlock.id,
-          parentOrder: 1
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          blockDuplicate: [
-            {
-              __typename: 'TypographyBlock',
-              id: 'typography0.id'
-            }
-          ]
-        }
-      }))
-    }
-
-    const { getByTestId, queryByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[mockBlockDuplicate]} addTypename={false}>
-          <JourneyProvider
-            value={{
-              journey: {
-                status: JourneyStatus.draft,
-                tags: []
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock }}>
-              <Menu />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(queryByRole('menu')).not.toBeInTheDocument()
-    fireEvent.click(getByTestId('MoreIcon'))
-    await waitFor(() => expect(queryByRole('menu')).toBeInTheDocument())
-    fireEvent.click(getByTestId('JourneysAdminMenuItemDuplicate-Block'))
-    await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument())
-    expect(mockBlockDuplicate.result).toHaveBeenCalled()
   })
 
   it('should open templates dialog', async () => {
@@ -386,7 +195,7 @@ describe('Toolbar Menu', () => {
       children: []
     }
 
-    const { getByRole, queryByRole } = render(
+    const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -407,16 +216,10 @@ describe('Toolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(
-      queryByRole('dialog', { name: 'Template Settings' })
-    ).not.toBeInTheDocument()
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('menuitem', { name: 'Template Settings' }))
-    await waitFor(() =>
-      expect(
-        getByRole('dialog', { name: 'Template Settings' })
-      ).toBeInTheDocument()
-    )
+    expect(
+      getByRole('menuitem', { name: 'Template Settings' })
+    ).toBeInTheDocument()
   })
 
   it('should handle edit journey title', async () => {

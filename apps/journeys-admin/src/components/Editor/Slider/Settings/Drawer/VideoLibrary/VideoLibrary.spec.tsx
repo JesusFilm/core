@@ -41,7 +41,7 @@ describe('VideoLibrary', () => {
       )
       expect(getByText('Video Library')).toBeInTheDocument()
       expect(getByTestId('VideoLibrary').parentElement).toHaveClass(
-        'MuiDrawer-paperAnchorRight'
+        'swiper-no-swiping MuiBox-root'
       )
     })
 
@@ -71,7 +71,7 @@ describe('VideoLibrary', () => {
       )
       expect(getByText('Video Library')).toBeInTheDocument()
       expect(getByTestId('VideoLibrary').parentElement).toHaveClass(
-        'MuiDrawer-paperAnchorBottom'
+        'swiper-no-swiping MuiBox-root'
       )
     })
   })
@@ -155,7 +155,7 @@ describe('VideoLibrary', () => {
     )
     expect(getByText('Video Library')).toBeInTheDocument()
     expect(getByTestId('VideoLibrary').parentElement).toHaveClass(
-      'MuiDrawer-paperAnchorRight'
+      'swiper-no-swiping MuiBox-root'
     )
   })
 
