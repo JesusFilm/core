@@ -99,8 +99,8 @@ describe('Canvas', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('step-step0.id')).toHaveStyle({
-      outline: '2px solid #C52D3A'
+    expect(getByTestId('CanvasContainer')).toHaveStyle({
+      border: '2px solid #C52D3A'
     })
   })
 
@@ -134,7 +134,7 @@ describe('Canvas', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('step-step0.id'))
+    fireEvent.click(getByTestId('CanvasContainer'))
     expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
     expect(getByText(`activeFab: Add`)).toBeInTheDocument()
     expect(
