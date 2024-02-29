@@ -6,7 +6,7 @@ import { JourneyFields as Journey } from '../../../../../../../__generated__/Jou
 
 import { Post } from '.'
 
-describe('SocialPreviewPost', () => {
+describe('Post', () => {
   it('should display blank socialpreviewpost', () => {
     const { getByTestId } = render(
       <JourneyProvider
@@ -22,7 +22,7 @@ describe('SocialPreviewPost', () => {
     expect(getByTestId('social-preview-post-empty')).toBeInTheDocument()
   })
 
-  it('should display socialpreviewpost', () => {
+  it('should display social preview post', () => {
     const { getByRole, getByText } = render(
       <JourneyProvider
         value={{

@@ -158,6 +158,7 @@ export function Canvas(): ReactElement {
             }}
           >
             <Box
+              data-testId="CanvasContainer"
               sx={{
                 position: 'relative',
                 left: '50%',
