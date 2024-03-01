@@ -10,3 +10,7 @@
 export interface CreateVerificationRequest {
   createVerificationRequest: boolean | null;
 }
+
+export interface CreateVerificationRequestVariables {
+  redirectLink?: string | null;
+}

@@ -69,7 +69,10 @@ function ValidateEmail({
   })
 
   const [resendValidationEmail] = useMutation<CreateVerificationRequest>(
-    CREATE_VERIFICATION_REQUEST
+    CREATE_VERIFICATION_REQUEST,
+    {
+      variables: { redirect: router?.query?.redirect as string }
+    }
   )
 
   const validationSchema = object().shape({

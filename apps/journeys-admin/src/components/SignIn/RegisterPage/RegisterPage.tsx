@@ -68,10 +68,6 @@ export function RegisterPage({
   async function handleCreateAccount(values, { setFieldError }): Promise<void> {
     try {
       await createAccountAndSignIn(values.email, values.name, values.password)
-      // await router.push({
-      //   pathname: '/',
-      //   query: { redirect: router.query.redirect }
-      // })
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
         setFieldError(

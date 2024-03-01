@@ -16,8 +16,8 @@ interface EmailVerificationDialogProps {
 }
 
 export const CREATE_VERIFICATION_REQUEST = gql`
-  mutation CreateVerificationRequest {
-    createVerificationRequest
+  mutation CreateVerificationRequest($redirectLink: String) {
+    createVerificationRequest(redirectLink: $redirectLink)
   }
 `
 
