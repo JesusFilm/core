@@ -5,7 +5,6 @@ import {
   getAuth,
   signInWithPopup
 } from 'firebase/auth'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -20,7 +19,7 @@ export function SignInServiceButton({
   service
 }: SignInServiceButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
+
   async function handleSignIn(): Promise<void> {
     const auth = getAuth()
     const authProvider =
@@ -33,10 +32,6 @@ export function SignInServiceButton({
     } catch (err) {
       console.error(err)
     }
-    await router.push({
-      pathname: '/',
-      query: { redirect: router.query.redirect }
-    })
   }
 
   return (
