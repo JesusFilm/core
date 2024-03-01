@@ -48,7 +48,7 @@ export class UserResolver {
   @UseGuards(GqlAuthGuard)
   async me(
     @CurrentUserId() userId: string,
-    @Args('redirectLink') redirectLink: string
+    @Args('redirectLink') redirectLink?: string
   ): Promise<User> {
     return await this.findOrFetchUser(userId, redirectLink)
   }
