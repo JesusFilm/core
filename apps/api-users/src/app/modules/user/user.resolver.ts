@@ -123,7 +123,6 @@ export class UserResolver {
     userId: string,
     redirectLink: string | undefined = undefined
   ): Promise<User> {
-    console.log(redirectLink)
     const existingUser = await this.prismaService.user.findUnique({
       where: {
         userId
