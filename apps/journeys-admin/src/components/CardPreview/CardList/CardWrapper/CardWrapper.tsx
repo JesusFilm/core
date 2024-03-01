@@ -24,7 +24,6 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
       <Card
         {...{ ...block, children: blocks }}
         wrappers={children.props.wrappers}
-        activeStep={false}
       />
     )
   }

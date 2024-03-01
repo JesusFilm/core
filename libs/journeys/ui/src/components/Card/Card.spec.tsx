@@ -289,7 +289,7 @@ describe('CardBlock', () => {
   it('should render card with theme background color', async () => {
     const { getByTestId, getByText } = render(
       <MockedProvider>
-        <Card {...block} activeStep />
+        <Card {...block} />
       </MockedProvider>
     )
 
@@ -310,7 +310,6 @@ describe('CardBlock', () => {
           themeMode={ThemeMode.dark}
           themeName={ThemeName.base}
           backgroundColor="#F1A025"
-          activeStep
         />
       </MockedProvider>
     )
@@ -324,7 +323,7 @@ describe('CardBlock', () => {
   it('should render expanded cover if no coverBlockId', () => {
     const { queryByText, getByTestId } = render(
       <MockedProvider>
-        <Card {...block} coverBlockId={null} activeStep />
+        <Card {...block} coverBlockId={null} />
       </MockedProvider>
     )
 
@@ -336,7 +335,7 @@ describe('CardBlock', () => {
   it('should render expanded cover if invalid coverBlockId', () => {
     const { queryByText, getByTestId } = render(
       <MockedProvider>
-        <Card {...block} coverBlockId="fakeId" activeStep />
+        <Card {...block} coverBlockId="fakeId" />
       </MockedProvider>
     )
 
@@ -352,7 +351,6 @@ describe('CardBlock', () => {
           {...{ ...block, children: [...block.children, imageBlock] }}
           fullscreen
           coverBlockId="imageBlockId"
-          activeStep
         />
       </MockedProvider>
     )
@@ -371,7 +369,6 @@ describe('CardBlock', () => {
         <Card
           {...{ ...block, children: [...block.children, imageBlock] }}
           coverBlockId="imageBlockId"
-          activeStep
         />
       </MockedProvider>
     )
@@ -392,7 +389,6 @@ describe('CardBlock', () => {
         <Card
           {...{ ...block, children: [...block.children, videoBlock] }}
           coverBlockId="videoBlockId"
-          activeStep
         />
       </MockedProvider>
     )
@@ -413,7 +409,7 @@ describe('CardBlock', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepNextEventCreate]}>
-        <Card {...card1} activeStep />
+        <Card {...card1} />
       </MockedProvider>
     )
 
@@ -447,7 +443,7 @@ describe('CardBlock', () => {
       <MockedProvider
         mocks={[getStepViewEventMock(step2.id), mockStepPreviousEventCreate]}
       >
-        <Card {...card2} activeStep />
+        <Card {...card2} />
       </MockedProvider>
     )
 
@@ -486,7 +482,7 @@ describe('CardBlock', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[getStepViewEventMock(step1.id, 'Untitled')]}>
-        <Card {...lockedCard} activeStep />
+        <Card {...lockedCard} />
       </MockedProvider>
     )
 
@@ -501,7 +497,7 @@ describe('CardBlock', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[getStepViewEventMock(step1.id)]}>
-        <Card {...card1} activeStep />
+        <Card {...card1} />
       </MockedProvider>
     )
 
@@ -516,7 +512,7 @@ describe('CardBlock', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[getStepViewEventMock(step3.id)]}>
-        <Card {...card3} activeStep />
+        <Card {...card3} />
       </MockedProvider>
     )
 
@@ -540,7 +536,7 @@ describe('CardBlock', () => {
         mocks={[getStepViewEventMock(step1.id), mockStepNextEventCreate]}
       >
         <JourneyProvider value={{ journey }}>
-          <Card {...card1} activeStep />
+          <Card {...card1} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -564,7 +560,7 @@ describe('CardBlock', () => {
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepPreviousEventCreate]}>
         <JourneyProvider value={{ journey }}>
-          <Card {...card2} activeStep />
+          <Card {...card2} />
         </JourneyProvider>
       </MockedProvider>
     )

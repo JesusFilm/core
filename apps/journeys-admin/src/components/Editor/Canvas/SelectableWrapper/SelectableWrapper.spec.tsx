@@ -164,7 +164,6 @@ describe('SelectableWrapper', () => {
               <RadioQuestion
                 {...radioQuestionBlock}
                 wrappers={{ Wrapper: SelectableWrapper }}
-                activeStep={false}
               />
             </SelectableWrapper>
           </EditorProvider>
@@ -221,7 +220,6 @@ describe('SelectableWrapper', () => {
             <RadioQuestion
               {...radioQuestionBlock}
               wrappers={{ Wrapper: SelectableWrapper }}
-              activeStep={false}
             />
           </SelectableWrapper>
         </EditorProvider>
@@ -251,7 +249,6 @@ describe('SelectableWrapper', () => {
             <RadioQuestion
               {...radioQuestionBlock}
               wrappers={{ Wrapper: SelectableWrapper }}
-              activeStep={false}
             />
           </SelectableWrapper>
         </EditorProvider>
@@ -280,7 +277,6 @@ describe('SelectableWrapper', () => {
             <RadioQuestion
               {...radioQuestionBlock}
               wrappers={{ Wrapper: SelectableWrapper }}
-              activeStep={false}
             />
           </SelectableWrapper>
         </EditorProvider>

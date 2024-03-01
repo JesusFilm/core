@@ -122,7 +122,7 @@ describe('VideoBlockEditorSettings', () => {
 
   it('should update muted', async () => {
     const onChange = jest.fn()
-    const { getByRole, getByText, queryByText } = render(
+    const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
           <SnackbarProvider>
@@ -135,13 +135,6 @@ describe('VideoBlockEditorSettings', () => {
         </MockedProvider>
       </ThemeProvider>
     )
-
-    expect(
-      queryByText(
-        'Some mobile browsers may override this choice and default the video to play muted when autoplay is enabled'
-      )
-    ).not.toBeInTheDocument()
-
     fireEvent.click(getByRole('checkbox', { name: 'Muted' }))
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({
@@ -152,12 +145,6 @@ describe('VideoBlockEditorSettings', () => {
         objectFit: ObjectFit.fill
       })
     })
-
-    expect(
-      getByText(
-        'Some mobile browsers may override this choice and default the video to play muted when autoplay is enabled'
-      )
-    ).toBeInTheDocument()
   })
 
   it('should update startAt', async () => {

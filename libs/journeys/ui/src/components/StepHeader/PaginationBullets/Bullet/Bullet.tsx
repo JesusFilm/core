@@ -5,7 +5,7 @@ type BulletVariant = 'active' | 'adjacent' | 'default'
 
 interface BulletProps {
   variant: BulletVariant
-  // left handles the spacing and animation of bullets
+  /**  left handles the spacing and animation of bullets */
   left: number
 }
 
