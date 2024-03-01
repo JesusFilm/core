@@ -193,8 +193,16 @@ describe('UserResolver', () => {
       expect(validateIpV4(null)).toBe(true)
     })
 
-    it('is internal ip', () => {
-      expect(validateIpV4('10.11.1.1')).toBe(true)
+    it('is stage aws', () => {
+      expect(validateIpV4('3.13.104.200')).toBe(true)
+    })
+
+    it('is prod aws', () => {
+      expect(validateIpV4('18.225.26.131')).toBe(true)
+    })
+
+    it('is localhost ip', () => {
+      expect(validateIpV4('127.0.0.1')).toBe(true)
     })
 
     it('is proxied external ip', () => {
@@ -210,7 +218,7 @@ describe('UserResolver', () => {
 
     it('should be true', () => {
       process.env.INTEROP_TOKEN = '1234'
-      expect(isValidInterOp('1234', '10.1.2.3')).toBe(true)
+      expect(isValidInterOp('1234', '18.225.26.131')).toBe(true)
     })
   })
 })
