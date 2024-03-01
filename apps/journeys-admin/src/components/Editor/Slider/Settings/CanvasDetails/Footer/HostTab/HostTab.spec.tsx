@@ -15,17 +15,16 @@ import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTea
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { GET_ALL_TEAM_HOSTS, HostTab } from './HostTab'
+import {
+  GetAllTeamHosts,
+  GetAllTeamHostsVariables
+} from '../../../../../../../../__generated__/GetAllTeamHosts'
+import {
+  UpdateJourneyHost,
+  UpdateJourneyHostVariables
+} from '../../../../../../../../__generated__/UpdateJourneyHost'
 
 const user1 = { id: 'userId', email: 'admin@email.com' }
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
 
 jest.mock('../../../../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
@@ -105,15 +104,19 @@ describe('HostTab', () => {
     }
   }
 
-  const getTeamHostsMock = {
+  const getTeamHostsMock: MockedResponse<
+    GetAllTeamHosts,
+    GetAllTeamHostsVariables
+  > = {
     request: {
       query: GET_ALL_TEAM_HOSTS,
-      variables: { teamId: journey?.team?.id }
+      variables: { teamId: journey?.team?.id ?? '' }
     },
     result: {
       data: {
         hosts: [
           {
+            __typename: 'Host',
             id: 'host1.id',
             location: '',
             src1: null,
@@ -125,8 +128,35 @@ describe('HostTab', () => {
     }
   }
 
-  it('should render the default host side panel', async () => {
-    const { getAllByRole } = render(
+  const updateJourneyHostMock: MockedResponse<
+    UpdateJourneyHost,
+    UpdateJourneyHostVariables
+  > = {
+    request: {
+      query: UPDATE_JOURNEY_HOST,
+      variables: {
+        id: journey.id,
+        input: {
+          hostId: null
+        }
+      }
+    },
+    result: {
+      data: {
+        journeyUpdate: {
+          __typename: 'Journey',
+          id: journey.id,
+          host: {
+            __typename: 'Host',
+            id: defaultHost.id
+          }
+        }
+      }
+    }
+  }
+
+  it('should render the default host tab', async () => {
+    const { getByRole } = render(
       <MockedProvider mocks={[getUserTeamMock]}>
         <ThemeProvider>
           <JourneyProvider
@@ -142,14 +172,12 @@ describe('HostTab', () => {
     )
 
     await waitFor(() => {
-      expect(
-        getAllByRole('button', { name: 'Select a Host' })[0]
-      ).not.toBeDisabled()
+      expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
     })
   })
 
   it('should disable editing hosts if no team on journey', async () => {
-    const { getAllByRole } = render(
+    const { getByRole } = render(
       <MockedProvider mocks={[getUserTeamMock]}>
         <ThemeProvider>
           <JourneyProvider
@@ -165,9 +193,7 @@ describe('HostTab', () => {
     )
 
     await waitFor(() => {
-      expect(
-        getAllByRole('button', { name: 'Select a Host' })[0]
-      ).toBeDisabled()
+      expect(getByRole('button', { name: 'Select a Host' })).toBeDisabled()
     })
   })
 
@@ -177,7 +203,7 @@ describe('HostTab', () => {
       data: { id: 'otherUser', email: 'otherUser@test.com' }
     })
 
-    const { getAllByRole, getAllByText } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider mocks={[getUserTeamMock]}>
         <ThemeProvider>
           <JourneyProvider
@@ -191,15 +217,8 @@ describe('HostTab', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-
-    await waitFor(() => {
-      expect(
-        getAllByRole('button', { name: 'Select a Host' })[0]
-      ).toBeDisabled()
-      expect(
-        getAllByText('Only My team members can edit this')[0]
-      ).toBeInTheDocument()
-    })
+    expect(getByRole('button', { name: 'Select a Host' })).toBeDisabled()
+    expect(getByText('Only My team members can edit this')).toBeInTheDocument()
   })
 
   it('should disable editing hosts if no users have access in team', async () => {
@@ -235,8 +254,8 @@ describe('HostTab', () => {
     })
   })
 
-  it('should navigate to the select host side panel', async () => {
-    const { getAllByRole, getAllByText } = render(
+  it('should navigate to Host List', async () => {
+    const { getAllByRole, getByText } = render(
       <MockedProvider mocks={[getUserTeamMock]}>
         <ThemeProvider>
           <JourneyProvider
@@ -260,12 +279,12 @@ describe('HostTab', () => {
     fireEvent.click(getAllByRole('button', { name: 'Select a Host' })[0])
 
     await waitFor(() => {
-      expect(getAllByText('Authors')[0]).toBeInTheDocument()
+      expect(getByText('Hosts')).toBeInTheDocument()
     })
   })
 
-  it('should navigate to the info side panel', async () => {
-    const { getAllByRole, getAllByText, getAllByTestId } = render(
+  it('should navigate to info', async () => {
+    const { getAllByRole, getByText, getByTestId } = render(
       <MockedProvider mocks={[getUserTeamMock]}>
         <ThemeProvider>
           <JourneyProvider
@@ -289,29 +308,15 @@ describe('HostTab', () => {
     fireEvent.click(getAllByRole('button', { name: 'Select a Host' })[0])
 
     await waitFor(() => {
-      expect(getAllByText('Authors')[0]).toBeInTheDocument()
+      expect(getByText('Hosts')).toBeInTheDocument()
     })
 
-    fireEvent.click(getAllByTestId('info')[0])
+    fireEvent.click(getByTestId('info'))
 
     await waitFor(() => {
-      expect(getAllByText('Information')[0]).toBeInTheDocument()
-    })
-  })
-
-  it('should render the edit host panel', async () => {
-    const { getAllByText } = render(
-      <MockedProvider mocks={[getUserTeamMock]}>
-        <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostTab />
-          </JourneyProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() => {
-      expect(getAllByText('Edit Author')[0]).toBeInTheDocument()
+      expect(
+        getByText('Why does your journey need a host?')
+      ).toBeInTheDocument()
     })
   })
 
@@ -327,7 +332,7 @@ describe('HostTab', () => {
       }
     }))
 
-    const { getAllByRole } = render(
+    const { getByRole } = render(
       <MockedProvider
         mocks={[
           getUserTeamMock,
@@ -357,16 +362,14 @@ describe('HostTab', () => {
     )
 
     await waitFor(() => {
-      expect(
-        getAllByRole('button', { name: 'Select a Host' })[0]
-      ).not.toBeDisabled()
+      expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
     })
-    fireEvent.click(getAllByRole('button', { name: 'Select a Host' })[0])
+    fireEvent.click(getByRole('button', { name: 'Select a Host' }))
 
     await waitFor(() => {
-      expect(getAllByRole('button', { name: 'Host1' })[0]).toBeInTheDocument()
+      expect(getByRole('button', { name: 'Host1' })).toBeInTheDocument()
     })
-    fireEvent.click(getAllByRole('button', { name: 'Host1' })[0])
+    fireEvent.click(getByRole('button', { name: 'Host1' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
 
@@ -374,8 +377,8 @@ describe('HostTab', () => {
   })
 
   it('should navigate to the create host panel', async () => {
-    const { getAllByRole, getAllByText } = render(
-      <MockedProvider mocks={[getUserTeamMock]}>
+    const { getByRole, getByText } = render(
+      <MockedProvider mocks={[getUserTeamMock, updateJourneyHostMock]}>
         <ThemeProvider>
           <JourneyProvider
             value={{
@@ -390,21 +393,19 @@ describe('HostTab', () => {
     )
 
     await waitFor(() => {
-      expect(
-        getAllByRole('button', { name: 'Select a Host' })[0]
-      ).not.toBeDisabled()
+      expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
     })
 
-    fireEvent.click(getAllByRole('button', { name: 'Select a Host' })[0])
+    fireEvent.click(getByRole('button', { name: 'Select a Host' }))
 
     await waitFor(() => {
-      expect(getAllByText('Authors')[0]).toBeInTheDocument()
+      expect(getByText('Hosts')).toBeInTheDocument()
     })
 
-    fireEvent.click(getAllByRole('button', { name: 'Create New' })[0])
+    fireEvent.click(getByRole('button', { name: 'Create New' }))
 
     await waitFor(() => {
-      expect(getAllByText('Create Author')[0]).toBeInTheDocument()
+      expect(getByText('Back')).toBeInTheDocument()
     })
   })
 

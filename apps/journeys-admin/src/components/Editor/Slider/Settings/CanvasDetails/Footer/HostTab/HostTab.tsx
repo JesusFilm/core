@@ -159,7 +159,7 @@ export function HostTab(): ReactElement {
               <Typography variant="subtitle2">
                 {data?.userTeams.length === 0
                   ? t('Cannot edit hosts for this old journey')
-                  : t('Only {{teamName} members can edit this', {
+                  : t('Only {{ teamName }} members can edit this', {
                       teamName: journey.team.title
                     })}
               </Typography>
