@@ -66,7 +66,7 @@ export function UserNavigation({
 }: UserNavigationProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const { data } = useSuspenseQuery<GetMe>(GET_ME, {
-    variables: { redirectLink: null }
+    variables: { redirectLink: undefined }
   })
   const { data: userRoleData } = useUserRoleSuspenseQuery()
   const { data: journeysData } = useAdminJourneysSuspenseQuery({
