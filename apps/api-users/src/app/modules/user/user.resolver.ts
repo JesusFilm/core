@@ -42,8 +42,11 @@ export class UserResolver {
 
   @Query()
   @UseGuards(GqlAuthGuard)
-  async me(@CurrentUserId() userId: string): Promise<User> {
-    return await this.findOrFetchUser(userId)
+  async me(
+    @CurrentUserId() userId: string,
+    @Args('redirectLink') redirectLink: string | undefined
+  ): Promise<User> {
+    return await this.findOrFetchUser(userId, redirectLink)
   }
 
   @Query()
@@ -112,7 +115,10 @@ export class UserResolver {
     return await this.findOrFetchUser(reference.id)
   }
 
-  private async findOrFetchUser(userId: string): Promise<User> {
+  private async findOrFetchUser(
+    userId: string,
+    redirectLink: string | undefined = undefined
+  ): Promise<User> {
     const existingUser = await this.prismaService.user.findUnique({
       where: {
         userId
@@ -164,7 +170,7 @@ export class UserResolver {
       })
       // after user create so it is ony sent once
       if (!emailVerified && email != null) {
-        await this.userService.verifyUser(userId, email)
+        await this.userService.verifyUser(userId, email, redirectLink)
       }
     } catch (e) {
       do {
@@ -203,11 +209,14 @@ export class UserResolver {
   }
 
   @Mutation()
-  async createVerificationRequest(@CurrentUser() user: User): Promise<boolean> {
+  async createVerificationRequest(
+    @CurrentUser() user: User,
+    @Args('redirectLink') redirectLink: string | undefined
+  ): Promise<boolean> {
     if (user == null)
       throw new GraphQLError('User not found', { extensions: { code: '404' } })
 
-    await this.userService.verifyUser(user.id, user.email)
+    await this.userService.verifyUser(user.id, user.email, redirectLink)
     return true
   }
 }

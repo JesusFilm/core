@@ -21,3 +21,7 @@ export interface GetMe_me {
 export interface GetMe {
   me: GetMe_me | null;
 }
+
+export interface GetMeVariables {
+  redirectLink?: string | null;
+}

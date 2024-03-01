@@ -104,10 +104,12 @@ export function UserMenu({
             handleProfileClose()
             await client.resetStore()
             await user.signOut()
+            await router.push('/users/sign-in')
             await enqueueSnackbar(t('Logout successful'), {
               variant: 'success',
               preventDuplicate: true
             })
+
             setActiveTeam(null)
           }}
           testId="LogOut"

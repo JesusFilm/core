@@ -40,8 +40,8 @@ const UserMenu = dynamic(
 )
 
 export const GET_ME = gql`
-  query GetMe {
-    me {
+  query GetMe($redirectLink: String) {
+    me(redirectLink: $redirectLink) {
       id
       firstName
       lastName

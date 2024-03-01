@@ -9,13 +9,13 @@ type User @key(fields: "id") {
 }
 
 extend type Query {
-  me: User
+  me(redirectLink: String): User
   user(id: ID!): User
   userByEmail(email: String!): User
 }
 
 extend type Mutation {
   userImpersonate(email: String!): String
-  createVerificationRequest: Boolean
+  createVerificationRequest(redirectLink: String): Boolean
   validateEmail(email: String!, token: String!): User
 }

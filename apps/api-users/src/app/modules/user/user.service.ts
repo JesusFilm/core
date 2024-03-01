@@ -16,7 +16,11 @@ export class UserService {
     private readonly prismaService: PrismaService
   ) {}
 
-  async verifyUser(userId: string, email: string): Promise<void> {
+  async verifyUser(
+    userId: string,
+    email: string,
+    redirectLink: string | undefined = undefined
+  ): Promise<void> {
     const token = Math.floor(100000 + Math.random() * 900000).toString() // six digit, first is not 0
     const job = await this.emailQueue.getJob(userId)
     if (job != null) {
@@ -26,7 +30,8 @@ export class UserService {
         {
           userId,
           email,
-          token
+          token,
+          redirectLink
         },
         {
           jobId: userId,
@@ -44,7 +49,8 @@ export class UserService {
         {
           userId,
           email,
-          token
+          token,
+          redirectLink
         },
         {
           jobId: userId,

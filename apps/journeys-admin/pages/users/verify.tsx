@@ -224,12 +224,15 @@ export const getServerSideProps = withUserTokenSSR({
   )
 
   // skip if already verified
-  const apiUser = await apolloClient.query<GetMe>({ query: GET_ME })
+  const apiUser = await apolloClient.query<GetMe>({
+    query: GET_ME,
+    variables: { redirectLink: query?.redirect ?? undefined }
+  })
   if (apiUser.data?.me?.emailVerified ?? false) {
     return {
       redirect: {
         permanent: false,
-        destination: '/'
+        destination: `/?redirect=${(query.redirect as string) ?? undefined}`
       }
     }
   }
@@ -256,7 +259,7 @@ export const getServerSideProps = withUserTokenSSR({
     return {
       redirect: {
         permanent: false,
-        destination: '/'
+        destination: `/?redirect=${(query.redirect as string) ?? undefined}`
       }
     }
   }

@@ -28,7 +28,7 @@ type Query {
 }
 
 extend type Query {
-  me: User
+  me(redirectLink: String): User
   user(id: ID!): User
   userByEmail(email: String!): User
 }
