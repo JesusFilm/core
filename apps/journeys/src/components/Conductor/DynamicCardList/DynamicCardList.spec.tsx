@@ -7,7 +7,7 @@ import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { StepViewEventCreate } from '../../../../__generated__/StepViewEventCreate'
 
-import { JourneyRenderer } from './JourneyRenderer'
+import { DynamicCardList } from './DynamicCardList'
 
 jest.mock('@core/journeys/ui/block', () => ({
   __esModule: true,
@@ -22,7 +22,7 @@ jest.mock('uuid', () => ({
 
 const mockUseBlocks = useBlocks as jest.MockedFunction<typeof useBlocks>
 
-describe('JourneyRenderer', () => {
+describe('DynamicCardList', () => {
   const step1: TreeBlock<StepBlock> = {
     id: 'step1.id',
     __typename: 'StepBlock',
@@ -102,7 +102,7 @@ describe('JourneyRenderer', () => {
 
     const { getByTestId, queryByTestId } = render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
-        <JourneyRenderer />
+        <DynamicCardList />
       </MockedProvider>
     )
 
@@ -121,7 +121,7 @@ describe('JourneyRenderer', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
-        <JourneyRenderer />
+        <DynamicCardList />
       </MockedProvider>
     )
 
@@ -138,7 +138,7 @@ describe('JourneyRenderer', () => {
 
     render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
-        <JourneyRenderer />
+        <DynamicCardList />
       </MockedProvider>
     )
 

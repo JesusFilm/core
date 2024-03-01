@@ -8,7 +8,7 @@ import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 
 import { StepFields } from '../../../../__generated__/StepFields'
 
-export function JourneyRenderer(): ReactElement {
+export function DynamicCardList(): ReactElement {
   const {
     blockHistory,
     treeBlocks,

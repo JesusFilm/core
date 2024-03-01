@@ -20,7 +20,7 @@ import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 
-import { JourneyRenderer } from './JourneyRenderer'
+import { DynamicCardList } from './DynamicCardList'
 import { NavigationButton } from './NavigationButton'
 import { SwipeNavigation } from './SwipeNavigation'
 
@@ -181,7 +181,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             />
             <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
               <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
-                <JourneyRenderer />
+                <DynamicCardList />
               </SwipeNavigation>
             </ThemeProvider>
             <NavigationButton
