@@ -85,7 +85,6 @@ describe('CardWrapper', () => {
     expect(Card).toHaveBeenCalledWith(
       {
         __typename: 'CardBlock',
-        activeStep: false,
         backgroundColor: null,
         children: [
           {
@@ -196,7 +195,6 @@ describe('CardWrapper', () => {
     expect(Card).toHaveBeenCalledWith(
       {
         __typename: 'CardBlock',
-        activeStep: false,
         backgroundColor: null,
         children: [
           {

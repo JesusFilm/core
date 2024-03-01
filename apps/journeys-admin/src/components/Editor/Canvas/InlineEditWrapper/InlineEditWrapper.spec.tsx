@@ -262,7 +262,6 @@ describe('InlineEditWrapper', () => {
               Wrapper: SelectableWrapper,
               RadioOptionWrapper: InlineEditWrapper
             }}
-            activeStep={false}
           />
         </InlineEditWrapper>
       </SelectableWrapper>

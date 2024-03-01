@@ -40,8 +40,7 @@ const emptyVideo: Omit<ComponentProps<typeof Video>, 'source'> = {
   fullsize: null,
   action: null,
   objectFit: null,
-  children: [],
-  activeStep: true
+  children: []
 }
 
 const startVideoMock = {
@@ -110,8 +109,7 @@ export const Youtube = {
   args: {
     ...Default.args,
     source: VideoBlockSource.youTube,
-    videoId: 'F7k5pqBVinA',
-    activeStep: true
+    videoId: 'F7k5pqBVinA'
   }
 }
 
@@ -119,8 +117,7 @@ export const Autoplay = {
   ...Template,
   args: {
     ...Arclight.args,
-    autoplay: true,
-    activeStep: true
+    autoplay: true
   },
   parameters: {
     chromatic: { disableSnapshot: true }
@@ -131,8 +128,7 @@ export const Muted = {
   ...Template,
   args: {
     ...Arclight.args,
-    muted: true,
-    activeStep: true
+    muted: true
   },
   parameters: {
     chromatic: { disableSnapshot: true }

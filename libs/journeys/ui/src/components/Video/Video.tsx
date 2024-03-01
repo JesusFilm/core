@@ -2,7 +2,14 @@ import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import { ThemeProvider, styled, useTheme } from '@mui/material/styles'
-import { CSSProperties, ReactElement, useMemo, useRef, useState } from 'react'
+import {
+  CSSProperties,
+  ReactElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { use100vh } from 'react-div-100vh'
 import Player from 'video.js/dist/types/player'
 
@@ -12,7 +19,11 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import { TreeBlock } from '../../libs/block'
+import {
+  TreeBlock,
+  isActiveBlockOrDescendant,
+  useBlocks
+} from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { useEditor } from '../../libs/EditorProvider'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -60,15 +71,19 @@ export function Video({
   posterBlockId,
   children,
   action,
-  objectFit,
-  activeStep
-}: TreeBlock<VideoFields> & { activeStep: boolean }): ReactElement {
+  objectFit
+}: TreeBlock<VideoFields>): ReactElement {
+  const { blockHistory } = useBlocks()
   const [loading, setLoading] = useState(true)
   const [showPoster, setShowPoster] = useState(true)
   const theme = useTheme()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<Player>()
   const hundredVh = use100vh()
+  const [activeStep, setActiveStep] = useState(false)
+  useEffect(() => {
+    setActiveStep(isActiveBlockOrDescendant(blockId))
+  }, [blockId, blockHistory])
 
   const {
     state: { selectedBlock }
@@ -154,7 +169,6 @@ export function Video({
         videoRef={videoRef}
         player={player}
         setPlayer={setPlayer}
-        activeStep={activeStep}
         triggerTimes={triggerTimes}
         videoEndTime={videoEndTime}
         selectedBlock={selectedBlock}
@@ -168,8 +182,8 @@ export function Video({
         setShowPoster={setShowPoster}
         setVideoEndTime={setVideoEndTime}
         source={source}
+        activeStep={activeStep}
       />
-
       {activeStep &&
         player != null &&
         eventVideoTitle != null &&

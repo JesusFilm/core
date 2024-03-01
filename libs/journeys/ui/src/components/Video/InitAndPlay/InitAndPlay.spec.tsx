@@ -154,8 +154,7 @@ describe('InitAndPlay', () => {
 
   it('should pause player when inactive', () => {
     const props = {
-      ...defaultProps,
-      activeStep: false
+      ...defaultProps
     }
 
     render(<InitAndPlay {...props} />)

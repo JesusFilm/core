@@ -20,7 +20,6 @@ interface InitAndPlayProps {
   videoRef: RefObject<HTMLVideoElement>
   player?: Player
   setPlayer: Dispatch<SetStateAction<Player | undefined>>
-  activeStep: boolean
   triggerTimes: number[]
   videoEndTime: number
   selectedBlock?: TreeBlock
@@ -34,13 +33,13 @@ interface InitAndPlayProps {
   setLoading: Dispatch<SetStateAction<boolean>>
   setShowPoster: Dispatch<SetStateAction<boolean>>
   setVideoEndTime: Dispatch<SetStateAction<number>>
+  activeStep?: boolean
 }
 
 export function InitAndPlay({
   videoRef,
   player,
   setPlayer,
-  activeStep,
   triggerTimes,
   videoEndTime,
   selectedBlock,
@@ -53,7 +52,8 @@ export function InitAndPlay({
   source,
   setLoading,
   setShowPoster,
-  setVideoEndTime
+  setVideoEndTime,
+  activeStep = false
 }: InitAndPlayProps): ReactElement {
   const { variant } = useJourney()
   const { blockHistory } = useBlocks()

@@ -49,7 +49,7 @@ const DynamicButton = dynamic<TreeBlock<ButtonBlock>>(
 )
 
 const DynamicCard = dynamic<
-  TreeBlock<CardBlock> & { wrappers?: WrappersProps; activeStep: boolean }
+  TreeBlock<CardBlock> & { wrappers?: WrappersProps }
 >(
   async () =>
     // eslint-disable-next-line import/no-cycle
@@ -86,7 +86,6 @@ const DynamicRadioOption = dynamic<TreeBlock<RadioOptionBlock>>(
 const DynamicRadioQuestion = dynamic<
   TreeBlock<RadioQuestionBlock> & {
     wrappers?: WrappersProps
-    activeStep: boolean
   }
 >(
   async () =>
@@ -132,15 +131,13 @@ const DynamicTypography = dynamic<TreeBlock<TypographyBlock>>(
 interface BlockRenderProps {
   block?: TreeBlock
   wrappers?: WrappersProps
-  activeStep?: boolean
 }
 
 const DefaultWrapper: WrapperFn = ({ children }) => children
 
 export function BlockRenderer({
   block,
-  wrappers,
-  activeStep = false
+  wrappers
 }: BlockRenderProps): ReactElement {
   const Wrapper = wrappers?.Wrapper ?? DefaultWrapper
   const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper
@@ -172,11 +169,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <CardWrapper block={block}>
-            <DynamicCard
-              {...block}
-              wrappers={wrappers}
-              activeStep={activeStep}
-            />
+            <DynamicCard {...block} wrappers={wrappers} />
           </CardWrapper>
         </Wrapper>
       )
@@ -208,11 +201,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <RadioQuestionWrapper block={block}>
-            <DynamicRadioQuestion
-              {...block}
-              wrappers={wrappers}
-              activeStep={activeStep}
-            />
+            <DynamicRadioQuestion {...block} wrappers={wrappers} />
           </RadioQuestionWrapper>
         </Wrapper>
       )
@@ -252,7 +241,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <VideoWrapper block={block}>
-            <Video {...block} activeStep={activeStep} />
+            <Video {...block} />
           </VideoWrapper>
         </Wrapper>
       )
