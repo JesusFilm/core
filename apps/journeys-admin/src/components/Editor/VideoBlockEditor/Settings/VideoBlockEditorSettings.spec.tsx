@@ -135,7 +135,6 @@ describe('VideoBlockEditorSettings', () => {
         </MockedProvider>
       </ThemeProvider>
     )
-
     fireEvent.click(getByRole('checkbox', { name: 'Muted' }))
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({
