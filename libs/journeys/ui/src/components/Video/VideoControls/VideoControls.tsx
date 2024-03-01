@@ -133,8 +133,6 @@ export function VideoControls({
     }
   }, [player, isYoutube, fullscreen, startAt, setShowHeaderFooter])
 
-  // TODO ACTIVE STEP
-
   // Handle pause event
   useEffect(() => {
     const handleVideoPause = (): void => {
