@@ -28,6 +28,8 @@ export class SegmindService {
         body.append('num_inference_steps', 20)
         body.append('samples', 1)
         body.append('scheduler', 'UniPC')
+        body.append('img_height', 1024)
+        body.append('img_width', 1024)
         break
     }
     body.append('prompt', prompt)
