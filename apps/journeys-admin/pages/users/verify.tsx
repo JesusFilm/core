@@ -235,7 +235,7 @@ export const getServerSideProps = withUserTokenSSR({
     return {
       redirect: {
         permanent: false,
-        destination: `/?redirect=${(query.redirect as string) ?? undefined}`
+        destination: `/`
       }
     }
   }
