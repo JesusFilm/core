@@ -165,8 +165,6 @@ const mocks: MockedResponse[] = [
 ]
 
 describe('EmbeddedPreview', () => {
-  mockUuidv4.mockReturnValue('uuid')
-
   beforeEach(() => {
     document.exitFullscreen = jest.fn()
     document.documentElement.requestFullscreen = jest.fn()
@@ -175,6 +173,7 @@ describe('EmbeddedPreview', () => {
   afterEach(() => jest.clearAllMocks())
 
   it('renders first block', async () => {
+    mockUuidv4.mockReturnValue('uuid')
     render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
@@ -188,6 +187,7 @@ describe('EmbeddedPreview', () => {
   })
 
   it('should toggle fullscreen', async () => {
+    mockUuidv4.mockReturnValue('uuid')
     const { getByTestId } = render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>

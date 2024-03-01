@@ -84,9 +84,7 @@ const DynamicRadioOption = dynamic<TreeBlock<RadioOptionBlock>>(
 )
 
 const DynamicRadioQuestion = dynamic<
-  TreeBlock<RadioQuestionBlock> & {
-    wrappers?: WrappersProps
-  }
+  TreeBlock<RadioQuestionBlock> & { wrappers?: WrappersProps }
 >(
   async () =>
     await import(
