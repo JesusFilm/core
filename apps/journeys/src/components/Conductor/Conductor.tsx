@@ -161,10 +161,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             sx={{
               maxHeight: {
                 xs: '100svh',
+                // 80px to allow for the gap between card and top/bottom of the viewport
                 lg: 'calc(100svh - 80px)'
               },
               height: {
                 xs: 'inherit',
+                // 102px to allow for the gap between card and top/bottom of the viewport
                 lg: 'calc(54.25vw + 102px)'
               },
               px: { lg: 6 }

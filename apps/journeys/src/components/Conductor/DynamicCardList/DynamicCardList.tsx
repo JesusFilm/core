@@ -46,7 +46,7 @@ export function DynamicCardList(): ReactElement {
             }
           : {
               height: 'inherit',
-              width: '-webkit-fill-available;',
+              width: '-webkit-fill-available',
               position: 'absolute',
               top: 0,
               left: 0
@@ -59,7 +59,7 @@ export function DynamicCardList(): ReactElement {
             timeout={{ appear: 0, enter: 200, exit: 0 }}
           >
             <Box
-              className={isCurrent ? 'active-card' : ''}
+              className={isCurrent ? 'active-card' : undefined}
               onClick={() => setShowNavigation(true)}
               sx={{
                 ...cardSx

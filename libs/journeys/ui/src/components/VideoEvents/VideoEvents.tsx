@@ -475,6 +475,7 @@ export function VideoEvents({
   useEffect(() => {
     function completeListener(): void {
       const id = uuidv4()
+      // + 2 to current time to prevent race condition between videoComplete and stepView events
       const currentPosition = (player.currentTime() ?? 0) + 2
       if (!calledComplete && currentPosition >= end) {
         void videoCompleteEventCreate({
