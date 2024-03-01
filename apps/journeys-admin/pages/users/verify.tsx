@@ -81,7 +81,7 @@ function ValidateEmail({
     await validateEmail({
       variables: { email, token: values.token },
       onCompleted: async () => {
-        await router.push('/')
+        await router.push('/users/terms-and-conditions')
       }
     })
     setTimeout(() => {
