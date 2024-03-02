@@ -8,6 +8,10 @@ type User @key(fields: "id") {
   emailVerified: Boolean!
 }
 
+input CreateVerificationRequestInput {
+  redirect: String
+}
+
 extend type Query {
   me: User
   user(id: ID!): User
@@ -16,6 +20,6 @@ extend type Query {
 
 extend type Mutation {
   userImpersonate(email: String!): String
-  createVerificationRequest: Boolean
+  createVerificationRequest(input: CreateVerificationRequestInput): Boolean
   validateEmail(email: String!, token: String!): User
 }

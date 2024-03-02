@@ -8,6 +8,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export class CreateVerificationRequestInput {
+    redirect?: Nullable<string>;
+}
+
 export class User {
     __typename?: 'User';
     id: string;
@@ -39,7 +43,7 @@ export class Translation {
 export abstract class IMutation {
     abstract userImpersonate(email: string): Nullable<string> | Promise<Nullable<string>>;
 
-    abstract createVerificationRequest(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    abstract createVerificationRequest(input?: Nullable<CreateVerificationRequestInput>): Nullable<boolean> | Promise<Nullable<boolean>>;
 
     abstract validateEmail(email: string, token: string): Nullable<User> | Promise<Nullable<User>>;
 }

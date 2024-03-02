@@ -16,6 +16,7 @@ import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 
+import { CreateVerificationRequestInput } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserService } from './user.service'
@@ -113,10 +114,13 @@ export class UserResolver {
     __typename: 'User'
     id: string
   }): Promise<User> {
-    return await this.findOrFetchUser(reference.id)
+    return await this.findOrFetchUser(reference.id, undefined)
   }
 
-  private async findOrFetchUser(userId: string): Promise<User> {
+  private async findOrFetchUser(
+    userId: string,
+    redirect: string | undefined = undefined
+  ): Promise<User> {
     const existingUser = await this.prismaService.user.findUnique({
       where: {
         userId
@@ -168,7 +172,7 @@ export class UserResolver {
       })
       // after user create so it is ony sent once
       if (!emailVerified && email != null) {
-        await this.userService.verifyUser(userId, email)
+        await this.userService.verifyUser(userId, email, redirect)
       }
     } catch (e) {
       do {
@@ -207,11 +211,19 @@ export class UserResolver {
   }
 
   @Mutation()
-  async createVerificationRequest(@CurrentUser() user: User): Promise<boolean> {
+  async createVerificationRequest(
+    @CurrentUser() user: User,
+    @Args('input') input?: CreateVerificationRequestInput
+  ): Promise<boolean> {
+    console.log('input', input)
     if (user == null)
       throw new GraphQLError('User not found', { extensions: { code: '404' } })
 
-    await this.userService.verifyUser(user.id, user.email)
+    await this.userService.verifyUser(
+      user.id,
+      user.email,
+      input?.redirect ?? undefined
+    )
     return true
   }
 }
