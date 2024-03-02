@@ -82,7 +82,7 @@ function ValidateEmail({
       variables: { email, token: values.token },
       onCompleted: async () => {
         await router.push({
-          pathname: '/',
+          pathname: '/users/terms-and-conditions',
           query: { redirect: router.query.redirect }
         })
       }
