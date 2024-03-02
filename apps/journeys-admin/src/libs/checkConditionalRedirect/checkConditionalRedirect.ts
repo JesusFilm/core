@@ -55,7 +55,7 @@ export async function checkConditionalRedirect({
   }
 
   // don't redirect on /users/verify
-  if (resolvedUrl.startsWith(`/users/verify${redirect}`)) return
+  if (resolvedUrl.startsWith('/users/verify')) return
 
   const { data } = await apolloClient.query<GetJourneyProfileAndTeams>({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
