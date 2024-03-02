@@ -43,8 +43,7 @@ export async function checkConditionalRedirect({
   }
 
   const { data: me } = await apolloClient.query<GetMe>({
-    query: GET_ME,
-    variables: { redirectLink: encodeURIComponent(resolvedUrl) ?? null }
+    query: GET_ME
   })
 
   if (!(me.me?.emailVerified ?? false)) {

@@ -71,7 +71,7 @@ function ValidateEmail({
   const [resendValidationEmail] = useMutation<CreateVerificationRequest>(
     CREATE_VERIFICATION_REQUEST,
     {
-      variables: { redirect: router?.query?.redirect as string }
+      variables: { input: { redirect: router?.query?.redirect } }
     }
   )
 
@@ -228,8 +228,7 @@ export const getServerSideProps = withUserTokenSSR({
 
   // skip if already verified
   const apiUser = await apolloClient.query<GetMe>({
-    query: GET_ME,
-    variables: { redirectLink: query?.redirect ?? undefined }
+    query: GET_ME
   })
   if (apiUser.data?.me?.emailVerified ?? false) {
     return {

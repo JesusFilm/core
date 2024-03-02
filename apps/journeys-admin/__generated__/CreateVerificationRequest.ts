@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { CreateVerificationRequestInput } from "./globalTypes";
+
 // ====================================================
 // GraphQL mutation operation: CreateVerificationRequest
 // ====================================================
@@ -12,5 +14,5 @@ export interface CreateVerificationRequest {
 }
 
 export interface CreateVerificationRequestVariables {
-  redirectLink?: string | null;
+  input?: CreateVerificationRequestInput | null;
 }

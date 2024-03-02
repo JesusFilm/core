@@ -293,6 +293,10 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface CreateVerificationRequestInput {
+  redirect?: string | null;
+}
+
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;

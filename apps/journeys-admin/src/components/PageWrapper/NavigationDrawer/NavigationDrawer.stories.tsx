@@ -44,8 +44,7 @@ const user = {
 
 const getMeMock: MockedResponse<GetMe> = {
   request: {
-    query: GET_ME,
-    variables: { redirectLink: null }
+    query: GET_ME
   },
   result: {
     data: {

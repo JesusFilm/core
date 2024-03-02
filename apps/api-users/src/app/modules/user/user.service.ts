@@ -19,7 +19,7 @@ export class UserService {
   async verifyUser(
     userId: string,
     email: string,
-    redirectLink: string | undefined = undefined
+    redirect?: string
   ): Promise<void> {
     const token = Math.floor(100000 + Math.random() * 900000).toString() // six digit, first is not 0
     const job = await this.emailQueue.getJob(userId)
@@ -31,7 +31,7 @@ export class UserService {
           userId,
           email,
           token,
-          redirectLink
+          redirect
         },
         {
           jobId: userId,
@@ -50,7 +50,7 @@ export class UserService {
           userId,
           email,
           token,
-          redirectLink
+          redirect
         },
         {
           jobId: userId,

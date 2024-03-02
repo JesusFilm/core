@@ -8,14 +8,18 @@ type User @key(fields: "id") {
   emailVerified: Boolean!
 }
 
+input CreateVerificationRequestInput {
+  redirect: String
+}
+
 extend type Query {
-  me(redirectLink: String): User
+  me: User
   user(id: ID!): User
   userByEmail(email: String!): User
 }
 
 extend type Mutation {
   userImpersonate(email: String!): String
-  createVerificationRequest(redirectLink: String): Boolean
+  createVerificationRequest(input: CreateVerificationRequestInput): Boolean
   validateEmail(email: String!, token: String!): User
 }

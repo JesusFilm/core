@@ -40,8 +40,8 @@ const UserMenu = dynamic(
 )
 
 export const GET_ME = gql`
-  query GetMe($redirectLink: String) {
-    me(redirectLink: $redirectLink) {
+  query GetMe {
+    me {
       id
       firstName
       lastName
@@ -65,9 +65,7 @@ export function UserNavigation({
   setTooltip
 }: UserNavigationProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
-  const { data } = useSuspenseQuery<GetMe>(GET_ME, {
-    variables: { redirectLink: undefined }
-  })
+  const { data } = useSuspenseQuery<GetMe>(GET_ME)
   const { data: userRoleData } = useUserRoleSuspenseQuery()
   const { data: journeysData } = useAdminJourneysSuspenseQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
