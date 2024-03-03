@@ -20,6 +20,7 @@ import { BaseNode } from '../BaseNode'
 
 import { getCardMetadata } from './libs/getCardMetadata'
 import { StepBlockNodeIcon } from './StepBlockNodeIcon'
+import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
 export const STEP_NODE_WIDTH = 200
 export const STEP_NODE_HEIGHT = 76
@@ -77,158 +78,175 @@ export function StepBlockNode({
       selected={
         activeContent === ActiveContent.Canvas && selectedStep?.id === step.id
       }
-      isStepBlock
-      setSelectedStep={handleClick}
       onSourceConnect={handleSourceConnect}
     >
       {({ selected }) => (
-        <Card
+        <Box
           sx={{
-            borderRadius: 2,
-            outline: (theme) =>
-              `2px solid ${
-                selected === true
-                  ? theme.palette.primary.main
-                  : selected === 'descendant'
-                  ? theme.palette.divider
-                  : 'transparent'
-              }`,
-            outlineOffset: '5px'
+            '.fab': {
+              opacity: 0,
+              transform: 'scale(0.5)',
+              transition: (theme) =>
+                theme.transitions.create(['opacity', 'transform'], {
+                  duration: 250
+                })
+            },
+            '&:hover .fab': {
+              transform: 'scale(1)',
+              opacity: 1
+            }
           }}
-          onClick={handleClick}
         >
-          <CardContent
-            data-testid="Step block"
+          <StepBlockNodeMenu className="fab" step={step} />
+          <Card
             sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyItems: 'center',
-              width: STEP_NODE_WIDTH,
-              height: STEP_NODE_HEIGHT,
-              gap: 2,
-              margin: 0,
-              padding: 0,
-              borderRadius: 1,
-              paddingBottom: '0px !important'
+              borderRadius: 2,
+              outline: (theme) =>
+                `2px solid ${
+                  selected === true
+                    ? theme.palette.primary.main
+                    : selected === 'descendant'
+                    ? theme.palette.divider
+                    : 'transparent'
+                }`,
+              outlineOffset: '5px'
             }}
+            onClick={handleClick}
           >
-            <Box
+            <CardContent
+              data-testid="Step block"
               sx={{
-                height: '100%',
-                flexShrink: 0,
-                width: 50,
-                border: '1px solid white',
-                borderBottomLeftRadius: 8,
-                borderTopLeftRadius: 8,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center center',
                 display: 'flex',
+                flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'center',
-                bgcolor: card?.backgroundColor ?? 'background.default',
-                backgroundImage: bgImage != null ? `url(${bgImage})` : undefined
-              }}
-            >
-              {priorityBlock != null && (
-                <StepBlockNodeIcon typename={priorityBlock.__typename} />
-              )}
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                justifyContent: 'center',
+                justifyItems: 'center',
                 width: STEP_NODE_WIDTH,
                 height: STEP_NODE_HEIGHT,
+                gap: 2,
                 margin: 0,
-                padding: 2
+                padding: 0,
+                borderRadius: 1,
+                paddingBottom: '0px !important'
               }}
             >
-              <Typography
+              <Box
                 sx={{
-                  display: '-webkit-box',
-                  '-webkit-box-orient': 'vertical',
-                  '-webkit-line-clamp': '1',
-                  overflow: 'hidden',
-                  padding: 0,
-                  fontSize: 9,
-                  height: 'auto',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-end',
-                  alignSelf: 'flex-start',
-                  marginBottom: 1,
-                  lineHeight: 1.3,
-                  alignItems: 'flex-end',
-                  color: '#444451'
+                  height: '100%',
+                  flexShrink: 0,
+                  width: 50,
+                  border: '1px solid white',
+                  borderBottomLeftRadius: 8,
+                  borderTopLeftRadius: 8,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center center',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bgcolor: card?.backgroundColor ?? 'background.default',
+                  backgroundImage:
+                    bgImage != null ? `url(${bgImage})` : undefined
                 }}
               >
-                {description !== '' ? description : ''}
-              </Typography>
-              <Typography
-                sx={{
-                  display: '-webkit-box',
-                  '-webkit-box-orient': 'vertical',
-                  '-webkit-line-clamp': '2',
-                  overflow: 'hidden',
-                  padding: 0,
-                  fontSize: 11,
-                  fontWeight: 'bold',
-                  height: 'auto',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-end',
-                  alignSelf: 'flex-start',
-                  marginBottom: 1,
-                  lineHeight: 1.3,
-                  alignItems: 'flex-end',
-                  color: '#26262E'
-                }}
-              >
-                {title != null && title !== '' ? (
-                  title
-                ) : (
-                  <Skeleton
-                    animation={false}
-                    sx={{
-                      height: 16,
-                      width: 117,
-                      borderRadius: 1,
-                      color: 'background.paper'
-                    }}
-                  />
+                {priorityBlock != null && (
+                  <StepBlockNodeIcon typename={priorityBlock.__typename} />
                 )}
-              </Typography>
-              <Typography
+              </Box>
+              <Box
                 sx={{
-                  display: '-webkit-box',
-                  '-webkit-box-orient': 'vertical',
-                  '-webkit-line-clamp': '2',
-                  fontSize: 10,
-                  lineHeight: '1.2',
-                  justifyContent: 'top',
-                  color: '#444451',
-                  overflow: 'hidden',
-                  paddingBottom: '1px'
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  justifyContent: 'center',
+                  width: STEP_NODE_WIDTH,
+                  height: STEP_NODE_HEIGHT,
+                  margin: 0,
+                  padding: 2
                 }}
               >
-                {title != null && title !== '' ? (
-                  subtitle
-                ) : (
-                  <Skeleton
-                    animation={false}
-                    sx={{
-                      height: 16,
-                      width: 95,
-                      borderRadius: 1,
-                      color: 'background.paper'
-                    }}
-                  />
-                )}
-              </Typography>
-            </Box>
-          </CardContent>
-        </Card>
+                <Typography
+                  sx={{
+                    display: '-webkit-box',
+                    '-webkit-box-orient': 'vertical',
+                    '-webkit-line-clamp': '1',
+                    overflow: 'hidden',
+                    padding: 0,
+                    fontSize: 9,
+                    height: 'auto',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    alignSelf: 'flex-start',
+                    marginBottom: 1,
+                    lineHeight: 1.3,
+                    alignItems: 'flex-end',
+                    color: '#444451'
+                  }}
+                >
+                  {description !== '' ? description : ''}
+                </Typography>
+                <Typography
+                  sx={{
+                    display: '-webkit-box',
+                    '-webkit-box-orient': 'vertical',
+                    '-webkit-line-clamp': '2',
+                    overflow: 'hidden',
+                    padding: 0,
+                    fontSize: 11,
+                    fontWeight: 'bold',
+                    height: 'auto',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    alignSelf: 'flex-start',
+                    marginBottom: 1,
+                    lineHeight: 1.3,
+                    alignItems: 'flex-end',
+                    color: '#26262E'
+                  }}
+                >
+                  {title != null && title !== '' ? (
+                    title
+                  ) : (
+                    <Skeleton
+                      animation={false}
+                      sx={{
+                        height: 16,
+                        width: 117,
+                        borderRadius: 1,
+                        color: 'background.paper'
+                      }}
+                    />
+                  )}
+                </Typography>
+                <Typography
+                  sx={{
+                    display: '-webkit-box',
+                    '-webkit-box-orient': 'vertical',
+                    '-webkit-line-clamp': '2',
+                    fontSize: 10,
+                    lineHeight: '1.2',
+                    justifyContent: 'top',
+                    color: '#444451',
+                    overflow: 'hidden',
+                    paddingBottom: '1px'
+                  }}
+                >
+                  {title != null && title !== '' ? (
+                    subtitle
+                  ) : (
+                    <Skeleton
+                      animation={false}
+                      sx={{
+                        height: 16,
+                        width: 95,
+                        borderRadius: 1,
+                        color: 'background.paper'
+                      }}
+                    />
+                  )}
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
       )}
     </BaseNode>
   )

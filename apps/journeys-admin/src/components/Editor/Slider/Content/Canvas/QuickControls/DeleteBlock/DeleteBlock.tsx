@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -29,22 +30,23 @@ interface DeleteBlockProps {
   variant: 'button' | 'list-item'
   closeMenu?: () => void
   disabled?: boolean
+  block?: TreeBlock
 }
 
 export function DeleteBlock({
   variant = 'button',
   closeMenu,
-  disabled = false
+  disabled = false,
+  block
 }: DeleteBlockProps): ReactElement {
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
   const { enqueueSnackbar } = useSnackbar()
-
   const { journey } = useJourney()
   const {
-    state: { selectedBlock, selectedStep, steps },
+    state: { selectedBlock: stateSelectedBlock, selectedStep, steps },
     dispatch
   } = useEditor()
-
+  const selectedBlock = block ?? stateSelectedBlock
   const label = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const [openDialog, setOpenDialog] = useState(false)
   const handleOpenDialog = (): void => setOpenDialog(true)

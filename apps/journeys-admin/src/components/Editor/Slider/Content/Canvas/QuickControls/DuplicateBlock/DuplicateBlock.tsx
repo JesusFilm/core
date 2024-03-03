@@ -21,6 +21,7 @@ interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
   handleClick?: () => void
   disabled?: boolean
+  block?: TreeBlock
 }
 
 export const BLOCK_DUPLICATE = gql`
@@ -34,16 +35,17 @@ export const BLOCK_DUPLICATE = gql`
 export function DuplicateBlock({
   variant,
   handleClick,
-  disabled = false
+  disabled = false,
+  block
 }: DuplicateBlockProps): ReactElement {
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
-
   const {
-    state: { selectedBlock },
+    state: { selectedBlock: stateSelectedBlock },
     dispatch
   } = useEditor()
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
+  const selectedBlock = block ?? stateSelectedBlock
   const blockLabel =
     selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const disableAction = selectedBlock == null || disabled
