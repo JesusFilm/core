@@ -30,7 +30,7 @@ export function TemplateSettingsItem({
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const [TemplateSettingsDialogOpen, setTemplateSettingsDialogOpen] = useState<
+  const [templateSettingsDialogOpen, setTemplateSettingsDialogOpen] = useState<
     boolean | undefined
   >()
 
@@ -60,9 +60,9 @@ export function TemplateSettingsItem({
         icon={<SettingsIcon />}
         onClick={handleClick}
       />
-      {journey?.id != null && TemplateSettingsDialogOpen != null && (
+      {journey?.id != null && templateSettingsDialogOpen != null && (
         <TemplateSettingsDialog
-          open={TemplateSettingsDialogOpen}
+          open={templateSettingsDialogOpen}
           onClose={handleClose}
         />
       )}

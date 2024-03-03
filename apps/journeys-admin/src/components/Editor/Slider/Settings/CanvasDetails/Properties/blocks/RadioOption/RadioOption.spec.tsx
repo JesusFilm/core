@@ -1,40 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveContent,
-  ActiveFab,
-  EditorProvider,
-  EditorState,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
-import {
-  ActiveCanvasDetailsDrawer,
-  ActiveSlide
-} from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
-import { Drawer } from '../../../../Drawer'
 
 import { RadioOption } from '.'
-
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 describe('RadioOption Attribute', () => {
   const block: TreeBlock<RadioOptionBlock> = {
@@ -46,23 +21,15 @@ describe('RadioOption Attribute', () => {
     action: null,
     children: []
   }
-  const state: EditorState = {
-    steps: [],
-    activeFab: ActiveFab.Add,
-    activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-  }
-
-  beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch: jest.fn()
-    })
-  })
 
   it('shows default attributes', async () => {
-    const { getByRole } = render(<RadioOption {...block} />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <RadioOption {...block} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
     await waitFor(() =>
       expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
     )
@@ -78,7 +45,11 @@ describe('RadioOption Attribute', () => {
         blockId: 'step2.id'
       }
     }
-    const { getByRole } = render(<RadioOption {...radioOptionBlock} />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <RadioOption {...radioOptionBlock} />
+      </MockedProvider>
+    )
     await waitFor(() =>
       expect(
         getByRole('button', { name: 'Action Selected Card' })
@@ -86,7 +57,7 @@ describe('RadioOption Attribute', () => {
     )
   })
 
-  it('clicking on action attribute shows the action edit drawer', async () => {
+  it('action accordion should be open', async () => {
     const radioOptionBlock: TreeBlock<RadioOptionBlock> = {
       ...block,
       action: {
@@ -96,31 +67,18 @@ describe('RadioOption Attribute', () => {
         blockId: 'step2.id'
       }
     }
-    const { getByTestId, getByRole, getAllByText } = render(
+    const { getByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <EditorProvider>
-            <Drawer />
             <RadioOption {...radioOptionBlock} />
+            <TestEditorState />
           </EditorProvider>
         </ThemeProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Action Selected Card' }))
-    await waitFor(() => expect(getByTestId('drawer-title')).toBeInTheDocument())
-    expect(getAllByText('Action')).toHaveLength(2)
-  })
-
-  it('should open property drawer for variant', () => {
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-    render(<RadioOption {...block} />)
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedAttributeIdAction',
-      selectedAttributeId: 'radioOption1.id-radio-option-action'
-    })
+    expect(
+      getByText('selectedAttributeId: radioOption1.id-radio-option-action')
+    ).toBeInTheDocument()
   })
 })

@@ -1,32 +1,15 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveContent,
-  ActiveFab,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
-import {
-  ActiveCanvasDetailsDrawer,
-  ActiveSlide,
-  EditorState
-} from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 
 import { Video } from './Video'
-
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 describe('Video', () => {
   const video: TreeBlock<VideoBlock> = {
@@ -69,38 +52,32 @@ describe('Video', () => {
     children: []
   }
 
-  const state: EditorState = {
-    steps: [],
-    activeFab: ActiveFab.Add,
-    activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-  }
-
-  beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch: jest.fn()
-    })
-  })
-
   it('should display Video Options', () => {
-    const { getByText } = render(<Video {...video} />)
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <Video {...video} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
 
     expect(getByText('Video Source')).toBeInTheDocument()
     expect(getByText('FallingPlates')).toBeInTheDocument()
   })
 
   it('should open property drawer for video options', () => {
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-    render(<Video {...video} />)
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedAttributeIdAction',
-      selectedAttributeId: 'video1.id-video-options'
-    })
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider>
+            <Video {...video} />
+            <TestEditorState />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(
+      getByText('selectedAttributeId: video1.id-video-options')
+    ).toBeInTheDocument()
   })
 })
