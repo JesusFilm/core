@@ -54,7 +54,9 @@ export function TemplateSections({
         )
       ]
       const mostRelevant = data.journeys.filter(({ tags }) =>
-        tagIds?.every((tagId) => tags.find((tag) => tag.id === tagId))
+        tagIds != null && tagIds.length > 1
+          ? tagIds.every((tagId) => tags.find((tag) => tag.id === tagId))
+          : true
       )
       collection = tagIds == null ? featuredAndNew : mostRelevant
       data.journeys.forEach((journey) => {
