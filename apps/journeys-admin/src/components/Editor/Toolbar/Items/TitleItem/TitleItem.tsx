@@ -27,7 +27,7 @@ export function TitleItem({ variant, onClose }: TitleItemProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const [TitleDialogOpen, setTitleDialogOpen] = useState<boolean | undefined>()
+  const [titleDialogOpen, setTitleDialogOpen] = useState<boolean | undefined>()
 
   function setRoute(param: string): void {
     router.query.param = param
@@ -55,8 +55,8 @@ export function TitleItem({ variant, onClose }: TitleItemProps): ReactElement {
         icon={<Edit2Icon />}
         onClick={handleClick}
       />
-      {journey?.id != null && TitleDialogOpen != null && (
-        <TitleDialog open={TitleDialogOpen} onClose={handleClose} />
+      {journey?.id != null && titleDialogOpen != null && (
+        <TitleDialog open={titleDialogOpen} onClose={handleClose} />
       )}
     </>
   )

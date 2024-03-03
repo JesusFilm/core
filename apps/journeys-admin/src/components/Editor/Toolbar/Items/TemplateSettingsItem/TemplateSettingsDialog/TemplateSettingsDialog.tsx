@@ -142,6 +142,7 @@ export function TemplateSettingsDialog({
       {({ handleSubmit, isSubmitting, resetForm }) => (
         <Form>
           <Dialog
+            data-testid="TemplateSettingsDialog"
             open={open}
             onClose={handleClose(resetForm)}
             dialogTitle={{ title: t('Template Settings') }}
