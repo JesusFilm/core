@@ -49,7 +49,7 @@ export async function checkConditionalRedirect({
   if (!(me.me?.emailVerified ?? false)) {
     if (resolvedUrl.startsWith('/users/verify')) return
     return {
-      destination: `/users/verify`,
+      destination: `/users/verify${redirect}`,
       permanent: false
     }
   }
