@@ -169,7 +169,7 @@
     "@nx/web": "18.0.4",
     "@nx/webpack": "18.0.4",
     "@nx/workspace": "18.0.4",
-    "@playwright/test": "^1.37.1",
+    "@playwright/test": "^1.42.1",
     "@storybook/addon-a11y": "7.6.6",
     "@storybook/addon-essentials": "7.6.6",
     "@storybook/addon-interactions": "7.6.6",
