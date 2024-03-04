@@ -3,8 +3,8 @@ import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 

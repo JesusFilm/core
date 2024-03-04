@@ -9,15 +9,6 @@ import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFi
 
 import { CREATE_USER_INVITE, EmailInviteForm } from './EmailInviteForm'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('EmailInviteForm', () => {
   it('should validate when fields are empty', async () => {
     const { getByRole, getAllByText } = render(

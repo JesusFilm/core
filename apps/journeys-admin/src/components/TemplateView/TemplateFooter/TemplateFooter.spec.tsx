@@ -7,11 +7,6 @@ import { journey } from '../../Editor/ActionDetails/data'
 
 import { TemplateFooter } from './TemplateFooter'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => ({ t: (str: string) => str })
-}))
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true

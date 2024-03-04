@@ -23,14 +23,6 @@ import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { Footer } from './Footer'
 import { HostSidePanel } from './HostSidePanel'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
 const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 jest.mock('@mui/material/useMediaQuery', () => ({

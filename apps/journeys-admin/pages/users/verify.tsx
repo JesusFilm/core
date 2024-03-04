@@ -17,9 +17,9 @@ import {
   withUser,
   withUserTokenSSR
 } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { number, object } from 'yup'
 
 import { CreateVerificationRequest } from '../../__generated__/CreateVerificationRequest'

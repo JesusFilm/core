@@ -9,15 +9,6 @@ import { TestHttpStack } from './TestHttpStack'
 
 import { AddByFile } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('AddByFile', () => {
   it('should check if the mutations gets called', async () => {
     const testStack = new TestHttpStack()
