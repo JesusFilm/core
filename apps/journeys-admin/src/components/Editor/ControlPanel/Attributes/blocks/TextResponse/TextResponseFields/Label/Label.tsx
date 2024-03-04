@@ -65,7 +65,11 @@ export function Label(): ReactElement {
   return (
     <Box sx={{ px: 6, py: 4 }} data-testid="Label">
       {selectedBlock != null ? (
-        <Formik initialValues={initialValues} onSubmit={noop}>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={noop}
+          enableReinitialize
+        >
           {({ values, errors, handleChange, handleBlur, setValues }) => (
             <Form>
               <TextField
