@@ -2,8 +2,8 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {

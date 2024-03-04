@@ -4,7 +4,7 @@ import MuiButton from '@mui/material/Button'
 import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import { ButtonVariant } from '../../../__generated__/globalTypes'

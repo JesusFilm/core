@@ -2,8 +2,8 @@ import Link from '@docusaurus/Link'
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
 import Layout from '@theme/Layout'
 import clsx from 'clsx'
+import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { FeatureList } from '../components/FeatureList'
 

@@ -2,9 +2,9 @@ import { gql, useMutation } from '@apollo/client'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Checkbox from '@mui/material/Checkbox'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ChangeEvent, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 

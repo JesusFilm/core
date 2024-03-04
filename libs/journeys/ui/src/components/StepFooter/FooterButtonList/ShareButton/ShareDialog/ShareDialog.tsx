@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import FacebookLogo from '@core/shared/ui/icons/FacebookLogo'

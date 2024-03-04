@@ -9,7 +9,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { FormikValues } from 'formik'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 import { Checkbox } from './formComponents/Checkbox'
 import { FormControl } from './formComponents/FormControl'

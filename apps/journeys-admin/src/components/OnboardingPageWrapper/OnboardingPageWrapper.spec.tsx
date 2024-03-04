@@ -3,21 +3,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { OnboardingPageWrapper } from './OnboardingPageWrapper'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str,
-      i18n: {
-        language: 'en',
-        options: {
-          locales: ['en', 'es', 'fr', 'id', 'ja', 'ru', 'tr', 'zh', 'zh-CN']
-        }
-      }
-    }
-  }
-}))
-
 describe('OnboardingPageWrapper', () => {
   it('should show logo', () => {
     const { getByRole } = render(

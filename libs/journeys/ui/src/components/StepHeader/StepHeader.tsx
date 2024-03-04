@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 import { useJourney } from '../../libs/JourneyProvider'
 
