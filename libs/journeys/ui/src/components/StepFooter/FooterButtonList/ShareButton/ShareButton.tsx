@@ -1,5 +1,5 @@
-import { ReactElement, useState } from 'react'
 import { useTranslation } from 'next-i18next'
+import { ReactElement, useState } from 'react'
 
 import ShareIcon from '@core/shared/ui/icons/Share'
 
