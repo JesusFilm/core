@@ -16,7 +16,10 @@ import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 
-import { CreateVerificationRequestInput } from '../../__generated__/graphql'
+import {
+  CreateVerificationRequestInput,
+  MeInput
+} from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserService } from './user.service'
@@ -47,8 +50,11 @@ export class UserResolver {
 
   @Query()
   @UseGuards(GqlAuthGuard)
-  async me(@CurrentUserId() userId: string): Promise<User> {
-    return await this.findOrFetchUser(userId)
+  async me(
+    @CurrentUserId() userId: string,
+    @Args('input') input?: MeInput
+  ): Promise<User> {
+    return await this.findOrFetchUser(userId, input?.redirect ?? undefined)
   }
 
   @Query()
