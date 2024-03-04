@@ -39,6 +39,8 @@ function TemplateIndexPage(): ReactElement {
         user={user}
         mainBodyPadding={false}
         showMainHeader={false}
+        showAppHeader={user?.id != null}
+        showNavBar={user?.id != null}
       >
         <TemplateGallery />
       </PageWrapper>
