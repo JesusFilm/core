@@ -5,7 +5,6 @@ import {
   getAuth,
   signInWithPopup
 } from 'firebase/auth'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
