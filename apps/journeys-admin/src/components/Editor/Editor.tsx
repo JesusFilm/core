@@ -1,8 +1,8 @@
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/system/createTheme'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {

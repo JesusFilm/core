@@ -2,15 +2,6 @@ import { render } from '@testing-library/react'
 
 import { PreviewTemplateButton } from './PreviewTemplateButton'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('PreviewTemplateButton', () => {
   const originalEnv = process.env
   jest.resetModules()

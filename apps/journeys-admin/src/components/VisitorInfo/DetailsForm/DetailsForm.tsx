@@ -11,8 +11,8 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import pick from 'lodash/pick'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 

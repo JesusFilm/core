@@ -1,7 +1,7 @@
 import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 

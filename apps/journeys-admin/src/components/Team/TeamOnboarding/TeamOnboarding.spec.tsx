@@ -18,15 +18,6 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 import { TeamOnboarding } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
@@ -177,7 +168,7 @@ describe('TeamOnboarding', () => {
         { __ref: 'Team:teamId1' }
       ])
     )
-    expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
+    expect(getByText('Team Title created.')).toBeInTheDocument()
     expect(push).toHaveBeenCalledWith('/?onboarding=true')
   })
 
@@ -335,7 +326,7 @@ describe('TeamOnboarding', () => {
         { __ref: 'Team:teamId1' }
       ])
     )
-    expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
+    expect(getByText('Team Title created.')).toBeInTheDocument()
     expect(push).toHaveBeenCalledWith(
       new URL('http://localhost/custom-location')
     )

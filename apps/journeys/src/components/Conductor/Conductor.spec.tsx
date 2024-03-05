@@ -27,15 +27,6 @@ import { JOURNEY_VIEW_EVENT_CREATE, JOURNEY_VISITOR_UPDATE } from './Conductor'
 
 import { Conductor } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('@core/shared/ui/useBreakpoints', () => ({
   __esModule: true,
   useBreakpoints: jest.fn()

@@ -670,18 +670,6 @@ describe('arclight', () => {
   })
 
   describe('transformMediaComponentToVideo', () => {
-    jest.mock('./arclight', () => {
-      const originalModule = jest.requireActual('./arclight')
-      return {
-        __esModule: true,
-        ...originalModule,
-        getArclightMediaComponentLanguages: jest.fn()
-      }
-    })
-    const mockGetArclightMediaComponentLanguages =
-      getArclightMediaComponentLanguages as jest.MockedFunction<
-        typeof getArclightMediaComponentLanguages
-      >
     const mediaComponent: ArclightMediaComponent = {
       mediaComponentId: 'mediaComponentId',
       primaryLanguageId: 529,
@@ -741,67 +729,89 @@ describe('arclight', () => {
     ]
     const usedVideoSlugs = {}
 
-    beforeEach(() => {
-      mockGetArclightMediaComponentLanguages.mockClear()
-    })
-
     it('transforms media component to video', async () => {
-      mockGetArclightMediaComponentLanguages.mockResolvedValueOnce(
-        mediaComponentLanguages
-      )
+      const request = mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () =>
+          await Promise.resolve({
+            _embedded: {
+              mediaComponentLanguage: mediaComponentLanguages
+            }
+          })
+      } as unknown as Response)
       const video = await transformMediaComponentToVideo(
         mediaComponent,
         languages,
         usedVideoSlugs
       )
       expect(video).toEqual({
-        id: mediaComponent.mediaComponentId,
         description: [
           { languageId: '529', primary: true, value: 'longDescription' }
         ],
-        duration: 1,
-        hls: 'hlsUrl',
+        id: 'mediaComponentId',
         image: 'mobileCinematicHigh',
-        languageId: '529',
-        slug: 'title/english',
-        subType: 'episode',
-        title: 'title',
-        videoVariants: [
+        imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
+        label: 'episode',
+        noIndex: false,
+        primaryLanguageId: '529',
+        seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
+        slug: 'title',
+        snippet: [
+          { languageId: '529', primary: true, value: 'shortDescription' }
+        ],
+        studyQuestions: [],
+        title: [
           {
-            id: 'refId',
+            languageId: '529',
+            primary: true,
+            value: 'title',
+            videoId: 'mediaComponentId'
+          }
+        ],
+        variants: [
+          {
             downloads: [
               {
                 quality: 'low',
                 size: 1024,
-                url: 'lowUrl'
+                url: 'lowUrl',
+                videoVariantId: 'refId'
               },
               {
                 quality: 'high',
                 size: 1024,
-                url: 'highUrl'
+                url: 'highUrl',
+                videoVariantId: 'refId'
               }
             ],
             duration: 1,
             hls: 'hlsUrl',
+            id: 'refId',
             languageId: '529',
             slug: 'title/english',
             subtitle: [
               {
                 languageId: '529',
                 primary: true,
-                value: 'subtitleUrl529'
+                value: 'subtitleUrl529',
+                videoVariantId: 'refId'
               },
               {
                 languageId: '2048',
                 primary: false,
-                value: 'subtitleUrl2048'
+                value: 'subtitleUrl2048',
+                videoVariantId: 'refId'
               }
-            ]
+            ],
+            videoId: 'mediaComponentId'
           }
         ]
       })
-      expect(mockGetArclightMediaComponentLanguages).toHaveBeenCalledWith(
-        mediaComponent.mediaComponentId
+      expect(request).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'https://api.arclight.org/v2/media-components/mediaComponentId/languages?platform=android&apiKey='
+        ),
+        undefined
       )
     })
   })
