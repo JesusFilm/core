@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { FormikValues } from 'formik'
 import { useRouter } from 'next/router'
+import { Trans, useTranslation } from 'next-i18next'
 import {
   ComponentProps,
   ReactElement,
@@ -14,7 +15,6 @@ import {
   useMemo,
   useState
 } from 'react'
-import { Trans, useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 

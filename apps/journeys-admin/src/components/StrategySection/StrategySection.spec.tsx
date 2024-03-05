@@ -2,15 +2,6 @@ import { fireEvent, render } from '@testing-library/react'
 
 import { StrategySection } from './StrategySection'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('StrategySection', () => {
   it('should render embedded canva strategy slug', () => {
     const canvaStrategySlug = 'https://www.canva.com/design/DAFvDBw1z1A/view'

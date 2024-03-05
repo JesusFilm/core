@@ -5,15 +5,6 @@ import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from './CustomUrl'
 
 import { CustomUrl } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('CustomUrl', () => {
   let originalEnv
 

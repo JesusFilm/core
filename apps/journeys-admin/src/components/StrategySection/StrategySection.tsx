@@ -2,8 +2,8 @@ import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import Presentation1 from '@core/shared/ui/icons/Presentation1'
 

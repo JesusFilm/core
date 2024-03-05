@@ -40,7 +40,8 @@ const i18nConfig = {
     tr: ['tr-TR'],
     zh: ['zh-Hans-CN']
   },
-  localePath
+  localePath,
+  react: { useSuspense: false }
 }
 
 module.exports = i18nConfig
