@@ -1,9 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import Lock1Icon from '@core/shared/ui/icons/Lock1'
 import LockOpen1Icon from '@core/shared/ui/icons/LockOpen1'

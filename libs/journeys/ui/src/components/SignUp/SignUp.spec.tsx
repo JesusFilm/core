@@ -42,15 +42,6 @@ jest.mock('next/router', () => ({
   }
 }))
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 const block: TreeBlock<SignUpFields> = {
   __typename: 'SignUpBlock',
   id: 'signUp0.id',
