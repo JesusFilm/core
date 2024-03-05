@@ -12,8 +12,12 @@ input CreateVerificationRequestInput {
   redirect: String
 }
 
+input MeInput {
+  redirect: String
+}
+
 extend type Query {
-  me: User
+  me(input: MeInput): User
   user(id: ID!): User
   userByEmail(email: String!): User
 }

@@ -4,9 +4,9 @@ import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 

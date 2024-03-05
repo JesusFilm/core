@@ -1,8 +1,8 @@
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { Trans, useTranslation } from 'react-i18next'
 
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 

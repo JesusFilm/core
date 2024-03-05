@@ -1,7 +1,7 @@
 import { gql, useSuspenseQuery } from '@apollo/client'
 import compact from 'lodash/compact'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { GetOnboardingJourneys } from '../../../../__generated__/GetOnboardingJourneys'
 import { MediaListItem } from '../../MediaListItem'

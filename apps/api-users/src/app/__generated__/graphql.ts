@@ -12,6 +12,10 @@ export class CreateVerificationRequestInput {
     redirect?: Nullable<string>;
 }
 
+export class MeInput {
+    redirect?: Nullable<string>;
+}
+
 export class User {
     __typename?: 'User';
     id: string;
@@ -26,7 +30,7 @@ export class User {
 export abstract class IQuery {
     __typename?: 'IQuery';
 
-    abstract me(): Nullable<User> | Promise<Nullable<User>>;
+    abstract me(input?: Nullable<MeInput>): Nullable<User> | Promise<Nullable<User>>;
 
     abstract user(id: string): Nullable<User> | Promise<Nullable<User>>;
 

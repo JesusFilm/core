@@ -5,8 +5,9 @@ import {
   getAuth,
   signInWithPopup
 } from 'firebase/auth'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'

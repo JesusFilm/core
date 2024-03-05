@@ -7,15 +7,6 @@ import { SegmindModel } from '../../../../../__generated__/globalTypes'
 
 import { AIGallery, CREATE_AI_IMAGE } from './AIGallery'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('AIGallery', () => {
   const getAIImage: MockedResponse<CreateAiImage> = {
     request: {
