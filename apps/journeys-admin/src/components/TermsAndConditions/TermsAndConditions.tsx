@@ -8,8 +8,8 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import ArrowRightSmIcon from '@core/shared/ui/icons/ArrowRightSm'
@@ -63,19 +63,19 @@ export function TermsAndConditions(): ReactElement {
         <TermsListItem
           link="https://your.nextstep.is/terms-of-use"
           icon={<AlertCircleIcon sx={{ color: 'secondary.light' }} />}
-          text="Terms of Use"
+          text={t('Terms of Use')}
         />
         <Divider component="li" />
         <TermsListItem
           link="https://your.nextstep.is/end-user-license-agreement"
           icon={<UsersProfiles2Icon sx={{ color: 'secondary.light' }} />}
-          text="End User License Agreement"
+          text={t('End User License Agreement')}
         />
         <Divider component="li" />
         <TermsListItem
           link="https://your.nextstep.is/community-guidelines"
           icon={<CheckSquareBrokenIcon sx={{ color: 'secondary.light' }} />}
-          text="Community Guidelines"
+          text={t('Community Guidelines')}
         />
         <Divider component="li" />
         <ListItemButton onClick={() => setAccepted(!accepted)}>

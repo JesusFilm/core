@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
@@ -17,7 +17,7 @@ export function AddJourneyButton(): ReactElement {
   const handleClick = async (): Promise<void> => {
     const journey = await createJourney()
     if (journey != null) {
-      void router.push(`/journeys/${journey.id}/edit`, undefined, {
+      void router.push(`/journeys/${journey.id}`, undefined, {
         shallow: true
       })
     }

@@ -8,9 +8,9 @@ import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import debounce from 'lodash/debounce'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import { HexColorPicker } from 'react-colorful'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -204,8 +204,8 @@ export function BackgroundColor(): ReactElement {
           variant="fullWidth"
           centered
         >
-          <Tab label="Palette" {...tabA11yProps('background-color', 0)} />
-          <Tab label="Custom" {...tabA11yProps('background-color', 1)} />
+          <Tab label={t('Palette')} {...tabA11yProps('background-color', 0)} />
+          <Tab label={t('Custom')} {...tabA11yProps('background-color', 1)} />
         </Tabs>
         <Divider />
         <TabPanel name="background-color" value={tabValue} index={0}>

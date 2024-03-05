@@ -2,8 +2,8 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import {
@@ -42,8 +42,8 @@ export function ActionEditor({
   url,
   setSelectedAction
 }: ActionEditorProps): ReactElement {
-  const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
 
   const blocks = (journey?.blocks ?? [])
     .filter((block) => ((block as ButtonBlock).action as LinkAction) != null)
@@ -72,14 +72,15 @@ export function ActionEditor({
 
   const linkActionSchema = object({
     link: string()
-      .test('valid-url', 'Invalid URL', checkURL)
-      .required('Required')
+      .test('valid-url', t('Invalid URL'), checkURL)
+      .required(t('Required'))
   })
 
   async function handleSubmit(src: string): Promise<void> {
     if (journey == null) return
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     blocks.map(async (block) => {
       await linkActionUpdate({
         variables: {
@@ -129,7 +130,7 @@ export function ActionEditor({
     <Box sx={{ pt: 6 }} data-testid="ActionEditor">
       <TextFieldForm
         id="link"
-        label="Navigate to"
+        label={t('Navigate to')}
         initialValue={url}
         validationSchema={linkActionSchema}
         onSubmit={handleSubmit}

@@ -1,8 +1,8 @@
 import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -53,7 +53,7 @@ export function TrashJourneyDialog({
   async function handleTrash(): Promise<void> {
     try {
       await trashJourney()
-      enqueueSnackbar('Journey trashed', {
+      enqueueSnackbar(t('Journey trashed'), {
         variant: 'success',
         preventDuplicate: true
       })
@@ -71,11 +71,11 @@ export function TrashJourneyDialog({
     <Dialog
       open={open}
       onClose={handleClose}
-      dialogTitle={{ title: 'Trash Journey?', closeButton: true }}
+      dialogTitle={{ title: t('Trash Journey?'), closeButton: true }}
       dialogAction={{
         onSubmit: handleTrash,
-        submitLabel: 'Delete',
-        closeLabel: 'Cancel'
+        submitLabel: t('Delete'),
+        closeLabel: t('Cancel')
       }}
       testId="TrashJourneyDialog"
     >

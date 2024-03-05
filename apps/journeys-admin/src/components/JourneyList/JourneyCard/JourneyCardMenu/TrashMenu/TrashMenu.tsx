@@ -1,3 +1,4 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
@@ -16,10 +17,11 @@ export function TrashMenu({
   setOpenDeleteDialog,
   handleCloseMenu
 }: TrashMenuProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <MenuItem
-        label="Restore"
+        label={t('Restore')}
         icon={<CheckContainedIcon color="secondary" />}
         onClick={() => {
           setOpenRestoreDialog()
@@ -29,7 +31,7 @@ export function TrashMenu({
       />
 
       <MenuItem
-        label="Delete Forever"
+        label={t('Delete Forever')}
         icon={<FileShredIcon color="secondary" />}
         onClick={() => {
           setOpenDeleteDialog()

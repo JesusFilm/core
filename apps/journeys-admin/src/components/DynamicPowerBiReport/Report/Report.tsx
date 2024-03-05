@@ -2,6 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { models } from 'powerbi-client'
 import { EmbedProps, PowerBIEmbed } from 'powerbi-client-react'
@@ -33,6 +34,7 @@ interface SingleReportProps {
 export type ReportProps = SingleReportProps | MultipleReportProps
 
 export function Report({ reportType, journeyId }: ReportProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
@@ -48,7 +50,7 @@ export function Report({ reportType, journeyId }: ReportProps): ReactElement {
 
   function onError(): void {
     setError(true)
-    enqueueSnackbar('Error loading report', {
+    enqueueSnackbar(t('Error loading report'), {
       variant: 'error',
       preventDuplicate: true
     })
@@ -125,8 +127,8 @@ export function Report({ reportType, journeyId }: ReportProps): ReactElement {
           >
             <Typography variant="overline" color="secondary.light">
               {error
-                ? 'There was an error loading the report'
-                : 'The report is loading...'}
+                ? t('There was an error loading the report')
+                : t('The report is loading...')}
             </Typography>
           </Box>
         </Fade>

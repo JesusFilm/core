@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -69,6 +70,7 @@ interface BackgroundMediaVideoProps {
 export function BackgroundMediaVideo({
   cardBlock
 }: BackgroundMediaVideoProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const coverBlock =
     (cardBlock?.children.find(
       (child) => child.id === cardBlock?.coverBlockId
@@ -172,7 +174,7 @@ export function BackgroundMediaVideo({
       } else {
         await updateVideoBlock(block)
       }
-      enqueueSnackbar('Video Updated', {
+      enqueueSnackbar(t('Video Updated'), {
         variant: 'success',
         preventDuplicate: true
       })

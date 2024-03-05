@@ -1,5 +1,5 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -27,7 +27,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${id}-video-options`
     })
-  }, [id, videoId, dispatch])
+  }, [id, videoId, dispatch, t])
 
   return (
     <>

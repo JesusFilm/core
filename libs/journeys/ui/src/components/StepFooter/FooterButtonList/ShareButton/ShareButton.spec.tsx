@@ -6,15 +6,6 @@ import { JourneyFields as Journey } from '../../../../libs/JourneyProvider/__gen
 
 import { ShareButton } from './ShareButton'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true

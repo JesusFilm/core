@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Bag5Icon from '@core/shared/ui/icons/Bag5'

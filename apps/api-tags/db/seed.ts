@@ -33,6 +33,7 @@ async function upsertTag(
     }
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   await childrenNames.map(async (name) => {
     await upsertTag(name, [], tag.id, service)
   })
@@ -72,7 +73,7 @@ async function main(): Promise<void> {
     'Ramadan',
     'Halloween',
     'Festivals',
-    'Sport Events',
+    'Sports Events',
     'World Youth Day',
     "Valentine's Day",
     "Mother's & Women's Day",

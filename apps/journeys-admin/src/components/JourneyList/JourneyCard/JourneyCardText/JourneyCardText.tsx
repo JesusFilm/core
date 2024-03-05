@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
@@ -27,6 +28,8 @@ export function JourneyCardText({
   journey,
   variant
 }: JourneyCardTextProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <StyledBadge
@@ -35,7 +38,7 @@ export function JourneyCardText({
         data-testid="new-journey-badge"
         sx={{ width: '100%' }}
         badgeContent={
-          <Tooltip title="New">
+          <Tooltip title={t('New')}>
             <CircleRoundedIcon color="warning" sx={{ fontSize: '10px' }} />
           </Tooltip>
         }

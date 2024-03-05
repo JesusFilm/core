@@ -7,15 +7,6 @@ import { FormFields } from './__generated__/FormFields'
 
 import { Form } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('Form', () => {
   it('should render form', () => {
     const block = {

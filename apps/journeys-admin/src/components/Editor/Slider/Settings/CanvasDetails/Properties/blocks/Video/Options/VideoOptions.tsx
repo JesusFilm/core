@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -44,6 +45,7 @@ export const UPDATE_VIDEO_BLOCK_NEXT_STEP = gql`
 `
 
 export function VideoOptions(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedStep, selectedBlock }
   } = useEditor()
@@ -95,7 +97,7 @@ export function VideoOptions(): ReactElement {
         }
       })
       await updateDefaultNextStep()
-      enqueueSnackbar('Video Updated', {
+      enqueueSnackbar(t('Video Updated'), {
         variant: 'success',
         preventDuplicate: true
       })

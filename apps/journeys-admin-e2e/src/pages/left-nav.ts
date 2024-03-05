@@ -42,6 +42,9 @@ export class LeftNav {
 
   async logout(): Promise<void> {
     // Click on Log out
-    await this.page.click('div ul li[role="menuitem"]')
+    await Promise.all([
+      this.page.waitForSelector('[data-testid="JourneysAdminMenuItemLogOut"]'),
+      this.page.click('[data-testid="JourneysAdminMenuItemLogOut"]')
+    ])
   }
 }

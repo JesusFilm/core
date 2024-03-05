@@ -3,9 +3,9 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -40,12 +40,9 @@ export function TeamUpdateDialog({
   const teamSchema = object({
     title: string()
       .required(t('Team Name must be at least one character.'))
-      .max(40, t('Max {{ count }} Characters', { count: 40 }))
-      .matches(/^(?!\s+$).*/g, 'This field cannot contain only blankspaces'),
-    publicTitle: string().max(
-      40,
-      t('Max {{ count }} Characters', { count: 40 })
-    )
+      .max(40, t('Max 40 Characters'))
+      .matches(/^(?!\s+$).*/g, t('This field cannot contain only blankspaces')),
+    publicTitle: string().max(40, t('Max 40 Characters'))
   })
 
   async function handleSubmit(
@@ -61,10 +58,15 @@ export function TeamUpdateDialog({
       })
       handleClose(resetForm)()
 
-      enqueueSnackbar(t(`${data?.teamUpdate.title ?? 'Team'} updated.`), {
-        variant: 'success',
-        preventDuplicate: true
-      })
+      enqueueSnackbar(
+        data !== null && data !== undefined && data?.teamUpdate.title !== ''
+          ? t('{{ teamName }} updated.', { teamName: data.teamUpdate.title })
+          : t('Team updated.'),
+        {
+          variant: 'success',
+          preventDuplicate: true
+        }
+      )
     } catch (error) {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
@@ -128,9 +130,9 @@ export function TeamUpdateDialog({
                 helperText={
                   errors.title !== undefined
                     ? (errors.title as string)
-                    : 'Private: Visible only to your team'
+                    : t('Private: Visible only to your team')
                 }
-                label="Team Name"
+                label={t('Team Name')}
               />
               <TextField
                 id="publicTitle"
@@ -143,9 +145,9 @@ export function TeamUpdateDialog({
                 helperText={
                   errors.publicTitle !== undefined
                     ? (errors.publicTitle as string)
-                    : 'Public: Anyone can view it'
+                    : t('Public: Anyone can view it')
                 }
-                label="Legal Name"
+                label={t('Legal Name')}
                 placeholder={values.title}
               />
 
