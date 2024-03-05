@@ -71,28 +71,33 @@ export function PageWrapper({
         data-testid="JourneysAdminPageWrapper"
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
-          <NavigationDrawer
-            open={open}
-            onClose={setOpen}
-            user={user}
-            selectedPage={router?.pathname?.split('/')[1]}
-          />
-
+          {!router.route.includes('/journeys/') && (
+            <NavigationDrawer
+              open={open}
+              onClose={setOpen}
+              user={user}
+              selectedPage={router?.pathname?.split('/')[1]}
+            />
+          )}
           <Stack
             flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
               backgroundColor: 'background.default',
               width: { xs: '100vw', md: `calc(100vw - ${navbar.width})` },
-              pt: { xs: toolbar.height, md: 0 },
+              pt: {
+                xs: router.route.includes('/journeys/') ? 0 : toolbar.height,
+                md: 0
+              },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
                 md: 0
               }
             }}
           >
-            {showAppHeader && <AppHeader onClick={() => setOpen(!open)} />}
-
+            {showAppHeader && !router.route.includes('/journeys/') && (
+              <AppHeader onClick={() => setOpen(!open)} />
+            )}
             <Stack
               component="main"
               flexGrow={1}
@@ -101,7 +106,13 @@ export function PageWrapper({
                   xs: 'inherit',
                   md:
                     sidePanelChildren != null || customSidePanel != null
-                      ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
+                      ? `calc(100vw - ${
+                          router.route.includes('/journeys/')
+                            ? ''
+                            : `${navbar.width} - `
+                        }${sidePanel.width})`
+                      : router.route.includes('/reports')
+                      ? '100vw'
                       : 'inherit'
                 }
               }}
