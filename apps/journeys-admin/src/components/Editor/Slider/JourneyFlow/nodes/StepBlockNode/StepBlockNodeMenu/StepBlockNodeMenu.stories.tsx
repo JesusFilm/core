@@ -33,8 +33,8 @@ const step: TreeBlock<StepBlock> = {
 const Template: StoryObj<
   ComponentProps<typeof StepBlockNodeMenu> & { mocks: MockedResponse[] }
 > = {
-  render: ({ mocks }) => (
-    <MockedProvider mocks={mocks}>
+  render: () => (
+    <MockedProvider>
       <ThemeProvider>
         <Box sx={{ position: 'fixed', top: '5%', left: '5%' }}>
           <StepBlockNodeMenu step={step} />
@@ -45,17 +45,11 @@ const Template: StoryObj<
 }
 
 export const Default = {
-  ...Template,
-  args: {
-    mocks: []
-  }
+  ...Template
 }
 
 export const Expanded = {
   ...Template,
-  args: {
-    mocks: []
-  },
   play: async () => {
     await waitFor(async () => {
       await expect(screen.getByTestId('edit-step-fab')).toBeInTheDocument()
