@@ -64,6 +64,7 @@ export function BaseNode({
 
   return (
     <Box
+      data-testid="base-node"
       sx={{
         '.show-on-hover': {
           visibility: 'hidden'
@@ -77,6 +78,7 @@ export function BaseNode({
       {isTargetConnectable && (
         <>
           <Handle
+            data-testid="base-node-top-target-handle"
             type="target"
             position={Position.Top}
             style={{
@@ -94,6 +96,7 @@ export function BaseNode({
             }}
           />
           <Handle
+            data-testid="base-node-bottom-target-handle"
             type="target"
             position={Position.Bottom}
             isConnectableStart={false}
@@ -112,6 +115,7 @@ export function BaseNode({
       {isSourceConnectable !== false && (
         <>
           <Handle
+            data-testid="base-node-source-handle-icon"
             type="source"
             position={Position.Bottom}
             onConnect={onSourceConnect}
@@ -130,6 +134,7 @@ export function BaseNode({
             }}
           />
           <Handle
+            data-testid="base-node-source-handle-area"
             type="source"
             position={Position.Bottom}
             onConnect={onSourceConnect}
@@ -148,6 +153,7 @@ export function BaseNode({
           />
           {isSourceConnectable === 'arrow' && (
             <ArrowDownwardRoundedIcon
+              data-testid="base-node-downward-arrow-icon"
               className="show-on-hover"
               style={{
                 display: 'flex',
