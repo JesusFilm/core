@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import omit from 'lodash/omit'
 
 import { User } from '.prisma/api-users-client'
 
@@ -10,14 +9,6 @@ import { UserResolver, isValidInterOp, validateIpV4 } from './user.resolver'
 import { UserService } from './user.service'
 
 jest.mock('@core/nest/common/firebaseClient', () => ({
-  auth: {
-    getUser: jest.fn().mockResolvedValue({
-      displayName: 'fo sho',
-      email: 'tho@no.co',
-      photoURL: 'p',
-      emailVerified: true
-    })
-  },
   impersonateUser: jest.fn().mockResolvedValue('impersonationToken')
 }))
 
@@ -59,39 +50,15 @@ describe('UserResolver', () => {
   })
 
   describe('me', () => {
-    it('returns User', async () => {
-      prismaService.user.findUnique.mockResolvedValueOnce(user)
-      expect(await resolver.me('userId')).toEqual(user)
-      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { userId: user.id }
-      })
-    })
-
-    it('returns email verified status always', async () => {
-      prismaService.user.findUnique.mockResolvedValueOnce(
-        omit(user, ['emailVerified']) as User
+    it('return findOrFetchUser', async () => {
+      userService.findOrFetchUser.mockResolvedValueOnce(user)
+      expect(await resolver.me('userId', { redirect: '/templates' })).toEqual(
+        user
       )
-      prismaService.user.update.mockResolvedValue(user)
-      expect(await resolver.me('userId')).toEqual(user)
-      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { userId: user.id }
-      })
-    })
-
-    it('fetches user from firebase', async () => {
-      prismaService.user.findUnique.mockResolvedValueOnce(null)
-      prismaService.user.create.mockResolvedValueOnce(user)
-      expect(await resolver.me('userId')).toEqual(user)
-      expect(prismaService.user.create).toHaveBeenCalledWith({
-        data: {
-          email: 'tho@no.co',
-          firstName: 'fo',
-          imageUrl: 'p',
-          lastName: 'sho',
-          userId: 'userId',
-          emailVerified: true
-        }
-      })
+      expect(userService.findOrFetchUser).toHaveBeenCalledWith(
+        'userId',
+        '/templates'
+      )
     })
   })
 
@@ -135,33 +102,41 @@ describe('UserResolver', () => {
   })
 
   describe('resolveReference', () => {
-    it('returns User', async () => {
-      prismaService.user.findUnique.mockResolvedValueOnce(user)
+    it('return findOrFetchUser', async () => {
+      userService.findOrFetchUser.mockResolvedValueOnce(user)
       expect(
         await resolver.resolveReference({ __typename: 'User', id: 'userId' })
       ).toEqual(user)
-      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { userId: user.id }
-      })
+      expect(userService.findOrFetchUser).toHaveBeenCalledWith('userId')
     })
 
-    it('fetches user from firebase', async () => {
-      prismaService.user.findUnique.mockResolvedValueOnce(null)
-      prismaService.user.create.mockResolvedValueOnce(user)
-      expect(
-        await resolver.resolveReference({ __typename: 'User', id: 'userId' })
-      ).toEqual(user)
-      expect(prismaService.user.create).toHaveBeenCalledWith({
-        data: {
-          email: 'tho@no.co',
-          firstName: 'fo',
-          imageUrl: 'p',
-          lastName: 'sho',
-          userId: 'userId',
-          emailVerified: true
-        }
-      })
-    })
+    // it('returns User', async () => {
+    //   prismaService.user.findUnique.mockResolvedValueOnce(user)
+    //   expect(
+    //     await resolver.resolveReference({ __typename: 'User', id: 'userId' })
+    //   ).toEqual(user)
+    //   expect(prismaService.user.findUnique).toHaveBeenCalledWith({
+    //     where: { userId: user.id }
+    //   })
+    // })
+
+    // it('fetches user from firebase', async () => {
+    //   prismaService.user.findUnique.mockResolvedValueOnce(null)
+    //   prismaService.user.create.mockResolvedValueOnce(user)
+    //   expect(
+    //     await resolver.resolveReference({ __typename: 'User', id: 'userId' })
+    //   ).toEqual(user)
+    //   expect(prismaService.user.create).toHaveBeenCalledWith({
+    //     data: {
+    //       email: 'tho@no.co',
+    //       firstName: 'fo',
+    //       imageUrl: 'p',
+    //       lastName: 'sho',
+    //       userId: 'userId',
+    //       emailVerified: true
+    //     }
+    //   })
+    // })
 
     // can't get google mock to work right
     it.skip('sends an email', async () => {
