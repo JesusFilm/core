@@ -110,34 +110,6 @@ describe('UserResolver', () => {
       expect(userService.findOrFetchUser).toHaveBeenCalledWith('userId')
     })
 
-    // it('returns User', async () => {
-    //   prismaService.user.findUnique.mockResolvedValueOnce(user)
-    //   expect(
-    //     await resolver.resolveReference({ __typename: 'User', id: 'userId' })
-    //   ).toEqual(user)
-    //   expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-    //     where: { userId: user.id }
-    //   })
-    // })
-
-    // it('fetches user from firebase', async () => {
-    //   prismaService.user.findUnique.mockResolvedValueOnce(null)
-    //   prismaService.user.create.mockResolvedValueOnce(user)
-    //   expect(
-    //     await resolver.resolveReference({ __typename: 'User', id: 'userId' })
-    //   ).toEqual(user)
-    //   expect(prismaService.user.create).toHaveBeenCalledWith({
-    //     data: {
-    //       email: 'tho@no.co',
-    //       firstName: 'fo',
-    //       imageUrl: 'p',
-    //       lastName: 'sho',
-    //       userId: 'userId',
-    //       emailVerified: true
-    //     }
-    //   })
-    // })
-
     // can't get google mock to work right
     it.skip('sends an email', async () => {
       jest
