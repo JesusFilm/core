@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import MuiTypography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 

@@ -1,8 +1,8 @@
 import { ApolloError } from '@apollo/client'
 import { Formik, FormikConfig, FormikHelpers } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { ObjectSchema, object, string } from 'yup'
 
 import { TeamCreateInput } from '../../../../__generated__/globalTypes'

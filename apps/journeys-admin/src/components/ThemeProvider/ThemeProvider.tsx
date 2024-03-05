@@ -10,10 +10,7 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({ children }: ThemeProviderProps): ReactElement {
   return (
-    <MuiThemeProvider
-      theme={adminLight}
-      data-testid="JourneysAdminThemeProvider"
-    >
+    <MuiThemeProvider theme={adminLight}>
       <CssBaseline />
       {children}
     </MuiThemeProvider>

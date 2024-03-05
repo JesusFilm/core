@@ -6,6 +6,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Popover from '@mui/material/Popover'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
+import { useTranslation } from 'next-i18next'
 import {
   ChangeEvent,
   MouseEvent,
@@ -14,7 +15,6 @@ import {
   useRef,
   useState
 } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 

@@ -1,9 +1,9 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'

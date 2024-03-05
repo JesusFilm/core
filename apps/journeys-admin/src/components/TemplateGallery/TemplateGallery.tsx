@@ -4,8 +4,8 @@ import Paper from '@mui/material/Paper'
 import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { TemplateSections } from '../TemplateSections'
 
