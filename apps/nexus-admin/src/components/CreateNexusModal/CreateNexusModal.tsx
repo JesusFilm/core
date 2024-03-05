@@ -75,8 +75,8 @@ export const CreateNexusModal: FC<CreateNexusModalProps> = ({
           value={formik.values.name}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          error={formik.touched.name && Boolean(formik.errors.name)}
-          helperText={formik.touched.name && formik.errors.name}
+          error={Boolean(formik.touched.name) && Boolean(formik.errors.name)}
+          helperText={Boolean(formik.touched.name) && formik.errors.name}
         />
         <TextField
           label="Description"
@@ -87,9 +87,12 @@ export const CreateNexusModal: FC<CreateNexusModalProps> = ({
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           error={
-            formik.touched.description && Boolean(formik.errors.description)
+            Boolean(formik.touched.description) &&
+            Boolean(formik.errors.description)
           }
-          helperText={formik.touched.description && formik.errors.description}
+          helperText={
+            Boolean(formik.touched.description) && formik.errors.description
+          }
         />
       </Stack>
     </Modal>

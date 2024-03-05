@@ -37,14 +37,14 @@ export const UpdateResourceModal: FC<UpdateResourceModalProps> = ({
   })
 
   useEffect(() => {
-    if (data) {
-      formik.setValues({
+    if (data !== undefined) {
+      void formik.setValues({
         name: data?.name ?? ''
       })
     }
   }, [data])
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     onClose()
     formik.resetForm()
   }
@@ -70,8 +70,8 @@ export const UpdateResourceModal: FC<UpdateResourceModalProps> = ({
           value={formik.values.name}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          error={formik.touched.name && Boolean(formik.errors.name)}
-          helperText={formik.touched.name && formik.errors.name}
+          error={Boolean(formik.touched.name) && Boolean(formik.errors.name)}
+          helperText={Boolean(formik.touched.name) && formik.errors.name}
         />
       </Stack>
     </Modal>

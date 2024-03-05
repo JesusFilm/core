@@ -44,15 +44,15 @@ export const UpdateChannelModal: FC<UpdateChannelModalProps> = ({
   })
 
   useEffect(() => {
-    if (data) {
-      formik.setValues({
+    if (data !== undefined) {
+      void formik.setValues({
         name: data?.name ?? '',
         platform: data?.platform ?? ''
       })
     }
   }, [data])
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     onClose()
     formik.resetForm()
   }
@@ -78,8 +78,8 @@ export const UpdateChannelModal: FC<UpdateChannelModalProps> = ({
           value={formik.values.name}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          error={formik.touched.name && Boolean(formik.errors.name)}
-          helperText={formik.touched.name && formik.errors.name}
+          error={Boolean(formik.touched.name) && Boolean(formik.errors.name)}
+          helperText={Boolean(formik.touched.name) && formik.errors.name}
         />
         <FormControl variant="filled" sx={{ m: 1, minWidth: 120 }}>
           <InputLabel>Platform Type</InputLabel>
@@ -89,14 +89,18 @@ export const UpdateChannelModal: FC<UpdateChannelModalProps> = ({
             value={formik.values.platform}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            error={formik.touched.platform && Boolean(formik.errors.platform)}
+            error={
+              Boolean(formik.touched.platform) &&
+              Boolean(formik.errors.platform)
+            }
           >
             <MenuItem value="youtube">Youtube</MenuItem>
           </Select>
         </FormControl>
-        {formik.touched.platform && Boolean(formik.errors.platform) && (
-          <FormHelperText error>{formik.errors.platform}</FormHelperText>
-        )}
+        {Boolean(formik.touched.platform) &&
+          Boolean(formik.errors.platform) && (
+            <FormHelperText error>{formik.errors.platform}</FormHelperText>
+          )}
       </Stack>
     </Modal>
   )

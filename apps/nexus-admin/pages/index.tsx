@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { Nexuses, Nexuses_nexuses } from '../__generated__/Nexuses'
 import { CreateNexusModal } from '../src/components/CreateNexusModal'
@@ -26,7 +26,7 @@ export const GET_NEXUSES = gql`
   }
 `
 
-export function Index() {
+export function Index(): ReactElement {
   const [nexusApps, setNexusApps] = useState<Nexuses_nexuses[]>([])
   const [openCreateNexusModal, setOpenCreateNexusModal] =
     useState<boolean>(false)
@@ -35,7 +35,7 @@ export function Index() {
   const { data, loading } = useQuery<Nexuses>(GET_NEXUSES)
 
   useEffect(() => {
-    if (data) {
+    if (data !== undefined) {
       setNexusApps(data.nexuses)
     }
   }, [data])

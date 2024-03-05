@@ -1,15 +1,16 @@
 import Avatar from '@mui/material/Avatar'
-import Chip from '@mui/material/Chip'
-import Paper from '@mui/material/Paper'
-import { DataGrid } from '@mui/x-data-grid'
-import { FC, useState } from 'react'
-
 import Box from '@mui/material/Box'
+import Chip from '@mui/material/Chip'
 import CircularProgress, {
   CircularProgressProps
 } from '@mui/material/CircularProgress'
+import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
+import { DataGrid } from '@mui/x-data-grid'
+import { FC, ReactElement, useState } from 'react'
+
 import { Batches_batches } from '../../../__generated__/Batches'
+
 import { BatchesTableHeader } from './BatchesTableHeader'
 
 interface BatchesTableProps {
@@ -117,7 +118,7 @@ export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
 
 const CircularProgressWithLabel = (
   props: CircularProgressProps & { value: number }
-) => {
+): ReactElement => {
   return (
     <Box sx={{ position: 'relative', display: 'inline-flex' }}>
       <CircularProgress variant="determinate" {...props} />
