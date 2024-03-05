@@ -336,6 +336,8 @@ describe('TeamOnboarding', () => {
       ])
     )
     expect(getByText('{{ teamName }} created.')).toBeInTheDocument()
-    expect(push).toHaveBeenCalledWith('http://localhost/custom-location')
+    expect(push).toHaveBeenCalledWith(
+      new URL('http://localhost/custom-location')
+    )
   })
 })
