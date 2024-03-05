@@ -5,6 +5,7 @@ import Player from 'video.js/dist/types/player'
 
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
+import { useJourney } from '../../libs/JourneyProvider'
 
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
 
@@ -15,12 +16,24 @@ type VideoTriggerProps = (
   player?: Player
 }
 
+function iPhone(): boolean {
+  if (
+    typeof navigator === 'undefined' ||
+    typeof navigator.userAgent === 'undefined'
+  )
+    return false
+
+  const userAgent = navigator.userAgent
+  return userAgent.includes('iPhone')
+}
+
 export function VideoTrigger({
   player,
   triggerAction,
   triggerStart
 }: VideoTriggerProps): ReactElement {
   const router = useRouter()
+  const { variant } = useJourney()
   const [triggered, setTriggered] = useState(false)
 
   useEffect(() => {
@@ -33,6 +46,10 @@ export function VideoTrigger({
           setTriggered(true)
           player.pause()
 
+          if (variant === 'embed' && !iPhone()) {
+            handleAction(router, triggerAction)
+            return
+          }
           if (player.isFullscreen() ?? false) {
             void player
               .exitFullscreen()
@@ -48,7 +65,7 @@ export function VideoTrigger({
       player.on('timeupdate', handleTimeUpdate)
       return () => player.off('timeupdate', handleTimeUpdate)
     }
-  }, [player, triggerStart, router, triggerAction, triggered])
+  }, [player, triggerStart, router, triggerAction, triggered, variant])
 
   return <></>
 }

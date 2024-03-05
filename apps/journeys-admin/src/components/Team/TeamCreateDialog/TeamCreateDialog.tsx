@@ -2,8 +2,8 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, FormikHelpers, FormikValues } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
@@ -77,9 +77,9 @@ export function TeamCreateDialog({
                 helperText={
                   errors.title !== undefined
                     ? errors.title
-                    : 'Private: Visible only to your team'
+                    : t('Private: Visible only to your team')
                 }
-                label="Team Name"
+                label={t('Team Name')}
               />
               <TextField
                 id="publicTitle"
@@ -92,9 +92,9 @@ export function TeamCreateDialog({
                 helperText={
                   errors.publicTitle !== undefined
                     ? errors.publicTitle
-                    : 'Public: Anyone can view it'
+                    : t('Public: Anyone can view it')
                 }
-                label="Legal Name"
+                label={t('Legal Name')}
                 placeholder={values.title}
               />
 

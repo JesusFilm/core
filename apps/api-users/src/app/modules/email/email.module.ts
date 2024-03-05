@@ -6,6 +6,8 @@ import { EmailService } from '@core/nest/common/email/emailService'
 
 import { PrismaService } from '../../lib/prisma.service'
 
+import { EmailConsumer } from './email.consumer'
+
 @Global()
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { PrismaService } from '../../lib/prisma.service'
       }
     })
   ],
-  providers: [PrismaService, EmailService],
+  providers: [EmailConsumer, PrismaService, EmailService],
   exports: []
 })
 export class EmailModule {}

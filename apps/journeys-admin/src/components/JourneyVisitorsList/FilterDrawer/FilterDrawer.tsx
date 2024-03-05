@@ -8,8 +8,8 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
@@ -58,35 +58,35 @@ export function FilterDrawer({
         <FormGroup>
           <FormControlLabel
             control={<Checkbox />}
-            label="Chat Started"
+            label={t('Chat Started')}
             value="Chat Started"
             onChange={handleChange}
             checked={chatStarted}
           />
           <FormControlLabel
             control={<Checkbox />}
-            label="With Poll Answers"
+            label={t('With Poll Answers')}
             value="With Poll Answers"
             onChange={handleChange}
             checked={withPollAnswers}
           />
           <FormControlLabel
             control={<Checkbox />}
-            label="With Submitted Text"
+            label={t('With Submitted Text')}
             value="With Submitted Text"
             onChange={handleChange}
             checked={withSubmittedText}
           />
           <FormControlLabel
             control={<Checkbox />}
-            label="With Icon"
+            label={t('With Icon')}
             value="With Icon"
             onChange={handleChange}
             checked={withIcon}
           />
           <FormControlLabel
             control={<Checkbox />}
-            label="Hide Inactive"
+            label={t('Hide Inactive')}
             value="Hide Inactive"
             onChange={handleChange}
             checked={hideInteractive}
@@ -106,14 +106,14 @@ export function FilterDrawer({
           <FormControlLabel
             value="date"
             control={<Radio />}
-            label="Date"
+            label={t('Date')}
             onChange={handleChange}
             checked={sortSetting === 'date'}
           />
           <FormControlLabel
             value="duration"
             control={<Radio />}
-            label="Duration"
+            label={t('Duration')}
             onChange={handleChange}
             checked={sortSetting === 'duration'}
           />

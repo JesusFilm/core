@@ -126,7 +126,12 @@
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run ts-node apps/api-videos/db/seed.ts"]
+        "commands": [
+          {
+            "command": "npm run ts-node apps/api-videos/db/seed.ts {args.mode} {args.target}",
+            "forwardAllArgs": false
+          }
+        ]
       }
     },
     "prisma-studio": {

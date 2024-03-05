@@ -1,7 +1,7 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import BibleIcon from '@core/shared/ui/icons/Bible'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
@@ -45,18 +45,20 @@ export function ActionInformation(): ReactElement {
         )}
       </Typography>
       <GoalDescription
-        label="Start a Conversation"
-        description="If the goal is to go any chat platform"
+        label={t('Start a Conversation')}
+        description={t('If the goal is to go any chat platform')}
         icon={<MessageChat1Icon />}
       />
       <GoalDescription
-        label="Visit a Website"
-        description="This could be your church or ministry website, or whatever you want to redirect the viewer to."
+        label={t('Visit a Website')}
+        description={t(
+          'This could be your church or ministry website, or whatever you want to redirect the viewer to.'
+        )}
         icon={<LinkAngledIcon />}
       />
       <GoalDescription
-        label="Link to Bible"
-        description="If the target of the journey is to download the Bible"
+        label={t('Link to Bible')}
+        description={t('If the target of the journey is to download the Bible')}
         icon={<BibleIcon />}
       />
     </Stack>

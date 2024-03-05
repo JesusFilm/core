@@ -1,5 +1,5 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -13,15 +13,15 @@ export function RadioOption({
   id,
   action
 }: TreeBlock<RadioOptionBlock>): ReactElement {
-  const { dispatch } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
+  const { dispatch } = useEditor()
 
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${id}-radio-option-action`
     })
-  }, [dispatch, id])
+  }, [dispatch, id, t])
 
   return (
     <>

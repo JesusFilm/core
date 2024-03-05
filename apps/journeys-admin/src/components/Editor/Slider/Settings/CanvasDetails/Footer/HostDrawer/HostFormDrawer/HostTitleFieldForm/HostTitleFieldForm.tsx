@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
@@ -19,13 +20,14 @@ export const CREATE_HOST = gql`
 `
 
 export function HostTitleFieldForm(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [hostCreate] = useMutation<CreateHost>(CREATE_HOST)
   const [journeyHostUpdate] = useUpdateJourneyHostMutation()
   const { updateHost } = useHostUpdateMutation()
   const { journey } = useJourney()
 
   const titleSchema = object({
-    hostTitle: string().required('Please enter a host name')
+    hostTitle: string().required(t('Please enter a host name'))
   })
 
   async function handleSubmit(value: string): Promise<void> {

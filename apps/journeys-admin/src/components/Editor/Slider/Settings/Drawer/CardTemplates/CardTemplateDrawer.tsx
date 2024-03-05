@@ -1,4 +1,5 @@
 import Grid from '@mui/material/Grid'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { CardCta } from './Templates/CardCta'

@@ -3,15 +3,6 @@ import noop from 'lodash/noop'
 
 import { AIPrompt } from './AIPrompt'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('AIPrompt', () => {
   it('should validate form on incorrect input', async () => {
     const { getByText, getByRole } = render(

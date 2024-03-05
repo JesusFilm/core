@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { Form, Formik, FormikValues } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -34,6 +35,7 @@ export function LanguageDialog({
   open,
   onClose
 }: LanguageDialogProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneyLanguageUpdate>(
     JOURNEY_LANGUAGE_UPDATE
   )
@@ -54,7 +56,7 @@ export function LanguageDialog({
       })
       onClose()
     } catch (error) {
-      enqueueSnackbar('There was an error updating language', {
+      enqueueSnackbar(t('There was an error updating language'), {
         variant: 'error'
       })
     }
@@ -111,10 +113,10 @@ export function LanguageDialog({
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
-              dialogTitle={{ title: 'Edit Language' }}
+              dialogTitle={{ title: t('Edit Language') }}
               dialogAction={{
                 onSubmit: handleSubmit,
-                closeLabel: 'Cancel'
+                closeLabel: t('Cancel')
               }}
               testId="LanguageDialog"
             >

@@ -4,8 +4,8 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 

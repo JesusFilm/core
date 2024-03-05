@@ -1,9 +1,10 @@
 import { gql, useMutation } from '@apollo/client'
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
+import last from 'lodash/last'
+import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
-import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock, useBlocks } from '../../libs/block'
@@ -72,6 +73,8 @@ export function Card({
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
+  const onFirstStep = activeBlock === treeBlocks[0]
+  const onLastStep = activeBlock === last(treeBlocks)
 
   const cardColor =
     backgroundColor != null
@@ -121,6 +124,7 @@ export function Card({
   // places used:
   // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
   function handleNextNavigationEventCreate(): void {
     const id = uuidv4()
     const stepName = getStepHeading(
@@ -157,12 +161,12 @@ export function Card({
       }
     })
   }
-
   // should always be called with previousActiveBlock()
   // should match with other handlePreviousNavigationEventCreate functions
   // places used:
   // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
   function handlePreviousNavigationEventCreate(): void {
     const id = uuidv4()
     const stepName = getStepHeading(
@@ -203,28 +207,32 @@ export function Card({
   }
   const handleNavigation = (e: MouseEvent): void => {
     if (variant === 'admin') return
-    const view = e.view as unknown as Window
+    const screenWidth = window.innerWidth
     if (rtl) {
-      const divide = view.innerWidth * 0.66
+      const divide = screenWidth * 0.66
       if (e.clientX <= divide) {
-        if (!activeBlock?.locked) {
+        if (!activeBlock?.locked && !onLastStep) {
           handleNextNavigationEventCreate()
           nextActiveBlock()
         }
       } else {
-        handlePreviousNavigationEventCreate()
-        previousActiveBlock()
+        if (!onFirstStep) {
+          handlePreviousNavigationEventCreate()
+          previousActiveBlock()
+        }
       }
     } else {
-      const divide = view.innerWidth * 0.33
+      const divide = screenWidth * 0.33
       if (e.clientX >= divide) {
-        if (!activeBlock?.locked) {
+        if (!activeBlock?.locked && !onLastStep) {
           handleNextNavigationEventCreate()
           nextActiveBlock()
         }
       } else {
-        handlePreviousNavigationEventCreate()
-        previousActiveBlock()
+        if (!onFirstStep) {
+          handlePreviousNavigationEventCreate()
+          previousActiveBlock()
+        }
       }
     }
   }

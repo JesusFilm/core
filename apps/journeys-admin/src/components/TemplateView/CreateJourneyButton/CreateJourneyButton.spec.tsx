@@ -21,15 +21,6 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../Team/TeamSelect/TeamSelect'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()

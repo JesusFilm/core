@@ -1,6 +1,7 @@
 import { ApolloQueryResult } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -41,6 +42,7 @@ export function DefaultMenu({
   template,
   refetch
 }: DefaultMenuProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <NextLink
@@ -53,11 +55,11 @@ export function DefaultMenu({
         legacyBehavior
         prefetch={false}
       >
-        <MenuItem label="Edit" icon={<Edit2Icon color="secondary" />} />
+        <MenuItem label={t('Edit')} icon={<Edit2Icon color="secondary" />} />
       </NextLink>
       {template !== true && (
         <MenuItem
-          label="Access"
+          label={t('Access')}
           icon={<UsersProfiles2Icon color="secondary" />}
           onClick={() => {
             setOpenAccessDialog()
@@ -72,7 +74,7 @@ export function DefaultMenu({
         prefetch={false}
       >
         <MenuItem
-          label="Preview"
+          label={t('Preview')}
           icon={<EyeOpenIcon color="secondary" />}
           openInNew
         />
@@ -90,7 +92,7 @@ export function DefaultMenu({
         refetch={refetch}
       />
       <MenuItem
-        label="Trash"
+        label={t('Trash')}
         icon={<Trash2Icon color="secondary" />}
         onClick={() => {
           setOpenTrashDialog()

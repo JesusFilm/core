@@ -12,8 +12,8 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import type { User } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, Suspense, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
@@ -149,7 +149,10 @@ export function NavigationDrawer({
                   <JourneysIcon />
                 </Badge>
               </ListItemIcon>
-              <ListItemText primary={t('Discover')} />
+              <ListItemText
+                primary={t('Discover')}
+                primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+              />
             </ListItemButton>
           </Tooltip>
         </NextLink>
@@ -161,7 +164,10 @@ export function NavigationDrawer({
             <ListItemIcon>
               <Bag5Icon />
             </ListItemIcon>
-            <ListItemText primary={t('Templates')} />
+            <ListItemText
+              primary={t('Templates')}
+              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            />
           </ListItemButton>
         </NextLink>
         {user?.id != null && (

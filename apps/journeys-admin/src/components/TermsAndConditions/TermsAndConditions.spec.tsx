@@ -14,14 +14,6 @@ jest.mock('next/router', () => ({
 }))
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
 
 describe('TermsAndConditions', () => {
   const push = jest.fn()

@@ -16,15 +16,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('ButtonEdit', () => {
   const props: TreeBlock<ButtonFields> = {
     __typename: 'ButtonBlock',

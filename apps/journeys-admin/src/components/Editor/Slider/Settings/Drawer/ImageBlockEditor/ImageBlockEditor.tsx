@@ -4,8 +4,8 @@ import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
@@ -60,6 +60,7 @@ export function ImageBlockEditor({
   showAdd,
   error
 }: ImageBlockEditorProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [tabValue, setTabValue] = useState(0)
   const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
@@ -85,7 +86,7 @@ export function ImageBlockEditor({
   }
 
   const srcSchema = object().shape({
-    src: string().url('Please enter a valid url').required('Required')
+    src: string().url(t('Please enter a valid url')).required(t('Required'))
   })
 
   const handleSrcChange = async (
@@ -125,8 +126,6 @@ export function ImageBlockEditor({
     await handleSrcChange(src, blurHash, width, height)
     setUnsplashAuthor(unsplashAuthor)
   }
-
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <>
@@ -168,7 +167,7 @@ export function ImageBlockEditor({
           />
           <Tab
             icon={<StarsIcon />}
-            label={<Typography variant="subtitle2">AI</Typography>}
+            label={<Typography variant="subtitle2">{t('AI')}</Typography>}
             {...tabA11yProps('custom', 3)}
           />
         </Tabs>
