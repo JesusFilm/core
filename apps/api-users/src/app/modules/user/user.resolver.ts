@@ -153,7 +153,6 @@ export class UserResolver {
     @CurrentUser() user: User,
     @Args('input') input?: CreateVerificationRequestInput
   ): Promise<boolean> {
-    console.log('input', input)
     if (user == null)
       throw new GraphQLError('User not found', { extensions: { code: '404' } })
 
