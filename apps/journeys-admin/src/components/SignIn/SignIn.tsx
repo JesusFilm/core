@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next'
 
 import logo from '../../../public/logo.svg'
 import { LanguageSwitcher } from '../LanguageSwitcher'
+import { TemplateSnippet } from '../TemplateSnippet'
 
 import { EmailUsedPage } from './EmailUsedPage'
 import { HomePage } from './HomePage'
@@ -63,59 +64,74 @@ export function SignIn(): ReactElement {
       break
   }
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        my: 30
-      }}
-      data-testid="JourneysAdminSignIn"
-    >
-      <Image src={logo} alt="Next Steps" height={41} width={228} />
-      <Card
+    <>
+      <Box
         sx={{
-          width: { xs: '100%', sm: 397 },
-          mt: 10,
-          borderRadius: { xs: 0, sm: 2 }
+          width: '100%',
+          height: '125px',
+          overflow: 'hidden',
+          opacity: '50%'
         }}
       >
-        <CardContent
+        <TemplateSnippet />
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          my: 30
+        }}
+        data-testid="JourneysAdminSignIn"
+      >
+        <Image src={logo} alt="Next Steps" height={41} width={228} />
+        <Card
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 4,
-            p: 6,
-            pt: 7
+            width: { xs: '100%', sm: 397 },
+            mt: 10,
+            borderRadius: { xs: 0, sm: 2 }
           }}
         >
-          {page}
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="center"
-            gap={4}
+          <CardContent
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
+              p: 6,
+              pt: 7
+            }}
           >
-            <Button size="small">
-              <Typography
-                variant="body2"
-                sx={{ color: 'primary.main', cursor: 'pointer' }}
-                component="a"
-                href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
-              >
-                {t('Feedback & Support')}
-              </Typography>
-            </Button>
-            <Button size="small" onClick={() => setOpen(true)}>
-              <Typography variant="body2">{t('Language')}</Typography>
-            </Button>
-          </Stack>
-          {open && (
-            <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
-          )}
-        </CardContent>
-      </Card>
-    </Box>
+            {page}
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="center"
+              gap={4}
+            >
+              <Button size="small">
+                <Typography
+                  variant="body2"
+                  sx={{ color: 'primary.main', cursor: 'pointer' }}
+                  component="a"
+                  href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
+                >
+                  {t('Feedback & Support')}
+                </Typography>
+              </Button>
+              <Button size="small" onClick={() => setOpen(true)}>
+                <Typography variant="body2">{t('Language')}</Typography>
+              </Button>
+            </Stack>
+            {open && (
+              <LanguageSwitcher
+                open={open}
+                handleClose={() => setOpen(false)}
+              />
+            )}
+          </CardContent>
+        </Card>
+      </Box>
+    </>
   )
 }
