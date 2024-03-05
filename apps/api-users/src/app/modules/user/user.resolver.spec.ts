@@ -168,4 +168,22 @@ describe('UserResolver', () => {
       expect(isValidInterOp('1234', '18.225.26.131')).toBe(true)
     })
   })
+
+  describe('createVerificationRequest', () => {
+    it('should create a verification request', async () => {
+      userService.verifyUser.mockImplementation(
+        async () => await Promise.resolve()
+      )
+      expect(
+        await resolver.createVerificationRequest(user, {
+          redirect: '/templates'
+        })
+      ).toBe(true)
+      expect(userService.verifyUser).toHaveBeenCalledWith(
+        user.id,
+        user.email,
+        '/templates'
+      )
+    })
+  })
 })
