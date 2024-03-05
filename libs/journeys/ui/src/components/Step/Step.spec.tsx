@@ -37,15 +37,6 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('next/head', () => {
   return {
     __esModule: true,

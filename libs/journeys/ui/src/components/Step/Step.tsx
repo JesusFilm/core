@@ -1,8 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
-import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '../../libs/block'

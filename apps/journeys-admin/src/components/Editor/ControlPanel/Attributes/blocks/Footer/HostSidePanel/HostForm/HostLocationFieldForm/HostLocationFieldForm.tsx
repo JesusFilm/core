@@ -1,5 +1,5 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 

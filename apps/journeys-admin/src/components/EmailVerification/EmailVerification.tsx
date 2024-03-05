@@ -3,8 +3,8 @@ import Button from '@mui/material/Button'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 

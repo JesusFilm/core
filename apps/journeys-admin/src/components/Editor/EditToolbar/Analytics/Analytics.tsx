@@ -1,8 +1,8 @@
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
 

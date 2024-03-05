@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import reduce from 'lodash/reduce'
+import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import useSWRInfinite from 'swr/infinite'
 
 import {
