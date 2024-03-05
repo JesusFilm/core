@@ -28,94 +28,107 @@ export function TemplateSnippet(): ReactElement {
   const { data } = useJourneyQuery({ id: getTemplateId() ?? '' })
 
   return (
-    <Container
-      sx={{
-        px: { xs: 6, sm: 8 },
-        pt: 10
-      }}
-    >
-      <Stack
-        direction="row"
-        sx={{
-          gap: { xs: 4, sm: 7 }
-        }}
-      >
-        <Box sx={{ flexShrink: 0, width: { xs: 107, sm: 244 } }}>
-          <Stack
-            sx={{
-              position: 'relative',
-              justifyContent: 'center',
-              alignItems: 'center',
-              overflow: 'hidden',
-              width: { xs: 107, sm: 244 },
-              height: { xs: 107, sm: 244 },
-              borderRadius: 3
-            }}
-          >
-            {data?.journey.primaryImageBlock?.src != null ? (
-              <NextImage
-                src={data?.journey.primaryImageBlock.src}
-                alt={data?.journey.primaryImageBlock.alt}
-                placeholder="blur"
-                blurDataURL={data?.journey.primaryImageBlock.blurhash}
-                layout="fill"
-                objectFit="cover"
-                priority
-              />
-            ) : data?.journey != null ? (
-              <GridEmptyIcon fontSize="large" />
-            ) : (
-              <Skeleton
-                data-testid="SnippetImageSkeleton"
-                variant="rectangular"
-                sx={{
-                  width: '100%',
-                  height: '100%'
-                }}
-              />
-            )}
-          </Stack>
-        </Box>
-        <Stack
-          direction="column"
+    <>
+      {data != null && (
+        <Box
           sx={{
             width: '100%',
-            flexShrink: 1
+            height: '125px',
+            overflow: 'hidden',
+            opacity: '50%'
           }}
         >
-          <Typography
-            variant="overline"
+          <Container
             sx={{
-              color: 'secondary.light'
+              px: { xs: 6, sm: 8 },
+              pt: 10
             }}
-            noWrap
           >
-            {data?.journey.createdAt != null ? (
-              intlFormat(parseISO(data?.journey.createdAt), {
-                month: 'long',
-                year: 'numeric'
-              })
-            ) : (
-              <Skeleton sx={{ width: '35%', maxWidth: 150 }} />
-            )}
-          </Typography>
-          <Typography variant="h1" sx={{ pb: 4 }}>
-            {data?.journey.title != null ? (
-              data?.journey.title
-            ) : (
-              <Skeleton
-                data-testid="TemplateSnippetTitleSkeleton"
+            <Stack
+              direction="row"
+              sx={{
+                gap: { xs: 4, sm: 7 }
+              }}
+            >
+              <Box sx={{ flexShrink: 0, width: { xs: 107, sm: 244 } }}>
+                <Stack
+                  sx={{
+                    position: 'relative',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    overflow: 'hidden',
+                    width: { xs: 107, sm: 244 },
+                    height: { xs: 107, sm: 244 },
+                    borderRadius: 3
+                  }}
+                >
+                  {data?.journey.primaryImageBlock?.src != null ? (
+                    <NextImage
+                      src={data?.journey.primaryImageBlock.src}
+                      alt={data?.journey.primaryImageBlock.alt}
+                      placeholder="blur"
+                      blurDataURL={data?.journey.primaryImageBlock.blurhash}
+                      layout="fill"
+                      objectFit="cover"
+                      priority
+                    />
+                  ) : data?.journey != null ? (
+                    <GridEmptyIcon fontSize="large" />
+                  ) : (
+                    <Skeleton
+                      data-testid="SnippetImageSkeleton"
+                      variant="rectangular"
+                      sx={{
+                        width: '100%',
+                        height: '100%'
+                      }}
+                    />
+                  )}
+                </Stack>
+              </Box>
+              <Stack
+                direction="column"
                 sx={{
-                  transform: 'scale(1, 0.8)',
-                  width: '50%',
-                  height: 38,
-                  maxWidth: 400
+                  width: '100%',
+                  flexShrink: 1
                 }}
-              />
-            )}
-          </Typography>
-        </Stack>
-      </Stack>
-    </Container>
+              >
+                <Typography
+                  variant="overline"
+                  sx={{
+                    color: 'secondary.light'
+                  }}
+                  noWrap
+                >
+                  {data?.journey.createdAt != null ? (
+                    intlFormat(parseISO(data?.journey.createdAt), {
+                      month: 'long',
+                      year: 'numeric'
+                    })
+                  ) : (
+                    <Skeleton sx={{ width: '35%', maxWidth: 150 }} />
+                  )}
+                </Typography>
+                <Typography variant="h1" sx={{ pb: 4 }}>
+                  {data?.journey.title != null ? (
+                    data?.journey.title
+                  ) : (
+                    <Skeleton
+                      data-testid="TemplateSnippetTitleSkeleton"
+                      sx={{
+                        transform: 'scale(1, 0.8)',
+                        width: '50%',
+                        height: 38,
+                        maxWidth: 400
+                      }}
+                    />
+                  )}
+                </Typography>
+              </Stack>
+            </Stack>
+          </Container>
+        </Box>
+      )}
+    </>
   )
 }

@@ -4,13 +4,10 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/system/Stack'
-import Image from 'next/image'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import logo from '../../../public/logo.svg'
 import { LanguageSwitcher } from '../LanguageSwitcher'
-import { TemplateSnippet } from '../TemplateSnippet'
 
 import { EmailUsedPage } from './EmailUsedPage'
 import { HomePage } from './HomePage'
@@ -67,16 +64,6 @@ export function SignIn(): ReactElement {
     <>
       <Box
         sx={{
-          width: '100%',
-          height: '125px',
-          overflow: 'hidden',
-          opacity: '50%'
-        }}
-      >
-        <TemplateSnippet />
-      </Box>
-      <Box
-        sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -85,7 +72,6 @@ export function SignIn(): ReactElement {
         }}
         data-testid="JourneysAdminSignIn"
       >
-        <Image src={logo} alt="Next Steps" height={41} width={228} />
         <Card
           sx={{
             width: { xs: '100%', sm: 397 },
