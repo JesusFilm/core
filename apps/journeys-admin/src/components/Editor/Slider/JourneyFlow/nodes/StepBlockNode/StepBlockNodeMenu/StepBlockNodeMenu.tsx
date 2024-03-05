@@ -3,9 +3,9 @@ import Menu from '@mui/material/Menu'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import MoreIcon from '@core/shared/ui/icons/More'
 
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { DeleteBlock } from '../../../../Content/Canvas/QuickControls/DeleteBlock'
 import { DuplicateBlock } from '../../../../Content/Canvas/QuickControls/DuplicateBlock'
 
@@ -44,6 +44,7 @@ export function StepBlockNodeMenu({
           top: -20,
           right: -20
         }}
+        data-testid="edit-step-fab"
       >
         <MoreIcon sx={{ transform: 'rotate(90deg)' }} />
       </Fab>

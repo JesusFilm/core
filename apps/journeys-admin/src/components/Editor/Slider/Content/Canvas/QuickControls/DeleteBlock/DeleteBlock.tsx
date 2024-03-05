@@ -47,6 +47,7 @@ export function DeleteBlock({
     dispatch
   } = useEditor()
   const selectedBlock = block ?? stateSelectedBlock
+
   const label = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const [openDialog, setOpenDialog] = useState(false)
   const handleOpenDialog = (): void => setOpenDialog(true)
@@ -72,7 +73,11 @@ export function DeleteBlock({
         parentBlockId: selectedBlock.parentBlockId
       },
       update(cache, { data }) {
-        if (data?.blockDelete != null && deletedBlockParentOrder != null) {
+        if (
+          data?.blockDelete != null &&
+          deletedBlockParentOrder != null &&
+          block?.id === stateSelectedBlock?.id
+        ) {
           const selected = getSelected({
             parentOrder: deletedBlockParentOrder,
             siblings: data.blockDelete,
