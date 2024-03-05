@@ -136,6 +136,7 @@ export function HostTab(): ReactElement {
                   setOpenHostForm(true)
                 }}
                 actionIcon={<Edit2Icon />}
+                // data-testid="host-select-icon-button"
               />
             </Stack>
           ) : (

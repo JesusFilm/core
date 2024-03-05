@@ -8,7 +8,19 @@ import { ComponentProps } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import {
+  GetAllTeamHosts,
+  GetAllTeamHostsVariables
+} from '../../../../../../../../__generated__/GetAllTeamHosts'
+import {
+  GetUserTeamsAndInvites,
+  GetUserTeamsAndInvites_userTeams as UserTeam
+} from '../../../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
+import {
+  UpdateJourneyHost,
+  UpdateJourneyHostVariables
+} from '../../../../../../../../__generated__/UpdateJourneyHost'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { GET_CURRENT_USER } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { UPDATE_JOURNEY_HOST } from '../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
@@ -24,13 +36,32 @@ const Demo: Meta<typeof HostTab> = {
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab'
 }
 
+const user = {
+  id: 'userId',
+  email: 'admin@email.com'
+}
+
+const userTeam: UserTeam = {
+  id: 'teamId',
+  __typename: 'UserTeam',
+  role: UserTeamRole.manager,
+  user: {
+    __typename: 'User',
+    email: user.email,
+    firstName: 'User',
+    id: user.id,
+    imageUrl: 'imageURL',
+    lastName: '1'
+  }
+}
+
 const defaultHost = {
   id: 'hostId',
   __typename: 'Host' as const,
   teamId: 'teamId',
   title: 'Cru International',
-  location: null,
-  src1: null,
+  location: 'Florida, USA',
+  src1: 'https://tinyurl.com/3bxusmyb',
   src2: null
 }
 
@@ -38,6 +69,8 @@ const journey = {
   __typename: 'Journey',
   id: 'journeyId',
   seoTitle: 'My awesome journey',
+  host: defaultHost,
+  team: { id: userTeam.id, title: 'My team' },
   language: {
     __typename: 'Language',
     id: '529',
@@ -48,15 +81,8 @@ const journey = {
         __typename: 'Translation'
       }
     ]
-  },
-  team: { __typename: 'Team', id: 'teamId', title: 'My Team' },
-  host: defaultHost
+  }
 } as unknown as Journey
-
-const user = {
-  id: 'userId',
-  email: 'admin@email.com'
-}
 
 const userMock = {
   request: {
@@ -68,44 +94,34 @@ const userMock = {
     }
   }
 }
-const userTeamMock = {
+const getUserTeamMock: MockedResponse<GetUserTeamsAndInvites> = {
   request: {
     query: GET_USER_TEAMS_AND_INVITES,
     variables: {
-      teamId: 'teamId',
+      teamId: userTeam.id,
       where: { role: [UserTeamRole.manager, UserTeamRole.member] }
     }
   },
   result: {
     data: {
-      userTeams: [
-        {
-          id: 'teamId',
-          __typename: 'UserTeam',
-          role: UserTeamRole.manager,
-          user: {
-            __typename: 'User',
-            email: user.email,
-            firstName: 'User',
-            id: user.id,
-            imageUrl: 'imageURL',
-            lastName: '1'
-          }
-        }
-      ],
+      userTeams: [userTeam],
       userTeamInvites: []
     }
   }
 }
-const teamHostsMock = {
+const getTeamHostsMock: MockedResponse<
+  GetAllTeamHosts,
+  GetAllTeamHostsVariables
+> = {
   request: {
     query: GET_ALL_TEAM_HOSTS,
-    variables: { teamId: journey?.team?.id }
+    variables: { teamId: journey?.team?.id ?? '' }
   },
   result: {
     data: {
       hosts: [
         {
+          __typename: 'Host',
           id: '1',
           location: '',
           src1: null,
@@ -113,6 +129,7 @@ const teamHostsMock = {
           title: `John "The Rock" Geronimo`
         },
         {
+          __typename: 'Host',
           id: '2',
           location: 'Auckland, New Zealand',
           src1: null,
@@ -120,6 +137,7 @@ const teamHostsMock = {
           title: 'Jian Wei'
         },
         {
+          __typename: 'Host',
           id: '3',
           location: 'Auckland, New Zealand',
           src1: null,
@@ -127,6 +145,7 @@ const teamHostsMock = {
           title: 'Nisal Cottingham'
         },
         {
+          __typename: 'Host',
           id: '4',
           location: 'Tokyo, Japan',
           src1: 'https://tinyurl.com/3bxusmyb',
@@ -138,7 +157,10 @@ const teamHostsMock = {
   }
 }
 
-const journeyHostMock = {
+const updateJourneyHostMock: MockedResponse<
+  UpdateJourneyHost,
+  UpdateJourneyHostVariables
+> = {
   request: {
     query: UPDATE_JOURNEY_HOST,
     variables: {
@@ -151,8 +173,10 @@ const journeyHostMock = {
   result: {
     data: {
       journeyUpdate: {
+        __typename: 'Journey',
         id: journey.id,
         host: {
+          __typename: 'Host',
           id: defaultHost.id
         }
       }
@@ -180,7 +204,7 @@ const Template: StoryObj<
 export const Default = {
   ...Template,
   args: {
-    mocks: [userMock, userTeamMock, teamHostsMock],
+    mocks: [userMock, getUserTeamMock, getTeamHostsMock],
     journey: { ...journey, host: null }
   }
 }
@@ -220,10 +244,10 @@ export const HostListTab = {
   }
 }
 
-export const HostFormTab = {
+export const HostFormTabEmpty = {
   ...Template,
   args: {
-    mocks: [...Default.args.mocks, journeyHostMock],
+    mocks: [...Default.args.mocks, updateJourneyHostMock],
     journey: { ...journey, host: null }
   },
   play: async () => {
@@ -241,6 +265,30 @@ export const HostFormTab = {
     await userEvent.click(screen.getByRole('button', { name: 'Create New' }))
     await waitFor(async () => {
       await expect(screen.getByText('Host Name')).toBeInTheDocument()
+    })
+  }
+}
+
+export const HostFormTabFilled = {
+  ...Template,
+  args: {
+    mocks: [...Default.args.mocks, updateJourneyHostMock],
+    journey
+  },
+  play: async () => {
+    await waitFor(async () => {
+      await expect(
+        screen.getByRole('button', { name: 'Cru International Florida, USA' })
+      ).not.toBeDisabled()
+    })
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Cru International Florida, USA' })
+    )
+    await waitFor(async () => {
+      await expect(screen.getByText('Host Name')).toBeInTheDocument()
+      await expect(
+        screen.getByRole('button', { name: 'Clear' })
+      ).toBeInTheDocument()
     })
   }
 }

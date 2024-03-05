@@ -5,24 +5,24 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import {
+  GetAllTeamHosts,
+  GetAllTeamHostsVariables
+} from '../../../../../../../../__generated__/GetAllTeamHosts'
+import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
+import {
+  UpdateJourneyHost,
+  UpdateJourneyHostVariables
+} from '../../../../../../../../__generated__/UpdateJourneyHost'
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { UPDATE_JOURNEY_HOST } from '../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { GET_ALL_TEAM_HOSTS, HostTab } from './HostTab'
-import {
-  GetAllTeamHosts,
-  GetAllTeamHostsVariables
-} from '../../../../../../../../__generated__/GetAllTeamHosts'
-import {
-  UpdateJourneyHost,
-  UpdateJourneyHostVariables
-} from '../../../../../../../../__generated__/UpdateJourneyHost'
 
 const user1 = { id: 'userId', email: 'admin@email.com' }
 
@@ -222,7 +222,7 @@ describe('HostTab', () => {
   })
 
   it('should disable editing hosts if no users have access in team', async () => {
-    const { getAllByRole, getAllByText } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
           {
@@ -245,11 +245,9 @@ describe('HostTab', () => {
     )
 
     await waitFor(() => {
+      expect(getByRole('button', { name: 'Select a Host' })).toBeDisabled()
       expect(
-        getAllByRole('button', { name: 'Select a Host' })[0]
-      ).toBeDisabled()
-      expect(
-        getAllByText('Cannot edit hosts for this old journey')[0]
+        getByText('Cannot edit hosts for this old journey')
       ).toBeInTheDocument()
     })
   })
@@ -320,7 +318,7 @@ describe('HostTab', () => {
     })
   })
 
-  it('should navigate the edit host panel on host selection', async () => {
+  it('should navigate to the edit host panel on host selection', async () => {
     const result = jest.fn(() => ({
       data: {
         journeyUpdate: {
@@ -332,7 +330,7 @@ describe('HostTab', () => {
       }
     }))
 
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
           getUserTeamMock,
@@ -367,8 +365,9 @@ describe('HostTab', () => {
     fireEvent.click(getByRole('button', { name: 'Select a Host' }))
 
     await waitFor(() => {
-      expect(getByRole('button', { name: 'Host1' })).toBeInTheDocument()
+      expect(getByText('Hosts')).toBeInTheDocument()
     })
+    expect(getByRole('button', { name: 'Host1' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Host1' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -421,7 +420,7 @@ describe('HostTab', () => {
       }
     }))
 
-    const { getAllByRole, getAllByText } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
           getUserTeamMock,
@@ -460,10 +459,15 @@ describe('HostTab', () => {
     )
 
     await waitFor(() => {
-      expect(getAllByText('Edit Author')[0]).toBeInTheDocument()
+      expect(getByText('Cru International')).toBeInTheDocument()
+    })
+    fireEvent.click(getByText('Cru International'))
+
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Clear' })).toBeInTheDocument()
     })
 
-    fireEvent.click(getAllByRole('button', { name: 'Clear' })[0])
+    fireEvent.click(getByRole('button', { name: 'Clear' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
 
