@@ -48,7 +48,7 @@ export function DeleteBlock({
   } = useEditor()
   const selectedBlock = block ?? stateSelectedBlock
 
-  const label = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
+  const blockType = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const [openDialog, setOpenDialog] = useState(false)
   const handleOpenDialog = (): void => setOpenDialog(true)
   const handleCloseDialog = (): void => {
@@ -131,16 +131,16 @@ export function DeleteBlock({
           aria-haspopup="true"
           aria-expanded="true"
           disabled={disableAction}
-          onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
+          onClick={blockType === 'Card' ? handleOpenDialog : handleDeleteBlock}
         >
           <Trash2Icon />
         </IconButton>
       ) : (
         <MenuItem
-          label={`Delete ${label}`}
+          label={`Delete ${blockType}`}
           icon={<Trash2Icon />}
           disabled={disableAction}
-          onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
+          onClick={blockType === 'Card' ? handleOpenDialog : handleDeleteBlock}
         />
       )}
     </>
