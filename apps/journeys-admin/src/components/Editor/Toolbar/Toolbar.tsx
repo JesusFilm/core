@@ -41,7 +41,7 @@ export function Toolbar(): ReactElement {
         }}
       />
       <NextLink href="/" passHref legacyBehavior>
-        <IconButton>
+        <IconButton data-testid="toolbar-back-button">
           <ChevronLeftIcon />
         </IconButton>
       </NextLink>
@@ -61,7 +61,7 @@ export function Toolbar(): ReactElement {
             ) : (
               <Image
                 src={journey.primaryImageBlock.src}
-                alt={journey.primaryImageBlock.src}
+                alt={journey.primaryImageBlock.alt}
                 width={50}
                 height={50}
                 style={{
