@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
 import {
   JourneyStatus,
@@ -11,14 +12,16 @@ import { JourneyFields } from '../../libs/JourneyProvider/__generated__/JourneyF
 
 import { StepHeader } from './StepHeader'
 
-jest.mock('react-i18next', () => ({
+jest.mock('next/router', () => ({
   __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
+  useRouter: jest.fn()
 }))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
+mockedUseRouter.mockReturnValue({
+  query: {}
+} as unknown as NextRouter)
 
 describe('StepHeader', () => {
   const journey: JourneyFields = {
@@ -172,5 +175,18 @@ describe('StepHeader', () => {
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(getByText('Team Title')).toBeInTheDocument())
+  })
+
+  it('should hide more info button if noi is in query', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { noi: '' }
+    } as unknown as NextRouter)
+
+    const { getByTestId, queryByTestId } = render(<StepHeader />)
+    await waitFor(() =>
+      expect(getByTestId('pagination-bullets')).toBeInTheDocument()
+    )
+
+    expect(queryByTestId('more-info')).not.toBeInTheDocument()
   })
 })

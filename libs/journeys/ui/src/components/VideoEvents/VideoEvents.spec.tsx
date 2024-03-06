@@ -668,7 +668,7 @@ describe('VideoEvents', () => {
               variables: {
                 input: {
                   ...input,
-                  position: 100
+                  position: 102
                 }
               }
             },
@@ -801,7 +801,7 @@ describe('VideoEvents', () => {
               variables: {
                 input: {
                   ...input,
-                  position: 100
+                  position: 102
                 }
               }
             },
@@ -901,7 +901,7 @@ describe('VideoEvents', () => {
           event: 'video_complete',
           eventId: 'uuid',
           blockId: 'video0.id',
-          videoPosition: 100,
+          videoPosition: 102,
           videoTitle: 'video.title',
           videoId: 'video.id'
         }

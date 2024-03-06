@@ -146,7 +146,7 @@ describe('OnboardingPanel', () => {
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
-        `/journeys/${variables.journeyId}/edit`,
+        `/journeys/${variables.journeyId}`,
         undefined,
         {
           shallow: true

@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import last from 'lodash/last'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -38,6 +39,7 @@ export function DuplicateBlock({
   disabled = false,
   block
 }: DuplicateBlockProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
   const {
     state: { selectedBlock: stateSelectedBlock },
@@ -119,10 +121,15 @@ export function DuplicateBlock({
         }
       }
     }
-    enqueueSnackbar(`${blockType} Duplicated`, {
-      variant: 'success',
-      preventDuplicate: true
-    })
+    enqueueSnackbar(
+      t('{{ blockLabel }} Duplicated', {
+        blockLabel: blockType === 'Card' ? t('Card') : t('Block')
+      }),
+      {
+        variant: 'success',
+        preventDuplicate: true
+      }
+    )
   }
 
   return (
@@ -139,7 +146,9 @@ export function DuplicateBlock({
         </IconButton>
       ) : (
         <MenuItem
-          label={`Duplicate ${blockType}`}
+          label={t('Duplicate {{ blockLabel }}', {
+            blockLabel: blockType === 'Card' ? t('Card') : t('Block')
+          })}
           icon={<CopyLeftIcon color="inherit" />}
           disabled={disableAction}
           onClick={handleDuplicateBlock}

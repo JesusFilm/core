@@ -11,15 +11,7 @@ import { publishedJourney } from '../../journeyListData'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
 import { JourneyCardInfo } from '.'
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
+import '../../../../../test/i18n'
 
 describe('JourneyCardInfo', () => {
   it('should show the langauge name', () => {

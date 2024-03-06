@@ -5,6 +5,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
+import '../../../../../test/i18n'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 

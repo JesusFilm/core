@@ -9,15 +9,6 @@ import { JourneyFields as Journey } from '../../../../../../../../__generated__/
 
 import { Chat } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('Chat', () => {
   it('should set the initial values', () => {
     const journey = {

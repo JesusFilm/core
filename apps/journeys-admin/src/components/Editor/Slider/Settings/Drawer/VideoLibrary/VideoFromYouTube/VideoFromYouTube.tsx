@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import reduce from 'lodash/reduce'
+import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import useSWRInfinite from 'swr/infinite'
 
 import {
@@ -120,7 +120,7 @@ export function VideoFromYouTube({
       <VideoSearch
         value={url}
         onChange={setUrl}
-        label="Paste any YouTube Link"
+        label={t('Paste any YouTube Link')}
         icon="link"
       />
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>

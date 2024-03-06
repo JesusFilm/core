@@ -14,15 +14,6 @@ jest.mock('uuid', () => ({
   v4: jest.fn()
 }))
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('HostFormDrawer', () => {
   const defaultHost = {
     id: 'hostId',

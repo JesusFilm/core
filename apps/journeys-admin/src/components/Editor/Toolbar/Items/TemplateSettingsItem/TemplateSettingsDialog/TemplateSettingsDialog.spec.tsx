@@ -13,15 +13,7 @@ import {
   JOURNEY_FEATURE_UPDATE,
   TemplateSettingsDialog
 } from './TemplateSettingsDialog'
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
+import '../../../../../../test/i18n'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

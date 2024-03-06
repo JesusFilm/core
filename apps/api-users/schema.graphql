@@ -22,17 +22,29 @@ type User
   emailVerified: Boolean!
 }
 
+input CreateVerificationRequestInput {
+  redirect: String
+}
+
+input MeInput {
+  redirect: String
+}
+
 type Query {
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
 }
 
 extend type Query {
-  me: User
+  me(input: MeInput): User
+  user(id: ID!): User
+  userByEmail(email: String!): User
 }
 
 extend type Mutation {
   userImpersonate(email: String!): String
+  createVerificationRequest(input: CreateVerificationRequestInput): Boolean
+  validateEmail(email: String!, token: String!): User
 }
 
 extend type Language

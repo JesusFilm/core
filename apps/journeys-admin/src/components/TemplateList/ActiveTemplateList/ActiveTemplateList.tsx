@@ -4,9 +4,9 @@ import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
@@ -167,13 +167,13 @@ export function ActiveTemplateList({
           open={archiveDialogOpen}
           onClose={handleClose}
           dialogTitle={{
-            title: 'Archive Templates',
+            title: t('Archive Templates'),
             closeButton: true
           }}
           dialogAction={{
             onSubmit: handleArchiveSubmit,
-            submitLabel: 'Archive',
-            closeLabel: 'Cancel'
+            submitLabel: t('Archive'),
+            closeLabel: t('Cancel')
           }}
         >
           <Typography>

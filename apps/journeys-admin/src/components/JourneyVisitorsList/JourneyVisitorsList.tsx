@@ -4,8 +4,8 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 
@@ -71,9 +71,13 @@ export function JourneyVisitorsList({
 
         {hasVisitors && visitorsCount != null && (
           <Typography>
-            {`${t('Showing')} ${visitorEdges?.length as unknown as string} ${t(
-              'visitors out of'
-            )} ${visitorsCount}`}
+            {t(
+              'Showing {{ shownVisitors }} visitors out of {{ visitorsCount }}',
+              {
+                shownVisitors: visitorEdges?.length as unknown as string,
+                visitorsCount
+              }
+            )}
           </Typography>
         )}
 

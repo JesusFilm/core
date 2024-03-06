@@ -2,8 +2,8 @@ import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -86,7 +86,7 @@ export function AddUserSection({
           }}
           onClick={handleClick}
         >
-          <Typography variant="body2">{selectedInviteMethod}</Typography>
+          <Typography variant="body2">{t(selectedInviteMethod)}</Typography>
         </Button>
         <Menu
           id="menu"
@@ -96,12 +96,12 @@ export function AddUserSection({
         >
           <MenuItem
             icon={<EmailIcon fontSize="small" />}
-            label="Email"
+            label={t('Email')}
             onClick={() => handleMenuItemClick('Email')}
           />
           <MenuItem
             icon={<LinkIcon fontSize="small" />}
-            label="Link"
+            label={t('Link')}
             onClick={() => handleMenuItemClick('Link')}
           />
         </Menu>

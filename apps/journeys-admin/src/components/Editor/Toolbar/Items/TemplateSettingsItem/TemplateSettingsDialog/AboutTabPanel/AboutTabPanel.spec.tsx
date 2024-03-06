@@ -6,15 +6,6 @@ import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
@@ -67,7 +58,7 @@ describe('AboutTabPanel', () => {
     )
   })
 
-  it('should render strategy section preview', async () => {
+  it('should render strategy section preview with old canva links', async () => {
     const { queryByText, getByTestId } = render(
       <MockedProvider>
         <FormikProvider
@@ -76,6 +67,29 @@ describe('AboutTabPanel', () => {
               values: {
                 creatorDescription: '',
                 strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view'
+              }
+            } as unknown as FormikContextType<TemplateSettingsFormValues>
+          }
+        >
+          <AboutTabPanel />
+        </FormikProvider>
+      </MockedProvider>
+    )
+
+    expect(queryByText('Strategy')).not.toBeInTheDocument()
+    expect(getByTestId('strategy-iframe')).toBeInTheDocument()
+  })
+
+  it('should render strategy section preview with new canva links', async () => {
+    const { queryByText, getByTestId } = render(
+      <MockedProvider>
+        <FormikProvider
+          value={
+            {
+              values: {
+                creatorDescription: '',
+                strategySlug:
+                  'https://www.canva.com/design/DAF9QMJYu1Y/XmioFIQOATVa-lXCEYucmg/view'
               }
             } as unknown as FormikContextType<TemplateSettingsFormValues>
           }

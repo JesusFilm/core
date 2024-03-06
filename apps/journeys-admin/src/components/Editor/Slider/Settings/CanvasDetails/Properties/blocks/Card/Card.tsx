@@ -138,10 +138,10 @@ export function Card({
         name={t('Style')}
         value={
           themeMode == null
-            ? 'Default'
+            ? t('Default')
             : themeMode === ThemeMode.light
-            ? 'Light'
-            : 'Dark'
+            ? t('Light')
+            : t('Dark')
         }
       >
         <CardStyling />

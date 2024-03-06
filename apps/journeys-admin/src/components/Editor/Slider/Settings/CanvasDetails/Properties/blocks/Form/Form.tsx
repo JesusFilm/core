@@ -1,5 +1,5 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -22,7 +22,7 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${id}-form-action`
     })
-  }, [dispatch, id])
+  }, [dispatch, id, t])
 
   return (
     <>

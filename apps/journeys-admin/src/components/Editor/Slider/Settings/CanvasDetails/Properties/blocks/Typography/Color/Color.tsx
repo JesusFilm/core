@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -25,6 +26,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
 `
 
 export function Color(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateColor>(
     TYPOGRAPHY_BLOCK_UPDATE_COLOR
   )
@@ -57,17 +59,17 @@ export function Color(): ReactElement {
   const options = [
     {
       value: TypographyColor.primary,
-      label: 'Primary',
+      label: t('Primary'),
       icon: <ColorDisplayIcon color={TypographyColor.primary} />
     },
     {
       value: TypographyColor.secondary,
-      label: 'Secondary',
+      label: t('Secondary'),
       icon: <ColorDisplayIcon color={TypographyColor.secondary} />
     },
     {
       value: TypographyColor.error,
-      label: 'Error',
+      label: t('Error'),
       icon: <ColorDisplayIcon color={TypographyColor.error} />
     }
   ]

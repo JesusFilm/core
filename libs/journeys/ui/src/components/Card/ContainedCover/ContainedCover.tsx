@@ -199,7 +199,8 @@ export function ContainedCover({
           width: '100%',
           height: { xs: hasFullscreenVideo ? '100%' : undefined, sm: '100%' },
           justifyContent: { xs: 'flex-end', sm: 'center' },
-          alignItems: { sm: rtl ? 'flex-start' : 'flex-end' }
+          alignItems: { sm: rtl ? 'flex-start' : 'flex-end' },
+          boxSizing: 'content-box'
         }}
       >
         {children.length !== 0 ? (

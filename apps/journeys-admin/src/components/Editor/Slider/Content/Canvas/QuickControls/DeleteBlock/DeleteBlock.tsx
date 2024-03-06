@@ -1,9 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -39,6 +39,7 @@ export function DeleteBlock({
   disabled = false,
   block
 }: DeleteBlockProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
@@ -95,28 +96,26 @@ export function DeleteBlock({
     handleCloseDialog()
 
     deletedBlockType !== 'StepBlock'
-      ? enqueueSnackbar('Block Deleted', {
+      ? enqueueSnackbar(t('Block Deleted'), {
           variant: 'success',
           preventDuplicate: true
         })
-      : enqueueSnackbar('Card Deleted', {
+      : enqueueSnackbar(t('Card Deleted'), {
           variant: 'success',
           preventDuplicate: true
         })
   }
-
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <>
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
-        dialogTitle={{ title: 'Delete Card?' }}
+        dialogTitle={{ title: t('Delete Card?') }}
         dialogAction={{
           onSubmit: handleDeleteBlock,
-          submitLabel: 'Delete',
-          closeLabel: 'Cancel'
+          submitLabel: t('Delete'),
+          closeLabel: t('Cancel')
         }}
       >
         <Typography>
@@ -137,7 +136,9 @@ export function DeleteBlock({
         </IconButton>
       ) : (
         <MenuItem
-          label={`Delete ${blockType}`}
+          label={t('Delete {{ label }}', {
+            label: blockType === 'Card' ? t('Card') : t('Block')
+          })}
           icon={<Trash2Icon />}
           disabled={disableAction}
           onClick={blockType === 'Card' ? handleOpenDialog : handleDeleteBlock}

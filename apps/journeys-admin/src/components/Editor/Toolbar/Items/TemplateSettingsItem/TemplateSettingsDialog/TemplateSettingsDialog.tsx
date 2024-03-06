@@ -6,9 +6,9 @@ import Tabs from '@mui/material/Tabs'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik } from 'formik'
 import omit from 'lodash/omit'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -42,7 +42,7 @@ export function TemplateSettingsDialog({
   onClose
 }: TemplateSettingsFormProp): ReactElement {
   const [tab, setTab] = useState(0)
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey } = useJourney()
   const [journeySettingsUpdate] = useJourneyUpdateMutation()
@@ -55,7 +55,7 @@ export function TemplateSettingsDialog({
       .test('valid-embed-url', t('Invalid embed link'), (value) => {
         if (value == null) return true
         const canvaRegex =
-          /^https:\/\/www\.canva\.com\/design\/[A-Za-z0-9]+\/(view|watch)$/
+          /^https:\/\/www\.canva\.com\/design\/[a-zA-Z0-9/-]+\/(view|watch)$/
 
         const googleSlidesRegex =
           /^https:\/\/docs\.google\.com\/presentation\/d\/e\/[A-Za-z0-9-_]+\/pub\?(start=true|start=false)&(loop=true|loop=false)&delayms=\d+$/
@@ -116,7 +116,7 @@ export function TemplateSettingsDialog({
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
           enqueueSnackbar(
-            'Field update failed. Reload the page or try again.',
+            t('Field update failed. Reload the page or try again.'),
             {
               variant: 'error',
               preventDuplicate: true

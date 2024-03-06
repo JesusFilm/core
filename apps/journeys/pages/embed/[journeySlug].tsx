@@ -83,14 +83,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
       `}</style>
       <JourneyProvider value={{ journey, variant: 'embed' }}>
         <ThemeProvider {...theme} rtl={rtl} locale={locale}>
-          {journey.blocks != null && (
-            <EmbeddedPreview
-              blocks={transformer(journey.blocks)}
-              themeMode={theme.themeMode}
-              rtl={rtl}
-              locale={locale}
-            />
-          )}
+          <EmbeddedPreview blocks={transformer(journey.blocks ?? [])} />
         </ThemeProvider>
       </JourneyProvider>
     </>
@@ -146,9 +139,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
     query: GET_JOURNEY_SLUGS
   })
 
-  const paths = data.journeys.map(({ slug: journeySlug }) => ({
-    params: { journeySlug }
-  }))
+  const paths = data.journeys
+    .filter(({ slug: journeySlug }) => journeySlug.length > 0)
+    .map(({ slug: journeySlug }) => ({
+      params: { journeySlug }
+    }))
 
   return {
     paths,

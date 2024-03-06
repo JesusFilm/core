@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 function VideosSubHeroStats(): ReactElement {
   const { t } = useTranslation('apps-watch')

@@ -1,8 +1,8 @@
 import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -60,7 +60,7 @@ export function RestoreJourneyDialog({
     try {
       await restoreJourney()
       handleClose()
-      enqueueSnackbar('Journey Restored', {
+      enqueueSnackbar(t('Journey Restored'), {
         variant: 'success',
         preventDuplicate: true
       })
@@ -77,11 +77,11 @@ export function RestoreJourneyDialog({
     <Dialog
       open={open}
       onClose={handleClose}
-      dialogTitle={{ title: 'Restore Journey?', closeButton: true }}
+      dialogTitle={{ title: t('Restore Journey?'), closeButton: true }}
       dialogAction={{
         onSubmit: handleRestore,
-        submitLabel: 'Restore',
-        closeLabel: 'Cancel'
+        submitLabel: t('Restore'),
+        closeLabel: t('Cancel')
       }}
       testId="RestoreJourneyDialog"
     >
