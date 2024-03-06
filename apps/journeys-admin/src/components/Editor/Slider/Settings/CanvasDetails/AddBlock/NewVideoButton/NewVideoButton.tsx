@@ -28,6 +28,7 @@ export const VIDEO_BLOCK_CREATE = gql`
 export function NewVideoButton({
   disabled = false
 }: NewVideoButtonProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
