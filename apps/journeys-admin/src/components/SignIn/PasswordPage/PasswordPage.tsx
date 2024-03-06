@@ -41,12 +41,13 @@ export function PasswordPage({
   async function handleLogin(values, { setFieldError }): Promise<void> {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password)
-      console.log(router)
-      console.log('routerasPath:', router.asPath)
-      await router.push({
-        pathname: '/',
-        query: router.asPath
-      })
+      const redirect =
+        router.query != null
+          ? new URL(
+              `${window.location.origin}${router.query.redirect as string}`
+            )
+          : '/'
+      await router.push(redirect)
     } catch (error) {
       if (error.code === 'auth/wrong-password') {
         setFieldError(
