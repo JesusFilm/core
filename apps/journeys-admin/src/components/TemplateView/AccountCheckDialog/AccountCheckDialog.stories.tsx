@@ -14,7 +14,7 @@ const AccountCheckDialogStory: Meta<typeof AccountCheckDialog> = {
   title: 'Journeys-Admin/TemplateView/AccountCheckDialog'
 }
 
-const AccountCheckDialogComponent = (args): ReactElement => {
+const AccountCheckDialogComponent = (): ReactElement => {
   const [open, setOpen] = useState(true)
   return (
     <AccountCheckDialog
@@ -26,8 +26,8 @@ const AccountCheckDialogComponent = (args): ReactElement => {
 }
 
 const Template: StoryObj<ComponentProps<typeof AccountCheckDialog>> = {
-  render: (args) => {
-    return <AccountCheckDialogComponent args={args} />
+  render: () => {
+    return <AccountCheckDialogComponent />
   }
 }
 

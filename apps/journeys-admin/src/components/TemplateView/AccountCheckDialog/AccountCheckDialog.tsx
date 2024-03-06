@@ -20,7 +20,7 @@ export function AccountCheckDialog({
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <Dialog open={open} onClose={onClose}>
-      <Stack spacing={2} p={4}>
+      <Stack spacing={2} p={4} sx={{ alignItems: 'center' }}>
         <Typography>
           {t('To use this template you need to have a registered account.')}
         </Typography>
