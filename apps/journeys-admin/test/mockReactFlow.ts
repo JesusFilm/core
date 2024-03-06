@@ -2,7 +2,7 @@
 // this implementation of ResizeObserver and DOMMatrixReadOnly
 // Documentation: https://reactflow.dev/learn/advanced-use/testing#using-jest
 
-const noop = (): undefined => undefined
+import noop from 'lodash/noop'
 
 class ResizeObserver {
   callback: globalThis.ResizeObserverCallback
