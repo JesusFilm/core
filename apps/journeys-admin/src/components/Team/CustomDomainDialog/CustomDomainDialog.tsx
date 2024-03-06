@@ -2,6 +2,8 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
+import MenuItem from '@mui/material/MenuItem'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
@@ -17,6 +19,8 @@ import { Dialog } from '@core/shared/ui/Dialog/Dialog'
 import Check from '@core/shared/ui/icons/Check'
 import CopyLeft from '@core/shared/ui/icons/CopyLeft'
 
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { useCustomDomain } from '../CustomDomainProvider'
 
 interface CustomDomainDialogProps {
@@ -30,6 +34,11 @@ export function CustomDomainDialog({
 }: CustomDomainDialogProps): ReactElement {
   // TODO: state changes replaced with network calls
   const { customDomain, setCustomDomain } = useCustomDomain()
+
+  const { data } = useAdminJourneysQuery({
+    status: [JourneyStatus.draft, JourneyStatus.published],
+    useLastActiveTeamId: true
+  })
 
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
@@ -50,12 +59,23 @@ export function CustomDomainDialog({
   }
 
   async function handleSubmit(value, { resetForm }): Promise<void> {
+    console.log('here')
+    console.log(value)
     if (customDomain != null) {
       setCustomDomain(null)
       resetForm()
     } else {
       setCustomDomain(value.domainName)
     }
+    enqueueSnackbar('Custom domain updated', {
+      variant: 'success',
+      preventDuplicate: false
+    })
+  }
+
+  async function handleOnChange(e: SelectChangeEvent): Promise<void> {
+    console.log('here')
+    console.log(e.target.value)
     enqueueSnackbar('Custom domain updated', {
       variant: 'success',
       preventDuplicate: false
@@ -105,6 +125,28 @@ export function CustomDomainDialog({
                   }}
                 />
               </Stack>
+              {customDomain != null && customDomain !== '' && (
+                <Stack spacing={4}>
+                  <Typography variant="subtitle1">
+                    {t('Default Journey')}
+                  </Typography>
+                  <Stack direction="row" justifyContent="space-between">
+                    <Select
+                      fullWidth
+                      id="defaultJourney"
+                      name="defaultJourney"
+                      value={values.defaultJourney}
+                      onChange={handleOnChange}
+                    >
+                      {data?.journeys.map((journey) => (
+                        <MenuItem value={journey.id} key={journey.id}>
+                          {journey.title}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </Stack>
+                </Stack>
+              )}
               {customDomain != null && customDomain !== '' && (
                 <Stack spacing={4}>
                   <Stack direction="row" justifyContent="space-between">
