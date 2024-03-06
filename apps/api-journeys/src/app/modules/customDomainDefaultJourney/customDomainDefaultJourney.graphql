@@ -1,0 +1,26 @@
+type CustomDomainDefaultJourney {
+  id: ID!
+  customDomainId: ID!
+  journeyId: ID!
+  order: Int!
+}
+
+input CustomDomainDefaultJourneyInput {
+  journeyId: ID!
+  order: Int
+}
+
+extend type Query {
+  customDomainDefaultJourney(id: ID!): CustomDomainDefaultJourney
+}
+
+extend type Mutation {
+  customDomainDefaultJourneyCreate(
+    input: CustomDomainDefaultJourneyInput!
+  ): CustomDomainDefaultJourney!
+  customDomainDefaultJourneyUpdate(
+    id: ID!
+    input: CustomDomainDefaultJourneyInput!
+  ): CustomDomainDefaultJourney!
+  customDomainDefaultJourneyDelete(id: ID!): CustomDomainDefaultJourney!
+}

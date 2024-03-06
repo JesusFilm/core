@@ -462,6 +462,16 @@ export class ChatButtonUpdateInput {
     platform?: Nullable<ChatPlatform>;
 }
 
+export class CustomDomainCreateInput {
+    hostName: string;
+    defaultJourneysOnly: boolean;
+}
+
+export class CustomDomainDefaultJourneyInput {
+    journeyId: string;
+    order?: Nullable<number>;
+}
+
 export class ButtonClickEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -801,6 +811,10 @@ export abstract class IQuery {
 
     abstract block(id: string): Block | Promise<Block>;
 
+    abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
+
+    abstract customDomainDefaultJourney(id: string): Nullable<CustomDomainDefaultJourney> | Promise<Nullable<CustomDomainDefaultJourney>>;
+
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
@@ -1046,6 +1060,22 @@ export class ChatButton {
     id: string;
     link?: Nullable<string>;
     platform?: Nullable<ChatPlatform>;
+}
+
+export class CustomDomain {
+    __typename?: 'CustomDomain';
+    id: string;
+    hostName: string;
+    teamId: string;
+    defaultJourneysOnly: boolean;
+}
+
+export class CustomDomainDefaultJourney {
+    __typename?: 'CustomDomainDefaultJourney';
+    id: string;
+    customDomainId: string;
+    journeyId: string;
+    order: number;
 }
 
 export class ButtonClickEvent implements Event {
@@ -1481,6 +1511,16 @@ export abstract class IMutation {
     abstract chatButtonUpdate(id: string, journeyId: string, input: ChatButtonUpdateInput): ChatButton | Promise<ChatButton>;
 
     abstract chatButtonRemove(id: string): ChatButton | Promise<ChatButton>;
+
+    abstract customDomainCreate(teamId: string, input: CustomDomainCreateInput): CustomDomain | Promise<CustomDomain>;
+
+    abstract customDomainDelete(id: string): CustomDomain | Promise<CustomDomain>;
+
+    abstract customDomainDefaultJourneyCreate(input: CustomDomainDefaultJourneyInput): CustomDomainDefaultJourney | Promise<CustomDomainDefaultJourney>;
+
+    abstract customDomainDefaultJourneyUpdate(id: string, input: CustomDomainDefaultJourneyInput): CustomDomainDefaultJourney | Promise<CustomDomainDefaultJourney>;
+
+    abstract customDomainDefaultJourneyDelete(id: string): CustomDomainDefaultJourney | Promise<CustomDomainDefaultJourney>;
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
