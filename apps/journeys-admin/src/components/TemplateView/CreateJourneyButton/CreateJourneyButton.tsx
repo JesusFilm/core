@@ -82,7 +82,7 @@ export function CreateJourneyButton({
         query: {
           redirect: url.includes('createNew')
             ? url
-            : `${window.location.origin + router.asPath}?createNew=true&`
+            : `${window.location.origin + router.asPath}?createNew=true`
         }
       },
       undefined,
