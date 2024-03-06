@@ -41,6 +41,8 @@ export function PasswordPage({
   async function handleLogin(values, { setFieldError }): Promise<void> {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password)
+      console.log(router)
+      console.log('routerasPath:', router.asPath)
       await router.push({
         pathname: '/',
         query: router.asPath
