@@ -1,13 +1,7 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/system/Stack'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-
-import { LanguageSwitcher } from '../LanguageSwitcher'
 
 import { EmailUsedPage } from './EmailUsedPage'
 import { HomePage } from './HomePage'
@@ -18,11 +12,9 @@ import { ResetPasswordSentPage } from './ResetPasswordSentPage'
 import { ActivePage, PageProps } from './types'
 
 export function SignIn(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [activePage, setActivePage] = useState<ActivePage>('home')
   const [userEmail, setUserEmail] = useState<string>('')
   const [userPassword, setUserPassword] = useState<string>('')
-  const [open, setOpen] = useState(false)
 
   let page: ReactElement<PageProps>
   const props: PageProps = {
@@ -68,7 +60,7 @@ export function SignIn(): ReactElement {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          my: 30
+          my: 5
         }}
         data-testid="JourneysAdminSignIn"
       >
@@ -89,32 +81,6 @@ export function SignIn(): ReactElement {
             }}
           >
             {page}
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="center"
-              gap={4}
-            >
-              <Button size="small">
-                <Typography
-                  variant="body2"
-                  sx={{ color: 'primary.main', cursor: 'pointer' }}
-                  component="a"
-                  href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
-                >
-                  {t('Feedback & Support')}
-                </Typography>
-              </Button>
-              <Button size="small" onClick={() => setOpen(true)}>
-                <Typography variant="body2">{t('Language')}</Typography>
-              </Button>
-            </Stack>
-            {open && (
-              <LanguageSwitcher
-                open={open}
-                handleClose={() => setOpen(false)}
-              />
-            )}
           </CardContent>
         </Card>
       </Box>

@@ -48,7 +48,7 @@ export function OnboardingForm({
   }
 
   return (
-    <Stack justifyContent="center" alignItems="center" spacing={7}>
+    <Stack justifyContent="center" alignItems="center" spacing={7} mb={10}>
       <Stack alignItems="center">
         <Typography variant="h4">{t('A Few Questions')}</Typography>
         <Typography variant="body1">{t('Help us serve you better')}</Typography>
