@@ -14,7 +14,21 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('PasswordPage', () => {
+  let push: jest.Mock
+
+  beforeEach(() => {
+    jest.resetAllMocks()
+    push = jest.fn()
+
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+  })
+
   it('should render password page', () => {
     const { getByText, getByLabelText } = render(
       <PasswordPage userEmail="example@example.com" userPassword="example" />
@@ -42,9 +56,33 @@ describe('PasswordPage', () => {
         typeof signInWithEmailAndPassword
       >
 
-    const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-    const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const { getByLabelText, getByRole } = render(
+      <PasswordPage userEmail="example@example.com" />
+    )
+
+    fireEvent.change(getByLabelText('Password'), {
+      target: { value: 'Password' }
+    })
+    fireEvent.click(getByRole('button', { name: 'Sign In' }))
+
+    await waitFor(() => {
+      expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith('/')
+    })
+  })
+
+  it('should redirect to router query location', async () => {
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: '/custom-location' }
+    } as unknown as NextRouter)
+
+    const mockSignInWithEmailAndPassword =
+      signInWithEmailAndPassword as jest.MockedFunction<
+        typeof signInWithEmailAndPassword
+      >
 
     const { getByLabelText, getByRole } = render(
       <PasswordPage userEmail="example@example.com" />
@@ -59,9 +97,9 @@ describe('PasswordPage', () => {
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
     })
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        pathname: '/'
-      })
+      expect(push).toHaveBeenCalledWith(
+        new URL('http://localhost/custom-location')
+      )
     })
   })
 
