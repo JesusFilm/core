@@ -52,26 +52,26 @@ export function OnboardingPageWrapper({
         </Box>
         <Stack alignItems="center" sx={{ maxWidth: { xs: 311, md: 397 } }}>
           {children}
-          <Stack direction="row" alignItems="center" gap={4}>
-            <Link
-              variant="body2"
-              underline="none"
-              sx={{
-                color: 'primary.main',
-                cursor: 'pointer'
-              }}
-              href={`mailto:support@nextstep.is?subject=${emailSubject}`}
-            >
-              {t('Feedback & Support')}
-            </Link>
-            <Button size="small" onClick={() => setOpen(true)}>
-              <Typography variant="body2">{t('Language')}</Typography>
-            </Button>
-          </Stack>
-          {open && (
-            <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
-          )}
         </Stack>
+        <Stack direction="row" alignItems="center" gap={4} mt={20}>
+          <Link
+            variant="body2"
+            underline="none"
+            sx={{
+              color: 'primary.main',
+              cursor: 'pointer'
+            }}
+            href={`mailto:support@nextstep.is?subject=${emailSubject}`}
+          >
+            {t('Feedback & Support')}
+          </Link>
+          <Button size="small" onClick={() => setOpen(true)}>
+            <Typography variant="body2">{t('Language')}</Typography>
+          </Button>
+        </Stack>
+        {open && (
+          <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
+        )}
       </Stack>
     </>
   )
