@@ -5,6 +5,7 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
 import i18nConfig from '../../next-i18next.config'
+import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { SignIn } from '../../src/components/SignIn'
 
 function SignInPage(): ReactElement {
@@ -12,7 +13,9 @@ function SignInPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Sign In')} />
-      <SignIn />
+      <OnboardingPageWrapper emailSubject={t('A question about sign in')}>
+        <SignIn />
+      </OnboardingPageWrapper>
     </>
   )
 }

@@ -4,11 +4,9 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/system/Stack'
-import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import logo from '../../../public/logo.svg'
 import { LanguageSwitcher } from '../LanguageSwitcher'
 
 import { EmailUsedPage } from './EmailUsedPage'
@@ -73,7 +71,6 @@ export function SignIn(): ReactElement {
       }}
       data-testid="JourneysAdminSignIn"
     >
-      <Image src={logo} alt="Next Steps" height={41} width={228} />
       <Card
         sx={{
           width: { xs: '100%', sm: 397 },
