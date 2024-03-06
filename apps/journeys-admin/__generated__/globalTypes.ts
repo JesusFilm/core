@@ -425,6 +425,10 @@ export interface LinkActionInput {
   target?: string | null;
 }
 
+export interface MeInput {
+  redirect?: string | null;
+}
+
 export interface NavigateActionInput {
   gtmEventName?: string | null;
 }
