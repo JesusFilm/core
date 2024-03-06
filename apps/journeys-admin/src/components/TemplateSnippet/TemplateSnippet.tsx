@@ -17,19 +17,24 @@ export function TemplateSnippet(): ReactElement {
 
   function getTemplateId(): string | undefined {
     const url = router.query.redirect as string | undefined
-    const pathnameParts = url?.split('/')
-    if (url?.includes('templates') === true && pathnameParts != null) {
+    if (url == null) return
+
+    const redirect = decodeURIComponent(url)
+    const pathnameParts = redirect?.split('/')
+    if (redirect?.includes('templates') && pathnameParts != null) {
       const idIndex = pathnameParts.indexOf('templates') + 1
       const id = pathnameParts[idIndex]
       return id.split('?')[0]
     }
   }
 
-  const { data } = useJourneyQuery({ id: getTemplateId() ?? '' })
+  const templateId = getTemplateId()
+
+  const { data } = useJourneyQuery({ id: templateId ?? '' })
 
   return (
     <>
-      {data != null && (
+      {templateId != null && (
         <Box
           sx={{
             width: '100%',
