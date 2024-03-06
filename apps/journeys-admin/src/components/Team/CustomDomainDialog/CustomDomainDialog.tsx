@@ -1,3 +1,4 @@
+import { gql, useMutation, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
@@ -19,26 +20,71 @@ import { Dialog } from '@core/shared/ui/Dialog/Dialog'
 import Check from '@core/shared/ui/icons/Check'
 import CopyLeft from '@core/shared/ui/icons/CopyLeft'
 
+import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
+import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
+import { GetCustomDomain } from '../../../../__generated__/GetCustomDomain'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
-import { useCustomDomain } from '../CustomDomainProvider'
+import { useTeam } from '../TeamProvider'
 
 interface CustomDomainDialogProps {
   open: boolean
   onClose: () => void
 }
 
+export const GET_CUSTOM_DOMAIN = gql`
+  query GetCustomDomain($teamId: ID!) {
+    customDomains(teamId: $teamId) {
+      hostName
+      defaultJourneysOnly
+      id
+      teamId
+    }
+  }
+`
+
+export const CREATE_CUSTOM_DOMAIN = gql`
+  mutation CreateCustomDomain($teamId: ID!, $input: CustomDomainCreateInput!) {
+    customDomainCreate(teamId: $teamId, input: $input) {
+      id
+      hostName
+      defaultJourneysOnly
+    }
+  }
+`
+
+export const DELETE_CUSTOM_DOMAIN = gql`
+  mutation DeleteCustomDomain($customDomainDeleteId: ID!) {
+    customDomainDelete(id: $customDomainDeleteId) {
+      id
+      hostName
+      defaultJourneysOnly
+    }
+  }
+`
+
 export function CustomDomainDialog({
   open,
   onClose
 }: CustomDomainDialogProps): ReactElement {
-  // TODO: state changes replaced with network calls
-  const { customDomain, setCustomDomain } = useCustomDomain()
-
-  const { data } = useAdminJourneysQuery({
+  const { data: journeysData } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
     useLastActiveTeamId: true
   })
+
+  const { activeTeam } = useTeam()
+  const { data: customDomainData } = useQuery<GetCustomDomain>(
+    GET_CUSTOM_DOMAIN,
+    {
+      variables: { teamId: activeTeam?.id }
+    }
+  )
+
+  const [createCustomDomain] =
+    useMutation<CreateCustomDomain>(CREATE_CUSTOM_DOMAIN)
+
+  const [deleteCustomDomain] =
+    useMutation<DeleteCustomDomain>(DELETE_CUSTOM_DOMAIN)
 
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
@@ -61,11 +107,22 @@ export function CustomDomainDialog({
   async function handleSubmit(value, { resetForm }): Promise<void> {
     console.log('here')
     console.log(value)
-    if (customDomain != null) {
-      setCustomDomain(null)
+
+    if (
+      customDomainData?.customDomains != null &&
+      customDomainData?.customDomains?.length !== 0
+    ) {
+      await deleteCustomDomain({
+        variables: { id: customDomainData?.customDomains[0].id }
+      })
       resetForm()
     } else {
-      setCustomDomain(value.domainName)
+      await createCustomDomain({
+        variables: {
+          teamId: activeTeam?.id,
+          input: { hostName: value.domainName, defaultJourneysOnly: true }
+        }
+      })
     }
     enqueueSnackbar('Custom domain updated', {
       variant: 'success',
@@ -119,113 +176,172 @@ export function CustomDomainDialog({
                   InputProps={{
                     endAdornment: (
                       <Button onClick={async () => handleSubmit()}>
-                        {customDomain != null ? t('Delete') : t('Update')}
+                        {customDomainData?.customDomains?.length !== 0 &&
+                        customDomainData?.customDomains != null
+                          ? t('Delete')
+                          : t('Update')}
                       </Button>
                     )
                   }}
                 />
               </Stack>
-              {customDomain != null && customDomain !== '' && (
-                <Stack spacing={4}>
-                  <Typography variant="subtitle1">
-                    {t('Default Journey')}
-                  </Typography>
-                  <Stack direction="row" justifyContent="space-between">
-                    <Select
-                      fullWidth
-                      id="defaultJourney"
-                      name="defaultJourney"
-                      value={values.defaultJourney}
-                      onChange={handleOnChange}
-                    >
-                      {data?.journeys.map((journey) => (
-                        <MenuItem value={journey.id} key={journey.id}>
-                          {journey.title}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </Stack>
-                </Stack>
-              )}
-              {customDomain != null && customDomain !== '' && (
-                <Stack spacing={4}>
-                  <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="subtitle1">
-                      {t('DNS Config')}
-                    </Typography>
-                    <Chip
-                      icon={
-                        <Check
-                          sx={{
-                            borderRadius: 777,
-                            backgroundColor: 'success.main',
-                            '&.MuiSvgIcon-root': { color: 'background.paper' }
-                          }}
-                        />
-                      }
-                      label="Status"
-                    />
-                  </Stack>
+              {customDomainData?.customDomains?.length !== 0 &&
+                customDomainData?.customDomains != null && (
                   <Stack spacing={4}>
-                    <Stack
-                      direction={smUp ? 'row' : 'column'}
-                      sx={{ width: '100%' }}
-                    >
-                      <Box
-                        sx={{
-                          border: '2px solid',
-                          borderColor: 'divider',
-                          color: 'secondary.light',
-                          borderRadius: '8px 0px 0px 8px',
-                          p: 4,
-                          flexGrow: 1
-                        }}
+                    <Typography variant="subtitle1">
+                      {t('Default Journey')}
+                    </Typography>
+                    <Stack direction="row" justifyContent="space-between">
+                      <Select
+                        fullWidth
+                        id="defaultJourney"
+                        name="defaultJourney"
+                        value={values.defaultJourney}
+                        onChange={handleOnChange}
                       >
-                        {t('A Record')}
-                      </Box>
-                      <Box
-                        sx={{
-                          borderTop: '2px solid',
-                          borderBottom: '2px solid',
-                          borderColor: 'divider',
-                          color: 'secondary.light',
-                          p: 4,
-                          flexGrow: 1
-                        }}
-                      >
-                        {t('@')}
-                      </Box>
-                      <Box
-                        sx={{
-                          border: '2px solid',
-                          borderRadius: '0px 8px 8px 0px',
-                          borderColor: 'divider',
-                          color: 'secondary.light',
-                          pl: 4,
-                          flexGrow: 1
-                        }}
-                      >
-                        <Stack
-                          direction="row"
-                          alignItems="center"
-                          height="100%"
-                          justifyContent="space-between"
-                        >
-                          {t('172.16.1.1')}
-                          <IconButton
-                            onClick={async () =>
-                              await handleCopyClick('172.16.1.1')
-                            }
-                            aria-label="Copy"
-                          >
-                            <CopyLeft />
-                          </IconButton>
-                        </Stack>
-                      </Box>
+                        {journeysData?.journeys.map((journey) => (
+                          <MenuItem value={journey.id} key={journey.id}>
+                            {journey.title}
+                          </MenuItem>
+                        ))}
+                      </Select>
                     </Stack>
                   </Stack>
-                </Stack>
-              )}
+                )}
+              {customDomainData?.customDomains?.length !== 0 &&
+                customDomainData?.customDomains != null && (
+                  <Stack spacing={4}>
+                    <Stack direction="row" justifyContent="space-between">
+                      <Typography variant="subtitle1">
+                        {t('DNS Config')}
+                      </Typography>
+                      <Chip
+                        icon={
+                          <Check
+                            sx={{
+                              borderRadius: 777,
+                              backgroundColor: 'success.main',
+                              '&.MuiSvgIcon-root': { color: 'background.paper' }
+                            }}
+                          />
+                        }
+                        label="Status"
+                      />
+                    </Stack>
+                    <Stack spacing={4}>
+                      <Stack direction="row" sx={{ width: '100%' }}>
+                        <Box
+                          sx={{
+                            border: '2px solid',
+                            borderColor: 'divider',
+                            color: 'secondary.light',
+                            borderRadius: '8px 0px 0px 8px',
+                            p: 4,
+                            width: '33%'
+                          }}
+                        >
+                          {t('A RECORD')}
+                        </Box>
+                        <Box
+                          sx={{
+                            borderTop: '2px solid',
+                            borderBottom: '2px solid',
+                            borderColor: 'divider',
+                            color: 'secondary.light',
+                            p: 4,
+                            width: '33%'
+                          }}
+                        >
+                          {t('@')}
+                        </Box>
+                        <Box
+                          sx={{
+                            border: '2px solid',
+                            borderRadius: '0px 8px 8px 0px',
+                            borderColor: 'divider',
+                            color: 'secondary.light',
+                            pl: 4,
+                            width: '33%'
+                          }}
+                        >
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            height="100%"
+                            justifyContent="space-between"
+                          >
+                            {t('76.76.21.21')}
+                            {smUp && (
+                              <IconButton
+                                onClick={async () =>
+                                  await handleCopyClick('76.76.21.21')
+                                }
+                                aria-label="Copy"
+                              >
+                                <CopyLeft />
+                              </IconButton>
+                            )}
+                          </Stack>
+                        </Box>
+                      </Stack>
+                      <Stack direction="row" sx={{ width: '100%' }}>
+                        <Box
+                          sx={{
+                            border: '2px solid',
+                            borderColor: 'divider',
+                            color: 'secondary.light',
+                            borderRadius: '8px 0px 0px 8px',
+                            p: 4,
+                            width: '33%'
+                          }}
+                        >
+                          {t('C NAME')}
+                        </Box>
+                        <Box
+                          sx={{
+                            borderTop: '2px solid',
+                            borderBottom: '2px solid',
+                            borderColor: 'divider',
+                            color: 'secondary.light',
+                            p: 4,
+                            width: '33%'
+                          }}
+                        >
+                          {t('@')}
+                        </Box>
+                        <Box
+                          sx={{
+                            border: '2px solid',
+                            borderRadius: '0px 8px 8px 0px',
+                            borderColor: 'divider',
+                            color: 'secondary.light',
+                            pl: 4,
+                            width: '33%'
+                          }}
+                        >
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            height="100%"
+                            justifyContent="space-between"
+                          >
+                            {t('cname.vercel-dns.com')}
+                            {smUp && (
+                              <IconButton
+                                onClick={async () =>
+                                  await handleCopyClick('cname.vercel-dns.com')
+                                }
+                                aria-label="Copy"
+                              >
+                                <CopyLeft />
+                              </IconButton>
+                            )}
+                          </Stack>
+                        </Box>
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                )}
             </Stack>
           </Form>
         </Dialog>

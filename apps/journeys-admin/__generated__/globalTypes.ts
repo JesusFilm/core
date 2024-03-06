@@ -293,6 +293,11 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface CustomDomainCreateInput {
+  hostName: string;
+  defaultJourneysOnly: boolean;
+}
+
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;

@@ -1,1 +1,0 @@
-export { useCustomDomain } from './CustomDomainProvider'
