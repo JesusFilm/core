@@ -811,7 +811,7 @@ export abstract class IQuery {
 
     abstract block(id: string): Block | Promise<Block>;
 
-    abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
+    abstract customDomains(teamId: string): Nullable<CustomDomain[]> | Promise<Nullable<CustomDomain[]>>;
 
     abstract customDomainDefaultJourney(id: string): Nullable<CustomDomainDefaultJourney> | Promise<Nullable<CustomDomainDefaultJourney>>;
 

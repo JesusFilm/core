@@ -11,7 +11,7 @@ input CustomDomainCreateInput {
 }
 
 extend type Query {
-  customDomains(teamId: ID!): [CustomDomain!]!
+  customDomains(teamId: ID!): [CustomDomain!]
 }
 
 extend type Mutation {

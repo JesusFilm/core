@@ -352,7 +352,7 @@ type Query {
 
 extend type Query {
   block(id: ID!): Block!
-  customDomains(teamId: ID!): [CustomDomain!]!
+  customDomains(teamId: ID!): [CustomDomain!]
   customDomainDefaultJourney(id: ID!): CustomDomainDefaultJourney
   hosts(teamId: ID!): [Host!]!
 
