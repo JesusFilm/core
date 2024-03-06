@@ -15,6 +15,7 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
+import { CustomDomainProvider } from '../src/components/Team/CustomDomainProvider/CustomDomainProvider'
 import { TeamProvider } from '../src/components/Team/TeamProvider'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
@@ -127,14 +128,16 @@ function JourneysAdminApp({
             )}
           <ApolloProvider client={apolloClient}>
             <TeamProvider>
-              <SnackbarProvider
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right'
-                }}
-              >
-                <Component {...pageProps} />
-              </SnackbarProvider>
+              <CustomDomainProvider>
+                <SnackbarProvider
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right'
+                  }}
+                >
+                  <Component {...pageProps} />
+                </SnackbarProvider>
+              </CustomDomainProvider>
             </TeamProvider>
           </ApolloProvider>
         </ThemeProvider>
