@@ -1459,7 +1459,7 @@ type Query
   @join__type(graph: VIDEOS)
 {
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
-  customDomains(teamId: ID!): [CustomDomain!]! @join__field(graph: JOURNEYS)
+  customDomains(teamId: ID!): [CustomDomain!] @join__field(graph: JOURNEYS)
   customDomainDefaultJourney(id: ID!): CustomDomainDefaultJourney @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
