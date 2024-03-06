@@ -53,37 +53,35 @@ export function SignIn(): ReactElement {
       break
   }
   return (
-    <>
-      <Box
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        my: 5
+      }}
+      data-testid="JourneysAdminSignIn"
+    >
+      <Card
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          my: 5
+          width: { xs: '100%', sm: 397 },
+          mt: 10,
+          borderRadius: { xs: 0, sm: 2 }
         }}
-        data-testid="JourneysAdminSignIn"
       >
-        <Card
+        <CardContent
           sx={{
-            width: { xs: '100%', sm: 397 },
-            mt: 10,
-            borderRadius: { xs: 0, sm: 2 }
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
+            p: 6,
+            pt: 7
           }}
         >
-          <CardContent
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 4,
-              p: 6,
-              pt: 7
-            }}
-          >
-            {page}
-          </CardContent>
-        </Card>
-      </Box>
-    </>
+          {page}
+        </CardContent>
+      </Card>
+    </Box>
   )
 }
