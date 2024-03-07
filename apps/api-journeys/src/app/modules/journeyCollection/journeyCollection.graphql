@@ -2,20 +2,20 @@ type JourneyCollection {
   id: ID!
   team: Team!
   title: String
-  customDomains: CustomDomain[]!
-  journeys: Journey[]!
+  customDomains: [CustomDomain]!
+  journeys: [Journey]!
 }
 
-input JourneyCollectionCreateInput {  
+input JourneyCollectionCreateInput {
   teamId: String!
   title: String
-  journeyIds: String[]
+  journeyIds: [String]
   customDomain: CustomDomainCreateInput
 }
 
-input JourneyCollectionUpdateInput {  
+input JourneyCollectionUpdateInput {
   title: String
-  journeyIds: String[]
+  journeyIds: [String]
 }
 
 extend type Mutation {
@@ -29,6 +29,6 @@ extend type Mutation {
 }
 
 extend type Query {
-    journeyCollection(id: ID!): JourneyCollection!
-    journeyCollections(teamId: ID!): JourneyCollection[]!    
+  journeyCollection(id: ID!): JourneyCollection!
+  journeyCollections(teamId: ID!): [JourneyCollection]!
 }

@@ -462,6 +462,18 @@ export class ChatButtonUpdateInput {
     platform?: Nullable<ChatPlatform>;
 }
 
+export class CustomDomainCreateInput {
+    name: string;
+    allowOutsideJourneys?: Nullable<boolean>;
+    journeyCollectionId?: Nullable<string>;
+}
+
+export class CustomDomainUpdateInput {
+    name?: Nullable<string>;
+    allowOutsideJourneys?: Nullable<boolean>;
+    journeyCollectionId?: Nullable<string>;
+}
+
 export class ButtonClickEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -652,6 +664,18 @@ export class JourneyTemplateInput {
     template?: Nullable<boolean>;
 }
 
+export class JourneyCollectionCreateInput {
+    teamId: string;
+    title?: Nullable<string>;
+    journeyIds?: Nullable<Nullable<string>[]>;
+    customDomain?: Nullable<CustomDomainCreateInput>;
+}
+
+export class JourneyCollectionUpdateInput {
+    title?: Nullable<string>;
+    journeyIds?: Nullable<Nullable<string>[]>;
+}
+
 export class JourneyProfileUpdateInput {
     lastActiveTeamId?: Nullable<string>;
 }
@@ -801,6 +825,8 @@ export abstract class IQuery {
 
     abstract block(id: string): Block | Promise<Block>;
 
+    abstract customDomain(id: string): CustomDomain | Promise<CustomDomain>;
+
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
@@ -812,6 +838,10 @@ export abstract class IQuery {
     abstract journeys(where?: Nullable<JourneysFilter>): Journey[] | Promise<Journey[]>;
 
     abstract journey(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
+
+    abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
+
+    abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
@@ -1048,6 +1078,25 @@ export class ChatButton {
     platform?: Nullable<ChatPlatform>;
 }
 
+export class VercelDomainVerification {
+    __typename?: 'VercelDomainVerification';
+    type?: Nullable<string>;
+    domain?: Nullable<string>;
+    value?: Nullable<string>;
+    reason?: Nullable<string>;
+}
+
+export class CustomDomain {
+    __typename?: 'CustomDomain';
+    id: string;
+    name: string;
+    apexName: string;
+    allowOutsideJourneys: boolean;
+    journeyCollection?: Nullable<JourneyCollection>;
+    verified: boolean;
+    verification?: Nullable<Nullable<VercelDomainVerification>[]>;
+}
+
 export class ButtonClickEvent implements Event {
     __typename?: 'ButtonClickEvent';
     id: string;
@@ -1240,6 +1289,15 @@ export class UserJourney {
     role: UserJourneyRole;
     user?: Nullable<User>;
     openedAt?: Nullable<DateTime>;
+}
+
+export class JourneyCollection {
+    __typename?: 'JourneyCollection';
+    id: string;
+    team: Team;
+    title?: Nullable<string>;
+    customDomains: Nullable<CustomDomain>[];
+    journeys: Nullable<Journey>[];
 }
 
 export class JourneyProfile {
@@ -1482,6 +1540,12 @@ export abstract class IMutation {
 
     abstract chatButtonRemove(id: string): ChatButton | Promise<ChatButton>;
 
+    abstract customDomainCreate(input: CustomDomainCreateInput): CustomDomain | Promise<CustomDomain>;
+
+    abstract customDomainUpdate(input: CustomDomainUpdateInput): CustomDomain | Promise<CustomDomain>;
+
+    abstract customDomainDelete(id: string): boolean | Promise<boolean>;
+
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
     abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
@@ -1539,6 +1603,12 @@ export abstract class IMutation {
     abstract journeysRestore(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
 
     abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
+
+    abstract journeyCollectionCreate(input: JourneyCollectionCreateInput): JourneyCollection | Promise<JourneyCollection>;
+
+    abstract journeyCollectionUpdate(input: JourneyCollectionUpdateInput): JourneyCollection | Promise<JourneyCollection>;
+
+    abstract journeyCollectionDelete(id: string): boolean | Promise<boolean>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
 
