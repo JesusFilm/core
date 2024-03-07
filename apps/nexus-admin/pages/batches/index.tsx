@@ -12,19 +12,11 @@ const GET_BATCHES = gql`
       id
       name
       status
-      averagePercent
-      channel {
-        name
-        platform
-        youtube {
-          imageUrl
-          title
-        }
-      }
-      resources {
-        isCompleted
-        error
-        percent
+      progress
+      tasks {
+        type
+        status
+        progress
       }
     }
   }
