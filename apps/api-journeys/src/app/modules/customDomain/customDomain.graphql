@@ -7,6 +7,7 @@ type VercelDomainVerification {
 
 type CustomDomain {
   id: ID!
+  teamId: String!
   name: String!
   apexName: String!
   allowOutsideJourneys: Boolean!
@@ -16,6 +17,7 @@ type CustomDomain {
 }
 
 input CustomDomainCreateInput {
+  teamId: String!
   name: String!
   allowOutsideJourneys: Boolean
   journeyCollectionId: String
@@ -35,4 +37,5 @@ extend type Mutation {
 
 extend type Query {
   customDomain(id: ID!): CustomDomain!
+  customDomains(teamId: ID!): [CustomDomain!]!
 }
