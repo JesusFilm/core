@@ -58,7 +58,7 @@ export function OnboardingStepper(): ReactElement {
     <Box
       sx={{
         width: 244,
-        display: { xs: 'none', sm: 'flex' },
+        display: { xs: 'none', md: 'flex' },
         flexDirection: 'column',
         alignItems: 'center'
       }}

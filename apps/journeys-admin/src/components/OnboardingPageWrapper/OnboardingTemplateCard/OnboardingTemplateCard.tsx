@@ -39,13 +39,13 @@ export function OnboardingTemplateCard(): ReactElement {
       {templateId != null && (
         <Stack
           spacing={{ xs: 4, md: 0 }}
-          justifyContent="flex-start"
+          justifyContent={{ xs: 'flex-start', sm: 'center', md: null }}
           direction={{ xs: 'row', md: 'column' }}
           sx={{
             flexShrink: 0,
             width: { xs: '100%', md: 244 },
-            px: { xs: 8, md: 0 },
-            pb: { xs: 6, sm: 0 }
+            px: { xs: 6, md: 0 },
+            pb: { xs: 6, md: 0 }
           }}
         >
           <Stack
@@ -56,8 +56,8 @@ export function OnboardingTemplateCard(): ReactElement {
               backgroundColor:
                 data?.journey != null ? 'background.default' : 'transparent',
               overflow: 'hidden',
-              height: { xs: 57, md: 244 },
-              width: { xs: 57, md: 244 },
+              height: { xs: 57, sm: 137, md: 244 },
+              width: { xs: 57, sm: 137, md: 244 },
               borderRadius: { xs: 2, md: 0 },
               borderTopLeftRadius: { xs: null, md: 12 },
               borderTopRightRadius: { xs: null, md: 12 }
@@ -175,7 +175,7 @@ function OnboardingTemplateCardDetails({
           variant="subtitle1"
           sx={{
             my: 1,
-            display: { xs: 'none', md: 'block' }
+            display: { xs: 'none', sm: 'block' }
           }}
         >
           {journey?.title != null ? (
@@ -196,7 +196,7 @@ function OnboardingTemplateCardDetails({
           variant="subtitle2"
           sx={{
             my: 1,
-            display: { xs: 'block', md: 'none' }
+            display: { xs: 'block', sm: 'none' }
           }}
         >
           {journey?.title != null ? (
