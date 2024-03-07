@@ -14,8 +14,8 @@ import {
 } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { PageProps } from '../types'
@@ -70,8 +70,7 @@ export function RegisterPage({
     try {
       await createAccountAndSignIn(values.email, values.name, values.password)
       await router.push({
-        pathname: '/',
-        query: router.asPath
+        pathname: '/'
       })
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {

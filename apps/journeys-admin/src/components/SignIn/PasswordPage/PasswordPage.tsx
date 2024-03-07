@@ -9,8 +9,8 @@ import Typography from '@mui/material/Typography'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { PageProps } from '../types'
@@ -42,7 +42,7 @@ export function PasswordPage({
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password)
       const redirect =
-        router.query != null
+        router.query.redirect != null
           ? new URL(
               `${window.location.origin}${router.query.redirect as string}`
             )

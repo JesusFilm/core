@@ -1,8 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { CreateAiImage } from '../../../../../__generated__/CreateAiImage'
 import { SegmindModel } from '../../../../../__generated__/globalTypes'

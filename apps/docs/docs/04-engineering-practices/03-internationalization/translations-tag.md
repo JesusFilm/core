@@ -11,7 +11,7 @@ The `t` function, an integral part of the `useTranslation` hook in international
 To integrate translation into your React component, leverage the `useTranslation` hook from 'react-i18next,' providing access to the `t` function for text translation. Here's a quick example:
 
 ```jsx
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 function Component() {
   const { t } = useTranslation('apps-journeys-admin') // include a namespace
@@ -37,7 +37,7 @@ Don't forget to run the `nx` command `extract-translations` for the project to g
 The `t` function supports parameterized translations, allowing you to include placeholders in your translation strings and replace them dynamically.
 
 ```jsx
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 function Component() {
   const { t } = useTranslation('apps-journeys-admin') // include a namespace

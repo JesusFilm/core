@@ -1,9 +1,9 @@
 import Button from '@mui/material/Button'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 

@@ -4,13 +4,13 @@ import CardActionArea from '@mui/material/CardActionArea'
 import Divider from '@mui/material/Divider'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import type {
   DraggableProvided,
   DraggableStateSnapshot,
   DroppableProvided
 } from 'react-beautiful-dnd'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
