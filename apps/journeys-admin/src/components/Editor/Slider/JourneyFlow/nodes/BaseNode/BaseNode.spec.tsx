@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactFlowProvider } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
@@ -11,6 +11,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import { StepAndCardBlockCreate } from '../../../../../../../__generated__/StepAndCardBlockCreate'
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
@@ -68,31 +69,7 @@ describe('BaseNode', () => {
     tags: []
   }
 
-  const stepAndCardBlockResult = jest.fn(() => ({
-    data: {
-      stepBlockCreate: {
-        __typename: 'StepBlock',
-        id: 'Step1.id',
-        parentBlockId: null,
-        parentOrder: 1,
-        locked: false,
-        nextBlockId: null
-      },
-      cardBlockCreate: {
-        id: 'Card1.id',
-        parentBlockId: 'Step1.id',
-        parentOrder: 0,
-        backgroundColor: null,
-        coverBlockId: null,
-        themeName: ThemeName.base,
-        themeMode: ThemeMode.dark,
-        fullscreen: false,
-        __typename: 'CardBlock'
-      }
-    }
-  }))
-
-  const stepAndCardBlockCreateBlockMock = {
+  const mockStepAndCardBlockCreate: MockedResponse<StepAndCardBlockCreate> = {
     request: {
       query: STEP_AND_CARD_BLOCK_CREATE,
       variables: {
@@ -109,7 +86,29 @@ describe('BaseNode', () => {
         }
       }
     },
-    result: stepAndCardBlockResult
+    result: jest.fn(() => ({
+      data: {
+        stepBlockCreate: {
+          __typename: 'StepBlock',
+          id: 'Step1.id',
+          parentBlockId: null,
+          parentOrder: 1,
+          locked: false,
+          nextBlockId: null
+        },
+        cardBlockCreate: {
+          __typename: 'CardBlock',
+          id: 'Card1.id',
+          parentBlockId: 'Step1.id',
+          parentOrder: 0,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.dark,
+          fullscreen: false
+        }
+      }
+    }))
   }
 
   it('should render with default properties', () => {
@@ -119,7 +118,7 @@ describe('BaseNode', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('base-node')).toBeInTheDocument()
+    expect(screen.getByTestId('BaseNode')).toBeInTheDocument()
   })
 
   it('should render target handles', () => {
@@ -131,12 +130,8 @@ describe('BaseNode', () => {
       </ReactFlowProvider>
     )
 
-    expect(
-      screen.getByTestId('base-node-top-target-handle')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByTestId('base-node-bottom-target-handle')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('BaseNodeTopTargetHandle')).toBeInTheDocument()
+    expect(screen.getByTestId('BaseNodeBottomTargetHandle')).toBeInTheDocument()
   })
 
   it('should render source handles', async () => {
@@ -148,12 +143,8 @@ describe('BaseNode', () => {
       </ReactFlowProvider>
     )
 
-    expect(
-      screen.getByTestId('base-node-source-handle-icon')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByTestId('base-node-source-handle-area')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('BaseNodeSourceHandleIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('BaseNodeSourceHandleArea')).toBeInTheDocument()
   })
 
   it('should render arrow icon', () => {
@@ -165,9 +156,7 @@ describe('BaseNode', () => {
       </ReactFlowProvider>
     )
 
-    expect(
-      screen.getByTestId('base-node-downward-arrow-icon')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('BaseNodeDownwardArrowIcon')).toBeInTheDocument()
   })
 
   it('should create new node when clicking on source handle', async () => {
@@ -177,7 +166,7 @@ describe('BaseNode', () => {
     render(
       <JourneyProvider value={{ journey: mockJourney }}>
         <ReactFlowProvider>
-          <MockedProvider mocks={[stepAndCardBlockCreateBlockMock]}>
+          <MockedProvider mocks={[mockStepAndCardBlockCreate]}>
             <BaseNode
               isSourceConnectable="arrow"
               onSourceConnect={mockSourceConnect}
@@ -187,12 +176,12 @@ describe('BaseNode', () => {
       </JourneyProvider>
     )
 
-    const sourceHandle = screen.getByTestId('base-node-source-handle-area')
+    const sourceHandle = screen.getByTestId('BaseNodeSourceHandleArea')
 
     fireEvent.click(sourceHandle)
 
     await waitFor(() =>
-      expect(stepAndCardBlockCreateBlockMock.result).toHaveBeenCalled()
+      expect(mockStepAndCardBlockCreate.result).toHaveBeenCalled()
     )
     expect(mockSourceConnect).toHaveBeenCalledTimes(1)
   })
