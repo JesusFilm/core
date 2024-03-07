@@ -23,7 +23,7 @@ import { CustomDomainDialog, GET_CUSTOM_DOMAIN } from './CustomDomainDialog'
 const CustomDomainDialogsStory: Meta<typeof CustomDomainDialog> = {
   ...journeysAdminConfig,
   component: CustomDomainDialog,
-  title: 'Journeys-Admin/Teams/CustomDomain/CustomDomainDialog'
+  title: 'Journeys-Admin/Team/CustomDomain/CustomDomainDialog'
 }
 
 const getAdminJourneysMock: MockedResponse<
