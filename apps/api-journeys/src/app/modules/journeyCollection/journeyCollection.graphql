@@ -25,6 +25,7 @@ extend type Mutation {
   journeyCollectionUpdate(
     input: JourneyCollectionUpdateInput!
   ): JourneyCollection!
+  journeyCollectionDelete(id: ID!): Boolean!
 }
 
 extend type Query {

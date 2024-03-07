@@ -30,6 +30,7 @@ input CustomDomainUpdateInput {
 extend type Mutation {
   customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
   customDomainUpdate(input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainDelete(id: ID!): Boolean!
 }
 
 extend type Query {
