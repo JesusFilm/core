@@ -9,7 +9,7 @@ export async function jfNexus(): Promise<void> {
     create: {
       id: 'jf-nexus',
       name: 'Jesus Film Project',
-      description: 'A Jesus Film Peoject Nexus',
+      description: 'A Jesus Film Project Nexus',
     },
   });
 }

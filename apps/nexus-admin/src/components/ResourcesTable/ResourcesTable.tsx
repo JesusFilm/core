@@ -119,6 +119,7 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
       renderCell: ({ row }: GridCellParams) => (
         <IconButton
           onClick={(event) => {
+            event.stopPropagation()
             setMorePopup(event.currentTarget)
             setResourceId(row.id)
           }}

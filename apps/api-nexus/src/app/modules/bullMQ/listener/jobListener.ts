@@ -45,6 +45,9 @@ export class NexusJobListener implements OnModuleInit {
       async (job: Job<UploadToBucketToYoutube>) => {
         console.log('Job completed: ', job.id);
         console.log('Job: ', job);
+
+        // TODO: upload thumbnail and caption file
+
         // void Promise.all([
         //   await this.prismaService.batchResource.updateMany({
         //     data: {

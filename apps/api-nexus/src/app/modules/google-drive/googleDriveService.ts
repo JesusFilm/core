@@ -49,8 +49,14 @@ export interface SpreadsheetRow {
   captionDriveFile?: drive_v3.Schema$File;
   audio_track_file?: string;
   audioTrackDriveFile?: drive_v3.Schema$File;
-  customThumbnailDriveFile?: drive_v3.Schema$File;
   language?: string;
+  customThumbnailDriveFile?: drive_v3.Schema$File;
+  caption_language?: string;
+  notify_subscribers?: string;
+  playlist_id?: string;
+  is_made_for_kids?: string;
+  media_component_id?: string;
+  text_language?: string;
 }
 
 @Injectable()
@@ -362,7 +368,7 @@ export class GoogleDriveService {
       }
 
       if (spreadsheetRow.video_id != null) {
-        console.log('video_id', spreadsheetRow.video_id)
+        console.log('video_id', spreadsheetRow.video_id);
         templateType = SpreadsheetTemplateType.LOCALIZATION;
         const rowChannel = await this.prismaService.channel.findFirst({
           where: {
@@ -373,7 +379,7 @@ export class GoogleDriveService {
           include: { youtube: true },
         });
 
-        console.log('rowChannel', rowChannel)
+        console.log('rowChannel', rowChannel);
         if (rowChannel !== null) {
           spreadsheetRow.channelData = rowChannel;
         }

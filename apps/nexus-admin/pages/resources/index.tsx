@@ -1,8 +1,8 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
@@ -124,7 +124,7 @@ const ResourcesPage: FC = () => {
   })
 
   const { data: resourceData } = useQuery<Resource>(GET_RESOURCE, {
-    skip: resourceId !== '',
+    skip: resourceId === '',
     variables: {
       resourceId,
       nexusId
@@ -210,7 +210,7 @@ const ResourcesPage: FC = () => {
         }
       },
       onCompleted: () => {
-        enqueueSnackbar('Resources Loaded', {
+        enqueueSnackbar('Resource Loaded', {
           variant: 'success',
           preventDuplicate: true
         })

@@ -10,6 +10,7 @@ import {
   UpdateVideoLocalization,
 } from '../../modules/bullMQ/bullMQ.service';
 import { GoogleOAuthService } from '../googleOAuth/googleOAuth';
+import { BadRequestException } from '@nestjs/common';
 
 interface Credential {
   client_secret: string;
@@ -56,36 +57,43 @@ export class YoutubeService {
     const service = google.youtube('v3');
     const fileSize = statSync(youtubeData.filePath).size;
 
-    return await service.videos.insert(
-      {
-        auth: this.authorize(youtubeData.token),
-        part: ['id', 'snippet', 'status'],
-        notifySubscribers: false,
-        requestBody: {
-          snippet: {
-            title: youtubeData.title,
-            description: youtubeData.description,
-            channelId: youtubeData.channelId,
-            defaultLanguage: youtubeData.defaultLanguage ?? 'en',
-            categoryId: '22',
+    let uploadedYoutubeResponse;
+    try {
+      uploadedYoutubeResponse = await service.videos.insert(
+        {
+          auth: this.authorize(youtubeData.token),
+          part: ['id', 'snippet', 'status'],
+          notifySubscribers: false,
+          requestBody: {
+            snippet: {
+              title: youtubeData.title,
+              description: youtubeData.description,
+              channelId: youtubeData.channelId,
+              defaultLanguage: youtubeData.defaultLanguage ?? 'en',
+              categoryId: '22',
+            },
+            status: {
+              privacyStatus: 'private',
+            },
           },
-          status: {
-            privacyStatus: 'private',
+          media: {
+            body: createReadStream(youtubeData.filePath),
           },
         },
-        media: {
-          body: createReadStream(youtubeData.filePath),
+        {
+          onUploadProgress: async (evt) => {
+            const progress = (evt.bytesRead / fileSize) * 100;
+            if (progressCallback != null) {
+              await progressCallback(progress);
+            }
+          },
         },
-      },
-      {
-        onUploadProgress: async (evt) => {
-          const progress = (evt.bytesRead / fileSize) * 100;
-          if (progressCallback != null) {
-            await progressCallback(progress);
-          }
-        },
-      },
-    );
+      );
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+
+    return uploadedYoutubeResponse;
   }
 
   async updateVideoThumbnail(youtubeData: {

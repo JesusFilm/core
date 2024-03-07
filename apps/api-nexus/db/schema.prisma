@@ -65,13 +65,13 @@ model ChannelYoutube {
 }
 
 model Resource {
-    id                     String                   @id @default(uuid())
+    id                     String                        @id @default(uuid())
     nexusId                String
     name                   String
-    nexus                  Nexus                    @relation(fields: [nexusId], references: [id])
-    status                 ResourceStatus           @default(published)
-    createdAt              DateTime                 @default(now())
-    updatedAt              DateTime                 @updatedAt
+    nexus                  Nexus                         @relation(fields: [nexusId], references: [id])
+    status                 ResourceStatus                @default(published)
+    createdAt              DateTime                      @default(now())
+    updatedAt              DateTime                      @updatedAt
     deletedAt              DateTime?
     category               String?
     spokenLanguage         String?
@@ -80,7 +80,12 @@ model Resource {
     sourceType             SourceType
     localizations          ResourceLocalization[]
     googleDrive            GoogleDriveResource?
+    thumbnailGoogleDrive   ThumbnailGoogleDriveResource?
     resourceYoutubeChannel ResourceYoutubeChannel[]
+    notifySubscribers      String?
+    playlistId             String?
+    isMadeForKids          String?
+    mediaComponentId       String?
 }
 
 model ResourceYoutubeChannel {
@@ -101,12 +106,21 @@ model GoogleDriveResource {
     resource     Resource @relation(fields: [resourceId], references: [id])
 }
 
+model ThumbnailGoogleDriveResource {
+    id           String   @id @default(uuid())
+    resourceId   String   @unique
+    driveId      String
+    mimeType     String
+    refreshToken String
+    resource     Resource @relation(fields: [resourceId], references: [id])
+}
+
 model ResourceLocalization {
     id                    String                 @id @default(uuid())
     resourceId            String
-    title                 String
-    description           String
-    keywords              String
+    title                 String?
+    description           String?
+    keywords              String?
     captionFile           String?
     audioTrackFile        String?
     language              String

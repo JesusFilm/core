@@ -33,18 +33,53 @@ export class BatchService {
           customThumbnail: row.custom_thumbnail,
           category: row.category,
           privacy: row.privacy as PrivacyStatus,
+          notifySubscribers: row.notify_subscribers,
+          playlistId: row.playlist_id,
+          isMadeForKids: row.is_made_for_kids,
+          mediaComponentId: row.media_component_id,
           localizations: {
             create: {
               title: row.title ?? '',
               description: row.description ?? '',
               keywords: row.keywords ?? '',
-              language: row.spoken_language ?? '',
+              language: row.text_language ?? '',
+              captionFile: row.caption_file ?? '',
+              localizedResourceFile: {
+                create: {
+                  mimeType: row.captionDriveFile?.mimeType ?? '',
+                  captionDriveId: row.captionDriveFile?.id ?? '',
+                  audioDriveId: row.audioTrackDriveFile?.id ?? '',
+                  refreshToken,
+                },
+              },
             },
+
+            // createMany: {
+            //   data: [
+            //     {
+            //       title: row.title ?? '',
+            //       description: row.description ?? '',
+            //       keywords: row.keywords ?? '',
+            //       language: row.text_language ?? '',
+            //     },
+            //     {
+            //       captionFile: row.caption_file ?? '',
+            //       language: row.caption_language ?? '',
+            //     },
+            //   ],
+            // },
           },
           googleDrive: {
             create: {
               mimeType: row.driveFile?.mimeType ?? '',
               driveId: row.driveFile?.id ?? '',
+              refreshToken,
+            },
+          },
+          thumbnailGoogleDrive: {
+            create: {
+              mimeType: row.customThumbnailDriveFile?.mimeType ?? '',
+              driveId: row.customThumbnailDriveFile?.id ?? '',
               refreshToken,
             },
           },
