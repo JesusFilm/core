@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 
 import logo from '../../../../public/logo.svg'
 import { useJourneyQuery } from '../../../libs/useJourneyQuery'
+import { OnboardingStepper } from '../OnboardingStepper'
 import { OnboardingTemplateCard } from '../OnboardingTemplateCard/OnboardingTemplateCard'
 
 export function OnboardingSideBar(): ReactElement {
@@ -39,6 +40,7 @@ export function OnboardingSideBar(): ReactElement {
     >
       <Image src={logo} alt="Next Steps" height={41} width={208} />
       {data != null && <OnboardingTemplateCard journey={data.journey} />}
+      <OnboardingStepper />
     </Stack>
   )
 }
