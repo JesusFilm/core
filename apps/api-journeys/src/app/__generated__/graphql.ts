@@ -463,7 +463,7 @@ export class ChatButtonUpdateInput {
 }
 
 export class CustomDomainCreateInput {
-    hostName: string;
+    name: string;
     defaultJourneysOnly: boolean;
 }
 
@@ -1065,9 +1065,11 @@ export class ChatButton {
 export class CustomDomain {
     __typename?: 'CustomDomain';
     id: string;
-    hostName: string;
+    name: string;
+    apexName: string;
     teamId: string;
     defaultJourneysOnly: boolean;
+    verified: boolean;
 }
 
 export class CustomDomainDefaultJourney {
