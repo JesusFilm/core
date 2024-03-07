@@ -105,9 +105,6 @@ export function CustomDomainDialog({
   }
 
   async function handleSubmit(value, { resetForm }): Promise<void> {
-    console.log('here')
-    console.log(value)
-
     if (
       customDomainData?.customDomains != null &&
       customDomainData?.customDomains?.length !== 0
@@ -139,9 +136,17 @@ export function CustomDomainDialog({
     })
   }
 
+  const initialValues = {
+    domainName:
+      customDomainData?.customDomains != null
+        ? customDomainData?.customDomains[0]?.hostName
+        : ''
+  }
+
   return (
     <Formik
-      initialValues={{ domainName: '' }}
+      initialValues={initialValues}
+      enableReinitialize
       onSubmit={handleSubmit}
       validationSchema={validationSchema}
     >
@@ -196,7 +201,6 @@ export function CustomDomainDialog({
                         fullWidth
                         id="defaultJourney"
                         name="defaultJourney"
-                        value={values.defaultJourney}
                         onChange={handleOnChange}
                       >
                         {journeysData?.journeys.map((journey) => (
@@ -240,7 +244,7 @@ export function CustomDomainDialog({
                             width: '33%'
                           }}
                         >
-                          {t('A RECORD')}
+                          {t('A')}
                         </Box>
                         <Box
                           sx={{
@@ -295,7 +299,7 @@ export function CustomDomainDialog({
                             width: '33%'
                           }}
                         >
-                          {t('C NAME')}
+                          {t('CNAME')}
                         </Box>
                         <Box
                           sx={{
