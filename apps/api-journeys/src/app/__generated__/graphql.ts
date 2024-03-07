@@ -463,6 +463,7 @@ export class ChatButtonUpdateInput {
 }
 
 export class CustomDomainCreateInput {
+    teamId: string;
     name: string;
     allowOutsideJourneys?: Nullable<boolean>;
     journeyCollectionId?: Nullable<string>;
@@ -827,6 +828,8 @@ export abstract class IQuery {
 
     abstract customDomain(id: string): CustomDomain | Promise<CustomDomain>;
 
+    abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
+
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
@@ -1089,6 +1092,7 @@ export class VercelDomainVerification {
 export class CustomDomain {
     __typename?: 'CustomDomain';
     id: string;
+    teamId: string;
     name: string;
     apexName: string;
     allowOutsideJourneys: boolean;
