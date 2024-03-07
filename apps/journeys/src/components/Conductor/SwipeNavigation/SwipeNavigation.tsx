@@ -1,9 +1,9 @@
 import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import last from 'lodash/last'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useCallback } from 'react'
 import TagManager from 'react-gtm-module'
-import { useTranslation } from 'react-i18next'
 import { useSwipeable } from 'react-swipeable'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -190,7 +190,8 @@ export function SwipeNavigation({
       sx={{
         height: 'inherit',
         maxHeight: 'inherit',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        position: 'relative'
       }}
       {...swipeHandlers}
     >

@@ -1,13 +1,14 @@
 import Button from '@mui/material/Button'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
@@ -29,6 +30,7 @@ export function CreateJourneyButton({
   const router = useRouter()
   const { journey } = useJourney()
   const [openTeamDialog, setOpenTeamDialog] = useState<boolean | undefined>()
+  const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const [loadingJourney, setLoadingJourney] = useState(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
@@ -68,22 +70,26 @@ export function CreateJourneyButton({
     if (signedIn) {
       setOpenTeamDialog(true)
     } else {
-      const url = window.location.origin + router.asPath
-      void router.push(
-        {
-          pathname: '/users/sign-in',
-          query: {
-            redirect: url.includes('createNew')
-              ? url
-              : `${window.location.origin + router.asPath}?createNew=true`
-          }
-        },
-        undefined,
-        {
-          shallow: true
-        }
-      )
+      setOpenAccountDialog(true)
     }
+  }
+
+  const handleSignIn = (create: boolean): void => {
+    const url = window.location.origin + router.asPath
+    void router.push(
+      {
+        pathname: '/users/sign-in',
+        query: {
+          redirect: url.includes('createNew')
+            ? url
+            : `${window.location.origin + router.asPath}?createNew=true`
+        }
+      },
+      undefined,
+      {
+        shallow: true
+      }
+    )
   }
 
   useEffect(() => {
@@ -107,6 +113,11 @@ export function CreateJourneyButton({
       >
         {t('Use This Template')}
       </Button>
+      <AccountCheckDialog
+        open={openAccountDialog}
+        handleSignIn={handleSignIn}
+        onClose={() => setOpenAccountDialog(false)}
+      />
       {openTeamDialog != null && (
         <DynamicCopyToTeamDialog
           submitLabel={t('Add')}

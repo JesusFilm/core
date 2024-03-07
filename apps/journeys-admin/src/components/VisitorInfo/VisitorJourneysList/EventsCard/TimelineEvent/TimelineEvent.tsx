@@ -1,6 +1,6 @@
 import { intlFormat, parseISO } from 'date-fns'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import ArrowRightContained1Icon from '@core/shared/ui/icons/ArrowRightContained1'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'

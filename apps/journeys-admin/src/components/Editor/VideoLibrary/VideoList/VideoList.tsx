@@ -5,8 +5,8 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Skeleton from '@mui/material/Skeleton'
+import { useTranslation } from 'next-i18next'
 import { Fragment, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 

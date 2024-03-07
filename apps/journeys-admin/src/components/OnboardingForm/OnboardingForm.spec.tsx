@@ -24,29 +24,12 @@ const mockCreateClient = createClient as jest.MockedFunction<
   typeof createClient
 >
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
 }))
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
 
 describe('OnboardingForm', () => {
   const push = jest.fn()

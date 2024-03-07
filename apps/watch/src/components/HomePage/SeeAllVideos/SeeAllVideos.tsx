@@ -1,8 +1,8 @@
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 export function SeeAllVideos(): ReactElement {
   const { t } = useTranslation('apps-watch')

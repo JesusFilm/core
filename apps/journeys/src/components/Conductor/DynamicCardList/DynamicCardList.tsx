@@ -39,13 +39,11 @@ export function DynamicCardList(): ReactElement {
 
         const cardSx: SxProps = isCurrent
           ? {
-              height: '100%',
               width: 'inherit',
               position: 'relative',
               display: 'block'
             }
           : {
-              height: 'inherit',
               width: '-webkit-fill-available',
               position: 'absolute',
               top: 0,
@@ -62,6 +60,7 @@ export function DynamicCardList(): ReactElement {
               className={isCurrent ? 'active-card' : undefined}
               onClick={() => setShowNavigation(true)}
               sx={{
+                height: '100%',
                 ...cardSx
               }}
             >
