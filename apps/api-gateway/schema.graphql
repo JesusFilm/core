@@ -356,6 +356,7 @@ type CustomDomain
   @join__type(graph: JOURNEYS)
 {
   id: ID!
+  teamId: String!
   name: String!
   apexName: String!
   allowOutsideJourneys: Boolean!
@@ -367,6 +368,7 @@ type CustomDomain
 input CustomDomainCreateInput
   @join__type(graph: JOURNEYS)
 {
+  teamId: String!
   name: String!
   allowOutsideJourneys: Boolean
   journeyCollectionId: String
@@ -1483,6 +1485,7 @@ type Query
 {
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
   customDomain(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomains(teamId: ID!): [CustomDomain!]! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
   """
