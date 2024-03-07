@@ -1,5 +1,3 @@
-// imports
-
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ComponentProps, ReactElement, useState } from 'react'
