@@ -15,6 +15,8 @@ import { GET_ROLE } from './Menu'
 
 import { Menu } from '.'
 
+import '../../../../../test/i18n'
+
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
@@ -41,7 +43,7 @@ describe('Toolbar Menu', () => {
       nextBlockId: null,
       children: []
     }
-    const { getByRole } = render(
+    const { getByRole, getByTestId } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -65,6 +67,7 @@ describe('Toolbar Menu', () => {
     expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
+    expect(getByTestId('menu-divider')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
@@ -78,7 +81,7 @@ describe('Toolbar Menu', () => {
       nextBlockId: null,
       children: []
     }
-    const { getByRole } = render(
+    const { getByRole, getByTestId } = render(
       <SnackbarProvider>
         <MockedProvider
           mocks={[
@@ -123,11 +126,12 @@ describe('Toolbar Menu', () => {
     expect(
       getByRole('menuitem', { name: 'Create Template' })
     ).toBeInTheDocument()
+    expect(getByTestId('menu-divider')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
-  it('should render template menu items for publishers', async () => {
+  it('should render template menu items', async () => {
     const selectedBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'stepId',
@@ -139,24 +143,7 @@ describe('Toolbar Menu', () => {
     }
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_ROLE
-              },
-              result: {
-                data: {
-                  getUserRole: {
-                    id: '1',
-                    userId: 'userId',
-                    roles: [Role.publisher]
-                  }
-                }
-              }
-            }
-          ]}
-        >
+        <MockedProvider>
           <JourneyProvider
             value={{
               journey: {
@@ -178,10 +165,6 @@ describe('Toolbar Menu', () => {
     expect(
       getByRole('menuitem', { name: 'Template Settings' })
     ).toBeInTheDocument()
-    await waitFor(() => {
-      expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-    })
-    expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
   })
 
   it('should handle edit journey title', async () => {

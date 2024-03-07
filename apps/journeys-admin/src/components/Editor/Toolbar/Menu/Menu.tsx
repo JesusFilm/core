@@ -96,7 +96,9 @@ export function Menu(): ReactElement {
           <StrategyItem variant="menu-item" closeMenu={handleCloseMenu} />
         )}
         {journey != null &&
-          (journey?.template !== true || isPublisher != null) && <Divider />}
+          (journey?.template !== true || isPublisher != null) && (
+            <Divider data-testid="menu-divider" />
+          )}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && (
             <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
