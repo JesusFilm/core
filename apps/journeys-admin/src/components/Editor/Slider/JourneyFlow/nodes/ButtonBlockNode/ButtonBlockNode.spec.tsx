@@ -92,4 +92,19 @@ describe('ButtonBlockNode', () => {
 
     expect(screen.getByText(mockButtonBlock.label)).toBeInTheDocument()
   })
+
+  it('should render default text if block has no label', () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <ButtonBlockNode
+            {...defaultProps}
+            data={{ step: mockStep, ...mockButtonBlock, label: '' }}
+          />
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    expect(screen.getByText('Button')).toBeInTheDocument()
+  })
 })
