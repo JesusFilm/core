@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { Position, ReactFlowProvider } from 'reactflow'
-import '../../../../../../../test/i18n'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -14,6 +13,7 @@ import {
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
+import '../../../../../../../test/i18n'
 
 import { RadioOptionBlockNode } from './RadioOptionBlockNode'
 
@@ -91,5 +91,20 @@ describe('RadioOptionBlockNode', () => {
     )
 
     expect(screen.getByText(mockRadioOptionBlock.label)).toBeInTheDocument()
+  })
+
+  it('should render default option text', () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <RadioOptionBlockNode
+            {...defaultProps}
+            data={{ step: mockStep, ...mockRadioOptionBlock, label: '' }}
+          />
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    expect(screen.getByText('Option')).toBeInTheDocument()
   })
 })
