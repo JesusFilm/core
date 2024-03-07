@@ -199,7 +199,8 @@ export function CustomDomainDialog({
                 />
               </Stack>
               {customDomainData?.customDomains?.length !== 0 &&
-                customDomainData?.customDomains != null && (
+                customDomainData?.customDomains != null &&
+                customDomainData?.customDomains[0].verified && (
                   <Stack spacing={4}>
                     <Typography variant="subtitle1">
                       {t('Default Journey')}
