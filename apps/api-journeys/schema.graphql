@@ -221,11 +221,6 @@ extend type Mutation {
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
-  customDomainCreate(teamId: ID!, input: CustomDomainCreateInput!): CustomDomain!
-  customDomainDelete(id: ID!): CustomDomain!
-  customDomainDefaultJourneyCreate(input: CustomDomainDefaultJourneyInput!): CustomDomainDefaultJourney!
-  customDomainDefaultJourneyUpdate(id: ID!, input: CustomDomainDefaultJourneyInput!): CustomDomainDefaultJourney!
-  customDomainDefaultJourneyDelete(id: ID!): CustomDomainDefaultJourney!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -352,8 +347,6 @@ type Query {
 
 extend type Query {
   block(id: ID!): Block!
-  customDomains(teamId: ID!): [CustomDomain!]
-  customDomainDefaultJourney(id: ID!): CustomDomainDefaultJourney
   hosts(teamId: ID!): [Host!]!
 
   """
@@ -1166,39 +1159,6 @@ input ChatButtonCreateInput {
 input ChatButtonUpdateInput {
   link: String
   platform: ChatPlatform
-}
-
-type CustomDomain {
-  id: ID!
-  name: String!
-  apexName: String!
-  teamId: ID!
-  defaultJourneysOnly: Boolean!
-  verified: Boolean!
-  verification: Verification
-}
-
-type Verification {
-  type: String!
-  domain: String!
-  value: String!
-}
-
-input CustomDomainCreateInput {
-  name: String!
-  defaultJourneysOnly: Boolean!
-}
-
-type CustomDomainDefaultJourney {
-  id: ID!
-  customDomainId: ID!
-  journeyId: ID!
-  order: Int!
-}
-
-input CustomDomainDefaultJourneyInput {
-  journeyId: ID!
-  order: Int
 }
 
 enum ButtonAction {

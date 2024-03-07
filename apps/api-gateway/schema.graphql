@@ -352,41 +352,6 @@ input CreateVerificationRequestInput
   redirect: String
 }
 
-type CustomDomain
-  @join__type(graph: JOURNEYS)
-{
-  id: ID!
-  name: String!
-  apexName: String!
-  teamId: ID!
-  defaultJourneysOnly: Boolean!
-  verified: Boolean!
-  verification: Verification
-}
-
-input CustomDomainCreateInput
-  @join__type(graph: JOURNEYS)
-{
-  name: String!
-  defaultJourneysOnly: Boolean!
-}
-
-type CustomDomainDefaultJourney
-  @join__type(graph: JOURNEYS)
-{
-  id: ID!
-  customDomainId: ID!
-  journeyId: ID!
-  order: Int!
-}
-
-input CustomDomainDefaultJourneyInput
-  @join__type(graph: JOURNEYS)
-{
-  journeyId: ID!
-  order: Int
-}
-
 scalar DateTime
   @join__type(graph: JOURNEYS)
 
@@ -1265,11 +1230,6 @@ type Mutation
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
-  customDomainCreate(teamId: ID!, input: CustomDomainCreateInput!): CustomDomain! @join__field(graph: JOURNEYS)
-  customDomainDelete(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
-  customDomainDefaultJourneyCreate(input: CustomDomainDefaultJourneyInput!): CustomDomainDefaultJourney! @join__field(graph: JOURNEYS)
-  customDomainDefaultJourneyUpdate(id: ID!, input: CustomDomainDefaultJourneyInput!): CustomDomainDefaultJourney! @join__field(graph: JOURNEYS)
-  customDomainDefaultJourneyDelete(id: ID!): CustomDomainDefaultJourney! @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
@@ -1462,8 +1422,6 @@ type Query
   @join__type(graph: VIDEOS)
 {
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
-  customDomains(teamId: ID!): [CustomDomain!] @join__field(graph: JOURNEYS)
-  customDomainDefaultJourney(id: ID!): CustomDomainDefaultJourney @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
   """
@@ -2324,14 +2282,6 @@ input UserTeamUpdateInput
   @join__type(graph: JOURNEYS)
 {
   role: UserTeamRole!
-}
-
-type Verification
-  @join__type(graph: JOURNEYS)
-{
-  type: String!
-  domain: String!
-  value: String!
 }
 
 type Video
