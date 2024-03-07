@@ -40,7 +40,7 @@ export const Modal: FC<ModalProps> = ({
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
             {title}
           </Typography>
-          {subtitle && (
+          {subtitle !== '' && (
             <Typography variant="body2" sx={{ fontWeight: 700 }}>
               {subtitle}
             </Typography>

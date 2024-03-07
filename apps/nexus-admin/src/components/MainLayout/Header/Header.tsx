@@ -20,15 +20,15 @@ export const Header: FC<HeaderProps> = ({ title }) => {
   const accountMenuOpen = Boolean(accountMenu)
   const user = useUser()
 
-  const handleAccountMenuOpen = (event: MouseEvent<HTMLElement>) => {
+  const handleAccountMenuOpen = (event: MouseEvent<HTMLElement>): void => {
     setAccountMenu(event.currentTarget)
   }
 
-  const handleAccountMenuClose = () => {
+  const handleAccountMenuClose = (): void => {
     setAccountMenu(null)
   }
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     await user.signOut()
   }
 

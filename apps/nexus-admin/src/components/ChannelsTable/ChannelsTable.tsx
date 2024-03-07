@@ -117,9 +117,9 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
       renderCell: ({ row }: GridCellParams) => {
         return (
           <Chip
-            clickable={!row.connected}
-            label={row.connected ? 'Connected' : 'Connect now'}
-            color={row.connected ? 'success' : 'default'}
+            clickable={row.connected !== true}
+            label={row.connected === true ? 'Connected' : 'Connect now'}
+            color={row.connected === true ? 'success' : 'default'}
             onClick={() => {
               setChannelId(row.id)
               googleLogin()

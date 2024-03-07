@@ -45,7 +45,7 @@ const BatchesPage: FC = () => {
   })
 
   useEffect(() => {
-    if (data) {
+    if (data !== undefined) {
       setBatches(data?.batches)
     }
   }, [data])
