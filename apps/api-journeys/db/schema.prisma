@@ -481,7 +481,7 @@ model JourneysEmailPreference {
 }
 
 model CustomDomain {
-  id                   String             @id @unique
+  id                   String             @id @default(uuid())
   teamId               String
   name                 String             @unique
   apexName             String
@@ -492,7 +492,7 @@ model CustomDomain {
 }
 
 model JourneyCollection {
-  id            String         @id @unique
+  id            String         @id @default(uuid())
   teamId        String
   title         String
   customDomains CustomDomain[]

@@ -6,11 +6,12 @@ import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { CustomDomainResolver } from './customDomain.resolver'
+import { CustomDomainService } from './customDomain.service'
 
 @Global()
 @Module({
   imports: [CaslAuthModule.register(AppCaslFactory)],
-  providers: [CustomDomainResolver, PrismaService],
+  providers: [CustomDomainResolver, PrismaService, CustomDomainService],
   exports: [CustomDomainResolver]
 })
-export class HostModule {}
+export class CustomDomainModule {}
