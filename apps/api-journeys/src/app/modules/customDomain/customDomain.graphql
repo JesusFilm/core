@@ -9,10 +9,10 @@ type CustomDomain {
   id: ID!
   name: String!
   apexName: String!
-  allowOutsideJourneys: Boolean!  
+  allowOutsideJourneys: Boolean!
   journeyCollection: JourneyCollection
   verified: Boolean!
-  verification: VercelDomainVerification[]
+  verification: [VercelDomainVerification]
 }
 
 input CustomDomainCreateInput {
