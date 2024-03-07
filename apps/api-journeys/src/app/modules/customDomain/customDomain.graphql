@@ -1,12 +1,21 @@
 type CustomDomain {
   id: ID!
-  hostName: String!
+  name: String!
+  apexName: String!
   teamId: ID!
   defaultJourneysOnly: Boolean!
+  verified: Boolean!
+  verification: Verification
+}
+
+type Verification {
+  type: String!
+  domain: String!
+  value: String!
 }
 
 input CustomDomainCreateInput {
-  hostName: String!
+  name: String!
   defaultJourneysOnly: Boolean!
 }
 

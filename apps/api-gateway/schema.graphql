@@ -356,15 +356,18 @@ type CustomDomain
   @join__type(graph: JOURNEYS)
 {
   id: ID!
-  hostName: String!
+  name: String!
+  apexName: String!
   teamId: ID!
   defaultJourneysOnly: Boolean!
+  verified: Boolean!
+  verification: Verification
 }
 
 input CustomDomainCreateInput
   @join__type(graph: JOURNEYS)
 {
-  hostName: String!
+  name: String!
   defaultJourneysOnly: Boolean!
 }
 
@@ -2321,6 +2324,14 @@ input UserTeamUpdateInput
   @join__type(graph: JOURNEYS)
 {
   role: UserTeamRole!
+}
+
+type Verification
+  @join__type(graph: JOURNEYS)
+{
+  type: String!
+  domain: String!
+  value: String!
 }
 
 type Video
