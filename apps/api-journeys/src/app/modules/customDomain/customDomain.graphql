@@ -1,0 +1,37 @@
+type VercelDomainVerification {
+  type: String
+  domain: String
+  value: String
+  reason: String
+}
+
+type CustomDomain {
+  id: ID!
+  name: String!
+  apexName: String!
+  allowOutsideJourneys: Boolean!  
+  journeyCollection: JourneyCollection
+  verified: Boolean!
+  verification: VercelDomainVerification[]
+}
+
+input CustomDomainCreateInput {
+  name: String!
+  allowOutsideJourneys: Boolean
+  journeyCollectionId: String
+}
+
+input CustomDomainUpdateInput {
+  name: String
+  allowOutsideJourneys: Boolean
+  journeyCollectionId: String
+}
+
+extend type Mutation {
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
+  customDomainUpdate(input: CustomDomainUpdateInput!): CustomDomain!
+}
+
+extend type Query {
+  customDomain(id: ID!): CustomDomain!
+}

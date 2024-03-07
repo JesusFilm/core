@@ -197,16 +197,17 @@ model JourneyVisitor {
 }
 
 model Team {
-  id              String           @id @default(uuid())
-  title           String
-  publicTitle     String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  visitors        Visitor[]
-  userTeams       UserTeam[]
-  journeys        Journey[]
-  hosts           Host[]
-  UserTeamInvites UserTeamInvite[]
+  id                 String              @id @default(uuid())
+  title              String
+  publicTitle        String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  visitors           Visitor[]
+  userTeams          UserTeam[]
+  journeys           Journey[]
+  hosts              Host[]
+  UserTeamInvites    UserTeamInvite[]
+  journeyCollections JourneyCollection[]
 
   @@index(title)
 }
@@ -296,13 +297,13 @@ enum ThemeName {
 }
 
 model Journey {
-  id                  String           @id @default(uuid())
+  id                  String              @id @default(uuid())
   title               String
   languageId          String
   description         String?
-  slug                String           @unique
+  slug                String              @unique
   archivedAt          DateTime?
-  createdAt           DateTime         @default(now())
+  createdAt           DateTime            @default(now())
   deletedAt           DateTime?
   publishedAt         DateTime?
   trashedAt           DateTime?
@@ -310,27 +311,28 @@ model Journey {
   status              JourneyStatus
   seoTitle            String?
   seoDescription      String?
-  primaryImageBlockId String?          @unique
-  creatorImageBlockId String?          @unique
+  primaryImageBlockId String?             @unique
+  creatorImageBlockId String?             @unique
   creatorDescription  String?
-  template            Boolean?         @default(false)
+  template            Boolean?            @default(false)
   teamId              String
   hostId              String?
-  themeMode           ThemeMode?       @default(light)
-  themeName           ThemeName?       @default(base)
-  updatedAt           DateTime         @default(now()) @updatedAt
+  themeMode           ThemeMode?          @default(light)
+  themeName           ThemeName?          @default(base)
+  updatedAt           DateTime            @default(now()) @updatedAt
   userJourneys        UserJourney[]
-  team                Team             @relation(fields: [teamId], references: [id])
+  team                Team                @relation(fields: [teamId], references: [id])
   userInvites         UserInvite[]
   blocks              Block[]
   chatButtons         ChatButton[]
-  host                Host?            @relation(fields: [hostId], references: [id])
+  host                Host?               @relation(fields: [hostId], references: [id])
   journeyTags         JourneyTag[]
   actions             Action[]
-  primaryImageBlock   Block?           @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id], onDelete: SetNull)
-  creatorImageBlock   Block?           @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
+  primaryImageBlock   Block?              @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id], onDelete: SetNull)
+  creatorImageBlock   Block?              @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
   journeyVisitors     JourneyVisitor[]
   strategySlug        String?
+  journeyCollections  JourneyCollection[]
 
   @@index(title)
 }
@@ -475,4 +477,22 @@ model JourneysEmailPreference {
   accountNotifications Boolean @default(true)
 
   @@index(email)
+}
+
+model CustomDomain {
+  id                   String             @id @unique
+  name                 String             @unique
+  apexName             String
+  allowOutsideJourneys Boolean            @default(false)
+  journeyCollectionId  String?
+  journeyCollection    JourneyCollection? @relation(fields: [journeyCollectionId], references: [id])
+}
+
+model JourneyCollection {
+  id            String         @id @unique
+  teamId        String
+  title         String
+  customDomains CustomDomain[]
+  team          Team           @relation(fields: [teamId], references: [id])
+  journeys      Journey[]
 }
