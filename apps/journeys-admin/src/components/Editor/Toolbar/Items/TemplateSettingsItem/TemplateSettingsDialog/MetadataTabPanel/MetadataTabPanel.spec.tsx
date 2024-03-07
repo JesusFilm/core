@@ -10,6 +10,7 @@ import { publishedJourney } from '../../../../../../JourneyList/journeyListData'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { MetadataTabPanel } from './MetadataTabPanel'
+import '../../../../../../../../test/i18n'
 
 describe('MetadataTabPanel', () => {
   afterEach(() => jest.clearAllMocks())

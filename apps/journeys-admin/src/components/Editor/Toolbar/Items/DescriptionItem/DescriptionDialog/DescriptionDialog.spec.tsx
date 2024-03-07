@@ -8,6 +8,8 @@ import { defaultJourney } from '../../../../data'
 
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from '.'
 
+import '../../../../../../../test/i18n'
+
 const onClose = jest.fn()
 
 describe('JourneyView/Menu/DescriptionDialog', () => {

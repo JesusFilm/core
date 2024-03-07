@@ -8,6 +8,7 @@ import { GET_TAGS } from '../../../../../../../libs/useTagsQuery/useTagsQuery'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { CategoriesTabPanel } from './CategoriesTabPanel'
+import '../../../../../../../../test/i18n'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

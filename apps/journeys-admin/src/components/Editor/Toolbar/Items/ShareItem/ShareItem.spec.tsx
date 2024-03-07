@@ -34,7 +34,7 @@ describe('ShareItem', () => {
       }
     } as unknown as NextRouter)
 
-    const { getAllByRole, getByRole, queryByRole } = render(
+    const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -48,10 +48,19 @@ describe('ShareItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getAllByRole('button', { name: 'Edit URL' })[0])
+    fireEvent.click(getByRole('button', { name: 'Share' }))
     expect(getByRole('dialog')).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Edit URL' }))
+
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Save' })).toBeInTheDocument()
+      expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+    })
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
-    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument())
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Edit URL' })).toBeInTheDocument()
+      expect(getByRole('button', { name: 'Embed Journey' })).toBeInTheDocument()
+    })
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -76,7 +85,7 @@ describe('ShareItem', () => {
         on
       }
     } as unknown as NextRouter)
-    const { getAllByRole, getByRole, queryByRole } = render(
+    const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -90,10 +99,19 @@ describe('ShareItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getAllByRole('button', { name: 'Embed Journey' })[0])
+    fireEvent.click(getByRole('button', { name: 'Share' }))
     expect(getByRole('dialog')).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Embed Journey' }))
+    expect(getByRole('dialog')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Copy Code' })).toBeInTheDocument()
+      expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+    })
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
-    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument())
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Edit URL' })).toBeInTheDocument()
+      expect(getByRole('button', { name: 'Embed Journey' })).toBeInTheDocument()
+    })
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(

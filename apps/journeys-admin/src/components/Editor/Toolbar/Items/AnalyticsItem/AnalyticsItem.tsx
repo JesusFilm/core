@@ -1,6 +1,6 @@
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
