@@ -1,1 +1,0 @@
-export { OnboardingSideBar } from './OnboardingSideBar'

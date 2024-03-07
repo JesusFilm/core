@@ -70,7 +70,13 @@ export function TeamOnboarding(): ReactElement {
         isSubmitting
       }) => (
         <Form>
-          <Card>
+          <Card
+            sx={{
+              height: { xs: '100vh', sm: 'inherit' },
+              width: { xs: '100vw', sm: 397 },
+              borderRadius: { xs: 6, sm: 2 }
+            }}
+          >
             <CardHeader
               title={t('Create Team')}
               titleTypographyProps={{ variant: 'h6' }}

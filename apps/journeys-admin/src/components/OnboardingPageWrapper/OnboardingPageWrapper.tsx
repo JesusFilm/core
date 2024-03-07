@@ -4,10 +4,11 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useState } from 'react'
+import { use100vh } from 'react-div-100vh'
 
 import { LanguageSwitcher } from '../LanguageSwitcher'
 
-import { OnboardingSideBar } from './OnboardingSideBar'
+import { OnboardingDrawer } from './OnboardingDrawer'
 
 interface OnboardingPageWrapperProps {
   emailSubject: string
@@ -19,30 +20,44 @@ export function OnboardingPageWrapper({
   children
 }: OnboardingPageWrapperProps): ReactElement {
   const [open, setOpen] = useState(false)
+  const viewportHeight = use100vh()
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Stack direction="row" sx={{ backgroundColor: 'background.paper' }}>
-      <OnboardingSideBar />
+    <Stack
+      direction={{ xs: 'column', md: 'row' }}
+      sx={{
+        backgroundColor: { xs: 'background.default', md: 'background.paper' },
+        height: viewportHeight ?? '100vh',
+        overflow: 'hidden'
+      }}
+    >
+      <OnboardingDrawer />
       <Stack
         justifyContent="space-evenly"
         alignItems="center"
         sx={{
           height: '100vh',
-          minHeight: '600px',
           flexGrow: 1,
-          borderTopLeftRadius: 30,
-          borderBottomLeftRadius: 30,
-          borderLeftStyle: 'solid',
+          borderTopLeftRadius: { xs: 24, md: 30 },
+          borderBottomLeftRadius: { xs: 0, md: 30 },
+          borderTopRightRadius: { xs: 24, md: 0 },
+          borderLeftStyle: { xs: null, md: 'solid' },
+          borderTopStyle: { xs: 'solid', md: null },
           borderColor: 'divider',
-          backgroundColor: 'background.default'
+          backgroundColor: { xs: 'background.paper', md: 'background.default' }
         }}
-        data-testid="JourneysAdminOnboardingPageWrapper"
+        data-testid="OnboardingPageWrapper"
       >
-        <Stack alignItems="center" sx={{ maxWidth: { xs: 311, md: 397 } }}>
+        <Stack alignItems="center" sx={{ maxWidth: { xs: '100%', sm: 397 } }}>
           {children}
         </Stack>
-        <Stack direction="row" alignItems="center" gap={4}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          gap={4}
+          sx={{ display: { xs: 'none', sm: 'block' } }}
+        >
           <Link
             variant="body2"
             underline="none"
