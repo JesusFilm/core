@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { Position, ReactFlowProvider } from 'reactflow'
-import '../../../../../../../test/i18n'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -14,6 +13,7 @@ import {
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
+import '../../../../../../../test/i18n'
 
 import { FormBlockNode } from './FormBlockNode'
 
