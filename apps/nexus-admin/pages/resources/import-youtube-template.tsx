@@ -11,7 +11,7 @@ import { useGoogleLogin } from '@react-oauth/google'
 import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
 import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
 
@@ -88,51 +88,45 @@ const ImportYouTubeTemplatePage: FC = () => {
     }
   })
 
-  const filePicker = useCallback(
-    function (): void {
-      openPicker({
-        clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
-        developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
-        token: googleAccessToken ?? '',
-        viewId: 'SPREADSHEETS',
-        callbackFunction: (data) => {
-          if (data.action === 'cancel') {
-            console.log('User clicked cancel/close button')
-          }
-
-          if (data.action === 'picked') {
-            setSelectedTemplateFile(data.docs[0])
-            console.log(data.docs[0]?.id)
-            console.log(googleAccessTokenId)
-          }
+  const filePicker = function (): void {
+    openPicker({
+      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
+      developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
+      token: googleAccessToken ?? '',
+      viewId: 'SPREADSHEETS',
+      callbackFunction: (data) => {
+        if (data.action === 'cancel') {
+          console.log('User clicked cancel/close button')
         }
-      })
-    },
-    [googleAccessToken, googleAccessTokenId, openPicker]
-  )
 
-  const directoryPicker = useCallback(
-    function (): void {
-      openPicker({
-        clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
-        developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
-        token: googleAccessToken ?? '',
-        viewId: 'FOLDERS',
-        setSelectFolderEnabled: true,
-        callbackFunction: (data) => {
-          if (data.action === 'cancel') {
-            console.log('User clicked cancel/close button')
-          }
-
-          if (data.action === 'picked') {
-            setSelectedVideosDirectory(data.docs[0])
-            console.log(googleAccessTokenId)
-          }
+        if (data.action === 'picked') {
+          setSelectedTemplateFile(data.docs[0])
+          console.log(data.docs[0]?.id)
+          console.log(googleAccessTokenId)
         }
-      })
-    },
-    [googleAccessToken, googleAccessTokenId, openPicker]
-  )
+      }
+    })
+  }
+
+  const directoryPicker = function (): void {
+    openPicker({
+      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
+      developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
+      token: googleAccessToken ?? '',
+      viewId: 'FOLDERS',
+      setSelectFolderEnabled: true,
+      callbackFunction: (data) => {
+        if (data.action === 'cancel') {
+          console.log('User clicked cancel/close button')
+        }
+
+        if (data.action === 'picked') {
+          setSelectedVideosDirectory(data.docs[0])
+          console.log(googleAccessTokenId)
+        }
+      }
+    })
+  }
 
   useEffect(() => {
     if (googleAccessToken !== '') {
@@ -144,7 +138,7 @@ const ImportYouTubeTemplatePage: FC = () => {
         directoryPicker()
       }
     }
-  }, [directoryPicker, filePicker, googleAccessToken, resourceType])
+  }, [googleAccessToken])
 
   const uploadYoutubeTemplate = (): void => {
     void getResourceFromTemplate({
