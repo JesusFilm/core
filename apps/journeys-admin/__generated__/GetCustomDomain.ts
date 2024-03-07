@@ -7,9 +7,19 @@
 // GraphQL query operation: GetCustomDomain
 // ====================================================
 
+export interface GetCustomDomain_customDomains_verification {
+  __typename: "Verification";
+  domain: string;
+  type: string;
+  value: string;
+}
+
 export interface GetCustomDomain_customDomains {
   __typename: "CustomDomain";
-  hostName: string;
+  name: string;
+  apexName: string;
+  verified: boolean;
+  verification: GetCustomDomain_customDomains_verification | null;
   defaultJourneysOnly: boolean;
   id: string;
   teamId: string;

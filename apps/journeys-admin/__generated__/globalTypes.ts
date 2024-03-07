@@ -294,7 +294,7 @@ export interface ChatOpenEventCreateInput {
 }
 
 export interface CustomDomainCreateInput {
-  hostName: string;
+  name: string;
   defaultJourneysOnly: boolean;
 }
 

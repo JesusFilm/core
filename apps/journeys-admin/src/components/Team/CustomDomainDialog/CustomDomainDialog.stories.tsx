@@ -44,7 +44,7 @@ const getAdminJourneysMock: MockedResponse<
   }
 }
 
-const getCustomDomainMock: MockedResponse<GetCustomDomain> = {
+const getCustomDomainMockVerifiedFalse: MockedResponse<GetCustomDomain> = {
   request: {
     query: GET_CUSTOM_DOMAIN,
     variables: {
@@ -56,10 +56,68 @@ const getCustomDomainMock: MockedResponse<GetCustomDomain> = {
       customDomains: [
         {
           __typename: 'CustomDomain',
-          hostName: 'mockdomain.com',
+          name: 'mockdomain.com',
+          apexName: 'mockdomain.com',
           defaultJourneysOnly: true,
           id: 'customDomainId',
-          teamId: 'teamId'
+          teamId: 'teamId',
+          verified: false,
+          verification: {
+            __typename: 'Verification',
+            type: 'TXT',
+            domain: '_vercel.mockdomain.com',
+            value: 'vc-domain-verify=mockdomain.com,61eb769fc89e3d03578a'
+          }
+        }
+      ]
+    }
+  }
+}
+
+const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
+  request: {
+    query: GET_CUSTOM_DOMAIN,
+    variables: {
+      teamId: 'teamId'
+    }
+  },
+  result: {
+    data: {
+      customDomains: [
+        {
+          __typename: 'CustomDomain',
+          name: 'mockdomain.com',
+          apexName: 'mockdomain.com',
+          defaultJourneysOnly: true,
+          id: 'customDomainId',
+          teamId: 'teamId',
+          verified: true,
+          verification: null
+        }
+      ]
+    }
+  }
+}
+
+const getCustomDomainMockCName: MockedResponse<GetCustomDomain> = {
+  request: {
+    query: GET_CUSTOM_DOMAIN,
+    variables: {
+      teamId: 'teamId'
+    }
+  },
+  result: {
+    data: {
+      customDomains: [
+        {
+          __typename: 'CustomDomain',
+          name: 'tandem.mockdomain.com',
+          apexName: 'mockdomain.com',
+          defaultJourneysOnly: true,
+          id: 'customDomainId',
+          teamId: 'teamId',
+          verified: true,
+          verification: null
         }
       ]
     }
@@ -108,14 +166,40 @@ export const Default = {
   }
 }
 
-export const WithDomain = {
+export const StatusFailed = {
   ...Template,
   parameters: {
     apolloClient: {
       mocks: [
         getAdminJourneysMock,
         getLastActiveTeamIdAndTeamsMock,
-        getCustomDomainMock
+        getCustomDomainMockVerifiedFalse
+      ]
+    }
+  }
+}
+
+export const WithARECORD = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [
+        getAdminJourneysMock,
+        getLastActiveTeamIdAndTeamsMock,
+        getCustomDomainMockARecord
+      ]
+    }
+  }
+}
+
+export const WithCNAME = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [
+        getAdminJourneysMock,
+        getLastActiveTeamIdAndTeamsMock,
+        getCustomDomainMockCName
       ]
     }
   }

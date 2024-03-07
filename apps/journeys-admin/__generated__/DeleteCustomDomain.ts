@@ -10,7 +10,7 @@
 export interface DeleteCustomDomain_customDomainDelete {
   __typename: "CustomDomain";
   id: string;
-  hostName: string;
+  name: string;
   defaultJourneysOnly: boolean;
 }
 

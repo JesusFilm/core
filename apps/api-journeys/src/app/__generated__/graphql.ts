@@ -1070,6 +1070,14 @@ export class CustomDomain {
     teamId: string;
     defaultJourneysOnly: boolean;
     verified: boolean;
+    verification?: Nullable<Verification>;
+}
+
+export class Verification {
+    __typename?: 'Verification';
+    type: string;
+    domain: string;
+    value: string;
 }
 
 export class CustomDomainDefaultJourney {

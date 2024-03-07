@@ -12,7 +12,7 @@ import { CustomDomainCreateInput } from "./globalTypes";
 export interface CreateCustomDomain_customDomainCreate {
   __typename: "CustomDomain";
   id: string;
-  hostName: string;
+  name: string;
   defaultJourneysOnly: boolean;
 }
 

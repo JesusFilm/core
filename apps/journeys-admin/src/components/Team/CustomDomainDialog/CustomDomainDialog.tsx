@@ -19,6 +19,7 @@ import { object, string } from 'yup'
 import { Dialog } from '@core/shared/ui/Dialog/Dialog'
 import Check from '@core/shared/ui/icons/Check'
 import CopyLeft from '@core/shared/ui/icons/CopyLeft'
+import X3 from '@core/shared/ui/icons/X3'
 
 import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
 import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
@@ -35,7 +36,14 @@ interface CustomDomainDialogProps {
 export const GET_CUSTOM_DOMAIN = gql`
   query GetCustomDomain($teamId: ID!) {
     customDomains(teamId: $teamId) {
-      hostName
+      name
+      apexName
+      verified
+      verification {
+        domain
+        type
+        value
+      }
       defaultJourneysOnly
       id
       teamId
@@ -47,7 +55,7 @@ export const CREATE_CUSTOM_DOMAIN = gql`
   mutation CreateCustomDomain($teamId: ID!, $input: CustomDomainCreateInput!) {
     customDomainCreate(teamId: $teamId, input: $input) {
       id
-      hostName
+      name
       defaultJourneysOnly
     }
   }
@@ -57,7 +65,7 @@ export const DELETE_CUSTOM_DOMAIN = gql`
   mutation DeleteCustomDomain($customDomainDeleteId: ID!) {
     customDomainDelete(id: $customDomainDeleteId) {
       id
-      hostName
+      name
       defaultJourneysOnly
     }
   }
@@ -117,7 +125,7 @@ export function CustomDomainDialog({
       await createCustomDomain({
         variables: {
           teamId: activeTeam?.id,
-          input: { hostName: value.domainName, defaultJourneysOnly: true }
+          input: { name: value.domainName, defaultJourneysOnly: true }
         }
       })
     }
@@ -139,7 +147,7 @@ export function CustomDomainDialog({
   const initialValues = {
     domainName:
       customDomainData?.customDomains != null
-        ? customDomainData?.customDomains[0]?.hostName
+        ? customDomainData?.customDomains[0]?.name
         : ''
   }
 
@@ -221,128 +229,172 @@ export function CustomDomainDialog({
                       </Typography>
                       <Chip
                         icon={
-                          <Check
-                            sx={{
-                              borderRadius: 777,
-                              backgroundColor: 'success.main',
-                              '&.MuiSvgIcon-root': { color: 'background.paper' }
-                            }}
-                          />
+                          customDomainData.customDomains[0].verified ? (
+                            <Check
+                              sx={{
+                                borderRadius: 777,
+                                backgroundColor: 'success.main',
+                                '&.MuiSvgIcon-root': {
+                                  color: 'background.paper'
+                                }
+                              }}
+                            />
+                          ) : (
+                            <X3
+                              sx={{
+                                borderRadius: 777,
+                                backgroundColor: 'error.main',
+                                '&.MuiSvgIcon-root': {
+                                  color: 'background.paper'
+                                }
+                              }}
+                            />
+                          )
                         }
                         label="Status"
                       />
                     </Stack>
                     <Stack spacing={4}>
-                      <Stack direction="row" sx={{ width: '100%' }}>
-                        <Box
-                          sx={{
-                            border: '2px solid',
-                            borderColor: 'divider',
-                            color: 'secondary.light',
-                            borderRadius: '8px 0px 0px 8px',
-                            p: 4,
-                            width: '33%'
-                          }}
-                        >
-                          {t('A')}
-                        </Box>
-                        <Box
-                          sx={{
-                            borderTop: '2px solid',
-                            borderBottom: '2px solid',
-                            borderColor: 'divider',
-                            color: 'secondary.light',
-                            p: 4,
-                            width: '33%'
-                          }}
-                        >
-                          {t('@')}
-                        </Box>
-                        <Box
-                          sx={{
-                            border: '2px solid',
-                            borderRadius: '0px 8px 8px 0px',
-                            borderColor: 'divider',
-                            color: 'secondary.light',
-                            pl: 4,
-                            width: '33%'
-                          }}
-                        >
-                          <Stack
-                            direction="row"
-                            alignItems="center"
-                            height="100%"
-                            justifyContent="space-between"
+                      {customDomainData?.customDomains[0].verified && (
+                        <Stack direction="row" sx={{ width: '100%' }}>
+                          <Box
+                            sx={{
+                              border: '2px solid',
+                              borderColor: 'divider',
+                              color: 'secondary.light',
+                              borderRadius: '8px 0px 0px 8px',
+                              p: 4,
+                              width: '33%'
+                            }}
                           >
-                            {t('76.76.21.21')}
-                            {smUp && (
-                              <IconButton
-                                onClick={async () =>
-                                  await handleCopyClick('76.76.21.21')
-                                }
-                                aria-label="Copy"
-                              >
-                                <CopyLeft />
-                              </IconButton>
-                            )}
-                          </Stack>
-                        </Box>
-                      </Stack>
-                      <Stack direction="row" sx={{ width: '100%' }}>
-                        <Box
-                          sx={{
-                            border: '2px solid',
-                            borderColor: 'divider',
-                            color: 'secondary.light',
-                            borderRadius: '8px 0px 0px 8px',
-                            p: 4,
-                            width: '33%'
-                          }}
-                        >
-                          {t('CNAME')}
-                        </Box>
-                        <Box
-                          sx={{
-                            borderTop: '2px solid',
-                            borderBottom: '2px solid',
-                            borderColor: 'divider',
-                            color: 'secondary.light',
-                            p: 4,
-                            width: '33%'
-                          }}
-                        >
-                          {t('@')}
-                        </Box>
-                        <Box
-                          sx={{
-                            border: '2px solid',
-                            borderRadius: '0px 8px 8px 0px',
-                            borderColor: 'divider',
-                            color: 'secondary.light',
-                            pl: 4,
-                            width: '33%'
-                          }}
-                        >
-                          <Stack
-                            direction="row"
-                            alignItems="center"
-                            height="100%"
-                            justifyContent="space-between"
+                            {customDomainData?.customDomains[0].apexName ===
+                            customDomainData?.customDomains[0].name
+                              ? t('A')
+                              : t('CNAME')}
+                          </Box>
+                          <Box
+                            sx={{
+                              borderTop: '2px solid',
+                              borderBottom: '2px solid',
+                              borderColor: 'divider',
+                              color: 'secondary.light',
+                              p: 4,
+                              width: '33%'
+                            }}
                           >
-                            {t('cname.vercel-dns.com')}
-                            {smUp && (
-                              <IconButton
-                                onClick={async () =>
-                                  await handleCopyClick('cname.vercel-dns.com')
-                                }
-                                aria-label="Copy"
+                            {customDomainData.customDomains[0].apexName}
+                          </Box>
+                          <Box
+                            sx={{
+                              border: '2px solid',
+                              borderRadius: '0px 8px 8px 0px',
+                              borderColor: 'divider',
+                              color: 'secondary.light',
+                              pl: 4,
+                              width: '33%'
+                            }}
+                          >
+                            <Stack
+                              direction="row"
+                              alignItems="center"
+                              height="100%"
+                              justifyContent="space-between"
+                            >
+                              {customDomainData?.customDomains[0].apexName ===
+                              customDomainData?.customDomains[0].name
+                                ? t('76.76.21.21')
+                                : t('cname.vercel-dns.com')}
+                              {smUp && (
+                                <IconButton
+                                  onClick={async () =>
+                                    await handleCopyClick('76.76.21.21')
+                                  }
+                                  aria-label="Copy"
+                                >
+                                  <CopyLeft />
+                                </IconButton>
+                              )}
+                            </Stack>
+                          </Box>
+                        </Stack>
+                      )}
+                      {!customDomainData?.customDomains[0].verified &&
+                        customDomainData?.customDomains[0].verification !=
+                          null && (
+                          <Stack direction="row" sx={{ width: '100%' }}>
+                            <Box
+                              sx={{
+                                border: '2px solid',
+                                borderColor: 'divider',
+                                color: 'secondary.light',
+                                borderRadius: '8px 0px 0px 8px',
+                                p: 4,
+                                width: '33%',
+                                display: 'flex',
+                                alignItems: 'center'
+                              }}
+                            >
+                              {
+                                customDomainData?.customDomains[0].verification
+                                  ?.type
+                              }
+                            </Box>
+                            <Box
+                              sx={{
+                                borderTop: '2px solid',
+                                borderBottom: '2px solid',
+                                borderColor: 'divider',
+                                color: 'secondary.light',
+                                p: 4,
+                                width: '33%',
+                                wordBreak: 'break-all',
+                                display: 'flex',
+                                alignItems: 'center'
+                              }}
+                            >
+                              {customDomainData?.customDomains[0].verification?.domain.replace(
+                                '_vercel.',
+                                ''
+                              )}
+                            </Box>
+                            <Box
+                              sx={{
+                                border: '2px solid',
+                                borderRadius: '0px 8px 8px 0px',
+                                borderColor: 'divider',
+                                color: 'secondary.light',
+                                pl: 4,
+                                width: '33%'
+                              }}
+                            >
+                              <Stack
+                                direction="row"
+                                alignItems="center"
+                                height="100%"
+                                justifyContent="space-between"
+                                sx={{ wordBreak: 'break-all' }}
                               >
-                                <CopyLeft />
-                              </IconButton>
-                            )}
+                                {
+                                  customDomainData?.customDomains[0]
+                                    .verification?.value
+                                }
+                                {smUp && (
+                                  <IconButton
+                                    onClick={async () =>
+                                      await handleCopyClick(
+                                        customDomainData?.customDomains?.[0]
+                                          .verification?.value
+                                      )
+                                    }
+                                    aria-label="Copy"
+                                  >
+                                    <CopyLeft />
+                                  </IconButton>
+                                )}
+                              </Stack>
+                            </Box>
                           </Stack>
-                        </Box>
-                      </Stack>
+                        )}
                     </Stack>
                   </Stack>
                 )}
