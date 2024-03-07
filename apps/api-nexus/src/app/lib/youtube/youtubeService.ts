@@ -5,7 +5,10 @@ import { Injectable } from '@nestjs/common';
 import { google, youtube_v3 } from 'googleapis';
 import { GaxiosPromise, OAuth2Client } from 'googleapis-common';
 
-import { UpdateVideoLocalization } from '../../modules/bullMQ/bullMQ.service';
+import {
+  ResourceLocalizationJobData,
+  UpdateVideoLocalization,
+} from '../../modules/bullMQ/bullMQ.service';
 import { GoogleOAuthService } from '../googleOAuth/googleOAuth';
 
 interface Credential {
@@ -34,7 +37,7 @@ export class YoutubeService {
     );
     oAuth2Client.setCredentials({
       access_token: token,
-      scope: 'https://www.googleapis.com/auth/youtube.upload',
+      scope: 'https://www.googleapis.com/auth/youtube',
     });
     return oAuth2Client;
   }
@@ -64,6 +67,7 @@ export class YoutubeService {
             description: youtubeData.description,
             channelId: youtubeData.channelId,
             defaultLanguage: youtubeData.defaultLanguage ?? 'en',
+            categoryId: '22',
           },
           status: {
             privacyStatus: 'private',
@@ -101,19 +105,73 @@ export class YoutubeService {
     });
   }
 
+  // async addLocalizedMetadataAndUpdateTags(
+  //   youtubeData: ResourceLocalizationJobData,
+  // ): Promise<unknown> {
+  //   const token = await this.googleService.getNewAccessToken(
+  //     youtubeData.channel.refreshToken ?? '',
+  //   );
+  //   const auth = this.authorize(token);
+
+  //   // console.log('YOUTUBE DATA: ', youtubeData.resource);
+  //   const fetchResponse = await google.youtube('v3').videos.list({
+  //     auth,
+  //     part: ['snippet', 'localizations'],
+  //     id: [youtubeData.localization.youtubeId ?? ''],
+  //   });
+
+  //   if (
+  //     fetchResponse.data.items == null ||
+  //     fetchResponse.data.items.length === 0
+  //   ) {
+  //     throw new Error('Video not found');
+  //   }
+
+  //   const videoItem: youtube_v3.Schema$Video = fetchResponse.data.items[0];
+  //   console.log('VIDEO ITEM: ', videoItem);
+
+  //   const updatedLocalizations =
+  //     videoItem.localizations != null ? { ...videoItem.localizations } : {};
+  //   updatedLocalizations[youtubeData.localization.language] = {
+  //     title: youtubeData.localization.title,
+  //     description: youtubeData.localization.description,
+  //   };
+  //   console.log('UPDATED LOCALIZATIONS: ', updatedLocalizations);
+  //   console.log('YOUTUBEDATA: ', youtubeData);
+
+  //   const res = await google.youtube('v3').videos.update({
+  //     auth,
+  //     part: ['snippet', 'localizations'],
+  //     requestBody: {
+  //       id: youtubeData.localization.youtubeId,
+  //       snippet: {
+  //         categoryId: videoItem.snippet?.categoryId,
+  //         defaultLanguage: videoItem.snippet?.defaultLanguage,
+  //         title: videoItem.snippet?.title,
+  //         description: videoItem.snippet?.description,
+  //       },
+  //       localizations: updatedLocalizations,
+  //     },
+  //   });
+  //   console.log('UPDATE LOCALIZATION RESPONSE: ', res);
+  //   return res;
+  // }
+
   async addLocalizedMetadataAndUpdateTags(
-    youtubeData: UpdateVideoLocalization,
+    youtubeData: ResourceLocalizationJobData,
   ): Promise<unknown> {
+    // Changed return type to void as the method might not return anything specific
     const token = await this.googleService.getNewAccessToken(
-      youtubeData.channel.refreshToken,
+      youtubeData.channel.refreshToken ?? '',
     );
     const auth = this.authorize(token);
 
-    // console.log('YOUTUBE DATA: ', youtubeData.resource);
+    console.log('YOUTUBE DATA: ', youtubeData.localizations);
+    // Fetch the current video details, including existing localizations
     const fetchResponse = await google.youtube('v3').videos.list({
       auth,
       part: ['snippet', 'localizations'],
-      id: [youtubeData.resource.videoId ?? ''],
+      id: [youtubeData.videoId], // Use the videoId directly from the job data
     });
 
     if (
@@ -123,25 +181,35 @@ export class YoutubeService {
       throw new Error('Video not found');
     }
 
-    const videoItem: youtube_v3.Schema$Video = fetchResponse.data.items[0];
+    const videoItem = fetchResponse.data.items[0];
     console.log('VIDEO ITEM: ', videoItem);
 
+    // Prepare the updated localizations map
     const updatedLocalizations =
       videoItem.localizations != null ? { ...videoItem.localizations } : {};
-    updatedLocalizations[youtubeData.resource.language] = {
-      title: youtubeData.resource.title,
-      description: youtubeData.resource.description,
-    };
-    console.log('UPDATED LOCALIZATIONS: ', updatedLocalizations);
 
-    const res = await google.youtube('v3').videos.insert({
+    // Update localizations for each language provided in the job data
+    for (const localization of youtubeData.localizations) {
+      updatedLocalizations[localization.language] = {
+        title: localization.title,
+        description: localization.description,
+        // If the API supports tags in localizations, you can include them here
+      };
+    }
+
+    console.log('UPDATED LOCALIZATIONS: ', updatedLocalizations);
+    console.log('YOUTUBEDATA: ', youtubeData);
+
+    // Send the update request to YouTube
+    const res = await google.youtube('v3').videos.update({
       auth,
       part: ['snippet', 'localizations'],
       requestBody: {
-        id: youtubeData.resource.videoId,
+        id: youtubeData.videoId,
         snippet: {
           categoryId: videoItem.snippet?.categoryId,
           defaultLanguage: videoItem.snippet?.defaultLanguage,
+          // Keep the original title and description unless you intend to change them
           title: videoItem.snippet?.title,
           description: videoItem.snippet?.description,
         },

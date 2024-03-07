@@ -15,7 +15,7 @@ import { SpreadsheetRow } from '../google-drive/googleDriveService';
 export class BatchService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async createResourcesFromSpreadsheet(
+  async createUploadResourceFromSpreadsheet(
     nexusId: string,
     refreshToken: string,
     data: SpreadsheetRow[],
@@ -94,6 +94,7 @@ export class BatchService {
                   row.caption_file ?? existingLocalization.captionFile,
                 audioTrackFile:
                   row.audio_track_file ?? existingLocalization.audioTrackFile,
+                videoId: row.video_id ?? existingLocalization.videoId,
               },
               include: { resource: true },
             });
@@ -114,6 +115,7 @@ export class BatchService {
                 language: row.language ?? '',
                 captionFile: row.caption_file ?? '',
                 audioTrackFile: row.audio_track_file ?? '',
+                videoId: row.video_id ?? '',
                 localizedResourceFile: {
                   create: {
                     mimeType: row.driveFile?.mimeType ?? '',
@@ -137,7 +139,7 @@ export class BatchService {
     return localizationBatch;
   }
 
-  prepareBatchResourcesForBatchJob(
+  prepareBatchResourcesForUploadBatchJob(
     batchResources: Array<{ resource: Resource; channel: Channel }>,
   ): Array<{ channel: Channel; resources: Resource[] }> {
     const batches: Array<{ channel: Channel; resources: Resource[] }> = [];

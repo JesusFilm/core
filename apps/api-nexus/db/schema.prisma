@@ -18,7 +18,7 @@ model Nexus {
     userNexuses UserNexus[]
     channels    Channel[]
     resources   Resource[]
-    Batch       Batch[]
+    batches     Batch[]
 }
 
 enum NexusStatus {
@@ -45,7 +45,6 @@ model Channel {
     status                 ChannelStatus            @default(published)
     createdAt              DateTime                 @default(now())
     deletedAt              DateTime?
-    Batch                  Batch[]
     resourceYoutubeChannel ResourceYoutubeChannel[]
 }
 
@@ -81,7 +80,6 @@ model Resource {
     sourceType             SourceType
     localizations          ResourceLocalization[]
     googleDrive            GoogleDriveResource?
-    batches                BatchResource[]
     resourceYoutubeChannel ResourceYoutubeChannel[]
 }
 
@@ -112,6 +110,7 @@ model ResourceLocalization {
     captionFile           String?
     audioTrackFile        String?
     language              String
+    videoId               String?
     resource              Resource               @relation(fields: [resourceId], references: [id])
     localizedResourceFile LocalizedResourceFile?
 }
@@ -153,15 +152,18 @@ model GoogleAccessToken {
 }
 
 model Batch {
-    id        String          @id @default(uuid())
-    nexusId   String
-    channelId String
-    name      String
-    status    BatchStatus     @default(pending)
-    nexus     Nexus           @relation(fields: [nexusId], references: [id])
-    channel   Channel         @relation(fields: [channelId], references: [id])
-    resources BatchResource[]
-    createdAt DateTime        @default(now())
+    id             String      @id @default(uuid())
+    nexusId        String
+    name           String
+    status         BatchStatus @default(pending)
+    totalTasks     Int         @default(0)
+    completedTasks Int         @default(0)
+    failedTasks    Int         @default(0)
+    progress       Float       @default(0)
+    nexus          Nexus       @relation(fields: [nexusId], references: [id])
+    tasks          BatchTask[]
+    createdAt      DateTime    @default(now())
+    updatedAt      DateTime    @updatedAt
 }
 
 enum BatchStatus {
@@ -176,15 +178,29 @@ enum BatchStatus {
     scheduled
 }
 
-model BatchResource {
-    id          String   @id @default(uuid())
-    batchId     String
-    resourceId  String
-    isCompleted Boolean  @default(false)
-    error       String?
-    percent     Float    @default(0.0)
-    batch       Batch    @relation(fields: [batchId], references: [id])
-    resource    Resource @relation(fields: [resourceId], references: [id])
+model BatchTask {
+    id         String        @id @default(uuid())
+    batchId    String
+    type       BatchTaskType
+    status     TaskStatus
+    progress   Float         @default(0)
+    resourceId String
+    metadata   Json?
+    error      String?
+    batch      Batch         @relation(fields: [batchId], references: [id])
+    createdAt  DateTime      @default(now())
+    updatedAt  DateTime      @updatedAt
+}
 
-    @@unique([batchId, resourceId])
+enum BatchTaskType {
+    video_upload
+    caption_processing
+    localization
+}
+
+enum TaskStatus {
+    pending
+    processing
+    completed
+    failed
 }

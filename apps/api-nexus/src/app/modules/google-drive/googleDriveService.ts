@@ -49,6 +49,7 @@ export interface SpreadsheetRow {
   captionDriveFile?: drive_v3.Schema$File;
   audio_track_file?: string;
   audioTrackDriveFile?: drive_v3.Schema$File;
+  customThumbnailDriveFile?: drive_v3.Schema$File;
   language?: string;
 }
 
@@ -332,6 +333,12 @@ export class GoogleDriveService {
         );
       }
 
+      if (spreadsheetRow.custom_thumbnail != null) {
+        spreadsheetRow.customThumbnailDriveFile = files?.find(
+          (file) => file.name === spreadsheetRow.custom_thumbnail,
+        );
+      }
+
       if (spreadsheetRow.caption_file != null) {
         spreadsheetRow.captionDriveFile = files?.find(
           (file) => file.name === spreadsheetRow.caption_file,
@@ -355,15 +362,18 @@ export class GoogleDriveService {
       }
 
       if (spreadsheetRow.video_id != null) {
+        console.log('video_id', spreadsheetRow.video_id)
         templateType = SpreadsheetTemplateType.LOCALIZATION;
         const rowChannel = await this.prismaService.channel.findFirst({
           where: {
             resourceYoutubeChannel: {
-              every: { youtubeId: spreadsheetRow.video_id },
+              some: { youtubeId: spreadsheetRow.video_id },
             },
           },
           include: { youtube: true },
         });
+
+        console.log('rowChannel', rowChannel)
         if (rowChannel !== null) {
           spreadsheetRow.channelData = rowChannel;
         }

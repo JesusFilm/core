@@ -24,17 +24,17 @@ export class NexusJobListener implements OnModuleInit {
       'progress',
       async (job: Job<UploadToBucketToYoutube>, progress: number) => {
         // console.log('Job Progress:', job.id, progress);
-        void Promise.all([
-          await this.prismaService.batchResource.updateMany({
-            data: {
-              percent: progress,
-            },
-            where: {
-              batchId: job.data.batchId,
-              resourceId: job.data.resource.id,
-            },
-          }),
-        ]);
+        // void Promise.all([
+        //   await this.prismaService.batchResource.updateMany({
+        //     data: {
+        //       percent: progress,
+        //     },
+        //     where: {
+        //       batchId: job.data.batchId,
+        //       resourceId: job.data.resource.id,
+        //     },
+        //   }),
+        // ]);
       },
     );
   }
@@ -44,22 +44,23 @@ export class NexusJobListener implements OnModuleInit {
       'completed',
       async (job: Job<UploadToBucketToYoutube>) => {
         console.log('Job completed: ', job.id);
-        void Promise.all([
-          await this.prismaService.batchResource.updateMany({
-            data: {
-              isCompleted: true,
-              percent: 100,
-            },
-            where: {
-              batchId: job.data.batchId,
-              resourceId: job.data.resource.id,
-            },
-          }),
-          await this.prismaService.resource.update({
-            data: { status: 'published' },
-            where: { id: job.data.resource.id },
-          }),
-        ]);
+        console.log('Job: ', job);
+        // void Promise.all([
+        //   await this.prismaService.batchResource.updateMany({
+        //     data: {
+        //       isCompleted: true,
+        //       percent: 100,
+        //     },
+        //     where: {
+        //       batchId: job.data.batchId,
+        //       resourceId: job.data.resource.id,
+        //     },
+        //   }),
+        //   await this.prismaService.resource.update({
+        //     data: { status: 'published' },
+        //     where: { id: job.data.resource.id },
+        //   }),
+        // ]);
       },
     );
   }
@@ -67,22 +68,23 @@ export class NexusJobListener implements OnModuleInit {
   private listenToFailedEvents(): void {
     this.uploadQueue.on('failed', async (job: Job<UploadToBucketToYoutube>) => {
       console.log('Job failed', job.id);
-      void Promise.all([
-        await this.prismaService.batchResource.updateMany({
-          data: {
-            isCompleted: false,
-            error: 'Job failed',
-          },
-          where: {
-            batchId: job.data.batchId,
-            resourceId: job.data.resource.id,
-          },
-        }),
-        await this.prismaService.resource.update({
-          data: { status: 'error' },
-          where: { id: job.data.resource.id },
-        }),
-      ]);
+      console.log('Job:', job);
+      // void Promise.all([
+      //   await this.prismaService.batchResource.updateMany({
+      //     data: {
+      //       isCompleted: false,
+      //       error: 'Job failed',
+      //     },
+      //     where: {
+      //       batchId: job.data.batchId,
+      //       resourceId: job.data.resource.id,
+      //     },
+      //   }),
+      //   await this.prismaService.resource.update({
+      //     data: { status: 'error' },
+      //     where: { id: job.data.resource.id },
+      //   }),
+      // ]);
     });
   }
 }

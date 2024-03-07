@@ -1,6 +1,5 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
-import { youtube_v3 } from 'googleapis';
 
 import { BucketService } from '../../../lib/bucket/bucketService';
 import { GoogleOAuthService } from '../../../lib/googleOAuth/googleOAuth';
@@ -19,7 +18,7 @@ export class UploadToBucket {
     private readonly prismaService: PrismaService,
   ) {}
 
-  @Process('process')
+  @Process('video_upload')
   async process(
     job: Job<UploadToBucketToYoutube>,
   ): Promise<UploadToBucketToYoutube> {
@@ -66,15 +65,15 @@ export class UploadToBucket {
       },
     );
     console.log('YOUTUBE DATA: ', youtubeData.data.id);
-    // if (youtubeData.data.id != null) {
-    //   await this.prismaService.resourceYoutubeChannel.create({
-    //     data: {
-    //       resourceId: job.data.resource.id,
-    //       channelId: job.data.channel.id,
-    //       youtubeId: youtubeData.data.id,
-    //     },
-    //   });
-    // }
+    if (youtubeData.data.id != null) {
+      await this.prismaService.resourceYoutubeChannel.create({
+        data: {
+          resourceId: job.data.resource.id,
+          channelId: job.data.channel.id,
+          youtubeId: youtubeData.data.id,
+        },
+      });
+    }
     await job.progress(100);
     return {...job.returnvalue, 'youtubeId':youtubeData?.data?.id};
   }

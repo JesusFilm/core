@@ -16,7 +16,7 @@ export class UpdateThumbnail {
     private readonly youtubeService: YoutubeService,
   ) {}
 
-  @Process('process')
+  @Process('update_thumbnail')
   async process(
     job: Job<UpdateVideoThumbnail>,
   ): Promise<UpdateVideoThumbnail> {

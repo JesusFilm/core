@@ -20,6 +20,19 @@ export enum BatchStatus {
     scheduled = "scheduled"
 }
 
+export enum BatchTaskType {
+    video_upload = "video_upload",
+    caption_processing = "caption_processing",
+    localization = "localization"
+}
+
+export enum TaskStatus {
+    pending = "pending",
+    processing = "processing",
+    completed = "completed",
+    failed = "failed"
+}
+
 export enum ChannelStatus {
     deleted = "deleted",
     published = "published"
@@ -163,23 +176,20 @@ export class Batch {
     __typename?: 'Batch';
     id: string;
     nexusId: string;
-    channelId: string;
-    channel?: Nullable<Channel>;
-    resources?: Nullable<Nullable<BatchResource>[]>;
     name: string;
     status: BatchStatus;
-    averagePercent?: Nullable<number>;
+    tasks: BatchTask[];
+    progress?: Nullable<number>;
     createdAt: DateTime;
 }
 
-export class BatchResource {
-    __typename?: 'BatchResource';
+export class BatchTask {
+    __typename?: 'BatchTask';
     id: string;
     batchId: string;
-    resourceId: string;
-    isCompleted?: Nullable<boolean>;
-    error?: Nullable<string>;
-    percent?: Nullable<number>;
+    type: BatchTaskType;
+    status: TaskStatus;
+    progress?: Nullable<number>;
 }
 
 export abstract class IQuery {
@@ -200,12 +210,6 @@ export abstract class IQuery {
     abstract resources(where?: Nullable<ResourceFilter>): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
 
     abstract resource(id: string): Resource | Promise<Resource>;
-}
-
-export abstract class ISubscription {
-    __typename?: 'ISubscription';
-
-    abstract batchStatusChanged(id: string): Nullable<Batch> | Promise<Nullable<Batch>>;
 }
 
 export class Channel {

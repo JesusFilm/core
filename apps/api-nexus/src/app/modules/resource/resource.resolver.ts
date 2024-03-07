@@ -250,16 +250,24 @@ export class ResourceResolver {
       );
 
     if (templateType === SpreadsheetTemplateType.UPLOAD) {
+      console.log('IN UPLOAD');
+      console.log('spreadsheetData', spreadsheetData);
       const batchResources =
-        await this.batchService.createResourcesFromSpreadsheet(
+        await this.batchService.createUploadResourceFromSpreadsheet(
           nexus.id,
           googleAccessToken.refreshToken,
           spreadsheetData,
         );
+
+      console.log('batchResources', batchResources);
+
       const preparedBatchJobs =
-        this.batchService.prepareBatchResourcesForBatchJob(batchResources);
+        this.batchService.prepareBatchResourcesForUploadBatchJob(batchResources);
+
+      console.log('preparedBatchJobs', preparedBatchJobs);
+
       for (const preparedBatchJob of preparedBatchJobs) {
-        await this.bullMQService.createResourcesBatchJob(
+        await this.bullMQService.createUploadBatch(
           uuidv4(),
           nexusId,
           preparedBatchJob.channel,
@@ -268,15 +276,19 @@ export class ResourceResolver {
       }
       return batchResources.map((item) => item.resource);
     } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
+      console.log('IN LOCALIZATION');
+      console.log('spreadsheetData', spreadsheetData);
       const batchLocalizations =
         await this.batchService.createResourcesLocalization(
           googleAccessToken.refreshToken,
           spreadsheetData,
         );
+      console.log('batchLocalizations', batchLocalizations);
       const preparedBatchJobs =
         this.batchService.prepareBatchResourceLocalizationsForBatchJob(
           batchLocalizations,
         );
+      console.log('preparedBatchJobs', preparedBatchJobs);
       for (const preparedBatchJob of preparedBatchJobs) {
         await this.bullMQService.createLocalizationBatch(
           uuidv4(),
