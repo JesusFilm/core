@@ -354,6 +354,7 @@ type Query {
 extend type Query {
   block(id: ID!): Block!
   customDomain(id: ID!): CustomDomain!
+  customDomains(teamId: ID!): [CustomDomain!]!
   hosts(teamId: ID!): [Host!]!
 
   """
@@ -1179,6 +1180,7 @@ type VercelDomainVerification {
 
 type CustomDomain {
   id: ID!
+  teamId: String!
   name: String!
   apexName: String!
   allowOutsideJourneys: Boolean!
@@ -1188,6 +1190,7 @@ type CustomDomain {
 }
 
 input CustomDomainCreateInput {
+  teamId: String!
   name: String!
   allowOutsideJourneys: Boolean
   journeyCollectionId: String
