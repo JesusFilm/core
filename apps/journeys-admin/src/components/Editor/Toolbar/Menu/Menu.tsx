@@ -60,7 +60,7 @@ export function Menu(): ReactElement {
         aria-expanded={anchorEl != null ? 'true' : undefined}
         onClick={handleShowMenu}
         disabled={journey == null}
-        data-testid="toolbar-menu-button"
+        data-testid="ToolbarMenuButton"
       >
         <MoreIcon />
       </IconButton>

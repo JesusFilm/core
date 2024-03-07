@@ -36,12 +36,13 @@ describe('Toolbar', () => {
       </SnackbarProvider>
     )
     expect(getByAltText('Next Steps')).toBeInTheDocument() // NextSteps logo
-    expect(getByTestId('toolbar-back-button')).toBeInTheDocument()
+    const backButton = getByTestId('ToolbarBackButton')
+    expect(backButton.getAttribute('href')).toBe('/')
     expect(getByTestId('ThumbsUpIcon')).toBeInTheDocument()
     expect(getByText('My Awesome Journey Title')).toBeInTheDocument()
     expect(getByText('My Awesome Journey Description')).toBeInTheDocument()
-    expect(getByTestId('items-stack')).toBeInTheDocument()
-    expect(getByTestId('toolbar-menu-button')).toBeInTheDocument()
+    expect(getByTestId('ItemsStack')).toBeInTheDocument()
+    expect(getByTestId('ToolbarMenuButton')).toBeInTheDocument()
   })
 
   it('should render journey image', () => {

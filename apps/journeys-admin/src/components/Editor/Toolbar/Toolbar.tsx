@@ -41,7 +41,7 @@ export function Toolbar(): ReactElement {
         }}
       />
       <NextLink href="/" passHref legacyBehavior>
-        <IconButton data-testid="toolbar-back-button">
+        <IconButton data-testid="ToolbarBackButton">
           <ChevronLeftIcon />
         </IconButton>
       </NextLink>
