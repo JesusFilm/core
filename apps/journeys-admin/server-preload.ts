@@ -64,8 +64,7 @@ function setUpLogging(): void {
   // Monkey-patch Next.js logger.
   // See https://github.com/atkinchris/next-logger/blob/main/index.js
   // See https://github.com/vercel/next.js/blob/canary/packages/next/build/output/log.ts
-  type NextBuiltInLoggerKey =
-    | 'bootstrap'
+  type NextLoggerPrefix =
     | 'wait'
     | 'error'
     | 'warn'
@@ -73,32 +72,35 @@ function setUpLogging(): void {
     | 'info'
     | 'event'
     | 'trace'
-    | 'warnOnce'
+
+  const cachePath = require.resolve('next/dist/build/output/log')
+  const cacheObject = require.cache[cachePath]
+
+  if (cacheObject == null) return
+
+  // This is required to forcibly redefine all properties on the logger.
+  // From Next 13 and onwards they're defined as non-configurable, preventing them from being patched.
+  cacheObject.exports = { ...cacheObject.exports }
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const nextBuiltInLogger = require('next/dist/build/output/log')
-  for (const [property, value] of Object.entries(nextBuiltInLogger)) {
-    if (typeof value !== 'function' || property === 'prefixes') continue
-
-    let fnName: LogLevel = 'info'
-    const key = property as NextBuiltInLoggerKey
+  const nextLogger = require('next/dist/build/output/log')
+  Object.keys(nextLogger.prefixes).forEach((key: NextLoggerPrefix) => {
+    let fnName: LogLevel
 
     switch (key) {
-      case 'bootstrap':
       case 'wait':
       case 'ready':
       case 'event':
         fnName = 'info'
         break
-      case 'warnOnce':
-        fnName = 'warn'
-        break
       default:
         fnName = key
     }
 
-    nextBuiltInLogger[key] = getLoggingFunction(fnName)
-  }
+    Object.defineProperty(cacheObject.exports, key, {
+      value: getLoggingFunction(fnName)
+    })
+  })
 
   /**
    * Monkey-patch global console.log logger. Yes. Sigh.
