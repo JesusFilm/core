@@ -8,6 +8,7 @@ import { User } from '.prisma/api-users-client'
 import { auth } from '@core/nest/common/firebaseClient'
 
 import { PrismaService } from '../../lib/prisma.service'
+import { MailChimpService } from '../mailChimp/mailChimp.service'
 
 import { UserService } from './user.service'
 
@@ -31,6 +32,8 @@ const user = {
 describe('UserService', () => {
   let userService: UserService, prismaService: DeepMockProxy<PrismaService>
   let emailQueue
+  let mailChimpService
+
   const removeJob = jest.fn()
 
   beforeEach(async () => {
@@ -40,6 +43,9 @@ describe('UserService', () => {
         remove: removeJob
       }))
     }
+    mailChimpService = {
+      upsertContactToAudience: jest.fn()
+    }
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
@@ -47,7 +53,11 @@ describe('UserService', () => {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
         },
-        { provide: getQueueToken('api-users-email'), useValue: emailQueue }
+        { provide: getQueueToken('api-users-email'), useValue: emailQueue },
+        {
+          provide: MailChimpService,
+          useValue: mailChimpService
+        }
       ]
     })
       .overrideProvider(getQueueToken('api-users-email'))
@@ -190,6 +200,19 @@ describe('UserService', () => {
           emailVerified: true
         }
       })
+    })
+
+    it('adds user to mailchimp', async () => {
+      const userNotVerified = { ...user, emailVerified: false }
+      jest
+        .spyOn(auth, 'getUser')
+        .mockResolvedValue(userNotVerified as unknown as UserRecord)
+      prismaService.user.findUnique.mockResolvedValueOnce(null)
+      prismaService.user.create.mockResolvedValueOnce(userNotVerified)
+      expect(await userService.findOrFetchUser('userId')).toEqual(
+        userNotVerified
+      )
+      expect(mailChimpService.upsertContactToAudience).toHaveBeenCalled()
     })
   })
 })
