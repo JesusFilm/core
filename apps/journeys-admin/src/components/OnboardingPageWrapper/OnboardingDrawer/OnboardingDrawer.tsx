@@ -14,7 +14,8 @@ export function OnboardingDrawer(): ReactElement {
       sx={{
         height: { xs: '20%', md: '100%' },
         width: { xs: '100%', md: '30%' },
-        mt: { xs: 5, md: 10 }
+        mt: { xs: 5, md: 10 },
+        mb: { xs: 5, md: 0 }
       }}
     >
       <Image src={logo} alt="Next Steps" height={26} width={168} />
