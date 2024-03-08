@@ -4,6 +4,7 @@ import Step from '@mui/material/Step'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
 import Typography from '@mui/material/Typography'
+import Stack from '@mui/system/Stack'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -61,30 +62,27 @@ export function OnboardingStepper(): ReactElement {
   return (
     <Box
       sx={{
-        width: 244,
-        display: { xs: 'none', md: 'flex' },
+        width: { xs: '100%', md: 244 },
+        px: { lg: 3 },
+        display: 'flex',
         flexDirection: 'column',
         alignItems: 'center'
       }}
     >
-      <Box sx={{ p: 4 }}>
+      <Stack gap={6} sx={{ display: { xs: 'none', md: 'flex' } }}>
         <Typography variant="h6">
           {t(`Let's get you on the journey`)}
         </Typography>
-      </Box>
-      <Stepper
-        activeStep={currentStep}
-        orientation="vertical"
-        sx={{ display: { xs: 'none', md: 'flex' } }}
-      >
-        {steps.map((step) => (
-          <Step key={step.label}>
-            <StepLabel>
-              <Typography variant="subtitle2">{step.label}</Typography>
-            </StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+        <Stepper activeStep={currentStep} orientation="vertical" sx={{ px: 2 }}>
+          {steps.map((step) => (
+            <Step key={step.label}>
+              <StepLabel>
+                <Typography variant="subtitle2">{step.label}</Typography>
+              </StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Stack>
       <MobileStepper
         variant="progress"
         steps={steps.length}

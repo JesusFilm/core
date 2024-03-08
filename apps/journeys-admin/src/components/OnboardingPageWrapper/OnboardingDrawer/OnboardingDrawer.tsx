@@ -19,8 +19,15 @@ export function OnboardingDrawer(): ReactElement {
       }}
     >
       <Image src={logo} alt="Next Steps" height={26} width={168} />
-      <OnboardingTemplateCard />
-      <OnboardingStepper />
+      <Stack
+        alignItems="center"
+        gap={{ xs: 5, md: 20 }}
+        direction={{ xs: 'column-reverse', md: 'column' }}
+        width="100%"
+      >
+        <OnboardingTemplateCard />
+        <OnboardingStepper />
+      </Stack>
     </Stack>
   )
 }
