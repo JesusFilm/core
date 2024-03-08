@@ -9,7 +9,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 interface AccountCheckDialogProps {
   open: boolean
   onClose: () => void
-  handleSignIn: (create: boolean) => void
+  handleSignIn: () => void
 }
 
 export function AccountCheckDialog({
@@ -19,20 +19,43 @@ export function AccountCheckDialog({
 }: AccountCheckDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Dialog open={open} onClose={onClose}>
-      <Stack spacing={2} p={4} sx={{ alignItems: 'center' }}>
-        <Typography>
-          {t('To use this template you need to have a registered account.')}
+    <Dialog
+      open={open}
+      onClose={onClose}
+      dialogTitle={{ title: t('Great Choice!') }}
+      sx={{
+        '& .MuiPaper-root': {
+          borderRadius: 2,
+          width: 378,
+          py: 2
+        },
+        '& .MuiDialogTitle-root': {
+          justifyContent: 'center'
+        }
+      }}
+    >
+      <Stack gap={4} sx={{ alignItems: 'center' }}>
+        <Typography variant="body2" align="center" gutterBottom>
+          {t('Create a new account or log in to use this template')}
         </Typography>
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          sx={{ justifyContent: 'center' }}
+        <Button
+          variant="outlined"
+          size="large"
+          color="secondary"
+          fullWidth
+          onClick={handleSignIn}
         >
-          <Button onClick={() => handleSignIn(false)}>{t('Log in')}</Button>
-          <Button onClick={() => handleSignIn(true)}>
-            {t('Create an account')}
-          </Button>
-        </Stack>
+          {t('Log in with my account')}
+        </Button>
+        <Button
+          variant="outlined"
+          size="large"
+          color="secondary"
+          fullWidth
+          onClick={handleSignIn}
+        >
+          {t('Create a new account')}
+        </Button>
       </Stack>
     </Dialog>
   )
