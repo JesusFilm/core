@@ -12,4 +12,4 @@ RUN npm i -g next
 RUN npm i --omit=dev --force --silent
 RUN npm i sharp --force --silent
 
-CMD npm start
+CMD NODE_OPTIONS='-r ./server-preload.js' npm start

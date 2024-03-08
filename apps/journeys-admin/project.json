@@ -18,7 +18,8 @@
         "production": {
           "commands": [
             "cp -r libs/locales apps/journeys-admin/public",
-            "CI=true nx _build journeys-admin --prod"
+            "CI=true nx _build journeys-admin --prod",
+            "tsc apps/journeys-admin/server-preload --outDir dist/apps/journeys-admin"
           ]
         }
       }
