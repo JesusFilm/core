@@ -20,7 +20,7 @@ describe('MailChimpService', () => {
   let mailChimpService: MailChimpService
 
   beforeEach(async () => {
-    process.env = { ...OLD_ENV }
+    process.env = { ...OLD_ENV } // make a copy
     const module: TestingModule = await Test.createTestingModule({
       providers: [MailChimpService]
     }).compile()
