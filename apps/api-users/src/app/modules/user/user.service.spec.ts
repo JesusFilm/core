@@ -176,6 +176,16 @@ describe('UserService', () => {
       })
     })
 
+    it('updates User', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(null)
+      prismaService.user.create.mockRejectedValueOnce(
+        new Error('user already exists')
+      )
+      await userService.findOrFetchUser('userId')
+      expect(prismaService.user.update).toHaveBeenCalled()
+      expect(mailChimpService.upsertContactToAudience).not.toHaveBeenCalled()
+    })
+
     it('returns email verified status always', async () => {
       prismaService.user.findUnique.mockResolvedValueOnce(
         omit(user, ['emailVerified']) as User
@@ -227,22 +237,6 @@ describe('UserService', () => {
         firstName: 'fo',
         lastName: 'sho'
       })
-    })
-
-    it('does not add user to mailchimp if user create fails', async () => {
-      const userVerified = { ...user, emailVerified: true }
-
-      jest.spyOn(auth, 'getUser').mockResolvedValue({
-        userId: userVerified.id,
-        email: userVerified.email,
-        emailVerified: userVerified.emailVerified,
-        displayName: userVerified.firstName + ' ' + userVerified.lastName
-      } as unknown as UserRecord)
-      prismaService.user.findUnique.mockResolvedValueOnce(null)
-      prismaService.user.create.mockRejectedValueOnce(
-        new Error('user already exists')
-      )
-      expect(mailChimpService.upsertContactToAudience).not.toHaveBeenCalled()
     })
   })
 })
