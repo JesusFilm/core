@@ -74,12 +74,12 @@ export class UserService {
       })
       // after user create so it is ony sent once
       if (!emailVerified && email != null) {
+        await this.verifyUser(userId, email, redirect)
         await this.mailChimpService.upsertContactToAudience({
           email,
           firstName,
           lastName
         })
-        await this.verifyUser(userId, email, redirect)
       }
     } catch (e) {
       do {

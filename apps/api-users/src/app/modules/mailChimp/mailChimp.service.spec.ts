@@ -53,15 +53,14 @@ describe('MailChimpService', () => {
       )
     })
 
-    it('should throw error gracefully if the audience id is undefined', async () => {
-      const logSpy = jest.spyOn(console, 'log')
-      await mailChimpService.upsertContactToAudience({
-        email: 'someemail@example.com',
-        firstName: 'MyNama',
-        lastName: 'Jeff'
-      })
-
-      expect(logSpy).toHaveBeenCalledWith('Mailchimp Audience ID is undefined')
+    it('should throw error if the audience id is undefined', async () => {
+      await expect(
+        mailChimpService.upsertContactToAudience({
+          email: 'someemail@example.com',
+          firstName: 'MyNama',
+          lastName: 'Jeff'
+        })
+      ).rejects.toThrow('Mailchimp Audience ID is undefined')
     })
   })
 })
