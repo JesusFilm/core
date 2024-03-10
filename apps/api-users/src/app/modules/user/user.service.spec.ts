@@ -201,9 +201,14 @@ describe('UserService', () => {
           emailVerified: true
         }
       })
+      expect(mailChimpService.upsertContactToAudience).toHaveBeenCalledWith({
+        email: 'tho@no.co',
+        firstName: 'fo',
+        lastName: 'sho'
+      })
     })
 
-    it('adds user to mailchimp', async () => {
+    it('adds user to mailchimp if not verified', async () => {
       const userNotVerified = { ...user, emailVerified: false }
 
       jest.spyOn(auth, 'getUser').mockResolvedValue({
@@ -222,6 +227,22 @@ describe('UserService', () => {
         firstName: 'fo',
         lastName: 'sho'
       })
+    })
+
+    it('does not add user to mailchimp if user create fails', async () => {
+      const userVerified = { ...user, emailVerified: true }
+
+      jest.spyOn(auth, 'getUser').mockResolvedValue({
+        userId: userVerified.id,
+        email: userVerified.email,
+        emailVerified: userVerified.emailVerified,
+        displayName: userVerified.firstName + ' ' + userVerified.lastName
+      } as unknown as UserRecord)
+      prismaService.user.findUnique.mockResolvedValueOnce(null)
+      prismaService.user.create.mockRejectedValueOnce(
+        new Error('user already exists')
+      )
+      expect(mailChimpService.upsertContactToAudience).not.toHaveBeenCalled()
     })
   })
 })
