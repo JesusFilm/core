@@ -32,7 +32,7 @@ const user = {
 describe('UserService', () => {
   let userService: UserService, prismaService: DeepMockProxy<PrismaService>
   let emailQueue
-  let mailChimpService
+  let mailChimpService: DeepMockProxy<MailChimpService>
 
   const removeJob = jest.fn()
 
@@ -43,9 +43,7 @@ describe('UserService', () => {
         remove: removeJob
       }))
     }
-    mailChimpService = {
-      upsertContactToAudience: jest.fn()
-    }
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
@@ -56,7 +54,7 @@ describe('UserService', () => {
         { provide: getQueueToken('api-users-email'), useValue: emailQueue },
         {
           provide: MailChimpService,
-          useValue: mailChimpService
+          useValue: mockDeep<MailChimpService>()
         }
       ]
     })
@@ -68,6 +66,9 @@ describe('UserService', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    mailChimpService = module.get<MailChimpService>(
+      MailChimpService
+    ) as DeepMockProxy<MailChimpService>
   })
 
   afterEach(() => {
@@ -204,15 +205,23 @@ describe('UserService', () => {
 
     it('adds user to mailchimp', async () => {
       const userNotVerified = { ...user, emailVerified: false }
-      jest
-        .spyOn(auth, 'getUser')
-        .mockResolvedValue(userNotVerified as unknown as UserRecord)
+
+      jest.spyOn(auth, 'getUser').mockResolvedValue({
+        userId: userNotVerified.id,
+        email: userNotVerified.email,
+        emailVerified: userNotVerified.emailVerified,
+        displayName: userNotVerified.firstName + ' ' + userNotVerified.lastName
+      } as unknown as UserRecord)
       prismaService.user.findUnique.mockResolvedValueOnce(null)
       prismaService.user.create.mockResolvedValueOnce(userNotVerified)
       expect(await userService.findOrFetchUser('userId')).toEqual(
         userNotVerified
       )
-      expect(mailChimpService.upsertContactToAudience).toHaveBeenCalled()
+      expect(mailChimpService.upsertContactToAudience).toHaveBeenCalledWith({
+        email: 'tho@no.co',
+        firstName: 'fo',
+        lastName: 'sho'
+      })
     })
   })
 })

@@ -16,24 +16,26 @@ jest.mock('@mailchimp/mailchimp_marketing', () => {
 })
 
 describe('MailChimpService', () => {
+  const OLD_ENV = process.env
   let mailChimpService: MailChimpService
-  ;(mailchimp.lists.setListMember as jest.Mock).mockResolvedValue({})
 
   beforeEach(async () => {
+    process.env = { ...OLD_ENV }
     const module: TestingModule = await Test.createTestingModule({
       providers: [MailChimpService]
     }).compile()
 
     mailChimpService = module.get<MailChimpService>(MailChimpService)
-    process.env.MAILCHIMP_AUDIENCE_ID = '1234'
   })
 
   afterEach(() => {
+    process.env = OLD_ENV
     jest.clearAllMocks()
   })
 
   describe('upsertContactToAudience', () => {
     it('should add user to mailchimp', async () => {
+      process.env.MAILCHIMP_AUDIENCE_ID = '1234'
       await mailChimpService.upsertContactToAudience({
         email: 'someemail@example.com',
         firstName: 'MyNama',
@@ -49,6 +51,17 @@ describe('MailChimpService', () => {
           status_if_new: 'subscribed'
         }
       )
+    })
+
+    it('should throw error gracefully if the audience id is undefined', async () => {
+      const logSpy = jest.spyOn(console, 'log')
+      await mailChimpService.upsertContactToAudience({
+        email: 'someemail@example.com',
+        firstName: 'MyNama',
+        lastName: 'Jeff'
+      })
+
+      expect(logSpy).toHaveBeenCalledWith('Mailchimp Audience ID is undefined')
     })
   })
 })

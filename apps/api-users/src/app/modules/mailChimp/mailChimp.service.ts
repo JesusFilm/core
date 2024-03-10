@@ -14,9 +14,11 @@ export class MailChimpService {
     })
 
     try {
+      if (process.env.MAILCHIMP_AUDIENCE_ID == null)
+        throw new Error('Mailchimp Audience ID is undefined')
       // upsert operation
       await mailchimp.lists.setListMember(
-        process.env.MAILCHIMP_AUDIENCE_ID as string,
+        process.env.MAILCHIMP_AUDIENCE_ID,
         user.email,
         {
           email_address: user.email,
