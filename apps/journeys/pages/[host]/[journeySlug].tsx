@@ -1,11 +1,13 @@
+import { gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
-import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { transformer } from '@core/journeys/ui/transformer'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -15,11 +17,9 @@ import {
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
 import { GetJourneySlugs } from '../../__generated__/GetJourneySlugs'
-import { StepFields } from '../../__generated__/StepFields'
 import i18nConfig from '../../next-i18next.config'
-import { EmbeddedPreview } from '../../src/components/EmbeddedPreview'
+import { Conductor } from '../../src/components/Conductor'
 import { createApolloClient } from '../../src/libs/apolloClient'
-import { GET_JOURNEY, GET_JOURNEY_SLUGS } from '../[journeySlug]'
 
 interface JourneyPageProps {
   journey: Journey
@@ -28,29 +28,37 @@ interface JourneyPageProps {
 }
 
 function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
-  const blocks = useMemo(() => {
-    return transformer(journey.blocks ?? [])
-  }, [journey])
-
-  const theme =
-    blocks.length > 0
-      ? getStepTheme(blocks[0] as TreeBlock<StepFields>, journey)
-      : { themeName: journey.themeName, themeMode: journey.themeMode }
+  const router = useRouter()
+  const isIframe = typeof window !== 'undefined' && window.self !== window.top
+  if (isIframe) {
+    void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
+  }
   return (
     <>
+      <Head>
+        <link
+          rel="alternate"
+          type="application/json+oembed"
+          href={`https://${
+            process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
+          }/api/oembed?url=https%3A%2F%2F${
+            process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
+          }%2F${journey.slug}&format=json`}
+          title={journey.seoTitle ?? undefined}
+        />
+      </Head>
       <NextSeo
-        title={journey.title}
         nofollow
         noindex
-        description={journey.description ?? undefined}
+        title={journey.seoTitle ?? undefined}
+        description={journey.seoDescription ?? undefined}
         openGraph={{
           type: 'website',
-          title: journey.seoTitle ?? journey.title,
+          title: journey.seoTitle ?? undefined,
           url: `https://${
             process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
-          }/embed/${journey.slug}`,
-          description:
-            journey.seoDescription ?? journey.description ?? undefined,
+          }/${journey.slug}`,
+          description: journey.seoDescription ?? undefined,
           images:
             journey.primaryImageBlock?.src != null
               ? [
@@ -76,19 +84,30 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <style jsx global>{`
-        body {
-          background: transparent !important;
-        }
-      `}</style>
-      <JourneyProvider value={{ journey, variant: 'embed' }}>
-        <ThemeProvider {...theme} rtl={rtl} locale={locale}>
-          <EmbeddedPreview blocks={transformer(journey.blocks ?? [])} />
+      <JourneyProvider value={{ journey }}>
+        <ThemeProvider
+          themeName={journey.themeName}
+          themeMode={journey.themeMode}
+          rtl={rtl}
+          locale={locale}
+        >
+          {journey.blocks != null && (
+            <Conductor blocks={transformer(journey.blocks)} />
+          )}
         </ThemeProvider>
       </JourneyProvider>
     </>
   )
 }
+
+export const GET_JOURNEY = gql`
+  ${JOURNEY_FIELDS}
+  query GetJourney($id: ID!) {
+    journey(id: $id, idType: slug) {
+      ...JourneyFields
+    }
+  }
+`
 
 export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
   context
@@ -102,7 +121,6 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
       }
     })
     const { rtl, locale } = getJourneyRTL(data.journey)
-
     return {
       props: {
         ...(await serverSideTranslations(
@@ -132,6 +150,14 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
     throw e
   }
 }
+
+export const GET_JOURNEY_SLUGS = gql`
+  query GetJourneySlugs {
+    journeys {
+      slug
+    }
+  }
+`
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const apolloClient = createApolloClient()

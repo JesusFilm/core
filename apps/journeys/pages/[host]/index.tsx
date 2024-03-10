@@ -7,7 +7,7 @@ import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { GetStaticProps } from 'next'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -20,11 +20,10 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import {
   GetJourneys,
   GetJourneys_journeys as Journey
-} from '../__generated__/GetJourneys'
-import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
-import i18nConfig from '../next-i18next.config'
-import logo from '../public/logo.svg'
-import { createApolloClient } from '../src/libs/apolloClient'
+} from '../../__generated__/GetJourneys'
+import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
+import i18nConfig from '../../next-i18next.config'
+import { createApolloClient } from '../../src/libs/apolloClient'
 
 interface JourneysPageProps {
   journeys: Journey[]
@@ -41,17 +40,6 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
       <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
         <Container maxWidth="xxl">
           <Stack spacing={8} py={8}>
-            <Image
-              src={logo}
-              alt="Next Steps"
-              height={68}
-              width={152}
-              style={{
-                maxWidth: '100%',
-                height: 'auto',
-                alignSelf: 'center'
-              }}
-            />
             <Box>
               <Grid container spacing={{ xs: 2, sm: 4 }}>
                 {journeys.map(({ id, slug }, index) => (
@@ -70,7 +58,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                       >
                         <Fade in timeout={(index + 1) * 1000}>
                           <StyledIframe
-                            src={`/embed/${slug}`}
+                            src={`http://localhost:4100/embed/${slug}`}
                             sx={{
                               width: '100%',
                               height: 600,
@@ -94,46 +82,6 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                 ))}
               </Grid>
             </Box>
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={2}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <NextLink
-                href="https://www.cru.org/us/en/about/terms-of-use.html"
-                passHref
-                legacyBehavior
-              >
-                <Link
-                  underline="none"
-                  variant="body2"
-                  sx={{ p: 0 }}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  {t('Terms & Conditions')}
-                </Link>
-              </NextLink>
-              <NextLink
-                href="https://www.cru.org/us/en/about/privacy.html"
-                passHref
-                legacyBehavior
-              >
-                <Link
-                  underline="none"
-                  variant="body2"
-                  sx={{ p: 0 }}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  {t('Privacy Policy')}
-                </Link>
-              </NextLink>
-              <Typography variant="body2" suppressHydrationWarning>
-                {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
-              </Typography>
-            </Stack>
           </Stack>
         </Container>
       </ThemeProvider>
@@ -144,6 +92,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
 export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
   context
 ) => {
+  console.log(context.params.host)
   const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetJourneys>({
     query: gql`
@@ -181,6 +130,13 @@ export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
       },
       revalidate: 60
     }
+  }
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [],
+    fallback: 'blocking'
   }
 }
 
