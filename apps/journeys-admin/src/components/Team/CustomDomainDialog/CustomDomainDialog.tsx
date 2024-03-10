@@ -2,6 +2,7 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
+import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
@@ -175,7 +176,7 @@ export function CustomDomainDialog({
       onSubmit={handleSubmit}
       validationSchema={validationSchema}
     >
-      {({ values, errors, handleChange, handleSubmit, resetForm }) => (
+      {({ values, errors, handleChange, handleSubmit }) => (
         <Dialog
           open={open}
           onClose={onClose}
@@ -223,18 +224,23 @@ export function CustomDomainDialog({
                       {t('Default Journey')}
                     </Typography>
                     <Stack direction="row" justifyContent="space-between">
-                      <Select
-                        fullWidth
-                        id="defaultJourney"
-                        name="defaultJourney"
-                        onChange={handleOnChange}
-                      >
-                        {journeysData?.journeys.map((journey) => (
-                          <MenuItem value={journey.id} key={journey.id}>
-                            {journey.title}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      <FormControl variant="filled" fullWidth hiddenLabel>
+                        <Select
+                          id="defaultJourney"
+                          name="defaultJourney"
+                          onChange={handleOnChange}
+                          defaultValue={
+                            customDomainData?.customDomains[0]
+                              ?.journeyCollection?.journeys[0]?.title
+                          }
+                        >
+                          {journeysData?.journeys.map((journey) => (
+                            <MenuItem value={journey.id} key={journey.id}>
+                              {journey.title}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     </Stack>
                   </Stack>
                 )}
@@ -277,12 +283,15 @@ export function CustomDomainDialog({
                         <Stack direction="row" sx={{ width: '100%' }}>
                           <Box
                             sx={{
+                              display: 'flex',
+                              alignItems: 'center',
                               border: '2px solid',
                               borderColor: 'divider',
                               color: 'secondary.light',
                               borderRadius: '8px 0px 0px 8px',
                               p: 4,
-                              width: '33%'
+                              width: '33%',
+                              wordBreak: 'break-all'
                             }}
                           >
                             {customDomainData?.customDomains[0].apexName ===
@@ -297,7 +306,8 @@ export function CustomDomainDialog({
                               borderColor: 'divider',
                               color: 'secondary.light',
                               p: 4,
-                              width: '33%'
+                              width: '33%',
+                              wordBreak: 'break-all'
                             }}
                           >
                             {customDomainData.customDomains[0].apexName}
@@ -309,7 +319,8 @@ export function CustomDomainDialog({
                               borderColor: 'divider',
                               color: 'secondary.light',
                               pl: 4,
-                              width: '33%'
+                              width: '33%',
+                              wordBreak: 'break-all'
                             }}
                           >
                             <Stack
@@ -322,16 +333,15 @@ export function CustomDomainDialog({
                               customDomainData?.customDomains[0].name
                                 ? t('76.76.21.21')
                                 : t('cname.vercel-dns.com')}
-                              {smUp && (
-                                <IconButton
-                                  onClick={async () =>
-                                    await handleCopyClick('76.76.21.21')
-                                  }
-                                  aria-label="Copy"
-                                >
-                                  <CopyLeft />
-                                </IconButton>
-                              )}
+
+                              <IconButton
+                                onClick={async () =>
+                                  await handleCopyClick('76.76.21.21')
+                                }
+                                aria-label="Copy"
+                              >
+                                <CopyLeft />
+                              </IconButton>
                             </Stack>
                           </Box>
                         </Stack>
@@ -349,7 +359,8 @@ export function CustomDomainDialog({
                                 p: 4,
                                 width: '33%',
                                 display: 'flex',
-                                alignItems: 'center'
+                                alignItems: 'center',
+                                wordBreak: 'break-all'
                               }}
                             >
                               {
@@ -382,7 +393,8 @@ export function CustomDomainDialog({
                                 borderColor: 'divider',
                                 color: 'secondary.light',
                                 pl: 4,
-                                width: '33%'
+                                width: '33%',
+                                wordBreak: 'break-all'
                               }}
                             >
                               <Stack
@@ -396,22 +408,20 @@ export function CustomDomainDialog({
                                   customDomainData?.customDomains[0]
                                     .verification[0]?.value
                                 }
-                                {smUp && (
-                                  <IconButton
-                                    onClick={async () =>
-                                      await handleCopyClick(
-                                        customDomainData?.customDomains[0]
-                                          ?.verification != null
-                                          ? customDomainData?.customDomains[0]
-                                              ?.verification[0]?.value
-                                          : ''
-                                      )
-                                    }
-                                    aria-label="Copy"
-                                  >
-                                    <CopyLeft />
-                                  </IconButton>
-                                )}
+                                <IconButton
+                                  onClick={async () =>
+                                    await handleCopyClick(
+                                      customDomainData?.customDomains[0]
+                                        ?.verification != null
+                                        ? customDomainData?.customDomains[0]
+                                            ?.verification[0]?.value
+                                        : ''
+                                    )
+                                  }
+                                  aria-label="Copy"
+                                >
+                                  <CopyLeft />
+                                </IconButton>
                               </Stack>
                             </Box>
                           </Stack>

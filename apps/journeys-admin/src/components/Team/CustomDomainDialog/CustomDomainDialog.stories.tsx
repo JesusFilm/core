@@ -58,15 +58,23 @@ const getCustomDomainMockVerifiedFalse: MockedResponse<GetCustomDomain> = {
           __typename: 'CustomDomain',
           name: 'mockdomain.com',
           apexName: 'mockdomain.com',
-          defaultJourneysOnly: true,
+          allowOutsideJourneys: true,
           id: 'customDomainId',
           teamId: 'teamId',
           verified: false,
-          verification: {
-            __typename: 'Verification',
-            type: 'TXT',
-            domain: '_vercel.mockdomain.com',
-            value: 'vc-domain-verify=mockdomain.com,61eb769fc89e3d03578a'
+          verification: [
+            {
+              __typename: 'VercelDomainVerification',
+              type: 'TXT',
+              domain: '_vercel.mockdomain.com',
+              value: 'vc-domain-verify=mockdomain.com,61eb769fc89e3d03578a',
+              reason: ''
+            }
+          ],
+          journeyCollection: {
+            __typename: 'JourneyCollection',
+            id: 'journeyCollectionId',
+            journeys: []
           }
         }
       ]
@@ -88,11 +96,24 @@ const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
           __typename: 'CustomDomain',
           name: 'mockdomain.com',
           apexName: 'mockdomain.com',
-          defaultJourneysOnly: true,
+          allowOutsideJourneys: true,
           id: 'customDomainId',
           teamId: 'teamId',
           verified: true,
-          verification: null
+          verification: [
+            {
+              __typename: 'VercelDomainVerification',
+              type: 'TXT',
+              domain: '_vercel.mockdomain.com',
+              value: 'vc-domain-verify=mockdomain.com,61eb769fc89e3d03578a',
+              reason: ''
+            }
+          ],
+          journeyCollection: {
+            __typename: 'JourneyCollection',
+            id: 'journeyCollectionId',
+            journeys: []
+          }
         }
       ]
     }
@@ -113,11 +134,24 @@ const getCustomDomainMockCName: MockedResponse<GetCustomDomain> = {
           __typename: 'CustomDomain',
           name: 'tandem.mockdomain.com',
           apexName: 'mockdomain.com',
-          defaultJourneysOnly: true,
+          allowOutsideJourneys: true,
           id: 'customDomainId',
           teamId: 'teamId',
           verified: true,
-          verification: null
+          verification: [
+            {
+              __typename: 'VercelDomainVerification',
+              type: 'TXT',
+              domain: '_vercel.mockdomain.com',
+              value: 'vc-domain-verify=mockdomain.com,61eb769fc89e3d03578a',
+              reason: ''
+            }
+          ],
+          journeyCollection: {
+            __typename: 'JourneyCollection',
+            id: 'journeyCollectionId',
+            journeys: []
+          }
         }
       ]
     }
