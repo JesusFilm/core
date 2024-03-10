@@ -26,7 +26,8 @@ export function AccountCheckDialog({
       onClose={onClose}
       sx={{
         '& .MuiPaper-root': {
-          borderRadius: 2,
+          borderTopLeftRadius: 8,
+          borderTopRightRadius: 8,
           borderBottomLeftRadius: { xs: 0, sm: 8 },
           borderBottomRightRadius: { xs: 0, sm: 8 },
           height: { xs: 348, sm: 318 },
