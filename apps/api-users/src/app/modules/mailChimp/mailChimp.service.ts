@@ -1,7 +1,7 @@
 import mailchimp from '@mailchimp/mailchimp_marketing'
 import { Injectable } from '@nestjs/common'
 
-interface UnderContactToAudienceProps {
+interface UnderContactToAudienceParams {
   email: string
   firstName: string
   lastName: string
@@ -10,7 +10,7 @@ interface UnderContactToAudienceProps {
 @Injectable()
 export class MailChimpService {
   async upsertContactToAudience(
-    user: UnderContactToAudienceProps
+    user: UnderContactToAudienceParams
   ): Promise<void> {
     mailchimp.setConfig({
       apiKey: process.env.MAILCHIMP_MARKETING_API_KEY,
