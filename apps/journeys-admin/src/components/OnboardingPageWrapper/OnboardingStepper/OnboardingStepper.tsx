@@ -1,4 +1,6 @@
 import Box from '@mui/material/Box'
+import MobileStepper from '@mui/material/MobileStepper'
+import Stack from '@mui/material/Stack'
 import Step from '@mui/material/Step'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
@@ -18,14 +20,17 @@ export function OnboardingStepper(): ReactElement {
       case '/users/sign-in':
         step = 0
         break
-      case '/users/terms-and-conditions':
+      case '/users/verify':
         step = 1
         break
-      case '/onboarding-form':
+      case '/users/terms-and-conditions':
         step = 2
         break
-      case '/teams/new':
+      case '/onboarding-form':
         step = 3
+        break
+      case '/teams/new':
+        step = 4
         break
       default:
         step = 0
@@ -41,6 +46,9 @@ export function OnboardingStepper(): ReactElement {
       label: t('Sign up or Log in')
     },
     {
+      label: t('Verify your account')
+    },
+    {
       label: t('Terms and Conditions')
     },
     {
@@ -48,35 +56,49 @@ export function OnboardingStepper(): ReactElement {
     },
     {
       label: t('Create a Team')
-    },
-    {
-      label: t('Journey Ready!')
     }
   ]
 
   return (
     <Box
       sx={{
-        width: 244,
-        display: { xs: 'none', md: 'flex' },
+        width: { xs: '100%', md: 244 },
+        px: { lg: 3 },
+        display: 'flex',
         flexDirection: 'column',
         alignItems: 'center'
       }}
     >
-      <Box sx={{ p: 4 }}>
+      <Stack gap={6} sx={{ display: { xs: 'none', md: 'flex' } }}>
         <Typography variant="h6">
           {t(`Let's get you on the journey`)}
         </Typography>
-      </Box>
-      <Stepper activeStep={currentStep} orientation="vertical">
-        {steps.map((step) => (
-          <Step key={step.label}>
-            <StepLabel>
-              <Typography variant="subtitle2">{step.label}</Typography>
-            </StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+        <Stepper activeStep={currentStep} orientation="vertical" sx={{ px: 2 }}>
+          {steps.map((step) => (
+            <Step key={step.label}>
+              <StepLabel>
+                <Typography variant="subtitle2">{step.label}</Typography>
+              </StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Stack>
+      <MobileStepper
+        variant="progress"
+        steps={steps.length}
+        position="static"
+        activeStep={currentStep === 0 ? currentStep + 0.5 : currentStep}
+        backButton={null}
+        nextButton={null}
+        sx={{
+          display: { xs: 'flex', md: 'none' },
+          width: '100%',
+          p: 0,
+          '& .MuiLinearProgress-root': {
+            width: '100%'
+          }
+        }}
+      />
     </Box>
   )
 }
