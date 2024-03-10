@@ -3,6 +3,7 @@ type JourneyCollection {
   team: Team!
   title: String
   customDomains: [CustomDomain]!
+  journeyIds: [String!]!
   journeys: [Journey]!
 }
 
@@ -14,6 +15,7 @@ input JourneyCollectionCreateInput {
 }
 
 input JourneyCollectionUpdateInput {
+  id: ID!
   title: String
   journeyIds: [String]
 }
@@ -25,7 +27,7 @@ extend type Mutation {
   journeyCollectionUpdate(
     input: JourneyCollectionUpdateInput!
   ): JourneyCollection!
-  journeyCollectionDelete(id: ID!): Boolean!
+  journeyCollectionDelete(id: ID!): JourneyCollection!
 }
 
 extend type Query {

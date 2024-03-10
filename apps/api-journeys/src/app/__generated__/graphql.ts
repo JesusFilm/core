@@ -673,6 +673,7 @@ export class JourneyCollectionCreateInput {
 }
 
 export class JourneyCollectionUpdateInput {
+    id: string;
     title?: Nullable<string>;
     journeyIds?: Nullable<Nullable<string>[]>;
 }
@@ -1081,14 +1082,6 @@ export class ChatButton {
     platform?: Nullable<ChatPlatform>;
 }
 
-export class VercelDomainVerification {
-    __typename?: 'VercelDomainVerification';
-    type?: Nullable<string>;
-    domain?: Nullable<string>;
-    value?: Nullable<string>;
-    reason?: Nullable<string>;
-}
-
 export class CustomDomain {
     __typename?: 'CustomDomain';
     id: string;
@@ -1097,6 +1090,19 @@ export class CustomDomain {
     apexName: string;
     allowOutsideJourneys: boolean;
     journeyCollection?: Nullable<JourneyCollection>;
+    verification?: Nullable<CustomDomainVerification>;
+}
+
+export class VercelDomainVerification {
+    __typename?: 'VercelDomainVerification';
+    type?: Nullable<string>;
+    domain?: Nullable<string>;
+    value?: Nullable<string>;
+    reason?: Nullable<string>;
+}
+
+export class CustomDomainVerification {
+    __typename?: 'CustomDomainVerification';
     verified: boolean;
     verification?: Nullable<Nullable<VercelDomainVerification>[]>;
 }
@@ -1301,6 +1307,7 @@ export class JourneyCollection {
     team: Team;
     title?: Nullable<string>;
     customDomains: Nullable<CustomDomain>[];
+    journeyIds: string[];
     journeys: Nullable<Journey>[];
 }
 
@@ -1548,7 +1555,7 @@ export abstract class IMutation {
 
     abstract customDomainUpdate(input: CustomDomainUpdateInput): CustomDomain | Promise<CustomDomain>;
 
-    abstract customDomainDelete(id: string): boolean | Promise<boolean>;
+    abstract customDomainDelete(id: string): CustomDomain | Promise<CustomDomain>;
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
@@ -1612,7 +1619,7 @@ export abstract class IMutation {
 
     abstract journeyCollectionUpdate(input: JourneyCollectionUpdateInput): JourneyCollection | Promise<JourneyCollection>;
 
-    abstract journeyCollectionDelete(id: string): boolean | Promise<boolean>;
+    abstract journeyCollectionDelete(id: string): JourneyCollection | Promise<JourneyCollection>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
 
