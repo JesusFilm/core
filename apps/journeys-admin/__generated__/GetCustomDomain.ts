@@ -8,25 +8,39 @@
 // ====================================================
 
 export interface GetCustomDomain_customDomains_verification {
-  __typename: "Verification";
-  domain: string;
-  type: string;
-  value: string;
+  __typename: "VercelDomainVerification";
+  domain: string | null;
+  reason: string | null;
+  type: string | null;
+  value: string | null;
+}
+
+export interface GetCustomDomain_customDomains_journeyCollection_journeys {
+  __typename: "Journey";
+  title: string;
+  id: string;
+}
+
+export interface GetCustomDomain_customDomains_journeyCollection {
+  __typename: "JourneyCollection";
+  id: string;
+  journeys: (GetCustomDomain_customDomains_journeyCollection_journeys | null)[];
 }
 
 export interface GetCustomDomain_customDomains {
   __typename: "CustomDomain";
-  name: string;
-  apexName: string;
-  verified: boolean;
-  verification: GetCustomDomain_customDomains_verification | null;
-  defaultJourneysOnly: boolean;
   id: string;
+  apexName: string;
+  allowOutsideJourneys: boolean;
+  verified: boolean;
+  verification: (GetCustomDomain_customDomains_verification | null)[] | null;
   teamId: string;
+  name: string;
+  journeyCollection: GetCustomDomain_customDomains_journeyCollection | null;
 }
 
 export interface GetCustomDomain {
-  customDomains: GetCustomDomain_customDomains[] | null;
+  customDomains: GetCustomDomain_customDomains[];
 }
 
 export interface GetCustomDomainVariables {

@@ -294,8 +294,10 @@ export interface ChatOpenEventCreateInput {
 }
 
 export interface CustomDomainCreateInput {
+  teamId: string;
   name: string;
-  defaultJourneysOnly: boolean;
+  allowOutsideJourneys?: boolean | null;
+  journeyCollectionId?: string | null;
 }
 
 export interface EmailActionInput {

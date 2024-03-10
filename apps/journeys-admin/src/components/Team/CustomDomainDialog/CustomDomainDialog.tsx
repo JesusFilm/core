@@ -36,38 +36,50 @@ interface CustomDomainDialogProps {
 export const GET_CUSTOM_DOMAIN = gql`
   query GetCustomDomain($teamId: ID!) {
     customDomains(teamId: $teamId) {
-      name
+      id
       apexName
+      allowOutsideJourneys
       verified
       verification {
         domain
+        reason
         type
         value
       }
-      defaultJourneysOnly
-      id
       teamId
+      name
+      journeyCollection {
+        id
+        journeys {
+          title
+          id
+        }
+      }
     }
   }
 `
 
 export const CREATE_CUSTOM_DOMAIN = gql`
-  mutation CreateCustomDomain($teamId: ID!, $input: CustomDomainCreateInput!) {
-    customDomainCreate(teamId: $teamId, input: $input) {
+  mutation CreateCustomDomain($input: CustomDomainCreateInput!) {
+    customDomainCreate(input: $input) {
       id
+      apexName
       name
-      defaultJourneysOnly
+      allowOutsideJourneys
+      verification {
+        domain
+        reason
+        type
+        value
+      }
+      verified
     }
   }
 `
 
 export const DELETE_CUSTOM_DOMAIN = gql`
   mutation DeleteCustomDomain($customDomainDeleteId: ID!) {
-    customDomainDelete(id: $customDomainDeleteId) {
-      id
-      name
-      defaultJourneysOnly
-    }
+    customDomainDelete(id: $customDomainDeleteId)
   }
 `
 
@@ -118,14 +130,19 @@ export function CustomDomainDialog({
       customDomainData?.customDomains?.length !== 0
     ) {
       await deleteCustomDomain({
-        variables: { id: customDomainData?.customDomains[0].id }
+        variables: {
+          customDomainDeleteId: customDomainData?.customDomains[0].id
+        }
       })
       resetForm()
     } else {
       await createCustomDomain({
         variables: {
-          teamId: activeTeam?.id,
-          input: { name: value.domainName, defaultJourneysOnly: true }
+          input: {
+            name: value.domainName,
+            defaultJourneysOnly: true,
+            teamId: activeTeam?.id
+          }
         }
       })
     }
@@ -336,8 +353,8 @@ export function CustomDomainDialog({
                               }}
                             >
                               {
-                                customDomainData?.customDomains[0].verification
-                                  ?.type
+                                customDomainData?.customDomains[0]
+                                  .verification[0]?.type
                               }
                             </Box>
                             <Box
@@ -353,7 +370,7 @@ export function CustomDomainDialog({
                                 alignItems: 'center'
                               }}
                             >
-                              {customDomainData?.customDomains[0].verification?.domain.replace(
+                              {customDomainData?.customDomains[0].verification[0]?.domain?.replace(
                                 '_vercel.',
                                 ''
                               )}
@@ -377,14 +394,17 @@ export function CustomDomainDialog({
                               >
                                 {
                                   customDomainData?.customDomains[0]
-                                    .verification?.value
+                                    .verification[0]?.value
                                 }
                                 {smUp && (
                                   <IconButton
                                     onClick={async () =>
                                       await handleCopyClick(
-                                        customDomainData?.customDomains?.[0]
-                                          .verification?.value
+                                        customDomainData?.customDomains[0]
+                                          ?.verification != null
+                                          ? customDomainData?.customDomains[0]
+                                              ?.verification[0]?.value
+                                          : ''
                                       )
                                     }
                                     aria-label="Copy"
