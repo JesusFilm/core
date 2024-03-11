@@ -8,15 +8,13 @@ import { auth, firebaseClient } from '@core/nest/common/firebaseClient'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { VerifyUserJob } from '../email/email.consumer'
-import { MailChimpService } from '../mailChimp/mailChimp.service'
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectQueue('api-users-email')
     private readonly emailQueue: Queue<VerifyUserJob>,
-    private readonly prismaService: PrismaService,
-    private readonly mailChimpService: MailChimpService
+    private readonly prismaService: PrismaService
   ) {}
 
   async findOrFetchUser(
@@ -85,14 +83,8 @@ export class UserService {
       } while (user == null && retry < 3)
     }
     // after user create so it is only sent once
-    if (email != null && userCreated) {
-      if (!emailVerified) await this.verifyUser(userId, email, redirect)
-      await this.mailChimpService.upsertContactToAudience({
-        email,
-        firstName,
-        lastName
-      })
-    }
+    if (email != null && userCreated && !emailVerified)
+      await this.verifyUser(userId, email, redirect)
     return user
   }
 

@@ -1,3 +1,4 @@
+import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
@@ -6,12 +7,17 @@ import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
+import { MailChimpService } from '../mailChimp/mailChimp.service'
 
 import { JourneyProfileResolver } from './journeyProfile.resolver'
+
+jest.mock('@apollo/client')
 
 describe('JourneyProfileResolver', () => {
   let resolver: JourneyProfileResolver,
     prismaService: DeepMockProxy<PrismaService>
+
+  let mailChimpService: DeepMockProxy<MailChimpService>
 
   const profile: JourneyProfile = {
     id: '1',
@@ -34,6 +40,10 @@ describe('JourneyProfileResolver', () => {
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: MailChimpService,
+          useValue: mockDeep<MailChimpService>()
         }
       ]
     }).compile()
@@ -41,6 +51,9 @@ describe('JourneyProfileResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    mailChimpService = module.get<MailChimpService>(
+      MailChimpService
+    ) as DeepMockProxy<MailChimpService>
   })
 
   describe('getJourneyProfile', () => {
@@ -53,12 +66,39 @@ describe('JourneyProfileResolver', () => {
   describe('journeyProfileCreate', () => {
     it('should create user profile', async () => {
       prismaService.journeyProfile.findUnique.mockResolvedValueOnce(null)
+      prismaService.journeyProfile.create.mockResolvedValueOnce({
+        id: 'journeyProfileId',
+        userId: 'newUserId',
+        acceptedTermsAt: new Date(),
+        lastActiveTeamId: null,
+        onboardingFormCompletedAt: null
+      })
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'newUserId',
+                email: 'my-nama-yeff@example.com',
+                firstName: 'My-Nama',
+                lastName: 'Yeff'
+              }
+            }
+          } as unknown as ApolloQueryResult<unknown>)
+      )
+
       await resolver.journeyProfileCreate('newUserId')
       expect(prismaService.journeyProfile.create).toHaveBeenCalledWith({
         data: {
           userId: 'newUserId',
           acceptedTermsAt: new Date('2021-02-18T00:00:00.000Z')
         }
+      })
+      expect(mailChimpService.upsertContactToAudience).toHaveBeenCalledWith({
+        id: 'newUserId',
+        email: 'my-nama-yeff@example.com',
+        firstName: 'My-Nama',
+        lastName: 'Yeff'
       })
     })
 

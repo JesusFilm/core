@@ -8,7 +8,6 @@ import { User } from '.prisma/api-users-client'
 import { auth } from '@core/nest/common/firebaseClient'
 
 import { PrismaService } from '../../lib/prisma.service'
-import { MailChimpService } from '../mailChimp/mailChimp.service'
 
 import { UserService } from './user.service'
 
@@ -32,7 +31,6 @@ const user = {
 describe('UserService', () => {
   let userService: UserService, prismaService: DeepMockProxy<PrismaService>
   let emailQueue
-  let mailChimpService: DeepMockProxy<MailChimpService>
 
   const removeJob = jest.fn()
 
@@ -51,11 +49,7 @@ describe('UserService', () => {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
         },
-        { provide: getQueueToken('api-users-email'), useValue: emailQueue },
-        {
-          provide: MailChimpService,
-          useValue: mockDeep<MailChimpService>()
-        }
+        { provide: getQueueToken('api-users-email'), useValue: emailQueue }
       ]
     })
       .overrideProvider(getQueueToken('api-users-email'))
@@ -66,9 +60,6 @@ describe('UserService', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
-    mailChimpService = module.get<MailChimpService>(
-      MailChimpService
-    ) as DeepMockProxy<MailChimpService>
   })
 
   afterEach(() => {
@@ -183,7 +174,6 @@ describe('UserService', () => {
       )
       await userService.findOrFetchUser('userId')
       expect(prismaService.user.update).toHaveBeenCalled()
-      expect(mailChimpService.upsertContactToAudience).not.toHaveBeenCalled()
     })
 
     it('returns email verified status always', async () => {
@@ -210,32 +200,6 @@ describe('UserService', () => {
           userId: 'userId',
           emailVerified: true
         }
-      })
-      expect(mailChimpService.upsertContactToAudience).toHaveBeenCalledWith({
-        email: 'tho@no.co',
-        firstName: 'fo',
-        lastName: 'sho'
-      })
-    })
-
-    it('adds user to mailchimp if not verified', async () => {
-      const userNotVerified = { ...user, emailVerified: false }
-
-      jest.spyOn(auth, 'getUser').mockResolvedValue({
-        userId: userNotVerified.id,
-        email: userNotVerified.email,
-        emailVerified: userNotVerified.emailVerified,
-        displayName: userNotVerified.firstName + ' ' + userNotVerified.lastName
-      } as unknown as UserRecord)
-      prismaService.user.findUnique.mockResolvedValueOnce(null)
-      prismaService.user.create.mockResolvedValueOnce(userNotVerified)
-      expect(await userService.findOrFetchUser('userId')).toEqual(
-        userNotVerified
-      )
-      expect(mailChimpService.upsertContactToAudience).toHaveBeenCalledWith({
-        email: 'tho@no.co',
-        firstName: 'fo',
-        lastName: 'sho'
       })
     })
   })

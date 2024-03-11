@@ -1,3 +1,4 @@
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
@@ -7,10 +8,22 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { JourneyProfileUpdateInput } from '../../__generated__/graphql'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { MailChimpService } from '../mailChimp/mailChimp.service'
+
+const apollo = new ApolloClient({
+  uri: process.env.GATEWAY_URL,
+  cache: new InMemoryCache(),
+  headers: {
+    'interop-token': process.env.INTEROP_TOKEN ?? ''
+  }
+})
 
 @Resolver('JourneyProfile')
 export class JourneyProfileResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly mailChimpService: MailChimpService
+  ) {}
 
   @Query()
   @UseGuards(AppCaslGuard)
@@ -31,12 +44,28 @@ export class JourneyProfileResolver {
 
     // Create profile after accepting terms of service
     if (profile == null) {
-      return await this.prismaService.journeyProfile.create({
+      const createdProfile = await this.prismaService.journeyProfile.create({
         data: {
           userId,
           acceptedTermsAt: new Date()
         }
       })
+
+      const { data } = await apollo.query({
+        query: gql`
+          query User($userId: ID!) {
+            user(id: $userId) {
+              id
+              email
+              firstName
+              lastName
+            }
+          }
+        `,
+        variables: { userId: createdProfile.userId }
+      })
+      await this.mailChimpService.upsertContactToAudience({ ...data.user })
+      return createdProfile
     }
 
     return profile
