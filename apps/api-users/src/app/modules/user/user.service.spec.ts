@@ -188,9 +188,20 @@ describe('UserService', () => {
     })
 
     it('fetches user from firebase', async () => {
+      const verifyUserSpy = jest.spyOn(UserService.prototype, 'verifyUser')
+      jest.spyOn(auth, 'getUser').mockResolvedValue({
+        ...authUser,
+        emailVerified: false
+      } as unknown as UserRecord)
       prismaService.user.findUnique.mockResolvedValueOnce(null)
-      prismaService.user.create.mockResolvedValueOnce(user)
-      expect(await userService.findOrFetchUser('userId')).toEqual(user)
+      prismaService.user.create.mockResolvedValueOnce({
+        ...user,
+        emailVerified: false
+      })
+      expect(await userService.findOrFetchUser('userId')).toEqual({
+        ...user,
+        emailVerified: false
+      })
       expect(prismaService.user.create).toHaveBeenCalledWith({
         data: {
           email: 'tho@no.co',
@@ -198,9 +209,14 @@ describe('UserService', () => {
           imageUrl: 'p',
           lastName: 'sho',
           userId: 'userId',
-          emailVerified: true
+          emailVerified: false
         }
       })
+      expect(verifyUserSpy).toHaveBeenCalledWith(
+        'userId',
+        'tho@no.co',
+        undefined
+      )
     })
   })
 })
