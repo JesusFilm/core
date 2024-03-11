@@ -71,7 +71,7 @@ function ValidateEmail({
   const [resendValidationEmail] = useMutation<CreateVerificationRequest>(
     CREATE_VERIFICATION_REQUEST,
     {
-      variables: { input: { redirect: router?.query?.redirect ?? undefined } }
+      variables: { input: { redirect: router?.query?.redirect } }
     }
   )
 
@@ -86,7 +86,7 @@ function ValidateEmail({
       onCompleted: async () => {
         await router.push({
           pathname: '/users/terms-and-conditions',
-          query: { redirect: router.query.redirect ?? undefined }
+          query: { redirect: router.query.redirect }
         })
       }
     })
@@ -229,7 +229,7 @@ export const getServerSideProps = withUserTokenSSR({
   // skip if already verified
   const apiUser = await apolloClient.query<GetMe>({
     query: GET_ME,
-    variables: { input: { redirect: undefined } }
+    variables: { input: { redirect: null } }
   })
   if (apiUser.data?.me?.emailVerified ?? false) {
     return {

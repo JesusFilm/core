@@ -87,7 +87,7 @@ describe('NavigationDrawer', () => {
     const getMeMock: MockedResponse<GetMe> = {
       request: {
         query: GET_ME,
-        variables: { input: { redirect: undefined } }
+        variables: { input: { redirect: null } }
       },
       result: {
         data: {

@@ -68,7 +68,7 @@ const Template: StoryObj<typeof PageWrapper> = {
           {
             request: {
               query: GET_ME,
-              variables: { input: { redirect: undefined } }
+              variables: { input: { redirect: null } }
             },
             result: {
               data: {
