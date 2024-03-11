@@ -17,3 +17,8 @@ export interface GetJourneys_journeys {
 export interface GetJourneys {
   journeys: GetJourneys_journeys[];
 }
+
+export interface GetJourneysVariables {
+  featured?: boolean | null;
+  host?: string | null;
+}

@@ -19,6 +19,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
   GetJourneys,
+  GetJourneysVariables,
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
 import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
@@ -142,8 +143,8 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
 }
 
 export const GET_JOURNEYS = gql`
-  query GetJourneys($host: String) {
-    journeys(where: { featured: true, template: false, host: $host }) {
+  query GetJourneys($featured: Boolean, $host: String) {
+    journeys(where: { featured: $featured, template: false, host: $host }) {
       id
       title
       slug
@@ -155,8 +156,11 @@ export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<GetJourneys>({
-    query: GET_JOURNEYS
+  const { data } = await apolloClient.query<GetJourneys, GetJourneysVariables>({
+    query: GET_JOURNEYS,
+    variables: {
+      featured: true
+    }
   })
 
   if (data.journeys === null) {

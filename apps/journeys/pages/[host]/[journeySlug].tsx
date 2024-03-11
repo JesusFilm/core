@@ -12,6 +12,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
   GetJourney,
+  GetJourneyVariables,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
 import i18nConfig from '../../next-i18next.config'
@@ -96,10 +97,10 @@ export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
 ) => {
   const apolloClient = createApolloClient()
   try {
-    const { data } = await apolloClient.query<GetJourney>({
+    const { data } = await apolloClient.query<GetJourney, GetJourneyVariables>({
       query: GET_JOURNEY,
       variables: {
-        id: context.params?.journeySlug,
+        id: context.params?.journeySlug?.toString() ?? '',
         host: context.params?.host?.toString() ?? ''
       }
     })

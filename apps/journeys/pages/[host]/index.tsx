@@ -14,6 +14,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
   GetJourneys,
+  GetJourneysVariables,
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
 import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
@@ -90,7 +91,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<GetJourneys>({
+  const { data } = await apolloClient.query<GetJourneys, GetJourneysVariables>({
     query: GET_JOURNEYS,
     variables: {
       host: context.params?.host?.toString() ?? ''

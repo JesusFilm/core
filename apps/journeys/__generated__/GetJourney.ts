@@ -758,4 +758,5 @@ export interface GetJourney {
 
 export interface GetJourneyVariables {
   id: string;
+  host?: string | null;
 }
