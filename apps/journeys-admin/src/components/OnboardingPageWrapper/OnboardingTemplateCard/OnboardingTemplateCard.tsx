@@ -44,8 +44,7 @@ export function OnboardingTemplateCard(): ReactElement {
           sx={{
             flexShrink: 0,
             width: { xs: '100%', md: 244 },
-            px: { xs: 6, md: 0 },
-            pb: { xs: 6, md: 0 }
+            px: { xs: 6, md: 0 }
           }}
         >
           <Stack

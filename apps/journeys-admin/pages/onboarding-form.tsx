@@ -27,6 +27,7 @@ function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
     <>
       <NextSeo title={t('A Few Questions')} />
       <OnboardingPageWrapper
+        title={t('User Insights')}
         emailSubject={t('a question about onboarding form')}
       >
         <OnboardingForm form={form} user={user} />

@@ -9,10 +9,12 @@ import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function TermsAndConditionsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const title = t('Terms and Conditions')
   return (
     <>
-      <NextSeo title={t('Terms and Conditions')} />
+      <NextSeo title={title} />
       <OnboardingPageWrapper
+        title={title}
         emailSubject={t('A question about the terms and conditions form')}
       >
         <TermsAndConditions />

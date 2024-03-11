@@ -12,7 +12,6 @@ export function OnboardingDrawer(): ReactElement {
       alignItems="center"
       spacing={{ xs: 5, md: 20 }}
       sx={{
-        height: { xs: '20%', md: '100%' },
         width: { xs: '100%', md: '30%' },
         mt: { xs: 5, md: 10 },
         mb: { xs: 5, md: 0 }
