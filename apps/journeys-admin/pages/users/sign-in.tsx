@@ -13,7 +13,10 @@ function SignInPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Sign In')} />
-      <OnboardingPageWrapper emailSubject={t('A question about sign in')}>
+      <OnboardingPageWrapper
+        title={t('Create New Account or Log in')}
+        emailSubject={t('A question about sign in')}
+      >
         <SignIn />
       </OnboardingPageWrapper>
     </>

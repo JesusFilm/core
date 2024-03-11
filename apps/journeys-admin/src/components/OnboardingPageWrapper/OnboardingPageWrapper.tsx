@@ -1,5 +1,8 @@
 import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useState } from 'react'
@@ -10,17 +13,18 @@ import { LanguageSwitcher } from '../LanguageSwitcher'
 import { OnboardingDrawer } from './OnboardingDrawer'
 
 interface OnboardingPageWrapperProps {
+  title: string
   emailSubject: string
   children: ReactNode
 }
 
 export function OnboardingPageWrapper({
+  title,
   emailSubject,
   children
 }: OnboardingPageWrapperProps): ReactElement {
   const [open, setOpen] = useState(false)
   const viewportHeight = use100vh()
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Stack
@@ -45,40 +49,97 @@ export function OnboardingPageWrapper({
           borderLeftStyle: { xs: null, md: 'solid' },
           borderTopStyle: { xs: 'solid', md: null },
           borderColor: 'divider',
-          backgroundColor: { xs: 'background.paper', md: 'background.default' }
+          backgroundColor: 'background.default'
         }}
         data-testid="OnboardingPageWrapper"
       >
-        <Stack alignItems="center" sx={{ maxWidth: { xs: '100%', sm: 397 } }}>
-          {children}
-        </Stack>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="center"
-          gap={4}
-          sx={{
-            display: { xs: 'none', sm: 'block' }
-          }}
-        >
-          <Button size="small">
-            <Typography
-              variant="body2"
-              sx={{ color: 'primary.main', cursor: 'pointer' }}
-              component="a"
-              href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
+        <Typography variant="h1" sx={{ display: { xs: 'none', md: 'flex' } }}>
+          {title}
+        </Typography>
+        <Stack sx={{ maxWidth: { xs: '100%', sm: 397 } }}>
+          <Card
+            sx={{
+              height: { xs: '100vh', sm: 'inherit' },
+              width: { xs: '100vw', sm: 397 },
+              maxWidth: { xs: '100%', sm: 397 },
+              borderRadius: { xs: 4, sm: 2 }
+            }}
+          >
+            <CardContent
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4,
+                p: 6,
+                pt: 7
+              }}
             >
-              {t('Feedback & Support')}
-            </Typography>
-          </Button>
-          <Button size="small" onClick={() => setOpen(true)}>
-            <Typography variant="body2">{t('Language')}</Typography>
-          </Button>
+              {children}
+              <OnboardingUtilities
+                open={open}
+                setOpen={setOpen}
+                emailSubject={emailSubject}
+                sx={{
+                  display: { xs: 'flex', sm: 'none' }
+                }}
+              />
+            </CardContent>
+          </Card>
         </Stack>
-        {open && (
-          <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
-        )}
+        <OnboardingUtilities
+          open={open}
+          setOpen={setOpen}
+          emailSubject={emailSubject}
+          sx={{
+            display: { xs: 'none', sm: 'flex' }
+          }}
+        />
       </Stack>
     </Stack>
+  )
+}
+
+interface OnboardingUtilitiesProps {
+  open: boolean
+  setOpen: (open: boolean) => void
+  emailSubject: string
+  sx?: SxProps
+}
+
+function OnboardingUtilities({
+  open,
+  setOpen,
+  emailSubject,
+  sx
+}: OnboardingUtilitiesProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
+  return (
+    <>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        gap={4}
+        sx={{ ...sx }}
+      >
+        <Button size="small">
+          <Typography
+            variant="body2"
+            sx={{ color: 'primary.main', cursor: 'pointer' }}
+            component="a"
+            href={`mailto:support@nextstep.is?subject=${emailSubject}`}
+          >
+            {t('Feedback & Support')}
+          </Typography>
+        </Button>
+        <Button size="small" onClick={() => setOpen(true)}>
+          <Typography variant="body2">{t('Language')}</Typography>
+        </Button>
+      </Stack>
+      {open && (
+        <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
+      )}
+    </>
   )
 }

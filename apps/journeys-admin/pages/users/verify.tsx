@@ -105,7 +105,10 @@ function ValidateEmail({
   }
 
   return (
-    <OnboardingPageWrapper emailSubject={t('Validate NextStep Email')}>
+    <OnboardingPageWrapper
+      title={t('Verify Your Email')}
+      emailSubject={t('Validate NextStep Email')}
+    >
       <Formik
         initialValues={{ token }}
         onSubmit={handleReValidateEmail}

@@ -1,9 +1,5 @@
 import { useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
-import Card from '@mui/material/Card'
-import CardActions from '@mui/material/CardActions'
-import CardContent from '@mui/material/CardContent'
-import CardHeader from '@mui/material/CardHeader'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -70,83 +66,68 @@ export function TeamOnboarding(): ReactElement {
         isSubmitting
       }) => (
         <Form>
-          <Card
-            sx={{
-              height: { xs: '100vh', sm: 'inherit' },
-              width: { xs: '100vw', sm: 397 },
-              borderRadius: { xs: 6, sm: 2 }
-            }}
-          >
-            <CardHeader
-              title={t('Create Team')}
-              titleTypographyProps={{ variant: 'h6' }}
-              sx={{ py: 5, px: 6 }}
+          <Stack spacing={4}>
+            <TextField
+              id="title"
+              name="title"
+              fullWidth
+              value={values.title}
+              variant="filled"
+              error={Boolean(errors.title)}
+              onChange={handleChange}
+              helperText={
+                errors.title !== undefined
+                  ? errors.title
+                  : t('Private: Visible only to your team')
+              }
+              label={t('Team Name')}
             />
-            <CardContent sx={{ p: 6 }}>
-              <Stack spacing={4}>
-                <TextField
-                  id="title"
-                  name="title"
-                  fullWidth
-                  value={values.title}
-                  variant="filled"
-                  error={Boolean(errors.title)}
-                  onChange={handleChange}
-                  helperText={
-                    errors.title !== undefined
-                      ? errors.title
-                      : t('Private: Visible only to your team')
-                  }
-                  label={t('Team Name')}
-                />
-                <TextField
-                  id="publicTitle"
-                  name="publicTitle"
-                  fullWidth
-                  value={values.publicTitle}
-                  variant="filled"
-                  error={Boolean(errors.publicTitle)}
-                  onChange={handleChange}
-                  helperText={
-                    errors.publicTitle !== undefined
-                      ? errors.publicTitle
-                      : t('Public: Anyone can view it')
-                  }
-                  label={t('Legal Name')}
-                  placeholder={values.title}
-                />
+            <TextField
+              id="publicTitle"
+              name="publicTitle"
+              fullWidth
+              value={values.publicTitle}
+              variant="filled"
+              error={Boolean(errors.publicTitle)}
+              onChange={handleChange}
+              helperText={
+                errors.publicTitle !== undefined
+                  ? errors.publicTitle
+                  : t('Public: Anyone can view it')
+              }
+              label={t('Legal Name')}
+              placeholder={values.title}
+            />
 
-                <Stack direction="row" spacing={3} color="text.secondary">
-                  <InformationCircleContainedIcon
-                    sx={{ color: 'secondary.light' }}
-                  />
-                  <Typography
-                    variant="caption"
-                    color="secondary.light"
-                    gutterBottom
-                  >
-                    {t(
-                      'When visitors click the info icon, they will see text from the Legal Name box. This text can be a mission name, website title, or other public information.'
-                    )}
-                  </Typography>
-                </Stack>
-
-                <Typography gutterBottom>
-                  {t(
-                    'Create a team to hold your NextStep journeys and collaborate with others.'
-                  )}
-                </Typography>
-              </Stack>
-            </CardContent>
-            <CardActions sx={{ justifyContent: 'flex-end', px: 4 }}>
-              <Button
-                onClick={() => handleSubmit()}
-                disabled={!isValid || isSubmitting}
+            <Stack direction="row" spacing={3} color="text.secondary">
+              <InformationCircleContainedIcon
+                sx={{ color: 'secondary.light' }}
+              />
+              <Typography
+                variant="caption"
+                color="secondary.light"
+                gutterBottom
               >
-                {t('Create')}
-              </Button>
-            </CardActions>
-          </Card>
+                {t(
+                  'When visitors click the info icon, they will see text from the Legal Name box. This text can be a mission name, website title, or other public information.'
+                )}
+              </Typography>
+            </Stack>
+
+            <Typography gutterBottom>
+              {t(
+                'Create a team to hold your NextStep journeys and collaborate with others.'
+              )}
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => handleSubmit()}
+              disabled={!isValid || isSubmitting}
+              color="secondary"
+            >
+              {t('Create')}
+            </Button>
+          </Stack>
         </Form>
       )}
     </TeamCreateForm>
