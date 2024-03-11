@@ -63,6 +63,7 @@ export class JourneyCollectionResolver {
     return await this.prismaService.journeyCollection.create({
       data: {
         ...omit(input, ['teamId', 'customDomain']),
+        id: input.id ?? undefined,
         team: { connect: { id: input.teamId } },
         customDomains:
           customDomain != null

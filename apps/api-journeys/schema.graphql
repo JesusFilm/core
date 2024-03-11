@@ -2021,6 +2021,7 @@ type JourneyCollection {
 }
 
 input JourneyCollectionCreateInput {
+  id: ID
   teamId: String!
   title: String
   journeyIds: [String]

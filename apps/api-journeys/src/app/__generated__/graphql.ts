@@ -666,6 +666,7 @@ export class JourneyTemplateInput {
 }
 
 export class JourneyCollectionCreateInput {
+    id?: Nullable<string>;
     teamId: string;
     title?: Nullable<string>;
     journeyIds?: Nullable<Nullable<string>[]>;

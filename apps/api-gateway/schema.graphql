@@ -778,6 +778,7 @@ type JourneyCollection
 input JourneyCollectionCreateInput
   @join__type(graph: JOURNEYS)
 {
+  id: ID
   teamId: String!
   title: String
   journeyIds: [String]
