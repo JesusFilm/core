@@ -1,22 +1,15 @@
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
 import { JourneyProfile } from '.prisma/api-journeys-client'
+import { User } from '@core/nest/common/firebaseClient'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import { JourneyProfileUpdateInput } from '../../__generated__/graphql'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 import { MailChimpService } from '../mailChimp/mailChimp.service'
-
-const apollo = new ApolloClient({
-  uri: process.env.GATEWAY_URL,
-  cache: new InMemoryCache(),
-  headers: {
-    'interop-token': process.env.INTEROP_TOKEN ?? ''
-  }
-})
 
 @Resolver('JourneyProfile')
 export class JourneyProfileResolver {
@@ -38,33 +31,20 @@ export class JourneyProfileResolver {
   @Mutation()
   @UseGuards(AppCaslGuard)
   async journeyProfileCreate(
-    @CurrentUserId() userId: string
+    @CurrentUser() user: User
   ): Promise<JourneyProfile> {
-    const profile = await this.getJourneyProfile(userId)
+    const profile = await this.getJourneyProfile(user.id)
 
     // Create profile after accepting terms of service
     if (profile == null) {
       const createdProfile = await this.prismaService.journeyProfile.create({
         data: {
-          userId,
+          userId: user.id,
           acceptedTermsAt: new Date()
         }
       })
 
-      const { data } = await apollo.query({
-        query: gql`
-          query User($userId: ID!) {
-            user(id: $userId) {
-              id
-              email
-              firstName
-              lastName
-            }
-          }
-        `,
-        variables: { userId: createdProfile.userId }
-      })
-      await this.mailChimpService.upsertContactToAudience({ ...data.user })
+      await this.mailChimpService.upsertContactToAudience({ ...user })
       return createdProfile
     }
 

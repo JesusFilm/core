@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common'
 interface UpsertContactToAudienceParams {
   email: string
   firstName: string
-  lastName: string
+  lastName?: string
 }
 
 @Injectable()
