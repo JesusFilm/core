@@ -36,8 +36,7 @@ describe('Toolbar', () => {
       </SnackbarProvider>
     )
     expect(getByAltText('Next Steps')).toBeInTheDocument() // NextSteps logo
-    const backButton = getByTestId('ToolbarBackButton')
-    expect(backButton.getAttribute('href')).toBe('/')
+    expect(getByTestId('ToolbarBackButton')).toHaveAttribute('href', '/')
     expect(getByTestId('ThumbsUpIcon')).toBeInTheDocument()
     expect(getByText('My Awesome Journey Title')).toBeInTheDocument()
     expect(getByText('My Awesome Journey Description')).toBeInTheDocument()
