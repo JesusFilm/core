@@ -14,7 +14,7 @@ import { LanguageSwitcher } from '../LanguageSwitcher'
 import { OnboardingDrawer } from './OnboardingDrawer'
 
 interface OnboardingPageWrapperProps {
-  title: string
+  title?: string
   emailSubject: string
   children: ReactNode
 }
