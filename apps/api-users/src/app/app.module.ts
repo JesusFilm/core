@@ -12,7 +12,6 @@ import { LoggerModule } from 'nestjs-pino'
 
 import { EmailModule } from './modules/email/email.module'
 import { NestHealthModule } from './modules/health/health.module'
-import { MailChimpModule } from './modules/mailChimp/mailChimp.module'
 import { UserModule } from './modules/user/user.module'
 
 @Module({
@@ -20,7 +19,6 @@ import { UserModule } from './modules/user/user.module'
     NestHealthModule,
     EmailModule,
     UserModule,
-    MailChimpModule,
     BullModule.forRoot({
       connection: {
         host: process.env.REDIS_URL ?? 'redis',
