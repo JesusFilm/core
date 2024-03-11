@@ -1,20 +1,19 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { screen, userEvent } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
 const Demo: Meta<typeof StepBlockNodeMenu> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: StepBlockNodeMenu,
   title:
     'Journeys-Admin/Editor/Slider/JourneyFlow/nodes/StepBlockNode/StepBlockNodeMenu'
@@ -30,9 +29,7 @@ const step: TreeBlock<StepBlock> = {
   children: []
 }
 
-const Template: StoryObj<
-  ComponentProps<typeof StepBlockNodeMenu> & { mocks: MockedResponse[] }
-> = {
+const Template: StoryObj<ComponentProps<typeof StepBlockNodeMenu>> = {
   render: () => (
     <MockedProvider>
       <ThemeProvider>
@@ -51,10 +48,7 @@ export const Default = {
 export const Expanded = {
   ...Template,
   play: async () => {
-    await waitFor(async () => {
-      await expect(screen.getByTestId('edit-step-fab')).toBeInTheDocument()
-    })
-    await userEvent.click(screen.getByTestId('edit-step-fab'))
+    await userEvent.click(screen.getByTestId('EditStepFab'))
   }
 }
 

@@ -3,7 +3,7 @@ import Menu from '@mui/material/Menu'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import MoreIcon from '@core/shared/ui/icons/More'
+import EllipsisIcon from '@core/shared/ui/icons/Ellipsis'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { DeleteBlock } from '../../../../Content/Canvas/QuickControls/DeleteBlock'
@@ -32,6 +32,7 @@ export function StepBlockNodeMenu({
   return (
     <>
       <Fab
+        variant="extended"
         className={className}
         id="edit-step"
         size="small"
@@ -44,9 +45,9 @@ export function StepBlockNodeMenu({
           top: -20,
           right: -20
         }}
-        data-testid="edit-step-fab"
+        data-testid="EditStepFab"
       >
-        <MoreIcon sx={{ transform: 'rotate(90deg)' }} />
+        <EllipsisIcon />
       </Fab>
       <Menu
         id="edit-step-menu"
@@ -62,6 +63,7 @@ export function StepBlockNodeMenu({
           vertical: 'top',
           horizontal: 'right'
         }}
+        data-testid="EditStepMenu"
       >
         <DuplicateBlock
           variant="list-item"

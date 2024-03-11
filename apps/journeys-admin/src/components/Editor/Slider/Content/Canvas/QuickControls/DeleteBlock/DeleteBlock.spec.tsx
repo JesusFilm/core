@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -7,6 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { BlockDelete } from '../../../../../../../../__generated__/BlockDelete'
 import {
   BlockFields_StepBlock as StepBlock,
   BlockFields_TypographyBlock as TypographyBlock
@@ -17,6 +18,7 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../../../../../libs/TestEditorState'
 
 import { BLOCK_DELETE, DeleteBlock } from './DeleteBlock'
 
@@ -70,6 +72,50 @@ const selectedStep: TreeBlock<StepBlock> = {
   ]
 }
 
+const deleteBlockMock: MockedResponse<BlockDelete> = {
+  request: {
+    query: BLOCK_DELETE,
+    variables: {
+      id: selectedBlock.id,
+      parentBlockId: selectedBlock.parentBlockId,
+      journeyId: 'journeyId'
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      blockDelete: [
+        {
+          __typename: 'TypographyBlock',
+          id: selectedBlock.id,
+          parentOrder: selectedBlock.parentOrder
+        }
+      ]
+    }
+  }))
+}
+
+const deleteCardMock: MockedResponse<BlockDelete> = {
+  request: {
+    query: BLOCK_DELETE,
+    variables: {
+      id: selectedStep.id,
+      parentBlockId: selectedStep.parentBlockId,
+      journeyId: 'journeyId'
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      blockDelete: [
+        {
+          __typename: 'StepBlock',
+          id: selectedStep.id,
+          parentOrder: selectedStep.parentOrder
+        }
+      ]
+    }
+  }))
+}
+
 describe('DeleteBlock', () => {
   it('should delete a block on button click', async () => {
     const cache = new InMemoryCache()
@@ -89,36 +135,9 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
-    const result = jest.fn(() => ({
-      data: {
-        blockDelete: [
-          {
-            id: selectedBlock.id,
-            parentBlockId: selectedBlock.parentBlockId,
-            parentOrder: selectedBlock.parentOrder,
-            journeyId: 'journeyId'
-          }
-        ]
-      }
-    }))
     const { getByRole, getByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            {
-              request: {
-                query: BLOCK_DELETE,
-                variables: {
-                  id: selectedBlock.id,
-                  parentBlockId: selectedBlock.parentBlockId,
-                  journeyId: 'journeyId'
-                }
-              },
-              result
-            }
-          ]}
-        >
+        <MockedProvider cache={cache} mocks={[deleteBlockMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -134,7 +153,7 @@ describe('DeleteBlock', () => {
     )
     expect(getByRole('button')).toContainElement(getByTestId('Trash2Icon'))
     fireEvent.click(getByRole('button'))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(deleteBlockMock.result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:card1.id' }
     ])
@@ -158,36 +177,9 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
-    const result = jest.fn(() => ({
-      data: {
-        blockDelete: [
-          {
-            id: selectedBlock.id,
-            parentBlockId: selectedBlock.parentBlockId,
-            parentOrder: selectedBlock.parentOrder,
-            journeyId: 'journeyId'
-          }
-        ]
-      }
-    }))
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            {
-              request: {
-                query: BLOCK_DELETE,
-                variables: {
-                  id: selectedBlock.id,
-                  parentBlockId: selectedBlock.parentBlockId,
-                  journeyId: 'journeyId'
-                }
-              },
-              result
-            }
-          ]}
-        >
+        <MockedProvider cache={cache} mocks={[deleteBlockMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -202,7 +194,7 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
     await fireEvent.click(getByRole('menuitem', { name: 'Delete Block' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(deleteBlockMock.result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:card1.id' }
     ])
@@ -233,30 +225,9 @@ describe('DeleteBlock', () => {
       }
     })
 
-    const result = jest.fn(() => ({
-      data: {
-        blockDelete: []
-      }
-    }))
-
     const { getByRole, getByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            {
-              request: {
-                query: BLOCK_DELETE,
-                variables: {
-                  id: selectedBlock.id,
-                  parentBlockId: selectedBlock.parentBlockId,
-                  journeyId: 'journeyId'
-                }
-              },
-              result
-            }
-          ]}
-        >
+        <MockedProvider cache={cache} mocks={[deleteCardMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -277,7 +248,7 @@ describe('DeleteBlock', () => {
     expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Delete' }))
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(deleteCardMock.result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
   })
 
@@ -306,30 +277,9 @@ describe('DeleteBlock', () => {
       }
     })
 
-    const result = jest.fn(() => ({
-      data: {
-        blockDelete: []
-      }
-    }))
-
     const { getByRole, queryByRole } = render(
       <SnackbarProvider>
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            {
-              request: {
-                query: BLOCK_DELETE,
-                variables: {
-                  id: selectedBlock.id,
-                  parentBlockId: selectedBlock.parentBlockId,
-                  journeyId: 'journeyId'
-                }
-              },
-              result
-            }
-          ]}
-        >
+        <MockedProvider cache={cache} mocks={[deleteCardMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -349,7 +299,7 @@ describe('DeleteBlock', () => {
     expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Delete' }))
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(deleteCardMock.result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
     await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument())
     await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument())
@@ -375,5 +325,97 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
     expect(getByRole('button')).toBeDisabled()
+  })
+
+  // should delete the card that is passed in
+  it('should delete the card that is passed in', async () => {
+    const passedInStep: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'passedInStepId',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: [
+        {
+          id: 'card1.id',
+          __typename: 'CardBlock',
+          parentBlockId: 'passedInStepId',
+          parentOrder: 0,
+          coverBlockId: null,
+          backgroundColor: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: [selectedBlock, block1, block2]
+        }
+      ]
+    }
+
+    const passedInStepDeleteMock: MockedResponse<BlockDelete> = {
+      request: {
+        query: BLOCK_DELETE,
+        variables: {
+          id: passedInStep.id,
+          parentBlockId: passedInStep.parentBlockId,
+          journeyId: 'journeyId'
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          blockDelete: [
+            {
+              __typename: 'StepBlock',
+              id: passedInStep.id,
+              parentOrder: passedInStep.parentOrder
+            }
+          ]
+        }
+      }))
+    }
+
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [
+          { __ref: `StepBlock:passedInStepId` },
+          { __ref: `CardBlock:card1.id` },
+          { __ref: `TypographyBlock:typography0.id` }
+        ],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider cache={cache} mocks={[passedInStepDeleteMock]}>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock: selectedStep }}>
+              <DeleteBlock variant="list-item" block={passedInStep} />
+              <TestEditorState />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(getByRole('menuitem', { name: 'Delete Card' }))
+
+    expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Delete' }))
+
+    await waitFor(() =>
+      expect(passedInStepDeleteMock.result).toHaveBeenCalled()
+    )
+    await waitFor(() => expect(deleteCardMock.result).not.toHaveBeenCalled())
+    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
+
+    // assert that the selected block hasn't changed
+    expect(getByText(`selectedBlock: ${selectedStep.id}`)).toBeInTheDocument()
   })
 })

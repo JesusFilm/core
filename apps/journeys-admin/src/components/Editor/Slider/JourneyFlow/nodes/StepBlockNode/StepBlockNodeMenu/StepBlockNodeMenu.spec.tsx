@@ -20,7 +20,7 @@ describe('StepBlockNodeMenu', () => {
   }
 
   it('should open menu on click', async () => {
-    const { getByTestId, getByRole, queryByRole } = render(
+    const { getByTestId, getByRole, queryByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
           <StepBlockNodeMenu step={step} />
@@ -29,13 +29,13 @@ describe('StepBlockNodeMenu', () => {
     )
 
     await waitFor(() => {
-      expect(getByTestId('edit-step-fab')).toBeInTheDocument()
+      expect(getByTestId('EditStepFab')).toBeInTheDocument()
     })
-    expect(queryByRole('menu')).not.toBeInTheDocument()
+    expect(queryByTestId('EditStepMenu')).not.toBeInTheDocument()
 
-    fireEvent.click(getByTestId('edit-step-fab'))
+    fireEvent.click(getByTestId('EditStepFab'))
     await waitFor(() => {
-      expect(queryByRole('menu')).toBeInTheDocument()
+      expect(queryByTestId('EditStepMenu')).toBeInTheDocument()
     })
     expect(
       getByRole('menuitem', { name: 'Duplicate Card' })
