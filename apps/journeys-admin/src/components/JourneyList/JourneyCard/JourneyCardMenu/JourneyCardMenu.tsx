@@ -121,6 +121,18 @@ export function JourneyCardMenu({
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left'
+        }}
+        // transformOrigin={{
+        //   vertical: 'top',
+        //   horizontal: 'right'
+        // }}
+        transformOrigin={{
+          vertical: 0,
+          horizontal: 147.8
+        }}
         data-testid="JourneyCardMenu"
       >
         {status === JourneyStatus.trashed ? (
