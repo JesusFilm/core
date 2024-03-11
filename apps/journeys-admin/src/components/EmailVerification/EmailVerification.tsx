@@ -35,7 +35,7 @@ export function EmailVerification({
   const onSendverificationEmail = async (): Promise<void> => {
     setButtonDisabled(true)
     await createVerificationRequest({
-      variables: { input: { redirect: router.query.redirect } }
+      variables: { input: { redirect: router.query.redirect ?? undefined } }
     })
     setTimeout(() => {
       setButtonDisabled(false)
