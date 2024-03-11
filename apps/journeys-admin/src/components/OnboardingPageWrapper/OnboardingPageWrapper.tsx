@@ -92,10 +92,10 @@ export function OnboardingPageWrapper({
               sx={{
                 display: {
                   xs: 'flex',
-                  sm: 'none',
-                  marginBottom: 30,
-                  justifyContent: 'center'
-                }
+                  sm: 'none'
+                },
+                mb: 5,
+                justifyContent: 'center'
               }}
             >
               <OnboardingUtilities
