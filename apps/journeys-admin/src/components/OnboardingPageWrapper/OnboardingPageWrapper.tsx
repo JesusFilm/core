@@ -1,5 +1,6 @@
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/material/styles'
@@ -30,9 +31,9 @@ export function OnboardingPageWrapper({
     <Stack
       direction={{ xs: 'column', md: 'row' }}
       sx={{
-        backgroundColor: { xs: 'background.default', md: 'background.paper' },
+        overflow: 'hidden',
         height: viewportHeight ?? '100vh',
-        overflow: 'hidden'
+        backgroundColor: { xs: 'background.default', md: 'background.paper' }
       }}
     >
       <OnboardingDrawer />
@@ -41,32 +42,43 @@ export function OnboardingPageWrapper({
         alignItems="center"
         gap={10}
         sx={{
-          height: '100vh',
+          m: { xs: 0, sm: 5 },
           flexGrow: 1,
-          borderTopLeftRadius: { xs: 16, sm: 24, md: 30 },
-          borderBottomLeftRadius: { xs: 0, md: 30 },
-          borderTopRightRadius: { xs: 16, sm: 24, md: 0 },
-          borderLeftStyle: { xs: null, md: 'solid' },
-          borderTopStyle: { xs: 'solid', md: null },
+          display: 'flex',
           borderColor: 'divider',
-          backgroundColor: 'background.default'
+          flexDirection: 'column',
+          borderRadius: { xs: 2, sm: 4 },
+          borderStyle: { xs: 'none', sm: 'solid' },
+          backgroundColor: { xs: 'background.paper', md: 'background.default' }
         }}
         data-testid="OnboardingPageWrapper"
       >
-        <Typography variant="h1" sx={{ display: { xs: 'none', md: 'flex' } }}>
+        <Typography variant="h1" sx={{ display: { xs: 'none', sm: 'flex' } }}>
           {title}
         </Typography>
-        <Stack sx={{ maxWidth: { xs: '100%', sm: 397 } }}>
+        <Stack
+          alignItems="center"
+          sx={{
+            display: 'flex',
+            flexGrow: { xs: 1, sm: 0 },
+            maxWidth: { xs: '100%', sm: 397 }
+          }}
+        >
           <Card
             sx={{
-              height: { xs: '100vh', sm: 'inherit' },
+              flexGrow: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              borderRadius: 2,
+              borderBottomLeftRadius: { xs: 0, sm: 8 },
+              borderBottomRightRadius: { xs: 0, sm: 8 },
               width: { xs: '100vw', sm: 397 },
-              maxWidth: { xs: '100%', sm: 397 },
-              borderRadius: { xs: 4, sm: 2 }
+              maxWidth: { xs: '100%', sm: 397 }
             }}
           >
             <CardContent
               sx={{
+                flexGrow: 1,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 4,
@@ -75,15 +87,23 @@ export function OnboardingPageWrapper({
               }}
             >
               {children}
+            </CardContent>
+            <CardActions
+              sx={{
+                display: {
+                  xs: 'flex',
+                  sm: 'none',
+                  marginBottom: 30,
+                  justifyContent: 'center'
+                }
+              }}
+            >
               <OnboardingUtilities
                 open={open}
                 setOpen={setOpen}
                 emailSubject={emailSubject}
-                sx={{
-                  display: { xs: 'flex', sm: 'none' }
-                }}
               />
-            </CardContent>
+            </CardActions>
           </Card>
         </Stack>
         <OnboardingUtilities

@@ -47,7 +47,7 @@ export function OnboardingForm({
   }
 
   return (
-    <Stack justifyContent="center" alignItems="center" spacing={7}>
+    <Stack justifyContent="center" spacing={7}>
       <ThemeProvider
         themeName={ThemeName.base}
         themeMode={ThemeMode.light}
