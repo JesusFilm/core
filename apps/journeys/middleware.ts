@@ -14,13 +14,17 @@ export const config = {
   ]
 }
 
-export default async function middleware(req: NextRequest): NextResponse {
+export default async function middleware(
+  req: NextRequest
+): Promise<NextResponse> {
   const url = req.nextUrl
 
   // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
-  let hostname = req.headers
-    .get('host')
-    .replace('.localhost:4100', `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
+  let hostname =
+    req.headers
+      .get('host')
+      ?.replace('.localhost:4100', `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) ??
+    ''
 
   // special case for Vercel preview deployment URLs
   if (
