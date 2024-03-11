@@ -5,12 +5,9 @@ import { Injectable } from '@nestjs/common';
 import { google, youtube_v3 } from 'googleapis';
 import { GaxiosPromise, OAuth2Client } from 'googleapis-common';
 
-import {
-  ResourceLocalizationJobData,
-  UpdateVideoLocalization,
-} from '../../modules/bullMQ/bullMQ.service';
-import { GoogleOAuthService } from '../googleOAuth/googleOAuth';
 import { BadRequestException } from '@nestjs/common';
+import { ResourceLocalizationJobData } from '../../modules/bullMQ/bullMQ.service';
+import { GoogleOAuthService } from '../googleOAuth/googleOAuth';
 
 interface Credential {
   client_secret: string;
@@ -38,7 +35,8 @@ export class YoutubeService {
     );
     oAuth2Client.setCredentials({
       access_token: token,
-      scope: 'https://www.googleapis.com/auth/youtube',
+      scope:
+        'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload',
     });
     return oAuth2Client;
   }
