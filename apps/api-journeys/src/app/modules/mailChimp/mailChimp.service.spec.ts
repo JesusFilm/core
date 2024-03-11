@@ -42,7 +42,7 @@ describe('MailChimpService', () => {
     jest.clearAllMocks()
   })
 
-  describe('upsertContactToAudience', () => {
+  describe('syncUser', () => {
     it('should add user to mailchimp', async () => {
       process.env.MAILCHIMP_AUDIENCE_ID = '1234'
       await mailChimpService.syncUser(user)
