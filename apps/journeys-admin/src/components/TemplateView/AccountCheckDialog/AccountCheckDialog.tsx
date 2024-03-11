@@ -30,37 +30,32 @@ export function AccountCheckDialog({
           borderTopRightRadius: 8,
           borderBottomLeftRadius: { xs: 0, sm: 8 },
           borderBottomRightRadius: { xs: 0, sm: 8 },
-          height: { xs: 348, sm: 318 },
+          justifyContent: { xs: 'flex-start', sm: 'center' },
+          height: 318,
           width: { xs: '100%', sm: 418 },
-          py: 9,
-          px: 8,
+          p: 8,
+          m: 0,
           position: { xs: 'fixed', sm: 'relative' },
           bottom: { xs: 0 }
         }
       }}
     >
-      <Stack
-        gap={8}
-        sx={{
-          alignItems: 'center'
-        }}
-      >
+      <Stack gap={8}>
         <Stack gap={4} px={3}>
           <Typography variant="h4" align="center">
             {t('We Like Your Choice!')}
           </Typography>
-          <Typography variant="body2" align="center" gutterBottom>
+          <Typography variant="body2" align="center">
             {t('Create a new account or log in to use this template as yours.')}
           </Typography>
         </Stack>
-        <Stack gap={5} sx={{ width: '100%' }}>
+        <Stack gap={5} width="100%">
           <Button
             startIcon={<Key2 />}
             variant="outlined"
             size="large"
             color="secondary"
             onClick={handleSignIn}
-            sx={{ border: 1.5, borderRadius: 2, height: 50 }}
           >
             {t('Login with my account')}
           </Button>
@@ -70,7 +65,6 @@ export function AccountCheckDialog({
             size="large"
             color="secondary"
             onClick={handleSignIn}
-            sx={{ border: 1.5, borderRadius: 2, height: 50 }}
           >
             {t('Create a new account')}
           </Button>
