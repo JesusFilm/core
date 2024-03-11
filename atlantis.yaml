@@ -3,6 +3,15 @@ automerge: true
 delete_source_branch_on_merge: true
 projects:
   - dir: 'infrastructure'
+    autoplan:
+      when_modified:
+        [
+          '../apps/*/infrastructure/**/*.tf',
+          '../apps/*/infrastructure/*.tf',
+          './**/*.tf',
+          './*.tf',
+          './.terraform.lock.hcl'
+        ]
   - dir: 'infrastructure/resources/atlantis'
   - dir: 'infrastructure/resources/doppler'
   - dir: 'infrastructure/resources/terraform'
