@@ -93,9 +93,7 @@ describe('JourneyProfileResolver', () => {
           acceptedTermsAt: new Date('2021-02-18T00:00:00.000Z')
         }
       })
-      expect(mailChimpService.upsertContactToAudience).toHaveBeenCalledWith(
-        user
-      )
+      expect(mailChimpService.syncUser).toHaveBeenCalledWith(user)
     })
 
     it('should return existing profile', async () => {

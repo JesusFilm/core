@@ -44,7 +44,7 @@ export class JourneyProfileResolver {
         }
       })
 
-      await this.mailChimpService.upsertContactToAudience({ ...user })
+      await this.mailChimpService.syncUser(user)
       return createdProfile
     }
 

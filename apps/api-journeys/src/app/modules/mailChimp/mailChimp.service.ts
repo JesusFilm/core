@@ -1,17 +1,11 @@
 import mailchimp from '@mailchimp/mailchimp_marketing'
 import { Injectable } from '@nestjs/common'
 
-interface UpsertContactToAudienceParams {
-  email: string
-  firstName: string
-  lastName?: string
-}
+import { User } from '@core/nest/common/firebaseClient'
 
 @Injectable()
 export class MailChimpService {
-  async upsertContactToAudience(
-    user: UpsertContactToAudienceParams
-  ): Promise<void> {
+  async syncUser(user: User): Promise<void> {
     mailchimp.setConfig({
       apiKey: process.env.MAILCHIMP_MARKETING_API_KEY,
       server: process.env.MAILCHIMP_MARKETING_API_SERVER_PREFIX
