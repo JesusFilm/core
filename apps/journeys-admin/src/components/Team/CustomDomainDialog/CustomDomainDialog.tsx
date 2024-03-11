@@ -1,14 +1,10 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
-import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
-import MenuItem from '@mui/material/MenuItem'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
+import { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik } from 'formik'
@@ -28,6 +24,9 @@ import { GetCustomDomain } from '../../../../__generated__/GetCustomDomain'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { useTeam } from '../TeamProvider'
+
+import { DefaultJourneyForm } from './DefaultJourneyForm'
+import { DialogUpdateForm } from './DialogUpdateForm'
 
 interface CustomDomainDialogProps {
   open: boolean
@@ -176,73 +175,31 @@ export function CustomDomainDialog({
       onSubmit={handleSubmit}
       validationSchema={validationSchema}
     >
-      {({ values, errors, handleChange, handleSubmit }) => (
+      {({ isSubmitting }) => (
         <Dialog
           open={open}
           onClose={onClose}
           divider
-          dialogTitle={{ title: t('Custom Domain Settings') }}
+          dialogTitle={{
+            title: t('Custom Domain Settings'),
+            closeButton: true
+          }}
           fullscreen={!smUp}
+          loading={isSubmitting}
         >
           <Form>
             <Stack spacing={10}>
-              <Stack spacing={4}>
-                <Typography variant="subtitle1">
-                  {t('Your domain name')}
-                </Typography>
-                <TextField
-                  id="domainName"
-                  name="domainName"
-                  fullWidth
-                  value={values.domainName}
-                  variant="filled"
-                  error={Boolean(errors.domainName)}
-                  onChange={handleChange}
-                  helperText={
-                    errors.domainName !== undefined
-                      ? (errors.domainName as string)
-                      : null
-                  }
-                  label={t('Domain Name')}
-                  InputProps={{
-                    endAdornment: (
-                      <Button onClick={async () => handleSubmit()}>
-                        {customDomainData?.customDomains?.length !== 0 &&
-                        customDomainData?.customDomains != null
-                          ? t('Delete')
-                          : t('Update')}
-                      </Button>
-                    )
-                  }}
-                />
-              </Stack>
+              <DialogUpdateForm
+                customDomains={customDomainData?.customDomains}
+              />
               {customDomainData?.customDomains?.length !== 0 &&
                 customDomainData?.customDomains != null &&
                 customDomainData?.customDomains[0].verified && (
-                  <Stack spacing={4}>
-                    <Typography variant="subtitle1">
-                      {t('Default Journey')}
-                    </Typography>
-                    <Stack direction="row" justifyContent="space-between">
-                      <FormControl variant="filled" fullWidth hiddenLabel>
-                        <Select
-                          id="defaultJourney"
-                          name="defaultJourney"
-                          onChange={handleOnChange}
-                          defaultValue={
-                            customDomainData?.customDomains[0]
-                              ?.journeyCollection?.journeys[0]?.title
-                          }
-                        >
-                          {journeysData?.journeys.map((journey) => (
-                            <MenuItem value={journey.id} key={journey.id}>
-                              {journey.title}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                  </Stack>
+                  <DefaultJourneyForm
+                    handleOnChange={handleOnChange}
+                    customDomains={customDomainData.customDomains}
+                    journeys={journeysData?.journeys}
+                  />
                 )}
               {customDomainData?.customDomains?.length !== 0 &&
                 customDomainData?.customDomains != null && (

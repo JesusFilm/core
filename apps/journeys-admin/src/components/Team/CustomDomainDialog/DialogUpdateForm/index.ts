@@ -1,0 +1,1 @@
+export { DialogUpdateForm } from './DialogUpdateForm'
