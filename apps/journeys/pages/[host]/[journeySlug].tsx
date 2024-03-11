@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -7,7 +6,6 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { transformer } from '@core/journeys/ui/transformer'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -16,18 +14,24 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
-import { GetJourneySlugs } from '../../__generated__/GetJourneySlugs'
 import i18nConfig from '../../next-i18next.config'
 import { Conductor } from '../../src/components/Conductor'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { GET_JOURNEY } from '../home/[journeySlug]'
 
-interface JourneyPageProps {
+interface HostJourneyPageProps {
+  host: string
   journey: Journey
   locale: string
   rtl: boolean
 }
 
-function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
+function HostJourneyPage({
+  host,
+  journey,
+  locale,
+  rtl
+}: HostJourneyPageProps): ReactElement {
   const router = useRouter()
   const isIframe = typeof window !== 'undefined' && window.self !== window.top
   if (isIframe) {
@@ -55,9 +59,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
         openGraph={{
           type: 'website',
           title: journey.seoTitle ?? undefined,
-          url: `https://${
-            process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
-          }/${journey.slug}`,
+          url: `https://${host}/${journey.slug}`,
           description: journey.seoDescription ?? undefined,
           images:
             journey.primaryImageBlock?.src != null
@@ -71,17 +73,6 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
                   }
                 ]
               : []
-        }}
-        facebook={
-          process.env.NEXT_PUBLIC_FACEBOOK_APP_ID != null
-            ? {
-                appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID
-              }
-            : undefined
-        }
-        twitter={{
-          site: '@YourNextStepIs',
-          cardType: 'summary_large_image'
         }}
       />
       <JourneyProvider value={{ journey }}>
@@ -100,16 +91,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   )
 }
 
-export const GET_JOURNEY = gql`
-  ${JOURNEY_FIELDS}
-  query GetJourney($id: ID!) {
-    journey(id: $id, idType: slug) {
-      ...JourneyFields
-    }
-  }
-`
-
-export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
+export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
@@ -117,12 +99,14 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
     const { data } = await apolloClient.query<GetJourney>({
       query: GET_JOURNEY,
       variables: {
-        id: context.params?.journeySlug
+        id: context.params?.journeySlug,
+        host: context.params?.host?.toString() ?? ''
       }
     })
     const { rtl, locale } = getJourneyRTL(data.journey)
     return {
       props: {
+        host: context.params?.host?.toString() ?? '',
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-journeys', 'libs-journeys-ui'],
@@ -151,30 +135,11 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
   }
 }
 
-export const GET_JOURNEY_SLUGS = gql`
-  query GetJourneySlugs {
-    journeys {
-      slug
-    }
-  }
-`
-
 export const getStaticPaths: GetStaticPaths = async () => {
-  const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<GetJourneySlugs>({
-    query: GET_JOURNEY_SLUGS
-  })
-
-  const paths = data.journeys
-    .filter(({ slug: journeySlug }) => journeySlug.length > 0)
-    .map(({ slug: journeySlug }) => ({
-      params: { journeySlug }
-    }))
-
   return {
-    paths,
+    paths: [],
     fallback: 'blocking'
   }
 }
 
-export default JourneyPage
+export default HostJourneyPage

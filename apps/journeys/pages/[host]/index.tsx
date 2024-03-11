@@ -1,16 +1,11 @@
-import { gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'
 import Grid from '@mui/material/Grid'
-import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import Image from 'next/image'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -24,16 +19,15 @@ import {
 import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { GET_JOURNEYS } from '../home'
 
-interface JourneysPageProps {
+interface HostJourneysPageProps {
   journeys: Journey[]
 }
 
-const StyledIframe = styled('iframe')(({ theme }) => ({}))
+const StyledIframe = styled('iframe')(() => ({}))
 
-function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
-  const { t } = useTranslation('apps-journeys')
-
+function HostJourneysPage({ journeys }: HostJourneysPageProps): ReactElement {
   return (
     <>
       <NextSeo nofollow noindex />
@@ -58,7 +52,10 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                       >
                         <Fade in timeout={(index + 1) * 1000}>
                           <StyledIframe
-                            src={`http://localhost:4100/embed/${slug}`}
+                            src={`https://${
+                              process.env.NEXT_PUBLIC_VERCEL_URL ??
+                              'your.nextstep.is'
+                            }/embed/${slug}`}
                             sx={{
                               width: '100%',
                               height: 600,
@@ -89,21 +86,15 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   )
 }
 
-export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
+export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
   context
 ) => {
-  console.log(context.params.host)
   const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetJourneys>({
-    query: gql`
-      query GetJourneys {
-        journeys(where: { featured: true, template: false }) {
-          id
-          title
-          slug
-        }
-      }
-    `
+    query: GET_JOURNEYS,
+    variables: {
+      host: context.params?.host?.toString() ?? ''
+    }
   })
 
   if (data.journeys === null) {
@@ -140,4 +131,4 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-export default JourneysPage
+export default HostJourneysPage

@@ -102,8 +102,8 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
-  query GetJourney($id: ID!) {
-    journey(id: $id, idType: slug) {
+  query GetJourney($id: ID!, $host: String) {
+    journey(id: $id, idType: slug, host: $host) {
       ...JourneyFields
     }
   }

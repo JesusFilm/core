@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 
 import { GetJourney } from '../../__generated__/GetJourney'
 import { createApolloClient } from '../../src/libs/apolloClient'
-import { GET_JOURNEY } from '../[journeySlug]'
+import { GET_JOURNEY } from '../home/[journeySlug]'
 
 const apolloClient = createApolloClient()
 

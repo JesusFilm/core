@@ -30,7 +30,7 @@ interface JourneysPageProps {
   journeys: Journey[]
 }
 
-const StyledIframe = styled('iframe')(({ theme }) => ({}))
+const StyledIframe = styled('iframe')(() => ({}))
 
 function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys')
@@ -141,20 +141,22 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   )
 }
 
+export const GET_JOURNEYS = gql`
+  query GetJourneys($host: String) {
+    journeys(where: { featured: true, template: false, host: $host }) {
+      id
+      title
+      slug
+    }
+  }
+`
+
 export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetJourneys>({
-    query: gql`
-      query GetJourneys {
-        journeys(where: { featured: true, template: false }) {
-          id
-          title
-          slug
-        }
-      }
-    `
+    query: GET_JOURNEYS
   })
 
   if (data.journeys === null) {
