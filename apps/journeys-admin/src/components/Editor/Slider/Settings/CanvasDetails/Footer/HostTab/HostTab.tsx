@@ -32,11 +32,11 @@ export const GET_ALL_TEAM_HOSTS = gql`
   }
 `
 
-const HostListTab = dynamic(
+const HostList = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostListTab/HostListTab" */ './HostListTab'
-    ).then((mod) => mod.HostListTab),
+      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostList/HostList" */ './HostList'
+    ).then((mod) => mod.HostList),
   { ssr: false }
 )
 
@@ -174,7 +174,7 @@ export function HostTab(): ReactElement {
           )}
         </>
       )}
-      <HostListTab
+      <HostList
         openHostList={openHostList}
         teamHosts={teamHosts}
         handleOpenHostInfo={() => {

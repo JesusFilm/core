@@ -4,6 +4,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../../__generated__/GetAllTeamHosts'
 import { UPDATE_JOURNEY_HOST } from '../../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
@@ -15,20 +16,18 @@ jest.mock('uuid', () => ({
 }))
 
 describe('HostList', () => {
-  const defaultHost = {
+  const defaultHost: Host = {
     id: 'hostId',
     __typename: 'Host' as const,
-    teamId: 'teamId',
     title: 'Cru International',
     location: 'Florida, USA',
     src1: 'imageSrc1',
     src2: 'imageSrc2'
   }
 
-  const host2 = {
+  const host2: Host = {
     id: 'hostId2',
     __typename: 'Host' as const,
-    teamId: 'teamId',
     title: 'Another host',
     location: 'Auckland, NZ',
     src1: null,
@@ -58,7 +57,13 @@ describe('HostList', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostList hosts={[defaultHost, host2]} onItemClick={jest.fn()} />
+            <HostList
+              teamHosts={{ hosts: [defaultHost, host2] }}
+              openHostList
+              handleOpenHostForm={jest.fn()}
+              handleOpenHostInfo={jest.fn()}
+              handleSelectHost={jest.fn()}
+            />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -78,7 +83,7 @@ describe('HostList', () => {
   })
 
   it('should update journey host on list item click', async () => {
-    const onItemClick = jest.fn()
+    const handleSelectHost = jest.fn()
 
     const result = jest.fn(() => ({
       data: {
@@ -110,7 +115,13 @@ describe('HostList', () => {
       >
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostList hosts={[defaultHost, host2]} onItemClick={onItemClick} />
+            <HostList
+              teamHosts={{ hosts: [defaultHost, host2] }}
+              openHostList
+              handleOpenHostForm={jest.fn()}
+              handleOpenHostInfo={jest.fn()}
+              handleSelectHost={handleSelectHost}
+            />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -122,7 +133,7 @@ describe('HostList', () => {
       })
     )
 
-    void waitFor(() => expect(result).toHaveBeenCalled())
-    void waitFor(() => expect(onItemClick).toHaveBeenCalledWith(host2.id))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(handleSelectHost).toHaveBeenCalled()
   })
 })

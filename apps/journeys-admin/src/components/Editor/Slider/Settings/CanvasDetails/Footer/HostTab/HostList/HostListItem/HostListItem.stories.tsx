@@ -2,8 +2,8 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
-import { DRAWER_WIDTH } from '../../../../../../constants'
+import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
+import { DRAWER_WIDTH } from '../../../../../../../constants'
 
 import { HostListItem } from './HostListItem'
 
