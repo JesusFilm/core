@@ -8,7 +8,6 @@ import { UPDATE_JOURNEY_HOST } from '../../../../../../../../libs/useUpdateJourn
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
 import { DELETE_HOST, HostForm } from './HostForm'
-import '../../../../../../../../../test/i18n'
 
 jest.mock('uuid', () => ({
   __esModule: true,
