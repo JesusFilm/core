@@ -366,12 +366,17 @@ extend type Query {
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter): [Journey!]!
+  journey(
+    id: ID!
+    idType: IdType
 
-  """
-  hostname is required if the journey being searched for belongs to a team with
-  a custom domain.
-  """
-  journey(id: ID!, idType: IdType, hostname: String): Journey!
+    """
+    hostname is required if the journey being searched for belongs to a team with
+    a custom domain. Not providing it will search journeys where the team does
+    not have a custom domain.
+    """
+    hostname: String
+  ): Journey!
   getJourneyProfile: JourneyProfile
 
   """Get a list of Visitor Information by Journey"""
@@ -1890,8 +1895,9 @@ input JourneysFilter {
   orderByRecent: Boolean
 
   """
-  hostname filters journeys down to those that belong to a team with a custom
-  domain matching the hostname.
+  hostname filters journeys to those that belong to a team with a custom domain
+  matching the hostname. Not providing it will search journeys where the team
+  does not have a custom domain.
   """
   hostname: String
 }

@@ -54,7 +54,8 @@ input JourneysFilter {
   orderByRecent: Boolean
   """
   hostname filters journeys to those that belong to a team with a custom domain
-  matching the hostname.
+  matching the hostname. Not providing it will search journeys where the team
+  does not have a custom domain.
   """
   hostname: String
 }
@@ -108,11 +109,16 @@ extend type Query {
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter): [Journey!]!
-  """
-  hostname is required if the journey being searched for belongs to a team with
-  a custom domain.
-  """
-  journey(id: ID!, idType: IdType, hostname: String): Journey!
+  journey(
+    id: ID!
+    idType: IdType
+    """
+    hostname is required if the journey being searched for belongs to a team with
+    a custom domain. Not providing it will search journeys where the team does
+    not have a custom domain.
+    """
+    hostname: String
+  ): Journey!
 }
 
 input JourneyCreateInput {

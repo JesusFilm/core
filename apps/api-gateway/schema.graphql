@@ -796,8 +796,9 @@ input JourneysFilter
   orderByRecent: Boolean
 
   """
-  hostname filters journeys down to those that belong to a team with a custom
-  domain matching the hostname.
+  hostname filters journeys to those that belong to a team with a custom domain
+  matching the hostname. Not providing it will search journeys where the team
+  does not have a custom domain.
   """
   hostname: String
 }
@@ -1447,12 +1448,17 @@ type Query
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   adminJourney(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
+  journey(
+    id: ID!
+    idType: IdType
 
-  """
-  hostname is required if the journey being searched for belongs to a team with
-  a custom domain.
-  """
-  journey(id: ID!, idType: IdType, hostname: String): Journey! @join__field(graph: JOURNEYS)
+    """
+    hostname is required if the journey being searched for belongs to a team with
+    a custom domain. Not providing it will search journeys where the team does
+    not have a custom domain.
+    """
+    hostname: String
+  ): Journey! @join__field(graph: JOURNEYS)
   getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
 
   """Get a list of Visitor Information by Journey"""
