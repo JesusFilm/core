@@ -15,9 +15,10 @@ import {
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import React, { ReactElement, useEffect } from 'react'
+import React, { ReactElement } from 'react'
 import { object, string } from 'yup'
 
+import { useRedirectNewAccount } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
 
 export function RegisterPage({
@@ -28,19 +29,7 @@ export function RegisterPage({
   const router = useRouter()
   const [showPassword, setShowPassword] = React.useState(false)
 
-  useEffect(() => {
-    const redirectUrl = router.query.redirect as string
-    const updatedRedirect = redirectUrl.includes('createNew')
-      ? `${redirectUrl}&newAccount=true`
-      : `${redirectUrl}?newAccount=true`
-    void router.push({
-      pathname: router.pathname,
-      query: {
-        redirect: updatedRedirect
-      }
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  useRedirectNewAccount()
 
   const handleClickShowPassword = (): void => setShowPassword((show) => !show)
 
