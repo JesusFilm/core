@@ -36,7 +36,7 @@ describe('ShareItem', () => {
       }
     } as unknown as NextRouter)
 
-    const { getByRole, getAllByText } = render(
+    const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -69,7 +69,7 @@ describe('ShareItem', () => {
     })
 
     await waitFor(() => {
-      expect(getAllByText('Edit URL')).toHaveLength(2) // button on ShareItem, and title on the SlugDialog
+      expect(getByRole('dialog', { name: 'Edit URL' })).toBeInTheDocument()
     })
     expect(getByRole('button', { name: 'Save' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
@@ -89,7 +89,7 @@ describe('ShareItem', () => {
         on
       }
     } as unknown as NextRouter)
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -120,7 +120,7 @@ describe('ShareItem', () => {
       )
     })
     await waitFor(() => {
-      expect(getByText('Embed journey')).toBeInTheDocument() // EmbedJourneyDialog title
+      expect(getByRole('dialog', { name: 'Embed journey' })).toBeInTheDocument()
     })
     expect(getByRole('button', { name: 'Copy Code' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
