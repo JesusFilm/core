@@ -6,6 +6,14 @@ tracer.init({
   logInjection: true
 })
 
+const logger = (defaultConfig) =>
+  pino({
+    ...defaultConfig,
+    formatters: {
+      level: (label, _number) => ({ level: label })
+    }
+  })
+
 module.exports = {
-  logger: pino
+  logger
 }
