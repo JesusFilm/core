@@ -52,6 +52,11 @@ input JourneysFilter {
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
+  """
+  hostname filters journeys to those that belong to a team with a custom domain
+  matching the hostname.
+  """
+  hostname: String
 }
 
 enum JourneysReportType {
@@ -103,7 +108,11 @@ extend type Query {
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter): [Journey!]!
-  journey(id: ID!, idType: IdType): Journey!
+  """
+  hostname is required if the journey being searched for belongs to a team with
+  a custom domain.
+  """
+  journey(id: ID!, idType: IdType, hostname: String): Journey!
 }
 
 input JourneyCreateInput {
