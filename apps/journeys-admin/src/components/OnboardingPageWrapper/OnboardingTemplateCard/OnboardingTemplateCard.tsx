@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -11,7 +10,6 @@ import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
-import { abbreviateLanguageName } from '../../../libs/abbreviateLanguageName'
 import { useJourneyQuery } from '../../../libs/useJourneyQuery'
 
 export function OnboardingTemplateCard(): ReactElement {
@@ -101,13 +99,6 @@ function OnboardingTemplateCardDetails({
   journey
 }: OnboardingTemplateCardDetailsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
-  const localLanguage = journey?.language?.name.find(
-    ({ primary }) => !primary
-  )?.value
-  const nativeLanguage =
-    journey?.language?.name.find(({ primary }) => primary)?.value ?? ''
-
   return (
     <Stack
       data-testid="OnboardingTemplateCardDetails"
