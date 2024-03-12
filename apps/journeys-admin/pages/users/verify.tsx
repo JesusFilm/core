@@ -229,7 +229,7 @@ export const getServerSideProps = withUserTokenSSR({
   // skip if already verified
   const apiUser = await apolloClient.query<GetMe>({
     query: GET_ME,
-    variables: { input: { redirect: null } }
+    variables: { input: { redirect: undefined } }
   })
   if (apiUser.data?.me?.emailVerified ?? false) {
     return {
