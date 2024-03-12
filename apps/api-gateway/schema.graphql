@@ -361,8 +361,7 @@ type CustomDomain
   apexName: String!
   allowOutsideJourneys: Boolean!
   journeyCollection: JourneyCollection
-  verified: Boolean!
-  verification: [VercelDomainVerification]
+  verification: CustomDomainVerification
 }
 
 input CustomDomainCreateInput
@@ -380,6 +379,13 @@ input CustomDomainUpdateInput
   name: String
   allowOutsideJourneys: Boolean
   journeyCollectionId: String
+}
+
+type CustomDomainVerification
+  @join__type(graph: JOURNEYS)
+{
+  verified: Boolean!
+  verification: [VercelDomainVerification]
 }
 
 scalar DateTime
@@ -765,12 +771,14 @@ type JourneyCollection
   team: Team!
   title: String
   customDomains: [CustomDomain]!
+  journeyIds: [String!]!
   journeys: [Journey]!
 }
 
 input JourneyCollectionCreateInput
   @join__type(graph: JOURNEYS)
 {
+  id: ID
   teamId: String!
   title: String
   journeyIds: [String]
@@ -780,6 +788,7 @@ input JourneyCollectionCreateInput
 input JourneyCollectionUpdateInput
   @join__type(graph: JOURNEYS)
 {
+  id: ID!
   title: String
   journeyIds: [String]
 }
@@ -1288,7 +1297,7 @@ type Mutation
   chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
   customDomainCreate(input: CustomDomainCreateInput!): CustomDomain! @join__field(graph: JOURNEYS)
   customDomainUpdate(input: CustomDomainUpdateInput!): CustomDomain! @join__field(graph: JOURNEYS)
-  customDomainDelete(id: ID!): Boolean! @join__field(graph: JOURNEYS)
+  customDomainDelete(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
@@ -1334,7 +1343,7 @@ type Mutation
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyCollectionUpdate(input: JourneyCollectionUpdateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
-  journeyCollectionDelete(id: ID!): Boolean! @join__field(graph: JOURNEYS)
+  journeyCollectionDelete(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)

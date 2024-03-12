@@ -6,6 +6,7 @@ import {
   Parent,
   Query,
   ResolveField,
+  ResolveReference,
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
@@ -914,5 +915,13 @@ export class JourneyResolver {
     return journeyTags.map((tag) => {
       return { __typename: 'Tag', id: tag.tagId }
     })
+  }
+
+  @ResolveReference()
+  async resolveReference(reference: {
+    __typename: 'Journey'
+    id: string
+  }): Promise<Journey | null> {
+    return await this.journey(reference.id, IdType.databaseId)
   }
 }

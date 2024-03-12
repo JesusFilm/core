@@ -2,15 +2,18 @@ import { UseGuards } from '@nestjs/common'
 import {
   Args,
   Mutation,
+  Parent,
   Query,
+  ResolveField,
   ResolveReference,
   Resolver
 } from '@nestjs/graphql'
-import omit from 'lodash/omit'
+
+import { CustomDomain } from '.prisma/api-journeys-client'
 
 import {
-  CustomDomain,
-  CustomDomainCreateInput
+  CustomDomainCreateInput,
+  CustomDomainVerification
 } from '../../__generated__/graphql'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
@@ -25,18 +28,18 @@ export class CustomDomainResolver {
   ) {}
 
   @Query()
-  @UseGuards(AppCaslGuard)
   async customDomain(@Args('id') id: string): Promise<CustomDomain | null> {
-    return await this.findDomain(id)
+    return await this.prismaService.customDomain.findUnique({
+      where: { id }
+    })
   }
 
   @Query()
-  @UseGuards(AppCaslGuard)
   async customDomains(@Args('teamId') teamId: string): Promise<CustomDomain[]> {
     return (
-      ((await this.prismaService.customDomain.findMany({
+      (await this.prismaService.customDomain.findMany({
         where: { teamId }
-      })) as unknown as CustomDomain[]) ?? []
+      })) ?? []
     )
   }
 
@@ -44,35 +47,18 @@ export class CustomDomainResolver {
   @UseGuards(AppCaslGuard)
   async customDomainCreate(
     @Args('input') input: CustomDomainCreateInput
-  ): Promise<CustomDomain> {
-    const vercelResult = await this.customDomainService.addVercelDomain(
-      input.name
-    )
-    const customDomain = await this.prismaService.customDomain.create({
-      data: {
-        ...omit(input, ['teamId', 'journeyCollectionId']),
-        apexName: vercelResult.apexName,
-        allowOutsideJourneys: input.allowOutsideJourneys ?? undefined,
-        team: { connect: { id: input.teamId } },
-        journeyCollection: {
-          connect: { id: input.journeyCollectionId ?? undefined }
-        }
-      }
-    })
-    return {
-      ...customDomain,
-      verified: vercelResult.verified,
-      verification: vercelResult.verification
-    }
+  ): Promise<CustomDomain & { verification: CustomDomainVerification }> {
+    return await this.customDomainService.customDomainCreate(input)
   }
 
   @Mutation()
   @UseGuards(AppCaslGuard)
-  async customDomainDelete(@Args('id') id: string): Promise<boolean> {
+  async customDomainDelete(@Args('id') id: string): Promise<CustomDomain> {
     const customDomain = await this.prismaService.customDomain.delete({
       where: { id }
     })
-    return await this.customDomainService.deleteVercelDomain(customDomain.name)
+    await this.customDomainService.deleteVercelDomain(customDomain.name)
+    return customDomain
   }
 
   @ResolveReference()
@@ -80,21 +66,29 @@ export class CustomDomainResolver {
     __typename: 'CustomDomain'
     id: string
   }): Promise<CustomDomain | null> {
-    return await this.findDomain(reference.id)
+    return await this.customDomain(reference.id)
   }
 
-  private async findDomain(id: string): Promise<CustomDomain | null> {
-    const customDomain = await this.prismaService.customDomain.findUnique({
-      where: { id }
-    })
-    if (customDomain == null) return null
+  @ResolveField()
+  journeyCollection(
+    @Parent() customDomain: CustomDomain
+  ): null | { __typename: 'JourneyCollection'; id: string } {
+    return customDomain.journeyCollectionId == null
+      ? null
+      : {
+          __typename: 'JourneyCollection',
+          id: customDomain.journeyCollectionId
+        }
+  }
 
+  @ResolveField()
+  async verification(
+    @Parent() customDomain: CustomDomain
+  ): Promise<CustomDomainVerification> {
     const vercelResult = await this.customDomainService.verifyVercelDomain(
       customDomain.name
     )
-
     return {
-      ...customDomain,
       verified: vercelResult.verified,
       verification: vercelResult.verification
     }

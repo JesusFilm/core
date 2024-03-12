@@ -494,7 +494,7 @@ model CustomDomain {
 model JourneyCollection {
   id            String         @id @default(uuid())
   teamId        String
-  title         String
+  title         String?
   customDomains CustomDomain[]
   team          Team           @relation(fields: [teamId], references: [id])
   journeys      Journey[]
