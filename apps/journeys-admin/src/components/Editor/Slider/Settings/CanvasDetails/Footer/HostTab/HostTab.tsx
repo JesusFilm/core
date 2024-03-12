@@ -2,8 +2,8 @@ import { gql, useLazyQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { HostAvatars } from '@core/journeys/ui/StepFooter/HostAvatars'
@@ -19,8 +19,6 @@ import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUse
 import { useUpdateJourneyHostMutation } from '../../../../../../../libs/useUpdateJourneyHostMutation'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
 import { ContainedIconButton } from '../../../../../../ContainedIconButton'
-
-import { HostFormTab } from './HostFormTab'
 
 export const GET_ALL_TEAM_HOSTS = gql`
   query GetAllTeamHosts($teamId: ID!) {
@@ -42,11 +40,19 @@ const HostListTab = dynamic(
   { ssr: false }
 )
 
-const HostInfoTab = dynamic(
+const HostInfo = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostInfoTab/HostInfoTab" */ './HostInfoTab'
-    ).then((mod) => mod.HostInfoTab),
+      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostInfo/HostInfo" */ './HostInfo'
+    ).then((mod) => mod.HostInfo),
+  { ssr: false }
+)
+
+const HostForm = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostForm/HostForm" */ './HostForm'
+    ).then((mod) => mod.HostForm),
   { ssr: false }
 )
 
@@ -181,14 +187,14 @@ export function HostTab(): ReactElement {
           setSelectHostBox(true)
         }}
       />
-      <HostInfoTab
+      <HostInfo
         openHostInfo={openHostInfo}
         onClose={() => {
           setOpenHostInfo(false)
           setOpenHostList(true)
         }}
       />
-      <HostFormTab
+      <HostForm
         onClear={handleClear}
         openHostForm={openHostForm}
         onBack={() => {
