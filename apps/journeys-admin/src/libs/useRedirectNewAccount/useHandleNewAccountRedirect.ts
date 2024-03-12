@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 
-export function useRedirectNewAccount(): void {
+export function useHandleNewAccountRedirect(): void {
   const router = useRouter()
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export function useRedirectNewAccount(): void {
       if (containsCreateNew && redirectUrl != null) {
         updatedRedirectUrl = `${redirectUrl ?? ''}&newAccount=true`
       } else {
-        updatedRedirectUrl = `?newAccount=true`
+        updatedRedirectUrl = `${window.location.origin}?newAccount=true`
       }
     }
 

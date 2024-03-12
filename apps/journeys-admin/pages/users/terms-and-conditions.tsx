@@ -6,13 +6,13 @@ import { ReactElement } from 'react'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { TermsAndConditions } from '../../src/components/TermsAndConditions'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { useRedirectNewAccount } from '../../src/libs/useRedirectNewAccount'
+import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 
 function TermsAndConditionsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const title = t('Terms and Conditions')
 
-  useRedirectNewAccount()
+  useHandleNewAccountRedirect()
 
   return (
     <>

@@ -13,23 +13,21 @@ import {
   updateProfile
 } from 'firebase/auth'
 import { Form, Formik } from 'formik'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { useRedirectNewAccount } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
+import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 
 export function RegisterPage({
   setActivePage,
   userEmail
 }: PageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
   const [showPassword, setShowPassword] = React.useState(false)
 
-  useRedirectNewAccount()
+  useHandleNewAccountRedirect()
 
   const handleClickShowPassword = (): void => setShowPassword((show) => !show)
 
@@ -75,9 +73,6 @@ export function RegisterPage({
   async function handleCreateAccount(values, { setFieldError }): Promise<void> {
     try {
       await createAccountAndSignIn(values.email, values.name, values.password)
-      await router.push({
-        pathname: '/'
-      })
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
         setFieldError(

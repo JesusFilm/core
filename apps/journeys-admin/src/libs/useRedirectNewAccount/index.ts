@@ -1,1 +1,1 @@
-export { useRedirectNewAccount } from './useRedirectNewAccount'
+export { useHandleNewAccountRedirect } from './useHandleNewAccountRedirect'
