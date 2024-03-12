@@ -108,18 +108,6 @@ function OnboardingTemplateCardDetails({
   const nativeLanguage =
     journey?.language?.name.find(({ primary }) => primary)?.value ?? ''
 
-  const displayLanguage = abbreviateLanguageName(
-    localLanguage ?? nativeLanguage
-  )
-
-  const date =
-    journey != null
-      ? intlFormat(parseISO(journey.createdAt), {
-          month: 'short',
-          year: isThisYear(parseISO(journey?.createdAt)) ? undefined : 'numeric'
-        }).replace(' ', ', ')
-      : ''
-
   return (
     <Stack
       data-testid="OnboardingTemplateCardDetails"
@@ -135,21 +123,6 @@ function OnboardingTemplateCardDetails({
         borderBottomRightRadius: 12
       }}
     >
-      <Typography
-        variant="overline2"
-        sx={{
-          whiteSpace: 'noWrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          color: (theme) => theme.palette.grey[700],
-          display: { xs: 'none', md: 'block' }
-        }}
-      >
-        {t('{{ date }} ● {{ displayLanguage }}', {
-          date,
-          displayLanguage
-        })}
-      </Typography>
       <Typography
         variant="overline2"
         sx={{
