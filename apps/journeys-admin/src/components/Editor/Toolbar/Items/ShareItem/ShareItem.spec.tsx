@@ -9,6 +9,8 @@ import { defaultJourney } from '../../../data'
 
 import { ShareItem } from './ShareItem'
 
+import '../../../../../../test/i18n'
+
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
@@ -34,7 +36,7 @@ describe('ShareItem', () => {
       }
     } as unknown as NextRouter)
 
-    const { getByRole } = render(
+    const { getByRole, getAllByText } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -53,16 +55,6 @@ describe('ShareItem', () => {
     fireEvent.click(getByRole('button', { name: 'Edit URL' }))
 
     await waitFor(() => {
-      expect(getByRole('button', { name: 'Save' })).toBeInTheDocument()
-      expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-    })
-    fireEvent.click(getByRole('button', { name: 'Cancel' }))
-    await waitFor(() => {
-      expect(getByRole('button', { name: 'Edit URL' })).toBeInTheDocument()
-      expect(getByRole('button', { name: 'Embed Journey' })).toBeInTheDocument()
-    })
-
-    await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
           query: { param: 'edit-url' },
@@ -75,6 +67,18 @@ describe('ShareItem', () => {
         { shallow: true }
       )
     })
+
+    await waitFor(() => {
+      expect(getAllByText('Edit URL')).toHaveLength(2) // button on ShareItem, and title on the SlugDialog
+    })
+    expect(getByRole('button', { name: 'Save' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Edit URL' })).toBeInTheDocument()
+    })
+    expect(getByRole('button', { name: 'Embed Journey' })).toBeInTheDocument()
   })
 
   it('should handle embed journey', async () => {
@@ -85,7 +89,7 @@ describe('ShareItem', () => {
         on
       }
     } as unknown as NextRouter)
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -102,17 +106,6 @@ describe('ShareItem', () => {
     fireEvent.click(getByRole('button', { name: 'Share' }))
     expect(getByRole('dialog')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Embed Journey' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
-    await waitFor(() => {
-      expect(getByRole('button', { name: 'Copy Code' })).toBeInTheDocument()
-      expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-    })
-    fireEvent.click(getByRole('button', { name: 'Cancel' }))
-    await waitFor(() => {
-      expect(getByRole('button', { name: 'Edit URL' })).toBeInTheDocument()
-      expect(getByRole('button', { name: 'Embed Journey' })).toBeInTheDocument()
-    })
-
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
@@ -126,5 +119,15 @@ describe('ShareItem', () => {
         { shallow: true }
       )
     })
+    await waitFor(() => {
+      expect(getByText('Embed journey')).toBeInTheDocument() // EmbedJourneyDialog title
+    })
+    expect(getByRole('button', { name: 'Copy Code' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Edit URL' })).toBeInTheDocument()
+    })
+    expect(getByRole('button', { name: 'Embed Journey' })).toBeInTheDocument()
   })
 })

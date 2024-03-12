@@ -9,6 +9,8 @@ import { defaultJourney } from '../../../data'
 
 import { AnalyticsItem } from './AnalyticsItem'
 
+import '../../../../../../test/i18n'
+
 describe('AnalyticsItem', () => {
   it('should link to journey reports page as a list item', async () => {
     const { getByRole } = render(

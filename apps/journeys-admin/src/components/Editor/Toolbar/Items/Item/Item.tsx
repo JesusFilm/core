@@ -33,7 +33,7 @@ export function Item({
             target={href != null ? '_blank' : undefined}
             href={href}
             onClick={onClick}
-            data-testid={`${label}-Item`}
+            data-testid={`${label}IconButtonItem`}
           >
             {icon}
           </IconButton>
@@ -50,7 +50,7 @@ export function Item({
           href={href}
           onClick={onClick}
           {...ButtonProps}
-          data-testid={`${label}-Item`}
+          data-testid={`${label}ButtonItem`}
         >
           <Typography variant="subtitle2" sx={{ py: 1 }}>
             {label}
@@ -64,7 +64,7 @@ export function Item({
           target={href != null ? '_blank' : undefined}
           href={href}
           onClick={onClick}
-          data-testid={`${label}-Item`}
+          data-testid={`${label}MenuItemItem`}
         >
           <ListItemIcon>{icon}</ListItemIcon>
           <ListItemText>{label}</ListItemText>

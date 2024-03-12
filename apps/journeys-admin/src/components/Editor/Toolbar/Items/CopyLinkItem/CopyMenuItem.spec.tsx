@@ -9,6 +9,8 @@ import { defaultJourney } from '../../../data'
 
 import { CopyLinkItem } from './CopyLinkItem'
 
+import '../../../../../../test/i18n'
+
 Object.assign(navigator, {
   clipboard: {
     writeText: jest.fn()

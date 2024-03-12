@@ -11,6 +11,8 @@ import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
 
 import { LanguageDialog } from '.'
 
+import '../../../../../../../test/i18n'
+
 const onClose = jest.fn()
 
 describe('JourneyView/Menu/LanguageDialog', () => {
