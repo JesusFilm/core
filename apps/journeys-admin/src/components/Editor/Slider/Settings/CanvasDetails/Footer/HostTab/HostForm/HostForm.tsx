@@ -23,62 +23,53 @@ export const DELETE_HOST = gql`
 
 interface HostFormTabProps {
   onClear: () => void
-  openHostForm: boolean
   onBack: () => void
 }
 
-export function HostForm({
-  onClear,
-  openHostForm,
-  onBack
-}: HostFormTabProps): ReactElement {
+export function HostForm({ onClear, onBack }: HostFormTabProps): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <>
-      {openHostForm && (
-        <>
-          {journey?.host != null ? (
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ p: 4 }}
-            >
-              <Button variant="outlined" size="small" onClick={onClear}>
-                {t('Clear')}
-              </Button>
-            </Stack>
-          ) : (
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ p: 4 }}
-            >
-              <Button variant="outlined" size="small" onClick={onBack}>
-                {t('Back')}
-              </Button>
-            </Stack>
-          )}
-          <Stack sx={{ p: 4 }} gap={6}>
-            <HostTitleFieldForm />
-            <HostLocationFieldForm />
-            <HostAvatarsButton />
-          </Stack>
-          <Divider />
-          <Stack sx={{ p: 4 }} direction="row" alignItems="center" gap={3}>
-            <AlertCircleIcon />
-            <Typography variant="subtitle2">
-              {t(
-                'Edits: Making changes here will apply to all journeys that share this Host.'
-              )}
-            </Typography>
-          </Stack>
-          <Divider />
-        </>
+      {journey?.host != null ? (
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ p: 4 }}
+        >
+          <Button variant="outlined" size="small" onClick={onClear}>
+            {t('Clear')}
+          </Button>
+        </Stack>
+      ) : (
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ p: 4 }}
+        >
+          <Button variant="outlined" size="small" onClick={onBack}>
+            {t('Back')}
+          </Button>
+        </Stack>
       )}
+      <Stack sx={{ p: 4 }} gap={6}>
+        <HostTitleFieldForm />
+        <HostLocationFieldForm />
+        <HostAvatarsButton />
+      </Stack>
+      <Divider />
+      <Stack sx={{ p: 4 }} direction="row" alignItems="center" gap={3}>
+        <AlertCircleIcon />
+        <Typography variant="subtitle2">
+          {t(
+            'Edits: Making changes here will apply to all journeys that share this Host.'
+          )}
+        </Typography>
+      </Stack>
+      <Divider />
     </>
   )
 }

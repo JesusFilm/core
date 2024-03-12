@@ -59,7 +59,6 @@ describe('HostList', () => {
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostList
               teamHosts={{ hosts: [defaultHost, host2] }}
-              openHostList
               handleOpenHostForm={jest.fn()}
               handleOpenHostInfo={jest.fn()}
               handleSelectHost={jest.fn()}
@@ -117,7 +116,6 @@ describe('HostList', () => {
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostList
               teamHosts={{ hosts: [defaultHost, host2] }}
-              openHostList
               handleOpenHostForm={jest.fn()}
               handleOpenHostInfo={jest.fn()}
               handleSelectHost={handleSelectHost}

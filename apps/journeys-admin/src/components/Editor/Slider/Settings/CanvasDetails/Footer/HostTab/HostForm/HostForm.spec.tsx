@@ -52,7 +52,7 @@ describe('HostForm', () => {
               variant: 'admin'
             }}
           >
-            <HostForm onClear={jest.fn()} openHostForm onBack={jest.fn()} />
+            <HostForm onClear={jest.fn()} onBack={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -81,7 +81,7 @@ describe('HostForm', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostForm onClear={jest.fn()} openHostForm onBack={jest.fn()} />
+            <HostForm onClear={jest.fn()} onBack={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -156,7 +156,7 @@ describe('HostForm', () => {
       >
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostForm onClear={jest.fn()} openHostForm onBack={jest.fn()} />
+            <HostForm onClear={jest.fn()} onBack={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>

@@ -15,7 +15,6 @@ import { useUpdateJourneyHostMutation } from '../../../../../../../../libs/useUp
 import { HostListItem } from './HostListItem'
 
 interface HostListProps {
-  openHostList: boolean
   teamHosts?: GetAllTeamHosts
   handleOpenHostInfo: () => void
   handleOpenHostForm: () => void
@@ -23,7 +22,6 @@ interface HostListProps {
 }
 
 export function HostList({
-  openHostList,
   teamHosts,
   handleOpenHostInfo,
   handleOpenHostForm,
@@ -48,35 +46,27 @@ export function HostList({
 
   return (
     <>
-      {openHostList && (
-        <>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{ p: 4, pb: 0 }}
-          >
-            <Stack direction="row" alignItems="center">
-              <Typography variant="subtitle2">{t('Hosts')}</Typography>
-              <IconButton data-testid="info" onClick={handleOpenHostInfo}>
-                <InformationCircleContainedIcon />
-              </IconButton>
-            </Stack>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={handleOpenHostForm}
-            >
-              {t('Create New')}
-            </Button>
-          </Stack>
-          <List disablePadding data-testid="HostList">
-            {teamHosts?.hosts.map((host) => (
-              <HostListItem key={host.id} {...host} onClick={handleClick} />
-            ))}
-          </List>
-        </>
-      )}
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ p: 4, pb: 0 }}
+      >
+        <Stack direction="row" alignItems="center">
+          <Typography variant="subtitle2">{t('Hosts')}</Typography>
+          <IconButton data-testid="info" onClick={handleOpenHostInfo}>
+            <InformationCircleContainedIcon />
+          </IconButton>
+        </Stack>
+        <Button variant="outlined" size="small" onClick={handleOpenHostForm}>
+          {t('Create New')}
+        </Button>
+      </Stack>
+      <List disablePadding data-testid="HostList">
+        {teamHosts?.hosts.map((host) => (
+          <HostListItem key={host.id} {...host} onClick={handleClick} />
+        ))}
+      </List>
     </>
   )
 }

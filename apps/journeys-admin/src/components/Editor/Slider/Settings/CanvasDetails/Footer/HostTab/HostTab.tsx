@@ -122,34 +122,38 @@ export function HostTab(): ReactElement {
           setOpenHostList={setOpenHostList}
         />
       )}
-      <HostList
-        openHostList={openHostList}
-        teamHosts={teamHosts}
-        handleOpenHostInfo={() => {
-          setOpenHostList(false)
-          setOpenHostInfo(true)
-        }}
-        handleOpenHostForm={handleOpenHostForm}
-        handleSelectHost={() => {
-          setOpenHostList(false)
-          setSelectHostBox(true)
-        }}
-      />
-      <HostInfo
-        openHostInfo={openHostInfo}
-        onClose={() => {
-          setOpenHostInfo(false)
-          setOpenHostList(true)
-        }}
-      />
-      <HostForm
-        onClear={handleClear}
-        openHostForm={openHostForm}
-        onBack={() => {
-          setOpenHostForm(false)
-          setOpenHostList(true)
-        }}
-      />
+      {openHostList && (
+        <HostList
+          teamHosts={teamHosts}
+          handleOpenHostInfo={() => {
+            setOpenHostList(false)
+            setOpenHostInfo(true)
+          }}
+          handleOpenHostForm={handleOpenHostForm}
+          handleSelectHost={() => {
+            setOpenHostList(false)
+            setSelectHostBox(true)
+          }}
+        />
+      )}
+
+      {openHostInfo && (
+        <HostInfo
+          onClose={() => {
+            setOpenHostInfo(false)
+            setOpenHostList(true)
+          }}
+        />
+      )}
+      {openHostForm && (
+        <HostForm
+          onClear={handleClear}
+          onBack={() => {
+            setOpenHostForm(false)
+            setOpenHostList(true)
+          }}
+        />
+      )}
     </>
   )
 }
