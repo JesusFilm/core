@@ -8,6 +8,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { GET_JOURNEY } from '../../libs/useJourneyQuery/useJourneyQuery'
+
 import { OnboardingPageWrapper } from '.'
 
 const OnboardingPageWrapperStory: Meta<typeof OnboardingPageWrapper> = {
