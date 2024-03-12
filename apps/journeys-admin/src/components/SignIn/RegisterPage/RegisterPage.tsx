@@ -17,8 +17,8 @@ import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { PageProps } from '../types'
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
+import { PageProps } from '../types'
 
 export function RegisterPage({
   setActivePage,
