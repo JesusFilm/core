@@ -145,7 +145,7 @@ describe('CreateJourneyButton', () => {
     ).toBeInTheDocument()
   })
 
-  it('should open account check dialog and redirect to sign in when login is clicked if not signed in', async () => {
+  it('should open account check dialog and redirect to sign in page when login is clicked if not signed in', async () => {
     const prefetch = jest.fn()
     const push = jest.fn().mockResolvedValueOnce('')
     mockUseRouter.mockReturnValue({
@@ -209,7 +209,7 @@ describe('CreateJourneyButton', () => {
     })
   })
 
-  it('should open account check dialog and redirect to sign in when create account is clicked if not signed in', async () => {
+  it('should open account check dialog and redirect to sign in page when create account is clicked if not signed in', async () => {
     const prefetch = jest.fn()
     const push = jest.fn().mockResolvedValueOnce('')
     mockUseRouter.mockReturnValue({
