@@ -753,10 +753,14 @@ export interface GetJourney_journey {
 }
 
 export interface GetJourney {
+  /**
+   * hostname is required if the journey being searched for belongs to a team with
+   * a custom domain.
+   */
   journey: GetJourney_journey;
 }
 
 export interface GetJourneyVariables {
   id: string;
-  host?: string | null;
+  hostname?: string | null;
 }

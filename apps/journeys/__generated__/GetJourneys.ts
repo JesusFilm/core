@@ -20,5 +20,5 @@ export interface GetJourneys {
 
 export interface GetJourneysVariables {
   featured?: boolean | null;
-  host?: string | null;
+  hostname?: string | null;
 }

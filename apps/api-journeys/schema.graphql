@@ -366,7 +366,12 @@ extend type Query {
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter): [Journey!]!
-  journey(id: ID!, idType: IdType, host: String): Journey!
+
+  """
+  hostname is required if the journey being searched for belongs to a team with
+  a custom domain.
+  """
+  journey(id: ID!, idType: IdType, hostname: String): Journey!
   getJourneyProfile: JourneyProfile
 
   """Get a list of Visitor Information by Journey"""
@@ -1883,7 +1888,12 @@ input JourneysFilter {
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
-  host: String
+
+  """
+  hostname filters journeys down to those that belong to a team with a custom
+  domain matching the hostname.
+  """
+  hostname: String
 }
 
 enum JourneysReportType {

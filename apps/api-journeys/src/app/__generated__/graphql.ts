@@ -619,7 +619,7 @@ export class JourneysFilter {
     languageIds?: Nullable<string[]>;
     limit?: Nullable<number>;
     orderByRecent?: Nullable<boolean>;
-    host?: Nullable<string>;
+    hostname?: Nullable<string>;
 }
 
 export class JourneyCreateInput {
@@ -812,7 +812,7 @@ export abstract class IQuery {
 
     abstract journeys(where?: Nullable<JourneysFilter>): Journey[] | Promise<Journey[]>;
 
-    abstract journey(id: string, idType?: Nullable<IdType>, host?: Nullable<string>): Journey | Promise<Journey>;
+    abstract journey(id: string, idType?: Nullable<IdType>, hostname?: Nullable<string>): Journey | Promise<Journey>;
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 

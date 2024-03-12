@@ -94,7 +94,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
   const { data } = await apolloClient.query<GetJourneys, GetJourneysVariables>({
     query: GET_JOURNEYS,
     variables: {
-      host: context.params?.host?.toString() ?? ''
+      hostname: context.params?.hostname?.toString() ?? ''
     }
   })
 

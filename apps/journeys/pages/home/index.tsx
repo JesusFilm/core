@@ -143,8 +143,10 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
 }
 
 export const GET_JOURNEYS = gql`
-  query GetJourneys($featured: Boolean, $host: String) {
-    journeys(where: { featured: $featured, template: false, host: $host }) {
+  query GetJourneys($featured: Boolean, $hostname: String) {
+    journeys(
+      where: { featured: $featured, template: false, hostname: $hostname }
+    ) {
       id
       title
       slug
