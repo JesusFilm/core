@@ -221,7 +221,8 @@ export class JourneyResolver {
   @Query()
   async journey(
     @Args('id') id: string,
-    @Args('idType') idType: IdType = IdType.slug
+    @Args('idType') idType: IdType = IdType.slug,
+    @Args('hostname') hostname?: string
   ): Promise<Journey | null> {
     const filter: Prisma.JourneyWhereUniqueInput =
       idType === IdType.slug ? { slug: id } : { id }
