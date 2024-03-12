@@ -42,20 +42,21 @@ export async function checkConditionalRedirect({
       redirect = `?redirect=${encodeURIComponent(resolvedUrl)}`
   }
 
-  // const { data: me } = await apolloClient.query<GetMe>({
-  //   query: GET_ME
-  // })
+  const { data: me } = await apolloClient.query<GetMe>({
+    query: GET_ME,
+    variables: { input: { redirect } }
+  })
 
-  // if (!(me.me?.emailVerified ?? false)) {
-  //   if (resolvedUrl.startsWith('/users/verify')) return
-  //   return {
-  //     destination: `/users/verify${redirect}`,
-  //     permanent: false
-  //   }
-  // }
+  if (!(me.me?.emailVerified ?? false)) {
+    if (resolvedUrl.startsWith('/users/verify')) return
+    return {
+      destination: `/users/verify${redirect}`,
+      permanent: false
+    }
+  }
 
   // don't redirect on /users/verify
-  // if (resolvedUrl.startsWith('/users/verify')) return
+  if (resolvedUrl.startsWith(`/users/verify${redirect}`)) return
 
   const { data } = await apolloClient.query<GetJourneyProfileAndTeams>({
     query: GET_JOURNEY_PROFILE_AND_TEAMS

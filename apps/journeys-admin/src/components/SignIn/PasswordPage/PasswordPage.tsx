@@ -8,7 +8,6 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { Form, Formik } from 'formik'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
@@ -29,7 +28,6 @@ export function PasswordPage({
     event.preventDefault()
   }
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
   const validationSchema = object().shape({
     email: string()
       .trim()
