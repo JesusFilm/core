@@ -182,15 +182,7 @@ describe('CreateJourneyButton', () => {
       expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
     })
 
-    expect(
-      getByRole('button', { name: 'Use This Template' })
-    ).toBeInTheDocument()
-
     fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-
-    expect(
-      getByRole('button', { name: 'Login with my account' })
-    ).toBeInTheDocument()
 
     fireEvent.click(getByRole('button', { name: 'Login with my account' }))
 
@@ -246,15 +238,7 @@ describe('CreateJourneyButton', () => {
       expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
     })
 
-    expect(
-      getByRole('button', { name: 'Use This Template' })
-    ).toBeInTheDocument()
-
     fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-
-    expect(
-      getByRole('button', { name: 'Create a new account' })
-    ).toBeInTheDocument()
 
     fireEvent.click(getByRole('button', { name: 'Create a new account' }))
 

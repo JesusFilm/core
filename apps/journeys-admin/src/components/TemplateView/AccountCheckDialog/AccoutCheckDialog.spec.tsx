@@ -2,10 +2,10 @@ import { fireEvent, render } from '@testing-library/react'
 
 import { AccountCheckDialog } from './AccountCheckDialog'
 
-const onClose = jest.fn()
-const handleSignIn = jest.fn()
-
 describe('AccountCheckDialog', () => {
+  const onClose = jest.fn()
+  const handleSignIn = jest.fn()
+
   it('should call handleSignIn when login is clicked', () => {
     const { getByRole } = render(
       <AccountCheckDialog open onClose={onClose} handleSignIn={handleSignIn} />
