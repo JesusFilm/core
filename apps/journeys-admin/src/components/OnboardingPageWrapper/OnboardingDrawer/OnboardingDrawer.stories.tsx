@@ -1,13 +1,14 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { GET_JOURNEY } from '../../../libs/useJourneyQuery/useJourneyQuery'
-import { simpleComponentConfig } from '../../../libs/storybook'
-import { OnboardingDrawer } from './OnboardingDrawer'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../libs/storybook'
+import { GET_JOURNEY } from '../../../libs/useJourneyQuery/useJourneyQuery'
+
+import { OnboardingDrawer } from './OnboardingDrawer'
 
 const OnboardingDrawerStory: Meta<typeof OnboardingDrawer> = {
   ...simpleComponentConfig,
