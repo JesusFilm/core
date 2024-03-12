@@ -62,7 +62,7 @@ export class UserService {
 
     let user: User | null = null
     let retry = 0
-
+    let userCreated = false
     // this function can run in parallel as such it is possible for multiple
     // calls to reach this point and try to create the same user
     // due to the earlier firebase async call.
@@ -70,10 +70,7 @@ export class UserService {
       user = await this.prismaService.user.create({
         data
       })
-      // after user create so it is ony sent once
-      if (!emailVerified && email != null) {
-        await this.verifyUser(userId, email, redirect)
-      }
+      userCreated = true
     } catch (e) {
       do {
         user = await this.prismaService.user.update({
@@ -85,6 +82,9 @@ export class UserService {
         retry++
       } while (user == null && retry < 3)
     }
+    // after user create so it is only sent once
+    if (email != null && userCreated && !emailVerified)
+      await this.verifyUser(userId, email, redirect)
     return user
   }
 
