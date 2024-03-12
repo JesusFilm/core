@@ -15,7 +15,7 @@ import {
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useEffect } from 'react'
 import { object, string } from 'yup'
 
 import { PageProps } from '../types'
@@ -24,7 +24,23 @@ export function RegisterPage({
   setActivePage,
   userEmail
 }: PageProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
   const [showPassword, setShowPassword] = React.useState(false)
+
+  useEffect(() => {
+    const redirectUrl = router.query.redirect as string
+    const updatedRedirect = redirectUrl.includes('createNew')
+      ? `${redirectUrl}&newAccount=true`
+      : `${redirectUrl}?newAccount=true`
+    void router.push({
+      pathname: router.pathname,
+      query: {
+        redirect: updatedRedirect
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleClickShowPassword = (): void => setShowPassword((show) => !show)
 
@@ -33,8 +49,7 @@ export function RegisterPage({
   ): void => {
     event.preventDefault()
   }
-  const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
+
   const validationSchema = object().shape({
     email: string()
       .trim()
@@ -50,6 +65,7 @@ export function RegisterPage({
       .required(t('Enter your password'))
       .min(6, t('Password must be at least 6 characters long'))
   })
+
   async function createAccountAndSignIn(
     email: string,
     name: string,
@@ -66,6 +82,7 @@ export function RegisterPage({
     })
     await signInWithEmailAndPassword(auth, email, password)
   }
+
   async function handleCreateAccount(values, { setFieldError }): Promise<void> {
     try {
       await createAccountAndSignIn(values.email, values.name, values.password)
