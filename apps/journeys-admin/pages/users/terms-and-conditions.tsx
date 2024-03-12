@@ -6,10 +6,14 @@ import { ReactElement } from 'react'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { TermsAndConditions } from '../../src/components/TermsAndConditions'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 
 function TermsAndConditionsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const title = t('Terms and Conditions')
+
+  useHandleNewAccountRedirect()
+
   return (
     <>
       <NextSeo title={title} />
