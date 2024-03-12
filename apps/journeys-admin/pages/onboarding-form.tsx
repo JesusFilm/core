@@ -14,6 +14,7 @@ import { formiumClient } from '@core/shared/ui/formiumClient'
 import { OnboardingForm } from '../src/components/OnboardingForm'
 import { OnboardingPageWrapper } from '../src/components/OnboardingPageWrapper'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+import { useHandleNewAccountRedirect } from '../src/libs/useRedirectNewAccount'
 
 interface OnboardingFormPageProps {
   form: Form
@@ -22,6 +23,8 @@ interface OnboardingFormPageProps {
 function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
   const user = useUser()
   const { t } = useTranslation('apps-journeys-admin')
+
+  useHandleNewAccountRedirect()
 
   return (
     <>
