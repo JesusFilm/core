@@ -63,6 +63,7 @@ export function Fab({ variant }: FabProps): ReactElement {
         selectedBlock: selectedStep
       })
       if (!smUp) {
+        console.log('HERE')
         dispatch({
           type: 'SetActiveSlideAction',
           activeSlide: ActiveSlide.Content
@@ -169,7 +170,7 @@ export function Fab({ variant }: FabProps): ReactElement {
     children = (
       <>
         <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
-        {smUp ? t(variant === 'canvas' ? 'Add Block' : 'Add') : ''}
+        {smUp && variant === 'canvas' && t('Add Block')}
       </>
     )
   }
