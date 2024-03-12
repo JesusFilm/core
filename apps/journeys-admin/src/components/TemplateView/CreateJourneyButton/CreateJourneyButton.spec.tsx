@@ -145,7 +145,7 @@ describe('CreateJourneyButton', () => {
     ).toBeInTheDocument()
   })
 
-  it('should redirect to sign in page on button click if not signed in', async () => {
+  it('should open account check dialog and redirect to sign in when login is clicked if not signed in', async () => {
     const prefetch = jest.fn()
     const push = jest.fn().mockResolvedValueOnce('')
     mockUseRouter.mockReturnValue({
@@ -187,6 +187,76 @@ describe('CreateJourneyButton', () => {
     ).toBeInTheDocument()
 
     fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+
+    expect(
+      getByRole('button', { name: 'Login with my account' })
+    ).toBeInTheDocument()
+
+    fireEvent.click(getByRole('button', { name: 'Login with my account' }))
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith(
+        {
+          pathname: '/users/sign-in',
+          query: {
+            redirect:
+              'http://localhost:4200/templates/[journeyId]?createNew=true'
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
+    })
+  })
+
+  it('should open account check dialog and redirect to sign in when create account is clicked if not signed in', async () => {
+    const prefetch = jest.fn()
+    const push = jest.fn().mockResolvedValueOnce('')
+    mockUseRouter.mockReturnValue({
+      prefetch,
+      push,
+      query: { createNew: false },
+      asPath: '/templates/[journeyId]'
+    } as unknown as NextRouter)
+
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      enumerable: true,
+      value: { origin: 'http://localhost:4200' }
+    })
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <CreateJourneyButton />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
+    })
+
+    expect(
+      getByRole('button', { name: 'Use This Template' })
+    ).toBeInTheDocument()
+
+    fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+
+    expect(
+      getByRole('button', { name: 'Create a new account' })
+    ).toBeInTheDocument()
+
+    fireEvent.click(getByRole('button', { name: 'Create a new account' }))
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
