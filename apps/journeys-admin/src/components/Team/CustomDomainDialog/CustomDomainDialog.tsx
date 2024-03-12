@@ -1,32 +1,28 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
-import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
-import IconButton from '@mui/material/IconButton'
 import { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog/Dialog'
-import Check from '@core/shared/ui/icons/Check'
-import CopyLeft from '@core/shared/ui/icons/CopyLeft'
-import X3 from '@core/shared/ui/icons/X3'
 
 import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
 import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
 import { GetCustomDomain } from '../../../../__generated__/GetCustomDomain'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { useTeam } from '../TeamProvider'
 
 import { DefaultJourneyForm } from './DefaultJourneyForm'
 import { DialogUpdateForm } from './DialogUpdateForm'
+import { DNSConfigSection } from './DNSConfigSection'
 
 interface CustomDomainDialogProps {
   open: boolean
@@ -39,12 +35,14 @@ export const GET_CUSTOM_DOMAIN = gql`
       id
       apexName
       allowOutsideJourneys
-      verified
       verification {
-        domain
-        reason
-        type
-        value
+        verified
+        verification {
+          domain
+          reason
+          type
+          value
+        }
       }
       teamId
       name
@@ -67,19 +65,48 @@ export const CREATE_CUSTOM_DOMAIN = gql`
       name
       allowOutsideJourneys
       verification {
-        domain
-        reason
-        type
-        value
+        verified
+        verification {
+          domain
+          reason
+          type
+          value
+        }
       }
-      verified
     }
   }
 `
 
 export const DELETE_CUSTOM_DOMAIN = gql`
   mutation DeleteCustomDomain($customDomainDeleteId: ID!) {
-    customDomainDelete(id: $customDomainDeleteId)
+    customDomainDelete(id: $customDomainDeleteId) {
+      id
+    }
+  }
+`
+
+export const JOURNEY_COLLECTION_CREATE = gql`
+  mutation JourneyCollectionCreate(
+    $journeyCollectionInput: JourneyCollectionCreateInput!
+    $customDomainUpdateInput: CustomDomainUpdateInput!
+  ) {
+    journeyCollectionCreate(input: $journeyCollectionInput) {
+      id
+      journeys {
+        id
+        title
+      }
+    }
+    customDomainUpdate(input: $customDomainUpdateInput) {
+      id
+      journeyCollection {
+        id
+        journeys {
+          id
+          title
+        }
+      }
+    }
   }
 `
 
@@ -106,6 +133,10 @@ export function CustomDomainDialog({
   const [deleteCustomDomain] =
     useMutation<DeleteCustomDomain>(DELETE_CUSTOM_DOMAIN)
 
+  const [journeyCollectionCreate] = useMutation<JourneyCollectionCreate>(
+    JOURNEY_COLLECTION_CREATE
+  )
+
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const validationSchema = object({
@@ -115,14 +146,6 @@ export function CustomDomainDialog({
       .required(t('Domain name is a required field'))
   })
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
-  async function handleCopyClick(value): Promise<void> {
-    await navigator.clipboard.writeText(value ?? '')
-    enqueueSnackbar('Address copied', {
-      variant: 'success',
-      preventDuplicate: true
-    })
-  }
 
   async function handleSubmit(value, { resetForm }): Promise<void> {
     if (
@@ -153,12 +176,27 @@ export function CustomDomainDialog({
   }
 
   async function handleOnChange(e: SelectChangeEvent): Promise<void> {
-    console.log('here')
-    console.log(e.target.value)
-    enqueueSnackbar('Custom domain updated', {
-      variant: 'success',
-      preventDuplicate: false
-    })
+    if (e.target.value != null) {
+      const id = uuidv4()
+      await journeyCollectionCreate({
+        variables: {
+          journeyCollectionInput: {
+            id,
+            teamId: activeTeam?.id,
+            journeyIds: [e.target.value]
+          },
+          customDomainUpdateInput: {
+            journeyCollectionId: id
+          }
+        },
+        onCompleted: () => {
+          enqueueSnackbar('Custom domain updated', {
+            variant: 'success',
+            preventDuplicate: false
+          })
+        }
+      })
+    }
   }
 
   const initialValues = {
@@ -194,7 +232,8 @@ export function CustomDomainDialog({
               />
               {customDomainData?.customDomains?.length !== 0 &&
                 customDomainData?.customDomains != null &&
-                customDomainData?.customDomains[0].verified && (
+                customDomainData?.customDomains[0]?.verification?.verified ===
+                  true && (
                   <DefaultJourneyForm
                     handleOnChange={handleOnChange}
                     customDomains={customDomainData.customDomains}
@@ -203,188 +242,18 @@ export function CustomDomainDialog({
                 )}
               {customDomainData?.customDomains?.length !== 0 &&
                 customDomainData?.customDomains != null && (
-                  <Stack spacing={4}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="subtitle1">
-                        {t('DNS Config')}
-                      </Typography>
-                      <Chip
-                        icon={
-                          customDomainData.customDomains[0].verified ? (
-                            <Check
-                              sx={{
-                                borderRadius: 777,
-                                backgroundColor: 'success.main',
-                                '&.MuiSvgIcon-root': {
-                                  color: 'background.paper'
-                                }
-                              }}
-                            />
-                          ) : (
-                            <X3
-                              sx={{
-                                borderRadius: 777,
-                                backgroundColor: 'error.main',
-                                '&.MuiSvgIcon-root': {
-                                  color: 'background.paper'
-                                }
-                              }}
-                            />
-                          )
-                        }
-                        label="Status"
-                      />
-                    </Stack>
-                    <Stack spacing={4}>
-                      {customDomainData?.customDomains[0].verified && (
-                        <Stack direction="row" sx={{ width: '100%' }}>
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              border: '2px solid',
-                              borderColor: 'divider',
-                              color: 'secondary.light',
-                              borderRadius: '8px 0px 0px 8px',
-                              p: 4,
-                              width: '33%',
-                              wordBreak: 'break-all'
-                            }}
-                          >
-                            {customDomainData?.customDomains[0].apexName ===
-                            customDomainData?.customDomains[0].name
-                              ? t('A')
-                              : t('CNAME')}
-                          </Box>
-                          <Box
-                            sx={{
-                              borderTop: '2px solid',
-                              borderBottom: '2px solid',
-                              borderColor: 'divider',
-                              color: 'secondary.light',
-                              p: 4,
-                              width: '33%',
-                              wordBreak: 'break-all'
-                            }}
-                          >
-                            {customDomainData.customDomains[0].apexName}
-                          </Box>
-                          <Box
-                            sx={{
-                              border: '2px solid',
-                              borderRadius: '0px 8px 8px 0px',
-                              borderColor: 'divider',
-                              color: 'secondary.light',
-                              pl: 4,
-                              width: '33%',
-                              wordBreak: 'break-all'
-                            }}
-                          >
-                            <Stack
-                              direction="row"
-                              alignItems="center"
-                              height="100%"
-                              justifyContent="space-between"
-                            >
-                              {customDomainData?.customDomains[0].apexName ===
-                              customDomainData?.customDomains[0].name
-                                ? t('76.76.21.21')
-                                : t('cname.vercel-dns.com')}
-
-                              <IconButton
-                                onClick={async () =>
-                                  await handleCopyClick('76.76.21.21')
-                                }
-                                aria-label="Copy"
-                              >
-                                <CopyLeft />
-                              </IconButton>
-                            </Stack>
-                          </Box>
-                        </Stack>
-                      )}
-                      {!customDomainData?.customDomains[0].verified &&
-                        customDomainData?.customDomains[0].verification !=
-                          null && (
-                          <Stack direction="row" sx={{ width: '100%' }}>
-                            <Box
-                              sx={{
-                                border: '2px solid',
-                                borderColor: 'divider',
-                                color: 'secondary.light',
-                                borderRadius: '8px 0px 0px 8px',
-                                p: 4,
-                                width: '33%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                wordBreak: 'break-all'
-                              }}
-                            >
-                              {
-                                customDomainData?.customDomains[0]
-                                  .verification[0]?.type
-                              }
-                            </Box>
-                            <Box
-                              sx={{
-                                borderTop: '2px solid',
-                                borderBottom: '2px solid',
-                                borderColor: 'divider',
-                                color: 'secondary.light',
-                                p: 4,
-                                width: '33%',
-                                wordBreak: 'break-all',
-                                display: 'flex',
-                                alignItems: 'center'
-                              }}
-                            >
-                              {customDomainData?.customDomains[0].verification[0]?.domain?.replace(
-                                '_vercel.',
-                                ''
-                              )}
-                            </Box>
-                            <Box
-                              sx={{
-                                border: '2px solid',
-                                borderRadius: '0px 8px 8px 0px',
-                                borderColor: 'divider',
-                                color: 'secondary.light',
-                                pl: 4,
-                                width: '33%',
-                                wordBreak: 'break-all'
-                              }}
-                            >
-                              <Stack
-                                direction="row"
-                                alignItems="center"
-                                height="100%"
-                                justifyContent="space-between"
-                                sx={{ wordBreak: 'break-all' }}
-                              >
-                                {
-                                  customDomainData?.customDomains[0]
-                                    .verification[0]?.value
-                                }
-                                <IconButton
-                                  onClick={async () =>
-                                    await handleCopyClick(
-                                      customDomainData?.customDomains[0]
-                                        ?.verification != null
-                                        ? customDomainData?.customDomains[0]
-                                            ?.verification[0]?.value
-                                        : ''
-                                    )
-                                  }
-                                  aria-label="Copy"
-                                >
-                                  <CopyLeft />
-                                </IconButton>
-                              </Stack>
-                            </Box>
-                          </Stack>
-                        )}
-                    </Stack>
-                  </Stack>
+                  <DNSConfigSection
+                    verified={
+                      customDomainData?.customDomains[0]?.verification
+                        ?.verified ?? false
+                    }
+                    name={customDomainData?.customDomains[0]?.name}
+                    apexName={customDomainData?.customDomains[0]?.apexName}
+                    domainError={
+                      customDomainData?.customDomains[0]?.verification
+                        ?.verification?.[0]
+                    }
+                  />
                 )}
             </Stack>
           </Form>

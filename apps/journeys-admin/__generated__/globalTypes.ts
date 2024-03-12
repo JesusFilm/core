@@ -300,6 +300,12 @@ export interface CustomDomainCreateInput {
   journeyCollectionId?: string | null;
 }
 
+export interface CustomDomainUpdateInput {
+  name?: string | null;
+  allowOutsideJourneys?: boolean | null;
+  journeyCollectionId?: string | null;
+}
+
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
@@ -365,6 +371,14 @@ export interface ImageBlockUpdateInput {
   blurhash?: string | null;
   width?: number | null;
   height?: number | null;
+}
+
+export interface JourneyCollectionCreateInput {
+  id?: string | null;
+  teamId: string;
+  title?: string | null;
+  journeyIds?: (string | null)[] | null;
+  customDomain?: CustomDomainCreateInput | null;
 }
 
 export interface JourneyProfileUpdateInput {

@@ -7,8 +7,13 @@
 // GraphQL mutation operation: DeleteCustomDomain
 // ====================================================
 
+export interface DeleteCustomDomain_customDomainDelete {
+  __typename: "CustomDomain";
+  id: string;
+}
+
 export interface DeleteCustomDomain {
-  customDomainDelete: boolean;
+  customDomainDelete: DeleteCustomDomain_customDomainDelete;
 }
 
 export interface DeleteCustomDomainVariables {

@@ -7,12 +7,18 @@
 // GraphQL query operation: GetCustomDomain
 // ====================================================
 
-export interface GetCustomDomain_customDomains_verification {
+export interface GetCustomDomain_customDomains_verification_verification {
   __typename: "VercelDomainVerification";
   domain: string | null;
   reason: string | null;
   type: string | null;
   value: string | null;
+}
+
+export interface GetCustomDomain_customDomains_verification {
+  __typename: "CustomDomainVerification";
+  verified: boolean;
+  verification: (GetCustomDomain_customDomains_verification_verification | null)[] | null;
 }
 
 export interface GetCustomDomain_customDomains_journeyCollection_journeys {
@@ -32,8 +38,7 @@ export interface GetCustomDomain_customDomains {
   id: string;
   apexName: string;
   allowOutsideJourneys: boolean;
-  verified: boolean;
-  verification: (GetCustomDomain_customDomains_verification | null)[] | null;
+  verification: GetCustomDomain_customDomains_verification | null;
   teamId: string;
   name: string;
   journeyCollection: GetCustomDomain_customDomains_journeyCollection | null;

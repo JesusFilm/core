@@ -9,12 +9,18 @@ import { CustomDomainCreateInput } from "./globalTypes";
 // GraphQL mutation operation: CreateCustomDomain
 // ====================================================
 
-export interface CreateCustomDomain_customDomainCreate_verification {
+export interface CreateCustomDomain_customDomainCreate_verification_verification {
   __typename: "VercelDomainVerification";
   domain: string | null;
   reason: string | null;
   type: string | null;
   value: string | null;
+}
+
+export interface CreateCustomDomain_customDomainCreate_verification {
+  __typename: "CustomDomainVerification";
+  verified: boolean;
+  verification: (CreateCustomDomain_customDomainCreate_verification_verification | null)[] | null;
 }
 
 export interface CreateCustomDomain_customDomainCreate {
@@ -23,8 +29,7 @@ export interface CreateCustomDomain_customDomainCreate {
   apexName: string;
   name: string;
   allowOutsideJourneys: boolean;
-  verification: (CreateCustomDomain_customDomainCreate_verification | null)[] | null;
-  verified: boolean;
+  verification: CreateCustomDomain_customDomainCreate_verification | null;
 }
 
 export interface CreateCustomDomain {

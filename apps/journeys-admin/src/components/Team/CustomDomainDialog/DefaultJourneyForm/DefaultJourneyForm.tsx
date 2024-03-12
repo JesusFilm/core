@@ -31,9 +31,7 @@ export function DefaultJourneyForm({
             id="defaultJourney"
             name="defaultJourney"
             onChange={handleOnChange}
-            defaultValue={
-              customDomains[0]?.journeyCollection?.journeys[0]?.title
-            }
+            defaultValue={customDomains[0]?.journeyCollection?.journeys[0]?.id}
           >
             {journeys?.map((journey) => (
               <MenuItem value={journey.id} key={journey.id}>
