@@ -81,23 +81,23 @@ export class NexusJobListener implements OnModuleInit {
           const captionLanguage = currentResource?.localizations?.[0]?.language;
 
           // Thumbnail
-          // console.log('DOWNLOADING Thumbnail: ', thumbnailDriveId);
-          // const thumbnailFilePath =
-          //   await this.googleDriveService.downloadDriveFile(
-          //     { fileId: thumbnailDriveId ?? '', accessToken: driveToken },
-          //     async (progress) => {
-          //       console.log(progress);
-          //     },
-          //   );
+          console.log('DOWNLOADING Thumbnail: ', thumbnailDriveId);
+          const thumbnailFilePath =
+            await this.googleDriveService.downloadDriveFile(
+              { fileId: thumbnailDriveId ?? '', accessToken: driveToken },
+              async (progress) => {
+                console.log(progress);
+              },
+            );
 
-          // console.log('UPLOADING FILE: ', thumbnailFilePath);
-          // const thumbnailBucketFile = await this.bucketService.uploadFile(
-          //   thumbnailFilePath,
-          //   process.env.BUCKET_NAME ?? 'bucket-name',
-          //   async (progress) => {
-          //     console.log(progress);
-          //   },
-          // );
+          console.log('UPLOADING FILE: ', thumbnailFilePath);
+          const thumbnailBucketFile = await this.bucketService.uploadFile(
+            thumbnailFilePath,
+            process.env.BUCKET_NAME ?? 'bucket-name',
+            async (progress) => {
+              console.log(progress);
+            },
+          );
 
           // Caption
           console.log('DOWNLOADING Caption: ', captionDriveId);
@@ -118,21 +118,21 @@ export class NexusJobListener implements OnModuleInit {
             },
           );
 
-          // console.log('BUCKET FILE Thumbnail', thumbnailBucketFile);
+          console.log('BUCKET FILE Thumbnail', thumbnailBucketFile);
           console.log('BUCKET FILE Caption', captionBucketFile);
 
           const youtubeToken = await this.googleOAuthService.getNewAccessToken(
             job.data.channel.refreshToken,
           );
 
-          // const youtubeResponse =
-          //   await this.youtubeService.updateVideoThumbnail({
-          //     token: youtubeToken,
-          //     videoId: job.returnvalue.youtubeId,
-          //     thumbnailPath: thumbnailFilePath,
-          //   });
+          const youtubeThumnailResponse =
+            await this.youtubeService.updateVideoThumbnail({
+              token: youtubeToken,
+              videoId: job.returnvalue.youtubeId,
+              thumbnailPath: thumbnailFilePath,
+            });
 
-          const youtubeResponse = await this.youtubeService.uploadCaption({
+          const youtubeCaptionResponse = await this.youtubeService.uploadCaption({
             token: youtubeToken,
             videoId: job.returnvalue.youtubeId,
             language: captionLanguage ?? '',
@@ -141,12 +141,9 @@ export class NexusJobListener implements OnModuleInit {
             isDraft: false,
           });
 
-          // console.log('YOUTUBE RESPONSE UPDATE THUMBNAIL: ', youtubeResponse);
-
-          console.log('YOUTUBE RESPONSE UPDATE CAPTION: ', youtubeResponse);
+          console.log('YOUTUBE RESPONSE UPDATE THUMBNAIL: ', youtubeThumnailResponse);
+          console.log('YOUTUBE RESPONSE UPDATE CAPTION: ', youtubeCaptionResponse);
         }
-
-        // TODO: upload thumbnail and caption file
 
         // void Promise.all([
         //   await this.prismaService.batchResource.updateMany({

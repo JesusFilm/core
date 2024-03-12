@@ -16,7 +16,7 @@ export class UpdateCaption {
     private readonly youtubeService: YoutubeService,
   ) {}
 
-  @Process('process')
+  @Process('processCaption')
   async process(
     job: Job<UpdateVideoCaption>,
   ): Promise<UpdateVideoCaption> {

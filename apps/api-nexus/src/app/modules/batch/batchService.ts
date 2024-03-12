@@ -131,7 +131,7 @@ export class BatchService {
                   row.audio_track_file ?? existingLocalization.audioTrackFile,
                 videoId: row.video_id ?? existingLocalization.videoId,
               },
-              include: { resource: true },
+              include: { resource: true, localizedResourceFile: true },
             });
           if (row.channelData !== undefined) {
             localizationBatch.push({
@@ -160,7 +160,7 @@ export class BatchService {
                   },
                 },
               },
-              include: { resource: true },
+              include: { resource: true, localizedResourceFile: true },
             });
           if (row.channelData !== undefined) {
             localizationBatch.push({

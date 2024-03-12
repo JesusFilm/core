@@ -10,9 +10,10 @@ import { GoogleDriveModule } from '../google-drive/googleDrive.module';
 import { GoogleDriveService } from '../google-drive/googleDriveService';
 
 import { BullMQService } from './bullMQ.service';
+import { UpdateCaption } from './consumers/updateCaption';
+import { UpdateLocalization } from './consumers/updateLocalization';
 import { UploadToBucket } from './consumers/uploadToBucket';
 import { UploadToYoutube } from './consumers/uploadToYoutube';
-import { UpdateLocalization } from './consumers/updateLocalization';
 import { NexusJobListener } from './listener/jobListener';
 
 @Global()
@@ -43,6 +44,7 @@ import { NexusJobListener } from './listener/jobListener';
   providers: [
     BullMQService,
     UpdateLocalization,
+    UpdateCaption,
     UploadToBucket,
     UploadToYoutube,
     GoogleDriveService,
