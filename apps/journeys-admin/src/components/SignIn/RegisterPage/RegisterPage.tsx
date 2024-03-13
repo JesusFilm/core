@@ -13,6 +13,7 @@ import {
   updateProfile
 } from 'firebase/auth'
 import { Form, Formik } from 'formik'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
 import { object, string } from 'yup'
@@ -26,6 +27,7 @@ export function RegisterPage({
 }: PageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showPassword, setShowPassword] = React.useState(false)
+  const router = useRouter()
 
   useHandleNewAccountRedirect()
 
@@ -176,7 +178,10 @@ export function RegisterPage({
                   variant="text"
                   size="large"
                   fullWidth
-                  onClick={() => setActivePage?.('home')}
+                  onClick={() => {
+                    setActivePage?.('home')
+                    router.back()
+                  }}
                 >
                   {t('Cancel')}
                 </Button>
