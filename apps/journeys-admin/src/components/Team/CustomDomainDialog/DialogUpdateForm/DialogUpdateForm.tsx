@@ -94,11 +94,12 @@ export function DialogUpdateForm({
         <Button
           disabled={loading}
           onClick={async () => handleSubmit()}
+          sx={{ color: 'secondary.light', borderColor: 'secondary.light' }}
           startIcon={
             customDomains?.length !== 0 && customDomains != null ? (
               <></>
             ) : (
-              <Check />
+              <Check sx={{ color: 'secondary.light' }} />
             )
           }
           variant="outlined"
