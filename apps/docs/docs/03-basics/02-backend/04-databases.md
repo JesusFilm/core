@@ -16,24 +16,24 @@ What follows is the most up to date Entity Relationship Diagrams ([main branch](
 
 ### API Journeys
 
-![API Journeys ERD](https://raw.githubusercontent.com/JesusFilm/core/24-02-TN-feat-generate-erd/apps/api-journeys/db/ERD.svg)
+![API Journeys ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apps/api-journeys/db/ERD.svg)
 
 ### API Languages
 
-![API Languages ERD](https://raw.githubusercontent.com/JesusFilm/core/24-02-TN-feat-generate-erd/apps/api-languages/db/ERD.svg)
+![API Languages ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apps/api-languages/db/ERD.svg)
 
 ### API Media
 
-![API Media ERD](https://raw.githubusercontent.com/JesusFilm/core/24-02-TN-feat-generate-erd/apps/api-media/db/ERD.svg)
+![API Media ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apps/api-media/db/ERD.svg)
 
 ### API Tags
 
-![API Tags ERD](https://raw.githubusercontent.com/JesusFilm/core/24-02-TN-feat-generate-erd/apps/api-tags/db/ERD.svg)
+![API Tags ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apps/api-tags/db/ERD.svg)
 
 ### API Users
 
-![API Users ERD](https://raw.githubusercontent.com/JesusFilm/core/24-02-TN-feat-generate-erd/apps/api-users/db/ERD.svg)
+![API Users ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apps/api-users/db/ERD.svg)
 
 ### API Videos
 
-![API Videos ERD](https://raw.githubusercontent.com/JesusFilm/core/24-02-TN-feat-generate-erd/apps/api-videos/db/ERD.svg)
+![API Videos ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apps/api-videos/db/ERD.svg)
