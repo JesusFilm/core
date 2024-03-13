@@ -47,12 +47,17 @@ jobs:
           restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
+      - uses: browser-actions/setup-chrome@v1
+        id: setup-chrome
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
           all: true
           parallel: 1
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
       - name: NPM apollo and graphql for codegen
         run: npm i -g apollo graphql @apollo/rover@0.22.0
       - name: Codegen
@@ -118,6 +123,8 @@ jobs:
           targets: prisma-generate
           all: true
           parallel: 1
+        env:
+          DISABLE_ERD: true
       - name: Install Doppler
         run: |
           sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
@@ -188,6 +195,8 @@ jobs:
           targets: prisma-generate
           all: true
           parallel: 1
+        env:
+          DISABLE_ERD: true
       - name: Get number of CPU cores
         id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v2
