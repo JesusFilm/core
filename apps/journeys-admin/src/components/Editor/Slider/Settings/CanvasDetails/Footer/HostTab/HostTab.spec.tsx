@@ -309,7 +309,7 @@ describe('HostTab', () => {
       expect(getByText('Hosts')).toBeInTheDocument()
     })
 
-    fireEvent.click(getByTestId('info'))
+    fireEvent.click(getByTestId('InformationCircleContainedIcon'))
 
     await waitFor(() => {
       expect(

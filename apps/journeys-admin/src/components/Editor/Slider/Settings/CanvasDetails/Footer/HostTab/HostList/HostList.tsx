@@ -54,7 +54,7 @@ export function HostList({
       >
         <Stack direction="row" alignItems="center">
           <Typography variant="subtitle2">{t('Hosts')}</Typography>
-          <IconButton data-testid="info" onClick={handleOpenHostInfo}>
+          <IconButton onClick={handleOpenHostInfo}>
             <InformationCircleContainedIcon />
           </IconButton>
         </Stack>
