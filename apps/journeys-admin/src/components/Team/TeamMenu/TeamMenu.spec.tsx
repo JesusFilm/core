@@ -4,6 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -103,11 +105,13 @@ describe('TeamMenu', () => {
     const { getByRole, getByText, queryByRole, getByTestId, queryByTestId } =
       render(
         <MockedProvider mocks={[getTeamsMock]}>
-          <SnackbarProvider>
-            <TeamProvider>
-              <TeamMenu />
-            </TeamProvider>
-          </SnackbarProvider>
+          <FlagsProvider flags={{ customDomain: true }}>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TeamMenu />
+              </TeamProvider>
+            </SnackbarProvider>
+          </FlagsProvider>
         </MockedProvider>
       )
     fireEvent.click(getByRole('button'))
