@@ -1,4 +1,6 @@
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -10,6 +12,7 @@ import Check from '@core/shared/ui/icons/Check'
 import Globe2 from '@core/shared/ui/icons/Globe2'
 import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
+import X3 from '@core/shared/ui/icons/X3'
 
 import { GetCustomDomain_customDomains as CustomDomains } from '../../../../../__generated__/GetCustomDomain'
 
@@ -42,8 +45,8 @@ export function DialogUpdateForm({
             <Typography variant="subtitle1">
               {t('Custom Domain Setup')}
             </Typography>
-            <Button endIcon={<LinkExternal />} variant="text" sx={{ p: 0 }}>
-              {t('Instructions')}
+            <Button endIcon={<LinkExternal />} variant="text" sx={{ py: 0 }}>
+              <Typography variant="body2"> {t('Instructions')}</Typography>
             </Button>
           </Stack>
           <Typography variant="body2">
@@ -90,11 +93,30 @@ export function DialogUpdateForm({
                 borderColor: 'secondary.light'
               }
           }}
+          InputProps={{
+            endAdornment:
+              customDomains?.length !== 0 && customDomains != null ? (
+                <InputAdornment position="start">
+                  <IconButton onClick={async () => handleSubmit()}>
+                    <X3 />
+                  </IconButton>
+                </InputAdornment>
+              ) : (
+                <></>
+              )
+          }}
         />
         <Button
           disabled={loading}
           onClick={async () => handleSubmit()}
-          sx={{ color: 'secondary.light', borderColor: 'secondary.light' }}
+          sx={{
+            color: 'secondary.light',
+            borderColor: 'secondary.light',
+            display:
+              customDomains?.length !== 0 && customDomains != null
+                ? 'none'
+                : 'flex'
+          }}
           startIcon={
             customDomains?.length !== 0 && customDomains != null ? (
               <></>
@@ -104,9 +126,7 @@ export function DialogUpdateForm({
           }
           variant="outlined"
         >
-          {customDomains?.length !== 0 && customDomains != null
-            ? t('Delete')
-            : t('Apply')}
+          {t('Apply')}
         </Button>
       </Stack>
     </Stack>

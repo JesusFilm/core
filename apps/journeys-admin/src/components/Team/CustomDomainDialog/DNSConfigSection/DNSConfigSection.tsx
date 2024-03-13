@@ -1,5 +1,6 @@
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
 import Table from '@mui/material/Table'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
@@ -26,6 +27,12 @@ interface DNSConfigSectionProps {
   apexName?: string
   domainError?: DomainError | null
 }
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  border: '2px solid ',
+  borderColor: theme.palette.divider,
+  fontSize: '16px'
+}))
 
 export function DNSConfigSection({
   verified,
@@ -86,22 +93,11 @@ export function DNSConfigSection({
               <TableContainer sx={{ display: { xs: 'none', sm: 'block' } }}>
                 <Table>
                   <TableRow>
-                    <TableCell
-                      align="left"
-                      sx={{ border: '2px solid ', borderColor: 'divider' }}
-                    >
+                    <StyledTableCell align="left">
                       {apexName === name ? t('A') : t('CNAME')}
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{ border: '2px solid ', borderColor: 'divider' }}
-                    >
-                      {apexName}
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{ border: '2px solid ', borderColor: 'divider' }}
-                    >
+                    </StyledTableCell>
+                    <StyledTableCell align="left">{apexName}</StyledTableCell>
+                    <StyledTableCell align="left">
                       <Stack
                         direction="row"
                         alignItems="center"
@@ -115,37 +111,27 @@ export function DNSConfigSection({
                             await handleCopyClick('76.76.21.21')
                           }
                           aria-label="Copy"
+                          sx={{ mr: -3 }}
                         >
                           <CopyLeft />
                         </IconButton>
                       </Stack>
-                    </TableCell>
+                    </StyledTableCell>
                   </TableRow>
                 </Table>
               </TableContainer>
               <TableContainer sx={{ display: { xs: 'block', sm: 'none' } }}>
                 <Table>
                   <TableRow>
-                    <TableCell
-                      align="left"
-                      sx={{ border: '2px solid ', borderColor: 'divider' }}
-                    >
+                    <StyledTableCell align="left">
                       {apexName === name ? t('A') : t('CNAME')}
-                    </TableCell>
+                    </StyledTableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell
-                      align="left"
-                      sx={{ border: '2px solid ', borderColor: 'divider' }}
-                    >
-                      {apexName}
-                    </TableCell>
+                    <StyledTableCell align="left">{apexName}</StyledTableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell
-                      align="left"
-                      sx={{ border: '2px solid ', borderColor: 'divider' }}
-                    >
+                    <StyledTableCell align="left">
                       <Stack
                         direction="row"
                         alignItems="center"
@@ -159,11 +145,12 @@ export function DNSConfigSection({
                             await handleCopyClick('76.76.21.21')
                           }
                           aria-label="Copy"
+                          sx={{ mr: -3 }}
                         >
                           <CopyLeft />
                         </IconButton>
                       </Stack>
-                    </TableCell>
+                    </StyledTableCell>
                   </TableRow>
                 </Table>
               </TableContainer>
@@ -181,22 +168,13 @@ export function DNSConfigSection({
                   }}
                 >
                   <TableRow>
-                    <TableCell
-                      align="left"
-                      sx={{ border: '2px solid ', borderColor: 'divider' }}
-                    >
+                    <StyledTableCell align="left">
                       {domainError.type}
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{ border: '2px solid ', borderColor: 'divider' }}
-                    >
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
                       {domainError.domain?.replace('_vercel.', '')}
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{ border: '2px solid ', borderColor: 'divider' }}
-                    >
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
                       <Stack
                         direction="row"
                         alignItems="center"
@@ -210,11 +188,12 @@ export function DNSConfigSection({
                             )
                           }
                           aria-label="Copy"
+                          sx={{ mr: -3 }}
                         >
                           <CopyLeft />
                         </IconButton>
                       </Stack>
-                    </TableCell>
+                    </StyledTableCell>
                   </TableRow>
                 </Table>
               </TableContainer>
@@ -227,26 +206,17 @@ export function DNSConfigSection({
                   }}
                 >
                   <TableRow>
-                    <TableCell
-                      align="left"
-                      sx={{ border: '2px solid ', borderColor: 'divider' }}
-                    >
+                    <StyledTableCell align="left">
                       {domainError.type}
-                    </TableCell>
+                    </StyledTableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell
-                      align="left"
-                      sx={{ border: '2px solid ', borderColor: 'divider' }}
-                    >
+                    <StyledTableCell align="left">
                       {domainError.domain?.replace('_vercel.', '')}
-                    </TableCell>
+                    </StyledTableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell
-                      align="left"
-                      sx={{ border: '2px solid ', borderColor: 'divider' }}
-                    >
+                    <StyledTableCell align="left">
                       <Stack
                         direction="row"
                         alignItems="center"
@@ -260,11 +230,12 @@ export function DNSConfigSection({
                             )
                           }
                           aria-label="Copy"
+                          sx={{ mr: -3 }}
                         >
                           <CopyLeft />
                         </IconButton>
                       </Stack>
-                    </TableCell>
+                    </StyledTableCell>
                   </TableRow>
                 </Table>
               </TableContainer>

@@ -1,4 +1,5 @@
 import FormControl from '@mui/material/FormControl'
+import FormHelperText from '@mui/material/FormHelperText'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
@@ -23,7 +24,6 @@ export function DefaultJourneyForm({
   journeys
 }: DefaultJourneyFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
   return (
     <Stack spacing={4}>
       <Stack direction="row" spacing={3}>
@@ -39,6 +39,7 @@ export function DefaultJourneyForm({
                 defaultValue={
                   customDomains[0]?.journeyCollection?.journeys[0]?.id
                 }
+                variant="outlined"
               >
                 {journeys?.map((journey) => (
                   <MenuItem value={journey.id} key={journey.id}>
@@ -46,6 +47,11 @@ export function DefaultJourneyForm({
                   </MenuItem>
                 ))}
               </Select>
+              <FormHelperText>
+                {t(
+                  `The selected Journey will be available under ${customDomains[0].name}/`
+                )}
+              </FormHelperText>
             </FormControl>
           </Stack>
         </Stack>
