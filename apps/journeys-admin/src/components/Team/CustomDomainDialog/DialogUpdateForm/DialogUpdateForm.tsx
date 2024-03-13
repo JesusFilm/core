@@ -19,10 +19,12 @@ interface DialogUpdateFormValues {
 
 interface DialogUpdateFormProps {
   customDomains?: CustomDomains[]
+  loading: boolean
 }
 
 export function DialogUpdateForm({
-  customDomains
+  customDomains,
+  loading
 }: DialogUpdateFormProps): ReactElement {
   const { values, handleChange, errors, handleSubmit } =
     useFormikContext<DialogUpdateFormValues>()
@@ -61,6 +63,7 @@ export function DialogUpdateForm({
           }}
         />
         <TextField
+          disabled={loading}
           id="domainName"
           name="domainName"
           focused
@@ -89,8 +92,15 @@ export function DialogUpdateForm({
           }}
         />
         <Button
+          disabled={loading}
           onClick={async () => handleSubmit()}
-          startIcon={<Check />}
+          startIcon={
+            customDomains?.length !== 0 && customDomains != null ? (
+              <></>
+            ) : (
+              <Check />
+            )
+          }
           variant="outlined"
         >
           {customDomains?.length !== 0 && customDomains != null

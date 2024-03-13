@@ -44,6 +44,20 @@ const getAdminJourneysMock: MockedResponse<
   }
 }
 
+const getCustomDomainMockEmpty: MockedResponse<GetCustomDomain> = {
+  request: {
+    query: GET_CUSTOM_DOMAIN,
+    variables: {
+      teamId: 'teamId'
+    }
+  },
+  result: {
+    data: {
+      customDomains: []
+    }
+  }
+}
+
 const getCustomDomainMockVerifiedFalse: MockedResponse<GetCustomDomain> = {
   request: {
     query: GET_CUSTOM_DOMAIN,
@@ -188,7 +202,11 @@ export const Default = {
   ...Template,
   parameters: {
     apolloClient: {
-      mocks: []
+      mocks: [
+        getCustomDomainMockEmpty,
+        getAdminJourneysMock,
+        getLastActiveTeamIdAndTeamsMock
+      ]
     }
   }
 }

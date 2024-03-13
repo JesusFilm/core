@@ -49,7 +49,7 @@ describe('CustomDomainDialog', () => {
     }))
   }
 
-  const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
+  const getCustomDomainMockEmpty: MockedResponse<GetCustomDomain> = {
     request: {
       query: GET_CUSTOM_DOMAIN,
       variables: {
@@ -58,29 +58,43 @@ describe('CustomDomainDialog', () => {
     },
     result: jest.fn(() => ({
       data: {
-        customDomains: [
-          {
-            __typename: 'CustomDomain',
-            name: 'mockdomain.com',
-            apexName: 'mockdomain.com',
-            allowOutsideJourneys: true,
-            id: 'customDomainId',
-            teamId: 'teamId',
-            verification: {
-              __typename: 'CustomDomainVerification',
-              verified: true,
-              verification: []
-            },
-            journeyCollection: {
-              __typename: 'JourneyCollection',
-              id: 'journeyCollectionId',
-              journeys: []
-            }
-          }
-        ]
+        customDomains: []
       }
     }))
   }
+
+  // const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
+  //   request: {
+  //     query: GET_CUSTOM_DOMAIN,
+  //     variables: {
+  //       teamId: 'teamId'
+  //     }
+  //   },
+  //   result: jest.fn(() => ({
+  //     data: {
+  //       customDomains: [
+  //         {
+  //           __typename: 'CustomDomain',
+  //           name: 'mockdomain.com',
+  //           apexName: 'mockdomain.com',
+  //           allowOutsideJourneys: true,
+  //           id: 'customDomainId',
+  //           teamId: 'teamId',
+  //           verification: {
+  //             __typename: 'CustomDomainVerification',
+  //             verified: true,
+  //             verification: []
+  //           },
+  //           journeyCollection: {
+  //             __typename: 'JourneyCollection',
+  //             id: 'journeyCollectionId',
+  //             journeys: []
+  //           }
+  //         }
+  //       ]
+  //     }
+  //   }))
+  // }
 
   const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
     {
@@ -142,7 +156,7 @@ describe('CustomDomainDialog', () => {
           getLastActiveTeamIdAndTeamsMock,
           getAdminJourneysMock,
           mockCreateCustomDomain,
-          getCustomDomainMockARecord
+          getCustomDomainMockEmpty
         ]}
       >
         <SnackbarProvider>
@@ -153,13 +167,12 @@ describe('CustomDomainDialog', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
+      expect(getCustomDomainMockEmpty.result).toHaveBeenCalled()
     )
     fireEvent.change(getByRole('textbox'), {
       target: { value: 'www.example.com' }
     })
-
-    fireEvent.click(getByText('Update'))
+    fireEvent.click(getByText('Apply'))
     await waitFor(() =>
       expect(mockCreateCustomDomain.result).toHaveBeenCalled()
     )

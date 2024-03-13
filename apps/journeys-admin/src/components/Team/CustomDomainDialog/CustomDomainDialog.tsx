@@ -7,7 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
@@ -132,16 +132,18 @@ export function CustomDomainDialog({
   open,
   onClose
 }: CustomDomainDialogProps): ReactElement {
+  const [loading, setLoading] = useState(true)
   const { data: journeysData } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
     useLastActiveTeamId: true
   })
 
   const { activeTeam } = useTeam()
-  const { data: customDomainData, loading } = useQuery<GetCustomDomain>(
+  const { data: customDomainData } = useQuery<GetCustomDomain>(
     GET_CUSTOM_DOMAIN,
     {
-      variables: { teamId: activeTeam?.id }
+      variables: { teamId: activeTeam?.id },
+      onCompleted: () => setLoading(false)
     }
   )
 
@@ -170,6 +172,7 @@ export function CustomDomainDialog({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   async function handleSubmit(value, { resetForm }): Promise<void> {
+    setLoading(true)
     if (
       customDomainData?.customDomains != null &&
       customDomainData?.customDomains?.length !== 0
@@ -190,6 +193,7 @@ export function CustomDomainDialog({
         }
       })
     }
+    setLoading(false)
     enqueueSnackbar(t('Custom domain updated'), {
       variant: 'success',
       preventDuplicate: false
@@ -263,6 +267,7 @@ export function CustomDomainDialog({
           <Form>
             <Stack spacing={10}>
               <DialogUpdateForm
+                loading={loading}
                 customDomains={customDomainData?.customDomains}
               />
               {customDomainData?.customDomains?.length !== 0 &&
