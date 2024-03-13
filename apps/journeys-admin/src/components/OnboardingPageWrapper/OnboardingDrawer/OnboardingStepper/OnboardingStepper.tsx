@@ -13,13 +13,16 @@ import { ReactElement, ReactNode } from 'react'
 
 import Circle from '@core/shared/ui/icons/Circle'
 
-export function OnboardingStepper(): ReactElement {
+type Variant = 'mobile' | 'desktop'
+interface OnboardingStepperProps {
+  variant: Variant
+}
+
+export function OnboardingStepper({
+  variant
+}: OnboardingStepperProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
-  const onboarding =
-    router.query.newAccount != null
-      ? true
-      : router.query.redirect?.includes('newAccount')
 
   function getActiveStep(): number {
     const path = router.pathname
@@ -125,61 +128,58 @@ export function OnboardingStepper(): ReactElement {
   }
 
   return (
-    <>
-      {onboarding === true && (
-        <Box
-          sx={{
-            width: { xs: '100%', md: 244 },
-            px: { lg: 3 },
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}
-        >
-          <Stack gap={6} sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Typography variant="h6">
-              {t(`Let's get you on the journey`)}
-            </Typography>
-            <Stepper
-              activeStep={activeStep}
-              orientation="vertical"
-              connector={<OnboardingStepperConnector />}
-            >
-              {steps.map((step) => (
-                <Step key={step.label}>
-                  <StepLabel
-                    StepIconComponent={(props) => (
-                      <OnboardingStepperIcon
-                        {...props}
-                        stepLabel={step.label}
-                      />
-                    )}
-                    sx={{ p: 0, py: 1 }}
-                  >
-                    <Typography variant="subtitle2">{step.label}</Typography>
-                  </StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </Stack>
-          <MobileStepper
-            variant="progress"
-            steps={steps.length}
-            position="static"
-            activeStep={activeStep === 0 ? activeStep + 0.5 : activeStep}
-            backButton={null}
-            nextButton={null}
-            sx={{
-              display: { xs: 'flex', md: 'none' },
-              width: '100%',
-              p: 0,
-              '& .MuiLinearProgress-root': {
-                width: '100%'
-              }
-            }}
-          />
-        </Box>
+    <Box
+      sx={{
+        width: { xs: '100%', md: 244 },
+        px: { lg: 3 },
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}
+    >
+      {variant === 'desktop' && (
+        <Stack gap={6} sx={{ display: { xs: 'none', md: 'flex' } }}>
+          <Typography variant="h6">
+            {t(`Let's get you on the journey`)}
+          </Typography>
+          <Stepper
+            activeStep={activeStep}
+            orientation="vertical"
+            connector={<OnboardingStepperConnector />}
+          >
+            {steps.map((step) => (
+              <Step key={step.label}>
+                <StepLabel
+                  StepIconComponent={(props) => (
+                    <OnboardingStepperIcon {...props} stepLabel={step.label} />
+                  )}
+                  sx={{ p: 0, py: 1 }}
+                >
+                  <Typography variant="subtitle2">{step.label}</Typography>
+                </StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        </Stack>
       )}
-    </>
+      {variant === 'mobile' && (
+        <MobileStepper
+          variant="progress"
+          steps={steps.length}
+          position="static"
+          activeStep={activeStep === 0 ? activeStep + 0.5 : activeStep}
+          backButton={null}
+          nextButton={null}
+          sx={{
+            display: { xs: 'flex', md: 'none' },
+            width: '100%',
+            p: 0,
+            '& .MuiLinearProgress-root': {
+              width: '100%'
+            }
+          }}
+        />
+      )}
+    </Box>
   )
 }

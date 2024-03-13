@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
 
 import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
 import {
@@ -11,13 +10,6 @@ import {
 import { GET_JOURNEY } from '../../../../libs/useJourneyQuery/useJourneyQuery'
 
 import { OnboardingTemplateCard } from './OnboardingTemplateCard'
-
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn()
-}))
-
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('OnboardingTemplateCard', () => {
   const journey: Journey = {
@@ -62,18 +54,7 @@ describe('OnboardingTemplateCard', () => {
     featuredAt: '2023-08-14T04:24:24.392Z'
   }
 
-  beforeEach(() => {
-    jest.resetAllMocks()
-  })
-
   it('should render OnboardingTemplateCard', async () => {
-    mockUseRouter.mockReturnValue({
-      push: jest.fn(),
-      query: {
-        redirect: 'https://localhost:4200/templates/template-id'
-      }
-    } as unknown as NextRouter)
-
     const result = jest.fn(() => ({ data: { journey } }))
 
     const { getByRole, getAllByText } = render(
@@ -90,7 +71,7 @@ describe('OnboardingTemplateCard', () => {
           }
         ]}
       >
-        <OnboardingTemplateCard />
+        <OnboardingTemplateCard templateId="template-id" />
       </MockedProvider>
     )
 

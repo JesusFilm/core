@@ -14,12 +14,11 @@ describe('OnboardingStepper', () => {
   it('should render correct steps', () => {
     mockedUseRouter.mockReturnValue({
       query: {
-        pathname: '/users/sign-in',
-        newAccount: true
+        pathname: '/users/sign-in'
       }
     } as unknown as NextRouter)
 
-    const { getByRole } = render(<OnboardingStepper />)
+    const { getByRole } = render(<OnboardingStepper variant="desktop" />)
 
     expect(
       getByRole('heading', { name: 'Create an account' })
@@ -35,18 +34,22 @@ describe('OnboardingStepper', () => {
   it('should indicate the active step based on pathname', () => {
     mockedUseRouter.mockReturnValue({
       query: {
-        pathname: '/users/sign-in',
-        newAccount: true
+        pathname: '/users/sign-in'
       }
     } as unknown as NextRouter)
 
-    const { getByTestId } = render(<OnboardingStepper />)
+    const { getByTestId } = render(<OnboardingStepper variant="desktop" />)
 
     expect(getByTestId('Create an account')).toBeInTheDocument()
   })
 
   it('should render mobile stepper', () => {
-    const { getByRole } = render(<OnboardingStepper />)
+    mockedUseRouter.mockReturnValue({
+      query: {
+        pathname: '/users/sign-in'
+      }
+    } as unknown as NextRouter)
+    const { getByRole } = render(<OnboardingStepper variant="mobile" />)
 
     expect(getByRole('progressbar')).toBeInTheDocument()
   })

@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -12,24 +11,13 @@ import { NextImage } from '@core/shared/ui/NextImage'
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
 import { useJourneyQuery } from '../../../../libs/useJourneyQuery'
 
-export function OnboardingTemplateCard(): ReactElement {
-  const router = useRouter()
+interface OnboardingTemplateCardProps {
+  templateId?: string
+}
 
-  function getTemplateId(): string | undefined {
-    const url = router.query.redirect as string | undefined
-    if (url == null) return
-
-    const redirect = decodeURIComponent(url)
-    const pathnameParts = redirect?.split('/')
-    if (redirect?.includes('templates') && pathnameParts != null) {
-      const idIndex = pathnameParts.indexOf('templates') + 1
-      const id = pathnameParts[idIndex]
-      return id.split('?')[0]
-    }
-  }
-
-  const templateId = getTemplateId()
-
+export function OnboardingTemplateCard({
+  templateId
+}: OnboardingTemplateCardProps): ReactElement {
   const { data } = useJourneyQuery({ id: templateId ?? '' })
 
   return (
