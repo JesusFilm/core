@@ -4,8 +4,10 @@ import { Injectable } from '@nestjs/common'
 import { Role } from '.prisma/api-journeys-client'
 import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 
+import { customDomainAcl } from '../../../modules/customDomain/customDomain.acl'
 import { hostAcl } from '../../../modules/host/host.acl'
 import { journeyAcl } from '../../../modules/journey/journey.acl'
+import { JourneyCollectionAcl } from '../../../modules/journeyCollection/journeyCollection.acl'
 import { journeyVisitorAcl } from '../../../modules/journeyVisitor/journeyVisitor.acl'
 import { teamAcl } from '../../../modules/team/team.acl'
 import { userInviteAcl } from '../../../modules/userInvite/userInvite.acl'
@@ -47,8 +49,10 @@ export class AppCaslFactory extends CaslFactory<Role> {
       createPrismaAbility
     )
     const acls = [
+      customDomainAcl,
       hostAcl,
       journeyAcl,
+      JourneyCollectionAcl,
       journeyVisitorAcl,
       teamAcl,
       userInviteAcl,

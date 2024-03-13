@@ -376,6 +376,7 @@ input CustomDomainCreateInput
 input CustomDomainUpdateInput
   @join__type(graph: JOURNEYS)
 {
+  id: ID!
   name: String
   allowOutsideJourneys: Boolean
   journeyCollectionId: String
@@ -761,6 +762,7 @@ type Journey
   team: Team
   strategySlug: String
   tags: [Tag!]!
+  journeyCollections: [JourneyCollection!]!
   userJourneys: [UserJourney!]
 }
 
@@ -859,6 +861,12 @@ input JourneysFilter
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
+
+  """
+  hostname filters journeys to those that belong to a team with a custom domain
+  matching the hostname.
+  """
+  hostname: String
 }
 
 enum JourneysReportType
@@ -1514,7 +1522,12 @@ type Query
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   adminJourney(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
-  journey(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
+
+  """
+  hostname is required if the journey being searched for belongs to a team with
+  a custom domain.
+  """
+  journey(id: ID!, idType: IdType, hostname: String): Journey! @join__field(graph: JOURNEYS)
   journeyCollection(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyCollections(teamId: ID!): [JourneyCollection]! @join__field(graph: JOURNEYS)
   getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)

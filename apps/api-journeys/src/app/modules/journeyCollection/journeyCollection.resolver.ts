@@ -1,3 +1,4 @@
+import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import {
   Args,
@@ -8,15 +9,18 @@ import {
   ResolveReference,
   Resolver
 } from '@nestjs/graphql'
+import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
 import { Journey, JourneyCollection } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
   CustomDomain,
   JourneyCollectionCreateInput,
   JourneyCollectionUpdateInput
 } from '../../__generated__/graphql'
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 import { CustomDomainService } from '../customDomain/customDomain.service'
@@ -51,33 +55,76 @@ export class JourneyCollectionResolver {
   @Mutation()
   @UseGuards(AppCaslGuard)
   async journeyCollectionCreate(
-    @Args('input') input: JourneyCollectionCreateInput
+    @Args('input') input: JourneyCollectionCreateInput,
+    @CaslAbility() ability: AppAbility
   ): Promise<JourneyCollection> {
-    let customDomain: CustomDomain | null = null
-    if (input.customDomain != null) {
-      customDomain = await this.customDomainService.customDomainCreate({
-        ...input.customDomain,
-        teamId: input.teamId
+    return await this.prismaService.$transaction(async (tx) => {
+      const collection = await tx.journeyCollection.create({
+        data: {
+          ...omit(input, ['teamId', 'customDomain']),
+          id: input.id ?? undefined,
+          team: { connect: { id: input.teamId } }
+        },
+        include: { team: { include: { userTeams: true } } }
       })
-    }
-    return await this.prismaService.journeyCollection.create({
-      data: {
-        ...omit(input, ['teamId', 'customDomain']),
-        id: input.id ?? undefined,
-        team: { connect: { id: input.teamId } },
-        customDomains:
-          customDomain != null
-            ? { connect: { id: customDomain.id } }
-            : undefined
+      if (
+        !ability.can(Action.Create, subject('JourneyCollection', collection))
+      ) {
+        throw new GraphQLError(
+          'user is not allowed to create journey collection',
+          {
+            extensions: { code: 'FORBIDDEN' }
+          }
+        )
       }
+      let customDomain: CustomDomain | null = null
+      if (input.customDomain != null) {
+        customDomain = await this.customDomainService.customDomainCreate(
+          {
+            ...input.customDomain,
+            teamId: input.teamId
+          },
+          ability
+        )
+        return await tx.journeyCollection.update({
+          where: { id: collection.id },
+          data: { customDomains: { connect: { id: customDomain.id } } },
+          include: { customDomains: true }
+        })
+      }
+      return collection
     })
   }
 
   @Mutation()
   @UseGuards(AppCaslGuard)
   async journeyCollectionDelete(
-    @Args('id') id: string
+    @Args('id') id: string,
+    @CaslAbility() ability: AppAbility
   ): Promise<JourneyCollection> {
+    const journeyCollection =
+      await this.prismaService.journeyCollection.findUnique({
+        where: { id },
+        include: { team: { include: { userTeams: true } } }
+      })
+    if (journeyCollection == null) {
+      throw new GraphQLError('journey collection not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+    if (
+      !ability.can(
+        Action.Delete,
+        subject('JourneyCollection', journeyCollection)
+      )
+    ) {
+      throw new GraphQLError(
+        'user is not allowed to delete journey collection',
+        {
+          extensions: { code: 'FORBIDDEN' }
+        }
+      )
+    }
     return await this.prismaService.journeyCollection.delete({
       where: { id }
     })
@@ -86,8 +133,32 @@ export class JourneyCollectionResolver {
   @Mutation()
   @UseGuards(AppCaslGuard)
   async journeyCollectionUpdate(
-    @Args('input') input: JourneyCollectionUpdateInput
+    @Args('input') input: JourneyCollectionUpdateInput,
+    @CaslAbility() ability: AppAbility
   ): Promise<JourneyCollection> {
+    const journeyCollection =
+      await this.prismaService.journeyCollection.findUnique({
+        where: { id: input.id },
+        include: { team: { include: { userTeams: true } } }
+      })
+    if (journeyCollection == null) {
+      throw new GraphQLError('journey collection not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+    if (
+      !ability.can(
+        Action.Update,
+        subject('JourneyCollection', journeyCollection)
+      )
+    ) {
+      throw new GraphQLError(
+        'user is not allowed to update journey collection',
+        {
+          extensions: { code: 'FORBIDDEN' }
+        }
+      )
+    }
     return await this.prismaService.journeyCollection.update({
       where: { id: input.id },
       data: {

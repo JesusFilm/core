@@ -470,6 +470,7 @@ export class CustomDomainCreateInput {
 }
 
 export class CustomDomainUpdateInput {
+    id: string;
     name?: Nullable<string>;
     allowOutsideJourneys?: Nullable<boolean>;
     journeyCollectionId?: Nullable<string>;
@@ -632,6 +633,7 @@ export class JourneysFilter {
     languageIds?: Nullable<string[]>;
     limit?: Nullable<number>;
     orderByRecent?: Nullable<boolean>;
+    hostname?: Nullable<string>;
 }
 
 export class JourneyCreateInput {
@@ -820,6 +822,7 @@ export class Journey {
     team?: Nullable<Team>;
     strategySlug?: Nullable<string>;
     tags: Tag[];
+    journeyCollections: JourneyCollection[];
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -842,7 +845,7 @@ export abstract class IQuery {
 
     abstract journeys(where?: Nullable<JourneysFilter>): Journey[] | Promise<Journey[]>;
 
-    abstract journey(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
+    abstract journey(id: string, idType?: Nullable<IdType>, hostname?: Nullable<string>): Journey | Promise<Journey>;
 
     abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
 
