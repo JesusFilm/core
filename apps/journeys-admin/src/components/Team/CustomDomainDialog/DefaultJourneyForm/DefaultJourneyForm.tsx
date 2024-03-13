@@ -33,6 +33,7 @@ export function DefaultJourneyForm({
           <Stack direction="row" justifyContent="space-between">
             <FormControl variant="filled" fullWidth hiddenLabel>
               <Select
+                data-testid="DefaultJourneySelect"
                 id="defaultJourney"
                 name="defaultJourney"
                 onChange={handleOnChange}

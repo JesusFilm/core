@@ -97,7 +97,10 @@ export function DialogUpdateForm({
             endAdornment:
               customDomains?.length !== 0 && customDomains != null ? (
                 <InputAdornment position="start">
-                  <IconButton onClick={async () => handleSubmit()}>
+                  <IconButton
+                    onClick={async () => handleSubmit()}
+                    data-testid="deleteCustomDomainIcon"
+                  >
                     <X3 />
                   </IconButton>
                 </InputAdornment>

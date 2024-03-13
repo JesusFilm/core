@@ -3,6 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
+import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables
@@ -10,8 +11,13 @@ import {
 import { GetCustomDomain } from '../../../../__generated__/GetCustomDomain'
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
+import { UpdateJourneyCollection } from '../../../../__generated__/UpdateJourneyCollection'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { defaultJourney } from '../../JourneyList/journeyListData'
+import {
+  defaultJourney,
+  publishedJourney
+} from '../../JourneyList/journeyListData'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -20,12 +26,20 @@ import {
 import {
   CREATE_CUSTOM_DOMAIN,
   CustomDomainDialog,
-  GET_CUSTOM_DOMAIN
+  DELETE_CUSTOM_DOMAIN,
+  GET_CUSTOM_DOMAIN,
+  JOURNEY_COLLECTION_CREATE,
+  UPDATE_JOURNEY_COLLECTION
 } from './CustomDomainDialog'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
+}))
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn(() => 'uuid')
 }))
 
 describe('CustomDomainDialog', () => {
@@ -44,7 +58,7 @@ describe('CustomDomainDialog', () => {
     },
     result: jest.fn(() => ({
       data: {
-        journeys: [defaultJourney]
+        journeys: [defaultJourney, publishedJourney]
       }
     }))
   }
@@ -63,38 +77,78 @@ describe('CustomDomainDialog', () => {
     }))
   }
 
-  // const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
-  //   request: {
-  //     query: GET_CUSTOM_DOMAIN,
-  //     variables: {
-  //       teamId: 'teamId'
-  //     }
-  //   },
-  //   result: jest.fn(() => ({
-  //     data: {
-  //       customDomains: [
-  //         {
-  //           __typename: 'CustomDomain',
-  //           name: 'mockdomain.com',
-  //           apexName: 'mockdomain.com',
-  //           allowOutsideJourneys: true,
-  //           id: 'customDomainId',
-  //           teamId: 'teamId',
-  //           verification: {
-  //             __typename: 'CustomDomainVerification',
-  //             verified: true,
-  //             verification: []
-  //           },
-  //           journeyCollection: {
-  //             __typename: 'JourneyCollection',
-  //             id: 'journeyCollectionId',
-  //             journeys: []
-  //           }
-  //         }
-  //       ]
-  //     }
-  //   }))
-  // }
+  const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
+    request: {
+      query: GET_CUSTOM_DOMAIN,
+      variables: {
+        teamId: 'teamId'
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        customDomains: [
+          {
+            __typename: 'CustomDomain',
+            name: 'mockdomain.com',
+            apexName: 'mockdomain.com',
+            allowOutsideJourneys: true,
+            id: 'customDomainId',
+            teamId: 'teamId',
+            verification: {
+              __typename: 'CustomDomainVerification',
+              verified: true,
+              verification: []
+            },
+            journeyCollection: {
+              __typename: 'JourneyCollection',
+              id: 'journeyCollectionId',
+              journeys: []
+            }
+          }
+        ]
+      }
+    }))
+  }
+
+  const getCustomDomainMockCNameAndJourneyCollection: MockedResponse<GetCustomDomain> =
+    {
+      request: {
+        query: GET_CUSTOM_DOMAIN,
+        variables: {
+          teamId: 'teamId'
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          customDomains: [
+            {
+              __typename: 'CustomDomain',
+              name: 'tandem.mockdomain.com',
+              apexName: 'mockdomain.com',
+              allowOutsideJourneys: true,
+              id: 'customDomainId',
+              teamId: 'teamId',
+              verification: {
+                __typename: 'CustomDomainVerification',
+                verified: true,
+                verification: []
+              },
+              journeyCollection: {
+                __typename: 'JourneyCollection',
+                id: 'journeyCollectionId',
+                journeys: [
+                  {
+                    __typename: 'Journey',
+                    id: 'journey-id',
+                    title: 'Default Journey Heading'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }))
+    }
 
   const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
     {
@@ -145,6 +199,88 @@ describe('CustomDomainDialog', () => {
     }))
   }
 
+  const mockDeleteCustomDomain: MockedResponse<DeleteCustomDomain> = {
+    request: {
+      query: DELETE_CUSTOM_DOMAIN,
+      variables: { customDomainDeleteId: 'customDomainId' }
+    },
+    result: jest.fn(() => ({
+      data: {
+        customDomainDelete: {
+          __typename: 'CustomDomain',
+          id: 'customDomainId'
+        }
+      }
+    }))
+  }
+
+  const mockJourneyCollectionCreate: MockedResponse<JourneyCollectionCreate> = {
+    request: {
+      query: JOURNEY_COLLECTION_CREATE,
+      variables: {
+        journeyCollectionInput: {
+          id: 'uuid',
+          teamId: 'teamId',
+          journeyIds: ['journey-id']
+        },
+        customDomainUpdateInput: {
+          journeyCollectionId: 'uuid'
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        journeyCollectionCreate: {
+          __typename: 'JourneyCollection',
+          id: 'journeyCollectionId',
+          journeys: [
+            {
+              __typename: 'Journey',
+              id: 'journey-id',
+              title: 'Default Journey Heading'
+            }
+          ]
+        },
+        customDomainUpdate: {
+          __typename: 'CustomDomain',
+          id: 'customDomainUpdate',
+          journeyCollection: {
+            __typename: 'JourneyCollection',
+            id: 'journeyCollectionId',
+            journeys: [
+              {
+                __typename: 'Journey',
+                id: 'journey-id',
+                title: 'Default Journey Heading'
+              }
+            ]
+          }
+        }
+      }
+    }))
+  }
+
+  const mockJourneyCollectionUpdate: MockedResponse<UpdateJourneyCollection> = {
+    request: {
+      query: UPDATE_JOURNEY_COLLECTION,
+      variables: {
+        input: {
+          id: 'journeyCollectionId',
+          journeyIds: ['published-journey-id']
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        journeyCollectionUpdate: {
+          __typename: 'JourneyCollection',
+          id: 'journeyCollectionId',
+          journeyIds: ['published-journey-id']
+        }
+      }
+    }))
+  }
+
   afterEach(() => {
     jest.clearAllMocks()
   })
@@ -175,6 +311,89 @@ describe('CustomDomainDialog', () => {
     fireEvent.click(getByText('Apply'))
     await waitFor(() =>
       expect(mockCreateCustomDomain.result).toHaveBeenCalled()
+    )
+  })
+
+  it('deletes a custom domain', async () => {
+    const { getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          getLastActiveTeamIdAndTeamsMock,
+          getAdminJourneysMock,
+          mockDeleteCustomDomain,
+          getCustomDomainMockARecord
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <CustomDomainDialog open onClose={onClose} />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
+    )
+
+    fireEvent.click(getByTestId('deleteCustomDomainIcon'))
+    await waitFor(() =>
+      expect(mockDeleteCustomDomain.result).toHaveBeenCalled()
+    )
+  })
+
+  it('creates a default journey for domain when selecting a new one', async () => {
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          getLastActiveTeamIdAndTeamsMock,
+          getAdminJourneysMock,
+          getCustomDomainMockARecord,
+          mockJourneyCollectionCreate
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <CustomDomainDialog open onClose={onClose} />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
+    )
+    fireEvent.mouseDown(getByRole('button', { expanded: false }))
+    fireEvent.click(getByRole('option', { name: 'Default Journey Heading' }))
+    await waitFor(() =>
+      expect(mockJourneyCollectionCreate.result).toHaveBeenCalled()
+    )
+  })
+
+  it('updates a default journey for domain if one already exists', async () => {
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          getLastActiveTeamIdAndTeamsMock,
+          getAdminJourneysMock,
+          getCustomDomainMockCNameAndJourneyCollection,
+          mockJourneyCollectionUpdate
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <CustomDomainDialog open onClose={onClose} />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(
+        getCustomDomainMockCNameAndJourneyCollection.result
+      ).toHaveBeenCalled()
+    )
+    fireEvent.mouseDown(getByRole('button', { expanded: false }))
+    fireEvent.click(getByRole('option', { name: 'Published Journey Heading' }))
+    await waitFor(() =>
+      expect(mockJourneyCollectionUpdate.result).toHaveBeenCalled()
     )
   })
 })
