@@ -16,6 +16,7 @@ input CustomDomainCreateInput {
 }
 
 input CustomDomainUpdateInput {
+  id: ID!
   name: String
   allowOutsideJourneys: Boolean
   journeyCollectionId: String

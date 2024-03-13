@@ -1,5 +1,7 @@
+import { subject } from '@casl/ability'
 import { Injectable } from '@nestjs/common'
 import FormData from 'form-data'
+import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 
@@ -10,6 +12,7 @@ import {
   CustomDomainVerification,
   VercelDomainVerification
 } from '../../__generated__/graphql'
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
 interface VercelResponse {
@@ -87,26 +90,36 @@ export class CustomDomainService {
   }
 
   async customDomainCreate(
-    input: CustomDomainCreateInput
+    input: CustomDomainCreateInput,
+    ability: AppAbility
   ): Promise<CustomDomain & { verification: CustomDomainVerification }> {
-    const vercelResult = await this.addVercelDomain(input.name)
-    const customDomain = await this.prismaService.customDomain.create({
-      data: {
-        ...omit(input, ['teamId', 'journeyCollectionId']),
-        apexName: vercelResult.apexName,
-        allowOutsideJourneys: input.allowOutsideJourneys ?? undefined,
-        team: { connect: { id: input.teamId } },
-        journeyCollection: {
-          connect: { id: input.journeyCollectionId ?? undefined }
+    return await this.prismaService.$transaction(async (tx) => {
+      const vercelResult = await this.addVercelDomain(input.name)
+      const customDomain = await tx.customDomain.create({
+        data: {
+          ...omit(input, ['teamId', 'journeyCollectionId']),
+          apexName: vercelResult.apexName,
+          allowOutsideJourneys: input.allowOutsideJourneys ?? undefined,
+          team: { connect: { id: input.teamId } },
+          journeyCollection: {
+            connect: { id: input.journeyCollectionId ?? undefined }
+          }
+        },
+        include: { team: { include: { userTeams: true } } }
+      })
+      if (!ability.can(Action.Create, subject('CustomDomain', customDomain))) {
+        await this.deleteVercelDomain(customDomain.name)
+        throw new GraphQLError('user is not allowed to create custom domain', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      }
+      return {
+        ...customDomain,
+        verification: {
+          verified: vercelResult.verified,
+          verification: vercelResult.verification
         }
       }
     })
-    return {
-      ...customDomain,
-      verification: {
-        verified: vercelResult.verified,
-        verification: vercelResult.verification
-      }
-    }
   }
 }

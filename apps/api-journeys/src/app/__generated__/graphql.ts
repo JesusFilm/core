@@ -470,6 +470,7 @@ export class CustomDomainCreateInput {
 }
 
 export class CustomDomainUpdateInput {
+    id: string;
     name?: Nullable<string>;
     allowOutsideJourneys?: Nullable<boolean>;
     journeyCollectionId?: Nullable<string>;
@@ -821,6 +822,7 @@ export class Journey {
     team?: Nullable<Team>;
     strategySlug?: Nullable<string>;
     tags: Tag[];
+    journeyCollections: JourneyCollection[];
     userJourneys?: Nullable<UserJourney[]>;
 }
 

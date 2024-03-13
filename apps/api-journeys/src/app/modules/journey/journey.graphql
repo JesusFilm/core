@@ -29,6 +29,7 @@ type Journey @key(fields: "id") {
   team: Team
   strategySlug: String
   tags: [Tag!]!
+  journeyCollections: [JourneyCollection!]!
 }
 
 enum IdType {

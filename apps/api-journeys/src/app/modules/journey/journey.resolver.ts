@@ -201,6 +201,13 @@ export class JourneyResolver {
         }
       }))
     }
+    if (where?.hostname != null) {
+      filter.journeyCollections = {
+        some: { customDomains: { some: { name: where.hostname } } }
+      }
+    } else {
+      filter.journeyCollections = { none: {} }
+    }
     if (where?.languageIds != null)
       filter.languageId = { in: where?.languageIds }
 
@@ -226,6 +233,13 @@ export class JourneyResolver {
   ): Promise<Journey | null> {
     const filter: Prisma.JourneyWhereUniqueInput =
       idType === IdType.slug ? { slug: id } : { id }
+    if (hostname != null) {
+      filter.journeyCollections = {
+        some: { customDomains: { some: { name: hostname } } }
+      }
+    } else {
+      filter.journeyCollections = { none: {} }
+    }
     const journey = await this.prismaService.journey.findUnique({
       where: filter
     })
@@ -924,5 +938,22 @@ export class JourneyResolver {
     id: string
   }): Promise<Journey | null> {
     return await this.journey(reference.id, IdType.databaseId)
+  }
+
+  @ResolveField()
+  async journeyCollections(
+    @Parent() parent: Journey
+  ): Promise<Array<{ __typename: 'JourneyCollection'; id: string }>> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id: parent.id },
+      include: { journeyCollections: { select: { id: true } } }
+    })
+
+    return (
+      journey?.journeyCollections.map(({ id }) => ({
+        __typename: 'JourneyCollection',
+        id
+      })) ?? []
+    )
   }
 }
