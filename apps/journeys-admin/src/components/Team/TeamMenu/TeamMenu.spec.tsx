@@ -179,7 +179,7 @@ describe('TeamMenu', () => {
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Custom Domain' }))
     await waitFor(() =>
-      expect(getByText('Custom Domain Settings')).toBeInTheDocument()
+      expect(getByText('Domain Settings')).toBeInTheDocument()
     )
     fireEvent.click(getByTestId('dialog-close-button'))
   })
