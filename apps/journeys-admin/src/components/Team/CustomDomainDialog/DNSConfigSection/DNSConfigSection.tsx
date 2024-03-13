@@ -1,6 +1,9 @@
-import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import Table from '@mui/material/Table'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -78,127 +81,194 @@ export function DNSConfigSection({
           </Stack>
         </Stack>
         <Stack spacing={4}>
-          {verified && (
-            <Stack direction="row" sx={{ width: '100%' }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  border: '2px solid',
-                  borderColor: 'divider',
-                  color: 'secondary.light',
-                  p: 4,
-                  width: '33%',
-                  wordBreak: 'break-all'
-                }}
-              >
-                {apexName === name ? t('A') : t('CNAME')}
-              </Box>
-              <Box
-                sx={{
-                  borderTop: '2px solid',
-                  borderBottom: '2px solid',
-                  borderColor: 'divider',
-                  color: 'secondary.light',
-                  p: 4,
-                  width: '33%',
-                  wordBreak: 'break-all'
-                }}
-              >
-                <Typography>{apexName}</Typography>
-              </Box>
-              <Box
-                sx={{
-                  border: '2px solid',
-                  borderColor: 'divider',
-                  color: 'secondary.light',
-                  pl: 4,
-                  width: '33%',
-                  wordBreak: 'break-all'
-                }}
-              >
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  height="100%"
-                  justifyContent="space-between"
-                >
-                  {apexName === name
-                    ? t('76.76.21.21')
-                    : t('cname.vercel-dns.com')}
-
-                  <IconButton
-                    onClick={async () => await handleCopyClick('76.76.21.21')}
-                    aria-label="Copy"
-                  >
-                    <CopyLeft />
-                  </IconButton>
-                </Stack>
-              </Box>
-            </Stack>
+          {domainError == null && (
+            <>
+              <TableContainer sx={{ display: { xs: 'none', sm: 'block' } }}>
+                <Table>
+                  <TableRow>
+                    <TableCell
+                      align="left"
+                      sx={{ border: '2px solid ', borderColor: 'divider' }}
+                    >
+                      {apexName === name ? t('A') : t('CNAME')}
+                    </TableCell>
+                    <TableCell
+                      align="left"
+                      sx={{ border: '2px solid ', borderColor: 'divider' }}
+                    >
+                      {apexName}
+                    </TableCell>
+                    <TableCell
+                      align="left"
+                      sx={{ border: '2px solid ', borderColor: 'divider' }}
+                    >
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                      >
+                        {apexName === name
+                          ? t('76.76.21.21')
+                          : t('cname.vercel-dns.com')}
+                        <IconButton
+                          onClick={async () =>
+                            await handleCopyClick('76.76.21.21')
+                          }
+                          aria-label="Copy"
+                        >
+                          <CopyLeft />
+                        </IconButton>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                </Table>
+              </TableContainer>
+              <TableContainer sx={{ display: { xs: 'block', sm: 'none' } }}>
+                <Table>
+                  <TableRow>
+                    <TableCell
+                      align="left"
+                      sx={{ border: '2px solid ', borderColor: 'divider' }}
+                    >
+                      {apexName === name ? t('A') : t('CNAME')}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell
+                      align="left"
+                      sx={{ border: '2px solid ', borderColor: 'divider' }}
+                    >
+                      {apexName}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell
+                      align="left"
+                      sx={{ border: '2px solid ', borderColor: 'divider' }}
+                    >
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                      >
+                        {apexName === name
+                          ? t('76.76.21.21')
+                          : t('cname.vercel-dns.com')}
+                        <IconButton
+                          onClick={async () =>
+                            await handleCopyClick('76.76.21.21')
+                          }
+                          aria-label="Copy"
+                        >
+                          <CopyLeft />
+                        </IconButton>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                </Table>
+              </TableContainer>
+            </>
           )}
+
           {!verified && domainError != null && (
-            <Stack direction="row" sx={{ width: '100%' }}>
-              <Box
-                sx={{
-                  border: '2px solid',
-                  borderColor: 'divider',
-                  color: 'secondary.light',
-                  p: 4,
-                  width: '33%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  wordBreak: 'break-all'
-                }}
-              >
-                {domainError.type}
-              </Box>
-              <Box
-                sx={{
-                  borderTop: '2px solid',
-                  borderBottom: '2px solid',
-                  borderColor: 'divider',
-                  color: 'secondary.light',
-                  p: 4,
-                  width: '33%',
-                  wordBreak: 'break-all',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                {domainError.domain?.replace('_vercel.', '')}
-              </Box>
-              <Box
-                sx={{
-                  border: '2px solid',
-                  borderColor: 'divider',
-                  color: 'secondary.light',
-                  pl: 4,
-                  width: '33%',
-                  wordBreak: 'break-all'
-                }}
-              >
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  height="100%"
-                  justifyContent="space-between"
-                  sx={{ wordBreak: 'break-all' }}
+            <>
+              <TableContainer sx={{ display: { xs: 'none', sm: 'block' } }}>
+                <Table
+                  sx={{
+                    tableLayout: 'fixed',
+                    width: '100%',
+                    overflowWrap: 'anywhere'
+                  }}
                 >
-                  {domainError.value}
-                  <IconButton
-                    onClick={async () =>
-                      await handleCopyClick(
-                        domainError != null ? domainError.value : ''
-                      )
-                    }
-                    aria-label="Copy"
-                  >
-                    <CopyLeft />
-                  </IconButton>
-                </Stack>
-              </Box>
-            </Stack>
+                  <TableRow>
+                    <TableCell
+                      align="left"
+                      sx={{ border: '2px solid ', borderColor: 'divider' }}
+                    >
+                      {domainError.type}
+                    </TableCell>
+                    <TableCell
+                      align="left"
+                      sx={{ border: '2px solid ', borderColor: 'divider' }}
+                    >
+                      {domainError.domain?.replace('_vercel.', '')}
+                    </TableCell>
+                    <TableCell
+                      align="left"
+                      sx={{ border: '2px solid ', borderColor: 'divider' }}
+                    >
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                      >
+                        {domainError.value}
+                        <IconButton
+                          onClick={async () =>
+                            await handleCopyClick(
+                              domainError != null ? domainError.value : ''
+                            )
+                          }
+                          aria-label="Copy"
+                        >
+                          <CopyLeft />
+                        </IconButton>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                </Table>
+              </TableContainer>
+              <TableContainer sx={{ display: { xs: 'block', sm: 'none' } }}>
+                <Table
+                  sx={{
+                    tableLayout: 'fixed',
+                    width: '100%',
+                    overflowWrap: 'anywhere'
+                  }}
+                >
+                  <TableRow>
+                    <TableCell
+                      align="left"
+                      sx={{ border: '2px solid ', borderColor: 'divider' }}
+                    >
+                      {domainError.type}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell
+                      align="left"
+                      sx={{ border: '2px solid ', borderColor: 'divider' }}
+                    >
+                      {domainError.domain?.replace('_vercel.', '')}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell
+                      align="left"
+                      sx={{ border: '2px solid ', borderColor: 'divider' }}
+                    >
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                      >
+                        {domainError.value}
+                        <IconButton
+                          onClick={async () =>
+                            await handleCopyClick(
+                              domainError != null ? domainError.value : ''
+                            )
+                          }
+                          aria-label="Copy"
+                        >
+                          <CopyLeft />
+                        </IconButton>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                </Table>
+              </TableContainer>
+            </>
           )}
         </Stack>
       </Stack>
