@@ -306,6 +306,10 @@ export interface CustomDomainUpdateInput {
   journeyCollectionId?: string | null;
 }
 
+export interface CreateVerificationRequestInput {
+  redirect?: string | null;
+}
+
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
@@ -446,6 +450,10 @@ export interface LinkActionInput {
   gtmEventName?: string | null;
   url: string;
   target?: string | null;
+}
+
+export interface MeInput {
+  redirect?: string | null;
 }
 
 export interface NavigateActionInput {
