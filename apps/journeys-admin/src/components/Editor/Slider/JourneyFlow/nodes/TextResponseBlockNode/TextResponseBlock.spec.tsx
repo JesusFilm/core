@@ -17,7 +17,7 @@ import '../../../../../../../test/i18n'
 
 import { TextResponseBlockNode } from './TextResponseBlockNode'
 
-describe('TextResponseBlock', () => {
+describe('TextResponseBlockNode', () => {
   beforeEach(() => {
     mockReactFlow()
   })
