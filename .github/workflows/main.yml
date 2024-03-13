@@ -47,8 +47,6 @@ jobs:
           restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
-      - uses: browser-actions/setup-chrome@v1
-        id: setup-chrome
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -56,8 +54,7 @@ jobs:
           all: true
           parallel: 1
         env:
-          PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
-          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
+          DISABLE_ERD: true
       - name: NPM apollo and graphql for codegen
         run: npm i -g apollo graphql @apollo/rover@0.22.0
       - name: Codegen
