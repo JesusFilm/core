@@ -14,17 +14,15 @@ export function HostInfo({ onClose }: HostInfoTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ p: 4, pb: 0 }}
-      >
-        <Button variant="outlined" size="small" onClick={onClose}>
+      <Stack sx={{ p: 4 }}>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={onClose}
+          sx={{ maxWidth: 45, mb: 4 }}
+        >
           {t('Back')}
         </Button>
-      </Stack>
-      <Stack sx={{ p: 4 }}>
         <Stack direction="row" alignItems="center" gap={3} sx={{ mb: 4 }}>
           <UserProfileCircleIcon />
           <Typography variant="subtitle2">
