@@ -26,8 +26,6 @@ export function OnboardingStepper(): ReactElement {
     let step: number
     switch (path) {
       case '/users/sign-in':
-        step = 0
-        break
       case '/users/verify':
         step = 0
         break
@@ -67,7 +65,7 @@ export function OnboardingStepper(): ReactElement {
     }
   ]
 
-  const OnboardingStepIcon = ({
+  const OnboardingStepperIcon = ({
     active,
     completed,
     stepLabel
@@ -101,7 +99,7 @@ export function OnboardingStepper(): ReactElement {
     )
   }
 
-  const OnboardingStepConnector = (): ReactNode => {
+  const OnboardingStepperConnector = (): ReactNode => {
     return (
       <StepConnector
         sx={{
@@ -145,11 +143,19 @@ export function OnboardingStepper(): ReactElement {
             <Stepper
               activeStep={activeStep}
               orientation="vertical"
-              sx={{ px: 2 }}
+              connector={<OnboardingStepperConnector />}
             >
               {steps.map((step) => (
                 <Step key={step.label}>
-                  <StepLabel>
+                  <StepLabel
+                    StepIconComponent={(props) => (
+                      <OnboardingStepperIcon
+                        {...props}
+                        stepLabel={step.label}
+                      />
+                    )}
+                    sx={{ p: 0, py: 1 }}
+                  >
                     <Typography variant="subtitle2">{step.label}</Typography>
                   </StepLabel>
                 </Step>
