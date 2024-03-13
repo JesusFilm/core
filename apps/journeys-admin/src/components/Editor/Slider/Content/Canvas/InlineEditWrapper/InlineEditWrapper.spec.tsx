@@ -21,6 +21,7 @@ import { TypographyFields } from '../../../../../../../__generated__/TypographyF
 import { SelectableWrapper } from '../SelectableWrapper'
 
 import { InlineEditWrapper } from '.'
+import { Snackbar } from '@mui/material'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -68,18 +69,20 @@ describe('InlineEditWrapper', () => {
   it('should edit typography on double click', async () => {
     const { getByDisplayValue, getByText, getByTestId } = render(
       <MockedProvider>
-        <EditorProvider
-          initialState={{
-            steps: [step(typographyBlock)],
-            activeFab: ActiveFab.Add
-          }}
-        >
-          <SelectableWrapper block={typographyBlock}>
-            <InlineEditWrapper block={typographyBlock}>
-              <Typography {...typographyBlock} />
-            </InlineEditWrapper>
-          </SelectableWrapper>
-        </EditorProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step(typographyBlock)],
+              activeFab: ActiveFab.Add
+            }}
+          >
+            <SelectableWrapper block={typographyBlock}>
+              <InlineEditWrapper block={typographyBlock}>
+                <Typography {...typographyBlock} />
+              </InlineEditWrapper>
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -114,18 +117,20 @@ describe('InlineEditWrapper', () => {
 
     const { getByDisplayValue, getByText, getByTestId } = render(
       <MockedProvider>
-        <EditorProvider
-          initialState={{
-            steps: [step(block)],
-            activeFab: ActiveFab.Add
-          }}
-        >
-          <SelectableWrapper block={block}>
-            <InlineEditWrapper block={block}>
-              <Button {...block} />
-            </InlineEditWrapper>
-          </SelectableWrapper>
-        </EditorProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step(block)],
+              activeFab: ActiveFab.Add
+            }}
+          >
+            <SelectableWrapper block={block}>
+              <InlineEditWrapper block={block}>
+                <Button {...block} />
+              </InlineEditWrapper>
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -261,19 +266,21 @@ describe('InlineEditWrapper', () => {
     it('should show add option when radio question selected', async () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <EditorProvider
-            initialState={{
-              steps: [step(block)],
-              activeFab: ActiveFab.Add,
-              selectedBlock: step(block)
-            }}
-          >
-            <SelectableWrapper block={block}>
-              <InlineEditWrapper block={block}>
-                {radioQuestion}
-              </InlineEditWrapper>
-            </SelectableWrapper>
-          </EditorProvider>
+          <SnackbarProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step(block)],
+                activeFab: ActiveFab.Add,
+                selectedBlock: step(block)
+              }}
+            >
+              <SelectableWrapper block={block}>
+                <InlineEditWrapper block={block}>
+                  {radioQuestion}
+                </InlineEditWrapper>
+              </SelectableWrapper>
+            </EditorProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
 
@@ -289,15 +296,17 @@ describe('InlineEditWrapper', () => {
     it('should show add option when radio option selected', async () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <EditorProvider
-            initialState={{
-              steps: [step(block)],
-              activeFab: ActiveFab.Save,
-              selectedBlock: step(block).children[0]
-            }}
-          >
-            {radioQuestion}
-          </EditorProvider>
+          <SnackbarProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step(block)],
+                activeFab: ActiveFab.Save,
+                selectedBlock: step(block).children[0]
+              }}
+            >
+              {radioQuestion}
+            </EditorProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
       fireEvent.click(getByText('option'))
@@ -314,15 +323,17 @@ describe('InlineEditWrapper', () => {
     it('should edit radio option label on double click', async () => {
       const { getByDisplayValue, getByText, getByTestId } = render(
         <MockedProvider>
-          <EditorProvider
-            initialState={{
-              steps: [step(block)],
-              activeFab: ActiveFab.Save,
-              selectedBlock: step(block).children[0]
-            }}
-          >
-            {radioQuestion}
-          </EditorProvider>
+          <SnackbarProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step(block)],
+                activeFab: ActiveFab.Save,
+                selectedBlock: step(block).children[0]
+              }}
+            >
+              {radioQuestion}
+            </EditorProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
       fireEvent.click(getByText('option'))
