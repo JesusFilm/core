@@ -1,4 +1,5 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
+import Divider from '@mui/material/Divider'
 import { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
@@ -17,6 +18,7 @@ import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain
 import { GetCustomDomain } from '../../../../__generated__/GetCustomDomain'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
+import { UpdateJourneyCollection } from '../../../../__generated__/UpdateJourneyCollection'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { useTeam } from '../TeamProvider'
 
@@ -73,6 +75,22 @@ export const CREATE_CUSTOM_DOMAIN = gql`
           value
         }
       }
+      journeyCollection {
+        id
+        journeys {
+          id
+          title
+        }
+      }
+    }
+  }
+`
+
+export const UPDATE_JOURNEY_COLLECTION = gql`
+  mutation UpdateJourneyCollection($input: JourneyCollectionUpdateInput!) {
+    journeyCollectionUpdate(input: $input) {
+      id
+      journeyIds
     }
   }
 `
@@ -120,7 +138,7 @@ export function CustomDomainDialog({
   })
 
   const { activeTeam } = useTeam()
-  const { data: customDomainData } = useQuery<GetCustomDomain>(
+  const { data: customDomainData, loading } = useQuery<GetCustomDomain>(
     GET_CUSTOM_DOMAIN,
     {
       variables: { teamId: activeTeam?.id }
@@ -129,6 +147,10 @@ export function CustomDomainDialog({
 
   const [createCustomDomain] =
     useMutation<CreateCustomDomain>(CREATE_CUSTOM_DOMAIN)
+
+  const [updateJourneyCollection] = useMutation<UpdateJourneyCollection>(
+    UPDATE_JOURNEY_COLLECTION
+  )
 
   const [deleteCustomDomain] =
     useMutation<DeleteCustomDomain>(DELETE_CUSTOM_DOMAIN)
@@ -163,20 +185,32 @@ export function CustomDomainDialog({
         variables: {
           input: {
             name: value.domainName,
-            defaultJourneysOnly: true,
             teamId: activeTeam?.id
           }
         }
       })
     }
-    enqueueSnackbar('Custom domain updated', {
+    enqueueSnackbar(t('Custom domain updated'), {
       variant: 'success',
       preventDuplicate: false
     })
   }
 
   async function handleOnChange(e: SelectChangeEvent): Promise<void> {
-    if (e.target.value != null) {
+    if (
+      customDomainData?.customDomains[0]?.journeyCollection?.journeys
+        ?.length !== 0 &&
+      customDomainData?.customDomains[0]?.journeyCollection?.journeys != null
+    ) {
+      await updateJourneyCollection({
+        variables: {
+          input: {
+            journeyIds: [e.target.value],
+            id: customDomainData?.customDomains[0].journeyCollection.id
+          }
+        }
+      })
+    } else {
       const id = uuidv4()
       await journeyCollectionCreate({
         variables: {
@@ -190,7 +224,7 @@ export function CustomDomainDialog({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar('Custom domain updated', {
+          enqueueSnackbar(t('Default journey set'), {
             variant: 'success',
             preventDuplicate: false
           })
@@ -219,17 +253,20 @@ export function CustomDomainDialog({
           onClose={onClose}
           divider
           dialogTitle={{
-            title: t('Custom Domain Settings'),
+            title: t('Domain Settings'),
             closeButton: true
           }}
           fullscreen={!smUp}
-          loading={isSubmitting}
+          loading={isSubmitting || loading}
+          sx={{ '& .MuiDialogContent-dividers': { px: 6, py: 9 } }}
         >
           <Form>
             <Stack spacing={10}>
               <DialogUpdateForm
                 customDomains={customDomainData?.customDomains}
               />
+              {customDomainData?.customDomains?.length !== 0 &&
+                customDomainData?.customDomains != null && <Divider />}
               {customDomainData?.customDomains?.length !== 0 &&
                 customDomainData?.customDomains != null &&
                 customDomainData?.customDomains[0]?.verification?.verified ===

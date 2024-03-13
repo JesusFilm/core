@@ -381,6 +381,12 @@ export interface JourneyCollectionCreateInput {
   customDomain?: CustomDomainCreateInput | null;
 }
 
+export interface JourneyCollectionUpdateInput {
+  id: string;
+  title?: string | null;
+  journeyIds?: (string | null)[] | null;
+}
+
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
 }

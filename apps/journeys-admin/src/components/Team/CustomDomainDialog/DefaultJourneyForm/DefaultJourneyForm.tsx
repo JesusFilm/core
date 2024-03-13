@@ -6,6 +6,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import Computer from '@core/shared/ui/icons/Computer'
+
 import { GetAdminJourneys_journeys as Journeys } from '../../../../../__generated__/GetAdminJourneys'
 import { GetCustomDomain_customDomains as CustomDomains } from '../../../../../__generated__/GetCustomDomain'
 
@@ -24,22 +26,29 @@ export function DefaultJourneyForm({
 
   return (
     <Stack spacing={4}>
-      <Typography variant="subtitle1">{t('Default Journey')}</Typography>
-      <Stack direction="row" justifyContent="space-between">
-        <FormControl variant="filled" fullWidth hiddenLabel>
-          <Select
-            id="defaultJourney"
-            name="defaultJourney"
-            onChange={handleOnChange}
-            defaultValue={customDomains[0]?.journeyCollection?.journeys[0]?.id}
-          >
-            {journeys?.map((journey) => (
-              <MenuItem value={journey.id} key={journey.id}>
-                {journey.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <Stack direction="row" spacing={3}>
+        <Computer />
+        <Stack spacing={4} width="100%">
+          <Typography variant="subtitle1">{t('Default Journey')}</Typography>
+          <Stack direction="row" justifyContent="space-between">
+            <FormControl variant="filled" fullWidth hiddenLabel>
+              <Select
+                id="defaultJourney"
+                name="defaultJourney"
+                onChange={handleOnChange}
+                defaultValue={
+                  customDomains[0]?.journeyCollection?.journeys[0]?.id
+                }
+              >
+                {journeys?.map((journey) => (
+                  <MenuItem value={journey.id} key={journey.id}>
+                    {journey.title}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
+        </Stack>
       </Stack>
     </Stack>
   )

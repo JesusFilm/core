@@ -61,16 +61,19 @@ const getCustomDomainMockVerifiedFalse: MockedResponse<GetCustomDomain> = {
           allowOutsideJourneys: true,
           id: 'customDomainId',
           teamId: 'teamId',
-          verified: false,
-          verification: [
-            {
-              __typename: 'VercelDomainVerification',
-              type: 'TXT',
-              domain: '_vercel.mockdomain.com',
-              value: 'vc-domain-verify=mockdomain.com,61eb769fc89e3d03578a',
-              reason: ''
-            }
-          ],
+          verification: {
+            __typename: 'CustomDomainVerification',
+            verified: false,
+            verification: [
+              {
+                __typename: 'VercelDomainVerification',
+                type: 'TXT',
+                domain: '_vercel.mockdomain.com',
+                value: 'vc-domain-verify=mockdomain.com,61eb769fc89e3d03578a',
+                reason: ''
+              }
+            ]
+          },
           journeyCollection: {
             __typename: 'JourneyCollection',
             id: 'journeyCollectionId',
@@ -99,16 +102,11 @@ const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
           allowOutsideJourneys: true,
           id: 'customDomainId',
           teamId: 'teamId',
-          verified: true,
-          verification: [
-            {
-              __typename: 'VercelDomainVerification',
-              type: 'TXT',
-              domain: '_vercel.mockdomain.com',
-              value: 'vc-domain-verify=mockdomain.com,61eb769fc89e3d03578a',
-              reason: ''
-            }
-          ],
+          verification: {
+            __typename: 'CustomDomainVerification',
+            verified: true,
+            verification: []
+          },
           journeyCollection: {
             __typename: 'JourneyCollection',
             id: 'journeyCollectionId',
@@ -137,16 +135,11 @@ const getCustomDomainMockCName: MockedResponse<GetCustomDomain> = {
           allowOutsideJourneys: true,
           id: 'customDomainId',
           teamId: 'teamId',
-          verified: true,
-          verification: [
-            {
-              __typename: 'VercelDomainVerification',
-              type: 'TXT',
-              domain: '_vercel.mockdomain.com',
-              value: 'vc-domain-verify=mockdomain.com,61eb769fc89e3d03578a',
-              reason: ''
-            }
-          ],
+          verification: {
+            __typename: 'CustomDomainVerification',
+            verified: true,
+            verification: []
+          },
           journeyCollection: {
             __typename: 'JourneyCollection',
             id: 'journeyCollectionId',
@@ -200,7 +193,7 @@ export const Default = {
   }
 }
 
-export const StatusFailed = {
+export const WithTXT = {
   ...Template,
   parameters: {
     apolloClient: {
@@ -213,7 +206,7 @@ export const StatusFailed = {
   }
 }
 
-export const WithARECORD = {
+export const WithA = {
   ...Template,
   parameters: {
     apolloClient: {

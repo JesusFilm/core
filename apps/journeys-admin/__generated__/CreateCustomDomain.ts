@@ -23,6 +23,18 @@ export interface CreateCustomDomain_customDomainCreate_verification {
   verification: (CreateCustomDomain_customDomainCreate_verification_verification | null)[] | null;
 }
 
+export interface CreateCustomDomain_customDomainCreate_journeyCollection_journeys {
+  __typename: "Journey";
+  id: string;
+  title: string;
+}
+
+export interface CreateCustomDomain_customDomainCreate_journeyCollection {
+  __typename: "JourneyCollection";
+  id: string;
+  journeys: (CreateCustomDomain_customDomainCreate_journeyCollection_journeys | null)[];
+}
+
 export interface CreateCustomDomain_customDomainCreate {
   __typename: "CustomDomain";
   id: string;
@@ -30,6 +42,7 @@ export interface CreateCustomDomain_customDomainCreate {
   name: string;
   allowOutsideJourneys: boolean;
   verification: CreateCustomDomain_customDomainCreate_verification | null;
+  journeyCollection: CreateCustomDomain_customDomainCreate_journeyCollection | null;
 }
 
 export interface CreateCustomDomain {
