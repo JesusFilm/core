@@ -8,7 +8,8 @@ generator client {
 }
 
 generator erd {
-  provider = "prisma-erd-generator"
+  provider    = "prisma-erd-generator"
+  ignoreEnums = true
 }
 
 datasource db {
