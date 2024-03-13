@@ -52,7 +52,7 @@ const HostForm = dynamic(
 )
 
 export function HostTab(): ReactElement {
-  const [selectHostBox, setSelectHostBox] = useState(true)
+  const [openHostSelection, setOpenHostSelection] = useState(true)
   const [openHostList, setOpenHostList] = useState(false)
   const [openHostForm, setOpenHostForm] = useState(false)
   const [openHostInfo, setOpenHostInfo] = useState(false)
@@ -94,63 +94,58 @@ export function HostTab(): ReactElement {
     if (journey?.id == null) return
     if (journey?.team != null)
       await getAllTeamHosts({ variables: { teamId: journey.team.id } })
-    setOpenHostList(false)
-    setOpenHostForm(false)
     await journeyHostUpdate({
       variables: { id: journey?.id, input: { hostId: null } }
     })
-    setSelectHostBox(true)
+    handleSelection('selection')
   }
 
-  async function handleOpenHostForm(): Promise<void> {
-    if (journey?.id == null) return
-    await journeyHostUpdate({
-      variables: { id: journey?.id, input: { hostId: null } }
-    })
+  function handleSelection(
+    selection: 'selection' | 'list' | 'form' | 'info'
+  ): void {
+    resetStates()
+    switch (selection) {
+      case 'selection':
+        setOpenHostSelection(true)
+        break
+      case 'list':
+        setOpenHostList(true)
+        break
+      case 'form':
+        setOpenHostForm(true)
+        break
+      case 'info':
+        setOpenHostInfo(true)
+        break
+    }
+  }
+
+  function resetStates(): void {
+    setOpenHostSelection(false)
     setOpenHostList(false)
-    setOpenHostForm(true)
+    setOpenHostForm(false)
+    setOpenHostInfo(false)
   }
 
   return (
     <>
-      {selectHostBox && (
+      {openHostSelection && (
         <HostSelection
           data={data}
           userInTeam={userInTeam}
-          setSelectHostBox={setSelectHostBox}
-          setOpenHostForm={setOpenHostForm}
-          setOpenHostList={setOpenHostList}
+          handleSelection={handleSelection}
         />
       )}
       {openHostList && (
-        <HostList
-          teamHosts={teamHosts}
-          handleOpenHostInfo={() => {
-            setOpenHostList(false)
-            setOpenHostInfo(true)
-          }}
-          handleOpenHostForm={handleOpenHostForm}
-          handleSelectHost={() => {
-            setOpenHostList(false)
-            setSelectHostBox(true)
-          }}
-        />
+        <HostList teamHosts={teamHosts} handleSelection={handleSelection} />
       )}
 
-      {openHostInfo && (
-        <HostInfo
-          onClose={() => {
-            setOpenHostInfo(false)
-            setOpenHostList(true)
-          }}
-        />
-      )}
+      {openHostInfo && <HostInfo handleSelection={handleSelection} />}
       {openHostForm && (
         <HostForm
           onClear={handleClear}
           onBack={() => {
-            setOpenHostForm(false)
-            setOpenHostList(true)
+            handleSelection('list')
           }}
         />
       )}

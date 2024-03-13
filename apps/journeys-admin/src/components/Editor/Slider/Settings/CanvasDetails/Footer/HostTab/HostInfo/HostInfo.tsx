@@ -7,10 +7,10 @@ import { ReactElement } from 'react'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 
 interface HostInfoTabProps {
-  onClose: () => void
+  handleSelection: (value: string) => void
 }
 
-export function HostInfo({ onClose }: HostInfoTabProps): ReactElement {
+export function HostInfo({ handleSelection }: HostInfoTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
@@ -18,7 +18,7 @@ export function HostInfo({ onClose }: HostInfoTabProps): ReactElement {
         <Button
           variant="outlined"
           size="small"
-          onClick={onClose}
+          onClick={() => handleSelection('list')}
           sx={{ maxWidth: 45, mb: 4 }}
         >
           {t('Back')}

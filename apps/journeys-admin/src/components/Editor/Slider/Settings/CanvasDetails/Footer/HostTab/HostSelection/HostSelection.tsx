@@ -14,17 +14,13 @@ import { ContainedIconButton } from '../../../../../../../ContainedIconButton'
 interface HostSelectionProps {
   data: GetUserTeamsAndInvites | undefined
   userInTeam: boolean
-  setSelectHostBox: (value: boolean) => void
-  setOpenHostForm: (value: boolean) => void
-  setOpenHostList: (value: boolean) => void
+  handleSelection: (value: string) => void
 }
 
 export function HostSelection({
   data,
   userInTeam,
-  setSelectHostBox,
-  setOpenHostForm,
-  setOpenHostList
+  handleSelection
 }: HostSelectionProps): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
@@ -47,8 +43,7 @@ export function HostSelection({
               )
             }}
             onClick={() => {
-              setSelectHostBox(false)
-              setOpenHostForm(true)
+              handleSelection('form')
             }}
             actionIcon={<Edit2Icon />}
           />
@@ -62,8 +57,7 @@ export function HostSelection({
               ImageThumbnail: <HostAvatars size="large" hasPlaceholder />
             }}
             onClick={() => {
-              setSelectHostBox(false)
-              setOpenHostList(true)
+              handleSelection('list')
             }}
           />
         </Stack>

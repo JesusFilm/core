@@ -16,16 +16,12 @@ import { HostListItem } from './HostListItem'
 
 interface HostListProps {
   teamHosts?: GetAllTeamHosts
-  handleOpenHostInfo: () => void
-  handleOpenHostForm: () => void
-  handleSelectHost: () => void
+  handleSelection: (value: string) => void
 }
 
 export function HostList({
   teamHosts,
-  handleOpenHostInfo,
-  handleOpenHostForm,
-  handleSelectHost
+  handleSelection
 }: HostListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -39,7 +35,7 @@ export function HostList({
         variables: { id: journey?.id, input: { hostId } }
       })
       if (data != null) {
-        handleSelectHost()
+        handleSelection('selection')
       }
     }
   }
@@ -54,11 +50,15 @@ export function HostList({
       >
         <Stack direction="row" alignItems="center">
           <Typography variant="subtitle2">{t('Hosts')}</Typography>
-          <IconButton onClick={handleOpenHostInfo}>
+          <IconButton onClick={() => handleSelection('info')}>
             <InformationCircleContainedIcon />
           </IconButton>
         </Stack>
-        <Button variant="outlined" size="small" onClick={handleOpenHostForm}>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => handleSelection('form')}
+        >
           {t('Create New')}
         </Button>
       </Stack>
