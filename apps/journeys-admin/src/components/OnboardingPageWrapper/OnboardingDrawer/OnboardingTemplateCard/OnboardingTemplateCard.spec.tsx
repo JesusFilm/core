@@ -2,13 +2,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
-import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
+import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../__generated__/globalTypes'
-import { GET_JOURNEY } from '../../../libs/useJourneyQuery/useJourneyQuery'
+} from '../../../../../__generated__/globalTypes'
+import { GET_JOURNEY } from '../../../../libs/useJourneyQuery/useJourneyQuery'
 
 import { OnboardingTemplateCard } from './OnboardingTemplateCard'
 

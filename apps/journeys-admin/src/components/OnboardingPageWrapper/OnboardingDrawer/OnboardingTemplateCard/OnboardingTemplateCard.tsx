@@ -9,8 +9,8 @@ import { ReactElement } from 'react'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
-import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
-import { useJourneyQuery } from '../../../libs/useJourneyQuery'
+import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
+import { useJourneyQuery } from '../../../../libs/useJourneyQuery'
 
 export function OnboardingTemplateCard(): ReactElement {
   const router = useRouter()

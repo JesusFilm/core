@@ -3,8 +3,9 @@ import Image from 'next/image'
 import { ReactElement } from 'react'
 
 import logo from '../../../../public/logo.svg'
-import { OnboardingStepper } from '../OnboardingStepper'
-import { OnboardingTemplateCard } from '../OnboardingTemplateCard/OnboardingTemplateCard'
+
+import { OnboardingStepper } from './OnboardingStepper'
+import { OnboardingTemplateCard } from './OnboardingTemplateCard/OnboardingTemplateCard'
 
 export function OnboardingDrawer(): ReactElement {
   return (

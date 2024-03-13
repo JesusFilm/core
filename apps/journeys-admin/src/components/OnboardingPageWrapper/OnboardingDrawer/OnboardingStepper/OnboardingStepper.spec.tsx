@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
 import { OnboardingStepper } from './OnboardingStepper'
-import { NextRouter, useRouter } from 'next/router'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -14,7 +14,8 @@ describe('OnboardingStepper', () => {
   it('should render correct steps', () => {
     mockedUseRouter.mockReturnValue({
       query: {
-        pathname: '/users/sign-in'
+        pathname: '/users/sign-in',
+        newAccount: true
       }
     } as unknown as NextRouter)
 
@@ -34,7 +35,8 @@ describe('OnboardingStepper', () => {
   it('should indicate the active step based on pathname', () => {
     mockedUseRouter.mockReturnValue({
       query: {
-        pathname: '/users/sign-in'
+        pathname: '/users/sign-in',
+        newAccount: true
       }
     } as unknown as NextRouter)
 
