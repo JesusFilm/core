@@ -13,8 +13,9 @@ import {
   ThemeName
 } from '../../../../../../__generated__/globalTypes'
 
-import { GoalsList } from './GoalsList'
-import '../../../../test/i18n'
+import { Goals } from '.'
+
+import '../../../../../../test/i18n'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -150,7 +151,7 @@ describe('GoalsList', () => {
   it('should render placeholder', () => {
     const { getByText } = render(
       <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <GoalsList goals={[]} />
+        <Goals />
       </JourneyProvider>
     )
     expect(getByText('Every Journey has a goal')).toBeInTheDocument()
@@ -159,7 +160,7 @@ describe('GoalsList', () => {
   it('should render a list of actions', () => {
     const { getByText, getAllByText, getAllByTestId } = render(
       <JourneyProvider
-        value={{
+        value={{  
           journey: {
             ...journey,
             blocks
@@ -167,19 +168,19 @@ describe('GoalsList', () => {
           variant: 'admin'
         }}
       >
-        <GoalsList goals={[]} />
+        <Goals />
       </JourneyProvider>
     )
     expect(getByText('The Journey Goals')).toBeInTheDocument()
 
     expect(getAllByText('https://m.me/some_user')[0]).toBeInTheDocument()
-    expect(getAllByText('Start a Conversation')).toHaveLength(2)
+    expect(getByText('Start a Conversation')).toBeInTheDocument()
 
     expect(getAllByText('https://www.bible.com/')[0]).toBeInTheDocument()
-    expect(getAllByText('Link to Bible')).toHaveLength(2)
+    expect(getByText('Link to Bible')).toBeInTheDocument()
 
     expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
-    expect(getAllByText('Visit a Website')).toHaveLength(2)
+    expect(getByText('Visit a Website')).toBeInTheDocument()
 
     expect(getAllByTestId('Edit2Icon')).toHaveLength(3)
   })
