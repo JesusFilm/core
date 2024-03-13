@@ -48,7 +48,7 @@ export function DialogUpdateForm({
           </Stack>
           <Typography variant="body2">
             {t(
-              `Use your own domain rather than 'your.nextstep.is' streamlines domain verification for ads, keeps our tool discreet (at a very basic level), and assists in bypassing certain reigonal blocks`
+              `Using your own domain rather than 'your.nextstep.is' streamlines domain verification for ads, keeps our tool discreet (at a very basic level), and assists in bypassing certain reigonal blocks`
             )}
           </Typography>
         </Stack>
