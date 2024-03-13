@@ -65,8 +65,9 @@ export function OnboardingStepper(): ReactElement {
 
   const OnboardingStepIcon = ({
     active,
-    completed
-  }: StepIconProps): ReactNode => {
+    completed,
+    stepLabel
+  }: StepIconProps & { stepLabel: string }): ReactNode => {
     return (
       <Box
         sx={{
@@ -82,10 +83,11 @@ export function OnboardingStepper(): ReactElement {
       >
         {active === true && (
           <Circle
+            data-testid={stepLabel}
             sx={{
               color: 'background.paper',
               backgroundColor: 'background.paper',
-              scale: '20%',
+              transform: 'scale(0.2)',
               borderRadius: '100%',
               position: 'absolute'
             }}
@@ -142,7 +144,9 @@ export function OnboardingStepper(): ReactElement {
           {steps.map((step) => (
             <Step key={step.label}>
               <StepLabel
-                StepIconComponent={OnboardingStepIcon}
+                StepIconComponent={(props) => (
+                  <OnboardingStepIcon {...props} stepLabel={step.label} />
+                )}
                 sx={{ p: 0, py: 1 }}
               >
                 <Typography variant="subtitle2">{step.label}</Typography>
