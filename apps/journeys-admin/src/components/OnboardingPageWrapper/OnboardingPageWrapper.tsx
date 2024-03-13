@@ -72,8 +72,7 @@ export function OnboardingPageWrapper({
               borderRadius: 2,
               borderBottomLeftRadius: { xs: 0, sm: 8 },
               borderBottomRightRadius: { xs: 0, sm: 8 },
-              width: { xs: '100vw', sm: 397 },
-              maxWidth: { xs: '100%', sm: 397 }
+              width: { xs: '100vw', sm: 397 }
             }}
           >
             <CardContent

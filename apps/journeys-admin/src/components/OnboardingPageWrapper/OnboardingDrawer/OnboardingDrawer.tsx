@@ -17,6 +17,7 @@ export function OnboardingDrawer(): ReactElement {
         mt: { xs: 5, md: 10 },
         mb: { xs: 5, md: 0 }
       }}
+      data-testid="OnboardingDrawer"
     >
       <Image src={logo} alt="Next Steps" height={26} width={168} />
       <Stack

@@ -120,8 +120,7 @@ function OnboardingTemplateCardDetails({
           whiteSpace: 'noWrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          color: (theme) => theme.palette.grey[700],
-          display: { xs: 'box', md: 'none' }
+          color: (theme) => theme.palette.grey[700]
         }}
       >
         {t('Journey Template')}
