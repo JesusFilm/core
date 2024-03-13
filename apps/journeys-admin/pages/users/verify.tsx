@@ -126,29 +126,23 @@ function ValidateEmail({
         {({ values, handleChange, handleBlur, errors, touched }) => (
           <Form noValidate autoComplete="off" data-testid="EmailInviteForm">
             <Stack textAlign="center">
-              <Typography variant="h4">{t('Verify Your Email')}</Typography>
-              <Typography variant="body1">
-                {t('To start making NextSteps journeys')}
-              </Typography>
-              <Paper sx={{ padding: '30px', mt: 7, borderRadius: '8px' }}>
-                <Stack textAlign="left" spacing={4}>
-                  <Typography variant="subtitle2">{email}</Typography>
-                  <Typography variant="body1">
-                    {t(
-                      'Email has been sent to this address with a link to verify your account. If you have not received the email after a few minutes, please check your spam folder.'
-                    )}
-                  </Typography>
-                  <Button
-                    onClick={handleResendValidationEmail}
-                    variant="contained"
-                    disabled={disableResendButton}
-                    color="secondary"
-                    fullWidth
-                  >
-                    {t('Resend Validation Email')}
-                  </Button>
-                </Stack>
-              </Paper>
+              <Stack textAlign="left" spacing={4}>
+                <Typography variant="subtitle2">{email}</Typography>
+                <Typography variant="body1">
+                  {t(
+                    'Email has been sent to this address with a link to verify your account. If you have not received the email after a few minutes, please check your spam folder.'
+                  )}
+                </Typography>
+                <Button
+                  onClick={handleResendValidationEmail}
+                  variant="contained"
+                  disabled={disableResendButton}
+                  color="secondary"
+                  fullWidth
+                >
+                  {t('Resend Validation Email')}
+                </Button>
+              </Stack>
               <Accordion
                 sx={{
                   mt: 7,
