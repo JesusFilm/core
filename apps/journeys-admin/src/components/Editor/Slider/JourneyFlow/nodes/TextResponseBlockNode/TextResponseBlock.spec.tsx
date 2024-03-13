@@ -22,7 +22,7 @@ describe('TextResponseBlockNode', () => {
     mockReactFlow()
   })
 
-  const mockTextResponseBlock = {
+  const mockTextResponseBlock: TreeBlock<TextResponseBlock> = {
     __typename: 'TextResponseBlock',
     id: 'TextResponseBlock.id',
     parentBlockId: 'CardBlock.id',
@@ -34,9 +34,9 @@ describe('TextResponseBlockNode', () => {
     submitIconId: null,
     action: null,
     children: []
-  } satisfies TreeBlock<TextResponseBlock>
+  }
 
-  const mockStep = {
+  const mockStep: TreeBlock<StepBlock> = {
     __typename: 'StepBlock',
     id: 'StepBlock.id',
     locked: false,
@@ -57,7 +57,7 @@ describe('TextResponseBlockNode', () => {
         children: [mockTextResponseBlock]
       }
     ]
-  } satisfies TreeBlock<StepBlock>
+  }
 
   const defaultProps = {
     id: mockTextResponseBlock.id,
