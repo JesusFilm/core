@@ -293,6 +293,10 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface CreateVerificationRequestInput {
+  redirect?: string | null;
+}
+
 export interface CustomDomainCreateInput {
   teamId: string;
   name: string;
@@ -304,10 +308,6 @@ export interface CustomDomainUpdateInput {
   name?: string | null;
   allowOutsideJourneys?: boolean | null;
   journeyCollectionId?: string | null;
-}
-
-export interface CreateVerificationRequestInput {
-  redirect?: string | null;
 }
 
 export interface EmailActionInput {
