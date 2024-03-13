@@ -21,7 +21,6 @@ import { TypographyFields } from '../../../../../../../__generated__/TypographyF
 import { SelectableWrapper } from '../SelectableWrapper'
 
 import { InlineEditWrapper } from '.'
-import { Snackbar } from '@mui/material'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
