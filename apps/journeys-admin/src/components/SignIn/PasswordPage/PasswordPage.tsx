@@ -29,7 +29,6 @@ export function PasswordPage({
     event.preventDefault()
   }
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
   const validationSchema = object().shape({
     email: string()
       .trim()
@@ -41,13 +40,6 @@ export function PasswordPage({
   async function handleLogin(values, { setFieldError }): Promise<void> {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password)
-      const redirect =
-        router.query.redirect != null
-          ? new URL(
-              `${window.location.origin}${router.query.redirect as string}`
-            )
-          : '/'
-      await router.push(redirect)
     } catch (error) {
       if (error.code === 'auth/wrong-password') {
         setFieldError(
