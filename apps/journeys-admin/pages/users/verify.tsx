@@ -30,6 +30,7 @@ import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrappe
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { useTeam } from '../../src/components/Team/TeamProvider'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 
 interface ValidateEmailProps {
   email?: string
@@ -74,6 +75,8 @@ function ValidateEmail({
       variables: { input: { redirect: router?.query?.redirect } }
     }
   )
+
+  useHandleNewAccountRedirect()
 
   const validationSchema = object().shape({
     token: number().min(100000).max(999999).required(t('Required'))

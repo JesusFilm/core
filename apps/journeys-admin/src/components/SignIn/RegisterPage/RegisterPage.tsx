@@ -17,13 +17,17 @@ import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
 import { object, string } from 'yup'
 
+import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
 
 export function RegisterPage({
   setActivePage,
   userEmail
 }: PageProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [showPassword, setShowPassword] = React.useState(false)
+
+  useHandleNewAccountRedirect()
 
   const handleClickShowPassword = (): void => setShowPassword((show) => !show)
 
@@ -32,7 +36,6 @@ export function RegisterPage({
   ): void => {
     event.preventDefault()
   }
-  const { t } = useTranslation('apps-journeys-admin')
 
   const validationSchema = object().shape({
     email: string()
@@ -49,6 +52,7 @@ export function RegisterPage({
       .required(t('Enter your password'))
       .min(6, t('Password must be at least 6 characters long'))
   })
+
   async function createAccountAndSignIn(
     email: string,
     name: string,
@@ -65,6 +69,7 @@ export function RegisterPage({
     })
     await signInWithEmailAndPassword(auth, email, password)
   }
+
   async function handleCreateAccount(values, { setFieldError }): Promise<void> {
     try {
       await createAccountAndSignIn(values.email, values.name, values.password)

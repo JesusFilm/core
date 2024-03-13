@@ -16,8 +16,12 @@ import Circle from '@core/shared/ui/icons/Circle'
 export function OnboardingStepper(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
+  const onboarding =
+    router.query.newAccount != null
+      ? true
+      : router.query.redirect?.includes('newAccount')
 
-  function getCurrentStep(): number {
+  function getActiveStep(): number {
     const path = router.pathname
     let step: number
     switch (path) {
@@ -43,7 +47,7 @@ export function OnboardingStepper(): ReactElement {
     return step
   }
 
-  const currentStep = getCurrentStep()
+  const activeStep = getActiveStep()
 
   const steps = [
     {
@@ -123,54 +127,53 @@ export function OnboardingStepper(): ReactElement {
   }
 
   return (
-    <Box
-      sx={{
-        width: { xs: '100%', md: 244 },
-        px: { lg: 3 },
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center'
-      }}
-    >
-      <Stack gap={6} sx={{ display: { xs: 'none', md: 'flex' } }}>
-        <Typography variant="h6">
-          {t(`Let's get you on the journey`)}
-        </Typography>
-        <Stepper
-          activeStep={currentStep}
-          orientation="vertical"
-          connector={<OnboardingStepConnector />}
+    <>
+      {onboarding === true && (
+        <Box
+          sx={{
+            width: { xs: '100%', md: 244 },
+            px: { lg: 3 },
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}
         >
-          {steps.map((step) => (
-            <Step key={step.label}>
-              <StepLabel
-                StepIconComponent={(props) => (
-                  <OnboardingStepIcon {...props} stepLabel={step.label} />
-                )}
-                sx={{ p: 0, py: 1 }}
-              >
-                <Typography variant="subtitle2">{step.label}</Typography>
-              </StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-      </Stack>
-      <MobileStepper
-        variant="progress"
-        steps={steps.length}
-        position="static"
-        activeStep={currentStep === 0 ? currentStep + 0.5 : currentStep}
-        backButton={null}
-        nextButton={null}
-        sx={{
-          display: { xs: 'flex', md: 'none' },
-          width: '100%',
-          p: 0,
-          '& .MuiLinearProgress-root': {
-            width: '100%'
-          }
-        }}
-      />
-    </Box>
+          <Stack gap={6} sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Typography variant="h6">
+              {t(`Let's get you on the journey`)}
+            </Typography>
+            <Stepper
+              activeStep={activeStep}
+              orientation="vertical"
+              sx={{ px: 2 }}
+            >
+              {steps.map((step) => (
+                <Step key={step.label}>
+                  <StepLabel>
+                    <Typography variant="subtitle2">{step.label}</Typography>
+                  </StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Stack>
+          <MobileStepper
+            variant="progress"
+            steps={steps.length}
+            position="static"
+            activeStep={activeStep === 0 ? activeStep + 0.5 : activeStep}
+            backButton={null}
+            nextButton={null}
+            sx={{
+              display: { xs: 'flex', md: 'none' },
+              width: '100%',
+              p: 0,
+              '& .MuiLinearProgress-root': {
+                width: '100%'
+              }
+            }}
+          />
+        </Box>
+      )}
+    </>
   )
 }
