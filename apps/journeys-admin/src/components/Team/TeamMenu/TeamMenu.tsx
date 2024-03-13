@@ -45,7 +45,7 @@ const DynamicTeamManageDialog = dynamic(
 )
 
 export function TeamMenu(): ReactElement {
-  const { customDomain } = useFlags()
+  const flags = useFlags()
 
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
@@ -94,7 +94,7 @@ export function TeamMenu(): ReactElement {
           onClose={() => setTeamManageOpen(false)}
         />
       )}
-      {customDomainOpen != null && customDomain && (
+      {customDomainOpen != null && flags.customDomain && (
         <CustomDomainDialog
           open={customDomainOpen}
           onClose={() => setCustomDomainOpen(false)}
@@ -145,7 +145,7 @@ export function TeamMenu(): ReactElement {
             setAnchorEl(null)
           }}
         />
-        {customDomain && (
+        {flags.customDomain && (
           <MenuItem
             disabled={activeTeam == null}
             key="custom-domain"
