@@ -1,5 +1,7 @@
 # Databases
 
+## About
+
 Our Microservices use [PostgreSQL](https://www.postgresql.org/) as their Database. In Typescript we make use of [Prisma](https://www.prisma.io/) as our ORM or or Object Relational Mapper to connect with the PostgreSQL Database. Prisma provides the best experience for us to work and interact with databases. Even complex things like connection pooling, caching, real-time database subscriptions are a breeze with Prisma.
 
 In development we run a [PostgreSQL Docker Container](https://hub.docker.com/_/postgres) alongside your Dev Container. From your Dev Container you are able to connect to `postgres@db:5432` to access the PostgreSQL DB instance.
@@ -8,28 +10,30 @@ In Production we leverage [Amazon Aurora PostgreSQL](https://docs.aws.amazon.com
 
 It is important to note that in development we run one Database instance with per microservice databases inside, however, in production each instance is host to a single microservice database instance and can only be accessed via a single microservice.
 
-What follows is the most up to date Entity Relationship Diagram. These are generated automatically when running `nx run api-*:prisma-generate`.
+## Entity Relationship Diagrams (ERD)
 
-## API Journeys
+What follows is the most up to date Entity Relationship Diagrams ([main branch](https://github.com/JesusFilm/core)). These are generated automatically when running `nx run api-*:prisma-generate` from your Dev Container.
+
+### API Journeys
 
 ![API Journeys ERD](https://raw.githubusercontent.com/JesusFilm/core/24-02-TN-feat-generate-erd/apps/api-journeys/db/ERD.svg)
 
-## API Languages
+### API Languages
 
 ![API Languages ERD](https://raw.githubusercontent.com/JesusFilm/core/24-02-TN-feat-generate-erd/apps/api-languages/db/ERD.svg)
 
-## API Media
+### API Media
 
 ![API Media ERD](https://raw.githubusercontent.com/JesusFilm/core/24-02-TN-feat-generate-erd/apps/api-media/db/ERD.svg)
 
-## API Tags
+### API Tags
 
 ![API Tags ERD](https://raw.githubusercontent.com/JesusFilm/core/24-02-TN-feat-generate-erd/apps/api-tags/db/ERD.svg)
 
-## API Users
+### API Users
 
 ![API Users ERD](https://raw.githubusercontent.com/JesusFilm/core/24-02-TN-feat-generate-erd/apps/api-users/db/ERD.svg)
 
-## API Videos
+### API Videos
 
 ![API Videos ERD](https://raw.githubusercontent.com/JesusFilm/core/24-02-TN-feat-generate-erd/apps/api-videos/db/ERD.svg)
