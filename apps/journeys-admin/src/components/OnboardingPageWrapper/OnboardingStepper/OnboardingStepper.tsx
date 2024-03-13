@@ -2,12 +2,16 @@ import Box from '@mui/material/Box'
 import MobileStepper from '@mui/material/MobileStepper'
 import Stack from '@mui/material/Stack'
 import Step from '@mui/material/Step'
+import StepConnector from '@mui/material/StepConnector'
+import { StepIconProps } from '@mui/material/StepIcon'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
+
+import Circle from '@core/shared/ui/icons/Circle'
 
 export function OnboardingStepper(): ReactElement {
   const router = useRouter()
@@ -21,16 +25,16 @@ export function OnboardingStepper(): ReactElement {
         step = 0
         break
       case '/users/verify':
-        step = 1
+        step = 0
         break
       case '/users/terms-and-conditions':
-        step = 2
+        step = 1
         break
       case '/onboarding-form':
-        step = 3
+        step = 2
         break
       case '/teams/new':
-        step = 4
+        step = 3
         break
       default:
         step = 0
@@ -43,21 +47,78 @@ export function OnboardingStepper(): ReactElement {
 
   const steps = [
     {
-      label: t('Sign up or Log in')
-    },
-    {
-      label: t('Verify your account')
+      label: t('Create an account')
     },
     {
       label: t('Terms and Conditions')
     },
     {
-      label: t('Final Details')
+      label: t('User Insights')
     },
     {
       label: t('Create a Team')
+    },
+    {
+      label: t('Journey Begins')
     }
   ]
+
+  const OnboardingStepIcon = ({
+    active,
+    completed
+  }: StepIconProps): ReactNode => {
+    return (
+      <Box
+        sx={{
+          height: 24,
+          width: 24,
+          borderRadius: '100%',
+          backgroundColor:
+            completed === true || active === true
+              ? 'primary.main'
+              : 'background.default',
+          position: 'relative'
+        }}
+      >
+        {active === true && (
+          <Circle
+            sx={{
+              color: 'background.paper',
+              backgroundColor: 'background.paper',
+              scale: '20%',
+              borderRadius: '100%',
+              position: 'absolute'
+            }}
+          />
+        )}
+      </Box>
+    )
+  }
+
+  const OnboardingStepConnector = (): ReactNode => {
+    return (
+      <StepConnector
+        sx={{
+          marginLeft: '10.5px',
+          '&.Mui-active': {
+            '& .MuiStepConnector-line': {
+              borderColor: 'primary.main'
+            }
+          },
+          '&.Mui-completed': {
+            '& .MuiStepConnector-line': {
+              borderColor: 'primary.main'
+            }
+          },
+          '& .MuiStepConnector-line': {
+            borderColor: 'background.default',
+            borderLeftWidth: 2.5,
+            minHeight: '32px'
+          }
+        }}
+      />
+    )
+  }
 
   return (
     <Box
@@ -73,10 +134,17 @@ export function OnboardingStepper(): ReactElement {
         <Typography variant="h6">
           {t(`Let's get you on the journey`)}
         </Typography>
-        <Stepper activeStep={currentStep} orientation="vertical" sx={{ px: 2 }}>
+        <Stepper
+          activeStep={currentStep}
+          orientation="vertical"
+          connector={<OnboardingStepConnector />}
+        >
           {steps.map((step) => (
             <Step key={step.label}>
-              <StepLabel>
+              <StepLabel
+                StepIconComponent={OnboardingStepIcon}
+                sx={{ p: 0, py: 1 }}
+              >
                 <Typography variant="subtitle2">{step.label}</Typography>
               </StepLabel>
             </Step>
