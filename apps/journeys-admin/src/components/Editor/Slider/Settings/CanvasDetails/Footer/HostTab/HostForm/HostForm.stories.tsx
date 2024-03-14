@@ -2,20 +2,19 @@ import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
-import { isArguments } from 'lodash'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../../__generated__/GetAllTeamHosts'
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import { DRAWER_WIDTH } from '../../../../../../constants'
 
 import { HostForm } from './HostForm'
 
 const Demo: Meta<typeof HostForm> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: HostForm,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab/HostForm'
 }
