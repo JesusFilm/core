@@ -359,7 +359,6 @@ type CustomDomain
   teamId: String!
   name: String!
   apexName: String!
-  allowOutsideJourneys: Boolean!
   journeyCollection: JourneyCollection
   verification: CustomDomainVerification
 }
@@ -369,7 +368,6 @@ input CustomDomainCreateInput
 {
   teamId: String!
   name: String!
-  allowOutsideJourneys: Boolean
   journeyCollectionId: String
 }
 
@@ -378,7 +376,6 @@ input CustomDomainUpdateInput
 {
   id: ID!
   name: String
-  allowOutsideJourneys: Boolean
   journeyCollectionId: String
 }
 
@@ -772,9 +769,8 @@ type JourneyCollection
   id: ID!
   team: Team!
   title: String
-  customDomains: [CustomDomain]!
-  journeyIds: [String!]!
-  journeys: [Journey]!
+  customDomains: [CustomDomain!]
+  journeys: [Journey!]
 }
 
 input JourneyCollectionCreateInput
@@ -783,7 +779,7 @@ input JourneyCollectionCreateInput
   id: ID
   teamId: String!
   title: String
-  journeyIds: [String]
+  journeyIds: [String!]
   customDomain: CustomDomainCreateInput
 }
 
@@ -792,7 +788,7 @@ input JourneyCollectionUpdateInput
 {
   id: ID!
   title: String
-  journeyIds: [String]
+  journeyIds: [String!]
 }
 
 input JourneyCreateInput

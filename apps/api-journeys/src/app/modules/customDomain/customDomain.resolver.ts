@@ -77,7 +77,6 @@ export class CustomDomainResolver {
       data: {
         ...omit(input, 'journeyCollectionId'),
         name: input.name ?? undefined,
-        allowOutsideJourneys: input.allowOutsideJourneys ?? undefined,
         journeyCollection: {
           connect: { id: input.journeyCollectionId ?? undefined }
         }

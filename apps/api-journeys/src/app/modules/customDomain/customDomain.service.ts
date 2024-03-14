@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 
-import { CustomDomain } from '.prisma/api-journeys-client'
+import { CustomDomain, Prisma } from '.prisma/api-journeys-client'
 
 import {
   CustomDomainCreateInput,
@@ -95,16 +95,18 @@ export class CustomDomainService {
   ): Promise<CustomDomain & { verification: CustomDomainVerification }> {
     return await this.prismaService.$transaction(async (tx) => {
       const vercelResult = await this.addVercelDomain(input.name)
+      const data: Prisma.CustomDomainCreateInput = {
+        ...omit(input, ['teamId', 'journeyCollectionId']),
+        apexName: vercelResult.apexName,
+        team: { connect: { id: input.teamId } }
+      }
+      if (input.journeyCollectionId != null) {
+        data.journeyCollection = {
+          connect: { id: input.journeyCollectionId ?? undefined }
+        }
+      }
       const customDomain = await tx.customDomain.create({
-        data: {
-          ...omit(input, ['teamId', 'journeyCollectionId']),
-          apexName: vercelResult.apexName,
-          allowOutsideJourneys: input.allowOutsideJourneys ?? undefined,
-          team: { connect: { id: input.teamId } },
-          journeyCollection: {
-            connect: { id: input.journeyCollectionId ?? undefined }
-          }
-        },
+        data,
         include: { team: { include: { userTeams: true } } }
       })
       if (!ability.can(Action.Create, subject('CustomDomain', customDomain))) {

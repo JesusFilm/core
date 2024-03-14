@@ -20,19 +20,23 @@ CREATE TABLE "JourneyCollection" (
 );
 
 -- CreateTable
-CREATE TABLE "_JourneyToJourneyCollection" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL
+CREATE TABLE "JourneyCollectionJourneys" (
+    "id" TEXT NOT NULL,
+    "journeyCollectionId" TEXT NOT NULL,
+    "journeyId" TEXT NOT NULL,
+    "order" INTEGER NOT NULL,
+
+    CONSTRAINT "JourneyCollectionJourneys_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "CustomDomain_name_key" ON "CustomDomain"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_JourneyToJourneyCollection_AB_unique" ON "_JourneyToJourneyCollection"("A", "B");
+CREATE UNIQUE INDEX "JourneyCollectionJourneys_journeyCollectionId_journeyId_key" ON "JourneyCollectionJourneys"("journeyCollectionId", "journeyId");
 
 -- CreateIndex
-CREATE INDEX "_JourneyToJourneyCollection_B_index" ON "_JourneyToJourneyCollection"("B");
+CREATE UNIQUE INDEX "JourneyCollectionJourneys_journeyCollectionId_order_key" ON "JourneyCollectionJourneys"("journeyCollectionId", "order");
 
 -- AddForeignKey
 ALTER TABLE "CustomDomain" ADD CONSTRAINT "CustomDomain_journeyCollectionId_fkey" FOREIGN KEY ("journeyCollectionId") REFERENCES "JourneyCollection"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -44,7 +48,7 @@ ALTER TABLE "CustomDomain" ADD CONSTRAINT "CustomDomain_teamId_fkey" FOREIGN KEY
 ALTER TABLE "JourneyCollection" ADD CONSTRAINT "JourneyCollection_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_JourneyToJourneyCollection" ADD CONSTRAINT "_JourneyToJourneyCollection_A_fkey" FOREIGN KEY ("A") REFERENCES "Journey"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "JourneyCollectionJourneys" ADD CONSTRAINT "JourneyCollectionJourneys_journeyCollectionId_fkey" FOREIGN KEY ("journeyCollectionId") REFERENCES "JourneyCollection"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_JourneyToJourneyCollection" ADD CONSTRAINT "_JourneyToJourneyCollection_B_fkey" FOREIGN KEY ("B") REFERENCES "JourneyCollection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "JourneyCollectionJourneys" ADD CONSTRAINT "JourneyCollectionJourneys_journeyId_fkey" FOREIGN KEY ("journeyId") REFERENCES "Journey"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
