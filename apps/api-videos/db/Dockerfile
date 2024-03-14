@@ -1,5 +1,6 @@
 FROM node:18-alpine3.18
 
+ENV DISABLE_ERD=true
 ENV PRISMA_LOCATION_VIDEOS=/app/node_modules/.prisma/api-videos-client
 
 RUN apk upgrade --update-cache --available && \

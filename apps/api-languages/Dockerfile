@@ -2,6 +2,7 @@ FROM node:18-alpine3.18
 
 EXPOSE 4003
 
+ENV DISABLE_ERD=true
 ENV PRISMA_LOCATION_LANGUAGES=/app/node_modules/.prisma/api-languages-client
 
 RUN apk upgrade --update-cache --available && \

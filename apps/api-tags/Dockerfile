@@ -2,6 +2,7 @@ FROM node:18-alpine3.18
 
 EXPOSE 4006
 
+ENV DISABLE_ERD=true
 ENV PRISMA_LOCATION_TAGS=/app/node_modules/.prisma/api-tags-client
 
 RUN apk upgrade --update-cache --available && \

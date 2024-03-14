@@ -2,6 +2,7 @@ FROM node:18-alpine3.18
 
 EXPOSE 4005
 
+ENV DISABLE_ERD=true
 ENV PRISMA_LOCATION_MEDIA=/app/node_modules/.prisma/api-media-client
 
 RUN apk upgrade --update-cache --available && \

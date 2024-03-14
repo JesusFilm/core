@@ -2,6 +2,7 @@ FROM node:18-alpine3.18
 
 EXPOSE 4002
 
+ENV DISABLE_ERD=true
 ENV PRISMA_LOCATION_USERS=/app/node_modules/.prisma/api-users-client
 
 RUN apk upgrade --update-cache --available && \

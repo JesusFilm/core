@@ -1,5 +1,6 @@
 FROM node:18-alpine3.18
 
+ENV DISABLE_ERD=true
 ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
 
 RUN apk upgrade --update-cache --available && \
