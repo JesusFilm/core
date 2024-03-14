@@ -106,9 +106,13 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
     {
       field: 'keywords',
       headerName: 'Keywords',
-      flex: 2,
+      flex: 4,
       renderCell: ({ row }) => (
-        <Chip label={row.localizations?.[0]?.keywords} variant="outlined" />
+        <Stack direction="row" spacing={2}>
+          {row.localizations?.[0]?.keywords?.split(',')?.map((keyword) => (
+            <Chip key={keyword} label={keyword} variant="outlined" />
+          ))}
+        </Stack>
       )
     },
     {
