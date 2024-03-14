@@ -45,7 +45,7 @@ export function OnboardingDrawer(): ReactElement {
         my: { md: 10 },
         mx: { md: 20 },
         width: { xs: '100%', md: '37%' },
-        mb: { xs: templateId == null || newAccountQuery === true ? 0 : 5 }
+        mb: { xs: templateId == null ? 0 : 5 }
       }}
       data-testid="JourneysAdminOnboardingDrawer"
     >
@@ -58,7 +58,7 @@ export function OnboardingDrawer(): ReactElement {
           sx={{
             pt: 10,
             overflow: 'hidden',
-            aspectRatio: '1180/1340.16',
+            aspectRatio: '1200/1340.16',
             flexGrow: 1,
             display: { xs: 'none', md: 'flex' }
           }}
