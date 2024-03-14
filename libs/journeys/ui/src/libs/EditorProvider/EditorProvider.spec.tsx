@@ -1,16 +1,14 @@
-import { render } from '@testing-library/react'
-import { ReactElement } from 'react'
-
 import type { TreeBlock } from '../block'
 
 import {
-  ActiveJourneyEditContent,
-  EditorProvider,
-  reducer,
-  useEditor
+  ActiveCanvasDetailsDrawer,
+  ActiveContent,
+  ActiveSlide,
+  EditorState,
+  reducer
 } from './EditorProvider'
 
-import { ActiveFab, ActiveTab } from '.'
+import { ActiveFab } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -30,28 +28,28 @@ describe('EditorContext', () => {
           nextBlockId: null,
           children: []
         }
-        const state = {
+        const state: EditorState = {
           steps: [step],
-          drawerMobileOpen: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
         }
         expect(
           reducer(state, {
             type: 'SetSelectedStepAction',
-            step
+            selectedStep: step
           })
         ).toEqual({
           ...state,
           selectedStep: step,
           selectedBlock: step,
-          selectedComponent: undefined
+          active: undefined
         })
       })
     })
 
-    describe('SetSelectedComponentAction', () => {
+    describe('SetactiveCanvasDetailsDrawerAction', () => {
       it('should set selected component', () => {
         const block: TreeBlock = {
           id: 'step0.id',
@@ -63,21 +61,21 @@ describe('EditorContext', () => {
           children: []
         }
 
-        const state = {
+        const state: EditorState = {
           steps: [block],
-          drawerMobileOpen: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Edit,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
         }
         expect(
           reducer(state, {
-            type: 'SetSelectedComponentAction',
-            component: 'Footer'
+            type: 'SetActiveCanvasDetailsDrawerAction',
+            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
           })
         ).toEqual({
           ...state,
-          selectedComponent: 'Footer',
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
           selectedBlock: undefined
         })
       })
@@ -94,22 +92,21 @@ describe('EditorContext', () => {
           nextBlockId: null,
           children: []
         }
-        const state = {
+        const state: EditorState = {
           steps: [block],
-          drawerMobileOpen: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Edit,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
         }
         expect(
           reducer(state, {
             type: 'SetSelectedBlockAction',
-            block
+            selectedBlock: block
           })
         ).toEqual({
           ...state,
-          selectedBlock: block,
-          selectedComponent: undefined
+          selectedBlock: block
         })
       })
     })
@@ -137,22 +134,22 @@ describe('EditorContext', () => {
           nextBlockId: null,
           children: [block]
         }
-        const state = {
+        const state: EditorState = {
           steps: [step],
-          drawerMobileOpen: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
           activeFab: ActiveFab.Edit,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
         }
         expect(
           reducer(state, {
             type: 'SetSelectedBlockByIdAction',
-            id: 'card0.id'
+            selectedBlockId: 'card0.id'
           })
         ).toEqual({
           ...state,
           selectedBlock: block,
-          selectedComponent: undefined
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
         })
       })
 
@@ -178,17 +175,17 @@ describe('EditorContext', () => {
           nextBlockId: null,
           children: [block]
         }
-        const state = {
+        const state: EditorState = {
           steps: [step],
-          drawerMobileOpen: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
         }
         expect(
           reducer(state, {
             type: 'SetSelectedBlockByIdAction',
-            id: 'card1.id'
+            selectedBlockId: 'card1.id'
           })
         ).toEqual({
           ...state,
@@ -197,12 +194,12 @@ describe('EditorContext', () => {
       })
 
       it('should set selected block to undefined when id is undefined', () => {
-        const state = {
+        const state: EditorState = {
           steps: [],
-          drawerMobileOpen: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeContent: ActiveContent.Canvas,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeSlide: ActiveSlide.JourneyFlow
         }
         expect(
           reducer(state, {
@@ -217,17 +214,17 @@ describe('EditorContext', () => {
 
     describe('SetSelectedAttributeIdAction', () => {
       it('should set selected attribute id', () => {
-        const state = {
+        const state: EditorState = {
           steps: [],
-          drawerMobileOpen: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
         }
         expect(
           reducer(state, {
             type: 'SetSelectedAttributeIdAction',
-            id: 'testId'
+            selectedAttributeId: 'testId'
           })
         ).toEqual({
           ...state,
@@ -236,103 +233,14 @@ describe('EditorContext', () => {
       })
     })
 
-    describe('SetDrawerPropsAction', () => {
-      it('should set drawer props action', () => {
-        const state = {
-          steps: [],
-          drawerMobileOpen: false,
-          activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
-        }
-        expect(
-          reducer(state, {
-            type: 'SetDrawerPropsAction',
-            title: 'abc',
-            children: <></>,
-            mobileOpen: true
-          })
-        ).toEqual({
-          ...state,
-          drawerTitle: 'abc',
-          drawerChildren: <></>,
-          drawerMobileOpen: true
-        })
-      })
-
-      it('should set drawer props action with defaults', () => {
-        const state = {
-          steps: [],
-          drawerTitle: 'abc',
-          drawerChildren: <></>,
-          drawerMobileOpen: false,
-          activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
-        }
-        expect(
-          reducer(state, {
-            type: 'SetDrawerPropsAction'
-          })
-        ).toEqual({
-          ...state,
-          drawerTitle: undefined,
-          drawerChildren: undefined,
-          drawerMobileOpen: false
-        })
-      })
-    })
-
-    describe('SetDrawerMobileOpenAction', () => {
-      it('should set drawerMobileOpen', () => {
-        const state = {
-          steps: [],
-          drawerMobileOpen: false,
-          activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
-        }
-        expect(
-          reducer(state, {
-            type: 'SetDrawerMobileOpenAction',
-            mobileOpen: true
-          })
-        ).toEqual({
-          ...state,
-          drawerMobileOpen: true
-        })
-      })
-    })
-
-    describe('SetActiveTabAction', () => {
-      it('should set active tab', () => {
-        const state = {
-          steps: [],
-          drawerMobileOpen: false,
-          activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
-        }
-        expect(
-          reducer(state, {
-            type: 'SetActiveTabAction',
-            activeTab: ActiveTab.Properties
-          })
-        ).toEqual({
-          ...state,
-          activeTab: ActiveTab.Properties
-        })
-      })
-    })
-
     describe('SetActiveFabAction', () => {
       it('should set active fab', () => {
-        const state = {
+        const state: EditorState = {
           steps: [],
-          drawerMobileOpen: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
         }
         expect(
           reducer(state, {
@@ -357,12 +265,12 @@ describe('EditorContext', () => {
           nextBlockId: null,
           children: []
         }
-        const state = {
+        const state: EditorState = {
           steps: [],
-          drawerMobileOpen: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
         }
         expect(
           reducer(state, {
@@ -407,14 +315,14 @@ describe('EditorContext', () => {
           ...step,
           children: [updatedBlock]
         }
-        const state = {
+        const state: EditorState = {
           steps: [step],
-          drawerMobileOpen: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Journey,
+          activeSlide: ActiveSlide.JourneyFlow,
           selectedBlock: block,
           selectedStep: step,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeContent: ActiveContent.Canvas
         }
         expect(
           reducer(state, {
@@ -432,48 +340,23 @@ describe('EditorContext', () => {
 
     describe('SetJourneyEditContentComponentAction', () => {
       it('should set journey edit content component', () => {
-        const state = {
+        const state: EditorState = {
           steps: [],
-          drawerMobileOpen: false,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
-          activeTab: ActiveTab.Journey,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
         }
         expect(
           reducer(state, {
-            type: 'SetJourneyEditContentAction',
-            component: ActiveJourneyEditContent.Canvas
+            type: 'SetActiveContentAction',
+            activeContent: ActiveContent.Canvas
           })
         ).toEqual({
           ...state,
-          journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+          activeContent: ActiveContent.Canvas
         })
       })
-    })
-  })
-
-  describe('EditorProvider', () => {
-    function TestState(): ReactElement {
-      const { state } = useEditor()
-      return <div>drawerTitle: {state.drawerTitle}</div>
-    }
-
-    it('should render children when component', () => {
-      const { getByText } = render(
-        <EditorProvider initialState={{ drawerTitle: 'test' }}>
-          <TestState />
-        </EditorProvider>
-      )
-      expect(getByText('drawerTitle: test')).toBeInTheDocument()
-    })
-
-    it('should render children when function', () => {
-      const { getByText } = render(
-        <EditorProvider initialState={{ drawerTitle: 'test' }}>
-          {(state) => <div>drawerTitle: {state.drawerTitle}</div>}
-        </EditorProvider>
-      )
-      expect(getByText('drawerTitle: test')).toBeInTheDocument()
     })
   })
 })

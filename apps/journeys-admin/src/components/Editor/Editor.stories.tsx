@@ -2,12 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
-
-import {
-  GetJourney_journey_blocks as Block,
-  GetJourney_journey as Journey
-} from '../../../__generated__/GetJourney'
+import { BlockFields as Block } from '../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -21,10 +17,6 @@ import {
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
-
-import { ControlPanel } from './ControlPanel'
-import { Drawer } from './Drawer'
-import { EditToolbar } from './EditToolbar'
 
 import { Editor } from '.'
 
@@ -649,18 +641,7 @@ const Template: StoryObj<typeof Editor> = {
   render: (args) => {
     return (
       <MockedProvider>
-        <Editor
-          journey={args.journey}
-          view={args.view ?? ActiveJourneyEditContent.Canvas}
-          PageWrapperProps={{
-            title: args.journey?.title ?? 'Edit Journey',
-            mainHeaderChildren: <EditToolbar />,
-            bottomPanelChildren: <ControlPanel />,
-            customSidePanel: <Drawer />,
-            mainBodyPadding: false,
-            backHref: '/journeys/nua-journey-ep-3-decision'
-          }}
-        />
+        <Editor journey={args.journey} initialState={args.initialState} />
       </MockedProvider>
     )
   }

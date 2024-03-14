@@ -1,0 +1,29 @@
+import { ComponentProps, ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import Play3Icon from '@core/shared/ui/icons/Play3'
+
+import { Item } from '../Item/Item'
+
+interface PreviewItemProps {
+  variant: ComponentProps<typeof Item>['variant']
+  onClick?: () => void
+}
+
+export function PreviewItem({
+  variant,
+  onClick
+}: PreviewItemProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
+  return (
+    <Item
+      variant={variant}
+      href={`/api/preview?slug=${journey?.slug}`}
+      label={t('Preview')}
+      icon={<Play3Icon />}
+      onClick={onClick}
+    />
+  )
+}

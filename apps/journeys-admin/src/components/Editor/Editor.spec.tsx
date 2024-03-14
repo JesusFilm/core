@@ -12,9 +12,6 @@ import {
 } from '../../../__generated__/globalTypes'
 import { ThemeProvider } from '../ThemeProvider'
 
-import { ControlPanel } from './ControlPanel'
-import { Drawer } from './Drawer'
-
 import { Editor } from '.'
 
 describe('Editor', () => {
@@ -80,13 +77,7 @@ describe('Editor', () => {
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
-            <Editor
-              journey={journey}
-              PageWrapperProps={{
-                bottomPanelChildren: <ControlPanel />,
-                customSidePanel: <Drawer />
-              }}
-            />
+            <Editor journey={journey} />
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -100,13 +91,7 @@ describe('Editor', () => {
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
-            <Editor
-              journey={journey}
-              PageWrapperProps={{
-                bottomPanelChildren: <ControlPanel />,
-                customSidePanel: <Drawer />
-              }}
-            />
+            <Editor journey={journey} />
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -121,13 +106,7 @@ describe('Editor', () => {
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
-            <Editor
-              journey={journey}
-              PageWrapperProps={{
-                bottomPanelChildren: <ControlPanel />,
-                customSidePanel: <Drawer />
-              }}
-            />
+            <Editor journey={journey} />
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
