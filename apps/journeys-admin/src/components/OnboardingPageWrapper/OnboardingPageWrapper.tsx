@@ -69,8 +69,8 @@ export function OnboardingPageWrapper({
               display: 'flex',
               flexDirection: 'column',
               borderRadius: 2,
-              borderBottomLeftRadius: { sm: 8 },
-              borderBottomRightRadius: { sm: 8 },
+              borderBottomLeftRadius: { xs: 0, sm: 8 },
+              borderBottomRightRadius: { xs: 0, sm: 8 },
               width: { xs: '100vw', sm: 397 }
             }}
           >

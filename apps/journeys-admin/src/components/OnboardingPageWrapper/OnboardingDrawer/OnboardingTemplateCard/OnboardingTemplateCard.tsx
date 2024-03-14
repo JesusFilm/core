@@ -28,14 +28,12 @@ export function OnboardingTemplateCard({
           justifyContent={{ xs: 'flex-start', sm: 'center' }}
           direction={{ xs: 'row', md: 'column' }}
           sx={{
-            flexShrink: 0,
+            flexGrow: 1,
             width: { xs: '100%', md: 200 },
             px: { xs: 6, md: 0 }
           }}
         >
           <Stack
-            alignItems="center"
-            justifyContent="center"
             sx={{
               position: 'relative',
               backgroundColor:
@@ -92,7 +90,7 @@ function OnboardingTemplateCardDetails({
       data-testid="OnboardingTemplateCardDetails"
       direction="column"
       sx={{
-        p: 3,
+        p: { md: 3 },
         borderWidth: { xs: 0, md: 1 },
         borderStyle: 'solid',
         borderColor: 'divider',
@@ -111,7 +109,6 @@ function OnboardingTemplateCardDetails({
       </Typography>
       <Box
         sx={{
-          display: { xs: 'none', md: '-webkit-box' },
           height: { xs: 26, md: 46 },
           overflow: 'hidden',
           textOverflow: 'ellipsis'

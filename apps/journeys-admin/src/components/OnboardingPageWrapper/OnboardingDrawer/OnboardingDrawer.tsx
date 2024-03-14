@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
+import landingDescriptionMobile from '../../../../public/landing-description-mobile.png'
 import landingDescription from '../../../../public/landing-description.png'
 import landingIllustration from '../../../../public/landing-illustration.png'
 import logo from '../../../../public/logo.svg'
@@ -37,10 +38,16 @@ export function OnboardingDrawer(): ReactElement {
   return (
     <Stack
       alignItems="center"
-      gap={5}
+      justifyContent="space-between"
+      gap={{
+        xs: 4,
+        md: templateId == null ? 10 : 0
+      }}
       sx={{
-        py: { md: 10 },
-        width: { xs: '100%', md: '30%' }
+        mt: { xs: 5 },
+        my: { md: 10 },
+        mx: { md: 20 },
+        width: { xs: '100%', md: '37%' }
       }}
       data-testid="JourneysAdminOnboardingDrawer"
     >
@@ -50,9 +57,9 @@ export function OnboardingDrawer(): ReactElement {
       {templateId == null && (
         <Box
           sx={{
-            p: 5,
+            pt: 10,
             overflow: 'hidden',
-            aspectRatio: '0.86/1',
+            aspectRatio: '1180/1340.16',
             flexGrow: 1,
             display: { xs: 'none', md: 'flex' }
           }}
@@ -66,22 +73,38 @@ export function OnboardingDrawer(): ReactElement {
       )}
       {newAccountQuery === true && <OnboardingStepper variant="mobile" />}
       {templateId == null && (
-        <Box
-          sx={{
-            py: { xs: 3, md: 0 },
-            pb: { xs: 0, md: 40 },
-            display: {
-              xs: 'block',
-              md: newAccountQuery === true ? 'none' : 'block'
-            }
-          }}
-        >
-          <Image
-            src={landingDescription}
-            alt="Landing Description"
-            layout="responsive"
-          />
-        </Box>
+        <>
+          <Box
+            sx={{
+              width: 600,
+              py: { xs: 3, md: 0 },
+              display: {
+                xs: 'none',
+                md: newAccountQuery === true ? 'none' : 'block'
+              }
+            }}
+          >
+            <Image
+              src={landingDescription}
+              alt="Landing Description"
+              layout="responsive"
+            />
+          </Box>
+          <Box
+            sx={{
+              display: {
+                xs: 'block',
+                md: 'none'
+              }
+            }}
+          >
+            <Image
+              src={landingDescriptionMobile}
+              alt="Landing Description Mobile"
+              layout="responsive"
+            />
+          </Box>
+        </>
       )}
       <OnboardingTemplateCard templateId={templateId} />
       {newAccountQuery === true && <OnboardingStepper variant="desktop" />}
