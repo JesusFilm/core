@@ -1,12 +1,20 @@
-import Avatar from '@mui/material/Avatar'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
 import CircularProgress, {
   CircularProgressProps
 } from '@mui/material/CircularProgress'
+import Collapse from '@mui/material/Collapse'
+import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TablePagination from '@mui/material/TablePagination'
+import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
-import { DataGrid } from '@mui/x-data-grid'
 import { FC, ReactElement, useState } from 'react'
 
 import { Batches_batches } from '../../../__generated__/Batches'
@@ -19,100 +27,80 @@ interface BatchesTableProps {
 }
 
 export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
-  const [isTableViewOpen, setIsTableViewOpen] = useState<boolean>(false)
-  const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: 10
-  })
-
-  const columns = [
-    {
-      field: 'id',
-      headerName: 'Batch Number',
-      flex: 1,
-      sortable: false
-    },
-    {
-      field: 'destination',
-      headerName: 'Destination',
-      flex: 1,
-      renderCell: ({ row }) => (
-        <Chip
-          avatar={
-            <Avatar
-              src={row.channel?.youtube?.imageUrl}
-              alt={row.channel?.youtube?.title}
-            />
-          }
-          label={row.channel?.youtube?.title}
-        />
-      ),
-      sortable: false
-    },
-    // {
-    //   field: 'createdBy',
-    //   headerName: 'Created By',
-    //   flex: 1
-    // },
-    {
-      field: 'status',
-      headerName: 'Status',
-      flex: 1,
-      sortable: false,
-      renderCell: ({ row }) => {
-        const totalResources = row.resources?.length
-        const totalCompleteResources = row.resources?.filter(
-          (resource) => resource.isCompleted
-        ).length
-
-        return <>{`${totalCompleteResources} / ${totalResources}`}</>
-      }
-    },
-    {
-      field: 'averagePercent',
-      headerName: 'Progress',
-      flex: 1,
-      sortable: false,
-      renderCell: ({ row }) => {
-        return <CircularProgressWithLabel value={row.averagePercent} />
-      }
-    },
-    {
-      field: 'createdAt',
-      headerName: 'Created at',
-      flex: 1,
-      sortable: false
-    }
-  ]
+  const [page, setPage] = useState(0)
+  const [pageSize, setPageSize] = useState(10)
 
   return (
-    <Paper>
-      <DataGrid
-        autoHeight
-        disableColumnMenu
-        disableRowSelectionOnClick
-        rows={data}
-        columns={columns}
-        loading={loading}
-        pageSizeOptions={[5, 10]}
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-        slots={{
-          toolbar: BatchesTableHeader
-        }}
-        slotProps={{
-          toolbar: {
-            onTableView: () => setIsTableViewOpen(!isTableViewOpen)
-          }
-        }}
-        sx={{
-          fontFamily: 'Montserrat',
-          '& .MuiDataGrid-columnHeaderTitle': {
-            fontWeight: 700
-          }
+    <TableContainer component={Paper}>
+      <BatchesTableHeader />
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell />
+            <TableCell>
+              <Typography
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  fontFamily: 'Montserrat'
+                }}
+              >
+                Batch Number
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  fontFamily: 'Montserrat'
+                }}
+              >
+                Status
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  fontFamily: 'Montserrat'
+                }}
+              >
+                Progress
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  fontFamily: 'Montserrat'
+                }}
+              >
+                Created At
+              </Typography>
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data.map((batch) => (
+            <Row key={batch.id} batch={batch} />
+          ))}
+        </TableBody>
+      </Table>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={data.length}
+        rowsPerPage={pageSize}
+        page={page}
+        onPageChange={(event, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(event) => {
+          setPageSize(parseInt(event.target.value, 10))
         }}
       />
-    </Paper>
+    </TableContainer>
   )
 }
 
@@ -141,5 +129,75 @@ const CircularProgressWithLabel = (
         >{`${Math.round(props.value)}%`}</Typography>
       </Box>
     </Box>
+  )
+}
+
+const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+        <TableCell>
+          <IconButton size="small" onClick={() => setOpen(!open)}>
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+        <TableCell>{batch.id}</TableCell>
+        <TableCell>{batch.status}</TableCell>
+        <TableCell>
+          <CircularProgressWithLabel value={batch.progress} />
+        </TableCell>
+        <TableCell>{batch.createdAt}</TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '14px',
+                      fontFamily: 'Montserrat'
+                    }}
+                  >
+                    Type
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '14px',
+                      fontFamily: 'Montserrat'
+                    }}
+                  >
+                    Status
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '14px',
+                      fontFamily: 'Montserrat'
+                    }}
+                  >
+                    Progress
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {batch.tasks.map((task) => (
+                  <TableRow key={task.type}>
+                    <TableCell>{task.type}</TableCell>
+                    <TableCell>{task.status}</TableCell>
+                    <TableCell>{task.progress}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </>
   )
 }

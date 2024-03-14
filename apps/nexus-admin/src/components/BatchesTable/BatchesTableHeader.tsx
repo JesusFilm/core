@@ -2,13 +2,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { FC } from 'react'
 
-interface BatchesTableHeaderProps {
-  onTableView: () => void
-}
-
-export const BatchesTableHeader: FC<BatchesTableHeaderProps> = ({
-  onTableView
-}) => {
+export const BatchesTableHeader: FC = () => {
   return (
     <Stack
       sx={{
