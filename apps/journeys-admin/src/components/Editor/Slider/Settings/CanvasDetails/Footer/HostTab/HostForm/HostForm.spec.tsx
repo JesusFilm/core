@@ -1,9 +1,14 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { DeleteHost } from '../../../../../../../../../__generated__/DeleteHost'
+import {
+  UpdateJourneyHost,
+  UpdateJourneyHostVariables
+} from '../../../../../../../../../__generated__/UpdateJourneyHost'
 import { UPDATE_JOURNEY_HOST } from '../../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
@@ -42,8 +47,8 @@ describe('HostForm', () => {
     team: { id: 'teamId' }
   } as unknown as Journey
 
-  it('should render an create host form', async () => {
-    const { getByTestId } = render(
+  it('should render a create host form', async () => {
+    const { getByRole, getByTestId, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider
@@ -58,26 +63,33 @@ describe('HostForm', () => {
       </MockedProvider>
     )
 
-    const sidePanel = within(getByTestId('side-panel'))
-
-    expect(
-      sidePanel.getByRole('textbox', { name: 'Host Name Host Name' })
-    ).toHaveAttribute('value', '')
-    expect(
-      sidePanel.getByRole('textbox', { name: 'Location Location' })
-    ).toHaveAttribute('value', '')
-    expect(sidePanel.getByTestId('avatar1').firstChild).toHaveAttribute(
+    expect(getByRole('button', { name: 'Back' })).toBeInTheDocument()
+    expect(getByRole('textbox', { name: 'Host Name' })).toHaveAttribute(
+      'value',
+      ''
+    )
+    expect(getByRole('textbox', { name: 'Location' })).toHaveAttribute(
+      'value',
+      ''
+    )
+    expect(getByTestId('avatar1').firstChild).toHaveAttribute(
       'data-testid',
       'UserProfile2Icon'
     )
-    expect(sidePanel.getByTestId('avatar2').firstChild).toHaveAttribute(
+    expect(getByTestId('avatar2').firstChild).toHaveAttribute(
       'data-testid',
       'Plus2Icon'
     )
+    expect(getByTestId('AlertCircleIcon')).toBeInTheDocument()
+    expect(
+      getByText(
+        'Edits: Making changes here will apply to all journeys that share this Host.'
+      )
+    ).toBeInTheDocument()
   })
 
   it('should render an edit host form', async () => {
-    const { getByTestId } = render(
+    const { getByRole, getByAltText, getByText, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -87,87 +99,85 @@ describe('HostForm', () => {
       </MockedProvider>
     )
 
-    const sidePanel = within(getByTestId('side-panel'))
-
-    expect(sidePanel.getByRole('button', { name: 'Clear' })).toBeInTheDocument()
-    expect(
-      sidePanel.getByRole('textbox', { name: 'Host Name Host Name' })
-    ).toHaveAttribute('value', defaultHost.title)
-    expect(
-      sidePanel.getByRole('textbox', { name: 'Location Location' })
-    ).toHaveAttribute('value', defaultHost.location)
-    expect(sidePanel.getByAltText('avatar1')).toHaveAttribute(
-      'src',
-      defaultHost.src1
+    expect(getByRole('button', { name: 'Clear' })).toBeInTheDocument()
+    expect(getByRole('textbox', { name: 'Host Name' })).toHaveAttribute(
+      'value',
+      defaultHost.title
     )
-    expect(sidePanel.getByAltText('avatar2')).toHaveAttribute(
-      'src',
-      defaultHost.src2
+    expect(getByRole('textbox', { name: 'Location' })).toHaveAttribute(
+      'value',
+      defaultHost.location
     )
+    expect(getByAltText('avatar1')).toHaveAttribute('src', defaultHost.src1)
+    expect(getByAltText('avatar2')).toHaveAttribute('src', defaultHost.src2)
+    expect(getByTestId('AlertCircleIcon')).toBeInTheDocument()
+    expect(
+      getByText(
+        'Edits: Making changes here will apply to all journeys that share this Host.'
+      )
+    ).toBeInTheDocument()
   })
 
   it('should delete and update journey host on clear button click', async () => {
     const onClear = jest.fn()
-
-    const result = jest.fn(() => ({
-      data: {
-        hostDelete: {
-          id: defaultHost.id
-        }
-      }
-    }))
-    const journeyUpdate = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
+    const updateJourneyHostMock: MockedResponse<
+      UpdateJourneyHost,
+      UpdateJourneyHostVariables
+    > = {
+      request: {
+        query: UPDATE_JOURNEY_HOST,
+        variables: {
           id: journey.id,
-          host: {
-            id: null
+          input: {
+            hostId: null
           }
         }
-      }
-    }))
-
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: DELETE_HOST,
-              variables: {
-                id: defaultHost.id,
-                teamId: defaultHost.teamId
-              }
-            },
-            result
-          },
-          {
-            request: {
-              query: UPDATE_JOURNEY_HOST,
-              variables: {
-                id: journey.id,
-                input: {
-                  hostId: null
-                }
-              }
-            },
-            result: journeyUpdate
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyUpdate: {
+            __typename: 'Journey',
+            id: journey.id,
+            host: {
+              __typename: 'Host',
+              id: defaultHost.id
+            }
           }
-        ]}
-      >
+        }
+      }))
+    }
+
+    const hostDeleteMock: MockedResponse<DeleteHost> = {
+      request: {
+        query: DELETE_HOST,
+        variables: {
+          id: defaultHost.id,
+          teamId: defaultHost.teamId
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          hostDelete: {
+            __typename: 'Host',
+            id: defaultHost.id
+          }
+        }
+      }))
+    }
+    const { getByRole } = render(
+      <MockedProvider mocks={[hostDeleteMock, updateJourneyHostMock]}>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostForm onClear={jest.fn()} onBack={jest.fn()} />
+            <HostForm onClear={onClear} onBack={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
-    const sidePanel = within(getByTestId('side-panel'))
+    fireEvent.click(getByRole('button', { name: 'Clear' }))
 
-    fireEvent.click(sidePanel.getByRole('button', { name: 'Clear' }))
-
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() => expect(journeyUpdate).toHaveBeenCalled())
+    await waitFor(() => expect(hostDeleteMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(updateJourneyHostMock.result).toHaveBeenCalled())
     await waitFor(() => expect(onClear).toHaveBeenCalled())
   })
 })
