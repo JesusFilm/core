@@ -7,6 +7,7 @@ import ListItemText from '@mui/material/ListItemText'
 import compact from 'lodash/compact'
 import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useEffect, useState } from 'react'
@@ -40,8 +41,8 @@ const UserMenu = dynamic(
 )
 
 export const GET_ME = gql`
-  query GetMe {
-    me {
+  query GetMe($input: MeInput) {
+    me(input: $input) {
       id
       firstName
       lastName
@@ -65,7 +66,10 @@ export function UserNavigation({
   setTooltip
 }: UserNavigationProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
-  const { data } = useSuspenseQuery<GetMe>(GET_ME)
+  const router = useRouter()
+  const { data } = useSuspenseQuery<GetMe>(GET_ME, {
+    variables: { input: { redirect: router?.query?.redirect } }
+  })
   const { data: userRoleData } = useUserRoleSuspenseQuery()
   const { data: journeysData } = useAdminJourneysSuspenseQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
