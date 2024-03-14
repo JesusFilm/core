@@ -46,9 +46,10 @@ export class BatchService {
               captionFile: row.caption_file ?? '',
               localizedResourceFile: {
                 create: {
-                  mimeType: row.captionDriveFile?.mimeType ?? '',
+                  captionMimeType: row.captionDriveFile?.mimeType ?? '',
                   captionDriveId: row.captionDriveFile?.id ?? '',
                   audioDriveId: row.audioTrackDriveFile?.id ?? '',
+                  audioMimeType: row.audioTrackDriveFile?.mimeType ?? '',
                   refreshToken,
                 },
               },
@@ -153,9 +154,10 @@ export class BatchService {
                 videoId: row.video_id ?? '',
                 localizedResourceFile: {
                   create: {
-                    mimeType: row.driveFile?.mimeType ?? '',
+                    captionMimeType: row.captionDriveFile?.mimeType ?? '',
                     captionDriveId: row.captionDriveFile?.id ?? '',
                     audioDriveId: row.audioTrackDriveFile?.id ?? '',
+                    audioMimeType: row.audioTrackDriveFile?.mimeType ?? '',
                     refreshToken,
                   },
                 },

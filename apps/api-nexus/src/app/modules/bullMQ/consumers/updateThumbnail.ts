@@ -50,6 +50,7 @@ export class UpdateThumbnail {
       token: youtubeToken,
       videoId: job.data.resource.videoId,
       thumbnailPath: filePath,
+      mimeType: 'image/jpeg'
     });
     console.log('YOUTUBE RESPONSE UPDATE THUMBNAIL: ', youtubeResponse);
     await job.progress(100);

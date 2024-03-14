@@ -101,6 +101,7 @@ model GoogleDriveResource {
     id           String   @id @default(uuid())
     resourceId   String   @unique
     driveId      String
+    cloudFlareId String   @default("")
     mimeType     String
     refreshToken String
     resource     Resource @relation(fields: [resourceId], references: [id])
@@ -110,6 +111,7 @@ model ThumbnailGoogleDriveResource {
     id           String   @id @default(uuid())
     resourceId   String   @unique
     driveId      String
+    cloudFlareId String   @default("")
     mimeType     String
     refreshToken String
     resource     Resource @relation(fields: [resourceId], references: [id])
@@ -130,13 +132,16 @@ model ResourceLocalization {
 }
 
 model LocalizedResourceFile {
-    id             String               @id @default(uuid())
-    localizationId String               @unique
-    captionDriveId String
-    audioDriveId   String
-    mimeType       String
-    refreshToken   String?
-    localization   ResourceLocalization @relation(fields: [localizationId], references: [id])
+    id                      String               @id @default(uuid())
+    localizationId          String               @unique
+    captionDriveId          String
+    captionFileCloudFlareId String               @default("")
+    audioDriveId            String
+    audioFileCloudFlareId   String               @default("")
+    captionMimeType         String
+    audioMimeType           String
+    refreshToken            String?
+    localization            ResourceLocalization @relation(fields: [localizationId], references: [id])
 }
 
 enum ResourceStatus {

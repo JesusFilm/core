@@ -121,6 +121,25 @@ export class NexusJobListener implements OnModuleInit {
           console.log('BUCKET FILE Thumbnail', thumbnailBucketFile);
           console.log('BUCKET FILE Caption', captionBucketFile);
 
+          await this.prismaService.resource.update({
+            where: { id: currentResource?.id },
+            data: {
+              thumbnailGoogleDrive: {
+                update: { cloudFlareId: thumbnailBucketFile.Key },
+              },
+            },
+          });
+
+          const localizedResource =
+            await this.prismaService.resourceLocalization.findFirst({
+              where: { resourceId: currentResource?.id },
+            });
+
+          const resourceFile = await this.prismaService.localizedResourceFile.update({
+            where: { localizationId: localizedResource?.id },
+            data: { captionFileCloudFlareId: captionBucketFile.Key }
+          });
+
           const youtubeToken = await this.googleOAuthService.getNewAccessToken(
             job.data.channel.refreshToken,
           );
@@ -130,19 +149,28 @@ export class NexusJobListener implements OnModuleInit {
               token: youtubeToken,
               videoId: job.returnvalue.youtubeId,
               thumbnailPath: thumbnailFilePath,
+              mimeType: currentResource?.thumbnailGoogleDrive?.mimeType ?? 'image/jpeg'
             });
 
-          const youtubeCaptionResponse = await this.youtubeService.uploadCaption({
-            token: youtubeToken,
-            videoId: job.returnvalue.youtubeId,
-            language: captionLanguage ?? '',
-            name: '',
-            captionFile: captionFilePath,
-            isDraft: false,
-          });
+          const youtubeCaptionResponse =
+            await this.youtubeService.uploadCaption({
+              token: youtubeToken,
+              videoId: job.returnvalue.youtubeId,
+              language: captionLanguage ?? '',
+              name: '',
+              captionFile: captionFilePath,
+              isDraft: false,
+              mimeType: resourceFile.captionMimeType
+            });
 
-          console.log('YOUTUBE RESPONSE UPDATE THUMBNAIL: ', youtubeThumnailResponse);
-          console.log('YOUTUBE RESPONSE UPDATE CAPTION: ', youtubeCaptionResponse);
+          console.log(
+            'YOUTUBE RESPONSE UPDATE THUMBNAIL: ',
+            youtubeThumnailResponse,
+          );
+          console.log(
+            'YOUTUBE RESPONSE UPDATE CAPTION: ',
+            youtubeCaptionResponse,
+          );
         }
 
         // void Promise.all([

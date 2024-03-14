@@ -45,6 +45,11 @@ export class UploadToBucket {
       },
     );
     console.log('BUCKET FILE', bucketFile);
+    await this.prismaService.resource.update({
+      where: { id: job.data.resource.id },
+      data: { googleDrive: { update: { cloudFlareId: bucketFile.Key } } },
+    });
+
     const youtubeToken = await this.googleOAuthService.getNewAccessToken(
       job.data.channel.refreshToken,
     );
@@ -75,6 +80,6 @@ export class UploadToBucket {
       });
     }
     await job.progress(100);
-    return {...job.returnvalue, 'youtubeId':youtubeData?.data?.id};
+    return { ...job.returnvalue, youtubeId: youtubeData?.data?.id };
   }
 }

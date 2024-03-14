@@ -97,6 +97,7 @@ export class YoutubeService {
     token: string;
     videoId: string;
     thumbnailPath: string;
+    mimeType: string;
   }): Promise<unknown> {
     const service = google.youtube('v3');
 
@@ -104,7 +105,7 @@ export class YoutubeService {
       auth: this.authorize(youtubeData.token),
       videoId: youtubeData.videoId,
       media: {
-        mimeType: 'image/jpeg',
+        mimeType: youtubeData.mimeType,
         body: createReadStream(youtubeData.thumbnailPath),
       },
     });
@@ -173,6 +174,7 @@ export class YoutubeService {
     name: string;
     captionFile: string;
     isDraft: boolean;
+    mimeType: string;
   }): Promise<unknown> {
     const service = google.youtube('v3');
     const auth = this.authorize(youtubeData.token);
@@ -189,7 +191,7 @@ export class YoutubeService {
         },
       },
       media: {
-        mimeType: 'text/vtt',
+        mimeType: youtubeData.mimeType,
         body: createReadStream(youtubeData.captionFile),
       },
     };

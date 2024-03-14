@@ -98,6 +98,7 @@ export interface UpdateVideoCaption {
   resource: {
     id: string;
     driveId: string;
+    mimeType: string;
     refreshToken: string;
     videoId: string;
     language: string;
@@ -292,6 +293,7 @@ export class BullMQService {
           },
           resource: {
             driveId: localizedResourceFile?.captionDriveId,
+            mimeType: localizedResourceFile?.captionMimeType,
             language: localization.language,
             refreshToken: localizedResourceFile?.refreshToken,
             videoId: localization.videoId,

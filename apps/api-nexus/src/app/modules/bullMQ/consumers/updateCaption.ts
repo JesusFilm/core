@@ -3,6 +3,7 @@ import { Job } from 'bull';
 
 import { BucketService } from '../../../lib/bucket/bucketService';
 import { GoogleOAuthService } from '../../../lib/googleOAuth/googleOAuth';
+import { PrismaService } from '../../../lib/prisma.service';
 import { YoutubeService } from '../../../lib/youtube/youtubeService';
 import { GoogleDriveService } from '../../google-drive/googleDriveService';
 import { UpdateVideoCaption } from '../bullMQ.service';
@@ -14,12 +15,11 @@ export class UpdateCaption {
     private readonly googleOAuthService: GoogleOAuthService,
     private readonly bucketService: BucketService,
     private readonly youtubeService: YoutubeService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   @Process('processCaption')
-  async process(
-    job: Job<UpdateVideoCaption>,
-  ): Promise<UpdateVideoCaption> {
+  async process(job: Job<UpdateVideoCaption>): Promise<UpdateVideoCaption> {
     const driveToken = await this.googleOAuthService.getNewAccessToken(
       job.data.resource.refreshToken,
     );
@@ -42,6 +42,16 @@ export class UpdateCaption {
       },
     );
     console.log('BUCKET FILE', bucketFile);
+    const localizedResource =
+      await this.prismaService.resourceLocalization.findFirst({
+        where: { resourceId: job.data.resource.id },
+      });
+
+    await this.prismaService.localizedResourceFile.update({
+      where: { localizationId: localizedResource?.id },
+      data: { captionFileCloudFlareId: bucketFile.Key },
+    });
+
     const youtubeToken = await this.googleOAuthService.getNewAccessToken(
       job.data.channel.refreshToken,
     );
@@ -50,9 +60,10 @@ export class UpdateCaption {
       token: youtubeToken,
       videoId: job.data.resource.videoId,
       language: job.data.resource.language,
-      name: '', 
+      name: '',
       captionFile: filePath,
-      isDraft: false
+      isDraft: false,
+      mimeType: job.data.resource.mimeType
     });
     console.log('YOUTUBE RESPONSE UPLOAD CAPTION: ', youtubeResponse);
     await job.progress(100);
