@@ -1,25 +1,81 @@
-import { render } from '@testing-library/react'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { render, screen } from '@testing-library/react'
+
+import {
+  ActiveCanvasDetailsDrawer,
+  ActiveContent,
+  ActiveFab,
+  ActiveSlide,
+  EditorState,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 
 import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { SocialPreview } from './SocialPreview'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
+const mockUseMediaQuery = useMediaQuery as jest.MockedFunction<
+  typeof useMediaQuery
+>
+
+jest.mock('@core/journeys/ui/EditorProvider', () => {
+  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
+  return {
+    __esModule: true,
+    ...originalModule,
+    useEditor: jest.fn()
+  }
+})
+
+const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
+
 describe('SocialPreview', () => {
-  it('should display socialpreviewpost', () => {
-    const { getAllByText } = render(
-      <ThemeProvider>
-        <SocialPreview />
-      </ThemeProvider>
-    )
-    expect(getAllByText('Social App View')[0]).toBeInTheDocument()
+  const state: EditorState = {
+    activeFab: ActiveFab.Add,
+    activeSlide: ActiveSlide.JourneyFlow,
+    activeContent: ActiveContent.Social,
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
+  }
+
+  beforeEach(() => {
+    mockUseMediaQuery.mockImplementation(() => true)
+
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch: jest.fn()
+    })
   })
 
-  it('should display socialpreviewmessage', () => {
-    const { getAllByText } = render(
+  it('should render Message Post and Fab for viewports larger than mobile', () => {
+    render(
       <ThemeProvider>
         <SocialPreview />
       </ThemeProvider>
     )
-    expect(getAllByText('Messaging App View')[0]).toBeInTheDocument()
+
+    expect(screen.getByText('Social App View')).toBeInTheDocument()
+    expect(screen.getByText('Messaging App View')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Edit' })).toBeInTheDocument()
+  })
+
+  it('should only render Message and Post for mobile viewport', () => {
+    mockUseMediaQuery.mockImplementation(() => false)
+
+    render(
+      <ThemeProvider>
+        <SocialPreview />
+      </ThemeProvider>
+    )
+
+    expect(screen.getByText('Social App View')).toBeInTheDocument()
+    expect(screen.getByText('Messaging App View')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Edit' })
+    ).not.toBeInTheDocument()
   })
 })
