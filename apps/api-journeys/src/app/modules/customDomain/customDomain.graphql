@@ -3,7 +3,6 @@ type CustomDomain {
   teamId: String!
   name: String!
   apexName: String!
-  allowOutsideJourneys: Boolean!
   journeyCollection: JourneyCollection
   verification: CustomDomainVerification
 }
@@ -11,14 +10,12 @@ type CustomDomain {
 input CustomDomainCreateInput {
   teamId: String!
   name: String!
-  allowOutsideJourneys: Boolean
   journeyCollectionId: String
 }
 
 input CustomDomainUpdateInput {
   id: ID!
   name: String
-  allowOutsideJourneys: Boolean
   journeyCollectionId: String
 }
 

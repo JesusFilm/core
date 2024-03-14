@@ -465,14 +465,12 @@ export class ChatButtonUpdateInput {
 export class CustomDomainCreateInput {
     teamId: string;
     name: string;
-    allowOutsideJourneys?: Nullable<boolean>;
     journeyCollectionId?: Nullable<string>;
 }
 
 export class CustomDomainUpdateInput {
     id: string;
     name?: Nullable<string>;
-    allowOutsideJourneys?: Nullable<boolean>;
     journeyCollectionId?: Nullable<string>;
 }
 
@@ -671,14 +669,14 @@ export class JourneyCollectionCreateInput {
     id?: Nullable<string>;
     teamId: string;
     title?: Nullable<string>;
-    journeyIds?: Nullable<Nullable<string>[]>;
+    journeyIds?: Nullable<string[]>;
     customDomain?: Nullable<CustomDomainCreateInput>;
 }
 
 export class JourneyCollectionUpdateInput {
     id: string;
     title?: Nullable<string>;
-    journeyIds?: Nullable<Nullable<string>[]>;
+    journeyIds?: Nullable<string[]>;
 }
 
 export class JourneyProfileUpdateInput {
@@ -1092,7 +1090,6 @@ export class CustomDomain {
     teamId: string;
     name: string;
     apexName: string;
-    allowOutsideJourneys: boolean;
     journeyCollection?: Nullable<JourneyCollection>;
     verification?: Nullable<CustomDomainVerification>;
 }
@@ -1310,9 +1307,8 @@ export class JourneyCollection {
     id: string;
     team: Team;
     title?: Nullable<string>;
-    customDomains: Nullable<CustomDomain>[];
-    journeyIds: string[];
-    journeys: Nullable<Journey>[];
+    customDomains?: Nullable<CustomDomain[]>;
+    journeys?: Nullable<Journey[]>;
 }
 
 export class JourneyProfile {

@@ -12,7 +12,7 @@ import {
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { Journey, JourneyCollection } from '.prisma/api-journeys-client'
+import { Journey, JourneyCollection, Prisma } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
@@ -59,12 +59,23 @@ export class JourneyCollectionResolver {
     @CaslAbility() ability: AppAbility
   ): Promise<JourneyCollection> {
     return await this.prismaService.$transaction(async (tx) => {
+      const data: Prisma.JourneyCollectionCreateInput = {
+        ...omit(input, ['teamId', 'customDomain', 'journeyIds']),
+        id: input.id ?? undefined,
+        team: { connect: { id: input.teamId } }
+      }
+      if (input.journeyIds != null && input.journeyIds.length > 0) {
+        data.journeyCollectionJourneys = {
+          createMany: {
+            data: (input.journeyIds as string[]).map((id, index) => ({
+              order: index,
+              journeyId: id
+            }))
+          }
+        }
+      }
       const collection = await tx.journeyCollection.create({
-        data: {
-          ...omit(input, ['teamId', 'customDomain']),
-          id: input.id ?? undefined,
-          team: { connect: { id: input.teamId } }
-        },
+        data,
         include: { team: { include: { userTeams: true } } }
       })
       if (
@@ -159,10 +170,26 @@ export class JourneyCollectionResolver {
         }
       )
     }
+
+    if (input.journeyIds != null) {
+      await this.prismaService.journeyCollectionJourneys.deleteMany({
+        where: { journeyCollectionId: input.id }
+      })
+      if (input.journeyIds.length > 0) {
+        await this.prismaService.journeyCollectionJourneys.createMany({
+          data: (input.journeyIds as string[]).map((id, index) => ({
+            order: index,
+            journeyId: id,
+            journeyCollectionId: input.id
+          }))
+        })
+      }
+    }
+
     return await this.prismaService.journeyCollection.update({
       where: { id: input.id },
       data: {
-        ...omit(input, 'id')
+        ...omit(input, ['id', 'journeyIds'])
       }
     })
   }
@@ -193,11 +220,11 @@ export class JourneyCollectionResolver {
 
   @ResolveField()
   async journeys(journeyCollection: JourneyCollection): Promise<Journey[]> {
-    const result = await this.prismaService.journeyCollection.findUnique({
-      where: { id: journeyCollection.id },
-      select: { journeys: true }
+    const result = await this.prismaService.journeyCollectionJourneys.findMany({
+      where: { journeyCollectionId: journeyCollection.id },
+      include: { journey: true }
     })
 
-    return result?.journeys ?? []
+    return result?.map(({ journey }) => journey) ?? []
   }
 }

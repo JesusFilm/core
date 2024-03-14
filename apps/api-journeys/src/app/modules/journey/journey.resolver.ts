@@ -202,11 +202,15 @@ export class JourneyResolver {
       }))
     }
     if (where?.hostname != null) {
-      filter.journeyCollections = {
-        some: { customDomains: { some: { name: where.hostname } } }
+      filter.journeyCollectionJourneys = {
+        some: {
+          journeyCollection: {
+            customDomains: { some: { name: where.hostname } }
+          }
+        }
       }
     } else {
-      filter.journeyCollections = { none: {} }
+      filter.journeyCollectionJourneys = { none: {} }
     }
     if (where?.languageIds != null)
       filter.languageId = { in: where?.languageIds }
@@ -234,11 +238,13 @@ export class JourneyResolver {
     const filter: Prisma.JourneyWhereUniqueInput =
       idType === IdType.slug ? { slug: id } : { id }
     if (hostname != null) {
-      filter.journeyCollections = {
-        some: { customDomains: { some: { name: hostname } } }
+      filter.journeyCollectionJourneys = {
+        some: {
+          journeyCollection: { customDomains: { some: { name: hostname } } }
+        }
       }
     } else {
-      filter.journeyCollections = { none: {} }
+      filter.journeyCollectionJourneys = { none: {} }
     }
     const journey = await this.prismaService.journey.findUnique({
       where: filter
@@ -944,15 +950,16 @@ export class JourneyResolver {
   async journeyCollections(
     @Parent() parent: Journey
   ): Promise<Array<{ __typename: 'JourneyCollection'; id: string }>> {
-    const journey = await this.prismaService.journey.findUnique({
-      where: { id: parent.id },
-      include: { journeyCollections: { select: { id: true } } }
-    })
+    const journeyCollections =
+      await this.prismaService.journeyCollectionJourneys.findMany({
+        where: { journeyId: parent.id },
+        select: { journeyCollectionId: true }
+      })
 
     return (
-      journey?.journeyCollections.map(({ id }) => ({
+      journeyCollections.map(({ journeyCollectionId }) => ({
         __typename: 'JourneyCollection',
-        id
+        id: journeyCollectionId
       })) ?? []
     )
   }
