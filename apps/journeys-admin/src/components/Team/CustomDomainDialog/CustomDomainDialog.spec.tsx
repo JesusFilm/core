@@ -1,3 +1,4 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -221,6 +222,7 @@ describe('CustomDomainDialog', () => {
           journeyIds: ['journey-id']
         },
         customDomainUpdateInput: {
+          id: 'customDomainId',
           journeyCollectionId: 'uuid'
         }
       }
@@ -283,8 +285,10 @@ describe('CustomDomainDialog', () => {
   })
 
   it('creates a custom domain', async () => {
+    const cache = new InMemoryCache()
     const { getByRole, getByText } = render(
       <MockedProvider
+        cache={cache}
         mocks={[
           getLastActiveTeamIdAndTeamsMock,
           getAdminJourneysMock,
@@ -306,14 +310,30 @@ describe('CustomDomainDialog', () => {
       target: { value: 'www.example.com' }
     })
     fireEvent.click(getByText('Apply'))
+
     await waitFor(() =>
       expect(mockCreateCustomDomain.result).toHaveBeenCalled()
     )
+
+    expect(cache.extract()['CustomDomain:customDomainId']).toEqual({
+      __typename: 'CustomDomain',
+      apexName: 'www.example.com',
+      id: 'customDomainId',
+      journeyCollection: null,
+      name: 'www.example.com',
+      verification: {
+        __typename: 'CustomDomainVerification',
+        verification: [],
+        verified: true
+      }
+    })
   })
 
   it('deletes a custom domain', async () => {
+    const cache = new InMemoryCache()
     const { getByTestId } = render(
       <MockedProvider
+        cache={cache}
         mocks={[
           getLastActiveTeamIdAndTeamsMock,
           getAdminJourneysMock,
@@ -331,11 +351,12 @@ describe('CustomDomainDialog', () => {
     await waitFor(() =>
       expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
     )
-
+    expect(cache.extract()['CustomDomain:customDomainId']).toBeDefined()
     fireEvent.click(getByTestId('DeleteCustomDomainIcon'))
     await waitFor(() =>
       expect(mockDeleteCustomDomain.result).toHaveBeenCalled()
     )
+    expect(cache.extract()['CustomDomain:customDomainId']).toBeUndefined()
   })
 
   it('creates a default journey for domain when selecting a new one', async () => {

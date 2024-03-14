@@ -171,7 +171,7 @@ export function CustomDomainDialog({
   })
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  async function handleSubmit(value, { resetForm }): Promise<void> {
+  async function handleSubmit(value, { setValues }): Promise<void> {
     setLoading(true)
     if (
       customDomainData?.customDomains != null &&
@@ -180,9 +180,17 @@ export function CustomDomainDialog({
       await deleteCustomDomain({
         variables: {
           customDomainDeleteId: customDomainData?.customDomains[0].id
+        },
+        update: (cache, { data }) => {
+          if (data?.customDomainDelete != null) {
+            cache.evict({
+              id: cache.identify({ ...data.customDomainDelete })
+            })
+          }
+          cache.gc()
         }
       })
-      resetForm()
+      setValues({ domainName: '' })
     } else {
       await createCustomDomain({
         variables: {
@@ -190,6 +198,27 @@ export function CustomDomainDialog({
             name: value.domainName,
             teamId: activeTeam?.id
           }
+        },
+        update: (cache, { data: createCustomDomain }) => {
+          if (createCustomDomain?.customDomainCreate != null)
+            cache.modify({
+              fields: {
+                customDomains(existingCustomDomains = []) {
+                  const newCustomDomainRef = cache.writeFragment({
+                    data: createCustomDomain,
+                    id: cache.identify({
+                      ...createCustomDomain.customDomainCreate
+                    }),
+                    fragment: gql`
+                      fragment NewCustomDomain on CustomDomain {
+                        id
+                      }
+                    `
+                  })
+                  return [...existingCustomDomains, newCustomDomainRef]
+                }
+              }
+            })
         }
       })
     }
@@ -199,6 +228,10 @@ export function CustomDomainDialog({
       preventDuplicate: false
     })
   }
+
+  const hasCustomDomain: boolean =
+    customDomainData?.customDomains?.length !== 0 &&
+    customDomainData?.customDomains != null
 
   async function handleOnChange(e: SelectChangeEvent): Promise<void> {
     if (
@@ -215,38 +248,34 @@ export function CustomDomainDialog({
         }
       })
     } else {
-      const id = uuidv4()
-      await journeyCollectionCreate({
-        variables: {
-          journeyCollectionInput: {
-            id,
-            teamId: activeTeam?.id,
-            journeyIds: [e.target.value]
+      if (activeTeam?.id != null && customDomainData != null) {
+        const id = uuidv4()
+        await journeyCollectionCreate({
+          variables: {
+            journeyCollectionInput: {
+              id,
+              teamId: activeTeam.id,
+              journeyIds: [e.target.value]
+            },
+            customDomainUpdateInput: {
+              id: customDomainData.customDomains[0].id,
+              journeyCollectionId: id
+            }
           },
-          customDomainUpdateInput: {
-            journeyCollectionId: id
+          onCompleted: () => {
+            enqueueSnackbar(t('Default journey set'), {
+              variant: 'success',
+              preventDuplicate: false
+            })
           }
-        },
-        onCompleted: () => {
-          enqueueSnackbar(t('Default journey set'), {
-            variant: 'success',
-            preventDuplicate: false
-          })
-        }
-      })
+        })
+      }
     }
   }
 
   const initialValues = {
-    domainName:
-      customDomainData?.customDomains != null
-        ? customDomainData?.customDomains[0]?.name
-        : ''
+    domainName: hasCustomDomain ? customDomainData?.customDomains[0]?.name : ''
   }
-
-  const hasCustomDomain: boolean =
-    customDomainData?.customDomains?.length !== 0 &&
-    customDomainData?.customDomains != null
 
   return (
     <Formik

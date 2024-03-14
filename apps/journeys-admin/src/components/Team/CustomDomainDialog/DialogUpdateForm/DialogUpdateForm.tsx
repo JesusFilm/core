@@ -65,7 +65,7 @@ export function DialogUpdateForm({
           }}
         />
         <TextField
-          disabled={loading}
+          disabled={showDeleteButton || loading}
           id="domainName"
           name="domainName"
           focused
