@@ -18,7 +18,12 @@ export function HostInfo({ handleSelection }: HostInfoTabProps): ReactElement {
         variant="outlined"
         size="small"
         onClick={() => handleSelection('list')}
-        sx={{ display: 'flex', mb: 4 }}
+        sx={{
+          mb: 4,
+          width: 'fit-content',
+          maxWidth: '100%',
+          overflow: 'hidden'
+        }}
       >
         {t('Back')}
       </Button>
