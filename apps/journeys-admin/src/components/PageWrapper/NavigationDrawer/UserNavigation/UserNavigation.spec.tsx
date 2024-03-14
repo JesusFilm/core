@@ -33,7 +33,8 @@ describe('UserNavigation', () => {
 
   const getMeMock: MockedResponse<GetMe> = {
     request: {
-      query: GET_ME
+      query: GET_ME,
+      variables: { input: { redirect: undefined } }
     },
     result: {
       data: {

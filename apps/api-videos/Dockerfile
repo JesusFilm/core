@@ -16,7 +16,7 @@ RUN npm install --production --silent --force
 
 WORKDIR /prisma
 COPY ./apps/api-videos/db .
-RUN npx prisma@^5.2.0 generate
+RUN npx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
 

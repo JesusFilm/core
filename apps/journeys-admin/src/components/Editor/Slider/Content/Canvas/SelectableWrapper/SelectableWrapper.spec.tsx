@@ -210,19 +210,21 @@ describe('SelectableWrapper', () => {
   it('should select radio question on radio option click', async () => {
     const { getByTestId, getByRole } = render(
       <MockedProvider>
-        <EditorProvider
-          initialState={{
-            steps: [step([radioQuestionBlock])],
-            activeFab: ActiveFab.Add
-          }}
-        >
-          <SelectableWrapper block={radioQuestionBlock}>
-            <RadioQuestion
-              {...radioQuestionBlock}
-              wrappers={{ Wrapper: SelectableWrapper }}
-            />
-          </SelectableWrapper>
-        </EditorProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step([radioQuestionBlock])],
+              activeFab: ActiveFab.Add
+            }}
+          >
+            <SelectableWrapper block={radioQuestionBlock}>
+              <RadioQuestion
+                {...radioQuestionBlock}
+                wrappers={{ Wrapper: SelectableWrapper }}
+              />
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -238,20 +240,22 @@ describe('SelectableWrapper', () => {
   it('should select radio option on click when radio question selected', async () => {
     const { getByTestId, getByRole } = render(
       <MockedProvider>
-        <EditorProvider
-          initialState={{
-            selectedBlock: radioQuestionBlock,
-            steps: [step([radioQuestionBlock])],
-            activeFab: ActiveFab.Add
-          }}
-        >
-          <SelectableWrapper block={radioQuestionBlock}>
-            <RadioQuestion
-              {...radioQuestionBlock}
-              wrappers={{ Wrapper: SelectableWrapper }}
-            />
-          </SelectableWrapper>
-        </EditorProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: radioQuestionBlock,
+              steps: [step([radioQuestionBlock])],
+              activeFab: ActiveFab.Add
+            }}
+          >
+            <SelectableWrapper block={radioQuestionBlock}>
+              <RadioQuestion
+                {...radioQuestionBlock}
+                wrappers={{ Wrapper: SelectableWrapper }}
+              />
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -266,20 +270,22 @@ describe('SelectableWrapper', () => {
   it('should select radio option on click when sibling option selected', async () => {
     const { getByTestId, getByRole } = render(
       <MockedProvider>
-        <EditorProvider
-          initialState={{
-            selectedBlock: radioOption1,
-            steps: [step([radioQuestionBlock])],
-            activeFab: ActiveFab.Add
-          }}
-        >
-          <SelectableWrapper block={radioQuestionBlock}>
-            <RadioQuestion
-              {...radioQuestionBlock}
-              wrappers={{ Wrapper: SelectableWrapper }}
-            />
-          </SelectableWrapper>
-        </EditorProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: radioOption1,
+              steps: [step([radioQuestionBlock])],
+              activeFab: ActiveFab.Add
+            }}
+          >
+            <SelectableWrapper block={radioQuestionBlock}>
+              <RadioQuestion
+                {...radioQuestionBlock}
+                wrappers={{ Wrapper: SelectableWrapper }}
+              />
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
