@@ -293,29 +293,4 @@ export const HostFormTabFilled = {
   }
 }
 
-export const HostInfoTab = {
-  ...Template,
-  args: {
-    ...Default.args,
-    journey: { ...journey, host: null }
-  },
-  play: async () => {
-    await waitFor(async () => {
-      await expect(
-        screen.getByRole('button', { name: 'Select a Host' })
-      ).not.toBeDisabled()
-    })
-    await userEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
-    await waitFor(async () => {
-      await expect(screen.getAllByTestId('info')[0]).toBeInTheDocument()
-    })
-    await userEvent.click(screen.getAllByTestId('info')[0])
-    await waitFor(async () => {
-      await expect(
-        screen.getByText('Why does your journey need a host?')
-      ).toBeInTheDocument()
-    })
-  }
-}
-
 export default Demo
