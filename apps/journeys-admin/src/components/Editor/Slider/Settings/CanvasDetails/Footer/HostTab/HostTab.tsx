@@ -10,7 +10,6 @@ import {
 } from '../../../../../../../../__generated__/GetAllTeamHosts'
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
-import { useUpdateJourneyHostMutation } from '../../../../../../../libs/useUpdateJourneyHostMutation'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
 
 import { HostSelection } from './HostSelection'
@@ -78,7 +77,6 @@ export function HostTab(): ReactElement {
     GetAllTeamHosts,
     GetAllTeamHostsVariables
   >(GET_ALL_TEAM_HOSTS)
-  const [journeyHostUpdate] = useUpdateJourneyHostMutation()
 
   useEffect(() => {
     void loadUser()
@@ -92,11 +90,9 @@ export function HostTab(): ReactElement {
 
   async function handleClear(): Promise<void> {
     if (journey?.id == null) return
-    if (journey?.team != null)
+    if (journey?.team != null) {
       await getAllTeamHosts({ variables: { teamId: journey.team.id } })
-    await journeyHostUpdate({
-      variables: { id: journey?.id, input: { hostId: null } }
-    })
+    }
     handleSelection('selection')
   }
 

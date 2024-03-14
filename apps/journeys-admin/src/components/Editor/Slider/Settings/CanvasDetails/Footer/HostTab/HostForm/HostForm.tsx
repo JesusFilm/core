@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { ApolloCache, gql, useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
@@ -8,6 +8,9 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
+
+import { DeleteHost } from '../../../../../../../../../__generated__/DeleteHost'
+import { useUpdateJourneyHostMutation } from '../../../../../../../../libs/useUpdateJourneyHostMutation'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
 import { HostLocationFieldForm } from './HostLocationFieldForm'
@@ -29,6 +32,29 @@ interface HostFormTabProps {
 export function HostForm({ onClear, onBack }: HostFormTabProps): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
+  const [hostDelete] = useMutation<DeleteHost>(DELETE_HOST)
+  const [journeyHostUpdate] = useUpdateJourneyHostMutation()
+  const host = journey?.host
+
+  const handleClear = async (): Promise<void> => {
+    if (host != null && journey?.team != null) {
+      try {
+        await hostDelete({
+          variables: { id: host.id, teamId: journey.team.id },
+          update(cache: ApolloCache<any>) {
+            cache.evict({
+              id: cache.identify({ __typename: 'Host', id: host.id })
+            })
+          }
+        })
+      } catch (e) {}
+    }
+    if (journey?.id == null) return
+    await journeyHostUpdate({
+      variables: { id: journey?.id, input: { hostId: null } }
+    })
+    onClear()
+  }
 
   return (
     <>
@@ -39,7 +65,7 @@ export function HostForm({ onClear, onBack }: HostFormTabProps): ReactElement {
           alignItems="center"
           sx={{ p: 4 }}
         >
-          <Button variant="outlined" size="small" onClick={onClear}>
+          <Button variant="outlined" size="small" onClick={handleClear}>
             {t('Clear')}
           </Button>
         </Stack>
