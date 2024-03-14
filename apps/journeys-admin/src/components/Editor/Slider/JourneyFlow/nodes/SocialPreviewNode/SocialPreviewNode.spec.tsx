@@ -1,6 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import {
   ActiveFab,
@@ -23,11 +22,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import {
-  StepAndCardBlockCreate,
-  StepAndCardBlockCreateVariables
-} from '../../../../../../../__generated__/StepAndCardBlockCreate'
-import { STEP_AND_CARD_BLOCK_CREATE } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
 import { SocialPreviewNode } from './SocialPreviewNode'
 
@@ -118,98 +112,51 @@ describe('SocialPreviewNode', () => {
     primaryImageBlock: null
   }
 
-  const stepAndCardBlockCreateMock: MockedResponse<
-    StepAndCardBlockCreate,
-    StepAndCardBlockCreateVariables
-  > = {
-    request: {
-      query: STEP_AND_CARD_BLOCK_CREATE,
-      variables: {
-        stepBlockCreateInput: {
-          id: 'stepId',
-          journeyId: 'journeyId'
-        },
-        cardBlockCreateInput: {
-          id: 'cardId',
-          journeyId: 'journeyId',
-          parentBlockId: 'stepId',
-          themeMode: ThemeMode.dark,
-          themeName: ThemeName.base
-        }
-      }
-    },
-    result: {
-      data: {
-        stepBlockCreate: {
-          id: 'stepId',
-          parentBlockId: null,
-          parentOrder: 0,
-          locked: false,
-          nextBlockId: null,
-          __typename: 'StepBlock'
-        },
-        cardBlockCreate: {
-          id: 'cardId',
-          parentBlockId: 'stepId',
-          parentOrder: 0,
-          backgroundColor: null,
-          coverBlockId: null,
-          themeMode: null,
-          themeName: null,
-          fullscreen: false,
-          __typename: 'CardBlock'
-        }
-      }
-    }
-  }
-
   it('renders social preview node properly', async () => {
-    const { getByRole, getByText } = render(
-      <MockedProvider mocks={[stepAndCardBlockCreateMock]}>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            <SocialPreviewNode />
-          </JourneyProvider>
-        </SnackbarProvider>
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <SocialPreviewNode />
+        </JourneyProvider>
       </MockedProvider>
     )
 
-    expect(getByRole('img')).toHaveAttribute(
+    expect(screen.getByRole('img')).toHaveAttribute(
       'src',
       'https://images.unsplash.com/photo-1649866725673-16dc15de5c29?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1009&q=80'
     )
-    expect(getByText('Test Description Social Preview')).toBeInTheDocument()
-    expect(getByText('Test Title Social Preview')).toBeInTheDocument()
+    expect(
+      screen.getByText('Test Description Social Preview')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Test Title Social Preview')).toBeInTheDocument()
   })
 
   it('renders blank social preview node properly', async () => {
-    const { getByTestId } = render(
-      <MockedProvider mocks={[stepAndCardBlockCreateMock]}>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey: blankSeoJourney }}>
-            <SocialPreviewNode />
-          </JourneyProvider>
-        </SnackbarProvider>
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: blankSeoJourney }}>
+          <SocialPreviewNode />
+        </JourneyProvider>
       </MockedProvider>
     )
 
-    expect(getByTestId('SocialPreviewPostEmpty')).toBeInTheDocument()
-    expect(getByTestId('SocialPreviewTitleEmpty')).toBeInTheDocument()
-    expect(getByTestId('SocialPreviewDescriptionEmpty')).toBeInTheDocument()
+    expect(screen.getByTestId('SocialPreviewPostEmpty')).toBeInTheDocument()
+    expect(screen.getByTestId('SocialPreviewTitleEmpty')).toBeInTheDocument()
+    expect(
+      screen.getByTestId('SocialPreviewDescriptionEmpty')
+    ).toBeInTheDocument()
   })
 
   it('calls dispatch on social media node click', async () => {
-    const { getByTestId } = render(
-      <MockedProvider mocks={[stepAndCardBlockCreateMock]}>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey: blankSeoJourney }}>
-            <SocialPreviewNode />
-          </JourneyProvider>
-        </SnackbarProvider>
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: blankSeoJourney }}>
+          <SocialPreviewNode />
+        </JourneyProvider>
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('SocialPreviewNode'))
+    fireEvent.click(screen.getByTestId('SocialPreviewNode'))
 
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetActiveContentAction',
