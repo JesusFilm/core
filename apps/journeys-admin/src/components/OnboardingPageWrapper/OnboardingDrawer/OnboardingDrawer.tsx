@@ -39,21 +39,20 @@ export function OnboardingDrawer(): ReactElement {
     <Stack
       alignItems="center"
       justifyContent="space-between"
-      gap={{
-        xs: 4,
-        md: templateId == null ? 10 : 0
-      }}
+      gap={{ xs: 4, md: templateId == null ? 10 : 0 }}
       sx={{
         mt: { xs: 5 },
         my: { md: 10 },
         mx: { md: 20 },
-        width: { xs: '100%', md: '37%' }
+        width: { xs: '100%', md: '37%' },
+        mb: { xs: templateId == null || newAccountQuery === true ? 0 : 5 }
       }}
       data-testid="JourneysAdminOnboardingDrawer"
     >
       <Box sx={{ height: 26, width: { xs: 148, md: 195 } }}>
         <Image src={logo} alt="Next Steps" layout="responsive" />
       </Box>
+
       {templateId == null && (
         <Box
           sx={{
@@ -71,33 +70,27 @@ export function OnboardingDrawer(): ReactElement {
           />
         </Box>
       )}
+
       {newAccountQuery === true && <OnboardingStepper variant="mobile" />}
+
       {templateId == null && (
         <>
-          <Box
-            sx={{
-              width: 600,
-              py: { xs: 3, md: 0 },
-              display: {
-                xs: 'none',
-                md: newAccountQuery === true ? 'none' : 'block'
-              }
-            }}
-          >
-            <Image
-              src={landingDescription}
-              alt="Landing Description"
-              layout="responsive"
-            />
-          </Box>
-          <Box
-            sx={{
-              display: {
-                xs: 'block',
-                md: 'none'
-              }
-            }}
-          >
+          {newAccountQuery === false && (
+            <Box
+              sx={{
+                width: 600,
+                py: { xs: 3, md: 0 },
+                display: { xs: 'none', md: 'block' }
+              }}
+            >
+              <Image
+                src={landingDescription}
+                alt="Landing Description"
+                layout="responsive"
+              />
+            </Box>
+          )}
+          <Box sx={{ display: { xs: 'block', md: 'none' } }}>
             <Image
               src={landingDescriptionMobile}
               alt="Landing Description Mobile"
@@ -106,7 +99,9 @@ export function OnboardingDrawer(): ReactElement {
           </Box>
         </>
       )}
-      <OnboardingTemplateCard templateId={templateId} />
+
+      {templateId != null && <OnboardingTemplateCard templateId={templateId} />}
+
       {newAccountQuery === true && <OnboardingStepper variant="desktop" />}
     </Stack>
   )
