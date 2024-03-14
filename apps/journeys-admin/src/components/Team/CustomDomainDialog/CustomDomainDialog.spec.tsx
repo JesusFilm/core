@@ -335,7 +335,7 @@ describe('CustomDomainDialog', () => {
       expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
     )
 
-    fireEvent.click(getByTestId('deleteCustomDomainIcon'))
+    fireEvent.click(getByTestId('DeleteCustomDomainIcon'))
     await waitFor(() =>
       expect(mockDeleteCustomDomain.result).toHaveBeenCalled()
     )

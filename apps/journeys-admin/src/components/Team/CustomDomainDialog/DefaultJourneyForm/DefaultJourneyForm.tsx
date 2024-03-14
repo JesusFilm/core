@@ -10,18 +10,19 @@ import { ReactElement } from 'react'
 import Computer from '@core/shared/ui/icons/Computer'
 
 import { GetAdminJourneys_journeys as Journeys } from '../../../../../__generated__/GetAdminJourneys'
-import { GetCustomDomain_customDomains as CustomDomains } from '../../../../../__generated__/GetCustomDomain'
 
 interface DefaultJourneyFormProps {
   handleOnChange: (e: SelectChangeEvent) => Promise<void>
-  customDomains: CustomDomains[]
+  defaultValue?: string
   journeys?: Journeys[]
+  domainName: string
 }
 
 export function DefaultJourneyForm({
   handleOnChange,
-  customDomains,
-  journeys
+  defaultValue,
+  journeys,
+  domainName
 }: DefaultJourneyFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
@@ -37,9 +38,7 @@ export function DefaultJourneyForm({
                 id="defaultJourney"
                 name="defaultJourney"
                 onChange={handleOnChange}
-                defaultValue={
-                  customDomains[0]?.journeyCollection?.journeys[0]?.id
-                }
+                defaultValue={defaultValue}
                 variant="outlined"
               >
                 {journeys?.map((journey) => (
@@ -50,7 +49,7 @@ export function DefaultJourneyForm({
               </Select>
               <FormHelperText>
                 {t(
-                  `The selected Journey will be available under ${customDomains[0].name}/`
+                  `The selected Journey will be available under ${domainName}/`
                 )}
               </FormHelperText>
             </FormControl>

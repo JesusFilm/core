@@ -14,23 +14,22 @@ import InformationCircleContained from '@core/shared/ui/icons/InformationCircleC
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import X3 from '@core/shared/ui/icons/X3'
 
-import { GetCustomDomain_customDomains as CustomDomains } from '../../../../../__generated__/GetCustomDomain'
-
 interface DialogUpdateFormValues {
   domainName: string
 }
 
 interface DialogUpdateFormProps {
-  customDomains?: CustomDomains[]
+  showDeleteButton: boolean
   loading: boolean
 }
 
 export function DialogUpdateForm({
-  customDomains,
+  showDeleteButton,
   loading
 }: DialogUpdateFormProps): ReactElement {
   const { values, handleChange, errors, handleSubmit } =
     useFormikContext<DialogUpdateFormValues>()
+
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <Stack spacing={8}>
@@ -94,19 +93,18 @@ export function DialogUpdateForm({
               }
           }}
           InputProps={{
-            endAdornment:
-              customDomains?.length !== 0 && customDomains != null ? (
-                <InputAdornment position="start">
-                  <IconButton
-                    onClick={async () => handleSubmit()}
-                    data-testid="deleteCustomDomainIcon"
-                  >
-                    <X3 />
-                  </IconButton>
-                </InputAdornment>
-              ) : (
-                <></>
-              )
+            endAdornment: showDeleteButton ? (
+              <InputAdornment position="start">
+                <IconButton
+                  onClick={async () => handleSubmit()}
+                  data-testid="DeleteCustomDomainIcon"
+                >
+                  <X3 />
+                </IconButton>
+              </InputAdornment>
+            ) : (
+              <></>
+            )
           }}
         />
         <Button
@@ -115,13 +113,10 @@ export function DialogUpdateForm({
           sx={{
             color: 'secondary.light',
             borderColor: 'secondary.light',
-            display:
-              customDomains?.length !== 0 && customDomains != null
-                ? 'none'
-                : 'flex'
+            display: showDeleteButton ? 'none' : 'flex'
           }}
           startIcon={
-            customDomains?.length !== 0 && customDomains != null ? (
+            showDeleteButton ? (
               <></>
             ) : (
               <Check sx={{ color: 'secondary.light' }} />

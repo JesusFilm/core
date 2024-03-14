@@ -244,6 +244,10 @@ export function CustomDomainDialog({
         : ''
   }
 
+  const hasCustomDomain: boolean =
+    customDomainData?.customDomains?.length !== 0 &&
+    customDomainData?.customDomains != null
+
   return (
     <Formik
       initialValues={initialValues}
@@ -268,35 +272,36 @@ export function CustomDomainDialog({
             <Stack spacing={10}>
               <DialogUpdateForm
                 loading={loading}
-                customDomains={customDomainData?.customDomains}
+                showDeleteButton={hasCustomDomain}
               />
-              {customDomainData?.customDomains?.length !== 0 &&
-                customDomainData?.customDomains != null && <Divider />}
-              {customDomainData?.customDomains?.length !== 0 &&
-                customDomainData?.customDomains != null &&
+              {hasCustomDomain && <Divider />}
+              {hasCustomDomain &&
                 customDomainData?.customDomains[0]?.verification?.verified ===
                   true && (
                   <DefaultJourneyForm
                     handleOnChange={handleOnChange}
-                    customDomains={customDomainData.customDomains}
+                    defaultValue={
+                      customDomainData.customDomains[0]?.journeyCollection
+                        ?.journeys[0]?.id
+                    }
                     journeys={journeysData?.journeys}
+                    domainName={customDomainData?.customDomains[0]?.name}
                   />
                 )}
-              {customDomainData?.customDomains?.length !== 0 &&
-                customDomainData?.customDomains != null && (
-                  <DNSConfigSection
-                    verified={
-                      customDomainData?.customDomains[0]?.verification
-                        ?.verified ?? false
-                    }
-                    name={customDomainData?.customDomains[0]?.name}
-                    apexName={customDomainData?.customDomains[0]?.apexName}
-                    domainError={
-                      customDomainData?.customDomains[0]?.verification
-                        ?.verification?.[0]
-                    }
-                  />
-                )}
+              {hasCustomDomain && (
+                <DNSConfigSection
+                  verified={
+                    customDomainData?.customDomains[0]?.verification
+                      ?.verified ?? false
+                  }
+                  name={customDomainData?.customDomains[0]?.name}
+                  apexName={customDomainData?.customDomains[0]?.apexName}
+                  domainError={
+                    customDomainData?.customDomains[0]?.verification
+                      ?.verification?.[0]
+                  }
+                />
+              )}
             </Stack>
           </Form>
         </Dialog>

@@ -104,11 +104,15 @@ export function DNSConfigSection({
                         justifyContent="space-between"
                       >
                         {apexName === name
-                          ? t('76.76.21.21')
-                          : t('cname.vercel-dns.com')}
+                          ? '76.76.21.21'
+                          : 'cname.vercel-dns.com'}
                         <IconButton
                           onClick={async () =>
-                            await handleCopyClick('76.76.21.21')
+                            await handleCopyClick(
+                              apexName === name
+                                ? '76.76.21.21'
+                                : 'cname.vercel-dns.com'
+                            )
                           }
                           aria-label="Copy"
                           sx={{ mr: -3 }}
@@ -142,7 +146,11 @@ export function DNSConfigSection({
                           : t('cname.vercel-dns.com')}
                         <IconButton
                           onClick={async () =>
-                            await handleCopyClick('76.76.21.21')
+                            await handleCopyClick(
+                              apexName === name
+                                ? '76.76.21.21'
+                                : 'cname.vercel-dns.com'
+                            )
                           }
                           aria-label="Copy"
                           sx={{ mr: -3 }}
