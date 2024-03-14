@@ -17,7 +17,7 @@ describe('DNSConfigSection', () => {
   })
 
   it('should show copy A value to clipboard', async () => {
-    const { getAllByRole } = render(
+    const { getAllByRole, getByText } = render(
       <SnackbarProvider>
         <DNSConfigSection
           name="www.example.com"
@@ -31,10 +31,11 @@ describe('DNSConfigSection', () => {
     await waitFor(() =>
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith('76.76.21.21')
     )
+    expect(getByText('Address copied')).toBeInTheDocument()
   })
 
   it('should show copy CNAME value to clipboard', async () => {
-    const { getAllByRole } = render(
+    const { getAllByRole, getByText } = render(
       <SnackbarProvider>
         <DNSConfigSection
           name="www.mock.example.com"
@@ -50,10 +51,11 @@ describe('DNSConfigSection', () => {
         'cname.vercel-dns.com'
       )
     )
+    expect(getByText('Address copied')).toBeInTheDocument()
   })
 
   it('should show copy TXT value to clipboard', async () => {
-    const { getAllByRole } = render(
+    const { getAllByRole, getByText } = render(
       <SnackbarProvider>
         <DNSConfigSection
           name="www.example.com"
@@ -74,5 +76,6 @@ describe('DNSConfigSection', () => {
         'vc-domain-verify=example.com,61eb769fc89e3d03578a'
       )
     )
+    expect(getByText('Address copied')).toBeInTheDocument()
   })
 })
