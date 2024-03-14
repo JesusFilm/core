@@ -23,7 +23,7 @@ export function GoalDetails(): ReactElement {
   }
 
   return (
-    <Drawer
+    <Drawer data-testId='GoalDetails'
       title={selectedGoalUrl != null ? t('Goal Details') : t('Information')}
     >
       <Box

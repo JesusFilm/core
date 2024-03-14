@@ -1,5 +1,5 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, getByTestId, render } from '@testing-library/react'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import {
@@ -13,9 +13,12 @@ import {
   ActiveSlide
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
+import { GoalDetails } from '../../../Settings/GoalDetails'
 import { Goal } from '../Goals'
 
 import { GoalsList } from './GoalsList'
+
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -73,21 +76,24 @@ describe('GoalsList', () => {
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
     )
 
+  
     it('should render the information drawer on the right', () => {
       const { getByTestId, getByRole } = render(<GoalsList goals={goals} />)
-      fireEvent.click(getByRole('button', { name: 'Learn More' }))
+       fireEvent.click(getByRole('button', { name: 'Learn More' }))
+      expect(useEditor().dispatch).toHaveBeenCalledWith({ type: 'SetSelectedGoalUrlAction' });
+
       expect(getByTestId('GoalInformation').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorRight'
       )
     })
 
-    it('should close information drawer on close icon click', () => {
+    it('should close information drawer on goal list click', () => {
       const { getByTestId, getByText, getByRole } = render(
         <GoalsList goals={goals} />
       )
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
       expect(getByText('Information')).toBeInTheDocument()
-      fireEvent.click(getByTestId('X2Icon'))
+      fireEvent.click(getByTestId('GoalsListBody'))
       expect(getByTestId('GoalInformation').parentElement).not.toHaveClass(
         'MuiDrawer-parentAnchorRight'
       )
@@ -113,12 +119,17 @@ describe('GoalsList', () => {
     )
 
     it('should render the information drawer from the bottom', () => {
-      const { getByTestId, getByText, getByRole } = render(
-        <GoalsList goals={goals} />
+      const { getByText, getByRole } = render(
+        <>
+          <TestEditorState />
+          <GoalsList goals={goals} />
+          <GoalDetails />
+        </>
       )
+      expect(getByText('selectedGoalUrl:')).toBeInTheDocument()
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
       expect(getByText('Information')).toBeInTheDocument()
-      expect(getByTestId('GoalInformation').parentElement).toHaveClass(
+      expect(getByTestId('GoalDeatils').parentElement).toHaveClass(
         'MuiPaper-root MuiPaper-elevation MuiPaper-elevation0 MuiDrawer-paper MuiDrawer-paperAnchorBottom css-1mdfdy2-MuiPaper-root-MuiDrawer-paper'
       )
     })

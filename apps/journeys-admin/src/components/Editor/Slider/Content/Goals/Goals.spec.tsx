@@ -107,7 +107,7 @@ const blocks: Blocks[] = [
   }
 ]
 
-describe('GoalsList', () => {
+describe('Goals', () => {
   const journey: Journey = {
     __typename: 'Journey',
     id: 'journeyId',

@@ -25,7 +25,6 @@ interface GoalsListProps {
 
 export function GoalsList({ goals }: GoalsListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
   const { dispatch } = useEditor()
 
   function handleClick(): void {
@@ -67,6 +66,7 @@ export function GoalsList({ goals }: GoalsListProps): ReactElement {
                 mb: { xs: 4, sm: 0 }
               }}
               onClick={() => handleClick()}
+              name="Learn More"
             >
               <Typography variant="subtitle2">{t('Learn More')}</Typography>
             </Button>
@@ -116,7 +116,7 @@ export function GoalsList({ goals }: GoalsListProps): ReactElement {
                 />
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody data-testid="GoalsListBody">
               {goals?.map((goal) => (
                 <GoalsListItem key={goal.url} goal={goal} />
               ))}
