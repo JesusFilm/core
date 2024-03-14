@@ -85,8 +85,8 @@ export function OnboardingDrawer(): ReactElement {
           {newAccountQuery === false && (
             <Box
               sx={{
+                mb: 20,
                 width: 600,
-                py: { xs: 3, md: 0 },
                 display: { xs: 'none', md: 'block' }
               }}
             >
