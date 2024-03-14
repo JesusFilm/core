@@ -62,9 +62,6 @@ export function OnboardingStepper({
     },
     {
       label: t('Create a Team')
-    },
-    {
-      label: t('Journey Begins')
     }
   ]
 

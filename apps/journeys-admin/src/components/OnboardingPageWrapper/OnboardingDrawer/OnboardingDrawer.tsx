@@ -38,7 +38,7 @@ export function OnboardingDrawer(): ReactElement {
   return (
     <Stack
       alignItems="center"
-      gap={2}
+      gap={{ xs: onboarding === true ? 4 : 0, md: 10 }}
       sx={{
         width: { xs: '100%', md: '30%' },
         mt: { xs: 5, md: 10 }
@@ -48,41 +48,34 @@ export function OnboardingDrawer(): ReactElement {
       <ResponsiveImage
         src={logo}
         alt="Next Steps"
-        sx={{ height: 26, width: 168 }}
+        sx={{ height: 26, width: { xs: 148, md: 195 } }}
       />
       {templateId == null && (
-        <>
-          <ResponsiveImage
-            src={landingIllustration}
-            alt="Landing Illustration"
-            sx={{
-              px: 10,
-              display: { xs: 'none', md: 'block' }
-            }}
-          />
-          {onboarding === true && <OnboardingStepper variant="mobile" />}
-          <ResponsiveImage
-            src={landingDescription}
-            alt="landing-description"
-            sx={{
-              py: { xs: 3, md: 0 },
-              display: {
-                xs: 'block',
-                md: onboarding === true ? 'none' : 'block'
-              }
-            }}
-          />
-        </>
+        <ResponsiveImage
+          src={landingIllustration}
+          alt="Landing Illustration"
+          sx={{
+            px: { md: 10, lg: 15 },
+            display: { xs: 'none', md: 'block' }
+          }}
+        />
       )}
-      <Stack
-        alignItems="center"
-        gap={{ xs: 5, md: 20 }}
-        direction={{ xs: 'column-reverse', md: 'column' }}
-        width="100%"
-      >
-        <OnboardingTemplateCard templateId={templateId} />
-        {onboarding === true && <OnboardingStepper variant="desktop" />}
-      </Stack>
+      {onboarding === true && <OnboardingStepper variant="mobile" />}
+      {templateId == null && (
+        <ResponsiveImage
+          src={landingDescription}
+          alt="Landing Description"
+          sx={{
+            py: { xs: 3, md: 0 },
+            display: {
+              xs: 'block',
+              md: onboarding === true ? 'none' : 'block'
+            }
+          }}
+        />
+      )}
+      <OnboardingTemplateCard templateId={templateId} />
+      {onboarding === true && <OnboardingStepper variant="desktop" />}
     </Stack>
   )
 }

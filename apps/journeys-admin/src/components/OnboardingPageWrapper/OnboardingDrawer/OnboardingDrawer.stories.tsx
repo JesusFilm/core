@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
 import {
@@ -13,13 +14,27 @@ import { OnboardingDrawer } from './OnboardingDrawer'
 const OnboardingDrawerStory: Meta<typeof OnboardingDrawer> = {
   ...simpleComponentConfig,
   component: OnboardingDrawer,
-  title: 'Journeys-Admin/OnboardingPageWrapper/OnboardingDrawer'
+  title: 'Journeys-Admin/OnboardingPageWrapper/OnboardingDrawer',
+  parameters: {
+    ...simpleComponentConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const Template: StoryObj<typeof OnboardingDrawer> = {
-  render: ({ ...args }) => {
-    return <OnboardingDrawer {...args} />
-  }
+  render: ({ ...args }) => (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: 'white'
+      }}
+    >
+      <OnboardingDrawer {...args} />
+    </Box>
+  )
 }
 
 const getJourneyMock = {
@@ -80,7 +95,20 @@ export const Default = {
   ...Template
 }
 
-export const Completed = {
+export const WithStepper = {
+  ...Template,
+  parameters: {
+    nextjs: {
+      router: {
+        query: {
+          newAccount: 'true'
+        }
+      }
+    }
+  }
+}
+
+export const WithTemplateAndStepper = {
   ...Template,
   parameters: {
     apolloClient: {
