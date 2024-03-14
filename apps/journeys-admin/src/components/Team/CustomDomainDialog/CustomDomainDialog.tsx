@@ -205,10 +205,7 @@ export function CustomDomainDialog({
               fields: {
                 customDomains(existingCustomDomains = []) {
                   const newCustomDomainRef = cache.writeFragment({
-                    data: createCustomDomain,
-                    id: cache.identify({
-                      ...createCustomDomain.customDomainCreate
-                    }),
+                    data: createCustomDomain.customDomainCreate,
                     fragment: gql`
                       fragment NewCustomDomain on CustomDomain {
                         id
