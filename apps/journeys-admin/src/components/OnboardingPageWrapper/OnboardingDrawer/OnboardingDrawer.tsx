@@ -14,7 +14,7 @@ import { OnboardingTemplateCard } from './OnboardingTemplateCard/OnboardingTempl
 export function OnboardingDrawer(): ReactElement {
   const router = useRouter()
 
-  const onboarding =
+  const newAccountQuery =
     router.query.newAccount != null
       ? true
       : router.query.redirect?.includes('newAccount')
@@ -53,7 +53,7 @@ export function OnboardingDrawer(): ReactElement {
             p: 5,
             overflow: 'hidden',
             aspectRatio: '0.9/1',
-            flexGrow: templateId == null ? 0 : 1,
+            flexGrow: 1,
             display: { xs: 'none', md: 'flex' }
           }}
         >
@@ -64,14 +64,14 @@ export function OnboardingDrawer(): ReactElement {
           />
         </Box>
       )}
-      {onboarding === true && <OnboardingStepper variant="mobile" />}
+      {newAccountQuery === true && <OnboardingStepper variant="mobile" />}
       {templateId == null && (
         <Box
           sx={{
             py: { xs: 3, md: 0 },
             display: {
               xs: 'block',
-              md: onboarding === true ? 'none' : 'block'
+              md: newAccountQuery === true ? 'none' : 'block'
             }
           }}
         >
@@ -83,7 +83,7 @@ export function OnboardingDrawer(): ReactElement {
         </Box>
       )}
       <OnboardingTemplateCard templateId={templateId} />
-      {onboarding === true && <OnboardingStepper variant="desktop" />}
+      {newAccountQuery === true && <OnboardingStepper variant="desktop" />}
     </Stack>
   )
 }
