@@ -40,11 +40,15 @@ describe('StepBlockResolver', () => {
     id: 'blockId',
     journeyId: 'journeyId',
     nextBlockId: 'nextBlockId',
-    locked: true
+    locked: true,
+    x: 0,
+    y: 0
   }
   const blockUpdateInput: StepBlockUpdateInput = {
     nextBlockId: 'nextBlockId',
-    locked: false
+    locked: false,
+    x: 0,
+    y: 0
   }
   const blockService = {
     provide: BlockService,
@@ -101,6 +105,8 @@ describe('StepBlockResolver', () => {
             }
           },
           parentOrder: 2,
+          x: 0,
+          y: 0,
           typename: 'StepBlock'
         },
         include: {
@@ -130,7 +136,12 @@ describe('StepBlockResolver', () => {
     it('updates a StepBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.stepBlockUpdate(ability, 'blockId', blockUpdateInput)
-      expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
+      expect(service.update).toHaveBeenCalledWith('blockId', {
+        locked: false,
+        nextBlockId: 'nextBlockId',
+        x: 0,
+        y: 0
+      })
     })
 
     it('throws error if not found', async () => {
