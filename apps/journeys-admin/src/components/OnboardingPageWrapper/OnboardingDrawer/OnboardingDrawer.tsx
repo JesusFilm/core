@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { SxProps } from '@mui/material/styles'
-import Image, { StaticImageData } from 'next/image'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
@@ -38,33 +37,36 @@ export function OnboardingDrawer(): ReactElement {
   return (
     <Stack
       alignItems="center"
-      gap={{ xs: onboarding === true ? 4 : 0, md: 10 }}
+      gap={5}
       sx={{
-        width: { xs: '100%', md: '30%' },
-        mt: { xs: 5, md: 10 }
+        py: { md: 10 },
+        width: { xs: '100%', md: '30%' }
       }}
-      data-testid="OnboardingDrawer"
+      data-testid="JourneysAdminOnboardingDrawer"
     >
-      <ResponsiveImage
-        src={logo}
-        alt="Next Steps"
-        sx={{ height: 26, width: { xs: 148, md: 195 } }}
-      />
+      <Box sx={{ height: 26, width: { xs: 148, md: 195 } }}>
+        <Image src={logo} alt="Next Steps" layout="responsive" />
+      </Box>
       {templateId == null && (
-        <ResponsiveImage
-          src={landingIllustration}
-          alt="Landing Illustration"
+        <Box
           sx={{
-            px: { md: 10, lg: 15 },
-            display: { xs: 'none', md: 'block' }
+            p: 5,
+            overflow: 'hidden',
+            aspectRatio: '0.9/1',
+            flexGrow: templateId == null ? 0 : 1,
+            display: { xs: 'none', md: 'flex' }
           }}
-        />
+        >
+          <Image
+            src={landingIllustration}
+            alt="Landing Illustration"
+            layout="responsive"
+          />
+        </Box>
       )}
       {onboarding === true && <OnboardingStepper variant="mobile" />}
       {templateId == null && (
-        <ResponsiveImage
-          src={landingDescription}
-          alt="Landing Description"
+        <Box
           sx={{
             py: { xs: 3, md: 0 },
             display: {
@@ -72,24 +74,16 @@ export function OnboardingDrawer(): ReactElement {
               md: onboarding === true ? 'none' : 'block'
             }
           }}
-        />
+        >
+          <Image
+            src={landingDescription}
+            alt="Landing Description"
+            layout="responsive"
+          />
+        </Box>
       )}
       <OnboardingTemplateCard templateId={templateId} />
       {onboarding === true && <OnboardingStepper variant="desktop" />}
     </Stack>
-  )
-}
-
-interface ResponsiveImageProps {
-  src: StaticImageData
-  alt?: string
-  sx?: SxProps
-}
-
-function ResponsiveImage({ src, alt, sx }: ResponsiveImageProps): ReactElement {
-  return (
-    <Box sx={{ width: '100%', height: 'auto', ...sx }}>
-      <Image src={src} alt={alt ?? 'landing-page-image'} layout="responsive" />
-    </Box>
   )
 }

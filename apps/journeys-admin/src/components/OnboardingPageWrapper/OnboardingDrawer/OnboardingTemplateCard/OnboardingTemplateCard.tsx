@@ -25,11 +25,11 @@ export function OnboardingTemplateCard({
       {templateId != null && (
         <Stack
           spacing={{ xs: 4, md: 0 }}
-          justifyContent={{ xs: 'flex-start', sm: 'center', md: null }}
+          justifyContent={{ xs: 'flex-start', sm: 'center' }}
           direction={{ xs: 'row', md: 'column' }}
           sx={{
             flexShrink: 0,
-            width: { xs: '100%', md: 244 },
+            width: { xs: '100%', md: 200 },
             px: { xs: 6, md: 0 }
           }}
         >
@@ -41,8 +41,8 @@ export function OnboardingTemplateCard({
               backgroundColor:
                 data?.journey != null ? 'background.default' : 'transparent',
               overflow: 'hidden',
-              height: { xs: 57, sm: 137, md: 244 },
-              width: { xs: 57, sm: 137, md: 244 },
+              height: { xs: 60, sm: 140, md: 200 },
+              width: { xs: 60, sm: 140, md: 200 },
               borderRadius: { xs: 2, md: 0 },
               borderTopLeftRadius: { xs: null, md: 12 },
               borderTopRightRadius: { xs: null, md: 12 }
@@ -92,8 +92,7 @@ function OnboardingTemplateCardDetails({
       data-testid="OnboardingTemplateCardDetails"
       direction="column"
       sx={{
-        py: { xs: null, md: 6 },
-        px: { xs: null, md: 3 },
+        p: 3,
         borderWidth: { xs: 0, md: 1 },
         borderStyle: 'solid',
         borderColor: 'divider',
@@ -105,9 +104,6 @@ function OnboardingTemplateCardDetails({
       <Typography
         variant="overline2"
         sx={{
-          whiteSpace: 'noWrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
           color: (theme) => theme.palette.grey[700]
         }}
       >
@@ -115,10 +111,12 @@ function OnboardingTemplateCardDetails({
       </Typography>
       <Box
         sx={{
+          display: { xs: 'none', md: '-webkit-box' },
           height: { xs: 26, md: 46 },
+          overflow: 'hidden',
           textOverflow: 'ellipsis',
           WebkitBoxOrient: 'vertical',
-          WebkitLineClamp: 3
+          WebkitLineClamp: 2
         }}
       >
         <Typography

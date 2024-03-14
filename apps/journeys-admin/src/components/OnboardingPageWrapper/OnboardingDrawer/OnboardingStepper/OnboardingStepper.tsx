@@ -127,15 +127,11 @@ export function OnboardingStepper({
   return (
     <Box
       sx={{
-        width: { xs: '100%', md: 244 },
-        px: { lg: 3 },
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center'
+        width: { xs: '100%', md: 200 }
       }}
     >
       {variant === 'desktop' && (
-        <Stack gap={6} sx={{ display: { xs: 'none', md: 'flex' } }}>
+        <Stack gap={3} sx={{ display: { xs: 'none', md: 'flex' } }}>
           <Typography variant="h6">
             {t(`Let's get you on the journey`)}
           </Typography>

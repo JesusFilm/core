@@ -51,7 +51,7 @@ export function OnboardingPageWrapper({
           borderStyle: { xs: 'none', sm: 'solid' },
           backgroundColor: { xs: 'background.paper', md: 'background.default' }
         }}
-        data-testid="OnboardingPageWrapper"
+        data-testid="JourneysAdminOnboardingPageWrapper"
       >
         <Typography variant="h1" sx={{ display: { xs: 'none', sm: 'flex' } }}>
           {title}
@@ -59,7 +59,6 @@ export function OnboardingPageWrapper({
         <Stack
           alignItems="center"
           sx={{
-            display: 'flex',
             flexGrow: { xs: 1, sm: 0 },
             maxWidth: { xs: '100%', sm: 397 }
           }}
@@ -70,8 +69,8 @@ export function OnboardingPageWrapper({
               display: 'flex',
               flexDirection: 'column',
               borderRadius: 2,
-              borderBottomLeftRadius: { xs: 0, sm: 8 },
-              borderBottomRightRadius: { xs: 0, sm: 8 },
+              borderBottomLeftRadius: { sm: 8 },
+              borderBottomRightRadius: { sm: 8 },
               width: { xs: '100vw', sm: 397 }
             }}
           >
