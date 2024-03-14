@@ -73,7 +73,7 @@ export function Card({
     backgroundColor ?? cardTheme.palette.background.paper
 
   return (
-    <>
+    <Box data-testid="CardProperties">
       <Accordion
         id={`${id}-background-color`}
         icon={
@@ -154,6 +154,6 @@ export function Card({
       >
         <CardLayout />
       </Accordion>
-    </>
+    </Box>
   )
 }

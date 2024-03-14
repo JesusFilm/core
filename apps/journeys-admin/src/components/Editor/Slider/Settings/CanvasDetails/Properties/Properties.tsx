@@ -8,8 +8,8 @@ import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
+import { Drawer } from '../../Drawer'
 import { CardTemplateDrawer } from '../../Drawer/CardTemplates/CardTemplateDrawer'
-import { Drawer } from '../../Drawer/Drawer'
 
 const Card = dynamic(
   async () =>
