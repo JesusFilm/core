@@ -64,7 +64,8 @@ export class CustomDomainResolver {
     @CaslAbility() ability: AppAbility
   ): Promise<CustomDomainUpdateInput> {
     const customDomain = await this.prismaService.customDomain.findUnique({
-      where: { id: input.id }
+      where: { id: input.id },
+      include: { team: { include: { userTeams: true } } }
     })
     if (customDomain == null) {
       throw new Error('Custom domain not found')
@@ -91,7 +92,8 @@ export class CustomDomainResolver {
     @CaslAbility() ability: AppAbility
   ): Promise<CustomDomain> {
     const customDomain = await this.prismaService.customDomain.findUnique({
-      where: { id }
+      where: { id },
+      include: { team: { include: { userTeams: true } } }
     })
     if (customDomain == null) {
       throw new Error('Custom domain not found')
