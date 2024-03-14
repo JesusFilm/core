@@ -40,7 +40,7 @@ describe('JourneyCollectionResolver', () => {
   describe('journeyCollection', () => {
     it('should return a journey collection', async () => {
       const id = 'id'
-      const journeyCollection = { id }
+      const journeyCollection = { id, teamId: 'teamId', title: '' }
       const findUniqueSpy = jest.spyOn(
         prismaService.journeyCollection,
         'findUnique'
@@ -57,7 +57,7 @@ describe('JourneyCollectionResolver', () => {
   describe('journeyCollections', () => {
     it('should return journey collections', async () => {
       const teamId = 'teamId'
-      const journeyCollections = [{ id: 'id' }]
+      const journeyCollections = [{ id: 'id', teamId, title: '' }]
       const findManySpy = jest.spyOn(
         prismaService.journeyCollection,
         'findMany'
@@ -68,6 +68,39 @@ describe('JourneyCollectionResolver', () => {
 
       expect(result).toEqual(journeyCollections)
       expect(findManySpy).toHaveBeenCalledWith({ where: { teamId } })
+    })
+  })
+
+  describe('journeyCollectionCreate', () => {
+    it('should create a journey collection', async () => {
+      const input = {
+        id: 'id',
+        teamId: 'teamId',
+        title: 'title',
+        customDomain: 'customDomain',
+        journeyIds: ['journeyId']
+      }
+      const collection = { id: 'id', teamId: 'teamId', title: 'title' }
+      const createSpy = jest.spyOn(prismaService.journeyCollection, 'create')
+      createSpy.mockResolvedValue(collection)
+
+      const result = await resolver.journeyCollectionCreate(input, {} as any)
+
+      expect(result).toEqual(collection)
+      expect(createSpy).toHaveBeenCalledWith({
+        data: {
+          id: input.id,
+          team: { connect: { id: input.teamId } },
+          title: input.title,
+          customDomain: input.customDomain,
+          journeyCollectionJourneys: {
+            createMany: {
+              data: [{ order: 0, journeyId: input.journeyIds[0] }]
+            }
+          }
+        },
+        include: { team: { include: { userTeams: true } } }
+      })
     })
   })
 })

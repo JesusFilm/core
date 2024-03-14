@@ -67,7 +67,7 @@ export class JourneyCollectionResolver {
       if (input.journeyIds != null && input.journeyIds.length > 0) {
         data.journeyCollectionJourneys = {
           createMany: {
-            data: (input.journeyIds as string[]).map((id, index) => ({
+            data: input.journeyIds.map((id, index) => ({
               order: index,
               journeyId: id
             }))
@@ -177,7 +177,7 @@ export class JourneyCollectionResolver {
       })
       if (input.journeyIds.length > 0) {
         await this.prismaService.journeyCollectionJourneys.createMany({
-          data: (input.journeyIds as string[]).map((id, index) => ({
+          data: input.journeyIds.map((id, index) => ({
             order: index,
             journeyId: id,
             journeyCollectionId: input.id
