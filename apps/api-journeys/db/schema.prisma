@@ -445,6 +445,8 @@ model Block {
   projectId               String?
   apiToken                String?
   formSlug                String?
+  x                       Int?
+  y                       Int?
   updatedAt               DateTime             @default(now()) @updatedAt
   journey                 Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
