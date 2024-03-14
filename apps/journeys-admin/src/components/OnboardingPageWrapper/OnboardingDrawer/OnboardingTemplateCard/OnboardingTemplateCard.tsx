@@ -42,8 +42,8 @@ export function OnboardingTemplateCard({
               height: { xs: 60, sm: 140, md: 200 },
               width: { xs: 60, sm: 140, md: 200 },
               borderRadius: { xs: 2, md: 0 },
-              borderTopLeftRadius: { xs: null, md: 12 },
-              borderTopRightRadius: { xs: null, md: 12 }
+              borderTopLeftRadius: { md: 12 },
+              borderTopRightRadius: { md: 12 }
             }}
             data-testid="OnboardingSideBarSocialImage"
           >
