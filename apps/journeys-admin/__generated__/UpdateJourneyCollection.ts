@@ -9,10 +9,15 @@ import { JourneyCollectionUpdateInput } from "./globalTypes";
 // GraphQL mutation operation: UpdateJourneyCollection
 // ====================================================
 
+export interface UpdateJourneyCollection_journeyCollectionUpdate_journeys {
+  __typename: "Journey";
+  id: string;
+}
+
 export interface UpdateJourneyCollection_journeyCollectionUpdate {
   __typename: "JourneyCollection";
   id: string;
-  journeyIds: string[];
+  journeys: UpdateJourneyCollection_journeyCollectionUpdate_journeys[] | null;
 }
 
 export interface UpdateJourneyCollection {

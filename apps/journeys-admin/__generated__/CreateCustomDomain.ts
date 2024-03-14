@@ -32,7 +32,7 @@ export interface CreateCustomDomain_customDomainCreate_journeyCollection_journey
 export interface CreateCustomDomain_customDomainCreate_journeyCollection {
   __typename: "JourneyCollection";
   id: string;
-  journeys: (CreateCustomDomain_customDomainCreate_journeyCollection_journeys | null)[];
+  journeys: CreateCustomDomain_customDomainCreate_journeyCollection_journeys[] | null;
 }
 
 export interface CreateCustomDomain_customDomainCreate {
@@ -40,7 +40,6 @@ export interface CreateCustomDomain_customDomainCreate {
   id: string;
   apexName: string;
   name: string;
-  allowOutsideJourneys: boolean;
   verification: CreateCustomDomain_customDomainCreate_verification | null;
   journeyCollection: CreateCustomDomain_customDomainCreate_journeyCollection | null;
 }

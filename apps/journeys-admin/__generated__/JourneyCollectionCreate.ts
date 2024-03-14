@@ -18,7 +18,7 @@ export interface JourneyCollectionCreate_journeyCollectionCreate_journeys {
 export interface JourneyCollectionCreate_journeyCollectionCreate {
   __typename: "JourneyCollection";
   id: string;
-  journeys: (JourneyCollectionCreate_journeyCollectionCreate_journeys | null)[];
+  journeys: JourneyCollectionCreate_journeyCollectionCreate_journeys[] | null;
 }
 
 export interface JourneyCollectionCreate_customDomainUpdate_journeyCollection_journeys {
@@ -30,7 +30,7 @@ export interface JourneyCollectionCreate_customDomainUpdate_journeyCollection_jo
 export interface JourneyCollectionCreate_customDomainUpdate_journeyCollection {
   __typename: "JourneyCollection";
   id: string;
-  journeys: (JourneyCollectionCreate_customDomainUpdate_journeyCollection_journeys | null)[];
+  journeys: JourneyCollectionCreate_customDomainUpdate_journeyCollection_journeys[] | null;
 }
 
 export interface JourneyCollectionCreate_customDomainUpdate {

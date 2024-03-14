@@ -30,14 +30,13 @@ export interface GetCustomDomain_customDomains_journeyCollection_journeys {
 export interface GetCustomDomain_customDomains_journeyCollection {
   __typename: "JourneyCollection";
   id: string;
-  journeys: (GetCustomDomain_customDomains_journeyCollection_journeys | null)[];
+  journeys: GetCustomDomain_customDomains_journeyCollection_journeys[] | null;
 }
 
 export interface GetCustomDomain_customDomains {
   __typename: "CustomDomain";
   id: string;
   apexName: string;
-  allowOutsideJourneys: boolean;
   verification: GetCustomDomain_customDomains_verification | null;
   teamId: string;
   name: string;

@@ -91,7 +91,6 @@ describe('CustomDomainDialog', () => {
             __typename: 'CustomDomain',
             name: 'mockdomain.com',
             apexName: 'mockdomain.com',
-            allowOutsideJourneys: true,
             id: 'customDomainId',
             teamId: 'teamId',
             verification: {
@@ -125,7 +124,6 @@ describe('CustomDomainDialog', () => {
               __typename: 'CustomDomain',
               name: 'tandem.mockdomain.com',
               apexName: 'mockdomain.com',
-              allowOutsideJourneys: true,
               id: 'customDomainId',
               teamId: 'teamId',
               verification: {
@@ -187,7 +185,6 @@ describe('CustomDomainDialog', () => {
           id: 'customDomainId',
           apexName: 'www.example.com',
           name: 'www.example.com',
-          allowOutsideJourneys: true,
           verification: {
             __typename: 'CustomDomainVerification',
             verified: true,
@@ -275,7 +272,7 @@ describe('CustomDomainDialog', () => {
         journeyCollectionUpdate: {
           __typename: 'JourneyCollection',
           id: 'journeyCollectionId',
-          journeyIds: ['published-journey-id']
+          journeys: [{ __typename: 'Journey', id: 'published-journey-id' }]
         }
       }
     }))

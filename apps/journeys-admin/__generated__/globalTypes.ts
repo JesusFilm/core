@@ -300,13 +300,12 @@ export interface CreateVerificationRequestInput {
 export interface CustomDomainCreateInput {
   teamId: string;
   name: string;
-  allowOutsideJourneys?: boolean | null;
   journeyCollectionId?: string | null;
 }
 
 export interface CustomDomainUpdateInput {
+  id: string;
   name?: string | null;
-  allowOutsideJourneys?: boolean | null;
   journeyCollectionId?: string | null;
 }
 
@@ -381,14 +380,14 @@ export interface JourneyCollectionCreateInput {
   id?: string | null;
   teamId: string;
   title?: string | null;
-  journeyIds?: (string | null)[] | null;
+  journeyIds?: string[] | null;
   customDomain?: CustomDomainCreateInput | null;
 }
 
 export interface JourneyCollectionUpdateInput {
   id: string;
   title?: string | null;
-  journeyIds?: (string | null)[] | null;
+  journeyIds?: string[] | null;
 }
 
 export interface JourneyProfileUpdateInput {
@@ -440,6 +439,7 @@ export interface JourneysFilter {
   languageIds?: string[] | null;
   limit?: number | null;
   orderByRecent?: boolean | null;
+  hostname?: string | null;
 }
 
 export interface LanguagesFilter {

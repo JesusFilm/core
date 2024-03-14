@@ -72,7 +72,6 @@ const getCustomDomainMockVerifiedFalse: MockedResponse<GetCustomDomain> = {
           __typename: 'CustomDomain',
           name: 'mockdomain.com',
           apexName: 'mockdomain.com',
-          allowOutsideJourneys: true,
           id: 'customDomainId',
           teamId: 'teamId',
           verification: {
@@ -113,7 +112,6 @@ const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
           __typename: 'CustomDomain',
           name: 'mockdomain.com',
           apexName: 'mockdomain.com',
-          allowOutsideJourneys: true,
           id: 'customDomainId',
           teamId: 'teamId',
           verification: {
@@ -146,7 +144,6 @@ const getCustomDomainMockCName: MockedResponse<GetCustomDomain> = {
           __typename: 'CustomDomain',
           name: 'tandem.mockdomain.com',
           apexName: 'mockdomain.com',
-          allowOutsideJourneys: true,
           id: 'customDomainId',
           teamId: 'teamId',
           verification: {

@@ -36,7 +36,6 @@ export const GET_CUSTOM_DOMAIN = gql`
     customDomains(teamId: $teamId) {
       id
       apexName
-      allowOutsideJourneys
       verification {
         verified
         verification {
@@ -65,7 +64,6 @@ export const CREATE_CUSTOM_DOMAIN = gql`
       id
       apexName
       name
-      allowOutsideJourneys
       verification {
         verified
         verification {
@@ -90,7 +88,9 @@ export const UPDATE_JOURNEY_COLLECTION = gql`
   mutation UpdateJourneyCollection($input: JourneyCollectionUpdateInput!) {
     journeyCollectionUpdate(input: $input) {
       id
-      journeyIds
+      journeys {
+        id
+      }
     }
   }
 `
@@ -281,8 +281,8 @@ export function CustomDomainDialog({
                   <DefaultJourneyForm
                     handleOnChange={handleOnChange}
                     defaultValue={
-                      customDomainData.customDomains[0]?.journeyCollection
-                        ?.journeys[0]?.id
+                      customDomainData?.customDomains[0]?.journeyCollection
+                        ?.journeys?.[0]?.id ?? undefined
                     }
                     journeys={journeysData?.journeys}
                     domainName={customDomainData?.customDomains[0]?.name}
