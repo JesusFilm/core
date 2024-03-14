@@ -52,7 +52,7 @@ export function OnboardingDrawer(): ReactElement {
           sx={{
             p: 5,
             overflow: 'hidden',
-            aspectRatio: '0.9/1',
+            aspectRatio: '0.86/1',
             flexGrow: 1,
             display: { xs: 'none', md: 'flex' }
           }}
@@ -69,6 +69,7 @@ export function OnboardingDrawer(): ReactElement {
         <Box
           sx={{
             py: { xs: 3, md: 0 },
+            pb: { xs: 0, md: 40 },
             display: {
               xs: 'block',
               md: newAccountQuery === true ? 'none' : 'block'

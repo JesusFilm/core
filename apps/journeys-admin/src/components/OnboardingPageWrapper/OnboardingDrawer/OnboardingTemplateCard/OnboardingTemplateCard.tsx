@@ -34,10 +34,10 @@ export function OnboardingTemplateCard({
           }}
         >
           <Stack
+            alignItems="center"
+            justifyContent="center"
             sx={{
               position: 'relative',
-              justifyContent: 'center',
-              alignItems: 'center',
               backgroundColor:
                 data?.journey != null ? 'background.default' : 'transparent',
               overflow: 'hidden',
@@ -114,9 +114,7 @@ function OnboardingTemplateCardDetails({
           display: { xs: 'none', md: '-webkit-box' },
           height: { xs: 26, md: 46 },
           overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          WebkitBoxOrient: 'vertical',
-          WebkitLineClamp: 2
+          textOverflow: 'ellipsis'
         }}
       >
         <Typography
