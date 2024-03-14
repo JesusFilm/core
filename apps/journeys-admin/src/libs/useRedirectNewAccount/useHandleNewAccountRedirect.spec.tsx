@@ -10,14 +10,13 @@ jest.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-Object.defineProperty(window, 'location', {
-  configurable: true,
-  enumerable: true,
-  value: { origin: 'http://localhost:4200' }
-})
-
 describe('HandleNewAccountRedirect', () => {
   const push = jest.fn()
+  Object.defineProperty(window, 'location', {
+    configurable: true,
+    enumerable: true,
+    value: { origin: 'http://localhost:4200' }
+  })
 
   afterEach(() => {
     jest.clearAllMocks()
