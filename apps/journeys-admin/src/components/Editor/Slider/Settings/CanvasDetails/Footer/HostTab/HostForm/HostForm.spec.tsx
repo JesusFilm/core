@@ -5,6 +5,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { DeleteHost } from '../../../../../../../../../__generated__/DeleteHost'
+import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../../__generated__/GetAllTeamHosts'
 import {
   UpdateJourneyHost,
   UpdateJourneyHostVariables
@@ -29,10 +30,9 @@ jest.mock('react-i18next', () => ({
 }))
 
 describe('HostForm', () => {
-  const defaultHost = {
+  const defaultHost: Host = {
     id: 'hostId',
     __typename: 'Host',
-    teamId: 'teamId',
     title: 'Cru International',
     location: 'Florida, USA',
     src1: 'imageSrc1',
@@ -152,7 +152,7 @@ describe('HostForm', () => {
         query: DELETE_HOST,
         variables: {
           id: defaultHost.id,
-          teamId: defaultHost.teamId
+          teamId: journey.team?.id
         }
       },
       result: jest.fn(() => ({

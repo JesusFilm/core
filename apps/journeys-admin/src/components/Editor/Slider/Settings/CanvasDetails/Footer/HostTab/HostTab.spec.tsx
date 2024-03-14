@@ -6,7 +6,8 @@ import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__ge
 
 import {
   GetAllTeamHosts,
-  GetAllTeamHostsVariables
+  GetAllTeamHostsVariables,
+  GetAllTeamHosts_hosts as Host
 } from '../../../../../../../../__generated__/GetAllTeamHosts'
 import {
   GetUserTeamsAndInvites,
@@ -59,10 +60,9 @@ describe('HostTab', () => {
     }
   }
 
-  const defaultHost = {
+  const defaultHost: Host = {
     id: 'hostId',
     __typename: 'Host',
-    teamId: userTeam.id,
     title: 'Cru International',
     location: 'Florida, USA',
     src1: 'imageSrc1',

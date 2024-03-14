@@ -1,10 +1,14 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../../__generated__/GetAllTeamHosts'
+import {
+  UpdateJourneyHost,
+  UpdateJourneyHostVariables
+} from '../../../../../../../../../__generated__/UpdateJourneyHost'
 import { UPDATE_JOURNEY_HOST } from '../../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
@@ -52,8 +56,8 @@ describe('HostList', () => {
     host: defaultHost
   } as unknown as Journey
 
-  it('should render the list of hosts', async () => {
-    const { getByRole } = render(
+  it('should render host list', async () => {
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -65,6 +69,10 @@ describe('HostList', () => {
         </ThemeProvider>
       </MockedProvider>
     )
+
+    expect(getByText('Hosts')).toBeInTheDocument()
+    expect(getByTestId('InformationCircleContainedIcon')).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Create New' })).toBeInTheDocument()
 
     expect(getByRole('list').children).toHaveLength(2)
     expect(
@@ -79,42 +87,78 @@ describe('HostList', () => {
     ).toBeInTheDocument()
   })
 
-  it('should update journey host on list item click', async () => {
-    const handleSelectHost = jest.fn()
-
-    const result = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
-          id: journey.id,
-          host: {
-            id: host2.id
-          }
-        }
-      }
-    }))
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: UPDATE_JOURNEY_HOST,
-              variables: {
-                id: journey.id,
-                input: {
-                  hostId: host2.id
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+  it('should call handleselection on info button click', () => {
+    const handleSelection = jest.fn()
+    const { getByTestId } = render(
+      <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostList
               teamHosts={{ hosts: [defaultHost, host2] }}
-              handleSelection={handleSelectHost}
+              handleSelection={handleSelection}
+            />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('InformationCircleContainedIcon'))
+    expect(handleSelection).toHaveBeenCalledWith('info') // navigates to HostInfo
+  })
+
+  it('should call handleselection on create new button click', () => {
+    const handleSelection = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <HostList
+              teamHosts={{ hosts: [defaultHost, host2] }}
+              handleSelection={handleSelection}
+            />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Create New' }))
+    expect(handleSelection).toHaveBeenCalledWith('form') // navigates to HostForm
+  })
+
+  it('should update journey host on list item click', async () => {
+    const handleSelection = jest.fn()
+
+    const updateJourneyHostMock: MockedResponse<
+      UpdateJourneyHost,
+      UpdateJourneyHostVariables
+    > = {
+      request: {
+        query: UPDATE_JOURNEY_HOST,
+        variables: {
+          id: journey.id,
+          input: {
+            hostId: host2.id
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyUpdate: {
+            __typename: 'Journey',
+            id: journey.id,
+            host: {
+              __typename: 'Host',
+              id: host2.id
+            }
+          }
+        }
+      }))
+    }
+    const { getByRole } = render(
+      <MockedProvider mocks={[updateJourneyHostMock]}>
+        <ThemeProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <HostList
+              teamHosts={{ hosts: [defaultHost, host2] }}
+              handleSelection={handleSelection}
             />
           </JourneyProvider>
         </ThemeProvider>
@@ -127,7 +171,7 @@ describe('HostList', () => {
       })
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(handleSelectHost).toHaveBeenCalled()
+    await waitFor(() => expect(updateJourneyHostMock.result).toHaveBeenCalled())
+    expect(handleSelection).toHaveBeenCalledWith('selection') // navigate to HostSelection
   })
 })
