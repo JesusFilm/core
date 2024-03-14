@@ -27,11 +27,6 @@ export function OnboardingTemplateCard({
           spacing={{ xs: 4, md: 0 }}
           justifyContent={{ xs: 'flex-start', sm: 'center' }}
           direction={{ xs: 'row', md: 'column' }}
-          sx={{
-            flexGrow: 1,
-            width: { xs: '100%', md: 200 },
-            px: { xs: 6, md: 0 }
-          }}
         >
           <Stack
             sx={{

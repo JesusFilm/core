@@ -38,8 +38,8 @@ export function OnboardingDrawer(): ReactElement {
   return (
     <Stack
       alignItems="center"
-      justifyContent="space-between"
-      gap={{ xs: 4, md: templateId == null ? 10 : 0 }}
+      justifyContent={templateId != null ? 'flex-start' : 'space-between'}
+      gap={{ xs: templateId == null ? 2 : 4, md: templateId == null ? 10 : 0 }}
       sx={{
         mt: { xs: 5 },
         my: { md: 10 },
@@ -49,16 +49,23 @@ export function OnboardingDrawer(): ReactElement {
       }}
       data-testid="JourneysAdminOnboardingDrawer"
     >
-      <Box sx={{ height: 26, width: { xs: 148, md: 195 } }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 41,
+          width: { xs: 148, md: 195 }
+        }}
+      >
         <Image src={logo} alt="Next Steps" layout="responsive" />
       </Box>
 
       {templateId == null && (
         <Box
           sx={{
-            pt: 10,
             overflow: 'hidden',
-            aspectRatio: '1200/1340.16',
+            aspectRatio: '1260/1340.16',
             flexGrow: 1,
             display: { xs: 'none', md: 'flex' }
           }}
@@ -100,7 +107,19 @@ export function OnboardingDrawer(): ReactElement {
         </>
       )}
 
-      {templateId != null && <OnboardingTemplateCard templateId={templateId} />}
+      {templateId != null && (
+        <Box
+          sx={{
+            display: 'flex',
+            px: { xs: 6, md: 0 },
+            width: { xs: '100%', md: 200 },
+            pt: { md: newAccountQuery === true ? 0 : 10 },
+            flexGrow: newAccountQuery === true ? 1 : 0
+          }}
+        >
+          <OnboardingTemplateCard templateId={templateId} />
+        </Box>
+      )}
 
       {newAccountQuery === true && <OnboardingStepper variant="desktop" />}
     </Stack>
