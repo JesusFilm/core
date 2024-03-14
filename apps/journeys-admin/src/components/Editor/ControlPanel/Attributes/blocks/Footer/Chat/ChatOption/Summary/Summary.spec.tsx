@@ -13,15 +13,6 @@ import {
 
 import { Summary } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('Summary', () => {
   it('should render', () => {
     const props = {

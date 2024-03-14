@@ -1,5 +1,5 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { transformer } from '@core/journeys/ui/transformer'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'

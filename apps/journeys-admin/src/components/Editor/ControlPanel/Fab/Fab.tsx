@@ -1,7 +1,7 @@
 import MuiFab from '@mui/material/Fab'
 import Zoom from '@mui/material/Zoom'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'

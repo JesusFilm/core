@@ -5,9 +5,8 @@ import {
   getAuth,
   signInWithPopup
 } from 'firebase/auth'
-import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
@@ -20,7 +19,7 @@ export function SignInServiceButton({
   service
 }: SignInServiceButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
+
   async function handleSignIn(): Promise<void> {
     const auth = getAuth()
     const authProvider =
@@ -33,7 +32,6 @@ export function SignInServiceButton({
     } catch (err) {
       console.error(err)
     }
-    await router.push('/')
   }
 
   return (

@@ -293,6 +293,10 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface CreateVerificationRequestInput {
+  redirect?: string | null;
+}
+
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
@@ -421,6 +425,10 @@ export interface LinkActionInput {
   target?: string | null;
 }
 
+export interface MeInput {
+  redirect?: string | null;
+}
+
 export interface NavigateActionInput {
   gtmEventName?: string | null;
 }
@@ -488,11 +496,15 @@ export interface StepBlockCreateInput {
   journeyId: string;
   nextBlockId?: string | null;
   locked?: boolean | null;
+  x?: number | null;
+  y?: number | null;
 }
 
 export interface StepBlockUpdateInput {
   nextBlockId?: string | null;
   locked?: boolean | null;
+  x?: number | null;
+  y?: number | null;
 }
 
 export interface StepNextEventCreateInput {

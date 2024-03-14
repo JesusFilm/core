@@ -7,9 +7,9 @@ import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import {
   JourneysEmailPreference,

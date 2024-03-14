@@ -1,8 +1,8 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { GetVideos } from '../../../../../__generated__/GetVideos'
 import {
