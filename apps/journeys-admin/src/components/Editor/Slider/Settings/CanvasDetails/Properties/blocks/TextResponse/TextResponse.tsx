@@ -1,6 +1,6 @@
 import Divider from '@mui/material/Divider'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
