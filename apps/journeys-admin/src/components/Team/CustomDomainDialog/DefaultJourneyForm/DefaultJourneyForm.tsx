@@ -48,9 +48,7 @@ export function DefaultJourneyForm({
                 ))}
               </Select>
               <FormHelperText>
-                {t(
-                  `The selected Journey will be available under ${domainName}/`
-                )}
+                {t(`The default Journey will be available at ${domainName}`)}
               </FormHelperText>
             </FormControl>
           </Stack>

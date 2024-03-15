@@ -1,6 +1,4 @@
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
-import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -12,7 +10,6 @@ import Check from '@core/shared/ui/icons/Check'
 import Globe2 from '@core/shared/ui/icons/Globe2'
 import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
-import X3 from '@core/shared/ui/icons/X3'
 
 interface DialogUpdateFormValues {
   domainName: string
@@ -50,7 +47,7 @@ export function DialogUpdateForm({
           </Stack>
           <Typography variant="body2">
             {t(
-              `Using your own domain rather than 'your.nextstep.is' streamlines domain verification for ads, keeps our tool discreet (at a very basic level), and assists in bypassing certain reigonal blocks`
+              'NextSteps provides all journeys with a your.nextstep.is URL. However, to provide greater personalization and flexibility to your team, you can instead add a custom domain. To get started you’ll need to purchase a domain, complete the form below, and point it to NextSteps servers.'
             )}
           </Typography>
         </Stack>
@@ -92,28 +89,13 @@ export function DialogUpdateForm({
                 borderColor: 'secondary.light'
               }
           }}
-          InputProps={{
-            endAdornment: showDeleteButton ? (
-              <InputAdornment position="start">
-                <IconButton
-                  onClick={async () => handleSubmit()}
-                  data-testid="DeleteCustomDomainIcon"
-                >
-                  <X3 />
-                </IconButton>
-              </InputAdornment>
-            ) : (
-              <></>
-            )
-          }}
         />
         <Button
           disabled={loading}
           onClick={async () => handleSubmit()}
           sx={{
             color: 'secondary.light',
-            borderColor: 'secondary.light',
-            display: showDeleteButton ? 'none' : 'flex'
+            borderColor: 'secondary.light'
           }}
           startIcon={
             showDeleteButton ? (
@@ -124,7 +106,7 @@ export function DialogUpdateForm({
           }
           variant="outlined"
         >
-          {t('Apply')}
+          {showDeleteButton ? t('Reset') : t('Apply')}
         </Button>
       </Stack>
     </Stack>
