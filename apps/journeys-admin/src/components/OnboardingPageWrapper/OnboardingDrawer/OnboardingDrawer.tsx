@@ -10,7 +10,7 @@ import landingIllustration from '../../../../public/landing-illustration.png'
 import logo from '../../../../public/logo.svg'
 
 import { OnboardingStepper } from './OnboardingStepper'
-import { OnboardingTemplateCard } from './OnboardingTemplateCard/OnboardingTemplateCard'
+import { OnboardingTemplateCard } from './OnboardingTemplateCard'
 
 export function OnboardingDrawer(): ReactElement {
   const router = useRouter()
