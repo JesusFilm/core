@@ -92,7 +92,6 @@ export interface UpdateVideoLocalization {
   }>;
 }
 
-
 export interface UpdateVideoCaption {
   batchId: string;
   resource: {
@@ -144,6 +143,11 @@ export interface ResourceLocalizationJobData {
   }>;
 }
 
+interface Job {
+  name: string;
+  data: object;
+}
+
 @Injectable()
 export class BullMQService {
   constructor(
@@ -189,6 +193,7 @@ export class BullMQService {
 
         const jobData = {
           batchId: batch.id,
+          batchTaskId: task.id,
           resource: {
             id: resource.id,
             driveId: resource.googleDrive?.driveId ?? '',
@@ -268,43 +273,74 @@ export class BullMQService {
 
   async createCaptionBatchJob(
     batchId: string,
-    localizations: ResourceLocalization[],
     channel: Channel,
   ): Promise<Array<Bull.Job<unknown>>> {
+    const batch = await this.prismaService.batch.findUnique({
+      where: {
+        id: batchId,
+      },
+      include: {
+        tasks: {
+          where: {
+            type: 'caption_processing',
+          },
+        },
+      },
+    });
+
+    if (batch == null) {
+      throw new Error('Batch not found');
+    }
+
     const channelData = await this.prismaService.channel.findUnique({
       where: { id: channel.id },
       include: { youtube: true },
     });
-  
-    const jobs = await Promise.all(localizations.map(async (localization) => {
-      const localizedResourceFile = await this.prismaService.localizedResourceFile.findUnique({
-        where: { localizationId: localization.id },
-      });
-  
-      return {
-        name: 'processCaption',
-        data: {
-          batchId,
-          videoId: localization.videoId,
-          channel: {
-            id: channel.id,
-            channelId: channelData?.youtube?.youtubeId,
-            refreshToken: channelData?.youtube?.refreshToken,
-          },
-          resource: {
-            driveId: localizedResourceFile?.captionDriveId,
-            mimeType: localizedResourceFile?.captionMimeType,
-            language: localization.language,
-            refreshToken: localizedResourceFile?.refreshToken,
-            videoId: localization.videoId,
+
+    const jobs: Job[] = [];
+
+    for (const task of batch.tasks) {
+      const resource = await this.prismaService.resource.findUnique({
+        where: { id: task.resourceId },
+        include: {
+          localizations: {
+            include: {
+              localizedResourceFile: true,
+            },
           },
         },
-      };
-    }));
-  
+      });
+
+      if (resource == null) {
+        throw new Error('Resource not found');
+      }
+
+      for (const localization of resource.localizations) {
+        jobs.push({
+          name: 'processCaption',
+          data: {
+            batchId,
+            batchTaskId: task.id,
+            videoId: localization.videoId,
+            channel: {
+              id: channel.id,
+              channelId: channelData?.youtube?.youtubeId,
+              refreshToken: channelData?.youtube?.refreshToken,
+            },
+            resource: {
+              driveId: localization.localizedResourceFile?.captionDriveId,
+              mimeType: localization.localizedResourceFile?.captionMimeType,
+              language: localization.language,
+              refreshToken: localization.localizedResourceFile?.refreshToken,
+              videoId: localization.videoId,
+            },
+          },
+        });
+      }
+    }
+
     return await this.bucketQueue.addBulk(jobs);
   }
-  
 
   async createUploadBatch(
     batchName: string,
@@ -328,6 +364,10 @@ export class BullMQService {
           resourceId: resource.id,
           type: 'video_upload',
           status: 'pending',
+          metadata: {
+            resource,
+            channel,
+          },
         };
       }),
     });
@@ -359,6 +399,10 @@ export class BullMQService {
           resourceId: localization.resourceId,
           type: 'localization',
           status: 'pending',
+          metadata: {
+            localization,
+            channel,
+          },
         };
       }),
     });
@@ -371,13 +415,16 @@ export class BullMQService {
           resourceId: localization.resourceId,
           type: 'caption_processing',
           status: 'pending',
+          metadata: {
+            localization,
+            channel,
+          },
         };
       }),
     });
 
-
     await this.createLocalizationBatchJob(batch.id, localizations, channel);
-    await this.createCaptionBatchJob(batch.id, localizations, channel);
+    await this.createCaptionBatchJob(batch.id, channel);
 
     return batch as unknown as Batch;
   }
