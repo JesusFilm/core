@@ -82,7 +82,7 @@ export function OnboardingDrawer(): ReactElement {
 
       {templateId == null && (
         <>
-          {newAccountQuery === false && (
+          {newAccountQuery == null && (
             <Box
               sx={{
                 mb: 20,

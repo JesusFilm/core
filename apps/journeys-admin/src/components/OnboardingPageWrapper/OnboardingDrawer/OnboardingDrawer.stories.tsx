@@ -28,7 +28,6 @@ const Template: StoryObj<typeof OnboardingDrawer> = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh',
         backgroundColor: 'white'
       }}
     >
