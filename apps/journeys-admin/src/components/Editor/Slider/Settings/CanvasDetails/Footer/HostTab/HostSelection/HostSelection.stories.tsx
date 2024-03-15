@@ -7,6 +7,7 @@ import { ComponentProps } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../../__generated__/GetAllTeamHosts'
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
@@ -44,10 +45,9 @@ const userTeam: UserTeam = {
   }
 }
 
-const defaultHost = {
+const defaultHost: Host = {
   id: 'hostId',
   __typename: 'Host' as const,
-  teamId: 'teamId',
   title: 'Cru International',
   location: 'Florida, USA',
   src1: 'https://tinyurl.com/3bxusmyb',
