@@ -341,7 +341,8 @@ type Journey
 }
 
 input BlocksFilter {
-  typename: [String!]
+  journeyIds: [ID!]
+  typenames: [String!]
 }
 
 type Query {
@@ -350,7 +351,7 @@ type Query {
 }
 
 extend type Query {
-  blocks(journeyId: ID!, where: BlocksFilter): [Block!]!
+  blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block!
   hosts(teamId: ID!): [Host!]!
 

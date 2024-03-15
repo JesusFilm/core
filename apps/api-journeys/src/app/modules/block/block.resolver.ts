@@ -4,7 +4,7 @@ import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
 import { Block, Prisma } from '.prisma/api-journeys-client'
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
 import { BlocksFilter } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
@@ -148,36 +148,27 @@ export class BlockResolver {
   @Query()
   @UseGuards(AppCaslGuard)
   async blocks(
-    @CaslAbility() ability: AppAbility,
-    @Args('journeyId') journeyId: string,
+    @CaslAccessible('Block') accessibleBlocks: Prisma.BlockWhereInput,
     @Args('where') where?: BlocksFilter
   ): Promise<Block[]> {
-    const journey = await this.prismaService.journey.findUnique({
-      where: { id: journeyId },
-      include: {
-        userJourneys: true,
-        team: {
-          include: { userTeams: true }
-        }
-      }
-    })
-    if (journey == null)
-      throw new GraphQLError('journey not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    if (!ability.can(Action.Read, subject('Journey', journey)))
-      throw new GraphQLError('user is not allowed to view journey', {
-        extensions: { code: 'FORBIDDEN' }
-      })
-    const filter: Prisma.BlockWhereInput = { journeyId }
+    const filter: Prisma.BlockWhereInput = {}
 
-    if (where?.typename != null) {
-      filter.typename = { in: where.typename }
-    }
+    if (where?.typenames != null) filter.typename = { in: where.typenames }
+    if (where?.journeyIds != null) filter.journeyId = { in: where.journeyIds }
 
     const blocks = await this.prismaService.block.findMany({
-      where: filter,
-      include: { action: true }
+      where: {
+        AND: [accessibleBlocks, filter]
+      },
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
     })
     return blocks
   }

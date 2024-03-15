@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import {
+  Block,
+  Journey,
+  Prisma,
+  UserTeamRole
+} from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
@@ -200,44 +205,55 @@ describe('BlockResolver', () => {
   })
 
   describe('blocks', () => {
+    const accessibleBlocks: Prisma.BlockWhereInput = { OR: [{}] }
+
     it('returns blocks', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        journeyWithUserTeam
-      )
       prismaService.block.findMany.mockResolvedValueOnce([block])
-      expect(await resolver.blocks(ability, 'journeyId')).toEqual([block])
+      expect(await resolver.blocks(accessibleBlocks)).toEqual([block])
       expect(prismaService.block.findMany).toHaveBeenCalledWith({
-        where: { journeyId: 'journeyId' },
-        include: { action: true }
+        where: {
+          AND: [accessibleBlocks, {}]
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
       })
     })
 
-    it('returns blocks filtered by typename', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        journeyWithUserTeam
-      )
+    it('should get filtered blocks', async () => {
       prismaService.block.findMany.mockResolvedValueOnce([block])
       expect(
-        await resolver.blocks(ability, 'journeyId', { typename: ['StepBlock'] })
+        await resolver.blocks(accessibleBlocks, {
+          journeyIds: ['journeyId'],
+          typenames: ['StepBlock']
+        })
       ).toEqual([block])
       expect(prismaService.block.findMany).toHaveBeenCalledWith({
-        where: { journeyId: 'journeyId', typename: { in: ['StepBlock'] } },
-        include: { action: true }
+        where: {
+          AND: [
+            accessibleBlocks,
+            {
+              journeyId: { in: ['journeyId'] },
+              typename: { in: ['StepBlock'] }
+            }
+          ]
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
       })
-    })
-
-    it('throws error if not found', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(null)
-      await expect(resolver.blocks(ability, 'journeyId')).rejects.toThrow(
-        'journey not found'
-      )
-    })
-
-    it('throws error if not authorized', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
-      await expect(resolver.blocks(ability, 'journeyId')).rejects.toThrow(
-        'user is not allowed to view journey'
-      )
     })
   })
 })
