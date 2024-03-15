@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -62,7 +63,7 @@ export function DialogUpdateForm({
           }}
         />
         <TextField
-          disabled={showDeleteButton || loading}
+          disabled={loading}
           id="domainName"
           name="domainName"
           focused
@@ -77,6 +78,9 @@ export function DialogUpdateForm({
           }
           label={t('Domain Name')}
           size="medium"
+          InputProps={{
+            readOnly: showDeleteButton
+          }}
           sx={{
             '.MuiInputBase-input.MuiOutlinedInput-input': {
               height: '12px'
@@ -90,24 +94,27 @@ export function DialogUpdateForm({
               }
           }}
         />
-        <Button
-          disabled={loading}
-          onClick={async () => handleSubmit()}
-          sx={{
-            color: 'secondary.light',
-            borderColor: 'secondary.light'
-          }}
-          startIcon={
-            showDeleteButton ? (
-              <></>
-            ) : (
-              <Check sx={{ color: 'secondary.light' }} />
-            )
-          }
-          variant="outlined"
-        >
-          {showDeleteButton ? t('Reset') : t('Apply')}
-        </Button>
+        <Box>
+          <Button
+            disabled={loading}
+            onClick={async () => handleSubmit()}
+            sx={{
+              color: 'secondary.light',
+              borderColor: 'secondary.light',
+              height: '45px'
+            }}
+            startIcon={
+              showDeleteButton ? (
+                <></>
+              ) : (
+                <Check sx={{ color: 'secondary.light' }} />
+              )
+            }
+            variant="outlined"
+          >
+            {showDeleteButton ? t('Reset') : t('Apply')}
+          </Button>
+        </Box>
       </Stack>
     </Stack>
   )

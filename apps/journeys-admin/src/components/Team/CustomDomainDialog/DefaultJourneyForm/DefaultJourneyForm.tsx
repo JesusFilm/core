@@ -28,7 +28,7 @@ export function DefaultJourneyForm({
   return (
     <Stack spacing={4}>
       <Stack direction="row" spacing={3}>
-        <Computer />
+        <Computer sx={{ color: 'secondary.light' }} />
         <Stack spacing={4} width="100%">
           <Typography variant="subtitle1">{t('Default Journey')}</Typography>
           <Stack direction="row" justifyContent="space-between">
