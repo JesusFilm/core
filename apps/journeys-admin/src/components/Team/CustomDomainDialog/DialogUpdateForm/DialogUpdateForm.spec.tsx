@@ -12,7 +12,7 @@ describe('DialogUpdateForm', () => {
   })
 
   it('should handleSubmit on delete', () => {
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <FormikProvider
         value={
           {
@@ -27,7 +27,7 @@ describe('DialogUpdateForm', () => {
       </FormikProvider>
     )
 
-    fireEvent.click(getByTestId('DeleteCustomDomainIcon'))
+    fireEvent.click(getByRole('button', { name: 'Reset' }))
     expect(handleSubmit).toHaveBeenCalled()
   })
 

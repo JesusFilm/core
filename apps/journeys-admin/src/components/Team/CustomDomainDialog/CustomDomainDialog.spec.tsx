@@ -331,7 +331,7 @@ describe('CustomDomainDialog', () => {
 
   it('deletes a custom domain', async () => {
     const cache = new InMemoryCache()
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -352,7 +352,7 @@ describe('CustomDomainDialog', () => {
       expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
     )
     expect(cache.extract()['CustomDomain:customDomainId']).toBeDefined()
-    fireEvent.click(getByTestId('DeleteCustomDomainIcon'))
+    fireEvent.click(getByRole('button', { name: 'Reset' }))
     await waitFor(() =>
       expect(mockDeleteCustomDomain.result).toHaveBeenCalled()
     )
