@@ -36,6 +36,13 @@ interface Block
   parentOrder: Int
 }
 
+input BlocksFilter
+  @join__type(graph: JOURNEYS)
+{
+  journeyIds: [ID!]
+  typenames: [String!]
+}
+
 type Browser
   @join__type(graph: JOURNEYS)
 {
@@ -1421,6 +1428,7 @@ type Query
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
+  blocks(where: BlocksFilter): [Block!]! @join__field(graph: JOURNEYS)
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
