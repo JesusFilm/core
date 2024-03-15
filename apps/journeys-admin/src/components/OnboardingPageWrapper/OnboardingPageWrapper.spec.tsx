@@ -54,6 +54,6 @@ describe('OnboardingPageWrapper', () => {
         </OnboardingPageWrapper>
       </MockedProvider>
     )
-    expect(getByTestId('OnboardingDrawer')).toBeInTheDocument()
+    expect(getByTestId('JourneysAdminOnboardingDrawer')).toBeInTheDocument()
   })
 })

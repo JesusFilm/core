@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -12,24 +11,13 @@ import { NextImage } from '@core/shared/ui/NextImage'
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
 import { useJourneyQuery } from '../../../../libs/useJourneyQuery'
 
-export function OnboardingTemplateCard(): ReactElement {
-  const router = useRouter()
+interface OnboardingTemplateCardProps {
+  templateId?: string
+}
 
-  function getTemplateId(): string | undefined {
-    const url = router.query.redirect as string | undefined
-    if (url == null) return
-
-    const redirect = decodeURIComponent(url)
-    const pathnameParts = redirect?.split('/')
-    if (redirect?.includes('templates') && pathnameParts != null) {
-      const idIndex = pathnameParts.indexOf('templates') + 1
-      const id = pathnameParts[idIndex]
-      return id.split('?')[0]
-    }
-  }
-
-  const templateId = getTemplateId()
-
+export function OnboardingTemplateCard({
+  templateId
+}: OnboardingTemplateCardProps): ReactElement {
   const { data } = useJourneyQuery({ id: templateId ?? '' })
 
   return (
@@ -37,27 +25,20 @@ export function OnboardingTemplateCard(): ReactElement {
       {templateId != null && (
         <Stack
           spacing={{ xs: 4, md: 0 }}
-          justifyContent={{ xs: 'flex-start', sm: 'center', md: null }}
+          justifyContent={{ xs: 'flex-start', sm: 'center' }}
           direction={{ xs: 'row', md: 'column' }}
-          sx={{
-            flexShrink: 0,
-            width: { xs: '100%', md: 244 },
-            px: { xs: 6, md: 0 }
-          }}
         >
           <Stack
             sx={{
               position: 'relative',
-              justifyContent: 'center',
-              alignItems: 'center',
               backgroundColor:
                 data?.journey != null ? 'background.default' : 'transparent',
               overflow: 'hidden',
-              height: { xs: 57, sm: 137, md: 244 },
-              width: { xs: 57, sm: 137, md: 244 },
+              height: { xs: 60, sm: 140, md: 200 },
+              width: { xs: 60, sm: 140, md: 200 },
               borderRadius: { xs: 2, md: 0 },
-              borderTopLeftRadius: { xs: null, md: 12 },
-              borderTopRightRadius: { xs: null, md: 12 }
+              borderTopLeftRadius: { md: 12 },
+              borderTopRightRadius: { md: 12 }
             }}
             data-testid="OnboardingSideBarSocialImage"
           >
@@ -104,8 +85,7 @@ function OnboardingTemplateCardDetails({
       data-testid="OnboardingTemplateCardDetails"
       direction="column"
       sx={{
-        py: { xs: null, md: 6 },
-        px: { xs: null, md: 3 },
+        p: { md: 3 },
         borderWidth: { xs: 0, md: 1 },
         borderStyle: 'solid',
         borderColor: 'divider',
@@ -117,9 +97,6 @@ function OnboardingTemplateCardDetails({
       <Typography
         variant="overline2"
         sx={{
-          whiteSpace: 'noWrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
           color: (theme) => theme.palette.grey[700]
         }}
       >
@@ -128,9 +105,8 @@ function OnboardingTemplateCardDetails({
       <Box
         sx={{
           height: { xs: 26, md: 46 },
-          textOverflow: 'ellipsis',
-          WebkitBoxOrient: 'vertical',
-          WebkitLineClamp: 3
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
         }}
       >
         <Typography
