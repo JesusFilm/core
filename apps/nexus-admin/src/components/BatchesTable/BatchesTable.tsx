@@ -15,6 +15,7 @@ import TableHead from '@mui/material/TableHead'
 import TablePagination from '@mui/material/TablePagination'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
+import { format, parseISO } from 'date-fns'
 import { FC, ReactElement, useState } from 'react'
 
 import { Batches_batches } from '../../../__generated__/Batches'
@@ -148,7 +149,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
         <TableCell>
           <CircularProgressWithLabel value={batch.progress} />
         </TableCell>
-        <TableCell>{batch.createdAt}</TableCell>
+        <TableCell>{format(parseISO(batch.createdAt), 'yyyy-MM-dd')}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>

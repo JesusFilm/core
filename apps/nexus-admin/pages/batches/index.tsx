@@ -13,6 +13,7 @@ const GET_BATCHES = gql`
       name
       status
       progress
+      createdAt
       tasks {
         type
         status
