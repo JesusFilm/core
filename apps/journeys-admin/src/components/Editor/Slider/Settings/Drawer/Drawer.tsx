@@ -82,6 +82,7 @@ export function Drawer({
 
   return (
     <MuiDrawer
+      data-testid="SettingsDrawer"
       anchor={smUp ? 'right' : 'bottom'}
       variant={open != null ? 'temporary' : 'permanent'}
       SlideProps={{ appear: true }}

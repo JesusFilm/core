@@ -1,15 +1,15 @@
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
+import { Drawer } from '../../Drawer'
 import { CardTemplateDrawer } from '../../Drawer/CardTemplates/CardTemplateDrawer'
-import { Drawer } from '../../Drawer/Drawer'
 
 const Card = dynamic(
   async () =>

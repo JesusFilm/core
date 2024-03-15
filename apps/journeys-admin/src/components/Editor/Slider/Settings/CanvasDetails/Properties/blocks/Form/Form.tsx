@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
@@ -25,7 +26,7 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
   }, [dispatch, id, t])
 
   return (
-    <>
+    <Box data-testid="FormProperties">
       <Accordion
         id={`${id}-form-action`}
         icon={<LinkIcon />}
@@ -43,6 +44,6 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
       >
         <Credentials />
       </Accordion>
-    </>
+    </Box>
   )
 }

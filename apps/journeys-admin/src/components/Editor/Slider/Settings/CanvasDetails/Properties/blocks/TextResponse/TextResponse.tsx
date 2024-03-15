@@ -1,6 +1,7 @@
+import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
@@ -28,7 +29,7 @@ export function TextResponse({
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <>
+    <Box data-testid="TextResponseProperties">
       <Accordion
         id={`${id}-text-field-options`}
         icon={<TextInput1Icon />}
@@ -60,6 +61,6 @@ export function TextResponse({
       >
         <Icon id={submitIcon?.id} />
       </Accordion>
-    </>
+    </Box>
   )
 }
