@@ -1,5 +1,5 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import {
   ActiveCanvasDetailsDrawer,
@@ -34,6 +34,8 @@ jest.mock('@core/journeys/ui/EditorProvider', () => {
 
 const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
+const mockDispatch = jest.fn()
+
 describe('SocialPreview', () => {
   const state: EditorState = {
     activeFab: ActiveFab.Add,
@@ -47,7 +49,7 @@ describe('SocialPreview', () => {
 
     mockUseEditor.mockReturnValue({
       state,
-      dispatch: jest.fn()
+      dispatch: mockDispatch
     })
   })
 
@@ -77,5 +79,20 @@ describe('SocialPreview', () => {
     expect(
       screen.queryByRole('button', { name: 'Edit' })
     ).not.toBeInTheDocument()
+  })
+
+  it('should dispatch active slide action on click', () => {
+    render(
+      <ThemeProvider>
+        <SocialPreview />
+      </ThemeProvider>
+    )
+
+    fireEvent.click(screen.getByTestId('SocialPreview'))
+
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Content
+    })
   })
 })
