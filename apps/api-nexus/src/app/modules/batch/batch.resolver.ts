@@ -92,7 +92,7 @@ export class BatchResolver {
       include: {
         tasks: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { updatedAt: 'desc' },
       take: where?.limit ?? 100,
     });
 
@@ -110,7 +110,9 @@ export class BatchResolver {
   private calculateBatchProgress(tasks: BatchTask[]): number {
     if (tasks.length === 0) return 0;
 
-    const completedTasks = tasks.filter(task => task.status === 'completed').length;
+    const completedTasks = tasks.filter(
+      (task) => task.status === 'completed',
+    ).length;
     return (completedTasks / tasks.length) * 100;
   }
 
