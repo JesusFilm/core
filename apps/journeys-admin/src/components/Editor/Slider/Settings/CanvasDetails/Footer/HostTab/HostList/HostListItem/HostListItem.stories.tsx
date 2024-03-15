@@ -11,7 +11,7 @@ const HostListItemDemo: Meta<typeof HostListItem> = {
   ...journeysAdminConfig,
   component: HostListItem,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab/HostListItem',
+    'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab/HostList/HostListItem',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'

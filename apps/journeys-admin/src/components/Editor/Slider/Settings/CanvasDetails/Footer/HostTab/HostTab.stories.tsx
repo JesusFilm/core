@@ -1,8 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -17,13 +15,8 @@ import {
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
-import {
-  UpdateJourneyHost,
-  UpdateJourneyHostVariables
-} from '../../../../../../../../__generated__/UpdateJourneyHost'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { GET_CURRENT_USER } from '../../../../../../../libs/useCurrentUserLazyQuery'
-import { UPDATE_JOURNEY_HOST } from '../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import { DRAWER_WIDTH } from '../../../../../constants'
@@ -157,33 +150,6 @@ const getTeamHostsMock: MockedResponse<
   }
 }
 
-const updateJourneyHostMock: MockedResponse<
-  UpdateJourneyHost,
-  UpdateJourneyHostVariables
-> = {
-  request: {
-    query: UPDATE_JOURNEY_HOST,
-    variables: {
-      id: journey.id,
-      input: {
-        hostId: null
-      }
-    }
-  },
-  result: {
-    data: {
-      journeyUpdate: {
-        __typename: 'Journey',
-        id: journey.id,
-        host: {
-          __typename: 'Host',
-          id: defaultHost.id
-        }
-      }
-    }
-  }
-}
-
 const Template: StoryObj<
   ComponentProps<typeof HostTab> & { mocks: MockedResponse[] }
 > = {
@@ -206,22 +172,6 @@ export const Default = {
   args: {
     mocks: [userMock, getUserTeamMock, getTeamHostsMock],
     journey: { ...journey, host: null }
-  }
-}
-
-export const Disabled = {
-  ...Template,
-  args: {
-    mocks: [],
-    journey: { ...journey, host: null }
-  }
-}
-
-export const EditHost = {
-  ...Template,
-  args: {
-    ...Default.args,
-    journey
   }
 }
 
