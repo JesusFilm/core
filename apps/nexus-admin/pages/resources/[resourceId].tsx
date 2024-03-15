@@ -8,8 +8,8 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useRouter } from 'next/router'
 import { FC, SyntheticEvent, useEffect, useState } from 'react'
 
 import { ChannelTable } from '../../src/components/ChannelTable'
@@ -59,7 +59,7 @@ const ResourceDetailsPage: FC = () => {
   }
 
   return (
-    <MainLayout title="Video Details">
+    <MainLayout title="Video Details" hasBack={true}>
       <Stack
         sx={{
           pt: 4

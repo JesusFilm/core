@@ -7,10 +7,15 @@ import { Sidebar } from './Sidebar'
 
 interface MainLayoutProps {
   title?: string
+  hasBack?: boolean
   children: ReactNode
 }
 
-export const MainLayout: FC<MainLayoutProps> = ({ children, title }) => {
+export const MainLayout: FC<MainLayoutProps> = ({
+  children,
+  title,
+  hasBack = false
+}) => {
   return (
     <Stack
       direction="row"
@@ -28,7 +33,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children, title }) => {
           px: 3
         }}
       >
-        <Header title={title} />
+        <Header title={title} hasBack={hasBack} />
         <Box>{children}</Box>
       </Stack>
     </Stack>

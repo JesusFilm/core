@@ -1,3 +1,4 @@
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
 import TranslateOutlinedIcon from '@mui/icons-material/TranslateOutlined'
 import Avatar from '@mui/material/Avatar'
@@ -9,16 +10,19 @@ import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useUser } from 'next-firebase-auth'
+import { useRouter } from 'next/router'
 import { FC, MouseEvent, useState } from 'react'
 
 interface HeaderProps {
   title?: string
+  hasBack?: boolean
 }
 
-export const Header: FC<HeaderProps> = ({ title }) => {
+export const Header: FC<HeaderProps> = ({ title, hasBack }) => {
   const [accountMenu, setAccountMenu] = useState<HTMLElement | null>(null)
   const accountMenuOpen = Boolean(accountMenu)
   const user = useUser()
+  const router = useRouter()
 
   const handleAccountMenuOpen = (event: MouseEvent<HTMLElement>): void => {
     setAccountMenu(event.currentTarget)
@@ -34,14 +38,25 @@ export const Header: FC<HeaderProps> = ({ title }) => {
 
   return (
     <Stack direction="row" alignItems="center" justifyContent="space-between">
-      <Typography
-        variant="h5"
-        sx={{
-          fontWeight: 700
-        }}
-      >
-        {title}
-      </Typography>
+      <Stack direction="row" alignItems="center">
+        {hasBack && (
+          <IconButton onClick={() => router.back()}>
+            <KeyboardArrowLeftIcon
+              sx={{
+                color: '#000'
+              }}
+            />
+          </IconButton>
+        )}
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: 700
+          }}
+        >
+          {title}
+        </Typography>
+      </Stack>
       <Stack direction="row" alignItems="center" spacing={2}>
         <IconButton>
           <TranslateOutlinedIcon />
