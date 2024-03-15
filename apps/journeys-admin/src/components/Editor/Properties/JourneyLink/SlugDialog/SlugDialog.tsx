@@ -23,9 +23,14 @@ export const JOURNEY_SLUG_UPDATE = gql`
 interface SlugDialogProps {
   open: boolean
   onClose: () => void
+  customDomainName: string | undefined
 }
 
-export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
+export function SlugDialog({
+  open,
+  onClose,
+  customDomainName
+}: SlugDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneySlugUpdate>(JOURNEY_SLUG_UPDATE)
   const { journey } = useJourney()
@@ -74,6 +79,8 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
     }
   }
 
+  const hasCustomDomain: boolean = customDomainName != null
+
   return (
     <>
       {journey != null && (
@@ -106,8 +113,10 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
                   helperText={
                     values.slug !== '' ? (
                       <>
-                        {process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                          'https://your.nextstep.is'}
+                        {hasCustomDomain
+                          ? 'https://' + customDomainName
+                          : process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                            'https://your.nextstep.is'}
                         /<strong>{values.slug}</strong>
                       </>
                     ) : (

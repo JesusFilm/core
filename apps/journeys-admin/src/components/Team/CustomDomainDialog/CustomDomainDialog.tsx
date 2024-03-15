@@ -163,7 +163,7 @@ export function CustomDomainDialog({
 
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
-  const validationSchema = object({
+  const validationSchema = object({}).shape({
     domainName: string()
       .trim()
       .nonNullable()

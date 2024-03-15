@@ -24,6 +24,8 @@ import { ControlPanel } from '../../src/components/Editor/ControlPanel'
 import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { GetCustomDomain } from '../../__generated__/GetCustomDomain'
+import { GET_CUSTOM_DOMAIN } from '../../src/components/Team/CustomDomainDialog/CustomDomainDialog'
 
 export const GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -108,6 +110,16 @@ export const getServerSideProps = withUserTokenSSR({
         id: query?.journeyId
       }
     })
+
+    if (data.journey?.team?.id != null) {
+      // from: src/components/Editor/Properties/JourneyLink/JourneyLink.tsx
+      await apolloClient.query<GetCustomDomain>({
+        query: GET_CUSTOM_DOMAIN,
+        variables: {
+          teamId: data.journey.team.id
+        }
+      })
+    }
 
     if (data.journey?.template === true) {
       return {

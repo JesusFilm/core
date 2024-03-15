@@ -104,10 +104,12 @@ export function JourneyLink(): ReactElement {
       <SlugDialog
         open={showSlugDialog}
         onClose={() => setShowSlugDialog(false)}
+        customDomainName={customDomainData?.customDomains[0]?.name}
       />
       <EmbedJourneyDialog
         open={showEmbedDialog}
         onClose={() => setShowEmbedDialog(false)}
+        customDomainName={customDomainData?.customDomains[0]?.name}
       />
     </>
   )
