@@ -3,9 +3,10 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { Block } from '.prisma/api-journeys-client'
+import { Block, Prisma } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
+import { BlocksFilter } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
@@ -142,5 +143,42 @@ export class BlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
     return block
+  }
+
+  @Query()
+  @UseGuards(AppCaslGuard)
+  async blocks(
+    @CaslAbility() ability: AppAbility,
+    @Args('journeyId') journeyId: string,
+    @Args('where') where?: BlocksFilter
+  ): Promise<Block[]> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id: journeyId },
+      include: {
+        userJourneys: true,
+        team: {
+          include: { userTeams: true }
+        }
+      }
+    })
+    if (journey == null)
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(Action.Read, subject('Journey', journey)))
+      throw new GraphQLError('user is not allowed to view journey', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    const filter: Prisma.BlockWhereInput = { journeyId }
+
+    if (where?.typename != null) {
+      filter.typename = { in: where.typename }
+    }
+
+    const blocks = await this.prismaService.block.findMany({
+      where: filter,
+      include: { action: true }
+    })
+    return blocks
   }
 }

@@ -17,8 +17,14 @@ describe('BlockResolver', () => {
     ability: AppAbility
 
   const journey = {
-    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+    id: '2'
   } as unknown as Journey
+
+  const journeyWithUserTeam = {
+    ...journey,
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  }
+
   const block: Block = {
     id: 'blockId',
     journeyId: '2',
@@ -35,7 +41,7 @@ describe('BlockResolver', () => {
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
-    journey
+    journey: journeyWithUserTeam
   }
   const blockService = {
     provide: BlockService,
@@ -189,6 +195,48 @@ describe('BlockResolver', () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(resolver.block(ability, 'blockId')).rejects.toThrow(
         'user is not allowed to read block'
+      )
+    })
+  })
+
+  describe('blocks', () => {
+    it('returns blocks', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      expect(await resolver.blocks(ability, 'journeyId')).toEqual([block])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        where: { journeyId: 'journeyId' },
+        include: { action: true }
+      })
+    })
+
+    it('returns blocks filtered by typename', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      expect(
+        await resolver.blocks(ability, 'journeyId', { typename: ['StepBlock'] })
+      ).toEqual([block])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        where: { journeyId: 'journeyId', typename: { in: ['StepBlock'] } },
+        include: { action: true }
+      })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(resolver.blocks(ability, 'journeyId')).rejects.toThrow(
+        'journey not found'
+      )
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      await expect(resolver.blocks(ability, 'journeyId')).rejects.toThrow(
+        'user is not allowed to view journey'
       )
     })
   })
