@@ -65,8 +65,7 @@ export function OnboardingDrawer(): ReactElement {
         <Box
           sx={{
             overflow: 'hidden',
-            aspectRatio: '1260/1340.16',
-            flexGrow: 1,
+            height: 444,
             display: { xs: 'none', md: 'flex' }
           }}
         >
