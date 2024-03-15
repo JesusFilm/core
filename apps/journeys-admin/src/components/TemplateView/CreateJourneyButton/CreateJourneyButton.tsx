@@ -12,6 +12,8 @@ import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
+  openTeamDialog: boolean
+  setOpenTeamDialog: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const DynamicCopyToTeamDialog = dynamic(
@@ -23,13 +25,14 @@ const DynamicCopyToTeamDialog = dynamic(
 )
 
 export function CreateJourneyButton({
-  signedIn = false
+  signedIn = false,
+  openTeamDialog,
+  setOpenTeamDialog
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const router = useRouter()
   const { journey } = useJourney()
-  const [openTeamDialog, setOpenTeamDialog] = useState<boolean | undefined>()
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const [loadingJourney, setLoadingJourney] = useState(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
@@ -67,7 +70,7 @@ export function CreateJourneyButton({
   )
 
   const handleCheckSignIn = (): void => {
-    if (signedIn) {
+    if (signedIn && setOpenTeamDialog !== undefined) {
       setOpenTeamDialog(true)
     } else {
       setOpenAccountDialog(true)
@@ -97,10 +100,14 @@ export function CreateJourneyButton({
       // Prefetch the dashboard page
       void router.prefetch('/users/sign-in')
     }
-    if (router.query.createNew === 'true' && signedIn) {
+    if (
+      router.query.createNew === 'true' &&
+      signedIn &&
+      setOpenTeamDialog !== undefined
+    ) {
       setOpenTeamDialog(true)
     }
-  }, [signedIn, router, handleCreateJourney])
+  }, [signedIn, router, handleCreateJourney, setOpenTeamDialog])
 
   return (
     <>
@@ -124,7 +131,9 @@ export function CreateJourneyButton({
           title={t('Add Journey to Team')}
           open={openTeamDialog}
           loading={loadingJourney}
-          onClose={() => setOpenTeamDialog(false)}
+          onClose={() =>
+            setOpenTeamDialog !== undefined && setOpenTeamDialog(false)
+          }
           submitAction={handleCreateJourney}
         />
       )}

@@ -1,7 +1,6 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import TagManager from 'react-gtm-module'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -11,13 +10,10 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
-import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../Team/TeamProvider'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../Team/TeamSelect/TeamSelect'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
 
@@ -34,10 +30,6 @@ jest.mock('react-gtm-module', () => ({
     dataLayer: jest.fn()
   }
 }))
-
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
->
 
 describe('CreateJourneyButton', () => {
   const journey: Journey = {
@@ -90,12 +82,14 @@ describe('CreateJourneyButton', () => {
     }
   }))
 
+  const setOpenTeamDialogMock = jest.fn()
+
   it('should open team dialog if url query set to createNew', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: 'true' }
     } as unknown as NextRouter)
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -106,17 +100,18 @@ describe('CreateJourneyButton', () => {
           }
         ]}
       >
-        <CreateJourneyButton signedIn />
+        <CreateJourneyButton
+          signedIn
+          openTeamDialog={false}
+          setOpenTeamDialog={setOpenTeamDialogMock}
+        />
       </MockedProvider>
     )
-    await waitFor(() =>
-      expect(
-        getByRole('dialog', { name: 'Add Journey to Team' })
-      ).toBeInTheDocument()
-    )
+
+    expect(setOpenTeamDialogMock).toHaveBeenCalledWith(true)
   })
 
-  it('should open team dialog on button click if signed in', () => {
+  it('should open team dialog on button click if signed in', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: false }
     } as unknown as NextRouter)
@@ -133,16 +128,18 @@ describe('CreateJourneyButton', () => {
         ]}
       >
         <JourneyProvider value={{ journey }}>
-          <CreateJourneyButton signedIn />
+          <CreateJourneyButton
+            signedIn
+            openTeamDialog={false}
+            setOpenTeamDialog={setOpenTeamDialogMock}
+          />
         </JourneyProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByRole('button', { name: 'Use This Template' }))
 
-    expect(
-      getByRole('dialog', { name: 'Add Journey to Team' })
-    ).toBeInTheDocument()
+    expect(setOpenTeamDialogMock).toHaveBeenCalledWith(true)
   })
 
   it('should open account check dialog and redirect to sign in page when login is clicked if not signed in', async () => {
@@ -173,7 +170,10 @@ describe('CreateJourneyButton', () => {
         ]}
       >
         <JourneyProvider value={{ journey }}>
-          <CreateJourneyButton />
+          <CreateJourneyButton
+            openTeamDialog={false}
+            setOpenTeamDialog={setOpenTeamDialogMock}
+          />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -229,7 +229,10 @@ describe('CreateJourneyButton', () => {
         ]}
       >
         <JourneyProvider value={{ journey }}>
-          <CreateJourneyButton />
+          <CreateJourneyButton
+            openTeamDialog={false}
+            setOpenTeamDialog={setOpenTeamDialogMock}
+          />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -257,104 +260,6 @@ describe('CreateJourneyButton', () => {
     })
   })
 
-  it('should create journey from template and redirect on dialog submit', async () => {
-    const push = jest.fn().mockResolvedValueOnce('')
-    mockUseRouter.mockReturnValue({
-      push,
-      query: { createNew: false }
-    } as unknown as NextRouter)
-
-    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-      request: {
-        query: UPDATE_LAST_ACTIVE_TEAM_ID,
-        variables: {
-          input: {
-            lastActiveTeamId: 'teamId'
-          }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          journeyProfileUpdate: {
-            __typename: 'JourneyProfile',
-            id: 'teamId'
-          }
-        }
-      }))
-    }
-
-    const result = jest.fn(() => {
-      return {
-        data: {
-          journeyDuplicate: {
-            id: 'duplicatedJourneyId'
-          }
-        }
-      }
-    })
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          updateLastActiveTeamIdMock,
-          {
-            request: {
-              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-            },
-            result: teamResult
-          },
-          {
-            request: {
-              query: JOURNEY_DUPLICATE,
-              variables: {
-                id: 'journeyId',
-                teamId: 'teamId'
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <TeamProvider>
-          <JourneyProvider value={{ journey }}>
-            <CreateJourneyButton signedIn />
-          </JourneyProvider>
-        </TeamProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-
-    await waitFor(() => expect(teamResult).toHaveBeenCalled())
-
-    expect(
-      getByRole('button', { name: 'Select Team Team Name' })
-    ).toBeInTheDocument()
-
-    fireEvent.click(getByRole('button', { name: 'Add' }))
-
-    await waitFor(() =>
-      expect(updateLastActiveTeamIdMock.result).toHaveBeenCalled()
-    )
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'template_use',
-          journeyId: 'journeyId',
-          journeyTitle: 'Template'
-        }
-      })
-    )
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        '/journeys/duplicatedJourneyId',
-        undefined,
-        { shallow: true }
-      )
-    })
-  })
-
   it('should disable button while loading', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: false }
@@ -372,7 +277,11 @@ describe('CreateJourneyButton', () => {
       >
         <TeamProvider>
           <JourneyProvider value={{}}>
-            <CreateJourneyButton signedIn />
+            <CreateJourneyButton
+              signedIn
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
+            />
           </JourneyProvider>
         </TeamProvider>
       </MockedProvider>
