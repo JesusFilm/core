@@ -255,6 +255,10 @@ export class EmailActionInput {
     email: string;
 }
 
+export class BlocksFilter {
+    typename?: Nullable<string[]>;
+}
+
 export class ButtonBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -802,6 +806,8 @@ export class Journey {
 
 export abstract class IQuery {
     __typename?: 'IQuery';
+
+    abstract blocks(journeyId: string, where?: Nullable<BlocksFilter>): Block[] | Promise<Block[]>;
 
     abstract block(id: string): Block | Promise<Block>;
 
