@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
@@ -12,7 +13,9 @@ import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import Code1Icon from '@core/shared/ui/icons/Code1'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
+import { GetCustomDomain } from '../../../../../__generated__/GetCustomDomain'
 import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
+import { GET_CUSTOM_DOMAIN } from '../../../Team/CustomDomainDialog/CustomDomainDialog'
 
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 import { SlugDialog } from './SlugDialog'
@@ -20,6 +23,14 @@ import { SlugDialog } from './SlugDialog'
 export function JourneyLink(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+
+  const { data: customDomainData } = useQuery<GetCustomDomain>(
+    GET_CUSTOM_DOMAIN,
+    {
+      variables: { teamId: journey?.team?.id }
+    }
+  )
+
   const [showSlugDialog, setShowSlugDialog] = useState(false)
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -33,6 +44,10 @@ export function JourneyLink(): ReactElement {
     })
   }
 
+  const hasCustomDomain =
+    customDomainData?.customDomains[0]?.name != null &&
+    customDomainData.customDomains[0]?.verification?.verified === true
+
   return (
     <>
       {smUp && (
@@ -44,8 +59,10 @@ export function JourneyLink(): ReactElement {
         value={
           journey?.slug != null
             ? `${
-                process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                'https://your.nextstep.is'
+                hasCustomDomain
+                  ? 'https://' + customDomainData.customDomains[0].name
+                  : process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                    'https://your.nextstep.is'
               }/${journey.slug}`
             : undefined
         }
