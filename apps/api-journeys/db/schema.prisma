@@ -493,8 +493,8 @@ model CustomDomain {
   teamId               String
   name                 String             @unique
   apexName             String
-  allowOutsideJourneys Boolean            @default(false)
   journeyCollectionId  String?
+  routeAllTeamJourneys Boolean            @default(true)
   journeyCollection    JourneyCollection? @relation(fields: [journeyCollectionId], references: [id])
   team                 Team               @relation(fields: [teamId], references: [id])
 }

@@ -361,6 +361,7 @@ type CustomDomain
   apexName: String!
   journeyCollection: JourneyCollection
   verification: CustomDomainVerification
+  routeAllTeamJourneys: Boolean!
 }
 
 input CustomDomainCreateInput
@@ -369,6 +370,7 @@ input CustomDomainCreateInput
   teamId: String!
   name: String!
   journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
 }
 
 input CustomDomainUpdateInput
@@ -377,6 +379,7 @@ input CustomDomainUpdateInput
   id: ID!
   name: String
   journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
 }
 
 type CustomDomainVerification
@@ -1942,6 +1945,7 @@ type Team
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
+  customDomains: [CustomDomain!]!
 }
 
 input TeamCreateInput

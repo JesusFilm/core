@@ -466,12 +466,14 @@ export class CustomDomainCreateInput {
     teamId: string;
     name: string;
     journeyCollectionId?: Nullable<string>;
+    routeAllTeamJourneys?: Nullable<boolean>;
 }
 
 export class CustomDomainUpdateInput {
     id: string;
     name?: Nullable<string>;
     journeyCollectionId?: Nullable<string>;
+    routeAllTeamJourneys?: Nullable<boolean>;
 }
 
 export class ButtonClickEventCreateInput {
@@ -1092,6 +1094,7 @@ export class CustomDomain {
     apexName: string;
     journeyCollection?: Nullable<JourneyCollection>;
     verification?: Nullable<CustomDomainVerification>;
+    routeAllTeamJourneys: boolean;
 }
 
 export class VercelDomainVerification {
@@ -1367,6 +1370,7 @@ export class Team {
     createdAt: DateTime;
     updatedAt: DateTime;
     userTeams: UserTeam[];
+    customDomains: CustomDomain[];
 }
 
 export class UserInvite {

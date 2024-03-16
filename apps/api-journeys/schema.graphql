@@ -1184,18 +1184,21 @@ type CustomDomain {
   apexName: String!
   journeyCollection: JourneyCollection
   verification: CustomDomainVerification
+  routeAllTeamJourneys: Boolean!
 }
 
 input CustomDomainCreateInput {
   teamId: String!
   name: String!
   journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
 }
 
 input CustomDomainUpdateInput {
   id: ID!
   name: String
   journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
 }
 
 type VercelDomainVerification {
@@ -2192,6 +2195,7 @@ type Team
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
+  customDomains: [CustomDomain!]!
 }
 
 input TeamCreateInput {

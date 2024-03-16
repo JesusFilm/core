@@ -78,6 +78,7 @@ export class CustomDomainResolver {
       data: {
         ...omit(input, 'journeyCollectionId'),
         name: input.name ?? undefined,
+        routeAllTeamJourneys: input.routeAllTeamJourneys ?? undefined,
         journeyCollection: {
           connect: { id: input.journeyCollectionId ?? undefined }
         }
