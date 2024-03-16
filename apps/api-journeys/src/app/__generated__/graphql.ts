@@ -255,6 +255,11 @@ export class EmailActionInput {
     email: string;
 }
 
+export class BlocksFilter {
+    journeyIds?: Nullable<string[]>;
+    typenames?: Nullable<string[]>;
+}
+
 export class ButtonBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -377,11 +382,15 @@ export class StepBlockCreateInput {
     journeyId: string;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
 }
 
 export class StepBlockUpdateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
 }
 
 export class TextResponseBlockCreateInput {
@@ -829,6 +838,8 @@ export class Journey {
 export abstract class IQuery {
     __typename?: 'IQuery';
 
+    abstract blocks(where?: Nullable<BlocksFilter>): Block[] | Promise<Block[]>;
+
     abstract block(id: string): Block | Promise<Block>;
 
     abstract customDomain(id: string): CustomDomain | Promise<CustomDomain>;
@@ -1017,6 +1028,8 @@ export class StepBlock implements Block {
     locked: boolean;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
 }
 
 export class TextResponseBlock implements Block {

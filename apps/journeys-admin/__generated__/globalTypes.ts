@@ -496,11 +496,15 @@ export interface StepBlockCreateInput {
   journeyId: string;
   nextBlockId?: string | null;
   locked?: boolean | null;
+  x?: number | null;
+  y?: number | null;
 }
 
 export interface StepBlockUpdateInput {
   nextBlockId?: string | null;
   locked?: boolean | null;
+  x?: number | null;
+  y?: number | null;
 }
 
 export interface StepNextEventCreateInput {
