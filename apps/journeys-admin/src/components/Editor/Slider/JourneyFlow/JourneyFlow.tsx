@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+// import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { SmartBezierEdge } from '@tisoap/react-flow-smart-edge'
 import { ReactElement, useEffect, useState } from 'react'
