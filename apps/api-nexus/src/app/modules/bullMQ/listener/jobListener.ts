@@ -180,7 +180,7 @@ export class NexusJobListener implements OnModuleInit {
             }),
           ]);
         }
-        
+
         void Promise.all([
           await this.prismaService.batchTask.update({
             data: {
@@ -200,21 +200,22 @@ export class NexusJobListener implements OnModuleInit {
     this.uploadQueue.on('failed', async (job: Job<UploadToBucketToYoutube>) => {
       console.log('Job failed', job.id);
       console.log('Job:', job);
-      void Promise.all([
-        await this.prismaService.batchTask.update({
-          data: {
-            status: 'failed',
-            error: job.failedReason,
-          },
-          where: {
-            id: job.data.batchTaskId,
-          },
-        }),
+
+      await this.prismaService.batchTask.update({
+        data: {
+          status: 'failed',
+          error: job.failedReason,
+        },
+        where: {
+          id: job.data.batchTaskId,
+        },
+      });
+
+      if (job.name === 'video_upload')
         await this.prismaService.resource.update({
           data: { status: 'error' },
           where: { id: job.data.resource.id },
-        }),
-      ]);
+        });
     });
   }
 }
