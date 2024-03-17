@@ -262,7 +262,9 @@ export class ResourceResolver {
       console.log('batchResources', batchResources);
 
       const preparedBatchJobs =
-        this.batchService.prepareBatchResourcesForUploadBatchJob(batchResources);
+        this.batchService.prepareBatchResourcesForUploadBatchJob(
+          batchResources,
+        );
 
       console.log('preparedBatchJobs', preparedBatchJobs);
 
@@ -293,6 +295,7 @@ export class ResourceResolver {
         await this.bullMQService.createLocalizationBatch(
           uuidv4(),
           nexusId,
+          preparedBatchJob.videoId,
           preparedBatchJob.channel,
           preparedBatchJob.localizations,
         );

@@ -206,29 +206,39 @@ export class BatchService {
       resourceLocalization: ResourceLocalization;
       channel: Channel;
     }>,
-  ): Array<{ channel: Channel; localizations: ResourceLocalization[] }> {
+  ): Array<{
+    videoId: string;
+    channel: Channel;
+    localizations: ResourceLocalization[];
+  }> {
     const batches: Array<{
+      videoId: string;
       channel: Channel;
       localizations: ResourceLocalization[];
     }> = [];
-    const uniqueChannels = batchResourceLocalizations
-      .filter((item, index, self) => {
-        return (
-          index === self.findIndex((t) => t.channel?.id === item.channel?.id) &&
-          item.channel !== undefined
-        );
-      })
-      .map((item) => item.channel);
 
-    for (const channel of uniqueChannels) {
-      if (channel === undefined) continue;
-      const localizations = batchResourceLocalizations
-        .filter((item) => {
-          return item.channel?.id === channel.id;
-        })
-        .map((item) => item.resourceLocalization);
-      batches.push({ channel, localizations });
+    // Extract unique videoIds, ignoring null values
+    const uniqueVideoIds = batchResourceLocalizations
+      .map((item) => item.resourceLocalization.videoId)
+      .filter((videoId): videoId is string => videoId !== null) // Filter out null values and ensure videoId is treated as string
+      .filter((value, index, self) => self.indexOf(value) === index); // Remove duplicates
+
+    for (const videoId of uniqueVideoIds) {
+      const localizationsAndChannels = batchResourceLocalizations.filter(
+        (item) => item.resourceLocalization.videoId === videoId,
+      );
+
+      const localizations = localizationsAndChannels.map(
+        (item) => item.resourceLocalization,
+      );
+      const channel = localizationsAndChannels[0]?.channel; // Choose the first channel as the representative
+
+      if (channel !== null) {
+        // Ensure channel is not undefined
+        batches.push({ videoId, localizations, channel });
+      }
     }
+
     return batches;
   }
 }

@@ -31,18 +31,17 @@ export class NexusJobListener implements OnModuleInit {
     this.uploadQueue.on(
       'progress',
       async (job: Job<UploadToBucketToYoutube>, progress: number) => {
-        // console.log('Job Progress:', job.id, progress);
-        // void Promise.all([
-        //   await this.prismaService.batchResource.updateMany({
-        //     data: {
-        //       percent: progress,
-        //     },
-        //     where: {
-        //       batchId: job.data.batchId,
-        //       resourceId: job.data.resource.id,
-        //     },
-        //   }),
-        // ]);
+        console.log('Job Progress:', job.id, progress);
+        void Promise.all([
+          await this.prismaService.batchTask.update({
+            data: {
+              progress,
+            },
+            where: {
+              id: job.data.batchTaskId,
+            },
+          }),
+        ]);
       },
     );
   }
@@ -135,10 +134,11 @@ export class NexusJobListener implements OnModuleInit {
               where: { resourceId: currentResource?.id },
             });
 
-          const resourceFile = await this.prismaService.localizedResourceFile.update({
-            where: { localizationId: localizedResource?.id },
-            data: { captionFileCloudFlareId: captionBucketFile.Key }
-          });
+          const resourceFile =
+            await this.prismaService.localizedResourceFile.update({
+              where: { localizationId: localizedResource?.id },
+              data: { captionFileCloudFlareId: captionBucketFile.Key },
+            });
 
           const youtubeToken = await this.googleOAuthService.getNewAccessToken(
             job.data.channel.refreshToken,
@@ -149,7 +149,8 @@ export class NexusJobListener implements OnModuleInit {
               token: youtubeToken,
               videoId: job.returnvalue.youtubeId,
               thumbnailPath: thumbnailFilePath,
-              mimeType: currentResource?.thumbnailGoogleDrive?.mimeType ?? 'image/jpeg'
+              mimeType:
+                currentResource?.thumbnailGoogleDrive?.mimeType ?? 'image/jpeg',
             });
 
           const youtubeCaptionResponse =
@@ -160,7 +161,7 @@ export class NexusJobListener implements OnModuleInit {
               name: '',
               captionFile: captionFilePath,
               isDraft: false,
-              mimeType: resourceFile.captionMimeType
+              mimeType: resourceFile.captionMimeType,
             });
 
           console.log(
@@ -171,24 +172,26 @@ export class NexusJobListener implements OnModuleInit {
             'YOUTUBE RESPONSE UPDATE CAPTION: ',
             youtubeCaptionResponse,
           );
-        }
 
-        // void Promise.all([
-        //   await this.prismaService.batchResource.updateMany({
-        //     data: {
-        //       isCompleted: true,
-        //       percent: 100,
-        //     },
-        //     where: {
-        //       batchId: job.data.batchId,
-        //       resourceId: job.data.resource.id,
-        //     },
-        //   }),
-        //   await this.prismaService.resource.update({
-        //     data: { status: 'published' },
-        //     where: { id: job.data.resource.id },
-        //   }),
-        // ]);
+          void Promise.all([
+            await this.prismaService.resource.update({
+              data: { status: 'published' },
+              where: { id: job.data.resource.id },
+            }),
+          ]);
+        }
+        
+        void Promise.all([
+          await this.prismaService.batchTask.update({
+            data: {
+              status: 'completed',
+              progress: 100,
+            },
+            where: {
+              id: job.data.batchTaskId,
+            },
+          }),
+        ]);
       },
     );
   }
@@ -197,22 +200,21 @@ export class NexusJobListener implements OnModuleInit {
     this.uploadQueue.on('failed', async (job: Job<UploadToBucketToYoutube>) => {
       console.log('Job failed', job.id);
       console.log('Job:', job);
-      // void Promise.all([
-      //   await this.prismaService.batchResource.updateMany({
-      //     data: {
-      //       isCompleted: false,
-      //       error: 'Job failed',
-      //     },
-      //     where: {
-      //       batchId: job.data.batchId,
-      //       resourceId: job.data.resource.id,
-      //     },
-      //   }),
-      //   await this.prismaService.resource.update({
-      //     data: { status: 'error' },
-      //     where: { id: job.data.resource.id },
-      //   }),
-      // ]);
+      void Promise.all([
+        await this.prismaService.batchTask.update({
+          data: {
+            status: 'failed',
+            error: job.failedReason,
+          },
+          where: {
+            id: job.data.batchTaskId,
+          },
+        }),
+        await this.prismaService.resource.update({
+          data: { status: 'error' },
+          where: { id: job.data.resource.id },
+        }),
+      ]);
     });
   }
 }
