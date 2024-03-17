@@ -2,6 +2,7 @@ locals {
   port = 4001
   environment_variables = [
     "FIREBASE_API_KEY",
+    "GIT_BRANCH",
     "PG_DATABASE_URL_JOURNEYS",
     "PLAYWRIGHT_USER_ID",
     "POWER_BI_CLIENT_ID",
@@ -23,7 +24,9 @@ locals {
     "GATEWAY_URL",
     "MAILCHIMP_AUDIENCE_ID",
     "MAILCHIMP_MARKETING_API_KEY",
-    "MAILCHIMP_MARKETING_API_SERVER_PREFIX"
+    "MAILCHIMP_MARKETING_API_SERVER_PREFIX",
+    "VERCEL_PROJECT_ID",
+    "VERCEL_TOKEN"
   ]
   service_config = {
     name           = "api-journeys"
