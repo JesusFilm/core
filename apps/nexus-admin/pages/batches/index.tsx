@@ -18,6 +18,8 @@ const GET_BATCHES = gql`
         type
         status
         progress
+        metadata
+        error
       }
     }
   }

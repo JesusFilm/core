@@ -1,3 +1,5 @@
+scalar Object
+
 type Batch @key(fields: "id") {
   id: ID!
   nexusId: String!
@@ -26,6 +28,8 @@ type BatchTask @key(fields: "id") {
   type: BatchTaskType!
   status: TaskStatus!
   progress: Float
+  metadata: Object
+  error: String
 }
 
 enum BatchTaskType {

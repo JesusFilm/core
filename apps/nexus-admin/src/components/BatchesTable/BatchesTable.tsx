@@ -184,6 +184,24 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                   >
                     Progress
                   </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '14px',
+                      fontFamily: 'Montserrat'
+                    }}
+                  >
+                    MetaData
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '14px',
+                      fontFamily: 'Montserrat'
+                    }}
+                  >
+                    Error
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -192,6 +210,8 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                     <TableCell>{task.type}</TableCell>
                     <TableCell>{task.status}</TableCell>
                     <TableCell>{task.progress}</TableCell>
+                    <TableCell>{JSON.stringify(task.metadata)}</TableCell>
+                    <TableCell>{task.error}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
