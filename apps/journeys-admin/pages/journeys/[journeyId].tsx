@@ -17,15 +17,15 @@ import {
   GetAdminJourney,
   GetAdminJourneyVariables
 } from '../../__generated__/GetAdminJourney'
+import { GetCustomDomain } from '../../__generated__/GetCustomDomain'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
 import { ControlPanel } from '../../src/components/Editor/ControlPanel'
 import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
-import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { GetCustomDomain } from '../../__generated__/GetCustomDomain'
 import { GET_CUSTOM_DOMAIN } from '../../src/components/Team/CustomDomainDialog/CustomDomainDialog'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 export const GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}
