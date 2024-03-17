@@ -1,12 +1,10 @@
+import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { SmartBezierEdge } from '@tisoap/react-flow-smart-edge'
-import findIndex from 'lodash/findIndex'
 import { ReactElement, useEffect, useState } from 'react'
 import {
   Background,
   Controls,
-  Edge,
-  Node,
   OnConnectEnd,
   OnConnectStart,
   ReactFlow,
@@ -19,300 +17,51 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  BlockFields,
-  BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_CardBlock as CardBlock,
-  BlockFields_FormBlock as FormBlock,
-  BlockFields_RadioOptionBlock as RadioOptionBlock,
-  BlockFields_SignUpBlock as SignUpBlock,
-  BlockFields_StepBlock as StepBlock,
-  BlockFields_TextResponseBlock as TextResponseBlock,
-  BlockFields_VideoBlock as VideoBlock
-} from '../../../../../__generated__/BlockFields'
+// import {
+//   GetStepBlockPositions,
+//   GetStepBlockPositionsVariables
+// } from '../../../../../__generated__/GetStepBlockPositions'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
 
-import {
-  ACTION_NODE_HEIGHT_GAP,
-  ACTION_NODE_WIDTH,
-  ACTION_NODE_WIDTH_GAP
-} from './nodes/ActionNode'
-import { ButtonBlockNode, ButtonBlockNodeData } from './nodes/ButtonBlockNode'
-import { FormBlockNode, FormBlockNodeData } from './nodes/FormBlockNode'
-import {
-  RadioOptionBlockNode,
-  RadioOptionBlockNodeData
-} from './nodes/RadioOptionBlockNode'
-import { SignUpBlockNode, SignUpBlockNodeData } from './nodes/SignUpBlockNode'
-import {
-  SocialPreviewNode,
-  SocialPreviewNodeData
-} from './nodes/SocialPreviewNode'
-import {
-  STEP_NODE_HEIGHT,
-  STEP_NODE_HEIGHT_GAP,
-  STEP_NODE_WIDTH,
-  STEP_NODE_WIDTH_GAP,
-  StepBlockNode,
-  StepBlockNodeData
-} from './nodes/StepBlockNode'
-import {
-  TextResponseBlockNode,
-  TextResponseBlockNodeData
-} from './nodes/TextResponseBlockNode'
-import { VideoBlockNode, VideoBlockNodeData } from './nodes/VideoBlockNode'
+import { isActionBlock } from './libs/isActionBlock'
+import { transformSteps } from './libs/transformSteps'
+import { ButtonBlockNode } from './nodes/ButtonBlockNode'
+import { FormBlockNode } from './nodes/FormBlockNode'
+import { RadioOptionBlockNode } from './nodes/RadioOptionBlockNode'
+import { SignUpBlockNode } from './nodes/SignUpBlockNode'
+import { SocialPreviewNode } from './nodes/SocialPreviewNode'
+import { StepBlockNode } from './nodes/StepBlockNode'
+import { TextResponseBlockNode } from './nodes/TextResponseBlockNode'
+import { VideoBlockNode } from './nodes/VideoBlockNode'
 
 import 'reactflow/dist/style.css'
 
-type InternalNode =
-  | Node<StepBlockNodeData, 'StepBlock'>
-  | Node<RadioOptionBlockNodeData, 'RadioOptionBlock'>
-  | Node<ButtonBlockNodeData, 'ButtonBlock'>
-  | Node<TextResponseBlockNodeData, 'TextResponseBlock'>
-  | Node<SignUpBlockNodeData, 'SignUpBlock'>
-  | Node<FormBlockNodeData, 'FormBlock'>
-  | Node<VideoBlockNodeData, 'VideoBlock'>
-  | Node<SocialPreviewNodeData, 'SocialPreview'>
-
-interface Connection<T = BlockFields> {
-  block: TreeBlock<T>
-  step: TreeBlock<StepBlock>
-  steps: Array<TreeBlock<StepBlock>>
-}
-
-type ActionBlock =
-  | TreeBlock<RadioOptionBlock>
-  | TreeBlock<ButtonBlock>
-  | TreeBlock<TextResponseBlock>
-  | TreeBlock<SignUpBlock>
-  | TreeBlock<FormBlock>
-  | TreeBlock<VideoBlock>
-
-const isActionBlock = (block): block is ActionBlock => 'action' in block
-
-function filterActionBlocks(step: TreeBlock<StepBlock>): ActionBlock[] {
-  const card = step.children[0] as TreeBlock<CardBlock> | undefined
-  if (card == null) return []
-
-  return card.children
-    .flatMap((block) =>
-      block.__typename === 'RadioQuestionBlock' ? block.children : block
-    )
-    .filter(
-      (child) => card.coverBlockId !== child.id && isActionBlock(child)
-    ) as ActionBlock[]
-}
-
-function transformSteps(steps: Array<TreeBlock<StepBlock>>): {
-  nodes: InternalNode[]
-  edges: Edge[]
-} {
-  const nodes: InternalNode[] = []
-  const edges: Edge[] = []
-
-  const blocks: Array<Array<TreeBlock<StepBlock>>> = []
-  const visitedStepIds: string[] = []
-
-  function getStepFromId(id?: string): TreeBlock<StepBlock> | undefined {
-    if (id == null) return
-    if (visitedStepIds.includes(id)) return
-    visitedStepIds.push(id)
-    return steps.find((step) => step.id === id)
-  }
-
-  function getNextStep(
-    step: TreeBlock<StepBlock>
-  ): TreeBlock<StepBlock> | undefined {
-    const index = findIndex(steps, (child) => child.id === step.id)
-    if (index < 0) return
-    if (step.nextBlockId == null && steps[index + 1] != null) {
-      return getStepFromId(steps[index + 1].id)
-    }
-    if (step.nextBlockId != null && step.nextBlockId !== step.id) {
-      return getStepFromId(step.nextBlockId)
-    }
-  }
-
-  function connectBlockToNextBlock({ block, step, steps }: Connection): void {
-    const index = findIndex(steps, (child) => child.id === step.id)
-    if (index < 0) return
-    if (step.nextBlockId == null && steps[index + 1] != null) {
-      edges.push({
-        id: `${block.id}->${steps[index + 1].id}`,
-        source: block.id,
-        target: steps[index + 1].id,
-        // markerEnd: {
-        //   type: MarkerType.Arrow
-        // },
-        style: {
-          // strokeWidth: 2,
-          strokeDasharray: 4
-        },
-        type: 'smart'
-      })
-    }
-    if (step.nextBlockId != null && step.nextBlockId !== step.id) {
-      edges.push({
-        id: `${block.id}->${step.nextBlockId}`,
-        source: block.id,
-        target: step.nextBlockId,
-        // markerEnd: {
-        //   type: MarkerType.Arrow
-        // },
-        style: {
-          // strokeWidth: 2,
-          strokeDasharray: 4
-        },
-        type: 'smart'
-      })
-    }
-  }
-
-  function getDecendantStepsOfStep(
-    step: TreeBlock<StepBlock>
-  ): Array<TreeBlock<StepBlock>> {
-    const descendants: Array<TreeBlock<StepBlock>> = []
-    const nextStep = getNextStep(step)
-    if (nextStep != null) descendants.push(nextStep)
-
-    const blocks = filterActionBlocks(step)
-
-    blocks.forEach((child) => {
-      if (child.action?.__typename === 'NavigateToBlockAction') {
-        const nextStep = getStepFromId(child.action?.blockId)
-        if (nextStep != null) descendants.push(nextStep)
-      }
-    })
-    return descendants
-  }
-
-  function processSteps(steps: Array<TreeBlock<StepBlock>>): void {
-    blocks.push(steps)
-    const descendants = steps.flatMap((step) => {
-      return getDecendantStepsOfStep(step)
-    })
-    if (descendants.length > 0) processSteps(descendants)
-  }
-
-  function processBlock(block, step, steps, position): void {
-    const node = {
-      id: block.id,
-      selectable: false,
-      position
-    }
-    switch (block.__typename) {
-      case 'RadioOptionBlock':
-        nodes.push({
-          ...node,
-          type: block.__typename,
-          data: { ...block, step }
-        })
-        break
-      case 'ButtonBlock':
-        nodes.push({
-          ...node,
-          type: block.__typename,
-          data: { ...block, step }
-        })
-        break
-      case 'TextResponseBlock':
-        nodes.push({
-          ...node,
-          type: block.__typename,
-          data: { ...block, step }
-        })
-        break
-      case 'SignUpBlock':
-        nodes.push({
-          ...node,
-          type: block.__typename,
-          data: { ...block, step }
-        })
-        break
-      case 'FormBlock':
-        nodes.push({
-          ...node,
-          type: block.__typename,
-          data: { ...block, step }
-        })
-        break
-      case 'VideoBlock':
-        nodes.push({
-          ...node,
-          type: block.__typename,
-          data: { ...block, step }
-        })
-        break
-    }
-    if (block.action != null) {
-      if (block.action.__typename === 'NavigateToBlockAction') {
-        edges.push({
-          id: `${block.id}->${block.action.blockId}`,
-          source: block.id,
-          target: block.action.blockId,
-          type: 'smart',
-          // markerEnd: {
-          //   type: MarkerType.Arrow
-          // },
-          style: {
-            // strokeWidth: 2
-          }
-        })
-      }
-      if (block.action.__typename === 'NavigateAction') {
-        connectBlockToNextBlock({ block, step, steps })
-      }
-    }
-  }
-
-  const step = getStepFromId(steps[0]?.id)
-  if (step != null) processSteps([step])
-
-  blocks.forEach((row, index) => {
-    const stepY = index * (STEP_NODE_HEIGHT + STEP_NODE_HEIGHT_GAP)
-    row.forEach((step, index) => {
-      connectBlockToNextBlock({ block: step, step, steps })
-      const stepX =
-        index * (STEP_NODE_WIDTH + STEP_NODE_WIDTH_GAP) -
-        (row.length / 2) * (STEP_NODE_WIDTH + STEP_NODE_WIDTH_GAP)
-      nodes.push({
-        id: step.id,
-        type: 'StepBlock',
-        data: { ...step, steps },
-        position: { x: stepX, y: stepY }
-      })
-      const blockY = stepY + STEP_NODE_HEIGHT + ACTION_NODE_HEIGHT_GAP
-      const blocks = filterActionBlocks(step)
-      blocks.forEach((block, index) => {
-        const blockX =
-          stepX +
-          index * (ACTION_NODE_WIDTH + ACTION_NODE_WIDTH_GAP) -
-          (blocks.length / 2) * (ACTION_NODE_WIDTH + ACTION_NODE_WIDTH_GAP) +
-          STEP_NODE_WIDTH / 2 +
-          ACTION_NODE_WIDTH_GAP / 2
-        processBlock(block, step, steps, { x: blockX, y: blockY })
-      })
-    })
-  })
-
-  nodes.push({
-    type: 'SocialPreview',
-    id: 'SocialPreview',
-    position: { x: -165, y: -195 },
-    data: { __typename: 'SocialPreview' }
-  })
-
-  return { nodes, edges }
-}
+// export const GET_STEP_BLOCK_POSITIONS = gql`
+//   query GetStepBlockPositions($journeyIds: [ID!]) {
+//     blocks(where: { journeyIds: $journeyIds, typenames: "StepBlock" }) {
+//       id
+//       ... on StepBlock {
+//         x
+//         y
+//       }
+//     }
+//   }
+// `
 
 export function JourneyFlow(): ReactElement {
+  const { journey } = useJourney()
   const {
     state: { steps }
   } = useEditor()
-
+  // const { data } = useQuery<
+  //   GetStepBlockPositions,
+  //   GetStepBlockPositionsVariables
+  // >(GET_STEP_BLOCK_POSITIONS, {
+  //   variables: { journeyIds: journey?.id != null ? [journey.id] : undefined }
+  // })
   const [nodes, setNodes] = useNodesState([])
   const [edges, setEdges] = useEdgesState([])
   const [previousNodeId, setPreviousNodeId] = useState<string | null>(null)
@@ -341,7 +90,6 @@ export function JourneyFlow(): ReactElement {
     }
   }
 
-  const { journey } = useJourney()
   const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
