@@ -191,9 +191,10 @@ export class JourneyResolver {
     if (where?.featured != null)
       filter.featuredAt = where?.featured ? { not: null } : null
     if (where?.ids != null) filter.id = { in: where?.ids }
+    let OR: Prisma.JourneyWhereInput[] = []
     if (where?.tagIds != null) {
       // find every journey which has a journeyTag matching at least 1 tagId
-      filter.OR = where.tagIds.map((tagId) => ({
+      OR = where.tagIds.map((tagId) => ({
         journeyTags: {
           some: {
             tagId
@@ -202,18 +203,32 @@ export class JourneyResolver {
       }))
     }
     if (where?.hostname != null) {
-      filter.journeyCollectionJourneys = {
-        some: {
-          journeyCollection: {
-            customDomains: { some: { name: where.hostname } }
+      OR.push({
+        team: {
+          customDomains: {
+            some: { name: where.hostname, routeAllTeamJourneys: true }
           }
         }
-      }
+      })
+      OR.push({
+        journeyCollectionJourneys: {
+          some: {
+            journeyCollection: {
+              customDomains: { some: { name: where.hostname } }
+            }
+          }
+        }
+      })
     } else {
       filter.journeyCollectionJourneys = { none: {} }
+      filter.team = {
+        customDomains: { none: { routeAllTeamJourneys: true } }
+      }
     }
     if (where?.languageIds != null)
       filter.languageId = { in: where?.languageIds }
+
+    if (OR.length > 0) filter.OR = OR
 
     return await this.prismaService.journey.findMany({
       where: filter,
@@ -238,13 +253,27 @@ export class JourneyResolver {
     const filter: Prisma.JourneyWhereUniqueInput =
       idType === IdType.slug ? { slug: id } : { id }
     if (hostname != null) {
-      filter.journeyCollectionJourneys = {
-        some: {
-          journeyCollection: { customDomains: { some: { name: hostname } } }
-        }
+      filter.team = {
+        OR: [
+          {
+            customDomains: {
+              some: { name: hostname, routeAllTeamJourneys: true }
+            }
+          },
+          {
+            journeyCollections: {
+              some: {
+                customDomains: { some: { name: hostname } }
+              }
+            }
+          }
+        ]
       }
     } else {
       filter.journeyCollectionJourneys = { none: {} }
+      filter.team = {
+        customDomains: { none: { routeAllTeamJourneys: true } }
+      }
     }
     const journey = await this.prismaService.journey.findUnique({
       where: filter

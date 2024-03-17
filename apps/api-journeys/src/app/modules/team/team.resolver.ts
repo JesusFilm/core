@@ -33,7 +33,8 @@ export class TeamResolver {
     @CaslAccessible('Team') accessibleTeams: Prisma.TeamWhereInput
   ): Promise<Team[]> {
     return await this.prismaService.team.findMany({
-      where: { AND: [accessibleTeams] }
+      where: { AND: [accessibleTeams] },
+      include: { customDomains: { select: { id: true } } }
     })
   }
 
@@ -45,7 +46,7 @@ export class TeamResolver {
   ): Promise<Team> {
     const team = await this.prismaService.team.findUnique({
       where: { id },
-      include: { userTeams: true }
+      include: { userTeams: true, customDomains: { select: { id: true } } }
     })
     if (team == null)
       throw new GraphQLError('team not found', {
@@ -78,7 +79,7 @@ export class TeamResolver {
   ): Promise<Team | undefined> {
     const team = await this.prismaService.team.findUnique({
       where: { id },
-      include: { userTeams: true }
+      include: { userTeams: true, customDomains: { select: { id: true } } }
     })
     if (team == null)
       throw new GraphQLError('team not found', {
@@ -108,5 +109,15 @@ export class TeamResolver {
     return filter(userTeams, (userTeam) =>
       ability.can(Action.Read, subject('UserTeam', userTeam))
     )
+  }
+
+  @ResolveField()
+  customDomains(
+    @Parent() parent: Team & { customDomains: Array<{ id: string }> }
+  ): Array<{ __typename: 'CustomDomain'; id: string }> {
+    return parent.customDomains.map(({ id }) => ({
+      __typename: 'CustomDomain',
+      id
+    }))
   }
 }

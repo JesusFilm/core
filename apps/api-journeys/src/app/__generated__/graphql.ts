@@ -255,6 +255,11 @@ export class EmailActionInput {
     email: string;
 }
 
+export class BlocksFilter {
+    journeyIds?: Nullable<string[]>;
+    typenames?: Nullable<string[]>;
+}
+
 export class ButtonBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -470,12 +475,14 @@ export class CustomDomainCreateInput {
     teamId: string;
     name: string;
     journeyCollectionId?: Nullable<string>;
+    routeAllTeamJourneys?: Nullable<boolean>;
 }
 
 export class CustomDomainUpdateInput {
     id: string;
     name?: Nullable<string>;
     journeyCollectionId?: Nullable<string>;
+    routeAllTeamJourneys?: Nullable<boolean>;
 }
 
 export class ButtonClickEventCreateInput {
@@ -831,6 +838,8 @@ export class Journey {
 export abstract class IQuery {
     __typename?: 'IQuery';
 
+    abstract blocks(where?: Nullable<BlocksFilter>): Block[] | Promise<Block[]>;
+
     abstract block(id: string): Block | Promise<Block>;
 
     abstract customDomain(id: string): CustomDomain | Promise<CustomDomain>;
@@ -1098,6 +1107,7 @@ export class CustomDomain {
     apexName: string;
     journeyCollection?: Nullable<JourneyCollection>;
     verification?: Nullable<CustomDomainVerification>;
+    routeAllTeamJourneys: boolean;
 }
 
 export class VercelDomainVerification {
@@ -1373,6 +1383,7 @@ export class Team {
     createdAt: DateTime;
     updatedAt: DateTime;
     userTeams: UserTeam[];
+    customDomains: CustomDomain[];
 }
 
 export class UserInvite {

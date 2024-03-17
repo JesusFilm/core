@@ -54,7 +54,8 @@ describe('TeamResolver', () => {
       expect(prismaService.team.findMany).toHaveBeenCalledWith({
         where: {
           AND: [{ OR: [{}] }]
-        }
+        },
+        include: { customDomains: { select: { id: true } } }
       })
       expect(teams).toEqual([team])
     })

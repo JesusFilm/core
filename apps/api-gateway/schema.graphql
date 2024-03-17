@@ -36,6 +36,13 @@ interface Block
   parentOrder: Int
 }
 
+input BlocksFilter
+  @join__type(graph: JOURNEYS)
+{
+  journeyIds: [ID!]
+  typenames: [String!]
+}
+
 type Browser
   @join__type(graph: JOURNEYS)
 {
@@ -361,6 +368,7 @@ type CustomDomain
   apexName: String!
   journeyCollection: JourneyCollection
   verification: CustomDomainVerification
+  routeAllTeamJourneys: Boolean!
 }
 
 input CustomDomainCreateInput
@@ -369,6 +377,7 @@ input CustomDomainCreateInput
   teamId: String!
   name: String!
   journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
 }
 
 input CustomDomainUpdateInput
@@ -377,6 +386,7 @@ input CustomDomainUpdateInput
   id: ID!
   name: String
   journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
 }
 
 type CustomDomainVerification
@@ -1496,6 +1506,7 @@ type Query
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
+  blocks(where: BlocksFilter): [Block!]! @join__field(graph: JOURNEYS)
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
   customDomain(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
   customDomains(teamId: ID!): [CustomDomain!]! @join__field(graph: JOURNEYS)
@@ -1978,6 +1989,7 @@ type Team
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
+  customDomains: [CustomDomain!]!
 }
 
 input TeamCreateInput

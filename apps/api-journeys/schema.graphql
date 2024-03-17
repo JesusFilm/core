@@ -347,12 +347,18 @@ type Journey
   userJourneys: [UserJourney!]
 }
 
+input BlocksFilter {
+  journeyIds: [ID!]
+  typenames: [String!]
+}
+
 type Query {
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
 }
 
 extend type Query {
+  blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block!
   customDomain(id: ID!): CustomDomain!
   customDomains(teamId: ID!): [CustomDomain!]!
@@ -1220,18 +1226,21 @@ type CustomDomain {
   apexName: String!
   journeyCollection: JourneyCollection
   verification: CustomDomainVerification
+  routeAllTeamJourneys: Boolean!
 }
 
 input CustomDomainCreateInput {
   teamId: String!
   name: String!
   journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
 }
 
 input CustomDomainUpdateInput {
   id: ID!
   name: String
   journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
 }
 
 type VercelDomainVerification {
@@ -2228,6 +2237,7 @@ type Team
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
+  customDomains: [CustomDomain!]!
 }
 
 input TeamCreateInput {

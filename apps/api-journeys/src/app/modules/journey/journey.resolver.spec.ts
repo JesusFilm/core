@@ -470,7 +470,9 @@ describe('JourneyResolver', () => {
         await resolver.adminJourney(ability, 'journey-slug', IdType.slug)
       ).toEqual(journeyWithUserTeam)
       expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
-        where: { slug: 'journey-slug' },
+        where: {
+          slug: 'journey-slug'
+        },
         include: {
           userJourneys: true,
           team: {
@@ -519,7 +521,9 @@ describe('JourneyResolver', () => {
       expect(await resolver.journeys()).toEqual([journey, journey])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
-          status: 'published'
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         }
       })
     })
@@ -533,7 +537,9 @@ describe('JourneyResolver', () => {
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           status: 'published',
-          featuredAt: { not: null }
+          featuredAt: { not: null },
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         }
       })
     })
@@ -547,7 +553,9 @@ describe('JourneyResolver', () => {
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           status: 'published',
-          featuredAt: null
+          featuredAt: null,
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         }
       })
     })
@@ -565,7 +573,9 @@ describe('JourneyResolver', () => {
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           status: 'published',
-          template: true
+          template: true,
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         }
       })
       expect(fetchedJourneys[0].template).toBe(true)
@@ -579,7 +589,9 @@ describe('JourneyResolver', () => {
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           status: 'published',
-          template: false
+          template: false,
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         }
       })
       expect(fetchedJourneys[0].template).toBe(false)
@@ -592,7 +604,12 @@ describe('JourneyResolver', () => {
         await resolver.journeys({ ids: [journey.id, journey.id] })
       ).toEqual([journey, journey])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
-        where: { id: { in: ['journeyId', 'journeyId'] }, status: 'published' }
+        where: {
+          id: { in: ['journeyId', 'journeyId'] },
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
+        }
       })
     })
 
@@ -606,7 +623,9 @@ describe('JourneyResolver', () => {
             { journeyTags: { some: { tagId: 'tagId1' } } },
             { journeyTags: { some: { tagId: 'tagId2' } } }
           ],
-          status: 'published'
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         },
         include: { journeyTags: true }
       })
@@ -619,7 +638,9 @@ describe('JourneyResolver', () => {
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           languageId: { in: ['529'] },
-          status: 'published'
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         }
       })
     })
@@ -629,7 +650,9 @@ describe('JourneyResolver', () => {
       expect(await resolver.journeys({ limit: 2 })).toEqual([journey, journey])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
-          status: 'published'
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         },
         take: 2
       })
@@ -643,7 +666,9 @@ describe('JourneyResolver', () => {
       ])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
-          status: 'published'
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         },
         orderBy: { publishedAt: 'desc' }
       })
@@ -657,7 +682,11 @@ describe('JourneyResolver', () => {
         journey
       )
       expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
-        where: { slug: 'journey-slug' }
+        where: {
+          slug: 'journey-slug',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
+        }
       })
     })
 
@@ -667,7 +696,11 @@ describe('JourneyResolver', () => {
         journey
       )
       expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
-        where: { id: 'journeyId' }
+        where: {
+          id: 'journeyId',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
+        }
       })
     })
 

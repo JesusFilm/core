@@ -98,7 +98,8 @@ export class CustomDomainService {
       const data: Prisma.CustomDomainCreateInput = {
         ...omit(input, ['teamId', 'journeyCollectionId']),
         apexName: vercelResult.apexName,
-        team: { connect: { id: input.teamId } }
+        team: { connect: { id: input.teamId } },
+        routeAllTeamJourneys: input.routeAllTeamJourneys ?? undefined
       }
       if (input.journeyCollectionId != null) {
         data.journeyCollection = {
