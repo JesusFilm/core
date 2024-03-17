@@ -153,7 +153,7 @@ describe('VideoDetails', () => {
         />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Close' }))
+    fireEvent.click(getByRole('button', { name: 'close-image-library' }))
     expect(onClose).toHaveBeenCalled()
   })
 

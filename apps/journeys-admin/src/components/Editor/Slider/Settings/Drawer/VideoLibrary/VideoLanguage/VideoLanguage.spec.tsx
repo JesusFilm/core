@@ -70,7 +70,7 @@ describe('VideoLanguage', () => {
         loading={false}
       />
     )
-    fireEvent.click(getByRole('button', { name: 'Close' }))
+    fireEvent.click(getByRole('button', { name: 'close-image-library' }))
     expect(handleClose).toHaveBeenCalled()
   })
 
