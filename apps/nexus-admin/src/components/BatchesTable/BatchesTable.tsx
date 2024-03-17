@@ -1,3 +1,4 @@
+import CircleIcon from '@mui/icons-material/Circle'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Box from '@mui/material/Box'
@@ -20,6 +21,8 @@ import { FC, ReactElement, useState } from 'react'
 
 import { Batches_batches } from '../../../__generated__/Batches'
 
+import Chip from '@mui/material/Chip'
+import Tooltip from '@mui/material/Tooltip'
 import { BatchesTableHeader } from './BatchesTableHeader'
 
 interface BatchesTableProps {
@@ -136,6 +139,12 @@ const CircularProgressWithLabel = (
 const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
   const [open, setOpen] = useState(false)
 
+  const getChipColor = (status: string) => {
+    if (status === 'completed') return 'success'
+    if (status === 'failed') return 'error'
+    return 'warning'
+  }
+
   return (
     <>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -191,7 +200,16 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                       fontFamily: 'Montserrat'
                     }}
                   >
-                    MetaData
+                    Channel ID
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '14px',
+                      fontFamily: 'Montserrat'
+                    }}
+                  >
+                    Video ID
                   </TableCell>
                   <TableCell
                     sx={{
@@ -208,10 +226,43 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                 {batch.tasks.map((task) => (
                   <TableRow key={task.type}>
                     <TableCell>{task.type}</TableCell>
-                    <TableCell>{task.status}</TableCell>
-                    <TableCell>{task.progress}</TableCell>
-                    <TableCell>{JSON.stringify(task.metadata)}</TableCell>
-                    <TableCell>{task.error}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={task.status}
+                        color={getChipColor(task.status)}
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell>{Number(task.progress).toFixed(2)}%</TableCell>
+                    <TableCell>
+                      {task.metadata?.channel?.youtube?.youtubeId}
+                    </TableCell>
+                    <TableCell>
+                      {task.metadata?.localization?.videoId}
+                    </TableCell>
+                    <TableCell>
+                      {task.error ? (
+                        <Tooltip title={task.error}>
+                          <IconButton>
+                            <CircleIcon
+                              sx={{
+                                color: 'error.main'
+                              }}
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title="Successful">
+                          <IconButton>
+                            <CircleIcon
+                              sx={{
+                                color: 'success.main'
+                              }}
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
