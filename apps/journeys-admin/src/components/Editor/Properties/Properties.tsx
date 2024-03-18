@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { SidePanel } from '../../PageWrapper/SidePanel'
 import { SidePanelContainer } from '../../PageWrapper/SidePanelContainer'
