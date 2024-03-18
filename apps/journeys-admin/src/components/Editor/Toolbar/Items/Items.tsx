@@ -12,6 +12,7 @@ export function Items(): ReactElement {
       sx={{ display: { xs: 'none', sm: 'flex' } }}
       flexDirection="row"
       gap={5}
+      data-testid="ItemsStack"
     >
       <AnalyticsItem variant="icon-button" />
       <StrategyItem variant="button" />
