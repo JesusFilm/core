@@ -12,11 +12,15 @@ import {
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { Journey, JourneyCollection, Prisma } from '.prisma/api-journeys-client'
+import {
+  CustomDomain,
+  Journey,
+  JourneyCollection,
+  Prisma
+} from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
-  CustomDomain,
   JourneyCollectionCreateInput,
   JourneyCollectionUpdateInput
 } from '../../__generated__/graphql'

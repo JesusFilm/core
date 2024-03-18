@@ -6,6 +6,7 @@ import {
   Parent,
   Query,
   ResolveField,
+  ResolveReference,
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
@@ -119,5 +120,15 @@ export class TeamResolver {
       __typename: 'CustomDomain',
       id
     }))
+  }
+
+  @ResolveReference()
+  async resolveReference(reference: {
+    __typename: 'Team'
+    id: string
+  }): Promise<Team | null> {
+    return await this.prismaService.team.findUnique({
+      where: { id: reference.id }
+    })
   }
 }

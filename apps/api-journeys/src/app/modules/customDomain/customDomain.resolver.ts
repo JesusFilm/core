@@ -139,4 +139,12 @@ export class CustomDomainResolver {
       verification: vercelResult.verification
     }
   }
+
+  @ResolveField()
+  team(@Parent() customDomain: CustomDomain): {
+    __typename: 'Team'
+    id: string
+  } {
+    return { __typename: 'Team', id: customDomain.teamId }
+  }
 }
