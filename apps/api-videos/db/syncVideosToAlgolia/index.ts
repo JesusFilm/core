@@ -1,0 +1,1 @@
+export { syncVideosToAlgolia } from './syncVideosToAlgolia'

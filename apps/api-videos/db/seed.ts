@@ -20,6 +20,7 @@ import {
   updateChildIds,
   updateParentChild
 } from '../src/libs/postgresql/postgresql'
+import { syncVideosToAlgolia } from './syncVideosToAlgolia'
 
 const prisma = new PrismaClient()
 
@@ -148,6 +149,8 @@ export async function main(mode: string, target?: string): Promise<void> {
   for (const [key, value] of Object.entries(errors)) {
     console.log('error:', key, value)
   }
+
+  await syncVideosToAlgolia()
 }
 main(mode, target).catch((e) => {
   console.error(e)
