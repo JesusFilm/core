@@ -9,6 +9,7 @@ import {
   EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { act } from 'react-dom/test-utils'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveSlide
@@ -45,116 +46,67 @@ describe('Footer', () => {
     jest.resetAllMocks()
   })
 
-  it('should display Footer attributes', () => {
-    const { getByText } = render(
-      <JourneyProvider
-        value={{
-          journey: {
-            id: 'journeyId',
-            chatButtons: [
-              {
-                id: '1',
-                link: 'https://m.me/user',
-                platform: ChatPlatform.facebook
-              },
-              {
-                id: '2',
-                link: 'viber://',
-                platform: ChatPlatform.viber
-              }
-            ]
-          } as unknown as Journey,
-          variant: 'admin'
-        }}
-      >
-        <Footer />
-      </JourneyProvider>
-    )
-
-    // expect(getByText('Hosted by')).toBeInTheDocument()
-    expect(getByText('Chat Widget')).toBeInTheDocument()
-    expect(getByText('Facebook and Viber')).toBeInTheDocument()
-  })
-
-  it('should return a singular platform value', () => {
-    const { getByText } = render(
-      <JourneyProvider
-        value={{
-          journey: {
-            id: 'journeyId',
-            chatButtons: [
-              {
-                id: '1',
-                link: 'https://m.me/user',
-                platform: ChatPlatform.facebook
-              }
-            ]
-          } as unknown as Journey,
-          variant: 'admin'
-        }}
-      >
-        <Footer />
-      </JourneyProvider>
-    )
-    expect(getByText('Facebook')).toBeInTheDocument()
-  })
-
-  it.skip('should display Host attribute with hosts name if a name is provided', () => {
-    const { getByText } = render(
-      <JourneyProvider
-        value={{
-          journey: {
-            id: 'journeyId',
-            themeMode: ThemeMode.dark,
-            themeName: ThemeName.base,
-            language: {
-              __typename: 'Language',
-              id: '529',
-              bcp47: 'en',
-              iso3: 'eng'
-            },
-            host: {
-              title: `John Geronimo "The Rock" Johnson`
-            }
-          } as unknown as Journey,
-          variant: 'admin'
-        }}
-      >
-        <Footer />
-      </JourneyProvider>
-    )
-
-    expect(getByText('Hosted by')).toBeInTheDocument()
-    expect(getByText(`John Geronimo "The Rock" Johnson`)).toBeInTheDocument()
-  })
-
-  it.skip('should open property drawer for variant', () => {
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-
-    render(<Footer />)
-
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedAttributeIdAction',
-      selectedAttributeId: 'hosted-by'
-    })
-  })
-
-  it('should open property drawer for chat widget', () => {
-    const { getByText } = render(
+  it('should display Footer attributes', async () => {
+    const { getByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
-            <Footer />
             <TestEditorState />
+            <Footer />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByText('Chat Widget'))
-    expect(getByText('drawerTitle: Chat Widget')).toBeInTheDocument()
+
+    expect(getByText('Hosted By')).toBeInTheDocument()
+    expect(getByText('Chat Widget')).toBeInTheDocument()
+  })
+
+  it('should render the components', async () => {
+    const { getByText, queryByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={state}>
+            <TestEditorState />
+            <Footer />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await act(async () => {
+      fireEvent.click(getByText('Chat Widget'))
+    })
+
+    expect(queryByTestId('ChatComponent')).toBeInTheDocument()
+    expect(queryByTestId('HostComponent')).not.toBeInTheDocument()
+  })
+
+  it('should switch tabs', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={state}>
+            <TestEditorState />
+            <Footer />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('tab', { name: 'Hosted By' })).toBeInTheDocument()
+    expect(getByRole('tab', { name: 'Chat Widget' })).toBeInTheDocument()
+
+    fireEvent.click(getByRole('tab', { name: 'Chat Widget' }))
+    expect(getByRole('tab', { name: 'Chat Widget' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+
+    fireEvent.click(getByRole('tab', { name: 'Hosted By' }))
+    expect(getByRole('tab', { name: 'Hosted By' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 })
