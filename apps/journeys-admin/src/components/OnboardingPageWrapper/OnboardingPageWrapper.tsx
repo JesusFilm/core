@@ -43,6 +43,7 @@ export function OnboardingPageWrapper({
         gap={10}
         sx={{
           m: { xs: 0, sm: 5 },
+          ml: { xs: 0, sm: 0 },
           flexGrow: 1,
           display: 'flex',
           borderColor: 'divider',
