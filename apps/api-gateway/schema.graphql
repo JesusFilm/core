@@ -36,6 +36,13 @@ interface Block
   parentOrder: Int
 }
 
+input BlocksFilter
+  @join__type(graph: JOURNEYS)
+{
+  journeyIds: [ID!]
+  typenames: [String!]
+}
+
 type Browser
   @join__type(graph: JOURNEYS)
 {
@@ -1421,6 +1428,7 @@ type Query
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
+  blocks(where: BlocksFilter): [Block!]! @join__field(graph: JOURNEYS)
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
@@ -1707,6 +1715,18 @@ type StepBlock implements Block
   locked: Boolean!
   parentBlockId: ID
   parentOrder: Int
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 input StepBlockCreateInput
@@ -1716,6 +1736,18 @@ input StepBlockCreateInput
   journeyId: ID!
   nextBlockId: ID
   locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 input StepBlockUpdateInput
@@ -1723,6 +1755,18 @@ input StepBlockUpdateInput
 {
   nextBlockId: ID
   locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 type StepNextEvent implements Event

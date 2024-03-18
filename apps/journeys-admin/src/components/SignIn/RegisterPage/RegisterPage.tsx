@@ -13,7 +13,6 @@ import {
   updateProfile
 } from 'firebase/auth'
 import { Form, Formik } from 'formik'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
 import { object, string } from 'yup'
@@ -34,7 +33,7 @@ export function RegisterPage({
     event.preventDefault()
   }
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
+
   const validationSchema = object().shape({
     email: string()
       .trim()
@@ -69,9 +68,6 @@ export function RegisterPage({
   async function handleCreateAccount(values, { setFieldError }): Promise<void> {
     try {
       await createAccountAndSignIn(values.email, values.name, values.password)
-      await router.push({
-        pathname: '/'
-      })
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
         setFieldError(
