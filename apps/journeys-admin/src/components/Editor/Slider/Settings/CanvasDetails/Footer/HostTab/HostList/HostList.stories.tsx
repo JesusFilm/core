@@ -2,8 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { GetAllTeamHosts } from '../../../../../../../../../__generated__/GetAllTeamHosts'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
@@ -15,7 +17,8 @@ import { HostList } from './HostList'
 const Demo: Meta<typeof HostList> = {
   ...simpleComponentConfig,
   component: HostList,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab/HostList'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/HostTab/HostList'
 }
 
 const teamHosts: GetAllTeamHosts = {
@@ -55,19 +58,37 @@ const teamHosts: GetAllTeamHosts = {
   ]
 }
 
+const journey = {
+  __typename: 'Journey',
+  id: 'journeyId',
+  seoTitle: 'My awesome journey',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    name: [
+      {
+        value: 'English',
+        primary: true,
+        __typename: 'Translation'
+      }
+    ]
+  },
+  host: null
+} as unknown as Journey
+
 const handleSelection = jest.fn()
 
-const Template: StoryObj<typeof HostList> = {
-  render: ({ ...args }) => {
+const Template: StoryObj<{
+  journey: Journey
+  componentProps: ComponentProps<typeof HostList>
+}> = {
+  render: ({ journey, componentProps }) => {
     return (
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ ...args, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <Box sx={{ width: DRAWER_WIDTH }}>
-              <HostList
-                teamHosts={teamHosts}
-                handleSelection={handleSelection}
-              />
+              <HostList {...componentProps} />
             </Box>
           </JourneyProvider>
         </ThemeProvider>
@@ -77,7 +98,14 @@ const Template: StoryObj<typeof HostList> = {
 }
 
 export const Default = {
-  ...Template
+  ...Template,
+  args: {
+    journey,
+    componentProps: {
+      teamHosts,
+      handleSelection
+    }
+  }
 }
 
 export default Demo

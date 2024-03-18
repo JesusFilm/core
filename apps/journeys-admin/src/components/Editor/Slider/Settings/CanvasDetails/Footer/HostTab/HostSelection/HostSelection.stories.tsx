@@ -23,7 +23,7 @@ const Demo: Meta<typeof HostSelection> = {
   ...simpleComponentConfig,
   component: HostSelection,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab/HostSelection'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/HostTab/HostSelection'
 }
 
 const user = {
@@ -80,23 +80,17 @@ const data: GetUserTeamsAndInvites = {
 
 const handleSelection = jest.fn()
 
-const Template: StoryObj<
-  ComponentProps<typeof HostSelection> & {
-    journey: Journey
-    userInTeam: boolean
-  }
-> = {
-  render: ({ journey, userInTeam }) => {
+const Template: StoryObj<{
+  journey: Journey
+  componentProps: ComponentProps<typeof HostSelection>
+}> = {
+  render: ({ journey, componentProps }) => {
     return (
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <Box sx={{ width: DRAWER_WIDTH }}>
-              <HostSelection
-                data={data}
-                userInTeam={userInTeam}
-                handleSelection={handleSelection}
-              />
+              <HostSelection {...componentProps} />
             </Box>
           </JourneyProvider>
         </ThemeProvider>
@@ -105,11 +99,27 @@ const Template: StoryObj<
   }
 }
 
+export const Default = {
+  ...Template,
+  args: {
+    journey: { ...journey, host: null },
+    componentProps: {
+      userInTeam: true,
+      data,
+      handleSelection
+    }
+  }
+}
+
 export const EditHost = {
   ...Template,
   args: {
     journey,
-    userInTeam: true
+    componentProps: {
+      userInTeam: true,
+      data,
+      handleSelection
+    }
   }
 }
 
@@ -117,7 +127,11 @@ export const Disabled = {
   ...Template,
   args: {
     journey: { ...journey, host: null },
-    userInTeam: false
+    componentProps: {
+      userInTeam: false,
+      data,
+      handleSelection
+    }
   }
 }
 

@@ -26,7 +26,7 @@ import { GET_ALL_TEAM_HOSTS, HostTab } from './HostTab'
 const Demo: Meta<typeof HostTab> = {
   ...journeysAdminConfig,
   component: HostTab,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab'
+  title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/HostTab'
 }
 
 const user = {

@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 import { DRAWER_WIDTH } from '../../../../../../constants'
@@ -11,17 +12,16 @@ import { HostInfo } from './HostInfo'
 const Demo: Meta<typeof HostInfo> = {
   ...journeysAdminConfig,
   component: HostInfo,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab/HostInfo'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/HostTab/HostInfo'
 }
 
-const handleSelection = jest.fn()
-
-const Template: StoryObj<typeof HostInfo> = {
-  render: () => {
+const Template: StoryObj<ComponentProps<typeof HostInfo>> = {
+  render: ({ ...args }) => {
     return (
       <MockedProvider>
         <Box sx={{ width: DRAWER_WIDTH }}>
-          <HostInfo handleSelection={handleSelection} />
+          <HostInfo {...args} />
         </Box>
       </MockedProvider>
     )
@@ -29,7 +29,10 @@ const Template: StoryObj<typeof HostInfo> = {
 }
 
 export const Default = {
-  ...Template
+  ...Template,
+  componentProps: {
+    handleSelection: jest.fn()
+  }
 }
 
 export default Demo

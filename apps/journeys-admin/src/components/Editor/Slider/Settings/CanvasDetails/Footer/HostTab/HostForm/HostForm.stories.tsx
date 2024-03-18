@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -16,7 +17,8 @@ import { HostForm } from './HostForm'
 const Demo: Meta<typeof HostForm> = {
   ...simpleComponentConfig,
   component: HostForm,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab/HostForm'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/HostTab/HostForm'
 }
 
 const defaultHost: Host = {
@@ -47,17 +49,17 @@ const journey = {
   }
 } as unknown as Journey
 
-const onClear = jest.fn()
-const onBack = jest.fn()
-
-const Template: StoryObj<typeof HostForm> = {
-  render: ({ ...args }) => {
+const Template: StoryObj<{
+  journey: Journey
+  componentProps: ComponentProps<typeof HostForm>
+}> = {
+  render: ({ journey, componentProps }) => {
     return (
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ ...args, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
             <Box sx={{ width: DRAWER_WIDTH }}>
-              <HostForm onClear={onClear} onBack={onBack} />
+              <HostForm {...componentProps} />
             </Box>
           </JourneyProvider>
         </ThemeProvider>
@@ -66,17 +68,25 @@ const Template: StoryObj<typeof HostForm> = {
   }
 }
 
-export const Filled = {
+export const Default = {
   ...Template,
   args: {
-    journey
+    journey: { ...journey, host: null },
+    componentProps: {
+      onClear: jest.fn(),
+      onBack: jest.fn()
+    }
   }
 }
 
-export const Empty = {
+export const Filled = {
   ...Template,
   args: {
-    journey: { ...journey, host: null }
+    journey,
+    componentProps: {
+      onClear: jest.fn(),
+      onBack: jest.fn()
+    }
   }
 }
 
