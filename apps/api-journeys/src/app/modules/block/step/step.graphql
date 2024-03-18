@@ -15,6 +15,16 @@ type StepBlock implements Block {
   locked: Boolean!
   parentBlockId: ID
   parentOrder: Int
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 input StepBlockCreateInput {
@@ -22,11 +32,31 @@ input StepBlockCreateInput {
   journeyId: ID!
   nextBlockId: ID
   locked: Boolean
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 input StepBlockUpdateInput {
   nextBlockId: ID
   locked: Boolean
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 extend type Mutation {

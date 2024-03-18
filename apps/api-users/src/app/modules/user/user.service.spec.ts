@@ -31,6 +31,7 @@ const user = {
 describe('UserService', () => {
   let userService: UserService, prismaService: DeepMockProxy<PrismaService>
   let emailQueue
+
   const removeJob = jest.fn()
 
   beforeEach(async () => {
@@ -40,6 +41,7 @@ describe('UserService', () => {
         remove: removeJob
       }))
     }
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
@@ -165,6 +167,15 @@ describe('UserService', () => {
       })
     })
 
+    it('updates User', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(null)
+      prismaService.user.create.mockRejectedValueOnce(
+        new Error('user already exists')
+      )
+      await userService.findOrFetchUser('userId')
+      expect(prismaService.user.update).toHaveBeenCalled()
+    })
+
     it('returns email verified status always', async () => {
       prismaService.user.findUnique.mockResolvedValueOnce(
         omit(user, ['emailVerified']) as User
@@ -177,9 +188,20 @@ describe('UserService', () => {
     })
 
     it('fetches user from firebase', async () => {
+      const verifyUserSpy = jest.spyOn(UserService.prototype, 'verifyUser')
+      jest.spyOn(auth, 'getUser').mockResolvedValue({
+        ...authUser,
+        emailVerified: false
+      } as unknown as UserRecord)
       prismaService.user.findUnique.mockResolvedValueOnce(null)
-      prismaService.user.create.mockResolvedValueOnce(user)
-      expect(await userService.findOrFetchUser('userId')).toEqual(user)
+      prismaService.user.create.mockResolvedValueOnce({
+        ...user,
+        emailVerified: false
+      })
+      expect(await userService.findOrFetchUser('userId')).toEqual({
+        ...user,
+        emailVerified: false
+      })
       expect(prismaService.user.create).toHaveBeenCalledWith({
         data: {
           email: 'tho@no.co',
@@ -187,9 +209,14 @@ describe('UserService', () => {
           imageUrl: 'p',
           lastName: 'sho',
           userId: 'userId',
-          emailVerified: true
+          emailVerified: false
         }
       })
+      expect(verifyUserSpy).toHaveBeenCalledWith(
+        'userId',
+        'tho@no.co',
+        undefined
+      )
     })
   })
 })

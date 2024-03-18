@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -73,7 +73,7 @@ export function Card({
     backgroundColor ?? cardTheme.palette.background.paper
 
   return (
-    <>
+    <Box data-testid="CardProperties">
       <Accordion
         id={`${id}-background-color`}
         icon={
@@ -154,6 +154,6 @@ export function Card({
       >
         <CardLayout />
       </Accordion>
-    </>
+    </Box>
   )
 }
