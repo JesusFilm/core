@@ -72,7 +72,7 @@ describe('DuplicateBlock', () => {
         parentOrder: blockOrder + 1
       }
     },
-    result: jest.fn(() => ({
+    result: {
       data: {
         blockDuplicate: [
           {
@@ -81,7 +81,7 @@ describe('DuplicateBlock', () => {
           }
         ]
       }
-    }))
+    }
   }
 
   const duplicateCardMock: MockedResponse<BlockDuplicate> = {
@@ -93,7 +93,7 @@ describe('DuplicateBlock', () => {
         parentOrder: null
       }
     },
-    result: jest.fn(() => ({
+    result: {
       data: {
         blockDuplicate: [
           {
@@ -102,12 +102,17 @@ describe('DuplicateBlock', () => {
           }
         ]
       }
-    }))
+    }
   }
 
   it('should duplicate a block on button click', async () => {
+    const duplicateBlockResultMock = jest.fn(() => ({
+      ...duplicateBlockMock.result
+    }))
     const { getByRole, getByTestId } = render(
-      <MockedProvider mocks={[duplicateBlockMock]}>
+      <MockedProvider
+        mocks={[{ ...duplicateBlockMock, result: duplicateBlockResultMock }]}
+      >
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -125,12 +130,17 @@ describe('DuplicateBlock', () => {
     const button = getByRole('button')
     expect(button).toContainElement(getByTestId('CopyLeftIcon'))
     fireEvent.click(button)
-    await waitFor(() => expect(duplicateBlockMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
   })
 
   it('should duplicate a block on menu click', async () => {
+    const duplicateBlockResultMock = jest.fn(() => ({
+      ...duplicateBlockMock.result
+    }))
     const { getByRole } = render(
-      <MockedProvider mocks={[duplicateBlockMock]}>
+      <MockedProvider
+        mocks={[{ ...duplicateBlockMock, result: duplicateBlockResultMock }]}
+      >
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -146,12 +156,17 @@ describe('DuplicateBlock', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('menuitem', { name: 'Duplicate Block' }))
-    await waitFor(() => expect(duplicateBlockMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
   })
 
   it('should duplicate a card on button click', async () => {
+    const duplicateCardResultMock = jest.fn(() => ({
+      ...duplicateCardMock.result
+    }))
     const { getByRole, getByTestId } = render(
-      <MockedProvider mocks={[duplicateCardMock]}>
+      <MockedProvider
+        mocks={[{ ...duplicateCardMock, result: duplicateCardResultMock }]}
+      >
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -169,12 +184,17 @@ describe('DuplicateBlock', () => {
     const button = getByRole('button')
     expect(button).toContainElement(getByTestId('CopyLeftIcon'))
     fireEvent.click(button)
-    await waitFor(() => expect(duplicateCardMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
   })
 
   it('should duplicate a card on menu click', async () => {
+    const duplicateCardResultMock = jest.fn(() => ({
+      ...duplicateCardMock.result
+    }))
     const { getByRole } = render(
-      <MockedProvider mocks={[duplicateCardMock]}>
+      <MockedProvider
+        mocks={[{ ...duplicateCardMock, result: duplicateCardResultMock }]}
+      >
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -190,13 +210,18 @@ describe('DuplicateBlock', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
-    await waitFor(() => expect(duplicateCardMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
   })
 
   it('should call handleClick after clicking duplicate', async () => {
     const handleClickMock = jest.fn()
+    const duplicateCardResultMock = jest.fn(() => ({
+      ...duplicateCardMock.result
+    }))
     const { getByRole } = render(
-      <MockedProvider mocks={[duplicateCardMock]}>
+      <MockedProvider
+        mocks={[{ ...duplicateCardMock, result: duplicateCardResultMock }]}
+      >
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -215,7 +240,7 @@ describe('DuplicateBlock', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
-    await waitFor(() => expect(duplicateCardMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
     await waitFor(() => expect(handleClickMock).toHaveBeenCalled())
   })
 
@@ -287,10 +312,19 @@ describe('DuplicateBlock', () => {
     }
 
     const selectedStepDuplicateMock = duplicateCardMock
+    const selectedStepDuplicateResultMock = jest.fn(() => ({
+      ...selectedStepDuplicateMock.result
+    }))
 
     const { getByRole, getByTestId } = render(
       <MockedProvider
-        mocks={[passedInStepDuplicateMock, selectedStepDuplicateMock]}
+        mocks={[
+          passedInStepDuplicateMock,
+          {
+            ...selectedStepDuplicateMock,
+            result: selectedStepDuplicateResultMock
+          }
+        ]}
       >
         <SnackbarProvider>
           <JourneyProvider
@@ -313,7 +347,7 @@ describe('DuplicateBlock', () => {
       expect(passedInStepDuplicateMock.result).toHaveBeenCalled()
     )
     await waitFor(() =>
-      expect(selectedStepDuplicateMock.result).not.toHaveBeenCalled()
+      expect(selectedStepDuplicateResultMock).not.toHaveBeenCalled()
     )
   })
 })

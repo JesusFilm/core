@@ -31,11 +31,11 @@ describe('StepBlockNodeMenu', () => {
     await waitFor(() => {
       expect(getByTestId('EditStepFab')).toBeInTheDocument()
     })
-    expect(queryByTestId('EditStepMenu')).not.toBeInTheDocument()
+    expect(queryByTestId('StepBlockNodeMenu')).not.toBeInTheDocument()
 
     fireEvent.click(getByTestId('EditStepFab'))
     await waitFor(() => {
-      expect(queryByTestId('EditStepMenu')).toBeInTheDocument()
+      expect(queryByTestId('StepBlockNodeMenu')).toBeInTheDocument()
     })
     expect(
       getByRole('menuitem', { name: 'Duplicate Card' })

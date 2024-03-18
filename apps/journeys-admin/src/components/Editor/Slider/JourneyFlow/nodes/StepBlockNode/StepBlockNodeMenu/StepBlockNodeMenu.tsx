@@ -63,7 +63,7 @@ export function StepBlockNodeMenu({
           vertical: 'top',
           horizontal: 'right'
         }}
-        data-testid="EditStepMenu"
+        data-testid="StepBlockNodeMenu"
       >
         <DuplicateBlock
           variant="list-item"

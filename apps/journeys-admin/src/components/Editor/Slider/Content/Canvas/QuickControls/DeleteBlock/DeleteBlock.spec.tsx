@@ -27,96 +27,96 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-const selectedBlock: TreeBlock<TypographyBlock> = {
-  id: 'typography0.id',
-  __typename: 'TypographyBlock',
-  parentBlockId: 'card1.id',
-  parentOrder: 0,
-  content: 'Title',
-  variant: TypographyVariant.h1,
-  color: TypographyColor.primary,
-  align: TypographyAlign.center,
-  children: []
-}
-const block1: TreeBlock<TypographyBlock> = {
-  ...selectedBlock,
-  id: 'typography1.id',
-  parentOrder: 1
-}
-const block2: TreeBlock<TypographyBlock> = {
-  ...selectedBlock,
-  id: 'typography2.id',
-  parentOrder: 2
-}
-
-const selectedStep: TreeBlock<StepBlock> = {
-  __typename: 'StepBlock',
-  id: 'stepId',
-  parentBlockId: 'journeyId',
-  parentOrder: 0,
-  locked: true,
-  nextBlockId: null,
-  children: [
-    {
-      id: 'card1.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'stepId',
-      parentOrder: 0,
-      coverBlockId: null,
-      backgroundColor: null,
-      themeMode: null,
-      themeName: null,
-      fullscreen: false,
-      children: [selectedBlock, block1, block2]
-    }
-  ]
-}
-
-const deleteBlockMock: MockedResponse<BlockDelete> = {
-  request: {
-    query: BLOCK_DELETE,
-    variables: {
-      id: selectedBlock.id,
-      parentBlockId: selectedBlock.parentBlockId,
-      journeyId: 'journeyId'
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      blockDelete: [
-        {
-          __typename: 'TypographyBlock',
-          id: selectedBlock.id,
-          parentOrder: selectedBlock.parentOrder
-        }
-      ]
-    }
-  }))
-}
-
-const deleteCardMock: MockedResponse<BlockDelete> = {
-  request: {
-    query: BLOCK_DELETE,
-    variables: {
-      id: selectedStep.id,
-      parentBlockId: selectedStep.parentBlockId,
-      journeyId: 'journeyId'
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      blockDelete: [
-        {
-          __typename: 'StepBlock',
-          id: selectedStep.id,
-          parentOrder: selectedStep.parentOrder
-        }
-      ]
-    }
-  }))
-}
-
 describe('DeleteBlock', () => {
+  const selectedBlock: TreeBlock<TypographyBlock> = {
+    id: 'typography0.id',
+    __typename: 'TypographyBlock',
+    parentBlockId: 'card1.id',
+    parentOrder: 0,
+    content: 'Title',
+    variant: TypographyVariant.h1,
+    color: TypographyColor.primary,
+    align: TypographyAlign.center,
+    children: []
+  }
+  const block1: TreeBlock<TypographyBlock> = {
+    ...selectedBlock,
+    id: 'typography1.id',
+    parentOrder: 1
+  }
+  const block2: TreeBlock<TypographyBlock> = {
+    ...selectedBlock,
+    id: 'typography2.id',
+    parentOrder: 2
+  }
+
+  const selectedStep: TreeBlock<StepBlock> = {
+    __typename: 'StepBlock',
+    id: 'stepId',
+    parentBlockId: 'journeyId',
+    parentOrder: 0,
+    locked: true,
+    nextBlockId: null,
+    children: [
+      {
+        id: 'card1.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'stepId',
+        parentOrder: 0,
+        coverBlockId: null,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [selectedBlock, block1, block2]
+      }
+    ]
+  }
+
+  const deleteBlockMock: MockedResponse<BlockDelete> = {
+    request: {
+      query: BLOCK_DELETE,
+      variables: {
+        id: selectedBlock.id,
+        parentBlockId: selectedBlock.parentBlockId,
+        journeyId: 'journeyId'
+      }
+    },
+    result: {
+      data: {
+        blockDelete: [
+          {
+            __typename: 'TypographyBlock',
+            id: selectedBlock.id,
+            parentOrder: selectedBlock.parentOrder
+          }
+        ]
+      }
+    }
+  }
+
+  const deleteCardMock: MockedResponse<BlockDelete> = {
+    request: {
+      query: BLOCK_DELETE,
+      variables: {
+        id: selectedStep.id,
+        parentBlockId: selectedStep.parentBlockId,
+        journeyId: 'journeyId'
+      }
+    },
+    result: {
+      data: {
+        blockDelete: [
+          {
+            __typename: 'StepBlock',
+            id: selectedStep.id,
+            parentOrder: selectedStep.parentOrder
+          }
+        ]
+      }
+    }
+  }
+
   it('should delete a block on button click', async () => {
     const cache = new InMemoryCache()
     cache.restore({
@@ -135,9 +135,13 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
+    const deleteBlockResultMock = jest.fn(() => ({ ...deleteBlockMock.result }))
     const { getByRole, getByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider cache={cache} mocks={[deleteBlockMock]}>
+        <MockedProvider
+          cache={cache}
+          mocks={[{ ...deleteBlockMock, result: deleteBlockResultMock }]}
+        >
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -153,7 +157,7 @@ describe('DeleteBlock', () => {
     )
     expect(getByRole('button')).toContainElement(getByTestId('Trash2Icon'))
     fireEvent.click(getByRole('button'))
-    await waitFor(() => expect(deleteBlockMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(deleteBlockResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:card1.id' }
     ])
@@ -177,9 +181,13 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
+    const deleteBlockResultMock = jest.fn(() => ({ ...deleteBlockMock.result }))
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider cache={cache} mocks={[deleteBlockMock]}>
+        <MockedProvider
+          cache={cache}
+          mocks={[{ ...deleteBlockMock, result: deleteBlockResultMock }]}
+        >
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -194,7 +202,7 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
     await fireEvent.click(getByRole('menuitem', { name: 'Delete Block' }))
-    await waitFor(() => expect(deleteBlockMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(deleteBlockResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:card1.id' }
     ])
@@ -224,10 +232,13 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
-
+    const deleteCardResultMock = jest.fn(() => ({ ...deleteCardMock.result }))
     const { getByRole, getByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider cache={cache} mocks={[deleteCardMock]}>
+        <MockedProvider
+          cache={cache}
+          mocks={[{ ...deleteCardMock, result: deleteCardResultMock }]}
+        >
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -248,7 +259,7 @@ describe('DeleteBlock', () => {
     expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Delete' }))
 
-    await waitFor(() => expect(deleteCardMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
   })
 
@@ -276,10 +287,13 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
-
+    const deleteCardResultMock = jest.fn(() => ({ ...deleteCardMock.result }))
     const { getByRole, queryByRole } = render(
       <SnackbarProvider>
-        <MockedProvider cache={cache} mocks={[deleteCardMock]}>
+        <MockedProvider
+          cache={cache}
+          mocks={[{ ...deleteCardMock, result: deleteCardResultMock }]}
+        >
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -299,7 +313,7 @@ describe('DeleteBlock', () => {
     expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Delete' }))
 
-    await waitFor(() => expect(deleteCardMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
     await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument())
     await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument())
@@ -327,7 +341,6 @@ describe('DeleteBlock', () => {
     expect(getByRole('button')).toBeDisabled()
   })
 
-  // should delete the card that is passed in
   it('should delete the card that is passed in', async () => {
     const passedInStep: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
@@ -387,9 +400,16 @@ describe('DeleteBlock', () => {
       }
     })
 
+    const deleteCardResultMock = jest.fn(() => ({ ...deleteCardMock.result }))
     const { getByRole, getByText } = render(
       <SnackbarProvider>
-        <MockedProvider cache={cache} mocks={[passedInStepDeleteMock]}>
+        <MockedProvider
+          cache={cache}
+          mocks={[
+            { ...deleteCardMock, result: deleteCardResultMock },
+            passedInStepDeleteMock
+          ]}
+        >
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -412,10 +432,9 @@ describe('DeleteBlock', () => {
     await waitFor(() =>
       expect(passedInStepDeleteMock.result).toHaveBeenCalled()
     )
-    await waitFor(() => expect(deleteCardMock.result).not.toHaveBeenCalled())
+    await waitFor(() => expect(deleteCardResultMock).not.toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
 
-    // assert that the selected block hasn't changed
     expect(getByText(`selectedBlock: ${selectedStep.id}`)).toBeInTheDocument()
   })
 })
