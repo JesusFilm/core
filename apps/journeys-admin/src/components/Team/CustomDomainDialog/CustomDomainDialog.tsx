@@ -218,8 +218,8 @@ export function CustomDomainDialog({
             })
         },
         onError: () => {
-          setLoading(true)
-          enqueueSnackbar(t('Domain name not'), {
+          setLoading(false)
+          enqueueSnackbar(t('Domain name not updated'), {
             variant: 'error',
             preventDuplicate: false
           })
