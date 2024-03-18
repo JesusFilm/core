@@ -38,7 +38,6 @@ export interface GetCustomDomain_customDomains {
   id: string;
   apexName: string;
   verification: GetCustomDomain_customDomains_verification | null;
-  teamId: string;
   name: string;
   journeyCollection: GetCustomDomain_customDomains_journeyCollection | null;
 }

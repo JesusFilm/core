@@ -45,7 +45,6 @@ export const GET_CUSTOM_DOMAIN = gql`
           value
         }
       }
-      teamId
       name
       journeyCollection {
         id
