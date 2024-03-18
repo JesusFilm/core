@@ -85,8 +85,8 @@ function OnboardingTemplateCardDetails({
       direction="column"
       sx={{
         px: { xs: 0, sm: 5 },
-        pb: { xs: 4, sm: 5 },
-        pt: { xs: 2, sm: 4 },
+        pb: { xs: 0, sm: 5 },
+        pt: { xs: 0, sm: 4 },
         borderWidth: { xs: 0, md: 1 },
         borderStyle: 'solid',
         borderColor: 'divider',
