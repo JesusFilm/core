@@ -169,7 +169,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
   })
 
   it('shows custom domain if configured', async () => {
-    const { getByRole, getByText } = render(
+    const { getByText } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <JourneyProvider
@@ -181,7 +181,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
             <SlugDialog
               open
               onClose={onClose}
-              customDomainName={'www.customdomain.com'}
+              customDomainName="www.customdomain.com"
             />
           </JourneyProvider>
         </SnackbarProvider>
