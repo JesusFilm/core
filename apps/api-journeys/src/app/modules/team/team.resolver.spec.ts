@@ -203,4 +203,15 @@ describe('TeamResolver', () => {
       expect(await resolver.userTeams(team, undefined)).toEqual([])
     })
   })
+
+  describe('customDomains', () => {
+    it('returns customDomain links of parent', async () => {
+      expect(
+        resolver.customDomains({
+          ...team,
+          customDomains: [{ id: 'id' }]
+        })
+      ).toEqual([{ __typename: 'CustomDomain', id: 'id' }])
+    })
+  })
 })

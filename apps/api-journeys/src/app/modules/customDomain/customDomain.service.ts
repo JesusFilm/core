@@ -38,6 +38,7 @@ export class CustomDomainService {
 
     const body = new FormData()
     body.append('name', name)
+    body.append('gitBranch', process.env.GIT_BRANCH)
     const response = await fetch(
       `https://api.vercel.com/v10/projects/${process.env.VERCEL_PROJECT_ID}/domains`,
       {
