@@ -41,7 +41,9 @@ export class EmailConsumer extends WorkerHost {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${
       job.data.token
     }&email=${emailAlias ?? job.data.email}${
-      job.data.redirect != null ? `&redirect=${job.data.redirect}` : ''
+      job.data.redirect?.includes('redirect') && job.data.redirect != null
+        ? `&${job.data.redirect.replace(/\?redirect=/, '')}`
+        : `&redirect=${job.data.redirect}`
     }`
 
     const user = await this.prismaService.user.findUnique({
