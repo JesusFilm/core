@@ -214,4 +214,20 @@ describe('TeamResolver', () => {
       ).toEqual([{ __typename: 'CustomDomain', id: 'id' }])
     })
   })
+
+  describe('resolveReference', () => {
+    it('fetches team by id', async () => {
+      prismaService.team.findUnique.mockResolvedValue(team)
+      await expect(
+        resolver.resolveReference({ __typename: 'Team', id: 'teamId' })
+      ).resolves.toEqual(team)
+    })
+
+    it('returns null if team is not found', async () => {
+      prismaService.team.findUnique.mockResolvedValue(null)
+      await expect(
+        resolver.resolveReference({ __typename: 'Team', id: 'teamId' })
+      ).resolves.toBeNull()
+    })
+  })
 })
