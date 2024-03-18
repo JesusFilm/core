@@ -73,14 +73,24 @@ describe('AddNewBlock', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('JourneysAdminButtonNewTypographyButton')).toBeInTheDocument()
+    expect(
+      getByTestId('JourneysAdminButtonNewTypographyButton')
+    ).toBeInTheDocument()
     expect(getByTestId('JourneysAdminButtonNewImageButton')).toBeInTheDocument()
     expect(getByTestId('JourneysAdminButtonNewVideoButton')).toBeInTheDocument()
-    expect(getByTestId('JourneysAdminButtonNewRadioQuestionButton')).toBeInTheDocument()
-    expect(getByTestId('JourneysAdminButtonNewRadioQuestionButton')).toBeInTheDocument()
-    expect(getByTestId('JourneysAdminButtonNewSignUpButton')).toBeInTheDocument()
+    expect(
+      getByTestId('JourneysAdminButtonNewRadioQuestionButton')
+    ).toBeInTheDocument()
+    expect(
+      getByTestId('JourneysAdminButtonNewRadioQuestionButton')
+    ).toBeInTheDocument()
+    expect(
+      getByTestId('JourneysAdminButtonNewSignUpButton')
+    ).toBeInTheDocument()
     expect(getByTestId('JourneysAdminButtonNewButton')).toBeInTheDocument()
-    expect(getByTestId('JourneysAdminButtonNewFormiumFormIcon')).toBeInTheDocument()
+    expect(
+      getByTestId('JourneysAdminButtonNewFormiumFormIcon')
+    ).toBeInTheDocument()
   })
 
   it('does not render FormiumForm button when flag is falsh', () => {
@@ -93,6 +103,8 @@ describe('AddNewBlock', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(queryByTestId('JourneysAdminButtonNewFormiumFormIcon')).not.toBeInTheDocument()
+    expect(
+      queryByTestId('JourneysAdminButtonNewFormiumFormIcon')
+    ).not.toBeInTheDocument()
   })
 })
