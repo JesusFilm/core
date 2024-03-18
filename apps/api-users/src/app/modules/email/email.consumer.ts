@@ -38,11 +38,13 @@ export class EmailConsumer extends WorkerHost {
     if (job.data.email.includes('+'))
       emailAlias = job.data.email.replace(/\+/g, '%2B')
 
+    console.log('redirect', job.data.redirect)
+
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${
       job.data.token
     }&email=${emailAlias ?? job.data.email}${
       job.data.redirect != null && job.data.redirect.includes('redirect')
-        ? `&${job.data.redirect.replace(/\?redirect=/, '')}`
+        ? `&${job.data.redirect.replace(/\?/, '')}`
         : job.data.redirect != null
         ? `&redirect=${job.data.redirect}`
         : ''
