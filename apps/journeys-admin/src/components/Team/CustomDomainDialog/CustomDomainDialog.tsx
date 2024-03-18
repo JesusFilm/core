@@ -195,7 +195,7 @@ export function CustomDomainDialog({
       await createCustomDomain({
         variables: {
           input: {
-            name: value.domainName,
+            name: value.domainName.toLocaleLowerCase().replace(/\s/g, ''),
             teamId: activeTeam?.id
           }
         },
@@ -219,7 +219,7 @@ export function CustomDomainDialog({
         },
         onError: () => {
           setLoading(true)
-          enqueueSnackbar(t('Domain name not updated'), {
+          enqueueSnackbar(t('Domain name not'), {
             variant: 'error',
             preventDuplicate: false
           })

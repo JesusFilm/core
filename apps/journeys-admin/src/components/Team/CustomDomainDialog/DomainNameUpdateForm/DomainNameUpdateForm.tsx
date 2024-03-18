@@ -84,7 +84,7 @@ export function DomainNameUpdateForm({
           name="domainName"
           focused
           fullWidth
-          value={values.domainName.toLocaleLowerCase()}
+          value={values.domainName.toLocaleLowerCase().replace(/\s/g, '')}
           placeholder="your.nextstep.is"
           variant="outlined"
           error={formErrors.domainName !== undefined || errorMessage != null}
