@@ -1,5 +1,6 @@
+import Box from '@mui/material/Box'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -32,7 +33,7 @@ export function SignUp({
   }, [dispatch, id])
 
   return (
-    <>
+    <Box data-testid="SignUpProperties">
       <Accordion
         id={`${id}-signup-action`}
         icon={<LinkIcon />}
@@ -55,6 +56,6 @@ export function SignUp({
       >
         <Icon id={submitIcon?.id} />
       </Accordion>
-    </>
+    </Box>
   )
 }
