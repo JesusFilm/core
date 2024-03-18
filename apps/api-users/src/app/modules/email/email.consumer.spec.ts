@@ -28,6 +28,26 @@ const jobWithAlias = {
   name: 'verifyUser'
 }
 
+const jobWithRedirect = {
+  data: {
+    userId: 'user-id',
+    email: 'test@example.com',
+    token: '123456',
+    redirect: '/templates/templateId?createNew=true&newAccount=true'
+  },
+  name: 'verifyUser'
+}
+
+const jobWithRedirectInUrl = {
+  data: {
+    userId: 'user-id',
+    email: 'test@example.com',
+    token: '123456',
+    redirect: '?redirect=/templates/templateId?createNew=true&newAccount=true'
+  },
+  name: 'verifyUser'
+}
+
 jest.mock('../../emails/templates/EmailVerify/EmailVerify')
 
 describe('EmailConsumer', () => {
@@ -120,6 +140,70 @@ describe('EmailConsumer', () => {
       expect(EmailVerifyEmail).toHaveBeenCalledWith({
         inviteLink: expect.stringContaining(
           '/users/verify?token=123456&email=test%2B1@example.com'
+        ),
+        recipient: {
+          email: 'test@example.com',
+          firstName: 'Joe',
+          imageUrl: undefined,
+          lastName: 'Ron-Imo'
+        },
+        token: '123456'
+      })
+    })
+
+    it('should send email with redirect', async () => {
+      jest
+        .spyOn(emailService, 'sendEmail')
+        .mockImplementation(async () => await Promise.resolve())
+      prismaService.user.findUnique.mockResolvedValue({
+        id: 'userId',
+        firstName: 'Joe',
+        lastName: 'Ron-Imo',
+        imageUrl: null,
+        email: 'test@example.com',
+        userId: 'userUserId',
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      })
+
+      await emailConsumer.verifyUser(jobWithRedirect as Job<ApiUsersJob>)
+
+      expect(EmailVerifyEmail).toHaveBeenCalledWith({
+        inviteLink: expect.stringContaining(
+          '/users/verify?token=123456&email=test@example.com&redirect=/templates/templateId?createNew=true&newAccount=true'
+        ),
+        recipient: {
+          email: 'test@example.com',
+          firstName: 'Joe',
+          imageUrl: undefined,
+          lastName: 'Ron-Imo'
+        },
+        token: '123456'
+      })
+    })
+
+    it('should send email with redirect', async () => {
+      jest
+        .spyOn(emailService, 'sendEmail')
+        .mockImplementation(async () => await Promise.resolve())
+      prismaService.user.findUnique.mockResolvedValue({
+        id: 'userId',
+        firstName: 'Joe',
+        lastName: 'Ron-Imo',
+        imageUrl: null,
+        email: 'test@example.com',
+        userId: 'userUserId',
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      })
+
+      await emailConsumer.verifyUser(jobWithRedirectInUrl as Job<ApiUsersJob>)
+
+      expect(EmailVerifyEmail).toHaveBeenCalledWith({
+        inviteLink: expect.stringContaining(
+          '/users/verify?token=123456&email=test@example.com&redirect=/templates/templateId?createNew=true&newAccount=true'
         ),
         recipient: {
           email: 'test@example.com',
