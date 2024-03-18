@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
@@ -24,7 +25,7 @@ export function RadioOption({
   }, [dispatch, id, t])
 
   return (
-    <>
+    <Box data-testid="RadioOptionProperties">
       <Accordion
         id={`${id}-radio-option-action`}
         icon={<LinkIcon />}
@@ -37,6 +38,6 @@ export function RadioOption({
       >
         <Action />
       </Accordion>
-    </>
+    </Box>
   )
 }

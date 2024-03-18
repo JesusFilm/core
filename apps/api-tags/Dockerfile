@@ -16,7 +16,7 @@ RUN npm install --production --silent
 
 WORKDIR /prisma
 COPY ./apps/api-tags/db .
-RUN npx prisma@^5.2.0 generate
+RUN npx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
 RUN npm install tslib@^2.6.2 @nestjs/mapped-types @prisma/client@^5.2.0 pino-pretty@^10.2.0

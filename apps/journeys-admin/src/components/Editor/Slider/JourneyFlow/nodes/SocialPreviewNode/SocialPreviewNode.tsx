@@ -39,6 +39,7 @@ export function SocialPreviewNode(): ReactElement {
     <BaseNode selected={activeContent === ActiveContent.Social}>
       {({ selected }) => (
         <Card
+          data-testid="SocialPreviewNode"
           sx={{
             height: 168,
             width: 130.5,
@@ -94,7 +95,7 @@ export function SocialPreviewNode(): ReactElement {
           >
             {journey?.primaryImageBlock?.src == null ? (
               <Box
-                data-testid="social-preview-post-empty"
+                data-testid="SocialPreviewPostEmpty"
                 display="block"
                 width={118.5}
                 height={90}
@@ -127,6 +128,7 @@ export function SocialPreviewNode(): ReactElement {
               {journey?.seoTitle == null ||
               isEmpty(journey?.seoTitle?.trim()) ? (
                 <Box
+                  data-testid="SocialPreviewTitleEmpty"
                   width={118.5}
                   height={9}
                   bgcolor="#EFEFEF"
@@ -146,6 +148,7 @@ export function SocialPreviewNode(): ReactElement {
               {journey?.seoDescription == null ||
               isEmpty(journey?.seoDescription?.trim()) ? (
                 <Box
+                  data-testid="SocialPreviewDescriptionEmpty"
                   width={118.5}
                   height={9}
                   bgcolor="#EFEFEF"

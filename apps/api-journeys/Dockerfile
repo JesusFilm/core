@@ -16,7 +16,7 @@ RUN npm install --production --silent
 
 WORKDIR /prisma
 COPY ./apps/api-journeys/db .
-RUN npx prisma@^5.2.0 generate
+RUN npx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
 
