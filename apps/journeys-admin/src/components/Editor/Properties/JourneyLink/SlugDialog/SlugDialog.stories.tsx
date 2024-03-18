@@ -21,17 +21,22 @@ const SlugDialogStory: Meta<typeof SlugDialog> = {
 }
 
 const SlugDialogComponent = (args): ReactElement => {
+  const { args: slugDialogArgs } = args
   const [open, setOpen] = useState(true)
 
   return (
-    <MockedProvider mocks={args.mocks}>
+    <MockedProvider mocks={slugDialogArgs.mocks}>
       <JourneyProvider
         value={{
           journey: defaultJourney,
           variant: 'admin'
         }}
       >
-        <SlugDialog open={open} onClose={() => setOpen(false)} />
+        <SlugDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          customDomainName={slugDialogArgs.customDomainName}
+        />
       </JourneyProvider>
     </MockedProvider>
   )
@@ -44,6 +49,35 @@ const Template: StoryObj<typeof SlugDialog> = {
 export const Default = {
   ...Template,
   args: {
+    mocks: [
+      {
+        request: {
+          query: JOURNEY_SLUG_UPDATE,
+          variables: {
+            id: defaultJourney.id,
+            input: {
+              slug: 'default'
+            }
+          }
+        },
+        result: {
+          data: {
+            journeyUpdate: {
+              id: defaultJourney.id,
+              __typename: 'Journey',
+              slug: 'default'
+            }
+          }
+        }
+      }
+    ]
+  }
+}
+
+export const WithCustomDomain = {
+  ...Template,
+  args: {
+    customDomainName: 'www.example.com',
     mocks: [
       {
         request: {

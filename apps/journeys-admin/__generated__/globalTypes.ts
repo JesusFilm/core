@@ -301,12 +301,14 @@ export interface CustomDomainCreateInput {
   teamId: string;
   name: string;
   journeyCollectionId?: string | null;
+  routeAllTeamJourneys?: boolean | null;
 }
 
 export interface CustomDomainUpdateInput {
   id: string;
   name?: string | null;
   journeyCollectionId?: string | null;
+  routeAllTeamJourneys?: boolean | null;
 }
 
 export interface EmailActionInput {
