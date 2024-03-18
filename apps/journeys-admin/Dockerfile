@@ -10,6 +10,6 @@ COPY ./dist/apps/journeys-admin .
 # dependencies
 RUN npm i -g next
 RUN npm i --omit=dev --force --silent
-RUN npm i sharp --force --silent
+RUN npm i sharp pino dd-trace next-logger --force --silent
 
-CMD npm start
+CMD NODE_OPTIONS='-r next-logger' npm start

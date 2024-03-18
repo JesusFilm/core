@@ -5,7 +5,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword
 } from 'firebase/auth'
-import { NextRouter, useRouter } from 'next/router'
 
 import { RegisterPage } from './RegisterPage'
 
@@ -14,10 +13,6 @@ jest.mock('firebase/auth', () => ({
   createUserWithEmailAndPassword: jest.fn(),
   signInWithEmailAndPassword: jest.fn(),
   updateProfile: jest.fn()
-}))
-
-jest.mock('next/router', () => ({
-  useRouter: jest.fn()
 }))
 
 describe('PasswordPage', () => {
@@ -55,9 +50,6 @@ describe('PasswordPage', () => {
         typeof signInWithEmailAndPassword
       >
 
-    const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-    const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
     mockCreateUserWithEmailAndPassword.mockResolvedValue({
       user: {
         uid: '123'
@@ -82,11 +74,6 @@ describe('PasswordPage', () => {
     })
     await waitFor(() => {
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalled()
-    })
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        pathname: '/'
-      })
     })
   })
 

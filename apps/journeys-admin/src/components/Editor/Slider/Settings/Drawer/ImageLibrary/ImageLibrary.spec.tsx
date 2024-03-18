@@ -62,9 +62,9 @@ describe('ImageLibrary', () => {
         </MockedProvider>
       )
       expect(getByText('Custom')).toBeInTheDocument()
-      expect(getByTestId('ImageBlockEditor').parentElement).toHaveClass(
-        'MuiDrawer-paperAnchorRight'
-      )
+      expect(
+        getByTestId('ImageBlockEditor').parentElement?.parentElement
+      ).toHaveClass('MuiDrawer-paperAnchorRight')
     })
 
     it('should close ImageLibrary on close Icon click', () => {
@@ -108,9 +108,9 @@ describe('ImageLibrary', () => {
         </MockedProvider>
       )
       expect(getByText('Custom')).toBeInTheDocument()
-      expect(getByTestId('ImageBlockEditor').parentElement).toHaveClass(
-        'MuiDrawer-paperAnchorBottom'
-      )
+      expect(
+        getByTestId('ImageBlockEditor').parentElement?.parentElement
+      ).toHaveClass('MuiDrawer-paperAnchorBottom')
     })
   })
 })
