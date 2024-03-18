@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -95,8 +95,8 @@ describe('HostTab', () => {
     }
   }
 
-  it('should render the default host tab', async () => {
-    const { getByRole } = render(
+  it('should navigate to HostList', async () => {
+    const { getByRole, getByText } = render(
       <MockedProvider mocks={[getUserTeamMock]}>
         <ThemeProvider>
           <JourneyProvider
@@ -114,63 +114,17 @@ describe('HostTab', () => {
     await waitFor(() => {
       expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
     })
-  })
 
-  it('should disable editing hosts if no team on journey', async () => {
-    const { getByRole } = render(
-      <MockedProvider mocks={[getUserTeamMock]}>
-        <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: { ...journey, team: null, host: null },
-              variant: 'admin'
-            }}
-          >
-            <HostTab />
-          </JourneyProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
+    fireEvent.click(getByRole('button', { name: 'Select a Host' }))
 
     await waitFor(() => {
-      expect(getByRole('button', { name: 'Select a Host' })).toBeDisabled()
+      expect(getByText('Hosts')).toBeInTheDocument()
     })
   })
 
-  it('should disable editing hosts if current user does not have access', async () => {
-    mockUseCurrentUserLazyQuery.mockReturnValue({
-      loadUser: jest.fn(),
-      data: { id: 'otherUser', email: 'otherUser@test.com' }
-    })
-
-    const { getByRole, getByText } = render(
+  it('should navigate to HostInfo', async () => {
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider mocks={[getUserTeamMock]}>
-        <ThemeProvider>
-          <JourneyProvider
-            value={{
-              journey: { ...journey, host: null },
-              variant: 'admin'
-            }}
-          >
-            <HostTab />
-          </JourneyProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    expect(getByRole('button', { name: 'Select a Host' })).toBeDisabled()
-    expect(getByText('Only My team members can edit this')).toBeInTheDocument()
-  })
-
-  it('should disable editing hosts if no users have access in team', async () => {
-    const { getByRole, getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            ...getUserTeamMock,
-            result: { data: { userTeams: [], userTeamInvites: [] } }
-          }
-        ]}
-      >
         <ThemeProvider>
           <JourneyProvider
             value={{
@@ -185,10 +139,59 @@ describe('HostTab', () => {
     )
 
     await waitFor(() => {
-      expect(getByRole('button', { name: 'Select a Host' })).toBeDisabled()
+      expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
+    })
+
+    fireEvent.click(getByRole('button', { name: 'Select a Host' }))
+
+    await waitFor(() => {
+      expect(getByText('Hosts')).toBeInTheDocument()
+    })
+
+    fireEvent.click(getByTestId('InformationCircleContainedIcon'))
+
+    await waitFor(() => {
       expect(
-        getByText('Cannot edit hosts for this old journey')
+        getByText('Why does your journey need a host?')
       ).toBeInTheDocument()
     })
+  })
+
+  it('should navigate to hostform', async () => {
+    const { getByRole, getByText } = render(
+      <MockedProvider mocks={[getUserTeamMock]}>
+        <ThemeProvider>
+          <JourneyProvider
+            value={{
+              journey: { ...journey, host: null },
+              variant: 'admin'
+            }}
+          >
+            <HostTab />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
+    })
+
+    fireEvent.click(getByRole('button', { name: 'Select a Host' }))
+
+    await waitFor(() => {
+      expect(getByText('Hosts')).toBeInTheDocument()
+    })
+
+    fireEvent.click(getByRole('button', { name: 'Create New' }))
+
+    await waitFor(() => {
+      expect(getByText('Back')).toBeInTheDocument()
+    })
+    expect(
+      getByText(
+        'Edits: Making changes here will apply to all journeys that share this Host.'
+      )
+    ).toBeInTheDocument()
   })
 })
