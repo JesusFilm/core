@@ -23,8 +23,8 @@ import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { useTeam } from '../TeamProvider'
 
 import { DefaultJourneyForm } from './DefaultJourneyForm'
-import { DialogUpdateForm } from './DialogUpdateForm'
 import { DNSConfigSection } from './DNSConfigSection'
+import { DomainNameUpdateForm } from './DomainNameUpdateForm'
 
 interface CustomDomainDialogProps {
   open: boolean
@@ -147,7 +147,7 @@ export function CustomDomainDialog({
     }
   )
 
-  const [createCustomDomain] =
+  const [createCustomDomain, { error }] =
     useMutation<CreateCustomDomain>(CREATE_CUSTOM_DOMAIN)
 
   const [updateJourneyCollection] = useMutation<UpdateJourneyCollection>(
@@ -216,14 +216,23 @@ export function CustomDomainDialog({
                 }
               }
             })
+        },
+        onError: () => {
+          setLoading(true)
+          enqueueSnackbar(t('Domain name not updated'), {
+            variant: 'error',
+            preventDuplicate: false
+          })
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Custom domain updated'), {
+            variant: 'success',
+            preventDuplicate: false
+          })
         }
       })
     }
     setLoading(false)
-    enqueueSnackbar(t('Custom domain updated'), {
-      variant: 'success',
-      preventDuplicate: false
-    })
   }
 
   const hasCustomDomain: boolean =
@@ -296,9 +305,10 @@ export function CustomDomainDialog({
         >
           <Form>
             <Stack spacing={10}>
-              <DialogUpdateForm
+              <DomainNameUpdateForm
                 loading={loading}
                 showDeleteButton={hasCustomDomain}
+                errors={error}
               />
               {hasCustomDomain && <Divider />}
               {hasCustomDomain &&

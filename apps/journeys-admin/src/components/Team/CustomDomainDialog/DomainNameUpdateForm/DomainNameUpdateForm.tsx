@@ -1,3 +1,4 @@
+import { ApolloError } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -12,21 +13,36 @@ import Globe2 from '@core/shared/ui/icons/Globe2'
 import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
-interface DialogUpdateFormValues {
+interface DomainNameUpdateFormValues {
   domainName: string
 }
 
-interface DialogUpdateFormProps {
+interface DomainNameUpdateFormProps {
   showDeleteButton: boolean
   loading: boolean
+  errors: ApolloError | undefined
 }
 
-export function DialogUpdateForm({
+export function DomainNameUpdateForm({
   showDeleteButton,
-  loading
-}: DialogUpdateFormProps): ReactElement {
-  const { values, handleChange, errors, handleSubmit } =
-    useFormikContext<DialogUpdateFormValues>()
+  loading,
+  errors
+}: DomainNameUpdateFormProps): ReactElement {
+  const {
+    values,
+    handleChange,
+    errors: formErrors,
+    handleSubmit
+  } = useFormikContext<DomainNameUpdateFormValues>()
+
+  const errorMessage =
+    errors != null
+      ? errors?.message.includes(
+          'Unique constraint failed on the fields: (`name`)'
+        )
+        ? 'domain name already exists'
+        : errors.message
+      : undefined
 
   const { t } = useTranslation('apps-journeys-admin')
   return (
@@ -68,13 +84,15 @@ export function DialogUpdateForm({
           name="domainName"
           focused
           fullWidth
-          value={values.domainName}
+          value={values.domainName.toLocaleLowerCase()}
           placeholder="your.nextstep.is"
           variant="outlined"
-          error={Boolean(errors.domainName)}
+          error={formErrors.domainName !== undefined || errorMessage != null}
           onChange={handleChange}
           helperText={
-            errors.domainName !== undefined ? errors.domainName : null
+            formErrors.domainName !== undefined || errorMessage != null
+              ? formErrors.domainName ?? errorMessage
+              : null
           }
           label={t('Domain Name')}
           size="medium"

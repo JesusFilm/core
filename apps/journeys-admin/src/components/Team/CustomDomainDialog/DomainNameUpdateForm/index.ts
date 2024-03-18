@@ -1,0 +1,1 @@
+export { DomainNameUpdateForm } from './DomainNameUpdateForm'

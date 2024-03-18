@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import { FormikContextType, FormikProvider } from 'formik'
 
-import { DialogUpdateForm } from './DialogUpdateForm'
+import { DomainNameUpdateForm } from './DomainNameUpdateForm'
 
 describe('DialogUpdateForm', () => {
   const handleChange = jest.fn()
@@ -23,7 +23,11 @@ describe('DialogUpdateForm', () => {
           } as unknown as FormikContextType<{ domainName: string }>
         }
       >
-        <DialogUpdateForm loading={false} showDeleteButton />
+        <DomainNameUpdateForm
+          loading={false}
+          showDeleteButton
+          errors={undefined}
+        />
       </FormikProvider>
     )
 
@@ -43,7 +47,11 @@ describe('DialogUpdateForm', () => {
           } as unknown as FormikContextType<{ domainName: string }>
         }
       >
-        <DialogUpdateForm loading={false} showDeleteButton={false} />
+        <DomainNameUpdateForm
+          loading={false}
+          showDeleteButton={false}
+          errors={undefined}
+        />
       </FormikProvider>
     )
 
