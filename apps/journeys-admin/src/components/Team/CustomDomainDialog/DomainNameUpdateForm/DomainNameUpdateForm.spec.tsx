@@ -3,7 +3,7 @@ import { FormikContextType, FormikProvider } from 'formik'
 
 import { DomainNameUpdateForm } from './DomainNameUpdateForm'
 
-describe('DialogUpdateForm', () => {
+describe('DomainNameUpdateForm', () => {
   const handleChange = jest.fn()
   const handleSubmit = jest.fn()
 
