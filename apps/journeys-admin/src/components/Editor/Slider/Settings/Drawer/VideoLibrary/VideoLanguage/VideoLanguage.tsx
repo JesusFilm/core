@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import {
   LanguageAutocomplete,

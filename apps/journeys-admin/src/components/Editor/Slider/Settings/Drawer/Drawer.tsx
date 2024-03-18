@@ -122,6 +122,7 @@ export function Drawer({
     >
       <DrawerTitle title={title} onClose={onClose} />
       <Box
+        data-testid="SettingsDrawerContent"
         className="swiper-no-swiping"
         sx={{ flexGrow: 1, overflow: 'auto', mb: { sm: 4 } }}
       >

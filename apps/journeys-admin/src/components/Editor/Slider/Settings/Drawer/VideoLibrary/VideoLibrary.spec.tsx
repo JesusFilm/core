@@ -40,9 +40,9 @@ describe('VideoLibrary', () => {
         </MockedProvider>
       )
       expect(getByText('Video Library')).toBeInTheDocument()
-      expect(getByTestId('VideoLibrary').parentElement).toHaveClass(
-        'MuiDrawer-paperAnchorRight'
-      )
+      expect(
+        getByTestId('VideoLibrary').parentElement?.parentElement
+      ).toHaveClass('MuiDrawer-paperAnchorRight')
     })
 
     it('should close VideoLibrary on close Icon click', () => {
@@ -70,9 +70,9 @@ describe('VideoLibrary', () => {
         </MockedProvider>
       )
       expect(getByText('Video Library')).toBeInTheDocument()
-      expect(getByTestId('VideoLibrary').parentElement).toHaveClass(
-        'MuiDrawer-paperAnchorBottom'
-      )
+      expect(
+        getByTestId('VideoLibrary').parentElement?.parentElement
+      ).toHaveClass('MuiDrawer-paperAnchorBottom')
     })
   })
 
@@ -154,9 +154,9 @@ describe('VideoLibrary', () => {
       </MockedProvider>
     )
     expect(getByText('Video Library')).toBeInTheDocument()
-    expect(getByTestId('VideoLibrary').parentElement).toHaveClass(
-      'MuiDrawer-paperAnchorRight'
-    )
+    expect(
+      getByTestId('VideoLibrary').parentElement?.parentElement
+    ).toHaveClass('MuiDrawer-paperAnchorRight')
   })
 
   it('when video selected calls onSelect', async () => {
