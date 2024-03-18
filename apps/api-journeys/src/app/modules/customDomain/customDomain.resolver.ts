@@ -41,11 +41,9 @@ export class CustomDomainResolver {
 
   @Query()
   async customDomains(@Args('teamId') teamId: string): Promise<CustomDomain[]> {
-    return (
-      (await this.prismaService.customDomain.findMany({
-        where: { teamId }
-      })) ?? []
-    )
+    return await this.prismaService.customDomain.findMany({
+      where: { teamId }
+    })
   }
 
   @Mutation()
@@ -140,5 +138,13 @@ export class CustomDomainResolver {
       verified: vercelResult.verified,
       verification: vercelResult.verification
     }
+  }
+
+  @ResolveField()
+  team(@Parent() customDomain: CustomDomain): {
+    __typename: 'Team'
+    id: string
+  } {
+    return { __typename: 'Team', id: customDomain.teamId }
   }
 }

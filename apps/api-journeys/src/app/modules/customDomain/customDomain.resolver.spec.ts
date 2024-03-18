@@ -15,9 +15,7 @@ describe('CustomDomainResolver', () => {
   let prismaService: DeepMockProxy<PrismaService>
   let customDomainService: CustomDomainService
 
-  const ability = {
-    can: jest.fn().mockResolvedValue(true)
-  } as unknown as AppAbility
+  let ability: AppAbility
 
   const customDomain = {
     id: 'cd',
@@ -38,6 +36,10 @@ describe('CustomDomainResolver', () => {
   })
 
   beforeEach(async () => {
+    ability = {
+      can: jest.fn().mockResolvedValue(true)
+    } as unknown as AppAbility
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
@@ -130,6 +132,71 @@ describe('CustomDomainResolver', () => {
         where: { id: input.id }
       })
     })
+
+    it('should handle null values', async () => {
+      const input = {
+        id: 'cd',
+        name: null,
+        teamId: 'teamId',
+        routeAllTeamJourneys: null,
+        journeyCollectionId: null
+      }
+      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
+      findUniqueSpy.mockResolvedValue(customDomain)
+
+      const updateSpy = jest.spyOn(prismaService.customDomain, 'update')
+      updateSpy.mockResolvedValue(customDomain)
+
+      const result = await resolver.customDomainUpdate(input, ability)
+
+      expect(result).toEqual(customDomain)
+      expect(updateSpy).toHaveBeenCalledWith({
+        data: {
+          id: input.id,
+          teamId: input.teamId,
+          journeyCollection: {
+            connect: { id: undefined }
+          }
+        },
+        where: { id: input.id }
+      })
+    })
+
+    it('should handle not found', () => {
+      const input = {
+        id: 'cd',
+        name: 'name',
+        teamId: 'teamId',
+        routeAllTeamJourneys: true,
+        journeyCollectionId: 'id'
+      }
+      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
+      findUniqueSpy.mockResolvedValue(null)
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
+      expect(resolver.customDomainUpdate(input, ability)).rejects.toThrow(
+        'Custom domain not found'
+      )
+    })
+
+    it('should handle not allowed', () => {
+      const input = {
+        id: 'cd',
+        name: 'name',
+        teamId: 'teamId',
+        routeAllTeamJourneys: true,
+        journeyCollectionId: 'id'
+      }
+      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
+      findUniqueSpy.mockResolvedValue(customDomain)
+
+      ability.can = jest.fn().mockImplementation(() => false)
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
+      expect(resolver.customDomainUpdate(input, ability)).rejects.toThrow(
+        'user is not allowed to update custom domain'
+      )
+    })
   })
 
   describe('customDomainDelete', () => {
@@ -147,6 +214,30 @@ describe('CustomDomainResolver', () => {
 
       expect(result).toEqual(customDomain)
       expect(deleteSpy).toHaveBeenCalledWith({ where: { id } })
+    })
+
+    it('should handle not found', () => {
+      const id = 'id'
+      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
+      findUniqueSpy.mockResolvedValue(null)
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
+      expect(resolver.customDomainDelete(id, ability)).rejects.toThrow(
+        'Custom domain not found'
+      )
+    })
+
+    it('should handle not allowed', () => {
+      const id = 'id'
+      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
+      findUniqueSpy.mockResolvedValue(customDomain)
+
+      ability.can = jest.fn().mockImplementation(() => false)
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
+      expect(resolver.customDomainDelete(id, ability)).rejects.toThrow(
+        'user is not allowed to delete custom domain'
+      )
     })
   })
 
@@ -173,6 +264,29 @@ describe('CustomDomainResolver', () => {
         journeyCollectionId: 'id'
       })
       expect(result).toEqual({ __typename: 'JourneyCollection', id: 'id' })
+    })
+
+    it('should handle null', async () => {
+      const result = resolver.journeyCollection({
+        ...customDomain,
+        journeyCollectionId: null
+      })
+      expect(result).toBeNull()
+    })
+  })
+
+  describe('resolveReference', () => {
+    it('should resolve a custom domain reference', async () => {
+      const customDomainSpy = jest.spyOn(resolver, 'customDomain')
+      customDomainSpy.mockResolvedValue(customDomain)
+
+      const result = await resolver.resolveReference({
+        __typename: 'CustomDomain',
+        id: 'id'
+      })
+
+      expect(result).toEqual(customDomain)
+      expect(customDomainSpy).toHaveBeenCalledWith('id')
     })
   })
 })

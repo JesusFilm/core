@@ -1102,7 +1102,7 @@ export class ChatButton {
 export class CustomDomain {
     __typename?: 'CustomDomain';
     id: string;
-    teamId: string;
+    team: Team;
     name: string;
     apexName: string;
     journeyCollection?: Nullable<JourneyCollection>;
