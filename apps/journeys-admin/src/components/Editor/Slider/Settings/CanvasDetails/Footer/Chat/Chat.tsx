@@ -33,7 +33,7 @@ export function Chat(): ReactElement {
   )
 
   return (
-    <>
+    <div data-testid='ChatComponent'>
       <ChatOption
         title={t('Facebook Messenger')}
         chatButton={facebook}
@@ -80,6 +80,6 @@ export function Chat(): ReactElement {
           {t('You can add no more than two chat platforms')}
         </Typography>
       </Box>
-    </>
+    </div>
   )
 }

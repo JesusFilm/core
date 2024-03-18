@@ -109,7 +109,7 @@ export function HostDrawer(): ReactElement {
   }
 
   return (
-    <>
+     <div data-testid='HostDrawer'>
       {journey?.host != null ? (
         <Stack sx={{ p: 4 }}>
           <ContainedIconButton
@@ -168,6 +168,6 @@ export function HostDrawer(): ReactElement {
         open={openCreateHost}
         onClose={() => setOpenCreateHost(false)}
       />
-    </>
+    </div>
   )
 }
