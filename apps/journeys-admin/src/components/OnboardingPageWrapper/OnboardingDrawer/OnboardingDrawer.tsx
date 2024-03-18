@@ -26,7 +26,7 @@ export function OnboardingDrawer(): ReactElement {
 
     const redirect = decodeURIComponent(url)
     const match = redirect.match(/\/templates\/([^/?]+)/)
-    if (match) {
+    if (match != null) {
       return match[1]
     }
   }

@@ -6,7 +6,6 @@ export function useHandleNewAccountRedirect(): void {
 
   useEffect(() => {
     const redirectUrl = router.query.redirect as string
-    console.log('redirectUrl', redirectUrl)
 
     let updatedRedirectUrl
 
