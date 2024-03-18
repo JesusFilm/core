@@ -33,7 +33,7 @@ export function Chat(): ReactElement {
   )
 
   return (
-    <div data-testid='ChatComponent'>
+    <div data-testid="ChatComponent">
       <ChatOption
         title={t('Facebook Messenger')}
         chatButton={facebook}
