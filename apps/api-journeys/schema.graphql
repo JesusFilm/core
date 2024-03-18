@@ -1221,7 +1221,7 @@ input ChatButtonUpdateInput {
 
 type CustomDomain {
   id: ID!
-  teamId: String!
+  team: Team!
   name: String!
   apexName: String!
   journeyCollection: JourneyCollection

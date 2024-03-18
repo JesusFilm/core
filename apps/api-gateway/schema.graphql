@@ -363,7 +363,7 @@ type CustomDomain
   @join__type(graph: JOURNEYS)
 {
   id: ID!
-  teamId: String!
+  team: Team!
   name: String!
   apexName: String!
   journeyCollection: JourneyCollection
