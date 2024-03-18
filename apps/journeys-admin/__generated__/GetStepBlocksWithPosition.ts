@@ -4,15 +4,14 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetStepBlockPositions
+// GraphQL query operation: GetStepBlocksWithPosition
 // ====================================================
 
-export interface GetStepBlockPositions_blocks_ImageBlock {
+export interface GetStepBlocksWithPosition_blocks_ImageBlock {
   __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
-  id: string;
 }
 
-export interface GetStepBlockPositions_blocks_StepBlock {
+export interface GetStepBlocksWithPosition_blocks_StepBlock {
   __typename: "StepBlock";
   id: string;
   /**
@@ -27,12 +26,12 @@ export interface GetStepBlockPositions_blocks_StepBlock {
   y: number | null;
 }
 
-export type GetStepBlockPositions_blocks = GetStepBlockPositions_blocks_ImageBlock | GetStepBlockPositions_blocks_StepBlock;
+export type GetStepBlocksWithPosition_blocks = GetStepBlocksWithPosition_blocks_ImageBlock | GetStepBlocksWithPosition_blocks_StepBlock;
 
-export interface GetStepBlockPositions {
-  blocks: GetStepBlockPositions_blocks[];
+export interface GetStepBlocksWithPosition {
+  blocks: GetStepBlocksWithPosition_blocks[];
 }
 
-export interface GetStepBlockPositionsVariables {
+export interface GetStepBlocksWithPositionVariables {
   journeyIds?: string[] | null;
 }

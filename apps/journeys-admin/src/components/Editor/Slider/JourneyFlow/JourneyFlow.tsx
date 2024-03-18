@@ -1,10 +1,10 @@
-// import { gql, useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { SmartBezierEdge } from '@tisoap/react-flow-smart-edge'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import {
   Background,
   Controls,
+  NodeDragHandler,
   OnConnectEnd,
   OnConnectStart,
   ReactFlow,
@@ -17,63 +17,99 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-// import {
-//   GetStepBlockPositions,
-//   GetStepBlockPositionsVariables
-// } from '../../../../../__generated__/GetStepBlockPositions'
+import {
+  GetStepBlocksWithPosition,
+  GetStepBlocksWithPositionVariables
+} from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
+import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
+import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { isActionBlock } from './libs/isActionBlock'
 import { transformSteps } from './libs/transformSteps'
-import { ButtonBlockNode } from './nodes/ButtonBlockNode'
-import { FormBlockNode } from './nodes/FormBlockNode'
-import { RadioOptionBlockNode } from './nodes/RadioOptionBlockNode'
-import { SignUpBlockNode } from './nodes/SignUpBlockNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
-import { TextResponseBlockNode } from './nodes/TextResponseBlockNode'
-import { VideoBlockNode } from './nodes/VideoBlockNode'
 
 import 'reactflow/dist/style.css'
 
-// export const GET_STEP_BLOCK_POSITIONS = gql`
-//   query GetStepBlockPositions($journeyIds: [ID!]) {
-//     blocks(where: { journeyIds: $journeyIds, typenames: "StepBlock" }) {
-//       id
-//       ... on StepBlock {
-//         x
-//         y
-//       }
-//     }
-//   }
-// `
+export const GET_STEP_BLOCKS_WITH_POSITION = gql`
+  query GetStepBlocksWithPosition($journeyIds: [ID!]) {
+    blocks(where: { journeyIds: $journeyIds, typenames: ["StepBlock"] }) {
+      ... on StepBlock {
+        id
+        x
+        y
+      }
+    }
+  }
+`
 
 export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
   const {
     state: { steps }
   } = useEditor()
-  // const { data } = useQuery<
-  //   GetStepBlockPositions,
-  //   GetStepBlockPositionsVariables
-  // >(GET_STEP_BLOCK_POSITIONS, {
-  //   variables: { journeyIds: journey?.id != null ? [journey.id] : undefined }
-  // })
-  const [nodes, setNodes] = useNodesState([])
-  const [edges, setEdges] = useEdgesState([])
+  const [nodes, setNodes, onNodesChange] = useNodesState([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [previousNodeId, setPreviousNodeId] = useState<string | null>(null)
-  const edgeTypes = {
-    smart: SmartBezierEdge
-  }
-
-  useEffect(() => {
-    const { nodes, edges } = transformSteps(steps ?? [])
-    setEdges(edges)
-    setNodes(nodes)
-  }, [steps, setNodes, setEdges])
+  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
+  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
+  const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
+  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
+  useQuery<GetStepBlocksWithPosition, GetStepBlocksWithPositionVariables>(
+    GET_STEP_BLOCKS_WITH_POSITION,
+    {
+      variables: { journeyIds: journey?.id != null ? [journey.id] : undefined },
+      onCompleted: (data) => {
+        if (steps == null || journey == null) return
+        let positions: PositionMap = {}
+        if (
+          data.blocks.some(
+            (block) =>
+              block.__typename === 'StepBlock' &&
+              (block.x == null || block.y == null)
+          )
+        ) {
+          // some steps have no x or y coordinates
+          positions = arrangeSteps(steps)
+          Object.entries(positions).forEach(([id, position]) => {
+            void stepBlockPositionUpdate({
+              variables: {
+                id,
+                journeyId: journey.id,
+                x: position.x,
+                y: position.y
+              },
+              optimisticResponse: {
+                stepBlockUpdate: {
+                  id,
+                  __typename: 'StepBlock',
+                  x: position.x,
+                  y: position.y
+                }
+              }
+            })
+          })
+        } else {
+          data.blocks.forEach((block) => {
+            if (
+              block.__typename === 'StepBlock' &&
+              block.x != null &&
+              block.y != null
+            ) {
+              positions[block.id] = { x: block.x, y: block.y }
+            }
+          })
+        }
+        const { nodes, edges } = transformSteps(steps, positions)
+        setEdges(edges)
+        setNodes(nodes)
+      }
+    }
+  )
 
   const onConnectStart: OnConnectStart = (_, { nodeId }) => {
     setPreviousNodeId(nodeId)
@@ -89,10 +125,6 @@ export function JourneyFlow(): ReactElement {
       void createNewStepAndConnectBlock(nodeData)
     }
   }
-
-  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
-  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
-  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
 
   async function createNewStepAndConnectBlock(
     block?: TreeBlock
@@ -137,26 +169,52 @@ export function JourneyFlow(): ReactElement {
       await navigateToBlockActionUpdate(block, newStepId)
     }
   }
+  const nodeTypes = useMemo(
+    () => ({
+      StepBlock: StepBlockNode,
+      SocialPreview: SocialPreviewNode
+    }),
+    []
+  )
+
+  const onNodeDragStop: NodeDragHandler = async (
+    _event,
+    node
+  ): Promise<void> => {
+    if (journey == null || node.type !== 'StepBlock') return
+
+    const x = parseInt(node.position.x.toString())
+    const y = parseInt(node.position.y.toString())
+    await stepBlockPositionUpdate({
+      variables: {
+        id: node.id,
+        journeyId: journey.id,
+        x,
+        y
+      },
+      optimisticResponse: {
+        stepBlockUpdate: {
+          id: node.id,
+          __typename: 'StepBlock',
+          x,
+          y
+        }
+      }
+    })
+  }
 
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        edgeTypes={edgeTypes}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
+        onNodeDragStop={onNodeDragStop}
         fitView
-        nodeTypes={{
-          RadioOptionBlock: RadioOptionBlockNode,
-          StepBlock: StepBlockNode,
-          ButtonBlock: ButtonBlockNode,
-          TextResponseBlock: TextResponseBlockNode,
-          SignUpBlock: SignUpBlockNode,
-          FormBlock: FormBlockNode,
-          VideoBlock: VideoBlockNode,
-          SocialPreview: SocialPreviewNode
-        }}
+        nodeTypes={nodeTypes}
         proOptions={{ hideAttribution: true }}
       >
         <Controls showInteractive={false} />

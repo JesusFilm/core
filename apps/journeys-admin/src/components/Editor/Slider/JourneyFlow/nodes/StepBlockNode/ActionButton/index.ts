@@ -3,5 +3,5 @@ export {
   ACTION_NODE_HEIGHT,
   ACTION_NODE_WIDTH_GAP,
   ACTION_NODE_HEIGHT_GAP,
-  ActionNode
-} from './ActionNode'
+  ActionButton
+} from './ActionButton'
