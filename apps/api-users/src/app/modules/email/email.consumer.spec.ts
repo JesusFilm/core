@@ -183,7 +183,7 @@ describe('EmailConsumer', () => {
       })
     })
 
-    it('should send email with redirect', async () => {
+    it('should check if url has redirect', async () => {
       jest
         .spyOn(emailService, 'sendEmail')
         .mockImplementation(async () => await Promise.resolve())
