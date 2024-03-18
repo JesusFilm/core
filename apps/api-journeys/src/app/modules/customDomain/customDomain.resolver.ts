@@ -41,11 +41,9 @@ export class CustomDomainResolver {
 
   @Query()
   async customDomains(@Args('teamId') teamId: string): Promise<CustomDomain[]> {
-    return (
-      (await this.prismaService.customDomain.findMany({
-        where: { teamId }
-      })) ?? []
-    )
+    return await this.prismaService.customDomain.findMany({
+      where: { teamId }
+    })
   }
 
   @Mutation()

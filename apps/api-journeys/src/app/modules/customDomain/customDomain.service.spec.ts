@@ -90,6 +90,38 @@ describe('customDomainService', () => {
         include: { team: { include: { userTeams: true } } }
       })
     })
+
+    it('should handle alternative input', async () => {
+      const input = {
+        name: 'name',
+        teamId: 'teamId',
+        routeAllTeamJourneys: undefined,
+        journeyCollectionId: 'journeyCollectionId'
+      }
+      const createSpy = jest.spyOn(prismaService.customDomain, 'create')
+      createSpy.mockResolvedValue(customDomain)
+
+      const result = await service.customDomainCreate(input, ability)
+
+      expect(result).toEqual({
+        ...customDomain,
+        verification: {
+          verified: true,
+          verification: []
+        }
+      })
+      expect(createSpy).toHaveBeenCalledWith({
+        data: {
+          name: input.name,
+          apexName: 'name',
+          team: { connect: { id: input.teamId } },
+          journeyCollection: {
+            connect: { id: input.journeyCollectionId }
+          }
+        },
+        include: { team: { include: { userTeams: true } } }
+      })
+    })
   })
 
   describe('verifyVercelDomain', () => {
