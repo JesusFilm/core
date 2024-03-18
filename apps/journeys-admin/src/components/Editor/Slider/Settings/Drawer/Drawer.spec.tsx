@@ -36,7 +36,6 @@ describe('Drawer', () => {
     )
 
     it('should render drawer from the right', () => {
-      expect(true).toBeTruthy()
       render(<Drawer open />)
       expect(screen.getByTestId('SettingsDrawer').children[1]).toHaveClass(
         'MuiDrawer-paperAnchorRight'
@@ -50,7 +49,6 @@ describe('Drawer', () => {
     )
 
     it('should render drawer from the bottom', () => {
-      expect(true).toBeTruthy()
       render(<Drawer open />)
       expect(screen.getByTestId('SettingsDrawer').children[1]).toHaveClass(
         'MuiDrawer-paperAnchorBottom'
