@@ -44,7 +44,7 @@ export function OnboardingDrawer(): ReactElement {
         mt: { xs: 5 },
         my: { md: 10 },
         mx: { md: 20 },
-        width: { xs: '100%', md: '37%' },
+        width: { xs: '100%', md: '32%' },
         mb: { xs: templateId == null ? 0 : 5 }
       }}
       data-testid="JourneysAdminOnboardingDrawer"

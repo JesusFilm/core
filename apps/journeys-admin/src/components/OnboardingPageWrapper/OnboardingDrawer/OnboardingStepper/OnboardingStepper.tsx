@@ -128,7 +128,7 @@ export function OnboardingStepper({
     <>
       {variant === 'desktop' && (
         <Stack
-          gap={3}
+          gap={5}
           sx={{ display: { xs: 'none', md: 'flex' }, flexGrow: 2 }}
         >
           <Typography variant="h6">
