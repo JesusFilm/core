@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
@@ -32,11 +33,13 @@ export function StrategyItem({
   }
 
   return (
-    <Item
-      variant={variant}
-      label={t('Strategy')}
-      icon={<BulbIcon />}
-      onClick={handleGoalsClick}
-    />
+    <Box data-testId="Strategy-Item">
+      <Item
+        variant={variant}
+        label={t('Strategy')}
+        icon={<BulbIcon />}
+        onClick={handleGoalsClick}
+      />
+    </Box>
   )
 }

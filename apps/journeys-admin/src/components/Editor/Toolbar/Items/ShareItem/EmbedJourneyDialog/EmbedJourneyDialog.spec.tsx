@@ -3,8 +3,6 @@ import { SnackbarProvider } from 'notistack'
 
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 
-import '../../../../../../../test/i18n'
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true

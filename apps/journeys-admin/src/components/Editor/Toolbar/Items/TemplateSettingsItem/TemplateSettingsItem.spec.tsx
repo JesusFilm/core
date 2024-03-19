@@ -8,7 +8,6 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 import { TemplateSettingsItem } from './TemplateSettingsItem'
-import '../../../../../../test/i18n'
 
 jest.mock('next/router', () => ({
   __esModule: true,

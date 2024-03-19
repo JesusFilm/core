@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
@@ -15,17 +16,19 @@ export function AnalyticsItem({ variant }: AnalyticsItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   return (
-    <NextLink
-      href={`/journeys/${journey?.id}/reports`}
-      passHref
-      legacyBehavior
-      prefetch={false}
-    >
-      <Item
-        variant={variant}
-        label={t('Analytics')}
-        icon={<BarChartSquare3Icon />}
-      />
-    </NextLink>
+    <Box data-testId="Analytics-Item">
+      <NextLink
+        href={`/journeys/${journey?.id}/reports`}
+        passHref
+        legacyBehavior
+        prefetch={false}
+      >
+        <Item
+          variant={variant}
+          label={t('Analytics')}
+          icon={<BarChartSquare3Icon />}
+        />
+      </NextLink>
+    </Box>
   )
 }

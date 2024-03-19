@@ -9,8 +9,6 @@ import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 import { AccessItem } from './AccessItem'
 
-import '../../../../../../test/i18n'
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()

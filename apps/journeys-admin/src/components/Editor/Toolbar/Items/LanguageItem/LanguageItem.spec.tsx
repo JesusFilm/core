@@ -10,8 +10,6 @@ import { defaultJourney } from '../../../data'
 
 import { LanguageItem } from './LanguageItem'
 
-import '../../../../../../test/i18n'
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))

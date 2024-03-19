@@ -8,8 +8,6 @@ import { defaultJourney } from '../../../../data'
 
 import { JOURNEY_SLUG_UPDATE, SlugDialog } from '.'
 
-import '../../../../../../../test/i18n'
-
 const onClose = jest.fn()
 
 describe('JourneyView/Properties/SlugDialog', () => {

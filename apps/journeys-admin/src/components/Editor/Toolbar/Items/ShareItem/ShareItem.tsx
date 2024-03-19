@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -60,7 +61,7 @@ export function ShareItem({ variant }: ShareItemProps): ReactElement {
   }
 
   return (
-    <>
+    <Box data-testId="Share-Item">
       <Item
         variant={variant}
         label={t('Share')}
@@ -123,6 +124,6 @@ export function ShareItem({ variant }: ShareItemProps): ReactElement {
           onClose={() => setShowEmbedDialog(false)}
         />
       )}
-    </>
+    </Box>
   )
 }

@@ -9,8 +9,6 @@ import { defaultJourney } from '../../../data'
 
 import { ShareItem } from './ShareItem'
 
-import '../../../../../../test/i18n'
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
@@ -68,9 +66,7 @@ describe('ShareItem', () => {
       )
     })
 
-    await waitFor(() => {
-      expect(getByRole('dialog', { name: 'Edit URL' })).toBeInTheDocument()
-    })
+    expect(getByRole('dialog', { name: 'Edit URL' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Save' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
@@ -119,9 +115,8 @@ describe('ShareItem', () => {
         { shallow: true }
       )
     })
-    await waitFor(() => {
-      expect(getByRole('dialog', { name: 'Embed journey' })).toBeInTheDocument()
-    })
+
+    expect(getByRole('dialog', { name: 'Embed journey' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Copy Code' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Cancel' }))

@@ -13,7 +13,6 @@ import {
   JOURNEY_FEATURE_UPDATE,
   TemplateSettingsDialog
 } from './TemplateSettingsDialog'
-import '../../../../../../../test/i18n'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

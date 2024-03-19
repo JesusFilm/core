@@ -19,8 +19,6 @@ import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 import { StrategyItem } from './StrategyItem'
 
-import '../../../../../../test/i18n'
-
 jest.mock('@core/journeys/ui/EditorProvider', () => {
   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
   return {
@@ -55,14 +53,14 @@ describe('StrategyItem', () => {
     })
   })
 
-  it('should call close menu', async () => {
-    const mockOnClick = jest.fn()
+  it('should goals click', async () => {
+    const closeMenu = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider>
             <JourneyProvider value={{ journey: mockJourney }}>
-              <StrategyItem variant="button" closeMenu={mockOnClick} />
+              <StrategyItem variant="button" closeMenu={closeMenu} />
             </JourneyProvider>
           </EditorProvider>
         </SnackbarProvider>
@@ -70,7 +68,6 @@ describe('StrategyItem', () => {
     )
 
     fireEvent.click(getByRole('button'))
-    await waitFor(() => expect(mockOnClick).toHaveBeenCalled())
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetActiveContentAction',
       activeContent: ActiveContent.Goals
@@ -79,5 +76,6 @@ describe('StrategyItem', () => {
       type: 'SetActiveSlideAction',
       activeSlide: ActiveSlide.Content
     })
+    expect(closeMenu).toHaveBeenCalled()
   })
 })

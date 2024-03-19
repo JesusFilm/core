@@ -8,8 +8,6 @@ import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 import { PreviewItem } from './PreviewItem'
 
-import '../../../../../../test/i18n'
-
 describe('PreviewItem', () => {
   const mockJourney: JourneyFields = {
     id: 'journeyId',
