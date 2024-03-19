@@ -82,6 +82,7 @@ export function Drawer({
 
   return (
     <MuiDrawer
+      data-testid="SettingsDrawer"
       anchor={smUp ? 'right' : 'bottom'}
       variant={open != null ? 'temporary' : 'permanent'}
       SlideProps={{ appear: true }}
@@ -121,6 +122,7 @@ export function Drawer({
     >
       <DrawerTitle title={title} onClose={onClose} />
       <Box
+        data-testid="SettingsDrawerContent"
         className="swiper-no-swiping"
         sx={{ flexGrow: 1, overflow: 'auto', mb: { sm: 4 } }}
       >

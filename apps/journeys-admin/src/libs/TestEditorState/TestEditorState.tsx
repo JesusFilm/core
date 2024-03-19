@@ -19,6 +19,8 @@ export function TestEditorState(): ReactElement {
       <div>activeContent: {state.activeContent}</div>
       {/* eslint-disable-next-line i18next/no-literal-string */}
       <div>activeCanvasDetailsDrawer: {state.activeCanvasDetailsDrawer}</div>
+      {/* eslint-disable-next-line i18next/no-literal-string */}
+      <div>activeSlide: {state.activeSlide}</div>
     </>
   )
 }

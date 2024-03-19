@@ -377,11 +377,15 @@ export class StepBlockCreateInput {
     journeyId: string;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
 }
 
 export class StepBlockUpdateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
 }
 
 export class TextResponseBlockCreateInput {
@@ -979,6 +983,8 @@ export class StepBlock implements Block {
     locked: boolean;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
 }
 
 export class TextResponseBlock implements Block {

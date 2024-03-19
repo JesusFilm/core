@@ -13,7 +13,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('ImageOptions', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
-  it('opens the image library', async () => {
+  it('renders image source', async () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -21,8 +21,6 @@ describe('ImageOptions', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    await waitFor(() =>
-      expect(getByTestId('ImageBlockEditor')).toBeInTheDocument()
-    )
+    await waitFor(() => expect(getByTestId('ImageSource')).toBeInTheDocument())
   })
 })
