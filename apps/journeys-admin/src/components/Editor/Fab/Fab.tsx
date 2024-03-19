@@ -1,9 +1,9 @@
-import MuiFab, { FabProps } from '@mui/material/Fab'
+import MuiFab, { FabProps as MuiFabProps } from '@mui/material/Fab'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Zoom from '@mui/material/Zoom'
-import { MouseEvent, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
+import { MouseEvent, ReactElement, ReactNode } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -19,11 +19,11 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'
 
-interface fabProp {
+interface FabProps {
   variant?: 'social' | 'mobile' | 'canvas'
 }
 
-export function Fab({ variant }: fabProp): ReactElement {
+export function Fab({ variant }: FabProps): ReactElement {
   const {
     state: {
       activeFab,
@@ -116,59 +116,90 @@ export function Fab({ variant }: fabProp): ReactElement {
   const cardBlock = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
+  const videoBlock = cardBlock?.children?.find(
+    (block) =>
+      block.__typename === 'VideoBlock' && cardBlock.coverBlockId !== block.id
+  )
+  const disabled =
+    steps == null ||
+    (videoBlock != null && activeSlide !== ActiveSlide.JourneyFlow)
 
-  const props: FabProps = {
+  // props default to save fab
+  let props: MuiFabProps = {
     variant: smUp ? 'extended' : 'circular',
     size: 'large',
     color: 'primary',
-    disabled:
-      steps == null ||
-      (cardBlock?.children?.find(
-        (block) =>
-          block.__typename === 'VideoBlock' &&
-          cardBlock.coverBlockId !== block.id
-      ) != null &&
-        activeSlide !== ActiveSlide.JourneyFlow),
+    disabled,
     sx: {
       position: { xs: 'absolute', sm: 'relative' },
       bottom: { xs: 16, sm: 'auto' },
       right: { xs: 16, sm: 'auto' },
       fontWeight: 'bold'
+    },
+    onClick: handleSaveFab
+  }
+  // children default to save fab
+  let children: ReactNode = (
+    <>
+      <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
+      {smUp ? t('Done') : ''}
+    </>
+  )
+
+  const isEdit =
+    activeFab === ActiveFab.Edit || activeSlide === ActiveSlide.JourneyFlow
+  const isAdd = activeFab === ActiveFab.Add
+
+  if (isEdit) {
+    props = {
+      ...props,
+      onClick: handleEditFab
     }
+    children = (
+      <>
+        <Edit2Icon sx={{ mr: smUp ? 3 : 0 }} />
+        {smUp ? t('Edit') : ''}
+      </>
+    )
+  } else if (isAdd) {
+    props = {
+      ...props,
+      onClick: handleAddFab
+    }
+    children = (
+      <>
+        <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
+        {smUp && variant === 'canvas' && t('Add Block')}
+      </>
+    )
+  }
+
+  let fabIn = false
+  switch (variant) {
+    case 'mobile': {
+      fabIn =
+        !smUp &&
+        activeContent === ActiveContent.Canvas &&
+        activeSlide === ActiveSlide.Content
+      break
+    }
+    case 'canvas': {
+      fabIn = smUp && activeContent === ActiveContent.Canvas
+      break
+    }
+    case 'social': {
+      fabIn =
+        activeSlide === ActiveSlide.JourneyFlow &&
+        activeContent === ActiveContent.Social
+      break
+    }
+    default:
+      fabIn = false
   }
 
   return (
-    <Zoom
-      in={
-        variant === 'mobile'
-          ? !smUp &&
-            activeContent === ActiveContent.Canvas &&
-            activeSlide === ActiveSlide.Content
-          : variant === 'canvas'
-          ? smUp && activeContent === ActiveContent.Canvas
-          : activeSlide === ActiveSlide.JourneyFlow &&
-            activeContent === ActiveContent.Social
-      }
-      unmountOnExit
-      data-testid="Fab"
-    >
-      {activeFab === ActiveFab.Edit ||
-      activeSlide === ActiveSlide.JourneyFlow ? (
-        <MuiFab {...props} onClick={handleEditFab}>
-          <Edit2Icon sx={{ mr: smUp ? 3 : 0 }} />
-          {smUp ? t('Edit') : ''}
-        </MuiFab>
-      ) : activeFab === ActiveFab.Add ? (
-        <MuiFab {...props} onClick={handleAddFab}>
-          <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
-          {smUp ? t(variant === 'canvas' ? 'Add Block' : 'Add') : ''}
-        </MuiFab>
-      ) : (
-        <MuiFab {...props} onClick={handleSaveFab}>
-          <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
-          {smUp ? t('Done') : ''}
-        </MuiFab>
-      )}
+    <Zoom in={fabIn} unmountOnExit data-testid="Fab">
+      <MuiFab {...props}>{children}</MuiFab>
     </Zoom>
   )
 }
