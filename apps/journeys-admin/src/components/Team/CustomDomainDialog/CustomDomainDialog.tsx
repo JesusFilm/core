@@ -7,7 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
@@ -132,19 +132,21 @@ export function CustomDomainDialog({
   onClose
 }: CustomDomainDialogProps): ReactElement {
   const [loading, setLoading] = useState(true)
+  const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation('apps-journeys-admin')
+  const { activeTeam } = useTeam()
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
   const { data: journeysData } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
     useLastActiveTeamId: true
   })
 
-  const { activeTeam } = useTeam()
-  const { data: customDomainData } = useQuery<GetCustomDomain>(
-    GET_CUSTOM_DOMAIN,
-    {
+  const { data: customDomainData, refetch: refetchCustomDomains } =
+    useQuery<GetCustomDomain>(GET_CUSTOM_DOMAIN, {
       variables: { teamId: activeTeam?.id },
       onCompleted: () => setLoading(false)
-    }
-  )
+    })
 
   const [createCustomDomain, { error }] =
     useMutation<CreateCustomDomain>(CREATE_CUSTOM_DOMAIN)
@@ -159,16 +161,6 @@ export function CustomDomainDialog({
   const [journeyCollectionCreate] = useMutation<JourneyCollectionCreate>(
     JOURNEY_COLLECTION_CREATE
   )
-
-  const { enqueueSnackbar } = useSnackbar()
-  const { t } = useTranslation('apps-journeys-admin')
-  const validationSchema = object({}).shape({
-    domainName: string()
-      .trim()
-      .nonNullable()
-      .required(t('Domain name is a required field'))
-  })
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   async function handleSubmit(value, { setValues }): Promise<void> {
     setLoading(true)
@@ -234,9 +226,9 @@ export function CustomDomainDialog({
     setLoading(false)
   }
 
-  const hasCustomDomain: boolean =
-    customDomainData?.customDomains?.length !== 0 &&
-    customDomainData?.customDomains != null
+  useEffect(() => {
+    refetchCustomDomains()
+  }, [activeTeam, customDomainData])
 
   async function handleOnChange(e: SelectChangeEvent): Promise<void> {
     if (
@@ -277,6 +269,17 @@ export function CustomDomainDialog({
       }
     }
   }
+
+  const hasCustomDomain: boolean =
+    customDomainData?.customDomains?.length !== 0 &&
+    customDomainData?.customDomains != null
+
+  const validationSchema = object({}).shape({
+    domainName: string()
+      .trim()
+      .nonNullable()
+      .required(t('Domain name is a required field'))
+  })
 
   const initialValues = {
     domainName: hasCustomDomain ? customDomainData?.customDomains[0]?.name : ''
