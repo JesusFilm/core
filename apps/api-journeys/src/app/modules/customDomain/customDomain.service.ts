@@ -46,12 +46,17 @@ export class CustomDomainService {
       {
         body: JSON.stringify(body),
         headers: {
-          Authorization: `Bearer ${process.env.VERCEL_TOKEN}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
         },
         method: 'POST'
       }
     )
+    const json = await response.json()
+    if (json.error?.message != null)
+      throw new GraphQLError(json.error.message, {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
+
     return await response.json()
   }
 

@@ -16,6 +16,7 @@ import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
   CustomDomainCreateInput,
+  CustomDomain as CustomDomainGQL,
   CustomDomainUpdateInput,
   CustomDomainVerification
 } from '../../__generated__/graphql'
@@ -129,8 +130,10 @@ export class CustomDomainResolver {
 
   @ResolveField()
   async verification(
-    @Parent() customDomain: CustomDomain
+    @Parent() customDomain: CustomDomainGQL
   ): Promise<CustomDomainVerification> {
+    if (customDomain.verification != null) return customDomain.verification
+
     const vercelResult = await this.customDomainService.verifyVercelDomain(
       customDomain.name
     )
