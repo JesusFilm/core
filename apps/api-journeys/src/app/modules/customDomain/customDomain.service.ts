@@ -28,7 +28,7 @@ export class CustomDomainService {
 
   async addVercelDomain(name: string): Promise<VercelResponse> {
     // Don't hit vercel outside of deployed environments
-    if (process.env.VERCEL_PROJECT_ID == null)
+    if (process.env.VERCEL_JOURNEYS_PROJECT_ID == null)
       return {
         name,
         apexName: name,
@@ -36,15 +36,18 @@ export class CustomDomainService {
         verification: []
       }
 
-    const body = new FormData()
-    body.append('name', name)
-    body.append('gitBranch', process.env.GIT_BRANCH)
+    const body = {
+      name,
+      gitBranch: process.env.GIT_BRANCH
+    }
+
     const response = await fetch(
-      `https://api.vercel.com/v10/projects/${process.env.VERCEL_PROJECT_ID}/domains`,
+      `https://api.vercel.com/v10/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains?teamId=${process.env.VERCEL_TEAM_ID}`,
       {
-        body,
+        body: JSON.stringify(body),
         headers: {
-          Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
+          Authorization: `Bearer ${process.env.VERCEL_TOKEN}`,
+          'Content-Type': 'application/json'
         },
         method: 'POST'
       }
@@ -54,7 +57,7 @@ export class CustomDomainService {
 
   async verifyVercelDomain(name: string): Promise<VercelResponse> {
     // Don't hit vercel outside of deployed environments
-    if (process.env.VERCEL_PROJECT_ID == null)
+    if (process.env.VERCEL_JOURNEYS_PROJECT_ID == null)
       return {
         name,
         apexName: name,
@@ -63,7 +66,7 @@ export class CustomDomainService {
       }
 
     const response = await fetch(
-      `/projects/:${process.env.VERCEL_PROJECT_ID}/domains/${name}/verify`,
+      `/projects/:${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}/verify?teamId=${process.env.VERCEL_TEAM_ID}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
@@ -76,10 +79,10 @@ export class CustomDomainService {
 
   async deleteVercelDomain(name: string): Promise<boolean> {
     // Don't hit vercel outside of deployed environments
-    if (process.env.VERCEL_PROJECT_ID == null) return true
+    if (process.env.VERCEL_JOURNEYS_PROJECT_ID == null) return true
 
     const response = await fetch(
-      `/projects/:${process.env.VERCEL_PROJECT_ID}/domains/${name}`,
+      `/projects/:${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}?teamId=${process.env.VERCEL_TEAM_ID}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
