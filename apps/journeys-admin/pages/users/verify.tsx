@@ -69,7 +69,10 @@ function ValidateEmail({
   })
 
   const [resendValidationEmail] = useMutation<CreateVerificationRequest>(
-    CREATE_VERIFICATION_REQUEST
+    CREATE_VERIFICATION_REQUEST,
+    {
+      variables: { input: { redirect: router?.query?.redirect } }
+    }
   )
 
   const validationSchema = object().shape({
@@ -81,7 +84,10 @@ function ValidateEmail({
     await validateEmail({
       variables: { email, token: values.token },
       onCompleted: async () => {
-        await router.push('/users/terms-and-conditions')
+        await router.push({
+          pathname: '/users/terms-and-conditions',
+          query: { redirect: router.query.redirect }
+        })
       }
     })
     setTimeout(() => {
@@ -221,12 +227,15 @@ export const getServerSideProps = withUserTokenSSR({
   )
 
   // skip if already verified
-  const apiUser = await apolloClient.query<GetMe>({ query: GET_ME })
+  const apiUser = await apolloClient.query<GetMe>({
+    query: GET_ME,
+    variables: { input: { redirect: undefined } }
+  })
   if (apiUser.data?.me?.emailVerified ?? false) {
     return {
       redirect: {
         permanent: false,
-        destination: '/'
+        destination: `/`
       }
     }
   }
@@ -253,7 +262,7 @@ export const getServerSideProps = withUserTokenSSR({
     return {
       redirect: {
         permanent: false,
-        destination: '/'
+        destination: `/?redirect=${(query.redirect as string) ?? null}`
       }
     }
   }

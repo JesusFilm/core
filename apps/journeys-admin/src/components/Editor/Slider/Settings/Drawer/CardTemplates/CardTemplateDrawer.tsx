@@ -1,5 +1,4 @@
 import Grid from '@mui/material/Grid'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { CardCta } from './Templates/CardCta'
@@ -11,7 +10,7 @@ import { CardVideo } from './Templates/CardVideo'
 
 export function CardTemplateDrawer(): ReactElement {
   return (
-    <Grid container spacing={5} sx={{ p: 5 }}>
+    <Grid data-testid="CardTemplateDrawer" container spacing={5} sx={{ p: 5 }}>
       <Grid item xs={6}>
         <CardVideo />
       </Grid>

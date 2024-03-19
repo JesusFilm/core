@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -43,14 +44,16 @@ export function Step({
       : t('None')
 
   return (
-    <Accordion
-      id={`next-step-${id}`}
-      icon={locked ? <Lock1Icon /> : <LockOpen1Icon />}
-      name={t('Next Card')}
-      value={heading}
-      testId={`Step-${id}`}
-    >
-      <NextCard />
-    </Accordion>
+    <Box data-testid="StepProperties">
+      <Accordion
+        id={`next-step-${id}`}
+        icon={locked ? <Lock1Icon /> : <LockOpen1Icon />}
+        name={t('Next Card')}
+        value={heading}
+        testId={`Step-${id}`}
+      >
+        <NextCard />
+      </Accordion>
+    </Box>
   )
 }
