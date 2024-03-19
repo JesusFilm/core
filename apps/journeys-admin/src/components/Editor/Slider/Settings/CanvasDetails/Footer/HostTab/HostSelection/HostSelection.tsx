@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
@@ -14,7 +15,7 @@ import { ContainedIconButton } from '../../../../../../../ContainedIconButton'
 interface HostSelectionProps {
   data: GetUserTeamsAndInvites | undefined
   userInTeam: boolean
-  handleSelection: (value: string) => void
+  handleSelection: (value: 'form' | 'list') => void
 }
 
 export function HostSelection({
@@ -25,7 +26,7 @@ export function HostSelection({
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <>
+    <Box data-testId="host-selection">
       {journey?.host != null ? (
         <Stack sx={{ p: 4 }}>
           <ContainedIconButton
@@ -74,6 +75,6 @@ export function HostSelection({
           </Typography>
         </Stack>
       )}
-    </>
+    </Box>
   )
 }

@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
@@ -16,7 +17,7 @@ import { HostListItem } from './HostListItem'
 
 interface HostListProps {
   teamHosts?: GetAllTeamHosts
-  handleSelection: (value: string) => void
+  handleSelection: (value: 'selection' | 'info' | 'form') => void
 }
 
 export function HostList({
@@ -41,7 +42,7 @@ export function HostList({
   }
 
   return (
-    <>
+    <Box data-testId="host-list">
       <Stack
         direction="row"
         justifyContent="space-between"
@@ -62,11 +63,11 @@ export function HostList({
           {t('Create New')}
         </Button>
       </Stack>
-      <List disablePadding data-testid="HostList">
+      <List disablePadding>
         {teamHosts?.hosts.map((host) => (
           <HostListItem key={host.id} {...host} onClick={handleClick} />
         ))}
       </List>
-    </>
+    </Box>
   )
 }

@@ -87,7 +87,7 @@ describe('HostList', () => {
     ).toBeInTheDocument()
   })
 
-  it('should call handleselection on info button click', () => {
+  it('should call handleselection on info button click, navigate to info', () => {
     const handleSelection = jest.fn()
     const { getByTestId } = render(
       <MockedProvider>
@@ -102,10 +102,10 @@ describe('HostList', () => {
       </MockedProvider>
     )
     fireEvent.click(getByTestId('InformationCircleContainedIcon'))
-    expect(handleSelection).toHaveBeenCalledWith('info') // navigates to HostInfo
+    expect(handleSelection).toHaveBeenCalledWith('info')
   })
 
-  it('should call handleselection on create new button click', () => {
+  it('should call handleselection on create new button click, navigate to form', () => {
     const handleSelection = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
@@ -120,10 +120,10 @@ describe('HostList', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Create New' }))
-    expect(handleSelection).toHaveBeenCalledWith('form') // navigates to HostForm
+    expect(handleSelection).toHaveBeenCalledWith('form')
   })
 
-  it('should update journey host on list item click', async () => {
+  it('should update journey host on list item click, navigate to host selection', async () => {
     const handleSelection = jest.fn()
 
     const updateJourneyHostMock: MockedResponse<
@@ -172,6 +172,6 @@ describe('HostList', () => {
     )
 
     await waitFor(() => expect(updateJourneyHostMock.result).toHaveBeenCalled())
-    expect(handleSelection).toHaveBeenCalledWith('selection') // navigate to HostSelection
+    expect(handleSelection).toHaveBeenCalledWith('selection')
   })
 })

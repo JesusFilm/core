@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -90,6 +90,29 @@ describe('HostSelection', () => {
     })
   })
 
+  it('should render host details', () => {
+    const handleSelection = jest.fn()
+    const { getByText, getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider
+            value={{ journey: { ...journey }, variant: 'admin' }}
+          >
+            <HostSelection
+              data={data}
+              userInTeam
+              handleSelection={handleSelection}
+            />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    expect(getByText('Cru International')).toBeInTheDocument()
+    expect(getByText('Florida, USA')).toBeInTheDocument()
+    expect(getByTestId('Edit2Icon')).toBeInTheDocument()
+  })
+
   it('should disable editing hosts if no team on journey', async () => {
     const handleSelection = jest.fn()
     const { getByRole } = render(
@@ -167,6 +190,53 @@ describe('HostSelection', () => {
       expect(
         getByText('Cannot edit hosts for this old journey')
       ).toBeInTheDocument()
+    })
+  })
+
+  it('should call handleselection on list', async () => {
+    const handleSelection = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider
+            value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          >
+            <HostSelection
+              data={data}
+              userInTeam
+              handleSelection={handleSelection}
+            />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Select a Host' }))
+    await waitFor(() => {
+      expect(handleSelection).toHaveBeenCalledWith('list')
+    })
+  })
+
+  it('should call handleselection on form', async () => {
+    const handleSelection = jest.fn()
+    const { getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider
+            value={{ journey: { ...journey }, variant: 'admin' }}
+          >
+            <HostSelection
+              data={data}
+              userInTeam
+              handleSelection={handleSelection}
+            />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('Edit2Icon'))
+    await waitFor(() => {
+      expect(handleSelection).toHaveBeenCalledWith('form')
     })
   })
 })

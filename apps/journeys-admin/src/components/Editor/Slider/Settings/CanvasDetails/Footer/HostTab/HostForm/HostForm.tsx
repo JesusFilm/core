@@ -1,4 +1,11 @@
-import { ApolloCache, gql, useMutation } from '@apollo/client'
+import {
+  ApolloCache,
+  LazyQueryHookExecOptions,
+  QueryResult,
+  gql,
+  useMutation
+} from '@apollo/client'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
@@ -10,6 +17,10 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
 import { DeleteHost } from '../../../../../../../../../__generated__/DeleteHost'
+import {
+  GetAllTeamHosts,
+  GetAllTeamHostsVariables
+} from '../../../../../../../../../__generated__/GetAllTeamHosts'
 import { useUpdateJourneyHostMutation } from '../../../../../../../../libs/useUpdateJourneyHostMutation'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
@@ -25,11 +36,20 @@ export const DELETE_HOST = gql`
 `
 
 interface HostFormTabProps {
-  onClear: () => void
-  onBack: () => void
+  handleSelection: (value: 'selection' | 'list') => void
+  getAllTeamHosts: (
+    options?:
+      | Partial<
+          LazyQueryHookExecOptions<GetAllTeamHosts, GetAllTeamHostsVariables>
+        >
+      | undefined
+  ) => Promise<QueryResult<GetAllTeamHosts, GetAllTeamHostsVariables>>
 }
 
-export function HostForm({ onClear, onBack }: HostFormTabProps): ReactElement {
+export function HostForm({
+  handleSelection,
+  getAllTeamHosts
+}: HostFormTabProps): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   const [hostDelete] = useMutation<DeleteHost>(DELETE_HOST)
@@ -37,11 +57,15 @@ export function HostForm({ onClear, onBack }: HostFormTabProps): ReactElement {
   const host = journey?.host
 
   const handleClear = async (): Promise<void> => {
+    if (journey?.id == null) return
     if (host != null && journey?.team != null) {
       try {
         await hostDelete({
           variables: { id: host.id, teamId: journey.team.id },
-          update(cache: ApolloCache<any>) {
+          update(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            cache: ApolloCache<any>
+          ) {
             cache.evict({
               id: cache.identify({ __typename: 'Host', id: host.id })
             })
@@ -49,15 +73,17 @@ export function HostForm({ onClear, onBack }: HostFormTabProps): ReactElement {
         })
       } catch (e) {}
     }
-    if (journey?.id == null) return
     await journeyHostUpdate({
       variables: { id: journey?.id, input: { hostId: null } }
     })
-    onClear()
+    if (journey?.team != null) {
+      await getAllTeamHosts({ variables: { teamId: journey.team.id } })
+    }
+    handleSelection('selection')
   }
 
   return (
-    <>
+    <Box data-testId="host-form">
       {journey?.host != null ? (
         <Stack
           direction="row"
@@ -76,7 +102,11 @@ export function HostForm({ onClear, onBack }: HostFormTabProps): ReactElement {
           alignItems="center"
           sx={{ p: 4 }}
         >
-          <Button variant="outlined" size="small" onClick={onBack}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => handleSelection('list')}
+          >
             {t('Back')}
           </Button>
         </Stack>
@@ -96,6 +126,6 @@ export function HostForm({ onClear, onBack }: HostFormTabProps): ReactElement {
         </Typography>
       </Stack>
       <Divider />
-    </>
+    </Box>
   )
 }

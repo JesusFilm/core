@@ -1,4 +1,5 @@
 import { gql, useLazyQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import dynamic from 'next/dynamic'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -72,6 +73,7 @@ export function HostTab(): ReactElement {
       ? false
       : data.userTeams.find((userTeam) => userTeam.user.email === user.email) !=
         null
+
   // Fetch all hosts made for a team
   const [getAllTeamHosts, { data: teamHosts }] = useLazyQuery<
     GetAllTeamHosts,
@@ -87,14 +89,6 @@ export function HostTab(): ReactElement {
     if (journey?.team != null)
       void getAllTeamHosts({ variables: { teamId: journey.team.id } })
   }, [journey?.team, getAllTeamHosts])
-
-  async function handleClear(): Promise<void> {
-    if (journey?.id == null) return
-    if (journey?.team != null) {
-      await getAllTeamHosts({ variables: { teamId: journey.team.id } })
-    }
-    handleSelection('selection')
-  }
 
   function handleSelection(
     selection: 'selection' | 'list' | 'form' | 'info'
@@ -124,7 +118,7 @@ export function HostTab(): ReactElement {
   }
 
   return (
-    <>
+    <Box data-testId="host-tab">
       {openHostSelection && (
         <HostSelection
           data={data}
@@ -139,12 +133,10 @@ export function HostTab(): ReactElement {
       {openHostInfo && <HostInfo handleSelection={handleSelection} />}
       {openHostForm && (
         <HostForm
-          onClear={handleClear}
-          onBack={() => {
-            handleSelection('list')
-          }}
+          handleSelection={handleSelection}
+          getAllTeamHosts={getAllTeamHosts}
         />
       )}
-    </>
+    </Box>
   )
 }

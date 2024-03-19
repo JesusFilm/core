@@ -48,6 +48,7 @@ describe('HostForm', () => {
   } as unknown as Journey
 
   it('should render a create host form', async () => {
+    const handleSelection = jest.fn()
     const { getByRole, getByTestId, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -57,7 +58,10 @@ describe('HostForm', () => {
               variant: 'admin'
             }}
           >
-            <HostForm onClear={jest.fn()} onBack={jest.fn()} />
+            <HostForm
+              handleSelection={handleSelection}
+              getAllTeamHosts={jest.fn()}
+            />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -93,7 +97,7 @@ describe('HostForm', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostForm onClear={jest.fn()} onBack={jest.fn()} />
+            <HostForm handleSelection={jest.fn()} getAllTeamHosts={jest.fn()} />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -118,8 +122,31 @@ describe('HostForm', () => {
     ).toBeInTheDocument()
   })
 
+  it('should navigate to list on back button click', () => {
+    const handleSelection = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider
+            value={{
+              journey: { ...journey, host: null },
+              variant: 'admin'
+            }}
+          >
+            <HostForm
+              handleSelection={handleSelection}
+              getAllTeamHosts={jest.fn()}
+            />
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Back' }))
+    expect(handleSelection).toHaveBeenCalledWith('list')
+  })
+
   it('should delete and update journey host on clear button click', async () => {
-    const onClear = jest.fn()
     const updateJourneyHostMock: MockedResponse<
       UpdateJourneyHost,
       UpdateJourneyHostVariables
@@ -164,11 +191,16 @@ describe('HostForm', () => {
         }
       }))
     }
+    const handleSelection = jest.fn()
+    const getAllTeamHosts = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[hostDeleteMock, updateJourneyHostMock]}>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostForm onClear={onClear} onBack={jest.fn()} />
+            <HostForm
+              handleSelection={handleSelection}
+              getAllTeamHosts={getAllTeamHosts}
+            />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -177,7 +209,8 @@ describe('HostForm', () => {
     fireEvent.click(getByRole('button', { name: 'Clear' }))
 
     await waitFor(() => expect(hostDeleteMock.result).toHaveBeenCalled())
-    await waitFor(() => expect(updateJourneyHostMock.result).toHaveBeenCalled())
-    await waitFor(() => expect(onClear).toHaveBeenCalled())
+    expect(updateJourneyHostMock.result).toHaveBeenCalled()
+    expect(getAllTeamHosts).toHaveBeenCalled()
+    expect(handleSelection).toHaveBeenCalledWith('selection')
   })
 })

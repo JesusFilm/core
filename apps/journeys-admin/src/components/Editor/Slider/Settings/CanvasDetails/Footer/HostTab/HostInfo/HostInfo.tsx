@@ -7,13 +7,13 @@ import { ReactElement } from 'react'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 
 interface HostInfoTabProps {
-  handleSelection: (value: string) => void
+  handleSelection: (value: 'list') => void
 }
 
 export function HostInfo({ handleSelection }: HostInfoTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Stack sx={{ p: 4 }}>
+    <Stack sx={{ p: 4 }} data-testId="host-info">
       <Button
         variant="outlined"
         size="small"

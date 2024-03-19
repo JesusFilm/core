@@ -96,7 +96,7 @@ describe('HostTab', () => {
   }
 
   it('should navigate to HostList', async () => {
-    const { getByRole, getByText } = render(
+    const { getByRole, getByTestId } = render(
       <MockedProvider mocks={[getUserTeamMock]}>
         <ThemeProvider>
           <JourneyProvider
@@ -118,7 +118,7 @@ describe('HostTab', () => {
     fireEvent.click(getByRole('button', { name: 'Select a Host' }))
 
     await waitFor(() => {
-      expect(getByText('Hosts')).toBeInTheDocument()
+      expect(getByTestId('host-list')).toBeInTheDocument()
     })
   })
 
@@ -151,14 +151,12 @@ describe('HostTab', () => {
     fireEvent.click(getByTestId('InformationCircleContainedIcon'))
 
     await waitFor(() => {
-      expect(
-        getByText('Why does your journey need a host?')
-      ).toBeInTheDocument()
+      expect(getByTestId('host-info')).toBeInTheDocument()
     })
   })
 
-  it('should navigate to hostform', async () => {
-    const { getByRole, getByText } = render(
+  it('should navigate to HostForm', async () => {
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider mocks={[getUserTeamMock]}>
         <ThemeProvider>
           <JourneyProvider
@@ -186,12 +184,7 @@ describe('HostTab', () => {
     fireEvent.click(getByRole('button', { name: 'Create New' }))
 
     await waitFor(() => {
-      expect(getByText('Back')).toBeInTheDocument()
+      expect(getByTestId('host-form')).toBeInTheDocument()
     })
-    expect(
-      getByText(
-        'Edits: Making changes here will apply to all journeys that share this Host.'
-      )
-    ).toBeInTheDocument()
   })
 })
