@@ -36,7 +36,7 @@ describe('VideosPage', () => {
     it('should render a grid', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <VideosPage localVideos={videos} />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       expect(getByTestId('VideoGrid')).toBeInTheDocument()
@@ -64,7 +64,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage localVideos={videos} />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       await waitFor(() => {
@@ -148,7 +148,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage localVideos={[]} />
+          <VideosPage videos={[]} />
         </MockedProvider>
       )
       const comboboxEl = getByRole('combobox', {
@@ -232,7 +232,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage localVideos={[]} />
+          <VideosPage videos={[]} />
         </MockedProvider>
       )
       fireEvent.click(getByTestId('filter-item-subtitles'))
@@ -313,7 +313,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage localVideos={[]} />
+          <VideosPage videos={[]} />
         </MockedProvider>
       )
 

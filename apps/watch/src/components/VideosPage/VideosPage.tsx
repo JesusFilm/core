@@ -8,6 +8,7 @@ import { ReactElement, useEffect } from 'react'
 import {
   useInfiniteHits,
   useInstantSearch,
+  useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
 
@@ -57,14 +58,17 @@ export interface VideoPageFilter {
 }
 
 interface VideoProps {
-  localVideos: VideoChildFields[]
+  videos: VideoChildFields[]
 }
 
-export function VideosPage({ localVideos }: VideoProps): ReactElement {
+export function VideosPage({ videos }: VideoProps): ReactElement {
   const router = useRouter()
   const { status } = useInstantSearch()
-  const { query: algoliaQuery, refine } = useSearchBox()
-  const { hits: algoliaVideos, isLastPage, showMore } = useInfiniteHits()
+  const { refine } = useRefinementList({ attribute: 'subtitles' })
+  const { query: algoliaQuery, refine: searchRefine } = useSearchBox()
+  const { hits, isLastPage, showMore } = useInfiniteHits()
+
+  console.log('hits', hits)
 
   // we intentionally use window.location.search to prevent multiple renders
   // which occurs when using const { query } = useRouter()
@@ -91,8 +95,10 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
     .join(' ')
 
   useEffect(() => {
-    refine(formattedString)
-  }, [refine, formattedString])
+    if (filter.subtitleLanguageIds != null)
+      refine(filter.subtitleLanguageIds[0])
+    searchRefine(filter.title ?? '')
+  }, [searchRefine, refine, formattedString])
 
   function handleFilterChange(filter: VideoPageFilter): void {
     const params = new URLSearchParams()
@@ -112,12 +118,10 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
     })
   }
 
-  const videos = convertAlgoliaVideos(
-    algoliaVideos,
-    availableVariantLanguageIds
-  )
+  const algoliaVideos = convertAlgoliaVideos(hits)
+  console.log('algoliaVideos', algoliaVideos)
 
-  const realVideos = localVideos.filter((video) => video !== null)
+  const localVideos = videos.filter((video) => video !== null)
 
   const { data: languagesData, loading: languagesLoading } =
     useQuery<GetLanguages>(GET_LANGUAGES, {
@@ -149,7 +153,7 @@ export function VideosPage({ localVideos }: VideoProps): ReactElement {
           </Box>
           <Box sx={{ width: '100%' }}>
             <VideoGrid
-              videos={algoliaQuery === '' ? realVideos : videos}
+              videos={algoliaQuery === '' ? localVideos : algoliaVideos}
               onLoadMore={handleLoadMore}
               loading={status === 'loading' || status === 'stalled'}
               hasNextPage={algoliaQuery === '' ? false : !isLastPage}

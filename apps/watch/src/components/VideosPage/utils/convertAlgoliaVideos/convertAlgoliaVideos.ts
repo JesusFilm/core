@@ -1,43 +1,21 @@
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 
-// Temporary default variant logic due to paywall
-// Currently being set through a custom seed logic
-// Need to do variant logic here once past paywall
-export function convertAlgoliaVideos(videos, languageIds): VideoChildFields[] {
-  return videos.map((video) => {
-    function findVariantSlug(variants, languageIds): string | undefined {
-      return variants.find((variant) => variant.languageId === languageIds[0])
-        ?.slug
-    }
+interface VideoVariant {
+  objectID: string
+}
 
-    // video.variant is a temporary fix
-    // Everything in it will be removed once we're past paywall
-    const variant =
-      languageIds != null
-        ? {
-            duration: video.duration,
-            slug:
-              findVariantSlug(video.variants, languageIds) ?? video.variant.slug
-          }
-        : undefined
-
-    const videoFields = {
-      ...video,
-      title: [{ value: video.titles[0] }],
-      imageAlt: [{ value: video.imageAlt }],
-      snippet: [{ value: video.snippet }],
-      variant: {
-        duration: video.duration,
-        slug: video.variant.slug
-      }
+export function convertAlgoliaVideos(hits): VideoChildFields[] {
+  return hits.map((videoVariant) => {
+    return {
+      id: videoVariant.videoId,
+      label: videoVariant.label,
+      title: [{ value: videoVariant.titles.map((title) => title) }],
+      image: videoVariant.image,
+      imageAlt: videoVariant.imageAlt,
+      snippet: [],
+      slug: videoVariant.slug,
+      variant: null,
+      childrenCount: videoVariant.childrenCount
     }
-
-    if (variant != null) {
-      videoFields.variant = {
-        duration: video.duration,
-        slug: variant.slug
-      }
-    }
-    return videoFields
   })
 }

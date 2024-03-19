@@ -44,7 +44,7 @@ const Template: StoryObj<
         ]}
       >
         <InstantSearch searchClient={searchClient} indexName="videos">
-          <VideosPage localVideos={videos} />
+          <VideosPage videos={videos} />
         </InstantSearch>
       </MockedProvider>
     )
