@@ -17,39 +17,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('EditorContext', () => {
   describe('reducer', () => {
-    describe('SetSelectedStepAction', () => {
-      it('should set selected step', () => {
-        const step: TreeBlock = {
-          id: 'step0.id',
-          __typename: 'StepBlock',
-          parentBlockId: null,
-          parentOrder: 0,
-          locked: false,
-          nextBlockId: null,
-          children: []
-        }
-        const state: EditorState = {
-          steps: [step],
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
-          activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
-        }
-        expect(
-          reducer(state, {
-            type: 'SetSelectedStepAction',
-            selectedStep: step
-          })
-        ).toEqual({
-          ...state,
-          selectedStep: step,
-          selectedBlock: step,
-          active: undefined
-        })
-      })
-    })
-
-    describe('SetactiveCanvasDetailsDrawerAction', () => {
+    describe('SetActiveCanvasDetailsDrawerAction', () => {
       it('should set selected component', () => {
         const block: TreeBlock = {
           id: 'step0.id',
@@ -77,6 +45,71 @@ describe('EditorContext', () => {
           ...state,
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
           selectedBlock: undefined
+        })
+      })
+    })
+
+    describe('SetActiveContentAction - SetJourneyEditContentComponentAction', () => {
+      it('should set journey edit content component', () => {
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetActiveContentAction',
+            activeContent: ActiveContent.Canvas
+          })
+        ).toEqual({
+          ...state,
+          activeContent: ActiveContent.Canvas
+        })
+      })
+    })
+
+    describe('SetActiveFabAction', () => {
+      it('should set active fab', () => {
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetActiveFabAction',
+            activeFab: ActiveFab.Save
+          })
+        ).toEqual({
+          ...state,
+          activeFab: ActiveFab.Save
+        })
+      })
+    })
+
+    describe('SetActiveSlideAction', () => {})
+
+    describe('SetSelectedAttributeIdAction', () => {
+      it('should set selected attribute id', () => {
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetSelectedAttributeIdAction',
+            selectedAttributeId: 'testId'
+          })
+        ).toEqual({
+          ...state,
+          selectedAttributeId: 'testId'
         })
       })
     })
@@ -212,31 +245,21 @@ describe('EditorContext', () => {
       })
     })
 
-    describe('SetSelectedAttributeIdAction', () => {
-      it('should set selected attribute id', () => {
-        const state: EditorState = {
-          steps: [],
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
-          activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
-        }
-        expect(
-          reducer(state, {
-            type: 'SetSelectedAttributeIdAction',
-            selectedAttributeId: 'testId'
-          })
-        ).toEqual({
-          ...state,
-          selectedAttributeId: 'testId'
-        })
-      })
-    })
+    describe('SetSelectedGoalUrlAction', () => {})
 
-    describe('SetActiveFabAction', () => {
-      it('should set active fab', () => {
+    describe('SetSelectedStepAction', () => {
+      it('should set selected step', () => {
+        const step: TreeBlock = {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children: []
+        }
         const state: EditorState = {
-          steps: [],
+          steps: [step],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
@@ -244,12 +267,14 @@ describe('EditorContext', () => {
         }
         expect(
           reducer(state, {
-            type: 'SetActiveFabAction',
-            activeFab: ActiveFab.Save
+            type: 'SetSelectedStepAction',
+            selectedStep: step
           })
         ).toEqual({
           ...state,
-          activeFab: ActiveFab.Save
+          selectedStep: step,
+          selectedBlock: step,
+          active: undefined
         })
       })
     })
@@ -334,27 +359,6 @@ describe('EditorContext', () => {
           steps: [updatedStep],
           selectedBlock: updatedBlock,
           selectedStep: updatedStep
-        })
-      })
-    })
-
-    describe('SetJourneyEditContentComponentAction', () => {
-      it('should set journey edit content component', () => {
-        const state: EditorState = {
-          steps: [],
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
-          activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
-        }
-        expect(
-          reducer(state, {
-            type: 'SetActiveContentAction',
-            activeContent: ActiveContent.Canvas
-          })
-        ).toEqual({
-          ...state,
-          activeContent: ActiveContent.Canvas
         })
       })
     })
