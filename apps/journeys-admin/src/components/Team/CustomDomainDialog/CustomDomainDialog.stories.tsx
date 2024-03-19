@@ -73,7 +73,6 @@ const getCustomDomainMockVerifiedFalse: MockedResponse<GetCustomDomain> = {
           name: 'mockdomain.com',
           apexName: 'mockdomain.com',
           id: 'customDomainId',
-          teamId: 'teamId',
           verification: {
             __typename: 'CustomDomainVerification',
             verified: false,
@@ -113,7 +112,6 @@ const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
           name: 'mockdomain.com',
           apexName: 'mockdomain.com',
           id: 'customDomainId',
-          teamId: 'teamId',
           verification: {
             __typename: 'CustomDomainVerification',
             verified: true,
@@ -145,7 +143,6 @@ const getCustomDomainMockCName: MockedResponse<GetCustomDomain> = {
           name: 'tandem.mockdomain.com',
           apexName: 'mockdomain.com',
           id: 'customDomainId',
-          teamId: 'teamId',
           verification: {
             __typename: 'CustomDomainVerification',
             verified: true,
