@@ -49,7 +49,7 @@ describe('EditorContext', () => {
       })
     })
 
-    describe('SetActiveContentAction - SetJourneyEditContentComponentAction', () => {
+    describe('SetActiveContentAction', () => {
       it('should set journey edit content component', () => {
         const state: EditorState = {
           steps: [],
@@ -91,7 +91,46 @@ describe('EditorContext', () => {
       })
     })
 
-    describe('SetActiveSlideAction', () => {})
+    describe('SetActiveSlideAction', () => {
+      it('should set active slide and active content for JourneyFlow', () => {
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.Content,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetActiveSlideAction',
+            activeSlide: ActiveSlide.JourneyFlow
+          })
+        ).toEqual({
+          ...state,
+          activeContent: ActiveContent.Canvas,
+          activeSlide: ActiveSlide.JourneyFlow
+        })
+      })
+
+      it('should set active slide', () => {
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.Content,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetActiveSlideAction',
+            activeSlide: ActiveSlide.Content
+          })
+        ).toEqual({
+          ...state,
+          activeSlide: ActiveSlide.Content
+        })
+      })
+    })
 
     describe('SetSelectedAttributeIdAction', () => {
       it('should set selected attribute id', () => {
@@ -129,7 +168,7 @@ describe('EditorContext', () => {
           steps: [block],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Edit,
-          activeSlide: ActiveSlide.JourneyFlow,
+          activeSlide: ActiveSlide.Content,
           activeContent: ActiveContent.Canvas
         }
         expect(
@@ -245,7 +284,26 @@ describe('EditorContext', () => {
       })
     })
 
-    describe('SetSelectedGoalUrlAction', () => {})
+    describe('SetSelectedGoalUrlAction', () => {
+      it('should set selected goal url', () => {
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetSelectedGoalUrlAction',
+            selectedGoalUrl: 'testUrl'
+          })
+        ).toEqual({
+          ...state,
+          selectedGoalUrl: 'testUrl'
+        })
+      })
+    })
 
     describe('SetSelectedStepAction', () => {
       it('should set selected step', () => {
