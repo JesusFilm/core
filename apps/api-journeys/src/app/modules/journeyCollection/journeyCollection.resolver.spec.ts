@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
+import { CustomDomain } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
+import { JourneyCollection } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 import { CustomDomainService } from '../customDomain/customDomain.service'
@@ -156,6 +158,25 @@ describe('JourneyCollectionResolver', () => {
     })
   })
 
+  describe('customDomains', () => {
+    it('should return custom domains', async () => {
+      const teamId = 'teamId'
+      const customDomains = [{ id: 'cd', teamId } as unknown as CustomDomain]
+      const collection = { id: 'id', teamId: 'teamId', title: 'title' }
+
+      const findManySpy = jest.spyOn(prismaService.customDomain, 'findMany')
+      findManySpy.mockResolvedValue(customDomains)
+
+      const result = await resolver.customDomains(collection)
+
+      expect(result).toEqual([{ __typename: 'CustomDomain', id: 'cd' }])
+      expect(findManySpy).toHaveBeenCalledWith({
+        where: { journeyCollectionId: 'id' },
+        select: { id: true }
+      })
+    })
+  })
+
   describe('journeyCollectionDelete', () => {
     it('should delete a journey collection', async () => {
       const id = 'id'
@@ -176,6 +197,42 @@ describe('JourneyCollectionResolver', () => {
         include: { team: { include: { userTeams: true } } }
       })
       expect(deleteSpy).toHaveBeenCalledWith({ where: { id } })
+    })
+  })
+
+  describe('journeys', () => {
+    it('should return journeys', async () => {
+      const collection = { id: 'id', teamId: 'teamId', title: 'title' }
+      const findManySpy = jest.spyOn(
+        prismaService.journeyCollectionJourneys,
+        'findMany'
+      )
+      findManySpy.mockResolvedValue([])
+
+      const result = await resolver.journeys(collection)
+
+      expect(result).toEqual([])
+      expect(findManySpy).toHaveBeenCalledWith({
+        where: { journeyCollectionId: 'id' },
+        include: { journey: true }
+      })
+    })
+  })
+
+  it('should return empty array', async () => {
+    const collection = { id: 'id', teamId: 'teamId', title: 'title' }
+    const findManySpy = jest.spyOn(
+      prismaService.journeyCollectionJourneys,
+      'findMany'
+    )
+    findManySpy.mockResolvedValue([])
+
+    const result = await resolver.journeys(collection)
+
+    expect(result).toEqual([])
+    expect(findManySpy).toHaveBeenCalledWith({
+      where: { journeyCollectionId: 'id' },
+      include: { journey: true }
     })
   })
 })
