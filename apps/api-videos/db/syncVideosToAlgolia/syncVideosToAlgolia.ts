@@ -55,9 +55,8 @@ export async function syncVideosToAlgolia(): Promise<void> {
     const index = client.initIndex('video-variants')
     await index.saveObjects(transformedVideos).wait()
 
-    if (videoVariants.length === 15001) {
-      offset += 15000
-    } else nextPage = false
+    if (videoVariants.length === 15001) offset += 15000
+    else nextPage = false
   }
 
   console.log('synced videos to algolia')
