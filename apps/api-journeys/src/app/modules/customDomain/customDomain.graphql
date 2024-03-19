@@ -1,4 +1,4 @@
-type CustomDomain {
+type CustomDomain @key(fields: "id") {
   id: ID!
   team: Team!
   name: String!

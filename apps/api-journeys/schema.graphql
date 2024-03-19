@@ -1219,7 +1219,9 @@ input ChatButtonUpdateInput {
   platform: ChatPlatform
 }
 
-type CustomDomain {
+type CustomDomain
+  @key(fields: "id")
+{
   id: ID!
   team: Team!
   name: String!
@@ -2066,7 +2068,9 @@ input JourneyTemplateInput {
   template: Boolean
 }
 
-type JourneyCollection {
+type JourneyCollection
+  @key(fields: "id")
+{
   id: ID!
   team: Team!
   title: String
@@ -2577,4 +2581,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor
+union _Entity = CustomDomain | Journey | JourneyCollection | JourneyProfile | JourneyVisitor | Language | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor
