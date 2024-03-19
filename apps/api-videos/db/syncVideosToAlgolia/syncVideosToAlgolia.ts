@@ -34,7 +34,7 @@ export async function syncVideosToAlgolia(): Promise<void> {
         videoId: videoVariant.videoId,
         titles: videoVariant.video?.title.map((title) => title.value),
         description: (
-          videoVariant.video?.description as unknown as Array<Translation>
+          videoVariant.video?.description as unknown as Translation[]
         ).map((description) => description?.value),
         duration: videoVariant.duration,
         languageId: videoVariant.languageId,

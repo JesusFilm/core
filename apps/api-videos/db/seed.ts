@@ -20,6 +20,7 @@ import {
   updateChildIds,
   updateParentChild
 } from '../src/libs/postgresql/postgresql'
+
 import { syncVideosToAlgolia } from './syncVideosToAlgolia'
 
 const prisma = new PrismaClient()
