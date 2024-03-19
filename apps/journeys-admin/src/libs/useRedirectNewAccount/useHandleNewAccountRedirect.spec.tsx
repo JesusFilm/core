@@ -41,12 +41,12 @@ describe('HandleNewAccountRedirect', () => {
     })
   })
 
-  it('should append newAccount to redirect', () => {
+  it('should append newAccount to url', () => {
     mockUseRouter.mockReturnValue({
       push,
       pathname: '/users/sign-in',
       query: {
-        redirect: 'http://localhost:4200/?createNew=true'
+        redirect: null
       },
       asPath: '/users/sign-in'
     } as unknown as NextRouter)
@@ -55,7 +55,7 @@ describe('HandleNewAccountRedirect', () => {
     expect(push).toHaveBeenCalledWith({
       pathname: '/users/sign-in',
       query: {
-        redirect: 'http://localhost:4200/?createNew=true&newAccount=true'
+        redirect: 'http://localhost:4200?newAccount=true'
       }
     })
   })

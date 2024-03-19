@@ -18,7 +18,6 @@ export function useHandleNewAccountRedirect(): void {
           containsCreateNew ? '&newAccount=true' : ''
         }`
       } else {
-        console.log('window location origin ran')
         updatedRedirectUrl = `${window.location.origin}?newAccount=true`
       }
     }
