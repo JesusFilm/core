@@ -63,7 +63,6 @@ export function Fab({ variant }: FabProps): ReactElement {
         selectedBlock: selectedStep
       })
       if (!smUp) {
-        console.log('HERE')
         dispatch({
           type: 'SetActiveSlideAction',
           activeSlide: ActiveSlide.Content

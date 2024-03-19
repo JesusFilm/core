@@ -1,5 +1,5 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -15,7 +15,6 @@ import {
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { TestEditorState } from '../../../libs/TestEditorState'
-import '../../../../test/i18n'
 
 import { Fab } from '.'
 
@@ -67,25 +66,27 @@ describe('Fab', () => {
         selectedStep
       }
 
-      const { getByRole } = render(
+      render(
         <EditorProvider initialState={disabledState}>
           <Fab variant="canvas" />
         </EditorProvider>
       )
 
-      expect(getByRole('button', { name: 'Add Block' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Add Block' })).toBeDisabled()
     })
 
     it('should handle add', () => {
-      const { getByRole, getByText } = render(
+      render(
         <EditorProvider initialState={state}>
           <TestEditorState />
           <Fab variant="canvas" />
         </EditorProvider>
       )
-      expect(getByText('activeFab: Add')).toBeInTheDocument()
-      fireEvent.click(getByRole('button', { name: 'Add Block' }))
-      expect(getByText('activeCanvasDetailsDrawer: 2')).toBeInTheDocument()
+      expect(screen.getByText('activeFab: Add')).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Add Block' }))
+      expect(
+        screen.getByText('activeCanvasDetailsDrawer: 2')
+      ).toBeInTheDocument()
     })
 
     it('should handle add block', () => {
@@ -94,7 +95,7 @@ describe('Fab', () => {
         __typename: 'StepBlock',
         children: []
       } as unknown as TreeBlock<StepBlock>
-      const { getByRole, getByText } = render(
+      render(
         <EditorProvider
           initialState={{
             ...state,
@@ -107,11 +108,13 @@ describe('Fab', () => {
           <Fab variant="canvas" />
         </EditorProvider>
       )
-      expect(getByText('activeFab: Add')).toBeInTheDocument()
-      fireEvent.click(getByRole('button', { name: 'Add Block' }))
-      expect(getByText('activeSlide: 1')).toBeInTheDocument()
-      expect(getByText('activeCanvasDetailsDrawer: 2')).toBeInTheDocument()
-      expect(getByText('selectedBlock: step1.id')).toBeInTheDocument()
+      expect(screen.getByText('activeFab: Add')).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Add Block' }))
+      expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+      expect(
+        screen.getByText('activeCanvasDetailsDrawer: 2')
+      ).toBeInTheDocument()
+      expect(screen.getByText('selectedBlock: step1.id')).toBeInTheDocument()
     })
 
     it('should handle edit block', () => {
@@ -120,7 +123,7 @@ describe('Fab', () => {
         __typename: 'StepBlock',
         children: []
       } as unknown as TreeBlock<StepBlock>
-      const { getByText, getByTestId } = render(
+      render(
         <EditorProvider
           initialState={{
             ...state,
@@ -133,20 +136,20 @@ describe('Fab', () => {
           <Fab variant="canvas" />
         </EditorProvider>
       )
-      expect(getByText('activeSlide: 0')).toBeInTheDocument()
-      expect(getByText('activeFab: Edit')).toBeInTheDocument()
+      expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+      expect(screen.getByText('activeFab: Edit')).toBeInTheDocument()
 
-      fireEvent.click(getByTestId('Fab'))
-      expect(getByText('selectedBlock: step1.id')).toBeInTheDocument()
-      expect(getByText('activeFab: Add')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('Fab'))
+      expect(screen.getByText('selectedBlock: step1.id')).toBeInTheDocument()
+      expect(screen.getByText('activeFab: Add')).toBeInTheDocument()
       expect(
-        getByText('selectedAttributeId: step1.id-next-block')
+        screen.getByText('selectedAttributeId: step1.id-next-block')
       ).toBeInTheDocument()
-      expect(getByText('activeSlide: 1')).toBeInTheDocument()
+      expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     })
 
     it('should handle edit social', () => {
-      const { getByText, getByRole } = render(
+      render(
         <EditorProvider
           initialState={{
             ...state,
@@ -160,12 +163,12 @@ describe('Fab', () => {
         </EditorProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'Edit' }))
-      expect(getByText('activeSlide: 1')).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+      expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     })
 
     it('should update Fab text on edit', () => {
-      const { getByTestId, getByText } = render(
+      render(
         <EditorProvider
           initialState={{
             ...state,
@@ -176,17 +179,17 @@ describe('Fab', () => {
           <Fab variant="canvas" />
         </EditorProvider>
       )
-      const fab = getByTestId('Fab')
+      const fab = screen.getByTestId('Fab')
       expect(fab).toHaveTextContent('Edit')
-      expect(getByText('activeFab: Edit')).toBeInTheDocument()
+      expect(screen.getByText('activeFab: Edit')).toBeInTheDocument()
 
       fireEvent.click(fab)
       expect(fab).toHaveTextContent('Done')
-      expect(getByText('activeFab: Save')).toBeInTheDocument()
+      expect(screen.getByText('activeFab: Save')).toBeInTheDocument()
     })
 
     it('should handle save', () => {
-      const { getByText, getByRole } = render(
+      render(
         <EditorProvider
           initialState={{
             ...state,
@@ -197,18 +200,18 @@ describe('Fab', () => {
           <Fab variant="canvas" />
         </EditorProvider>
       )
-      fireEvent.click(getByRole('button', { name: 'Done' }))
-      expect(getByText('activeFab: Edit')).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Done' }))
+      expect(screen.getByText('activeFab: Edit')).toBeInTheDocument()
     })
 
     it('should set active content if nullish', () => {
-      const { getByText } = render(
+      render(
         <EditorProvider initialState={{ ...state, activeContent: undefined }}>
           <TestEditorState />
           <Fab variant="canvas" />
         </EditorProvider>
       )
-      expect(getByText('activeContent: canvas')).toBeInTheDocument()
+      expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
     })
   })
 
@@ -218,7 +221,7 @@ describe('Fab', () => {
     )
 
     it('should update Fab on edit', () => {
-      const { getByTestId, getByText } = render(
+      render(
         <EditorProvider
           initialState={{
             ...state,
@@ -229,33 +232,33 @@ describe('Fab', () => {
           <Fab variant="mobile" />
         </EditorProvider>
       )
-      const fab = getByTestId('Fab')
+      const fab = screen.getByTestId('Fab')
       expect(fab).not.toHaveTextContent('Edit')
-      expect(getByTestId('Edit2Icon')).toBeInTheDocument()
-      expect(getByText('activeFab: Edit')).toBeInTheDocument()
+      expect(screen.getByTestId('Edit2Icon')).toBeInTheDocument()
+      expect(screen.getByText('activeFab: Edit')).toBeInTheDocument()
 
       fireEvent.click(fab)
       expect(fab).not.toHaveTextContent('Done')
-      expect(getByTestId('CheckContainedIcon')).toBeInTheDocument()
-      expect(getByText('activeFab: Save')).toBeInTheDocument()
+      expect(screen.getByTestId('CheckContainedIcon')).toBeInTheDocument()
+      expect(screen.getByText('activeFab: Save')).toBeInTheDocument()
     })
 
     it('should handle add', async () => {
-      const { getByText, getByTestId } = render(
+      render(
         <EditorProvider initialState={state}>
           <TestEditorState />
           <Fab variant="mobile" />
         </EditorProvider>
       )
-      expect(getByText('activeSlide: 1')).toBeInTheDocument()
-      expect(getByText('activeFab: Add')).toBeInTheDocument()
+      expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+      expect(screen.getByText('activeFab: Add')).toBeInTheDocument()
 
-      const fab = getByTestId('Fab')
+      const fab = screen.getByTestId('Fab')
       fireEvent.click(fab)
       await waitFor(() => {
         expect(fab).not.toBeVisible()
       })
-      expect(getByText('activeSlide: 2')).toBeInTheDocument()
+      expect(screen.getByText('activeSlide: 2')).toBeInTheDocument()
     })
   })
 })
