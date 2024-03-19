@@ -1,14 +1,18 @@
 import type { TreeBlock } from '../block'
+import { ReactNode, useContext } from 'react'
 
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
   ActiveSlide,
-  EditorState,
-  reducer
-} from './EditorProvider'
+  EditorProvider,
+  EditorState
+} from '.'
+
+import { EditorContext, reducer } from './EditorProvider'
 
 import { ActiveFab } from '.'
+import { render, renderHook } from '@testing-library/react'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -418,6 +422,43 @@ describe('EditorContext', () => {
           selectedBlock: updatedBlock,
           selectedStep: updatedStep
         })
+      })
+    })
+  })
+
+  describe('EditorProvider', () => {
+    it('should set initial state', () => {
+      const block: TreeBlock = {
+        id: 'step0.id',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        children: []
+      }
+
+      const initialState = {
+        steps: [block],
+        selectedBlock: block,
+        selectedStep: block
+      }
+
+      const wrapper = ({ children }: { children: ReactNode }) => (
+        <EditorProvider initialState={initialState}>{children}</EditorProvider>
+      )
+      const { result } = renderHook(() => useContext(EditorContext), {
+        wrapper
+      })
+
+      expect(result.current.state).toEqual({
+        steps: [block],
+        selectedStep: block,
+        selectedBlock: block,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+        activeFab: ActiveFab.Add,
+        activeSlide: ActiveSlide.Content,
+        activeContent: ActiveContent.Canvas
       })
     })
   })
