@@ -52,12 +52,10 @@ export class CustomDomainService {
       }
     )
     const json = await response.json()
-    if (json.error?.message != null) {
-      void this.deleteVercelDomain(name)
+    if (json.error?.message != null)
       throw new GraphQLError(json.error.message, {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })
-    }
 
     return await response.json()
   }
