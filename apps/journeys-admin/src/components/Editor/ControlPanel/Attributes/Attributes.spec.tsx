@@ -15,15 +15,6 @@ import {
 
 import { Attributes } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('Attributes', () => {
   const card: TreeBlock<CardBlock> = {
     id: 'card0.id',

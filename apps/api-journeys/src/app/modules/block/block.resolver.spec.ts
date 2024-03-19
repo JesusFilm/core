@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import {
+  Block,
+  Journey,
+  Prisma,
+  UserTeamRole
+} from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
@@ -17,8 +22,14 @@ describe('BlockResolver', () => {
     ability: AppAbility
 
   const journey = {
-    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+    id: '2'
   } as unknown as Journey
+
+  const journeyWithUserTeam = {
+    ...journey,
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  }
+
   const block: Block = {
     id: 'blockId',
     journeyId: '2',
@@ -35,7 +46,7 @@ describe('BlockResolver', () => {
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
-    journey
+    journey: journeyWithUserTeam
   }
   const blockService = {
     provide: BlockService,
@@ -190,6 +201,59 @@ describe('BlockResolver', () => {
       await expect(resolver.block(ability, 'blockId')).rejects.toThrow(
         'user is not allowed to read block'
       )
+    })
+  })
+
+  describe('blocks', () => {
+    const accessibleBlocks: Prisma.BlockWhereInput = { OR: [{}] }
+
+    it('returns blocks', async () => {
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      expect(await resolver.blocks(accessibleBlocks)).toEqual([block])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [accessibleBlocks, {}]
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+    })
+
+    it('should get filtered blocks', async () => {
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      expect(
+        await resolver.blocks(accessibleBlocks, {
+          journeyIds: ['journeyId'],
+          typenames: ['StepBlock']
+        })
+      ).toEqual([block])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            accessibleBlocks,
+            {
+              journeyId: { in: ['journeyId'] },
+              typename: { in: ['StepBlock'] }
+            }
+          ]
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
     })
   })
 })

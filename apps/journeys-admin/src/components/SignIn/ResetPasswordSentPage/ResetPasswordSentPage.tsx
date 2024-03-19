@@ -1,8 +1,8 @@
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { PageProps } from '../types'
 
@@ -10,7 +10,7 @@ export function ResetPasswordSentPage({
   userEmail,
   setActivePage
 }: PageProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <Typography variant="h6" textAlign="left">

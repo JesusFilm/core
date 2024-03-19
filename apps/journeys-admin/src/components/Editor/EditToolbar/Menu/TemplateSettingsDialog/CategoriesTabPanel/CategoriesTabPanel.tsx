@@ -2,8 +2,8 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { GetTags_tags as Tags } from '../../../../../../../__generated__/GetTags'
 import { useTagsQuery } from '../../../../../../libs/useTagsQuery'
@@ -19,7 +19,7 @@ interface TagOptionsData {
 }
 
 export function CategoriesTabPanel(): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { parentTags, childTags } = useTagsQuery()
 

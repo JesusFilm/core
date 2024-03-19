@@ -6,9 +6,9 @@ import Tabs from '@mui/material/Tabs'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik } from 'formik'
 import omit from 'lodash/omit'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -42,7 +42,7 @@ export function TemplateSettingsDialog({
   onClose
 }: TemplateSettingsFormProp): ReactElement {
   const [tab, setTab] = useState(0)
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey } = useJourney()
   const [journeySettingsUpdate] = useJourneyUpdateMutation()

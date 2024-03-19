@@ -4,15 +4,6 @@ import { VisitorStatus } from '../../../../../__generated__/globalTypes'
 
 import { VisitorCardHeader } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('VisitorCardHeader', () => {
   it('should show header', () => {
     const props = {

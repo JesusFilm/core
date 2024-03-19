@@ -48,7 +48,7 @@ module.exports = {
 **It is very important that you include a namespace**. This namespace should be a dashed version of your project path. For example `apps/journeys` would become `apps-journeys` or `libs/journeys/ui` would become `libs-journeys-ui`.
 
 ```JSX
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 function Component() {
   const { t } = useTranslation('libs-journeys-ui') // must include namespace

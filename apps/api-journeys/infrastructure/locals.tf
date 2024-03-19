@@ -20,7 +20,10 @@ locals {
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
     "INTEROP_TOKEN",
-    "GATEWAY_URL"
+    "GATEWAY_URL",
+    "MAILCHIMP_AUDIENCE_ID",
+    "MAILCHIMP_MARKETING_API_KEY",
+    "MAILCHIMP_MARKETING_API_SERVER_PREFIX"
   ]
   service_config = {
     name           = "api-journeys"

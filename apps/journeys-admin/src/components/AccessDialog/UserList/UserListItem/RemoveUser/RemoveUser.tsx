@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import MinusCircleContainedIcon from '@core/shared/ui/icons/MinusCircleContained'
 

@@ -6,7 +6,7 @@ import type { TreeBlock } from '../block'
 import { JourneyFields } from '../JourneyProvider/__generated__/JourneyFields'
 
 export function getStepTheme(
-  block: TreeBlock<StepFields> | TreeBlock<CardFields>,
+  block?: TreeBlock<StepFields> | TreeBlock<CardFields>,
   journey?: Pick<JourneyFields, 'themeName' | 'themeMode'>
 ): { themeName: ThemeName; themeMode: ThemeMode } {
   const cardFromStep =

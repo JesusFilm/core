@@ -19,15 +19,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('@core/journeys/ui/EditorProvider', () => {
   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
   return {
@@ -125,7 +116,7 @@ describe('Step', () => {
           <Step {...step1} />
         </EditorProvider>
       )
-      expect(getByText('Step {{number}}')).toBeInTheDocument()
+      expect(getByText('Step 2')).toBeInTheDocument()
     })
 
     it('shows custom next step title', () => {

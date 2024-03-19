@@ -2,15 +2,21 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
 import { JourneyProfile } from '.prisma/api-journeys-client'
+import { User } from '@core/nest/common/firebaseClient'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import { JourneyProfileUpdateInput } from '../../__generated__/graphql'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { MailChimpService } from '../mailChimp/mailChimp.service'
 
 @Resolver('JourneyProfile')
 export class JourneyProfileResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly mailChimpService: MailChimpService
+  ) {}
 
   @Query()
   @UseGuards(AppCaslGuard)
@@ -25,18 +31,21 @@ export class JourneyProfileResolver {
   @Mutation()
   @UseGuards(AppCaslGuard)
   async journeyProfileCreate(
-    @CurrentUserId() userId: string
+    @CurrentUser() user: User
   ): Promise<JourneyProfile> {
-    const profile = await this.getJourneyProfile(userId)
+    const profile = await this.getJourneyProfile(user.id)
 
     // Create profile after accepting terms of service
     if (profile == null) {
-      return await this.prismaService.journeyProfile.create({
+      const createdProfile = await this.prismaService.journeyProfile.create({
         data: {
-          userId,
+          userId: user.id,
           acceptedTermsAt: new Date()
         }
       })
+
+      await this.mailChimpService.syncUser(user)
+      return createdProfile
     }
 
     return profile

@@ -4,15 +4,6 @@ import { GetJourneyVisitors_visitors_edges_node_events as Event } from '../../..
 
 import { VisitorCardDetails } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('VisitorCardDetails', () => {
   it('should show name', () => {
     const { getByText } = render(

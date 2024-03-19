@@ -1,10 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   act,
   cleanup,
   fireEvent,
   render,
-  waitFor
+  screen,
+  waitFor,
+  within
 } from '@testing-library/react'
 import fscreen from 'fscreen'
 import videojs from 'video.js'
@@ -15,6 +18,8 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 
 import { VideoControls } from './VideoControls'
+
+jest.mock('@mui/material/useMediaQuery', () => jest.fn().mockReturnValue(false))
 
 describe('VideoControls', () => {
   let player: Player
@@ -138,7 +143,7 @@ describe('VideoControls', () => {
     )
   })
 
-  it('mutes and unmutes the video on mute icon click', () => {
+  it('mutes and unmutes the video via control bar mute button', async () => {
     const muteStub = jest
       .spyOn(player, 'muted')
       .mockImplementationOnce(() => !(player.muted() ?? false))
@@ -149,12 +154,68 @@ describe('VideoControls', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'mute' }))
+    fireEvent.click(getByRole('button', { name: 'bar-mute-button' }))
     expect(muteStub).toHaveBeenCalled()
     expect(muteStub).toHaveReturnedWith(true)
-    fireEvent.click(getByRole('button', { name: 'mute' }))
+    fireEvent.click(getByRole('button', { name: 'bar-unmute-button' }))
     expect(muteStub).toHaveBeenCalled()
     expect(muteStub).toHaveReturnedWith(false)
+  })
+
+  it('should show unmute when playing muted videos for mobile', async () => {
+    const playStub = jest
+      .spyOn(player, 'play')
+      .mockImplementationOnce(async () => {
+        void jest.fn()
+      })
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <VideoControls player={player} startAt={0} endAt={10} muted />
+      </MockedProvider>
+    )
+
+    expect(
+      getByRole('button', { name: 'center-play-button' })
+    ).toBeInTheDocument()
+
+    fireEvent.click(getByRole('region', { name: 'video-controls' }))
+    await waitFor(() => expect(playStub).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'center-unmute-button' })
+      ).toBeInTheDocument()
+    )
+  })
+
+  it('should show pause after unmuting via region click', async () => {
+    ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(true)
+    jest.spyOn(player, 'on').mockImplementation((type, fn) => {
+      if (type === 'play') fn()
+    })
+
+    const muteStub = jest
+      .spyOn(player, 'muted')
+      .mockImplementationOnce(() => !(player.muted() ?? false))
+
+    render(
+      <MockedProvider>
+        <VideoControls player={player} startAt={0} endAt={10} muted />
+      </MockedProvider>
+    )
+
+    expect(
+      screen.getByRole('button', { name: 'center-unmute-button' })
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('region', { name: 'video-controls' }))
+
+    await waitFor(() => expect(muteStub).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'center-pause-button' })
+      ).toBeInTheDocument()
+    )
   })
 
   describe('fullscreen video', () => {
@@ -205,13 +266,17 @@ describe('VideoControls', () => {
         .spyOn(player, 'requestFullscreen')
         .mockImplementationOnce(async () => player)
 
-      const { getByRole } = render(
+      render(
         <MockedProvider>
           <VideoControls player={player} startAt={0} endAt={10} />
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'fullscreen' }))
+      fireEvent.click(
+        within(screen.getByTestId('desktop-controls')).getByRole('button', {
+          name: 'fullscreen'
+        })
+      )
       expect(fullscreenStub).toHaveBeenCalled()
     })
 
@@ -222,13 +287,17 @@ describe('VideoControls', () => {
         .spyOn(player, 'exitFullscreen')
         .mockImplementationOnce(async () => player)
 
-      const { getByRole } = render(
+      render(
         <MockedProvider>
           <VideoControls player={player} startAt={0} endAt={10} />
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'fullscreen' }))
+      fireEvent.click(
+        within(screen.getByTestId('desktop-controls')).getByRole('button', {
+          name: 'fullscreen'
+        })
+      )
       expect(fullscreenStub).toHaveBeenCalled()
     })
   })
@@ -244,9 +313,9 @@ describe('VideoControls', () => {
     })
 
     it('maximises the entire card on fullscreen icon click', async () => {
-      const { getByRole } = render(
+      render(
         <MockedProvider>
-          <div className="step swiper-slide-active">
+          <div className="step active-card">
             <div className="card MuiPaper-root">
               <VideoControls player={player} startAt={0} endAt={10} />
             </div>
@@ -254,7 +323,12 @@ describe('VideoControls', () => {
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'fullscreen' }))
+      fireEvent.click(
+        within(screen.getByTestId('desktop-controls')).getByRole('button', {
+          name: 'fullscreen'
+        })
+      )
+
       await waitFor(() => expect(fscreen.requestFullscreen).toHaveBeenCalled())
     })
 
@@ -266,13 +340,17 @@ describe('VideoControls', () => {
         // @ts-expect-error: jest mock type conflicts with fscreen type
         .mockImplementation(() => jest.fn())
 
-      const { getByRole } = render(
+      render(
         <MockedProvider>
           <VideoControls player={player} startAt={0} endAt={10} />
         </MockedProvider>
       )
 
-      fireEvent.click(getByRole('button', { name: 'fullscreen' }))
+      fireEvent.click(
+        within(screen.getByTestId('desktop-controls')).getByRole('button', {
+          name: 'fullscreen'
+        })
+      )
       await waitFor(() => expect(exitMock).toHaveBeenCalled())
     })
 
