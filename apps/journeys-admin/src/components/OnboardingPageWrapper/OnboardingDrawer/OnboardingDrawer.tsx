@@ -25,11 +25,9 @@ export function OnboardingDrawer(): ReactElement {
     if (url == null) return
 
     const redirect = decodeURIComponent(url)
-    const pathnameParts = redirect?.split('/')
-    if (redirect?.includes('templates') && pathnameParts != null) {
-      const idIndex = pathnameParts.indexOf('templates') + 1
-      const id = pathnameParts[idIndex]
-      return id.split('?')[0]
+    const match = redirect.match(/\/templates\/([^/?]+)/)
+    if (match != null) {
+      return match[1]
     }
   }
 
