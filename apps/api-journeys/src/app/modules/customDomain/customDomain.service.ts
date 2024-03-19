@@ -36,15 +36,18 @@ export class CustomDomainService {
         verification: []
       }
 
-    const body = new FormData()
-    body.append('name', name)
-    body.append('gitBranch', process.env.GIT_BRANCH)
+    const body = {
+      name,
+      gitBranch: process.env.GIT_BRANCH
+    }
+
     const response = await fetch(
       `https://api.vercel.com/v10/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains?teamId=${process.env.VERCEL_TEAM_ID}`,
       {
-        body,
+        body: JSON.stringify(body),
         headers: {
-          Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
+          Authorization: `Bearer ${process.env.VERCEL_TOKEN}`,
+          'Content-Type': 'application/json'
         },
         method: 'POST'
       }
