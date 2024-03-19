@@ -2,12 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockFields_VideoBlock as VideoBlock } from '../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 
 import { Toolbar } from '.'
 
@@ -18,30 +16,16 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('Toolbar', () => {
   it('should render Toolbar', () => {
-    const { getAllByRole, getByTestId } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <Toolbar />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(
-      getAllByRole('button', { name: 'Delete Block Actions' })[0]
-    ).toContainElement(getByTestId('Trash2Icon'))
-    expect(
-      getAllByRole('button', { name: 'Edit Journey Actions' })[0]
-    ).toContainElement(getByTestId('MoreIcon'))
-  })
-
-  it('should render analytics button', () => {
-    const { getByLabelText } = render(
+    const { getByTestId, getByAltText, getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
             value={{
               journey: {
-                slug: 'untitled-journey',
-                tags: []
+                title: 'My Awesome Journey Title',
+                description: 'My Awesome Journey Description',
+                primaryImageBlock: null,
+                status: JourneyStatus.draft
               } as unknown as Journey,
               variant: 'admin'
             }}
@@ -51,18 +35,36 @@ describe('Toolbar', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByLabelText('Analytics')).toBeInTheDocument()
+    expect(getByAltText('Next Steps')).toBeInTheDocument() // NextSteps logo
+    expect(getByTestId('ToolbarBackButton')).toHaveAttribute('href', '/')
+    expect(getByTestId('ThumbsUpIcon')).toBeInTheDocument()
+    expect(getByText('My Awesome Journey Title')).toBeInTheDocument()
+    expect(getByText('My Awesome Journey Description')).toBeInTheDocument()
+    expect(getByTestId('ItemsStack')).toBeInTheDocument()
+    expect(getByTestId('ToolbarMenuButton')).toBeInTheDocument()
   })
 
-  it('should render Preview Button', () => {
-    const { getAllByRole, getAllByTestId } = render(
+  it('should render journey image', () => {
+    const { getByAltText, queryByTestId } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
             value={{
               journey: {
-                slug: 'untitled-journey',
-                tags: []
+                title: 'My Awesome Journey Title',
+                description: 'My Awesome Journey Description',
+                primaryImageBlock: {
+                  id: 'image1.id',
+                  __typename: 'ImageBlock',
+                  parentBlockId: null,
+                  parentOrder: 0,
+                  src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+                  alt: 'random image from unsplash',
+                  width: 1920,
+                  height: 1080,
+                  blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+                },
+                status: JourneyStatus.draft
               } as unknown as Journey,
               variant: 'admin'
             }}
@@ -72,70 +74,8 @@ describe('Toolbar', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    const button = getAllByRole('link', { name: 'Preview' })[0]
-    expect(button).toContainElement(getAllByTestId('EyeOpenIcon')[0])
-    expect(button).toHaveAttribute('href', '/api/preview?slug=untitled-journey')
-    expect(button).toHaveAttribute('target', '_blank')
-    expect(button).not.toBeDisabled()
-  })
 
-  it('should disable duplicate button when active journey content is not canvas', () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                slug: 'untitled-journey',
-                tags: []
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider
-              initialState={{
-                activeContent: ActiveContent.Goals
-              }}
-            >
-              <Toolbar />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(
-      getByRole('button', { name: 'Duplicate Block Actions' })
-    ).toBeDisabled()
-  })
-
-  it('should disable duplicate button when selectedBlock is a video block', () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                slug: 'untitled-journey',
-                tags: []
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider
-              initialState={{
-                selectedBlock: {
-                  __typename: 'VideoBlock'
-                } as unknown as TreeBlock<VideoBlock>
-              }}
-            >
-              <Toolbar />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(
-      getByRole('button', { name: 'Duplicate Block Actions' })
-    ).toBeDisabled()
+    expect(getByAltText('random image from unsplash')).toBeInTheDocument()
+    expect(queryByTestId('ThumbsUpIcon')).not.toBeInTheDocument()
   })
 })
