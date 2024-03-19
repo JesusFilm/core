@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common'
 import { Role } from '.prisma/api-journeys-client'
 import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 
+import { blockAcl } from '../../../modules/block/block.acl'
 import { hostAcl } from '../../../modules/host/host.acl'
 import { journeyAcl } from '../../../modules/journey/journey.acl'
 import { journeyVisitorAcl } from '../../../modules/journeyVisitor/journeyVisitor.acl'
@@ -47,6 +48,7 @@ export class AppCaslFactory extends CaslFactory<Role> {
       createPrismaAbility
     )
     const acls = [
+      blockAcl,
       hostAcl,
       journeyAcl,
       journeyVisitorAcl,

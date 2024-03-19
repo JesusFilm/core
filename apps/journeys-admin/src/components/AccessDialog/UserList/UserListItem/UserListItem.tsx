@@ -7,6 +7,7 @@ import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import compact from 'lodash/compact'
+import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -41,6 +42,7 @@ export function UserListItem({
   currentUser,
   journeyId: journeyIdFromParent
 }: UserListItemProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
   const { id, role, displayName, email, imageUrl, journeyId } =
@@ -68,13 +70,13 @@ export function UserListItem({
   const menuLabel = useMemo((): string => {
     switch (role) {
       case UserJourneyRole.inviteRequested:
-        return 'Manage'
+        return t('Manage')
       case UserJourneyRole.owner:
-        return 'Owner'
+        return t('Owner')
       default:
-        return 'Editor'
+        return t('Editor')
     }
-  }, [role])
+  }, [role, t])
 
   const disableAction = useMemo((): boolean => {
     if (listItem.__typename === 'UserInvite') return false
@@ -123,7 +125,7 @@ export function UserListItem({
               typography: 'body2'
             }}
           >
-            {isInvite ? 'Pending' : menuLabel}
+            {isInvite ? t('Pending') : menuLabel}
           </Button>
         }
         data-testid="UserListItem"

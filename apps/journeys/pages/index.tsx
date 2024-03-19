@@ -10,10 +10,10 @@ import Typography from '@mui/material/Typography'
 import { GetStaticProps } from 'next'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
@@ -33,7 +33,7 @@ interface JourneysPageProps {
 const StyledIframe = styled('iframe')(({ theme }) => ({}))
 
 function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
-  const { t } = useTranslation('journeys')
+  const { t } = useTranslation('apps-journeys')
 
   return (
     <>
@@ -72,10 +72,9 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
                           <StyledIframe
                             src={`/embed/${slug}`}
                             sx={{
-                              width: 'calc(100% + 64px)',
-                              height: 664,
-                              border: 'none',
-                              margin: '-32px'
+                              width: '100%',
+                              height: 600,
+                              border: 'none'
                             }}
                           />
                         </Fade>

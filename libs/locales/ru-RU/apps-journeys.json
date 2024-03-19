@@ -1,0 +1,13 @@
+{
+  "404": "404",
+  "500": "500",
+  "%s | Next Steps": "%s | ",
+  "Next Steps": "Следующие шаги",
+  "This Journey is not available.": "Это путешествие недоступно.",
+  "Oops! Something went wrong.": "Упс! Что-то пошло не так.",
+  "<0>This page has been created to test the embed code.<1>If youve found this page in error click the button below.</1></0>": "<0>Эта страница была создана для проверки кода встраивания<1>.Если ты нашел эту страницу с ошибкой, нажми на кнопку ниже</1>.</0>",
+  "Get me out of here!": "Вытащи меня отсюда!",
+  "Terms & Conditions": "Правила и условия",
+  "Privacy Policy": "Политика конфиденциальности",
+  "NextSteps © {{year}}": "NextSteps © {{year}}"
+}

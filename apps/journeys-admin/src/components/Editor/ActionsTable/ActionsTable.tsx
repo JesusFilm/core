@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import {
   GoalType,
@@ -25,7 +25,7 @@ export interface Actions {
 }
 
 export function ActionsTable({ hasAction }: ActionsTableProps): ReactElement {
-  const { t } = useTranslation('journeys-admin')
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
   function countUrls(journey: Journey | undefined): Actions[] {

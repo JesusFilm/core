@@ -9,6 +9,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useFormik } from 'formik'
 import noop from 'lodash/noop'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import TimeField from 'react-simple-timefield'
@@ -44,6 +45,7 @@ export function VideoBlockEditorSettings({
   posterBlock,
   onChange
 }: VideoBlockEditorSettingsProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { values, errors, handleChange, setFieldValue } = useFormik({
     initialValues: {
@@ -58,8 +60,9 @@ export function VideoBlockEditorSettings({
       const convertedStartAt = timeFormatToSeconds(values.startAt)
       const convertedEndAt = timeFormatToSeconds(values.endAt)
       if (convertedStartAt > convertedEndAt - 3) {
-        errors.startAt =
+        errors.startAt = t(
           'Start time has to be at least 3 seconds less than end time'
+        )
         enqueueSnackbar(errors.startAt, {
           variant: 'error',
           preventDuplicate: true
@@ -68,9 +71,10 @@ export function VideoBlockEditorSettings({
         selectedBlock?.duration != null &&
         convertedStartAt > selectedBlock?.duration - 3
       ) {
-        errors.startAt = `Start time has to be at least 3 seconds less than video duration ${secondsToTimeFormat(
-          selectedBlock?.duration
-        )}`
+        errors.startAt = t(
+          'Start time has to be at least 3 seconds less than video duration {{ time }}',
+          { time: secondsToTimeFormat(selectedBlock?.duration) }
+        )
         enqueueSnackbar(errors.startAt, {
           variant: 'error',
           preventDuplicate: true
@@ -79,9 +83,10 @@ export function VideoBlockEditorSettings({
         selectedBlock?.duration != null &&
         convertedEndAt > selectedBlock?.duration
       ) {
-        errors.endAt = `End time has to be no more than video duration ${secondsToTimeFormat(
-          selectedBlock?.duration
-        )}`
+        errors.endAt = t(
+          'End time has to be no more than video duration {{ time }}',
+          { time: secondsToTimeFormat(selectedBlock?.duration) }
+        )
         enqueueSnackbar(errors.endAt, {
           variant: 'error',
           preventDuplicate: true
@@ -111,7 +116,7 @@ export function VideoBlockEditorSettings({
                   : undefined
             }}
           >
-            Timing
+            {t('Timing')}
           </Typography>
           <Stack direction="row" justifyContent="space-around" spacing={3}>
             <TimeField
@@ -121,7 +126,7 @@ export function VideoBlockEditorSettings({
               style={{ width: '100%' }}
               input={
                 <TextField
-                  label="Starts At"
+                  label={t('Starts At')}
                   name="startAt"
                   value={values.startAt}
                   variant="filled"
@@ -143,7 +148,7 @@ export function VideoBlockEditorSettings({
               style={{ width: '100%' }}
               input={
                 <TextField
-                  label="Ends At"
+                  label={t('Ends At')}
                   name="endAt"
                   value={values.endAt}
                   variant="filled"
@@ -173,11 +178,11 @@ export function VideoBlockEditorSettings({
                     : undefined
               }}
             >
-              Aspect ratio
+              {t('Aspect ratio')}
             </Typography>
             {selectedBlock?.source === VideoBlockSource.youTube && (
               <Typography variant="caption" color="action.disabled">
-                This option is not available for YouTube videos
+                {t('This option is not available for YouTube videos')}
               </Typography>
             )}
           </Stack>
@@ -203,7 +208,7 @@ export function VideoBlockEditorSettings({
               }}
               value={ObjectFit.fill}
             >
-              Fill
+              {t('Fill')}
             </ToggleButton>
             <ToggleButton
               sx={{
@@ -213,7 +218,7 @@ export function VideoBlockEditorSettings({
               }}
               value={ObjectFit.fit}
             >
-              Fit
+              {t('Fit')}
             </ToggleButton>
             <ToggleButton
               sx={{
@@ -223,7 +228,7 @@ export function VideoBlockEditorSettings({
               }}
               value={ObjectFit.zoomed}
             >
-              Crop
+              {t('Crop')}
             </ToggleButton>
           </ToggleButtonGroup>
         </Stack>
@@ -239,7 +244,7 @@ export function VideoBlockEditorSettings({
                       : undefined
                 }}
               >
-                Autoplay
+                {t('Autoplay')}
               </Typography>
               <Typography
                 variant="caption"
@@ -250,7 +255,7 @@ export function VideoBlockEditorSettings({
                       : undefined
                 }}
               >
-                Start video automatically when card appears
+                {t('Start video automatically when card appears')}
               </Typography>
             </Stack>
             <Switch
@@ -277,7 +282,7 @@ export function VideoBlockEditorSettings({
                       : undefined
                 }}
               >
-                Muted
+                {t('Muted')}
               </Typography>
               <Typography
                 variant="caption"
@@ -288,7 +293,7 @@ export function VideoBlockEditorSettings({
                       : undefined
                 }}
               >
-                Video always muted on the first card
+                {t('Video always muted on the first card')}
               </Typography>
             </Stack>
             <Switch

@@ -21,13 +21,15 @@ export class SegmindService {
     userId: string
   ): Promise<CloudflareImage | undefined> {
     const body = new FormData()
-    let path: string
+    let path = 'sdxl1.0-txt2img' // defaulted to avoid error
     switch (model) {
       case SegmindModel.sdxl1__0_txt2img:
         path = 'sdxl1.0-txt2img'
         body.append('num_inference_steps', 20)
         body.append('samples', 1)
         body.append('scheduler', 'UniPC')
+        body.append('img_height', 1024)
+        body.append('img_width', 1024)
         break
     }
     body.append('prompt', prompt)

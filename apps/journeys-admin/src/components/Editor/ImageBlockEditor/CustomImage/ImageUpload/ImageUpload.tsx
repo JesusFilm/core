@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import type FormDataType from 'form-data'
+import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
@@ -91,6 +92,8 @@ export function ImageUpload({
   const uploadError = error === true || success === false
   const noBorder = uploadSuccess || uploadError || loading === true
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <Stack
       {...getRootProps({ isDragAccept })}
@@ -147,12 +150,12 @@ export function ImageUpload({
           sx={{ pb: 4 }}
         >
           {loading === true
-            ? 'Uploading...'
+            ? t('Uploading...')
             : uploadSuccess
-            ? 'Upload successful!'
+            ? t('Upload successful!')
             : uploadError
-            ? 'Upload Failed!'
-            : 'Drop an image here'}
+            ? t('Upload Failed!')
+            : t('Drop an image here')}
         </Typography>
       </Box>
       <Stack
@@ -168,8 +171,8 @@ export function ImageUpload({
         />
         <Typography variant="caption">
           {uploadError
-            ? 'Something went wrong, try again'
-            : 'Max file size: 10 MB'}
+            ? t('Something went wrong, try again')
+            : t('Max file size: 10 MB')}
         </Typography>
       </Stack>
       <Button
@@ -190,7 +193,7 @@ export function ImageUpload({
           fontSize={14}
           sx={{ color: 'secondary.main' }}
         >
-          Upload file
+          {t('Upload file')}
         </Typography>
       </Button>
     </Stack>

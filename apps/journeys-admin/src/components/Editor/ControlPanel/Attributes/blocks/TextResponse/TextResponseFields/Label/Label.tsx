@@ -3,8 +3,8 @@ import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
+import { useTranslation } from 'next-i18next'
 import { FocusEvent, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -72,7 +72,7 @@ export function Label(): ReactElement {
                 id="textResponseLabel"
                 name="textResponseLabel"
                 variant="filled"
-                label="Label"
+                label={t('Label')}
                 fullWidth
                 value={values.textResponseLabel}
                 placeholder={t('Your answer here')}
@@ -95,7 +95,7 @@ export function Label(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label="Label"
+          label={t('Label')}
           fullWidth
           disabled
           sx={{

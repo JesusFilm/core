@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -16,6 +17,7 @@ interface SourceFromCloudflareProps {
 export function SourceFromCloudflare({
   selectedBlock
 }: SourceFromCloudflareProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <Box>
@@ -51,7 +53,7 @@ export function SourceFromCloudflare({
             overflow: 'hidden'
           }}
         >
-          Custom Video &nbsp;
+          {t('Custom Video')}
         </Typography>
       </Box>
       <Edit2Icon color="primary" />

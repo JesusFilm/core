@@ -1,6 +1,7 @@
 import { NormalizedCacheObject } from '@apollo/client'
 import algoliasearch from 'algoliasearch'
 import { GetStaticProps } from 'next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch'
 
@@ -8,6 +9,7 @@ import {
   GetHomeVideos,
   GetHomeVideos_videos as Video
 } from '../__generated__/GetHomeVideos'
+import i18nConfig from '../next-i18next.config'
 import { Videos } from '../src/components/VideosPage'
 import {
   GET_LANGUAGES,
@@ -59,7 +61,9 @@ const videoIds = [
   'LUMOCollection'
 ]
 
-export const getStaticProps: GetStaticProps<VideosPageProps> = async () => {
+export const getStaticProps: GetStaticProps<VideosPageProps> = async ({
+  locale
+}) => {
   const apolloClient = createApolloClient()
 
   const { data } = await apolloClient.query<GetHomeVideos>({
@@ -96,7 +100,12 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async () => {
     revalidate: 3600,
     props: {
       initialApolloState: apolloClient.cache.extract(),
-      videos
+      videos,
+      ...(await serverSideTranslations(
+        locale ?? 'en',
+        ['apps-watch'],
+        i18nConfig
+      ))
     }
   }
 }

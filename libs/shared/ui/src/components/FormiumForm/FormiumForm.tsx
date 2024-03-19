@@ -8,6 +8,7 @@ import { Form } from '@formium/types'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { FormikValues } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { Checkbox } from './formComponents/Checkbox'
@@ -68,6 +69,8 @@ export function FormiumForm({
     onSubmit?.()
   }
 
+  const { t } = useTranslation('libs-shared')
+
   return form != null && 'name' in form ? (
     <FormiumProvider {...props}>
       <Formium
@@ -86,7 +89,7 @@ export function FormiumForm({
       }}
     >
       <Typography variant="h6" color="error">
-        Error Loading Form
+        {t('Error Loading Form')}
       </Typography>
     </Box>
   )

@@ -2,6 +2,7 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -43,6 +44,7 @@ export const NAVIGATE_TO_JOURNEY_ACTION_UPDATE = gql`
 `
 
 export function NavigateToJourneyAction(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { state } = useEditor()
   const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
@@ -103,7 +105,7 @@ export function NavigateToJourneyAction(): ReactElement {
         IconComponent={ChevronDownIcon}
         inputProps={{ 'aria-label': 'journey' }}
       >
-        <MenuItem value="">Select the Journey...</MenuItem>
+        <MenuItem value="">{t('Select the Journey...')}</MenuItem>
         {data?.journeys?.map(({ title, id }) => (
           <MenuItem key={`button-navigate-journey-${id}`} value={id}>
             {title}

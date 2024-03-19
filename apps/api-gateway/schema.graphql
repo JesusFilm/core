@@ -36,6 +36,13 @@ interface Block
   parentOrder: Int
 }
 
+input BlocksFilter
+  @join__type(graph: JOURNEYS)
+{
+  journeyIds: [ID!]
+  typenames: [String!]
+}
+
 type Browser
   @join__type(graph: JOURNEYS)
 {
@@ -344,6 +351,12 @@ type CloudflareVideo
   userId: ID!
   createdAt: String!
   readyToStream: Boolean!
+}
+
+input CreateVerificationRequestInput
+  @join__type(graph: USERS)
+{
+  redirect: String
 }
 
 scalar DateTime
@@ -762,6 +775,22 @@ input JourneyProfileUpdateInput
   lastActiveTeamId: String
 }
 
+type JourneysEmailPreference
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
+  unsubscribeAll: Boolean!
+  accountNotifications: Boolean!
+}
+
+input JourneysEmailPreferenceUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
+  preference: String!
+  value: Boolean!
+}
+
 input JourneysFilter
   @join__type(graph: JOURNEYS)
 {
@@ -1049,6 +1078,12 @@ input LinkActionInput
   target: String
 }
 
+input MeInput
+  @join__type(graph: USERS)
+{
+  redirect: String
+}
+
 enum MessagePlatform
   @join__type(graph: JOURNEYS)
 {
@@ -1248,6 +1283,7 @@ type Mutation
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference @join__field(graph: JOURNEYS)
   teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
   teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
@@ -1289,6 +1325,8 @@ type Mutation
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
   userImpersonate(email: String!): String @join__field(graph: USERS)
+  createVerificationRequest(input: CreateVerificationRequestInput): Boolean @join__field(graph: USERS)
+  validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
 }
 
 """
@@ -1390,6 +1428,7 @@ type Query
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
+  blocks(where: BlocksFilter): [Block!]! @join__field(graph: JOURNEYS)
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
@@ -1430,6 +1469,7 @@ type Query
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
+  journeysEmailPreference(email: String!): JourneysEmailPreference @join__field(graph: JOURNEYS)
   teams: [Team!]! @join__field(graph: JOURNEYS)
   team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
@@ -1460,7 +1500,9 @@ type Query
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
   tags: [Tag!]! @join__field(graph: TAGS)
-  me: User @join__field(graph: USERS)
+  me(input: MeInput): User @join__field(graph: USERS)
+  user(id: ID!): User @join__field(graph: USERS)
+  userByEmail(email: String!): User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
 }
@@ -1673,6 +1715,18 @@ type StepBlock implements Block
   locked: Boolean!
   parentBlockId: ID
   parentOrder: Int
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 input StepBlockCreateInput
@@ -1682,6 +1736,18 @@ input StepBlockCreateInput
   journeyId: ID!
   nextBlockId: ID
   locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 input StepBlockUpdateInput
@@ -1689,6 +1755,18 @@ input StepBlockUpdateInput
 {
   nextBlockId: ID
   locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 type StepNextEvent implements Event
@@ -2148,6 +2226,7 @@ type User
   email: String! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   superAdmin: Boolean @join__field(graph: USERS)
+  emailVerified: Boolean! @join__field(graph: USERS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""

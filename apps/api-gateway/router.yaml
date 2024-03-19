@@ -15,6 +15,8 @@ headers:
           named: 'user-agent'
       - propagate:
           named: 'x-forwarded-for'
+      - propagate:
+          named: 'interop-token'
 health_check:
   listen: 0.0.0.0:8088
   enabled: true

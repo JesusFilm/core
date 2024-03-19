@@ -4,6 +4,7 @@ import CardActionArea from '@mui/material/CardActionArea'
 import Divider from '@mui/material/Divider'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import type {
   DraggableProvided,
@@ -72,6 +73,7 @@ export function CardList({
   isDraggable,
   showNavigationCards = false
 }: CardListProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { journeyEditContentComponent }
   } = useEditor()
@@ -128,7 +130,7 @@ export function CardList({
         <NavigationCard
           key="goals"
           id="goals"
-          title="Goals"
+          title={t('Goals')}
           destination={ActiveJourneyEditContent.Action}
           header={
             <Box
@@ -160,7 +162,7 @@ export function CardList({
         <NavigationCard
           key="social"
           id="social"
-          title="Social Media"
+          title={t('Social Media')}
           destination={ActiveJourneyEditContent.SocialPreview}
           header={
             journey?.primaryImageBlock?.src == null ? (

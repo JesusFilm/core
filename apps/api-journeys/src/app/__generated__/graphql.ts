@@ -255,6 +255,11 @@ export class EmailActionInput {
     email: string;
 }
 
+export class BlocksFilter {
+    journeyIds?: Nullable<string[]>;
+    typenames?: Nullable<string[]>;
+}
+
 export class ButtonBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -377,11 +382,15 @@ export class StepBlockCreateInput {
     journeyId: string;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
 }
 
 export class StepBlockUpdateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
 }
 
 export class TextResponseBlockCreateInput {
@@ -666,6 +675,12 @@ export class JourneyVisitorFilter {
     countryCode?: Nullable<string>;
 }
 
+export class JourneysEmailPreferenceUpdateInput {
+    email: string;
+    preference: string;
+    value: boolean;
+}
+
 export class TeamCreateInput {
     title: string;
     publicTitle?: Nullable<string>;
@@ -793,6 +808,8 @@ export class Journey {
 export abstract class IQuery {
     __typename?: 'IQuery';
 
+    abstract blocks(where?: Nullable<BlocksFilter>): Block[] | Promise<Block[]>;
+
     abstract block(id: string): Block | Promise<Block>;
 
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
@@ -812,6 +829,8 @@ export abstract class IQuery {
     abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
 
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
+
+    abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
 
     abstract teams(): Team[] | Promise<Team[]>;
 
@@ -971,6 +990,8 @@ export class StepBlock implements Block {
     locked: boolean;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
 }
 
 export class TextResponseBlock implements Block {
@@ -1275,6 +1296,13 @@ export class JourneyVisitorsConnection {
     pageInfo: PageInfo;
 }
 
+export class JourneysEmailPreference {
+    __typename?: 'JourneysEmailPreference';
+    email: string;
+    unsubscribeAll: boolean;
+    accountNotifications: boolean;
+}
+
 export class Team {
     __typename?: 'Team';
     id: string;
@@ -1530,6 +1558,8 @@ export abstract class IMutation {
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyProfileOnboardingFormComplete(): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 

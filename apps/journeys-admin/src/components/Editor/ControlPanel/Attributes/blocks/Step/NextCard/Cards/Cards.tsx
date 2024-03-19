@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -65,6 +66,8 @@ export function Cards(): ReactElement {
     })
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Box sx={{ pl: 6, pr: 4, pt: 4 }}>
@@ -72,7 +75,7 @@ export function Cards(): ReactElement {
           variant="subtitle2"
           sx={{ [theme.breakpoints.down('sm')]: { display: 'none' } }}
         >
-          Cards
+          {t('Cards')}
         </Typography>
       </Box>
       <CardPreview

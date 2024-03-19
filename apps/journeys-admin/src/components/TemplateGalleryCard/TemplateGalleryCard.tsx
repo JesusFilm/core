@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
@@ -58,7 +59,7 @@ export function TemplateGalleryCard({
   )
 
   const theme = useTheme()
-
+  const { t } = useTranslation('apps-journeys-admin')
   const date =
     journey != null
       ? intlFormat(parseISO(journey.createdAt), {
@@ -182,7 +183,10 @@ export function TemplateGalleryCard({
                     color: (theme) => theme.palette.grey[700]
                   }}
                 >
-                  {date} ● {displayLanguage}
+                  {t('{{ date }} ● {{ displayLanguage }}', {
+                    date,
+                    displayLanguage
+                  })}
                 </Typography>
                 <Box
                   sx={{

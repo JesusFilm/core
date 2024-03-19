@@ -1,12 +1,12 @@
 import AppBar from '@mui/material/AppBar'
 import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
-import { Theme } from '@mui/material/styles'
+import { Theme, useTheme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { Dialog as SharedUiDialog } from '@core/shared/ui/Dialog'
 import X2Icon from '@core/shared/ui/icons/X2'
@@ -29,6 +29,7 @@ function Drawer({
 }: DrawerOrDialogProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
+  const { zIndex } = useTheme()
 
   return (
     <MuiDrawer
@@ -39,6 +40,7 @@ function Drawer({
       elevation={smUp ? 1 : 0}
       hideBackdrop
       sx={{
+        zIndex: zIndex.modal,
         left: {
           xs: 0,
           sm: 'unset'

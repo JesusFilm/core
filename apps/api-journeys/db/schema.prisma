@@ -1,6 +1,14 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
   output   = env("PRISMA_LOCATION_JOURNEYS")
+}
+
+generator erd {
+  provider    = "prisma-erd-generator"
+  ignoreEnums = true
 }
 
 datasource db {
@@ -118,7 +126,7 @@ model Event {
 }
 
 model Visitor {
-  id                        String           @id
+  id                        String           @id @default(uuid())
   createdAt                 DateTime         @default(now())
   countryCode               String?
   duration                  Int              @default(0)
@@ -144,6 +152,7 @@ model Visitor {
   journeyVisitors           JourneyVisitor[]
   team                      Team             @relation(fields: [teamId], references: [id])
 
+  @@unique([teamId, userId])
   @@index(teamId)
   @@index(createdAt(sort: Desc))
   @@index(userId)
@@ -433,6 +442,8 @@ model Block {
   projectId               String?
   apiToken                String?
   formSlug                String?
+  x                       Int?
+  y                       Int?
   updatedAt               DateTime             @default(now()) @updatedAt
   journey                 Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
@@ -466,4 +477,12 @@ model Action {
   block         Block?   @relation("Block", fields: [blockId], references: [id])
 
   @@index(parentBlockId)
+}
+
+model JourneysEmailPreference {
+  email                String  @id @unique
+  unsubscribeAll       Boolean @default(false)
+  accountNotifications Boolean @default(true)
+
+  @@index(email)
 }

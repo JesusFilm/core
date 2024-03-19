@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import reduce from 'lodash/reduce'
+import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
 import useSWRInfinite from 'swr/infinite'
@@ -86,6 +87,7 @@ export function VideoFromYouTube({
   onSelect
 }: VideoFromYouTubeProps): ReactElement {
   const [url, setUrl] = useState<string>('')
+  const { t } = useTranslation('apps-journeys-admin')
   const { data, error, size, setSize } = useSWRInfinite<Data>(
     (_pageIndex, previousPageData?: Data) => {
       const YOUTUBE_ID_REGEX =
@@ -118,16 +120,16 @@ export function VideoFromYouTube({
       <VideoSearch
         value={url}
         onChange={setUrl}
-        label="Paste any YouTube Link"
+        label={t('Paste any YouTube Link')}
         icon="link"
       />
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         {videos.length > 1 && (
           <Box sx={{ pb: 4, px: 6 }}>
             <Typography variant="overline" color="primary">
-              YouTube
+              {t('YouTube')}
             </Typography>
-            <Typography variant="h6">Featured Videos</Typography>
+            <Typography variant="h6">{t('Featured Videos')}</Typography>
           </Box>
         )}
         <VideoList

@@ -22,6 +22,8 @@ services:
       PGPASSWORD: postgres
       PGUSER: postgres
       PGDATABASE: postgres
+      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
+      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
     extra_hosts:
       - 'host.docker.internal:host-gateway'
   db:
@@ -54,6 +56,12 @@ services:
       ]
     volumes:
       - redis-data:/data
+  maildev:
+    image: 'maildev/maildev:latest'
+    restart: unless-stopped
+    ports:
+      - 1080:1080
+      - 1025:1025
 volumes:
   core-node-doppler:
   postgres-data:

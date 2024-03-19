@@ -1,15 +1,7 @@
-import { render } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { OnboardingPageWrapper } from './OnboardingPageWrapper'
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
 
 describe('OnboardingPageWrapper', () => {
   it('should show logo', () => {
@@ -42,6 +34,23 @@ describe('OnboardingPageWrapper', () => {
     expect(getByRole('link', { name: 'Feedback & Support' })).toHaveAttribute(
       'href',
       `mailto:support@nextstep.is?subject=${emailSubject}`
+    )
+  })
+
+  it('should open language switcher dialog', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <OnboardingPageWrapper emailSubject="a question about onboarding">
+          <div>Child</div>
+        </OnboardingPageWrapper>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Language' }))
+    await waitFor(() =>
+      expect(
+        getByRole('dialog', { name: 'Change Language' })
+      ).toBeInTheDocument()
     )
   })
 })

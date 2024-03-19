@@ -16,15 +16,6 @@ import { defaultJourney } from '../Editor/data'
 import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
@@ -95,6 +86,28 @@ describe('TemplateView', () => {
     const journeyWithoutStrategySlug: Journey = {
       ...defaultJourney,
       strategySlug: null,
+      tags: [tag]
+    }
+    const { queryByText } = render(
+      <MockedProvider mocks={[getJourneyMock]}>
+        <JourneyProvider
+          value={{
+            journey: journeyWithoutStrategySlug,
+            variant: 'admin'
+          }}
+        >
+          <TemplateView authUser={{} as unknown as User} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(queryByText('Strategy')).not.toBeInTheDocument()
+  })
+
+  it('should not render Strategy section if journey strategy slug is empty string', () => {
+    const journeyWithoutStrategySlug: Journey = {
+      ...defaultJourney,
+      strategySlug: '',
       tags: [tag]
     }
     const { queryByText } = render(

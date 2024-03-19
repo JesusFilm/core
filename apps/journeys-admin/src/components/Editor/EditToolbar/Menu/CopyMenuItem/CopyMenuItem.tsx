@@ -1,3 +1,4 @@
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -15,6 +16,7 @@ export function CopyMenuItem({
   journey,
   onClose
 }: CopyMenuItemProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
 
   const handleCopyLink = async (): Promise<void> => {
@@ -26,7 +28,7 @@ export function CopyMenuItem({
       }`
     )
     onClose?.()
-    enqueueSnackbar('Link Copied', {
+    enqueueSnackbar(t('Link Copied'), {
       variant: 'success',
       preventDuplicate: true
     })
@@ -34,7 +36,7 @@ export function CopyMenuItem({
 
   return (
     <MenuItem
-      label="Copy Link"
+      label={t('Copy Link')}
       icon={<LingAngledIcon />}
       onClick={handleCopyLink}
       testId="Copy"

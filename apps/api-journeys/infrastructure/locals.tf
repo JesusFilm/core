@@ -2,7 +2,6 @@ locals {
   port = 4001
   environment_variables = [
     "FIREBASE_API_KEY",
-    "PG_DATABASE_URL",
     "PG_DATABASE_URL_JOURNEYS",
     "PLAYWRIGHT_USER_ID",
     "POWER_BI_CLIENT_ID",
@@ -15,7 +14,16 @@ locals {
     "POWER_BI_WORKSPACE_ID",
     "GOOGLE_APPLICATION_JSON",
     "CLOUDFLARE_ACCOUNT_ID",
-    "CLOUDFLARE_STREAM_TOKEN"
+    "CLOUDFLARE_STREAM_TOKEN",
+    "JOURNEYS_ADMIN_URL",
+    "REDIS_URL",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+    "INTEROP_TOKEN",
+    "GATEWAY_URL",
+    "MAILCHIMP_AUDIENCE_ID",
+    "MAILCHIMP_MARKETING_API_KEY",
+    "MAILCHIMP_MARKETING_API_SERVER_PREFIX"
   ]
   service_config = {
     name           = "api-journeys"
