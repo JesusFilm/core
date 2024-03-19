@@ -57,7 +57,7 @@ export class CustomDomainService {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })
 
-    return await response.json()
+    return json
   }
 
   async verifyVercelDomain(name: string): Promise<VercelResponse> {
