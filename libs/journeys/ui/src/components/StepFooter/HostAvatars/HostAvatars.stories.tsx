@@ -12,24 +12,12 @@ import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__genera
 import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
 
 import { HostAvatars } from './HostAvatars'
+import { has } from 'lodash'
 
 const HostAvatarsDemo: Meta<typeof HostAvatars> = {
   ...simpleComponentConfig,
   component: HostAvatars,
-  title: 'Journeys-Ui/StepFooter/HostAvatars',
-  parameters: {
-    ...simpleComponentConfig.parameters
-  }
-}
-
-const hostData = {
-  id: 'hostId',
-  __typename: 'Host' as const,
-  teamId: 'teamId',
-  title: 'Cru International',
-  location: 'Florida, USA',
-  src1: 'https://tinyurl.com/3bxusmyb',
-  src2: null
+  title: 'Journeys-Ui/StepFooter/HostAvatars'
 }
 
 const journey: Journey = {
@@ -67,23 +55,24 @@ const journey: Journey = {
   seoTitle: 'My awesome journey',
   seoDescription: null,
   chatButtons: [],
-  host: hostData,
+  host: {
+    id: 'hostId',
+    __typename: 'Host',
+    teamId: 'teamId',
+    title: 'Cru International',
+    location: 'Florida, USA',
+    src1: null,
+    src2: null
+  },
   team: null,
   tags: []
 }
 
-type Story = StoryObj<
-  ComponentProps<typeof HostAvatars> & {
-    variant: 'default' | 'admin' | 'embed'
-    journey: Journey
-  }
->
-
-const Template: Story = {
-  render: ({ variant = 'default', journey, ...args }) => (
-    <JourneyProvider value={{ variant, journey }}>
+const Template: StoryObj<ComponentProps<typeof HostAvatars>> = {
+  render: ({ ...args }) => (
+    <JourneyProvider value={{ journey }}>
       <Stack direction="row">
-        <HostAvatars hasPlaceholder={variant === 'admin'} {...args} />
+        <HostAvatars {...args} />
       </Stack>
     </JourneyProvider>
   )
@@ -92,30 +81,29 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
-    journey
+    avatarSrc1: 'https://tinyurl.com/3bxusmyb'
   }
 }
 
-export const Empty = {
+export const AdminEmpty = {
   ...Template,
   args: {
-    variant: 'admin',
-    journey: { ...journey, host: { ...hostData, src1: null } }
+    hasPlaceholder: true
   }
 }
 
-export const WithPlaceholder = {
+export const AdminOneAvatar = {
   ...Template,
   args: {
-    ...Empty.args,
-    journey
+    hasPlaceholder: true,
+    avatarSrc1: 'https://tinyurl.com/3bxusmyb'
   }
 }
 
 export const Placeholder = {
   ...Template,
   args: {
-    ...Empty.args,
+    hasPlaceholder: true,
     size: 'large'
   }
 }
@@ -123,18 +111,15 @@ export const Placeholder = {
 export const TwoAvatars = {
   ...Template,
   args: {
-    ...Empty.args,
-    journey: {
-      ...journey,
-      host: { ...hostData, src2: 'https://tinyurl.com/2nxtwn8v' }
-    }
+    avatarSrc1: 'https://tinyurl.com/3bxusmyb',
+    avatarSrc2: 'https://tinyurl.com/2nxtwn8v'
   }
 }
 
 export const Large = {
   ...Template,
   args: {
-    ...Default.args,
+    hasPlaceholder: true,
     size: 'large'
   }
 }
