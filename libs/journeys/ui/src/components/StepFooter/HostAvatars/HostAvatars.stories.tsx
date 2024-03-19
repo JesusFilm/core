@@ -12,7 +12,6 @@ import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__genera
 import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
 
 import { HostAvatars } from './HostAvatars'
-import { has } from 'lodash'
 
 const HostAvatarsDemo: Meta<typeof HostAvatars> = {
   ...simpleComponentConfig,
