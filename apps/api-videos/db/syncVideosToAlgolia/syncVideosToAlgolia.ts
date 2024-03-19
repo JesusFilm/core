@@ -32,10 +32,10 @@ export async function syncVideosToAlgolia(): Promise<void> {
       return {
         objectID: videoVariant.id,
         videoId: videoVariant.videoId,
-        titles: videoVariant.video?.title[0].value,
+        titles: videoVariant.video?.title.map((title) => title.value),
         description: (
-          videoVariant.video?.description as unknown as Translation
-        )[0].value,
+          videoVariant.video?.description as unknown as Array<Translation>
+        ).map((description) => description?.value),
         duration: videoVariant.duration,
         languageId: videoVariant.languageId,
         subtitles: videoVariant.subtitle.map((subtitle) => subtitle.languageId),
