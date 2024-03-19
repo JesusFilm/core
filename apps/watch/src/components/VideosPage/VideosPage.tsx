@@ -64,11 +64,8 @@ interface VideoProps {
 export function VideosPage({ videos }: VideoProps): ReactElement {
   const router = useRouter()
   const { status } = useInstantSearch()
-  const { refine } = useRefinementList({ attribute: 'subtitles' })
-  const { query: algoliaQuery, refine: searchRefine } = useSearchBox()
+  const { query: algoliaQuery, refine } = useSearchBox()
   const { hits, isLastPage, showMore } = useInfiniteHits()
-
-  console.log('hits', hits)
 
   // we intentionally use window.location.search to prevent multiple renders
   // which occurs when using const { query } = useRouter()
@@ -95,10 +92,8 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     .join(' ')
 
   useEffect(() => {
-    if (filter.subtitleLanguageIds != null)
-      refine(filter.subtitleLanguageIds[0])
-    searchRefine(filter.title ?? '')
-  }, [searchRefine, refine, formattedString])
+    refine(formattedString)
+  }, [refine, formattedString])
 
   function handleFilterChange(filter: VideoPageFilter): void {
     const params = new URLSearchParams()
