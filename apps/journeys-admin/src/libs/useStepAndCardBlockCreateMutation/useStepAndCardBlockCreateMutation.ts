@@ -23,6 +23,8 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
   ) {
     stepBlockCreate(input: $stepBlockCreateInput) {
       ...StepFields
+      x
+      y
     }
     cardBlockCreate(input: $cardBlockCreateInput) {
       ...CardFields

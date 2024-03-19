@@ -6,8 +6,8 @@ import {
 } from '../../../../../../../__generated__/BlockFields'
 import { ActionBlock, isActionBlock } from '../isActionBlock'
 
-export function filterActionBlocks(step: TreeBlock<StepBlock>): ActionBlock[] {
-  const card = step.children[0] as TreeBlock<CardBlock> | undefined
+export function filterActionBlocks(step?: TreeBlock<StepBlock>): ActionBlock[] {
+  const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   if (card == null) return []
 
   return card.children

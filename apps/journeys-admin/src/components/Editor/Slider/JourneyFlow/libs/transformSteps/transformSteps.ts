@@ -7,8 +7,6 @@ import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
-import { SocialPreviewNodeData } from '../../nodes/SocialPreviewNode'
-import { StepBlockNodeData } from '../../nodes/StepBlockNode'
 import { PositionMap } from '../arrangeSteps'
 import { filterActionBlocks } from '../filterActionBlocks'
 
@@ -18,20 +16,16 @@ interface Connection<T = BlockFields> {
   steps: Array<TreeBlock<StepBlock>>
 }
 
-type InternalNode =
-  | Node<StepBlockNodeData, 'StepBlock'>
-  | Node<SocialPreviewNodeData, 'SocialPreview'>
-
 type TreeStepBlock = TreeBlock<StepBlock>
 
 export function transformSteps(
   steps: TreeStepBlock[],
   positions: PositionMap
 ): {
-  nodes: InternalNode[]
+  nodes: Node[]
   edges: Edge[]
 } {
-  const nodes: InternalNode[] = []
+  const nodes: Node[] = []
   const edges: Edge[] = []
 
   function connectBlockToNextBlock({ block, step, steps }: Connection): void {
@@ -84,16 +78,16 @@ export function transformSteps(
     nodes.push({
       id: step.id,
       type: 'StepBlock',
-      data: { ...step, steps, actionBlocks },
+      data: {},
       position: positions[step.id]
     })
   })
 
   nodes.push({
-    type: 'SocialPreview',
     id: 'SocialPreview',
+    type: 'SocialPreview',
+    data: {},
     position: { x: -165, y: -195 },
-    data: { __typename: 'SocialPreview' },
     draggable: false
   })
 

@@ -11,12 +11,9 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  BlockFields_CardBlock as CardBlock,
-  BlockFields_StepBlock as StepBlock
-} from '../../../../../../../__generated__/BlockFields'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
-import { ActionBlock } from '../../libs/isActionBlock'
+import { filterActionBlocks } from '../../libs/filterActionBlocks'
 import { BaseNode } from '../BaseNode'
 
 import { ActionButton } from './ActionButton'
@@ -28,23 +25,17 @@ export const STEP_NODE_HEIGHT = 76
 export const STEP_NODE_WIDTH_GAP = 200
 export const STEP_NODE_HEIGHT_GAP = 150
 
-export interface StepBlockNodeData extends TreeBlock<StepBlock> {
-  steps: Array<TreeBlock<StepBlock>>
-  actionBlocks: ActionBlock[]
-}
-
-export function StepBlockNode({
-  data: { steps, actionBlocks, ...step }
-}: NodeProps<StepBlockNodeData>): ReactElement {
+export function StepBlockNode({ id }: NodeProps): ReactElement {
+  const {
+    state: { steps, selectedStep, activeContent },
+    dispatch
+  } = useEditor()
+  const step = steps?.find((step) => step.id === id)
+  const actionBlocks = filterActionBlocks(step)
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const { title, subtitle, description, priorityBlock, bgImage } =
     getCardMetadata(card)
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
-
-  const {
-    state: { selectedStep, activeContent },
-    dispatch
-  } = useEditor()
   const { journey } = useJourney()
 
   async function handleSourceConnect(params): Promise<void> {
@@ -72,7 +63,7 @@ export function StepBlockNode({
     dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
   }
 
-  return (
+  return step != null ? (
     <BaseNode
       id={step.id}
       isTargetConnectable
@@ -245,5 +236,7 @@ export function StepBlockNode({
         </Stack>
       )}
     </BaseNode>
+  ) : (
+    <></>
   )
 }

@@ -1,13 +1,23 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { ReactElement, useMemo, useState } from 'react'
+import {
+  MouseEvent,
+  ReactElement,
+  useCallback,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import {
   Background,
   Controls,
   NodeDragHandler,
+  OnConnect,
   OnConnectEnd,
   OnConnectStart,
+  OnConnectStartParams,
   ReactFlow,
+  ReactFlowInstance,
   useEdgesState,
   useNodesState
 } from 'reactflow'
@@ -16,6 +26,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
 import {
   GetStepBlocksWithPosition,
@@ -28,10 +39,9 @@ import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlo
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
-import { isActionBlock } from './libs/isActionBlock'
 import { transformSteps } from './libs/transformSteps'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
-import { StepBlockNode } from './nodes/StepBlockNode'
+import { STEP_NODE_WIDTH, StepBlockNode } from './nodes/StepBlockNode'
 
 import 'reactflow/dist/style.css'
 
@@ -52,9 +62,12 @@ export function JourneyFlow(): ReactElement {
   const {
     state: { steps }
   } = useEditor()
+  const connectingParams = useRef<OnConnectStartParams | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
-  const [previousNodeId, setPreviousNodeId] = useState<string | null>(null)
+
+  const [reactFlowInstance, setReactFlowInstance] =
+    useState<ReactFlowInstance | null>(null)
   const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
@@ -111,64 +124,120 @@ export function JourneyFlow(): ReactElement {
     }
   )
 
-  const onConnectStart: OnConnectStart = (_, { nodeId }) => {
-    setPreviousNodeId(nodeId)
-  }
+  const createNewStepAndConnectBlock = useCallback(
+    async function createNewStepAndConnectBlock(
+      step: TreeBlock,
+      block: TreeBlock,
+      x: number,
+      y: number
+    ): Promise<void> {
+      if (journey == null) return
+      const newStepId = uuidv4()
+      const newCardId = uuidv4()
 
-  const onConnectEnd: OnConnectEnd = (event) => {
-    if (
-      (event.target as HTMLElement | undefined)?.className ===
-        'react-flow__pane' &&
-      previousNodeId != null
-    ) {
-      const nodeData = nodes.find((node) => node.id === previousNodeId)?.data
-      void createNewStepAndConnectBlock(nodeData)
-    }
-  }
-
-  async function createNewStepAndConnectBlock(
-    block?: TreeBlock
-  ): Promise<void> {
-    if (journey == null || block == null) return
-    const newStepId = uuidv4()
-    const newCardId = uuidv4()
-
-    await stepAndCardBlockCreate({
-      variables: {
-        stepBlockCreateInput: {
-          id: newStepId,
-          journeyId: journey.id
-        },
-        cardBlockCreateInput: {
-          id: newCardId,
-          journeyId: journey.id,
-          parentBlockId: newStepId,
-          themeMode: ThemeMode.dark,
-          themeName: ThemeName.base
-        }
-      }
-    })
-    if (block.__typename === 'StepBlock') {
-      await stepBlockNextBlockUpdate({
+      await stepAndCardBlockCreate({
         variables: {
-          id: block.id,
-          journeyId: journey.id,
-          input: {
-            nextBlockId: newStepId
-          }
-        },
-        optimisticResponse: {
-          stepBlockUpdate: {
-            id: block.id,
-            __typename: 'StepBlock',
-            nextBlockId: newStepId
+          stepBlockCreateInput: {
+            id: newStepId,
+            journeyId: journey.id,
+            x,
+            y
+          },
+          cardBlockCreateInput: {
+            id: newCardId,
+            journeyId: journey.id,
+            parentBlockId: newStepId,
+            themeMode: ThemeMode.dark,
+            themeName: ThemeName.base
           }
         }
       })
-    } else if (isActionBlock(block)) {
-      await navigateToBlockActionUpdate(block, newStepId)
-    }
-  }
+      setNodes((oldNodes) =>
+        oldNodes.concat({
+          id: newStepId,
+          type: 'StepBlock',
+          data: {},
+          position: { x, y }
+        })
+      )
+      if (step.id === block.id) {
+        // step
+        await stepBlockNextBlockUpdate({
+          variables: {
+            id: step.id,
+            journeyId: journey.id,
+            input: {
+              nextBlockId: newStepId
+            }
+          },
+          optimisticResponse: {
+            stepBlockUpdate: {
+              id: step.id,
+              __typename: 'StepBlock',
+              nextBlockId: newStepId
+            }
+          }
+        })
+        setEdges((oldEdges) =>
+          oldEdges.concat({
+            id: `${step.id}->${newStepId}`,
+            source: step.id,
+            target: newStepId,
+            style: {
+              strokeDasharray: 4
+            }
+          })
+        )
+      } else {
+        // action
+        await navigateToBlockActionUpdate(block, newStepId)
+      }
+    },
+    []
+  )
+  const onConnect = useCallback<OnConnect>(() => {
+    // reset the start node on connections
+    connectingParams.current = null
+  }, [])
+  const onConnectStart = useCallback<OnConnectStart>((_, params) => {
+    connectingParams.current = params
+  }, [])
+  const onConnectEnd = useCallback<OnConnectEnd>(
+    (event: MouseEvent) => {
+      if (
+        reactFlowInstance == null ||
+        connectingParams.current == null ||
+        connectingParams.current.nodeId == null ||
+        connectingParams.current.handleId == null ||
+        connectingParams.current.handleType === 'target'
+      )
+        return
+
+      const step = steps?.find(
+        (step) => step.id === connectingParams.current?.nodeId
+      )
+      const block = searchBlocks(
+        step != null ? [step] : [],
+        connectingParams.current.handleId
+      )
+
+      if (step == null || block == null) return
+
+      const { x, y } = reactFlowInstance.screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY
+      })
+
+      void createNewStepAndConnectBlock(
+        step,
+        block,
+        parseInt(x.toString()) - STEP_NODE_WIDTH / 2,
+        parseInt(y.toString())
+      )
+    },
+    [reactFlowInstance, connectingParams, createNewStepAndConnectBlock]
+  )
+
   const nodeTypes = useMemo(
     () => ({
       StepBlock: StepBlockNode,
@@ -210,12 +279,14 @@ export function JourneyFlow(): ReactElement {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
         fitView
         nodeTypes={nodeTypes}
         proOptions={{ hideAttribution: true }}
+        onInit={setReactFlowInstance}
       >
         <Controls showInteractive={false} />
         <Background color="#aaa" gap={16} />
