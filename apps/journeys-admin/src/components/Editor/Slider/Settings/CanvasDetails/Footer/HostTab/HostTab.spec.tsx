@@ -4,7 +4,11 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../__generated__/GetAllTeamHosts'
+import {
+  GetAllTeamHosts,
+  GetAllTeamHostsVariables,
+  GetAllTeamHosts_hosts as Host
+} from '../../../../../../../../__generated__/GetAllTeamHosts'
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
@@ -14,7 +18,7 @@ import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUse
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
-import { HostTab } from './HostTab'
+import { GET_ALL_TEAM_HOSTS, HostTab } from './HostTab'
 
 const user1 = { id: 'userId', email: 'admin@email.com' }
 
@@ -95,9 +99,35 @@ describe('HostTab', () => {
     }
   }
 
+  const getAllTeamHosts: MockedResponse<
+    GetAllTeamHosts,
+    GetAllTeamHostsVariables
+  > = {
+    request: {
+      query: GET_ALL_TEAM_HOSTS,
+      variables: {
+        teamId: journey?.team?.id ?? ''
+      }
+    },
+    result: {
+      data: {
+        hosts: [
+          {
+            __typename: 'Host',
+            id: 'host1.id',
+            location: '',
+            src1: null,
+            src2: null,
+            title: 'Host1'
+          }
+        ]
+      }
+    }
+  }
+
   it('should navigate to HostList', async () => {
     const { getByRole, getByTestId } = render(
-      <MockedProvider mocks={[getUserTeamMock]}>
+      <MockedProvider mocks={[getUserTeamMock, getAllTeamHosts]}>
         <ThemeProvider>
           <JourneyProvider
             value={{
@@ -118,13 +148,13 @@ describe('HostTab', () => {
     fireEvent.click(getByRole('button', { name: 'Select a Host' }))
 
     await waitFor(() => {
-      expect(getByTestId('host-list')).toBeInTheDocument()
+      expect(getByTestId('HostList')).toBeInTheDocument()
     })
   })
 
   it('should navigate to HostInfo', async () => {
     const { getByRole, getByText, getByTestId } = render(
-      <MockedProvider mocks={[getUserTeamMock]}>
+      <MockedProvider mocks={[getUserTeamMock, getAllTeamHosts]}>
         <ThemeProvider>
           <JourneyProvider
             value={{
@@ -151,13 +181,13 @@ describe('HostTab', () => {
     fireEvent.click(getByTestId('InformationCircleContainedIcon'))
 
     await waitFor(() => {
-      expect(getByTestId('host-info')).toBeInTheDocument()
+      expect(getByTestId('HostInfo')).toBeInTheDocument()
     })
   })
 
   it('should navigate to HostForm', async () => {
     const { getByRole, getByText, getByTestId } = render(
-      <MockedProvider mocks={[getUserTeamMock]}>
+      <MockedProvider mocks={[getUserTeamMock, getAllTeamHosts]}>
         <ThemeProvider>
           <JourneyProvider
             value={{
@@ -184,7 +214,7 @@ describe('HostTab', () => {
     fireEvent.click(getByRole('button', { name: 'Create New' }))
 
     await waitFor(() => {
-      expect(getByTestId('host-form')).toBeInTheDocument()
+      expect(getByTestId('HostForm')).toBeInTheDocument()
     })
   })
 })

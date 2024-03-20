@@ -73,8 +73,8 @@ export const Default = {
   args: {
     journey: { ...journey, host: null },
     componentProps: {
-      onClear: jest.fn(),
-      onBack: jest.fn()
+      handleSelection: jest.fn(),
+      getAllTeamHosts: jest.fn()
     }
   }
 }
@@ -84,8 +84,8 @@ export const Filled = {
   args: {
     journey,
     componentProps: {
-      onClear: jest.fn(),
-      onBack: jest.fn()
+      handleSelection: jest.fn(),
+      getAllTeamHosts: jest.fn()
     }
   }
 }

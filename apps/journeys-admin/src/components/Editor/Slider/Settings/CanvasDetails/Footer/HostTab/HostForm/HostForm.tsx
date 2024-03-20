@@ -37,7 +37,7 @@ export const DELETE_HOST = gql`
 
 interface HostFormTabProps {
   handleSelection: (value: 'selection' | 'list') => void
-  getAllTeamHosts: (
+  getAllTeamHostsQuery: (
     options?:
       | Partial<
           LazyQueryHookExecOptions<GetAllTeamHosts, GetAllTeamHostsVariables>
@@ -48,7 +48,7 @@ interface HostFormTabProps {
 
 export function HostForm({
   handleSelection,
-  getAllTeamHosts
+  getAllTeamHostsQuery
 }: HostFormTabProps): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
@@ -77,13 +77,13 @@ export function HostForm({
       variables: { id: journey?.id, input: { hostId: null } }
     })
     if (journey?.team != null) {
-      await getAllTeamHosts({ variables: { teamId: journey.team.id } })
+      await getAllTeamHostsQuery({ variables: { teamId: journey.team.id } })
     }
     handleSelection('selection')
   }
 
   return (
-    <Box data-testId="host-form">
+    <Box data-testId="HostForm">
       {journey?.host != null ? (
         <Stack
           direction="row"

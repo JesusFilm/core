@@ -60,7 +60,7 @@ describe('HostForm', () => {
           >
             <HostForm
               handleSelection={handleSelection}
-              getAllTeamHosts={jest.fn()}
+              getAllTeamHostsQuery={jest.fn()}
             />
           </JourneyProvider>
         </ThemeProvider>
@@ -97,7 +97,10 @@ describe('HostForm', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <HostForm handleSelection={jest.fn()} getAllTeamHosts={jest.fn()} />
+            <HostForm
+              handleSelection={jest.fn()}
+              getAllTeamHostsQuery={jest.fn()}
+            />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -135,7 +138,7 @@ describe('HostForm', () => {
           >
             <HostForm
               handleSelection={handleSelection}
-              getAllTeamHosts={jest.fn()}
+              getAllTeamHostsQuery={jest.fn()}
             />
           </JourneyProvider>
         </ThemeProvider>
@@ -192,14 +195,14 @@ describe('HostForm', () => {
       }))
     }
     const handleSelection = jest.fn()
-    const getAllTeamHosts = jest.fn()
+    const getAllTeamHostsQuery = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[hostDeleteMock, updateJourneyHostMock]}>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostForm
               handleSelection={handleSelection}
-              getAllTeamHosts={getAllTeamHosts}
+              getAllTeamHostsQuery={getAllTeamHostsQuery}
             />
           </JourneyProvider>
         </ThemeProvider>
@@ -210,7 +213,9 @@ describe('HostForm', () => {
 
     await waitFor(() => expect(hostDeleteMock.result).toHaveBeenCalled())
     expect(updateJourneyHostMock.result).toHaveBeenCalled()
-    expect(getAllTeamHosts).toHaveBeenCalled()
+    expect(getAllTeamHostsQuery).toHaveBeenCalledWith({
+      variables: { teamId: journey.team?.id }
+    })
     expect(handleSelection).toHaveBeenCalledWith('selection')
   })
 })

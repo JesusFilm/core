@@ -13,7 +13,7 @@ interface HostInfoTabProps {
 export function HostInfo({ handleSelection }: HostInfoTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Stack sx={{ p: 4 }} data-testId="host-info">
+    <Stack sx={{ p: 4 }} data-testId="HostInfo">
       <Button
         variant="outlined"
         size="small"
