@@ -15,6 +15,20 @@ jest.mock('next/router', () => ({
   }))
 }))
 
+jest.mock('react-instantsearch', () => ({
+  _esModule: true,
+  useInstantSearch: jest.fn(() => ({
+    query: ''
+  })),
+  useSearchBox: jest.fn(() => ({
+    query: '',
+    refine: jest.fn()
+  })),
+  useInfiniteHits: jest.fn(() => ({
+    hits: []
+  }))
+}))
+
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('VideosPage', () => {
