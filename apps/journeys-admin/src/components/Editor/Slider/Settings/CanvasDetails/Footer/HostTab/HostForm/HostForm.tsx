@@ -83,7 +83,7 @@ export function HostForm({
   }
 
   return (
-    <Box data-testId="HostForm">
+    <Box data-testid="HostForm">
       {journey?.host != null ? (
         <Stack
           direction="row"

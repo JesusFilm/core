@@ -118,7 +118,7 @@ export function HostTab(): ReactElement {
   }
 
   return (
-    <Box data-testId="HostTab">
+    <Box data-testid="HostTab">
       {openHostSelection && (
         <HostSelection
           data={data}

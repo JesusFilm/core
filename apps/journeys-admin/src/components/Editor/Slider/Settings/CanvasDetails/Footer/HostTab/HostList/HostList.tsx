@@ -42,7 +42,7 @@ export function HostList({
   }
 
   return (
-    <Box data-testId="HostList">
+    <Box data-testid="HostList">
       <Stack
         direction="row"
         justifyContent="space-between"

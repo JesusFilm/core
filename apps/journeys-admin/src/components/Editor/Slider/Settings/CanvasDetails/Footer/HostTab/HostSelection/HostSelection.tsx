@@ -26,7 +26,7 @@ export function HostSelection({
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   return (
-    <Box data-testId="HostSelection">
+    <Box data-testid="HostSelection">
       {journey?.host != null ? (
         <Stack sx={{ p: 4 }}>
           <ContainedIconButton
