@@ -228,7 +228,7 @@ export function CustomDomainDialog({
 
   useEffect(() => {
     // update UI on team switch
-    refetchCustomDomains()
+    void refetchCustomDomains()
   }, [activeTeam])
 
   async function handleOnChange(e: SelectChangeEvent): Promise<void> {
