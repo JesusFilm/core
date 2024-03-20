@@ -60,6 +60,7 @@ export function Slider(): ReactElement {
 
   return (
     <StyledSwiper
+      data-testid="Slider"
       ref={swiperRef}
       slidesPerView="auto"
       breakpoints={swiperBreakpoints}
