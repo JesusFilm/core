@@ -12,11 +12,11 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { Drawer } from '../../Drawer'
 
-const HostDrawer = dynamic(
+const HostTab = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/HostDrawer/HostDrawer" */ './HostDrawer'
-    ).then((mod) => mod.HostDrawer),
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/HostTab/HostTab" */ './HostTab'
+    ).then((mod) => mod.HostTab),
   { ssr: false }
 )
 
@@ -74,7 +74,7 @@ export function Footer(): ReactElement {
         index={0}
         sx={{ flexGrow: 1, overflow: 'auto' }}
       >
-        <HostDrawer />
+        <HostTab />
       </TabPanel>
       <TabPanel
         name="chat"

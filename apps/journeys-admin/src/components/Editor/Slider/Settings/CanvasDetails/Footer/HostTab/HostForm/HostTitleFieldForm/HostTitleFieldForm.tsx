@@ -68,7 +68,7 @@ export function HostTitleFieldForm(): ReactElement {
   return (
     <TextFieldForm
       id="hostTitle"
-      label="Host Name"
+      label={t('Host Name')}
       initialValue={journey?.host == null ? '' : journey.host.title}
       validationSchema={titleSchema}
       onSubmit={handleSubmit}
