@@ -3,9 +3,10 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { Block } from '.prisma/api-journeys-client'
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { Block, Prisma } from '.prisma/api-journeys-client'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
+import { BlocksFilter } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
@@ -142,5 +143,33 @@ export class BlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
     return block
+  }
+
+  @Query()
+  @UseGuards(AppCaslGuard)
+  async blocks(
+    @CaslAccessible('Block') accessibleBlocks: Prisma.BlockWhereInput,
+    @Args('where') where?: BlocksFilter
+  ): Promise<Block[]> {
+    const filter: Prisma.BlockWhereInput = {}
+
+    if (where?.typenames != null) filter.typename = { in: where.typenames }
+    if (where?.journeyIds != null) filter.journeyId = { in: where.journeyIds }
+
+    const blocks = await this.prismaService.block.findMany({
+      where: {
+        AND: [accessibleBlocks, filter]
+      },
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+    return blocks
   }
 }

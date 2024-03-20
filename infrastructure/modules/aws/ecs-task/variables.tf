@@ -59,6 +59,12 @@ variable "env" {
   default = "prod"
 }
 
+variable "dd_source" {
+  type    = string
+  default = "nestjs"
+}
+
+
 variable "doppler_token" {
   type = string
 }

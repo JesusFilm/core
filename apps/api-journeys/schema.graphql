@@ -340,12 +340,18 @@ type Journey
   userJourneys: [UserJourney!]
 }
 
+input BlocksFilter {
+  journeyIds: [ID!]
+  typenames: [String!]
+}
+
 type Query {
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
 }
 
 extend type Query {
+  blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block!
   hosts(teamId: ID!): [Host!]!
 
