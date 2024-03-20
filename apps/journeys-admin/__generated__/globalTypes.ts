@@ -413,7 +413,6 @@ export interface JourneysFilter {
   languageIds?: string[] | null;
   limit?: number | null;
   orderByRecent?: boolean | null;
-  hostname?: string | null;
 }
 
 export interface LanguagesFilter {

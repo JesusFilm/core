@@ -195,6 +195,8 @@ export class JourneyResolver {
       embeded: false
     }
   ): Promise<Journey[]> {
+    if (options.embeded === true && options.hostname != null) return []
+
     const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
     if (where?.template != null) filter.template = where.template
     if (where?.featured != null)
@@ -265,6 +267,8 @@ export class JourneyResolver {
       embeded: false
     }
   ): Promise<Journey | null> {
+    if (options.embeded === true && options.hostname != null) return null
+
     const filter: Prisma.JourneyWhereUniqueInput =
       idType === IdType.slug ? { slug: id } : { id }
     if (options.embeded !== true) {
