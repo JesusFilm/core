@@ -53,7 +53,7 @@ describe('StrategyItem', () => {
     })
   })
 
-  it('should goals click', async () => {
+  it('should naivigate to goals and close menu on click', async () => {
     const mockCloseMenu = jest.fn()
     const { getByRole } = render(
       <MockedProvider>

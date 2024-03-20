@@ -7,7 +7,7 @@ import { Item } from './Item'
 describe('Item', () => {
   it('handles icon button item click', async () => {
     const handleClick = jest.fn()
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <Item
         variant="icon-button"
         label="Icon Button"
@@ -16,7 +16,7 @@ describe('Item', () => {
         onClick={handleClick}
       />
     )
-    const IconButtonItem = getByTestId('Icon ButtonIconButtonItem')
+    const IconButtonItem = getByRole('link', { name: 'Icon Button' })
     fireEvent.click(IconButtonItem)
     await waitFor(() => expect(handleClick).toHaveBeenCalled())
     expect(IconButtonItem.getAttribute('href')).toBe('https://test.com/')
@@ -25,7 +25,7 @@ describe('Item', () => {
 
   it('handles button item click', async () => {
     const handleClick = jest.fn()
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <Item
         variant="button"
         label="Button"
@@ -34,7 +34,7 @@ describe('Item', () => {
         onClick={handleClick}
       />
     )
-    const ButtonItem = getByTestId('ButtonButtonItem')
+    const ButtonItem = getByRole('link', { name: 'Button' })
     fireEvent.click(ButtonItem)
     await waitFor(() => expect(handleClick).toHaveBeenCalled())
     expect(ButtonItem.getAttribute('href')).toBe('https://test.com/')
@@ -43,7 +43,7 @@ describe('Item', () => {
 
   it('handles menu item click', async () => {
     const handleClick = jest.fn()
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <Item
         variant="menu-item"
         label="Menu"
@@ -52,7 +52,7 @@ describe('Item', () => {
         onClick={handleClick}
       />
     )
-    const MenuItem = getByTestId('MenuMenuItemItem')
+    const MenuItem = getByRole('menuitem', { name: 'Menu' })
     fireEvent.click(MenuItem)
     await waitFor(() => expect(handleClick).toHaveBeenCalled())
     expect(MenuItem.getAttribute('href')).toBe('https://test.com/')
