@@ -135,7 +135,7 @@ export function FilterList({
       enableReinitialize
     >
       {({ values, setFieldValue, handleChange, handleBlur }) => (
-        <Stack data-testid="FilterList" gap={6}>
+        <Stack data-testid="FilterList" gap={4}>
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
               <VolumeUpIcon />
