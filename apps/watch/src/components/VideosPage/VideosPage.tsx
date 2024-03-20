@@ -3,14 +3,9 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
+import algoliasearch from 'algoliasearch'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect } from 'react'
-import {
-  useInfiniteHits,
-  useInstantSearch,
-  useRefinementList,
-  useSearchBox
-} from 'react-instantsearch'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
@@ -61,39 +56,81 @@ interface VideoProps {
   videos: VideoChildFields[]
 }
 
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_KEY ?? '',
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+)
+
+const index = searchClient.initIndex('video-variants')
+
 export function VideosPage({ videos }: VideoProps): ReactElement {
   const router = useRouter()
-  const { status } = useInstantSearch()
-  const { query: algoliaQuery, refine } = useSearchBox()
-  const { hits, isLastPage, showMore } = useInfiniteHits()
+  const [hits, setHits] = useState([])
+
+  // const { status } = useInstantSearch()
+  // const { query: algoliaQuery, refine } = useSearchBox()
+  // const { hits, isLastPage, showMore } = useInfiniteHits()
 
   // we intentionally use window.location.search to prevent multiple renders
   // which occurs when using const { query } = useRouter()
-  const query = new URLSearchParams(
-    typeof window !== 'undefined'
-      ? window.location.search.split('?')[1]
-      : undefined
-  )
+  const query = useMemo(() => {
+    return new URLSearchParams(
+      typeof window !== 'undefined'
+        ? window.location.search.split('?')[1]
+        : undefined
+    )
+  }, [router])
 
   const getQueryParamArray = (param: string | null): string[] | undefined =>
     param != null ? [param] : undefined
 
   const availableVariantLanguageIds = getQueryParamArray(query.get('languages'))
 
-  const filter: VideoPageFilter = {
+  const filter: VideoPageFilter = useMemo(() => {
+    return {
+      availableVariantLanguageIds,
+      subtitleLanguageIds: getQueryParamArray(query.get('subtitles')),
+      title:
+        query.get('title') != null ? (query.get('title') as string) : undefined
+    }
+  }, [availableVariantLanguageIds, query])
+
+  console.log('filter', filter)
+
+  // const formattedString = Object.values(filter)
+  //   .filter((query) => query !== undefined)
+  //   .join(' ')
+
+  async function handleSearch({
+    title,
     availableVariantLanguageIds,
-    subtitleLanguageIds: getQueryParamArray(query.get('subtitles')),
-    title:
-      query.get('title') != null ? (query.get('title') as string) : undefined
+    subtitleLanguageIds
+  }): Promise<void> {
+    try {
+      const subtitleString =
+        subtitleLanguageIds !== undefined
+          ? ` AND subtitles:${subtitleLanguageIds}`
+          : ''
+
+      const { hits } = await index.search(title, {
+        filters: `languageId:${availableVariantLanguageIds}${subtitleString}`
+      })
+      console.log(hits)
+      setHits(hits)
+    } catch (error) {
+      console.error('Error occurred while searching:', error)
+    }
   }
 
-  const formattedString = Object.values(filter)
-    .filter((query) => query !== undefined)
-    .join(' ')
-
   useEffect(() => {
-    refine(formattedString)
-  }, [refine, formattedString])
+    const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
+
+    void handleSearch({
+      title: title ?? '',
+      availableVariantLanguageIds: availableVariantLanguageIds?.[0] ?? '529',
+      subtitleLanguageIds: subtitleLanguageIds?.[0]
+    })
+  }, [filter])
 
   function handleFilterChange(filter: VideoPageFilter): void {
     const params = new URLSearchParams()
@@ -112,7 +149,6 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
       shallow: true
     })
   }
-
   const algoliaVideos = convertAlgoliaVideos(hits)
   console.log('algoliaVideos', algoliaVideos)
 
@@ -128,6 +164,7 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
   }
 
   return (
+    // <InstantSearch searchClient={searchClient} indexName="video-variants">
     <PageWrapper hero={<VideosHero />} testId="VideosPage">
       <Container maxWidth="xxl">
         <VideosSubHero />
@@ -148,15 +185,16 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
           </Box>
           <Box sx={{ width: '100%' }}>
             <VideoGrid
-              videos={algoliaQuery === '' ? localVideos : algoliaVideos}
+              videos={algoliaVideos}
               onLoadMore={handleLoadMore}
-              loading={status === 'loading' || status === 'stalled'}
-              hasNextPage={algoliaQuery === '' ? false : !isLastPage}
+              // loading={status === 'loading' || status === 'stalled'}
+              // hasNextPage={algoliaQuery === '' ? false : !isLastPage}
               variant="expanded"
             />
           </Box>
         </Stack>
       </Container>
     </PageWrapper>
+    // </InstantSearch>
   )
 }

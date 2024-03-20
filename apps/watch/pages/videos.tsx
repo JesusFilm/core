@@ -1,9 +1,7 @@
 import { NormalizedCacheObject } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
 import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
-import { Configure, InstantSearch } from 'react-instantsearch'
 
 import {
   GetHomeVideos,
@@ -24,17 +22,7 @@ interface VideosPageProps {
   initialApolloState: NormalizedCacheObject
 }
 function VideosPage({ videos }): ReactElement {
-  const searchClient = algoliasearch(
-    process.env.NEXT_PUBLIC_ALGOLIA_APP_KEY ?? '',
-    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
-  )
-
-  return (
-    <InstantSearch searchClient={searchClient} indexName="video-variants">
-      <Configure hitsPerPage={20} />
-      <Videos videos={videos} />
-    </InstantSearch>
-  )
+  return <Videos videos={videos} />
 }
 
 const videoIds = [
