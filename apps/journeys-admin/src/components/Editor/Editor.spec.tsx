@@ -10,8 +10,8 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { ThemeProvider } from '../ThemeProvider'
 import { mockReactFlow } from '../../../test/mockReactFlow'
+import { ThemeProvider } from '../ThemeProvider'
 
 import { Editor } from '.'
 
@@ -72,6 +72,7 @@ describe('Editor', () => {
     team: null,
     tags: []
   }
+
   beforeEach(() => {
     mockReactFlow()
   })
