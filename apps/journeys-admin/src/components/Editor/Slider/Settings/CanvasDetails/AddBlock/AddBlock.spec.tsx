@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, fireEvent } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
