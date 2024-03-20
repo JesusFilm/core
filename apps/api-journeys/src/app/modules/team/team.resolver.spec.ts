@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import {
+  CustomDomain,
   Prisma,
   Team,
   UserTeam,
@@ -206,12 +207,20 @@ describe('TeamResolver', () => {
 
   describe('customDomains', () => {
     it('returns customDomain links of parent', async () => {
+      const customDomainsSpy = jest.spyOn(
+        prismaService.customDomain,
+        'findMany'
+      )
+      customDomainsSpy.mockResolvedValue([
+        { id: 'id' } as unknown as CustomDomain
+      ])
+
       expect(
-        resolver.customDomains({
+        await resolver.customDomains({
           ...team,
           customDomains: [{ id: 'id' }]
         })
-      ).toEqual([{ __typename: 'CustomDomain', id: 'id' }])
+      ).toEqual([{ id: 'id' }])
     })
   })
 

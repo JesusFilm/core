@@ -2,8 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 
+import { Journey, JourneyCollection, Team } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
+import { CustomDomain } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -251,42 +253,58 @@ describe('CustomDomainResolver', () => {
         .fn()
         .mockResolvedValue(verification)
 
-      const result = await resolver.verification(customDomain)
+      const result = await resolver.verification(
+        customDomain as unknown as CustomDomain
+      )
 
       expect(result).toEqual(verification)
     })
   })
 
   describe('journeyCollection', () => {
-    it('should return a journey collection link', async () => {
-      const result = resolver.journeyCollection({
+    it('should return a journey collection', async () => {
+      const jcFindSpy = jest.spyOn(prismaService.journeyCollection, 'findFirst')
+      jcFindSpy.mockResolvedValue({
+        id: 'id',
+        team: {
+          id: 'teamId'
+        } as unknown as Team,
+        title: 'title',
+        journeyCollectionJourneys: [
+          {
+            id: 'id',
+            order: 1,
+            journey: {
+              id: 'id'
+            } as unknown as Journey
+          }
+        ]
+      } as unknown as JourneyCollection)
+
+      const result = await resolver.journeyCollection({
         ...customDomain,
         journeyCollectionId: 'id'
       })
-      expect(result).toEqual({ __typename: 'JourneyCollection', id: 'id' })
+      expect(result).toEqual({
+        id: 'id',
+        team: {
+          id: 'teamId'
+        },
+        title: 'title',
+        journeys: [
+          {
+            id: 'id'
+          }
+        ]
+      })
     })
 
     it('should handle null', async () => {
-      const result = resolver.journeyCollection({
+      const result = await resolver.journeyCollection({
         ...customDomain,
         journeyCollectionId: null
       })
       expect(result).toBeNull()
-    })
-  })
-
-  describe('resolveReference', () => {
-    it('should resolve a custom domain reference', async () => {
-      const customDomainSpy = jest.spyOn(resolver, 'customDomain')
-      customDomainSpy.mockResolvedValue(customDomain)
-
-      const result = await resolver.resolveReference({
-        __typename: 'CustomDomain',
-        id: 'id'
-      })
-
-      expect(result).toEqual(customDomain)
-      expect(customDomainSpy).toHaveBeenCalledWith('id')
     })
   })
 })

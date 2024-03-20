@@ -6,19 +6,24 @@ import {
   Parent,
   Query,
   ResolveField,
-  ResolveReference,
   Resolver
 } from '@nestjs/graphql'
 import omit from 'lodash/omit'
 
-import { CustomDomain } from '.prisma/api-journeys-client'
+import {
+  CustomDomain,
+  Journey,
+  JourneyCollection,
+  Team
+} from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
   CustomDomainCreateInput,
   CustomDomain as CustomDomainGQL,
   CustomDomainUpdateInput,
-  CustomDomainVerification
+  CustomDomainVerification,
+  JourneyCollection as JourneyCollectionGQL
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
@@ -108,24 +113,31 @@ export class CustomDomainResolver {
     return customDomain
   }
 
-  @ResolveReference()
-  async resolveReference(reference: {
-    __typename: 'CustomDomain'
-    id: string
-  }): Promise<CustomDomain | null> {
-    return await this.customDomain(reference.id)
-  }
-
   @ResolveField()
-  journeyCollection(
+  async journeyCollection(
     @Parent() customDomain: CustomDomain
-  ): null | { __typename: 'JourneyCollection'; id: string } {
-    return customDomain.journeyCollectionId == null
-      ? null
-      : {
-          __typename: 'JourneyCollection',
-          id: customDomain.journeyCollectionId
-        }
+  ): Promise<null | (JourneyCollection & { journeys: Journey[] })> {
+    if (customDomain.journeyCollectionId == null) return null
+
+    const result = await this.prismaService.journeyCollection.findFirst({
+      where: {
+        customDomains: { some: { id: customDomain.id } }
+      },
+      include: {
+        journeyCollectionJourneys: {
+          include: { journey: true },
+          orderBy: { order: 'asc' }
+        },
+        team: true
+      }
+    })
+
+    if (result == null) return null
+
+    return {
+      ...omit(result, 'journeyCollectionJourneys'),
+      journeys: result.journeyCollectionJourneys.map(({ journey }) => journey)
+    }
   }
 
   @ResolveField()
@@ -144,10 +156,9 @@ export class CustomDomainResolver {
   }
 
   @ResolveField()
-  team(@Parent() customDomain: CustomDomain): {
-    __typename: 'Team'
-    id: string
-  } {
-    return { __typename: 'Team', id: customDomain.teamId }
+  async team(@Parent() customDomain: CustomDomain): Promise<Team | null> {
+    return await this.prismaService.team.findUnique({
+      where: { id: customDomain.teamId }
+    })
   }
 }

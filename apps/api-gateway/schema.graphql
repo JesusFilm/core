@@ -360,7 +360,7 @@ input CreateVerificationRequestInput
 }
 
 type CustomDomain
-  @join__type(graph: JOURNEYS, key: "id")
+  @join__type(graph: JOURNEYS)
 {
   id: ID!
   team: Team!
@@ -774,7 +774,7 @@ type Journey
 }
 
 type JourneyCollection
-  @join__type(graph: JOURNEYS, key: "id")
+  @join__type(graph: JOURNEYS)
 {
   id: ID!
   team: Team!

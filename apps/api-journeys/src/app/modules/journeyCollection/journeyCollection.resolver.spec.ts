@@ -169,10 +169,9 @@ describe('JourneyCollectionResolver', () => {
 
       const result = await resolver.customDomains(collection)
 
-      expect(result).toEqual([{ __typename: 'CustomDomain', id: 'cd' }])
+      expect(result).toEqual(customDomains)
       expect(findManySpy).toHaveBeenCalledWith({
-        where: { journeyCollectionId: 'id' },
-        select: { id: true }
+        where: { journeyCollectionId: 'id' }
       })
     })
   })

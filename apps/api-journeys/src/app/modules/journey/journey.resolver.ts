@@ -21,6 +21,7 @@ import {
   ChatButton,
   Host,
   Journey,
+  JourneyCollection,
   Prisma,
   Team,
   UserJourney,
@@ -978,18 +979,11 @@ export class JourneyResolver {
   @ResolveField()
   async journeyCollections(
     @Parent() parent: Journey
-  ): Promise<Array<{ __typename: 'JourneyCollection'; id: string }>> {
-    const journeyCollections =
-      await this.prismaService.journeyCollectionJourneys.findMany({
-        where: { journeyId: parent.id },
-        select: { journeyCollectionId: true }
-      })
-
-    return (
-      journeyCollections.map(({ journeyCollectionId }) => ({
-        __typename: 'JourneyCollection',
-        id: journeyCollectionId
-      })) ?? []
-    )
+  ): Promise<JourneyCollection[]> {
+    return await this.prismaService.journeyCollection.findMany({
+      where: {
+        journeyCollectionJourneys: { some: { journeyId: parent.id } }
+      }
+    })
   }
 }
