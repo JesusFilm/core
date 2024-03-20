@@ -60,6 +60,7 @@ export function Goals(): ReactElement {
       }
       py={6}
       flexGrow={1}
+      data-testid="Goals"
     >
       {journey != null &&
         (goals != null && goals.length > 0 ? (

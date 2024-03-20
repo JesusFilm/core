@@ -1,7 +1,8 @@
+import Box from '@mui/material/Box'
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -30,7 +31,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   }, [dispatch, id])
 
   return (
-    <>
+    <Box data-testid="TypographyProperties">
       <Accordion
         id={`${id}-typography-variant`}
         icon={<Type2Icon />}
@@ -59,6 +60,6 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
       >
         <Align />
       </Accordion>
-    </>
+    </Box>
   )
 }

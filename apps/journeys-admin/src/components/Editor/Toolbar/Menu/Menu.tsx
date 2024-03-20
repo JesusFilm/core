@@ -4,8 +4,8 @@ import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MoreIcon from '@core/shared/ui/icons/More'
@@ -60,6 +60,7 @@ export function Menu(): ReactElement {
         aria-expanded={anchorEl != null ? 'true' : undefined}
         onClick={handleShowMenu}
         disabled={journey == null}
+        data-testid="ToolbarMenuButton"
       >
         <MoreIcon />
       </IconButton>
@@ -96,7 +97,9 @@ export function Menu(): ReactElement {
           <StrategyItem variant="menu-item" closeMenu={handleCloseMenu} />
         )}
         {journey != null &&
-          (journey?.template !== true || isPublisher != null) && <Divider />}
+          (journey?.template !== true || isPublisher != null) && (
+            <Divider data-testid="menu-divider" />
+          )}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && (
             <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
