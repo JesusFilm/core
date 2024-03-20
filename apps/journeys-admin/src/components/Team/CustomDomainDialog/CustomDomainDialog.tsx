@@ -204,6 +204,25 @@ export function CustomDomainDialog({
                     `
                   })
                   return [...existingCustomDomains, newCustomDomainRef]
+                },
+                teams() {
+                  cache.writeFragment({
+                    data: {
+                      customDomains: [createCustomDomain.customDomainCreate]
+                    },
+                    fragment: gql`
+                      fragment UpdatedTeam on Team {
+                        id
+                        customDomains {
+                          id
+                        }
+                      }
+                    `,
+                    id: cache.identify({
+                      id: activeTeam?.id,
+                      __typename: activeTeam?.__typename
+                    })
+                  })
                 }
               }
             })
@@ -229,7 +248,7 @@ export function CustomDomainDialog({
   useEffect(() => {
     // update UI on team switch
     void refetchCustomDomains()
-  }, [activeTeam])
+  }, [activeTeam, refetchCustomDomains])
 
   async function handleOnChange(e: SelectChangeEvent): Promise<void> {
     if (

@@ -162,7 +162,8 @@ describe('CustomDomainDialog', () => {
               title: 'Team Title',
               __typename: 'Team',
               userTeams: [],
-              publicTitle: 'Team Title'
+              publicTitle: 'Team Title',
+              customDomains: []
             }
           ],
           getJourneyProfile: {

@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
+import Typography from '@mui/material/Typography'
+import Stack from '@mui/system/Stack'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -50,6 +52,7 @@ export function TeamMenu(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
+
   const [teamCreateOpen, setTeamCreateOpen] = useState<boolean | undefined>()
   const [teamUpdateOpen, setTeamUpdateOpen] = useState<boolean | undefined>()
   const [teamManageOpen, setTeamManageOpen] = useState<boolean | undefined>()
@@ -101,6 +104,30 @@ export function TeamMenu(): ReactElement {
         />
       )}
 
+      {activeTeam != null && activeTeam?.customDomains[0]?.name != null && (
+        <Stack
+          direction="row"
+          alignItems="center"
+          gap={1}
+          sx={{
+            mr: { xs: 0, sm: 4 }
+          }}
+        >
+          <GlobeIcon sx={{ color: 'primary.main' }} />
+          <Typography
+            component="a"
+            variant="subtitle3"
+            sx={{
+              whiteSpace: 'nowrap',
+              overflow: 'clip',
+              textOverflow: 'ellipsis',
+              color: 'primary.main'
+            }}
+          >
+            {activeTeam.customDomains[0].name}
+          </Typography>
+        </Stack>
+      )}
       {activeTeam != null && (
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
           <TeamAvatars
@@ -113,6 +140,7 @@ export function TeamMenu(): ReactElement {
           />
         </Box>
       )}
+
       <IconButton edge="end" color="inherit" onClick={handleShowMenu}>
         <MoreIcon />
       </IconButton>
