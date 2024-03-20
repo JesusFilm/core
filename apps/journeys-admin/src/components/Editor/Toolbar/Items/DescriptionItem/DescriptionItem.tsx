@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import File5Icon from '@core/shared/ui/icons/File5'
@@ -30,7 +30,7 @@ export function DescriptionItem({
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const [DescriptionDialogOpen, setDescriptionDialogOpen] = useState<
+  const [descriptionDialogOpen, setDescriptionDialogOpen] = useState<
     boolean | undefined
   >()
 
@@ -60,8 +60,8 @@ export function DescriptionItem({
         icon={<File5Icon />}
         onClick={handleClick}
       />
-      {journey?.id != null && DescriptionDialogOpen != null && (
-        <DescriptionDialog open={DescriptionDialogOpen} onClose={handleClose} />
+      {journey?.id != null && descriptionDialogOpen != null && (
+        <DescriptionDialog open={descriptionDialogOpen} onClose={handleClose} />
       )}
     </>
   )
