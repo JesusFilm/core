@@ -20,6 +20,7 @@ export function Toolbar(): ReactElement {
   const { journey } = useJourney()
   return (
     <Stack
+      data-testid="Toolbar"
       direction="row"
       alignItems="center"
       spacing={{ xs: 2, sm: 4 }}
