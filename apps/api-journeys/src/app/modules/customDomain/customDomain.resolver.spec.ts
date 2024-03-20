@@ -307,4 +307,22 @@ describe('CustomDomainResolver', () => {
       expect(result).toBeNull()
     })
   })
+
+  describe('team', () => {
+    it('should return a team', async () => {
+      const team: Team = {
+        id: 'id',
+        title: 'title',
+        publicTitle: 'publicTitle',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+      const teamSpy = jest.spyOn(prismaService.team, 'findUnique')
+      teamSpy.mockResolvedValue(team)
+
+      const result = await resolver.team(customDomain)
+
+      expect(result).toEqual(team)
+    })
+  })
 })
