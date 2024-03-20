@@ -42,6 +42,9 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        formatters: {
+          level: (label, _number) => ({ level: label })
+        },
         redact: ['req.headers.authorization'],
         autoLogging: {
           ignore: (req) => req.url === '/.well-known/apollo/server-health'
