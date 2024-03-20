@@ -1,6 +1,5 @@
 import { subject } from '@casl/ability'
 import { Injectable } from '@nestjs/common'
-import FormData from 'form-data'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 import fetch from 'node-fetch'
@@ -71,7 +70,7 @@ export class CustomDomainService {
       }
 
     const response = await fetch(
-      `/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}/verify?teamId=${process.env.VERCEL_TEAM_ID}`,
+      `https://api.vercel.com/v9/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}/verify?teamId=${process.env.VERCEL_TEAM_ID}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
@@ -87,7 +86,7 @@ export class CustomDomainService {
     if (process.env.VERCEL_JOURNEYS_PROJECT_ID == null) return true
 
     const response = await fetch(
-      `/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}?teamId=${process.env.VERCEL_TEAM_ID}`,
+      `https://api.vercel.com/v9/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}?teamId=${process.env.VERCEL_TEAM_ID}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
