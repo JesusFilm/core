@@ -5,4 +5,5 @@ module "ecs-task" {
   env                   = var.env
   doppler_token         = var.doppler_token
   environment_variables = local.environment_variables
+  dd_source             = "nextjs"
 }
