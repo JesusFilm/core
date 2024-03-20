@@ -1,16 +1,59 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import {
+  BlockFields_StepBlock as StepBlock,
+  BlockFields_TypographyBlock as TypographyBlock
+} from '../../../../../../../__generated__/BlockFields'
 
+import {
+  TypographyAlign,
+  TypographyColor,
+  TypographyVariant
+} from '../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { AddBlock } from '.'
 
 describe('AddNewBlock', () => {
-
-  it('renders add blocks toolbar properly', () => {
+  const selectedStep: TreeBlock<StepBlock> = {
+    __typename: 'StepBlock',
+    id: 'stepId',
+    parentBlockId: 'journeyId',
+    parentOrder: 0,
+    locked: true,
+    nextBlockId: null,
+    children: [
+      {
+        id: 'card1.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'stepId',
+        parentOrder: 0,
+        coverBlockId: null,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'typography0.id',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 0,
+            content: 'Title',
+            variant: TypographyVariant.h1,
+            color: TypographyColor.primary,
+            align: TypographyAlign.center,
+            children: []
+          }
+        ]
+      }
+    ]
+  }
+  it('renders add blocks toolbar properly', async () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -54,5 +97,22 @@ describe('AddNewBlock', () => {
     expect(
       queryByTestId('JourneysAdminButtonNewFormiumFormIcon')
     ).not.toBeInTheDocument()
+  })
+
+  it('should disable NewVideoButton when there are other blocks on the Card', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider initialState={{ selectedStep }}>
+            <AddBlock />
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    const newVideoButtonDiv = getByTestId('JourneysAdminButtonNewVideoButton')
+    const newVideoButton = newVideoButtonDiv.querySelector('button')
+
+    expect(newVideoButton).toBeDisabled()
   })
 })
