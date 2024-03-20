@@ -5,6 +5,7 @@ import { ComponentProps } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields_chatButtons as ChatButton } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { GetAllTeamHosts_hosts as Host } from '../../../../../../../__generated__/GetAllTeamHosts'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import {
   ChatPlatform,
@@ -21,13 +22,22 @@ const Demo: Meta<typeof Footer> = {
   title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer'
 }
 
+const defaultHost: Host = {
+  id: 'hostId',
+  __typename: 'Host' as const,
+  title: 'Cru International',
+  location: 'Florida, USA',
+  src1: 'https://tinyurl.com/3bxusmyb',
+  src2: null
+}
+
 const Template: StoryObj<
   ComponentProps<typeof Footer> & {
-    hostTitle: string | null
+    host: Host | null
     chatButtons: ChatButton[]
   }
 > = {
-  render: ({ hostTitle, chatButtons }) => {
+  render: ({ host, chatButtons }) => {
     return (
       <JourneyProvider
         value={{
@@ -42,9 +52,7 @@ const Template: StoryObj<
               iso3: 'eng'
             },
             chatButtons,
-            host: {
-              title: hostTitle
-            }
+            host
           } as unknown as Journey,
           variant: 'admin'
         }}
@@ -65,12 +73,12 @@ const Template: StoryObj<
   }
 }
 
-export const Default = { ...Template, args: { hostTitle: null } }
+export const Default = { ...Template, args: { host: null } }
 
 export const Filled = {
   ...Template,
   args: {
-    hostTitle: `John Geronimo "The Rock" Johnson`,
+    host: defaultHost,
     chatButtons: [
       {
         id: '1',
