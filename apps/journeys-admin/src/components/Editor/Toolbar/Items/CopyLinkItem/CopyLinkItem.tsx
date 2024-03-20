@@ -1,6 +1,6 @@
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
