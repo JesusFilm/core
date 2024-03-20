@@ -194,15 +194,16 @@ describe('HostForm', () => {
         }
       }))
     }
+
     const handleSelection = jest.fn()
-    const getAllTeamHostsQuery = jest.fn()
+    const mockGetAllTeamHostsQuery = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[hostDeleteMock, updateJourneyHostMock]}>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <HostForm
               handleSelection={handleSelection}
-              getAllTeamHostsQuery={getAllTeamHostsQuery}
+              getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
             />
           </JourneyProvider>
         </ThemeProvider>
@@ -213,7 +214,7 @@ describe('HostForm', () => {
 
     await waitFor(() => expect(hostDeleteMock.result).toHaveBeenCalled())
     expect(updateJourneyHostMock.result).toHaveBeenCalled()
-    expect(getAllTeamHostsQuery).toHaveBeenCalledWith({
+    expect(mockGetAllTeamHostsQuery).toHaveBeenCalledWith({
       variables: { teamId: journey.team?.id }
     })
     expect(handleSelection).toHaveBeenCalledWith('selection')
