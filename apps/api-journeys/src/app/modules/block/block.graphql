@@ -9,7 +9,13 @@ extend type Journey {
   blocks: [Block!]
 }
 
+input BlocksFilter {
+  journeyIds: [ID!]
+  typenames: [String!]
+}
+
 extend type Query {
+  blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block!
 }
 
