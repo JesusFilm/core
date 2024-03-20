@@ -12,7 +12,12 @@ import {
 import { GraphQLError } from 'graphql'
 import filter from 'lodash/filter'
 
-import { Prisma, Team, UserTeam } from '.prisma/api-journeys-client'
+import {
+  CustomDomain,
+  Prisma,
+  Team,
+  UserTeam
+} from '.prisma/api-journeys-client'
 import {
   CaslAbility,
   CaslAccessible,
@@ -113,13 +118,12 @@ export class TeamResolver {
   }
 
   @ResolveField()
-  customDomains(
+  async customDomains(
     @Parent() parent: Team & { customDomains: Array<{ id: string }> }
-  ): Array<{ __typename: 'CustomDomain'; id: string }> {
-    return parent.customDomains.map(({ id }) => ({
-      __typename: 'CustomDomain',
-      id
-    }))
+  ): Promise<CustomDomain[]> {
+    return await this.prismaService.customDomain.findMany({
+      where: { teamId: parent.id }
+    })
   }
 
   @ResolveReference()

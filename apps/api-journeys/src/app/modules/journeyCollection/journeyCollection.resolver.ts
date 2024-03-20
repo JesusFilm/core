@@ -6,7 +6,6 @@ import {
   Parent,
   Query,
   ResolveField,
-  ResolveReference,
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
@@ -198,28 +197,13 @@ export class JourneyCollectionResolver {
     })
   }
 
-  @ResolveReference()
-  async resolveReference(reference: {
-    __typename: 'JourneyCollection'
-    id: string
-  }): Promise<JourneyCollection | null> {
-    return await this.journeyCollection(reference.id)
-  }
-
   @ResolveField()
   async customDomains(
     @Parent() journeyCollection: JourneyCollection
-  ): Promise<Array<{ __typename: 'CustomDomain'; id: string }>> {
-    const customDomains = await this.prismaService.customDomain.findMany({
-      where: { journeyCollectionId: journeyCollection.id },
-      select: { id: true }
+  ): Promise<CustomDomain[]> {
+    return await this.prismaService.customDomain.findMany({
+      where: { journeyCollectionId: journeyCollection.id }
     })
-    return (
-      customDomains.map((customDomain) => ({
-        __typename: 'CustomDomain',
-        id: customDomain.id
-      })) ?? []
-    )
   }
 
   @ResolveField()

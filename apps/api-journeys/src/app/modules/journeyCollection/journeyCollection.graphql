@@ -1,4 +1,4 @@
-type JourneyCollection @key(fields: "id") {
+type JourneyCollection {
   id: ID!
   team: Team!
   title: String
