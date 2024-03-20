@@ -7,7 +7,7 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { HostAvatars } from '@core/journeys/ui/StepFooter/HostAvatars'
 
-import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../../__generated__/GetAllTeamHosts'
+import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../../../__generated__/GetAllTeamHosts'
 
 interface HostListItemProps extends Omit<Host, 'teamId' | '__typename'> {
   onClick: (hostId: string) => void

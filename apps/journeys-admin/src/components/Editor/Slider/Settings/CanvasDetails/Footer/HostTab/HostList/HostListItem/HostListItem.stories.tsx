@@ -1,14 +1,17 @@
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
+import { DRAWER_WIDTH } from '../../../../../../../constants'
 
 import { HostListItem } from './HostListItem'
 
 const HostListItemDemo: Meta<typeof HostListItem> = {
   ...journeysAdminConfig,
   component: HostListItem,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/HostedBy/HostListItem',
+  title:
+    'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/HostTab/HostList/HostListItem',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -17,14 +20,16 @@ const HostListItemDemo: Meta<typeof HostListItem> = {
 
 const Template: StoryObj<typeof HostListItem> = {
   render: ({ title, location, src1, src2 }) => (
-    <HostListItem
-      id="hostId"
-      title={title}
-      location={location}
-      src1={src1}
-      src2={src2}
-      onClick={noop}
-    />
+    <Box sx={{ width: DRAWER_WIDTH }}>
+      <HostListItem
+        id="hostId"
+        title={title}
+        location={location}
+        src1={src1}
+        src2={src2}
+        onClick={noop}
+      />
+    </Box>
   )
 }
 
