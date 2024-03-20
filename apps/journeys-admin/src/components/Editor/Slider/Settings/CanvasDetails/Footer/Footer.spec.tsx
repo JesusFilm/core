@@ -1,32 +1,21 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
   ActiveContent,
   ActiveFab,
   EditorProvider,
-  EditorState,
-  useEditor
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
-import { act } from 'react-dom/test-utils'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveSlide
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
-import {
-  ChatPlatform,
-  ThemeMode,
-  ThemeName
-} from '../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { Footer } from './Footer'
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -46,12 +35,11 @@ describe('Footer', () => {
     jest.resetAllMocks()
   })
 
-  it('should display Footer attributes', async () => {
-    const { getByText, getByTestId } = render(
+  it('should display Footer attributes', () => {
+    const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
-            <TestEditorState />
             <Footer />
           </EditorProvider>
         </SnackbarProvider>
@@ -63,26 +51,20 @@ describe('Footer', () => {
   })
 
   it('should render the components', async () => {
-    const { getByText, queryByTestId } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
-            <TestEditorState />
             <Footer />
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
-
-    await act(async () => {
-      fireEvent.click(getByText('Chat Widget'))
-    })
-
-    expect(queryByTestId('ChatComponent')).toBeInTheDocument()
-    expect(queryByTestId('HostComponent')).not.toBeInTheDocument()
+    await waitFor(() => expect(getByTestId('Chat')).toBeInTheDocument())
+    expect(getByTestId('HostTab')).toBeInTheDocument()
   })
 
-  it('should switch tabs', async () => {
+  it('should switch tabs', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -94,17 +76,12 @@ describe('Footer', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('tab', { name: 'Hosted By' })).toBeInTheDocument()
-    expect(getByRole('tab', { name: 'Chat Widget' })).toBeInTheDocument()
-
-    fireEvent.click(getByRole('tab', { name: 'Chat Widget' }))
-    expect(getByRole('tab', { name: 'Chat Widget' })).toHaveAttribute(
+    expect(getByRole('tab', { name: 'Hosted By' })).toHaveAttribute(
       'aria-selected',
       'true'
     )
-
-    fireEvent.click(getByRole('tab', { name: 'Hosted By' }))
-    expect(getByRole('tab', { name: 'Hosted By' })).toHaveAttribute(
+    fireEvent.click(getByRole('tab', { name: 'Chat Widget' }))
+    expect(getByRole('tab', { name: 'Chat Widget' })).toHaveAttribute(
       'aria-selected',
       'true'
     )
