@@ -71,7 +71,7 @@ export class CustomDomainService {
       }
 
     const response = await fetch(
-      `/projects/:${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}/verify?teamId=${process.env.VERCEL_TEAM_ID}`,
+      `/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}/verify?teamId=${process.env.VERCEL_TEAM_ID}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
@@ -87,7 +87,7 @@ export class CustomDomainService {
     if (process.env.VERCEL_JOURNEYS_PROJECT_ID == null) return true
 
     const response = await fetch(
-      `/projects/:${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}?teamId=${process.env.VERCEL_TEAM_ID}`,
+      `/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}?teamId=${process.env.VERCEL_TEAM_ID}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
