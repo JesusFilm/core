@@ -42,6 +42,7 @@ import {
   JourneyTemplateInput,
   JourneyUpdateInput,
   JourneysFilter,
+  JourneysQueryOptions,
   JourneysReportType
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
@@ -186,7 +187,14 @@ export class JourneyResolver {
   }
 
   @Query()
-  async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
+  async journeys(
+    @Args('where') where?: JourneysFilter,
+    @Args('options')
+    options: JourneysQueryOptions = {
+      hostname: null,
+      embeded: false
+    }
+  ): Promise<Journey[]> {
     const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
     if (where?.template != null) filter.template = where.template
     if (where?.featured != null)
@@ -203,27 +211,29 @@ export class JourneyResolver {
         }
       }))
     }
-    if (where?.hostname != null) {
-      OR.push({
-        team: {
-          customDomains: {
-            some: { name: where.hostname, routeAllTeamJourneys: true }
-          }
-        }
-      })
-      OR.push({
-        journeyCollectionJourneys: {
-          some: {
-            journeyCollection: {
-              customDomains: { some: { name: where.hostname } }
+    if (options.embeded !== true) {
+      if (options.hostname != null) {
+        OR.push({
+          team: {
+            customDomains: {
+              some: { name: options.hostname, routeAllTeamJourneys: true }
             }
           }
+        })
+        OR.push({
+          journeyCollectionJourneys: {
+            some: {
+              journeyCollection: {
+                customDomains: { some: { name: options.hostname } }
+              }
+            }
+          }
+        })
+      } else {
+        filter.journeyCollectionJourneys = { none: {} }
+        filter.team = {
+          customDomains: { none: { routeAllTeamJourneys: true } }
         }
-      })
-    } else {
-      filter.journeyCollectionJourneys = { none: {} }
-      filter.team = {
-        customDomains: { none: { routeAllTeamJourneys: true } }
       }
     }
     if (where?.languageIds != null)
@@ -249,31 +259,37 @@ export class JourneyResolver {
   async journey(
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.slug,
-    @Args('hostname') hostname?: string
+    @Args('options')
+    options: JourneysQueryOptions = {
+      hostname: null,
+      embeded: false
+    }
   ): Promise<Journey | null> {
     const filter: Prisma.JourneyWhereUniqueInput =
       idType === IdType.slug ? { slug: id } : { id }
-    if (hostname != null) {
-      filter.team = {
-        OR: [
-          {
-            customDomains: {
-              some: { name: hostname, routeAllTeamJourneys: true }
-            }
-          },
-          {
-            journeyCollections: {
-              some: {
-                customDomains: { some: { name: hostname } }
+    if (options.embeded !== true) {
+      if (options.hostname != null) {
+        filter.team = {
+          OR: [
+            {
+              customDomains: {
+                some: { name: options.hostname, routeAllTeamJourneys: true }
+              }
+            },
+            {
+              journeyCollections: {
+                some: {
+                  customDomains: { some: { name: options.hostname } }
+                }
               }
             }
-          }
-        ]
-      }
-    } else {
-      filter.journeyCollectionJourneys = { none: {} }
-      filter.team = {
-        customDomains: { none: { routeAllTeamJourneys: true } }
+          ]
+        }
+      } else {
+        filter.journeyCollectionJourneys = { none: {} }
+        filter.team = {
+          customDomains: { none: { routeAllTeamJourneys: true } }
+        }
       }
     }
     const journey = await this.prismaService.journey.findUnique({
