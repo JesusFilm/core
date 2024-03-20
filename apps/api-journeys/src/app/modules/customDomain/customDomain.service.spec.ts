@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import clone from 'lodash/clone'
 import fetch, { Response } from 'node-fetch'
 
 import { CustomDomain } from '.prisma/api-journeys-client'
@@ -35,7 +36,7 @@ describe('customDomainService', () => {
     can: jest.fn().mockResolvedValue(true)
   } as unknown as AppAbility
 
-  const originalEnv = process.env
+  const originalEnv = clone(process.env)
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -74,11 +75,14 @@ describe('customDomainService', () => {
       expect(result).toEqual(createResult)
     })
 
-    it.skip('should add a vercel domain in deployment', async () => {
-      process.env.VERCEL_TOKEN = 'abc'
-      process.env.VERCEL_TEAM_ID = 'teamId'
-      process.env.VERCEL_JOURNEYS_PROJECT_ID = 'projectId'
-      process.env.GIT_BRANCH = 'main'
+    it('should add a vercel domain in deployment', async () => {
+      process.env = {
+        ...originalEnv,
+        VERCEL_TOKEN: 'abc',
+        VERCEL_TEAM_ID: 'teamId',
+        VERCEL_JOURNEYS_PROJECT_ID: 'projectId',
+        GIT_BRANCH: 'main'
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -168,23 +172,70 @@ describe('customDomainService', () => {
   })
 
   describe('verifyVercelDomain', () => {
-    it('should verify a vercel domain', async () => {
+    it('should verify a vercel domain locally', async () => {
       const result = await service.verifyVercelDomain('name.com')
 
-      expect(result).toEqual({
-        name: 'name.com',
-        apexName: 'name.com',
-        verification: [],
-        verified: true
-      })
+      expect(result).toEqual(createResult)
+    })
+
+    it('should verify a vercel domain in deployment', async () => {
+      process.env = {
+        ...originalEnv,
+        VERCEL_TOKEN: 'abc',
+        VERCEL_TEAM_ID: 'teamId',
+        VERCEL_JOURNEYS_PROJECT_ID: 'projectId',
+        GIT_BRANCH: 'main'
+      }
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => await Promise.resolve(createResult)
+      } as unknown as Response)
+
+      const result = await service.verifyVercelDomain('name.com')
+
+      expect(result).toEqual(createResult)
+      expect(mockFetch).toHaveBeenCalledWith(
+        `https://api.vercel.com/v9/projects/projectId/domains/name.com/verify?teamId=${process.env.VERCEL_TEAM_ID}`,
+        {
+          headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` },
+          method: 'POST'
+        }
+      )
     })
   })
 
   describe('deleteVercelDomain', () => {
-    it('should delete a vercel domain', async () => {
+    it('should delete a vercel domain locally', async () => {
       const result = await service.deleteVercelDomain('name.com')
 
       expect(result).toBe(true)
+    })
+
+    it('should delete a vercel domain in deployment', async () => {
+      process.env = {
+        ...originalEnv,
+        VERCEL_TOKEN: 'abc',
+        VERCEL_TEAM_ID: 'teamId',
+        VERCEL_JOURNEYS_PROJECT_ID: 'projectId',
+        GIT_BRANCH: 'main'
+      }
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200
+      } as unknown as Response)
+
+      const result = await service.deleteVercelDomain('name.com')
+
+      expect(result).toBe(true)
+      expect(mockFetch).toHaveBeenCalledWith(
+        `https://api.vercel.com/v9/projects/projectId/domains/name.com?teamId=${process.env.VERCEL_TEAM_ID}`,
+        {
+          headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` },
+          method: 'DELETE'
+        }
+      )
     })
   })
 })
