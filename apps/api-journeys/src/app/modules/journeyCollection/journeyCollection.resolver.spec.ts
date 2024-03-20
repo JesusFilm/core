@@ -4,7 +4,6 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { CustomDomain } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
-import { JourneyCollection } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 import { CustomDomainService } from '../customDomain/customDomain.service'
