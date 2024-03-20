@@ -110,7 +110,8 @@ export function TeamMenu(): ReactElement {
           alignItems="center"
           gap={1}
           sx={{
-            mr: { xs: 0, sm: 4 }
+            mr: { xs: 0, sm: 4 },
+            display: { xs: 'none', sm: 'flex' }
           }}
         >
           <GlobeIcon sx={{ color: 'primary.main' }} />
@@ -119,8 +120,6 @@ export function TeamMenu(): ReactElement {
             variant="subtitle3"
             sx={{
               whiteSpace: 'nowrap',
-              overflow: 'clip',
-              textOverflow: 'ellipsis',
               color: 'primary.main'
             }}
           >
