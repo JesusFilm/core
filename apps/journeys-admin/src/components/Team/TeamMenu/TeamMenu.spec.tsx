@@ -225,4 +225,63 @@ describe('TeamMenu', () => {
       'true'
     )
   })
+
+  it('shows customs domain name if set', async () => {
+    const mockTeamWithCustomDomain = {
+      ...getTeamsMock,
+      result: jest.fn(() => ({
+        data: {
+          teams: [
+            {
+              id: 'teamId2',
+              title: 'Team Title2',
+              publicTitle: null,
+              __typename: 'Team',
+              userTeams: [],
+              customDomains: [
+                {
+                  __typename: 'CustomDomain',
+                  name: 'mockdomain.com',
+                  apexName: 'mockdomain.com',
+                  id: 'customDomainId',
+                  verification: {
+                    __typename: 'CustomDomainVerific  ation',
+                    verified: true,
+                    verification: []
+                  },
+                  journeyCollection: {
+                    __typename: 'JourneyCollection',
+                    id: 'journeyCollectionId',
+                    journeys: []
+                  }
+                }
+              ]
+            }
+          ],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            id: 'journeyProfileId',
+            lastActiveTeamId: 'teamId2'
+          }
+        }
+      }))
+    }
+
+    const { getByText } = render(
+      <MockedProvider mocks={[mockTeamWithCustomDomain]}>
+        <FlagsProvider flags={{ customDomain: true }}>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TeamMenu />
+            </TeamProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(mockTeamWithCustomDomain.result).toHaveBeenCalled()
+    )
+    expect(getByText('mockdomain.com')).toBeInTheDocument()
+  })
 })

@@ -49,6 +49,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     }
   }
 }
+
 const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS

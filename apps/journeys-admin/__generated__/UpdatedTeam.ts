@@ -10,7 +10,6 @@
 export interface UpdatedTeam_customDomains {
   __typename: "CustomDomain";
   id: string;
-  name: string;
 }
 
 export interface UpdatedTeam {
