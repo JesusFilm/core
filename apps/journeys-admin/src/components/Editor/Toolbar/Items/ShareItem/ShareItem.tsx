@@ -1,10 +1,11 @@
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, MouseEvent, ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
@@ -60,7 +61,7 @@ export function ShareItem({ variant }: ShareItemProps): ReactElement {
   }
 
   return (
-    <>
+    <Box data-testid="ShareItem">
       <Item
         variant={variant}
         label={t('Share')}
@@ -123,6 +124,6 @@ export function ShareItem({ variant }: ShareItemProps): ReactElement {
           onClose={() => setShowEmbedDialog(false)}
         />
       )}
-    </>
+    </Box>
   )
 }
