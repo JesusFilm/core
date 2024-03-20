@@ -61,7 +61,7 @@ export function ShareItem({ variant }: ShareItemProps): ReactElement {
   }
 
   return (
-    <Box data-testId="Share-Item">
+    <Box data-testid="ShareItem">
       <Item
         variant={variant}
         label={t('Share')}

@@ -19,7 +19,7 @@ export function PreviewItem({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   return (
-    <Box data-testId="Preview-Item">
+    <Box data-testid="PreviewItem">
       <Item
         variant={variant}
         href={`/api/preview?slug=${journey?.slug}`}

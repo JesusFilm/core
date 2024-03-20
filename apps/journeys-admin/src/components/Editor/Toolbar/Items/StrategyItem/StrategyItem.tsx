@@ -33,7 +33,7 @@ export function StrategyItem({
   }
 
   return (
-    <Box data-testId="Strategy-Item">
+    <Box data-testid="StrategyItem">
       <Item
         variant={variant}
         label={t('Strategy')}

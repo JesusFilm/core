@@ -16,7 +16,7 @@ export function AnalyticsItem({ variant }: AnalyticsItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   return (
-    <Box data-testId="Analytics-Item">
+    <Box data-testid="AnalyticsItem">
       <NextLink
         href={`/journeys/${journey?.id}/reports`}
         passHref

@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -54,13 +54,13 @@ describe('StrategyItem', () => {
   })
 
   it('should goals click', async () => {
-    const closeMenu = jest.fn()
+    const mockCloseMenu = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider>
             <JourneyProvider value={{ journey: mockJourney }}>
-              <StrategyItem variant="button" closeMenu={closeMenu} />
+              <StrategyItem variant="button" closeMenu={mockCloseMenu} />
             </JourneyProvider>
           </EditorProvider>
         </SnackbarProvider>
@@ -76,6 +76,6 @@ describe('StrategyItem', () => {
       type: 'SetActiveSlideAction',
       activeSlide: ActiveSlide.Content
     })
-    expect(closeMenu).toHaveBeenCalled()
+    expect(mockCloseMenu).toHaveBeenCalled()
   })
 })
