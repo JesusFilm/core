@@ -15,7 +15,7 @@ export function Settings(): ReactElement {
     case ActiveContent.Social:
       return <SocialDetails />
     case ActiveContent.Goals:
-      return <GoalDetails />
+      return <GoalDetails data-testId='GoalDetails'/>
     case ActiveContent.Canvas:
       return <CanvasDetails />
   }

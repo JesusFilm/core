@@ -1,33 +1,47 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 
 import { journey } from './data'
 import { GoalDetails } from './GoalDetails'
 
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn(() => false)
+}))
+
 describe('GoalDetails', () => {
   it('should return placeholder text', () => {
-    const { getByText } = render(
+    render(
       <MockedProvider>
-        <GoalDetails />
+        <EditorProvider >
+          <GoalDetails/>
+        </EditorProvider>
       </MockedProvider>
     )
-    expect(getByText('What are Goals?')).toBeInTheDocument()
-    expect(getByText('Start a Conversation')).toBeInTheDocument()
-    expect(getByText('Visit a Website')).toBeInTheDocument()
-    expect(getByText('Link to Bible')).toBeInTheDocument()
+
+    expect(screen.getByText('Information')).toBeInTheDocument()
+    expect(screen.getByText('What are Goals?')).toBeInTheDocument()
+    expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
+    expect(screen.getByText('Visit a Website')).toBeInTheDocument()
+    expect(screen.getByText('Link to Bible')).toBeInTheDocument()
   })
 
   it('should return action editor', () => {
-    const { getByDisplayValue, getByText } = render(
+    render(
       <MockedProvider>
-        <GoalDetails />
+        <EditorProvider >
+          <GoalDetails />
+        </EditorProvider>
       </MockedProvider>
     )
-    expect(getByDisplayValue('https://www.google.com/')).toBeInTheDocument()
-    expect(getByText('Visit a website')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('https://www.google.com/')).toBeInTheDocument()
+    expect(screen.getByText('Visit a website')).toBeInTheDocument()
   })
 
   it('should return action cards', () => {

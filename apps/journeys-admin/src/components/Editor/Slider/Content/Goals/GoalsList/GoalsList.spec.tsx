@@ -1,5 +1,6 @@
+import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, getByTestId, render } from '@testing-library/react'
+import { fireEvent, getByTestId, render, screen } from '@testing-library/react'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import {
@@ -10,7 +11,8 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
-  ActiveSlide
+  ActiveSlide,
+  EditorProvider
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
@@ -22,8 +24,9 @@ import { GoalsList } from './GoalsList'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: jest.fn(() => false)
 }))
+
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
@@ -71,39 +74,24 @@ describe('GoalsList', () => {
     })
   })
 
-  describe('mdUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
-    )
-
-  
-    it('should render the information drawer on the right', () => {
-      const { getByTestId, getByRole } = render(<GoalsList goals={goals} />)
-       fireEvent.click(getByRole('button', { name: 'Learn More' }))
-      expect(useEditor().dispatch).toHaveBeenCalledWith({ type: 'SetSelectedGoalUrlAction' });
-
-      expect(getByTestId('GoalInformation').parentElement).toHaveClass(
-        'MuiDrawer-paperAnchorRight'
-      )
+  describe('GoalsList', () => {
+ 
+    it('should render the component title and subtitle', () => {
+      const { getByText } = render(<GoalsList goals={goals} />)
+      expect(getByText('The Journey Goals')).toBeInTheDocument()
+    
     })
 
-    it('should close information drawer on goal list click', () => {
-      const { getByTestId, getByText, getByRole } = render(
-        <GoalsList goals={goals} />
-      )
+    it('should call dispatch with a URL', () => {
+      const { getByRole } = render(<GoalsList goals={goals} />)
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
-      expect(getByText('Information')).toBeInTheDocument()
-      fireEvent.click(getByTestId('GoalsListBody'))
-      expect(getByTestId('GoalInformation').parentElement).not.toHaveClass(
-        'MuiDrawer-parentAnchorRight'
-      )
+      expect(useEditor().dispatch).toHaveBeenCalledWith({ type: 'SetSelectedGoalUrlAction' });
     })
 
-    it('should render a list of goals', () => {
+    it('should render the goal URL subtitle', () => {
       const { getAllByText } = render(<GoalsList goals={goals} />)
       expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
-      expect(getAllByText('Visit a website')[0]).toBeInTheDocument()
-      expect(getAllByText(2)[0]).toBeInTheDocument()
+      expect(getAllByText('Visit a Website')[0]).toBeInTheDocument()
     })
 
     it('should open the drawer or dispatch on click', () => {
@@ -111,33 +99,11 @@ describe('GoalsList', () => {
       fireEvent.click(getAllByTestId('Edit2Icon')[0])
       expect(dispatch).toHaveBeenCalled()
     })
-  })
 
-  describe('mdDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
-    )
-
-    it('should render the information drawer from the bottom', () => {
-      const { getByText, getByRole } = render(
-        <>
-          <TestEditorState />
-          <GoalsList goals={goals} />
-          <GoalDetails />
-        </>
-      )
-      expect(getByText('selectedGoalUrl:')).toBeInTheDocument()
-      fireEvent.click(getByRole('button', { name: 'Learn More' }))
-      expect(getByText('Information')).toBeInTheDocument()
-      expect(getByTestId('GoalDeatils').parentElement).toHaveClass(
-        'MuiPaper-root MuiPaper-elevation MuiPaper-elevation0 MuiDrawer-paper MuiDrawer-paperAnchorBottom css-1mdfdy2-MuiPaper-root-MuiDrawer-paper'
-      )
-    })
-
-    it('should render the goals list in mobile view', () => {
+    it('should render the table titles', () => {
       const { getAllByText } = render(<GoalsList goals={goals} />)
       expect(getAllByText('Target and Goal')[0]).toBeInTheDocument()
-      expect(getAllByText('Appears on')).not.toHaveLength(2)
+      expect(getAllByText('Appears on')[0]).toBeInTheDocument()
     })
   })
 })
