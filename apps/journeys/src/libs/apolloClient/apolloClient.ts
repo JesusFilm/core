@@ -12,7 +12,7 @@ import { firebaseClient } from '../firebaseClient'
 import { cache } from './cache'
 
 const httpLink = createHttpLink({
-  uri: process.env.NEXT_PUBLIC_GATEWAY_URL
+  uri: process.env.GATEWAY_URL ?? '/api/graphql'
 })
 
 let signInPromise: Promise<UserCredential>

@@ -9,6 +9,7 @@ import {
   ChatButton,
   Host,
   Journey,
+  JourneyCollection,
   JourneyProfile,
   Prisma,
   Team,
@@ -874,6 +875,45 @@ describe('JourneyResolver', () => {
           'teamId'
         )
       ).rejects.toThrow('user is not allowed to create journey')
+    })
+
+    it('returns null when embedded and hostname are provided', async () => {
+      expect(
+        await resolver.journey('id', IdType.databaseId, {
+          embedded: true,
+          hostname: 'example.com'
+        })
+      ).toBeNull()
+    })
+
+    it('handles hostname', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(
+        await resolver.journey('id', IdType.databaseId, {
+          hostname: 'example.com'
+        })
+      ).toEqual(journey)
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 'id',
+          team: {
+            OR: [
+              {
+                customDomains: {
+                  some: { name: 'example.com', routeAllTeamJourneys: true }
+                }
+              },
+              {
+                journeyCollections: {
+                  some: {
+                    customDomains: { some: { name: 'example.com' } }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      })
     })
   })
 
@@ -2035,6 +2075,27 @@ describe('JourneyResolver', () => {
       } as unknown as Prisma.Prisma__JourneyClient<Journey>)
 
       expect(await resolver.tags({ ...journey })).toEqual([])
+    })
+  })
+
+  describe('journeyCollections', () => {
+    it('returns journeyCollections', async () => {
+      const journeyCollection: JourneyCollection = {
+        id: 'journeyCollectionId',
+        teamId: 'teamId',
+        title: 'title'
+      }
+      prismaService.journeyCollection.findMany.mockResolvedValueOnce([
+        journeyCollection
+      ])
+      expect(await resolver.journeyCollections(journey)).toEqual([
+        journeyCollection
+      ])
+      expect(prismaService.journeyCollection.findMany).toHaveBeenCalledWith({
+        where: {
+          journeyCollectionJourneys: { some: { journeyId: 'journeyId' } }
+        }
+      })
     })
   })
 })
