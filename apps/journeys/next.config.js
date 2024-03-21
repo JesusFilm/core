@@ -50,8 +50,7 @@ const nextConfig = {
     return [
       {
         source: '/api/graphql',
-        destination: process.env.GATEWAY_URL,
-        locale: false
+        destination: process.env.GATEWAY_URL
       }
     ]
   }
