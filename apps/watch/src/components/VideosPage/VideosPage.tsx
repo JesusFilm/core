@@ -4,8 +4,9 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import algoliasearch from 'algoliasearch'
+import isEqual from 'lodash/isEqual'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
@@ -44,7 +45,10 @@ export const GET_LANGUAGES = gql`
   }
 `
 
-export const limit = 20
+function isAtEnd(currentPage: number, totalPages: number): boolean {
+  if (currentPage === totalPages) return true
+  return false
+}
 
 export interface VideoPageFilter {
   availableVariantLanguageIds?: string[]
@@ -66,10 +70,9 @@ const index = searchClient.initIndex('video-variants')
 export function VideosPage({ videos }: VideoProps): ReactElement {
   const router = useRouter()
   const [hits, setHits] = useState([])
-
-  // const { status } = useInstantSearch()
-  // const { query: algoliaQuery, refine } = useSearchBox()
-  // const { hits, isLastPage, showMore } = useInfiniteHits()
+  const [currentPage, setCurrentPage] = useState(0)
+  const [totalPages, setTotalPages] = useState<number | undefined>()
+  const [isEnd, setIsEnd] = useState(false)
 
   // we intentionally use window.location.search to prevent multiple renders
   // which occurs when using const { query } = useRouter()
@@ -84,55 +87,67 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
   const getQueryParamArray = (param: string | null): string[] | undefined =>
     param != null ? [param] : undefined
 
-  const availableVariantLanguageIds = getQueryParamArray(query.get('languages'))
-
   const filter: VideoPageFilter = useMemo(() => {
     return {
-      availableVariantLanguageIds,
+      availableVariantLanguageIds: getQueryParamArray(query.get('languages')),
       subtitleLanguageIds: getQueryParamArray(query.get('subtitles')),
       title:
         query.get('title') != null ? (query.get('title') as string) : undefined
     }
-  }, [availableVariantLanguageIds, query])
+  }, [query])
 
-  console.log('filter', filter)
+  const handleSearch = useCallback(
+    async ({
+      availableVariantLanguageIds,
+      subtitleLanguageIds,
+      title
+    }): Promise<void> => {
+      const previousFilter: VideoPageFilter = {
+        availableVariantLanguageIds,
+        subtitleLanguageIds,
+        title
+      }
 
-  // const formattedString = Object.values(filter)
-  //   .filter((query) => query !== undefined)
-  //   .join(' ')
+      console.log(availableVariantLanguageIds, subtitleLanguageIds, title)
 
-  async function handleSearch({
-    title,
-    availableVariantLanguageIds,
-    subtitleLanguageIds
-  }): Promise<void> {
-    try {
-      const subtitleString =
-        subtitleLanguageIds !== undefined
-          ? ` AND subtitles:${subtitleLanguageIds}`
-          : ''
+      try {
+        const subtitleString =
+          subtitleLanguageIds !== undefined
+            ? ` AND subtitles:${subtitleLanguageIds}`
+            : ''
 
-      const { hits } = await index.search(title, {
-        filters: `languageId:${availableVariantLanguageIds}${subtitleString}`
-      })
-      console.log(hits)
-      setHits(hits)
-    } catch (error) {
-      console.error('Error occurred while searching:', error)
-    }
-  }
+        const {
+          hits: resultHits,
+          page,
+          nbPages: totalPages
+        } = await index.search(title, {
+          page: currentPage,
+          filters: `languageId:${
+            availableVariantLanguageIds ?? '529'
+          }${subtitleString}`
+        })
+
+        const newHits = isEqual(previousFilter, filter)
+          ? [...hits, ...resultHits]
+          : resultHits
+
+        setHits(newHits)
+
+        setCurrentPage(page)
+        setTotalPages(totalPages)
+      } catch (error) {
+        console.error('Error occurred while searching:', error)
+      }
+    },
+    [currentPage, filter, hits]
+  )
 
   useEffect(() => {
-    const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
-
-    void handleSearch({
-      title: title ?? '',
-      availableVariantLanguageIds: availableVariantLanguageIds?.[0] ?? '529',
-      subtitleLanguageIds: subtitleLanguageIds?.[0]
-    })
-  }, [filter])
+    setIsEnd(isAtEnd(currentPage ?? 0, totalPages ?? 0))
+  }, [filter, setIsEnd, currentPage, totalPages, handleSearch])
 
   function handleFilterChange(filter: VideoPageFilter): void {
+    const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
     const params = new URLSearchParams()
 
     const setQueryParam = (paramName: string, value?: string | null): void => {
@@ -148,10 +163,17 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     void router.push(`/videos?${params.toString()}`, undefined, {
       shallow: true
     })
-  }
-  const algoliaVideos = convertAlgoliaVideos(hits)
-  console.log('algoliaVideos', algoliaVideos)
 
+    void handleSearch({
+      title,
+      availableVariantLanguageIds: availableVariantLanguageIds?.[0],
+      subtitleLanguageIds: subtitleLanguageIds?.[0]
+    })
+  }
+
+  const algoliaVideos = convertAlgoliaVideos(hits)
+
+  // when user has query, and no results, don't return local
   const localVideos = videos.filter((video) => video !== null)
 
   const { data: languagesData, loading: languagesLoading } =
@@ -160,11 +182,18 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     })
 
   const handleLoadMore = async (): Promise<void> => {
-    showMore()
+    const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
+
+    if (isEnd) return
+    setCurrentPage(currentPage + 1)
+    void handleSearch({
+      title,
+      availableVariantLanguageIds: availableVariantLanguageIds?.[0],
+      subtitleLanguageIds: subtitleLanguageIds?.[0]
+    })
   }
 
   return (
-    // <InstantSearch searchClient={searchClient} indexName="video-variants">
     <PageWrapper hero={<VideosHero />} testId="VideosPage">
       <Container maxWidth="xxl">
         <VideosSubHero />
@@ -185,16 +214,15 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
           </Box>
           <Box sx={{ width: '100%' }}>
             <VideoGrid
-              videos={algoliaVideos}
+              videos={hits.length === 0 ? localVideos : algoliaVideos}
               onLoadMore={handleLoadMore}
-              // loading={status === 'loading' || status === 'stalled'}
-              // hasNextPage={algoliaQuery === '' ? false : !isLastPage}
+              loading={hits.length === 0}
+              hasNextPage={!isEnd}
               variant="expanded"
             />
           </Box>
         </Stack>
       </Container>
     </PageWrapper>
-    // </InstantSearch>
   )
 }

@@ -9,6 +9,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
 import type { VideoPageFilter } from '../VideosPage'
@@ -181,6 +182,7 @@ export function FilterList({
               fullWidth
             />
           </Stack>
+          <SubmitListener />
         </Stack>
       )}
     </Formik>
