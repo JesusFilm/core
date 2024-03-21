@@ -6,8 +6,8 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -40,7 +40,7 @@ export function LanguageSwitcher({
     setPreviousLanguageCode(currentLanguageCode)
     setCurrentLanguageCode(languageCode)
 
-    const cookieFingerprint = '00001'
+    const cookieFingerprint = '00002'
     document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${languageCode}; path=/`
     const path = router.asPath
     void router.push(path, path, { locale: languageCode })
@@ -60,8 +60,9 @@ export function LanguageSwitcher({
     )?.locales
 
     if (supportedLanguageCodes == null) return
-    const formattedLanguages = supportedLanguageCodes.map(
-      (languageCode): Language => {
+    const formattedLanguages = supportedLanguageCodes
+      .filter((languageCode) => languageCode !== 'zh')
+      .map((languageCode): Language => {
         const nativeName = new Intl.DisplayNames([currentLanguageCode], {
           type: 'language'
         }).of(languageCode)
@@ -74,8 +75,7 @@ export function LanguageSwitcher({
           nativeName: nativeName === localName ? undefined : nativeName,
           localName: localName ?? ''
         }
-      }
-    )
+      })
     setLanguages(formattedLanguages)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLanguageCode])

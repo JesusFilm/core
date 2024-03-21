@@ -3,6 +3,7 @@ import Paper from '@mui/material/Paper'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import {
   Dispatch,
   ReactElement,
@@ -10,7 +11,6 @@ import {
   SyntheticEvent,
   useState
 } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 

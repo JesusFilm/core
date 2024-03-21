@@ -5,12 +5,11 @@ import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/system/Box'
 import NextLink from 'next/link'
 import { withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import {
   JourneysEmailPreference,
@@ -21,6 +20,7 @@ import {
   UpdateJourneysEmailPreferenceVariables,
   UpdateJourneysEmailPreference_updateJourneysEmailPreference
 } from '../../__generated__/UpdateJourneysEmailPreference'
+import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 const GET_EMAIL_PREFERENCE = gql`
@@ -93,13 +93,7 @@ function EmailPreferencesPage({
     }
 
   return (
-    <Stack
-      justifyContent="center"
-      alignItems="center"
-      sx={{
-        height: '100vh'
-      }}
-    >
+    <OnboardingPageWrapper emailSubject="a question about email preferences">
       <Stack
         sx={{
           maxWidth: '400px'
@@ -143,16 +137,7 @@ function EmailPreferencesPage({
           </Button>
         </NextLink>
       </Stack>
-      <Box sx={{ mt: 40 }}>
-        <Button
-          variant="text"
-          component="a"
-          href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
-        >
-          {t('Feedback & Support')}
-        </Button>
-      </Box>
-    </Stack>
+    </OnboardingPageWrapper>
   )
 }
 

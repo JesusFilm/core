@@ -11,15 +11,6 @@ import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { MetadataTabPanel } from './MetadataTabPanel'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('MetadataTabPanel', () => {
   afterEach(() => jest.clearAllMocks())
 

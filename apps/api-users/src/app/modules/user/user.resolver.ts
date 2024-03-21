@@ -10,14 +10,36 @@ import {
 import { GraphQLError } from 'graphql'
 
 import { User } from '.prisma/api-users-client'
-import { auth, impersonateUser } from '@core/nest/common/firebaseClient'
+import { impersonateUser } from '@core/nest/common/firebaseClient'
+import { CurrentIPAddress } from '@core/nest/decorators/CurrentIPAddress'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 
+import {
+  CreateVerificationRequestInput,
+  MeInput
+} from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserService } from './user.service'
+
+export function validateIpV4(s: string | null): boolean {
+  if (s == null) return true // localhost
+
+  const match = s.match(/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/g)
+  const ip = match?.[0] ?? ''
+  return (
+    ip === '3.13.104.200' || // prod aws nat
+    ip === '18.225.26.131' || // stage aws nat
+    ip === '127.0.0.1' // localhsot
+  )
+}
+
+export function isValidInterOp(token: string, address: string): boolean {
+  const validIp = validateIpV4(address)
+  return token === process.env.INTEROP_TOKEN && validIp
+}
 
 @Resolver('User')
 export class UserResolver {
@@ -28,16 +50,24 @@ export class UserResolver {
 
   @Query()
   @UseGuards(GqlAuthGuard)
-  async me(@CurrentUserId() userId: string): Promise<User> {
-    return await this.findOrFetchUser(userId)
+  async me(
+    @CurrentUserId() userId: string,
+    @Args('input') input?: MeInput
+  ): Promise<User> {
+    return await this.userService.findOrFetchUser(
+      userId,
+      input?.redirect ?? undefined
+    )
   }
 
   @Query()
   async user(
     @Args('id') id: string,
-    @Context() context: { headers: Record<string, string> }
+    @CurrentIPAddress() ipAddress: string,
+    @Context()
+    context: { headers: Record<string, string> }
   ): Promise<User | null> {
-    if (context.headers['interop-token'] !== process.env.INTEROP_TOKEN) {
+    if (!isValidInterOp(context.headers['interop-token'], ipAddress)) {
       throw new GraphQLError('Invalid Interop Token')
     }
     return await this.prismaService.user.findUnique({ where: { userId: id } })
@@ -46,9 +76,11 @@ export class UserResolver {
   @Query()
   async userByEmail(
     @Args('email') email: string,
-    @Context() context: { headers: Record<string, string> }
+    @CurrentIPAddress() ipAddress: string,
+    @Context()
+    context: { headers: Record<string, string> }
   ): Promise<User | null> {
-    if (context.headers['interop-token'] !== process.env.INTEROP_TOKEN) {
+    if (!isValidInterOp(context.headers['interop-token'], ipAddress)) {
       throw new GraphQLError('Invalid Interop Token')
     }
     return await this.prismaService.user.findUnique({ where: { email } })
@@ -91,75 +123,7 @@ export class UserResolver {
     __typename: 'User'
     id: string
   }): Promise<User> {
-    return await this.findOrFetchUser(reference.id)
-  }
-
-  private async findOrFetchUser(userId: string): Promise<User> {
-    const existingUser = await this.prismaService.user.findUnique({
-      where: {
-        userId
-      }
-    })
-    if (existingUser != null && existingUser.emailVerified == null) {
-      const user = await this.prismaService.user.update({
-        where: {
-          id: userId
-        },
-        data: {
-          emailVerified: false
-        }
-      })
-      return user
-    }
-
-    if (existingUser != null && existingUser.emailVerified != null)
-      return existingUser
-
-    const {
-      displayName,
-      email,
-      emailVerified,
-      photoURL: imageUrl
-    } = await auth.getUser(userId)
-
-    const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
-    const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''
-
-    const data = {
-      userId,
-      firstName,
-      lastName,
-      email: email ?? '',
-      imageUrl,
-      emailVerified
-    }
-
-    let user: User | null = null
-    let retry = 0
-
-    // this function can run in parallel as such it is possible for multiple
-    // calls to reach this point and try to create the same user
-    // due to the earlier firebase async call.
-    try {
-      user = await this.prismaService.user.create({
-        data
-      })
-      // after user create so it is ony sent once
-      if (!emailVerified && email != null) {
-        await this.userService.verifyUser(userId, email)
-      }
-    } catch (e) {
-      do {
-        user = await this.prismaService.user.update({
-          where: {
-            id: userId
-          },
-          data
-        })
-        retry++
-      } while (user == null && retry < 3)
-    }
-    return user
+    return await this.userService.findOrFetchUser(reference.id)
   }
 
   @Mutation()
@@ -185,11 +149,18 @@ export class UserResolver {
   }
 
   @Mutation()
-  async createVerificationRequest(@CurrentUser() user: User): Promise<boolean> {
+  async createVerificationRequest(
+    @CurrentUser() user: User,
+    @Args('input') input?: CreateVerificationRequestInput
+  ): Promise<boolean> {
     if (user == null)
       throw new GraphQLError('User not found', { extensions: { code: '404' } })
 
-    await this.userService.verifyUser(user.id, user.email)
+    await this.userService.verifyUser(
+      user.id,
+      user.email,
+      input?.redirect ?? undefined
+    )
     return true
   }
 }

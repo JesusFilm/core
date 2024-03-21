@@ -53,8 +53,10 @@ jobs:
           targets: prisma-generate
           all: true
           parallel: 1
+        env:
+          DISABLE_ERD: true
       - name: NPM apollo and graphql for codegen
-        run: npm i -g apollo graphql @apollo/rover@0.16.2
+        run: npm i -g apollo graphql @apollo/rover@0.22.0
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -118,6 +120,8 @@ jobs:
           targets: prisma-generate
           all: true
           parallel: 1
+        env:
+          DISABLE_ERD: true
       - name: Install Doppler
         run: |
           sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
@@ -189,6 +193,8 @@ jobs:
           targets: prisma-generate
           all: true
           parallel: 1
+        env:
+          DISABLE_ERD: true
       - name: Get number of CPU cores
         id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v2

@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { Trans, useTranslation } from 'react-i18next'
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 

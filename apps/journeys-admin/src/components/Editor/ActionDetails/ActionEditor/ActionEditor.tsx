@@ -2,8 +2,8 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -78,6 +78,7 @@ export function ActionEditor({
     if (journey == null) return
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     blocks.map(async (block) => {
       await linkActionUpdate({
         variables: {

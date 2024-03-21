@@ -68,7 +68,7 @@ jobs:
         run: npm install -g nx --silent
 
       - name: rover Install
-        run: npm install -g @apollo/rover@0.16.2
+        run: npm install -g @apollo/rover@0.22.0
 
       - name: Get affected apps
         run: |
@@ -89,7 +89,8 @@ jobs:
           targets: prisma-generate
           projects: ${{ inputs.name }}
           parallel: 1
-
+        env:
+          DISABLE_ERD: true
       - name: Build ${{ inputs.name }}
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3

@@ -11,16 +11,14 @@ export class LoginPage {
   }
 
   async fillExistingEmail(email: string): Promise<void> {
-    await this.page.getByLabel('Email').fill(email)
-    await expect(this.page.locator('input[name="email"]')).toHaveValue(email)
-  }
-
-  async clickNextButton(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Next' }).click()
+    await this.page
+      .getByPlaceholder('Enter your email address here')
+      .fill(email)
+    await expect(this.page.locator('input[type="email"]')).toHaveValue(email)
   }
 
   async fillExistingPassword(password: string): Promise<void> {
-    await this.page.getByLabel('Password').fill(password)
+    await this.page.getByPlaceholder('Enter Password').fill(password)
   }
 
   async clickSubmitButton(): Promise<void> {
@@ -30,7 +28,7 @@ export class LoginPage {
   async login(): Promise<void> {
     const email = await getEmail()
     await this.fillExistingEmail(email)
-    await this.clickNextButton()
+    await this.clickSubmitButton()
     const password = await getPassword()
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()

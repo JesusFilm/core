@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { MeInput } from "./globalTypes";
+
 // ====================================================
 // GraphQL query operation: GetMe
 // ====================================================
@@ -20,4 +22,8 @@ export interface GetMe_me {
 
 export interface GetMe {
   me: GetMe_me | null;
+}
+
+export interface GetMeVariables {
+  input?: MeInput | null;
 }

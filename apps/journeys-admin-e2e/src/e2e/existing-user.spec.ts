@@ -12,7 +12,6 @@ test('Existing user can login and logout successfully', async ({ page }) => {
   const loginPage = new LoginPage(page)
 
   await landingPage.goToAdminUrl()
-  await landingPage.clickSignInWithEmail()
 
   await loginPage.login()
 

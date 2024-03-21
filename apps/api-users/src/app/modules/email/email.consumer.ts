@@ -11,6 +11,7 @@ export interface VerifyUserJob {
   userId: string
   email: string
   token: string
+  redirect: string | undefined
 }
 
 export type ApiUsersJob = VerifyUserJob
@@ -37,9 +38,19 @@ export class EmailConsumer extends WorkerHost {
     if (job.data.email.includes('+'))
       emailAlias = job.data.email.replace(/\+/g, '%2B')
 
+    let redirectParam = ''
+
+    if (job.data.redirect != null) {
+      if (job.data.redirect.includes('redirect')) {
+        redirectParam = `&${job.data.redirect.replace(/\?/, '')}`
+      } else {
+        redirectParam = `&redirect=${job.data.redirect}`
+      }
+    }
+
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${
       job.data.token
-    }&email=${emailAlias ?? job.data.email}`
+    }&email=${emailAlias ?? job.data.email}${redirectParam}`
 
     const user = await this.prismaService.user.findUnique({
       where: { userId: job.data.userId }
