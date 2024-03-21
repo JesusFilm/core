@@ -202,12 +202,6 @@ export abstract class IQuery {
     abstract resource(id: string): Resource | Promise<Resource>;
 }
 
-export abstract class ISubscription {
-    __typename?: 'ISubscription';
-
-    abstract batchStatusChanged(id: string): Nullable<Batch> | Promise<Nullable<Batch>>;
-}
-
 export class Channel {
     __typename?: 'Channel';
     id: string;

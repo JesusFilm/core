@@ -35,6 +35,76 @@ input AddResourceFromGoogleDriveInput
   nexusId: String!
 }
 
+type Batch
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  nexusId: String!
+  channelId: String!
+  channel: Channel
+  resources: [BatchResource]
+  name: String!
+  status: BatchStatus!
+  averagePercent: Float
+  createdAt: DateTime!
+}
+
+input BatchFilter
+  @join__type(graph: NEXUS)
+{
+  ids: [ID!]
+  name: String
+  nexusId: String
+  status: BatchStatus
+  limit: Int
+}
+
+input BatchJobBatch
+  @join__type(graph: NEXUS)
+{
+  id: ID!
+  batchName: String!
+}
+
+input BatchJobInput
+  @join__type(graph: NEXUS)
+{
+  batch: BatchJobBatch!
+  resources: [BatchJobResource]!
+}
+
+input BatchJobResource
+  @join__type(graph: NEXUS)
+{
+  resource: ID!
+  channel: ID!
+}
+
+type BatchResource
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  batchId: String!
+  resourceId: String!
+  isCompleted: Boolean
+  error: String
+  percent: Float
+}
+
+enum BatchStatus
+  @join__type(graph: NEXUS)
+{
+  pending @join__enumValue(graph: NEXUS)
+  running @join__enumValue(graph: NEXUS)
+  completed @join__enumValue(graph: NEXUS)
+  failed @join__enumValue(graph: NEXUS)
+  cancelled @join__enumValue(graph: NEXUS)
+  paused @join__enumValue(graph: NEXUS)
+  error @join__enumValue(graph: NEXUS)
+  warning @join__enumValue(graph: NEXUS)
+  scheduled @join__enumValue(graph: NEXUS)
+}
+
 interface Block
   @join__type(graph: JOURNEYS)
 {
@@ -42,6 +112,13 @@ interface Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+}
+
+input BlocksFilter
+  @join__type(graph: JOURNEYS)
+{
+  journeyIds: [ID!]
+  typenames: [String!]
 }
 
 type Browser
@@ -267,6 +344,7 @@ type Channel
   connected: Boolean
   youtube: ChannelYoutube
   status: ChannelStatus!
+  createdAt: DateTime!
 }
 
 input ChannelCreateInput
@@ -419,6 +497,12 @@ input ConnectYoutubeChannelInput
   channelId: String!
   authCode: String!
   redirectUri: String!
+}
+
+input CreateVerificationRequestInput
+  @join__type(graph: USERS)
+{
+  redirect: String
 }
 
 scalar DateTime
@@ -1156,6 +1240,12 @@ input LinkActionInput
   target: String
 }
 
+input MeInput
+  @join__type(graph: USERS)
+{
+  redirect: String
+}
+
 enum MessagePlatform
   @join__type(graph: JOURNEYS)
 {
@@ -1411,8 +1501,9 @@ type Mutation
   resourceFromTemplate(nexusId: String!, tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!] @join__field(graph: NEXUS)
   getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse! @join__field(graph: NEXUS)
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean @join__field(graph: NEXUS)
+  resourceBatchJob(input: BatchJobInput!): String @join__field(graph: NEXUS)
   userImpersonate(email: String!): String @join__field(graph: USERS)
-  createVerificationRequest: Boolean @join__field(graph: USERS)
+  createVerificationRequest(input: CreateVerificationRequestInput): Boolean @join__field(graph: USERS)
   validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
 }
 
@@ -1567,6 +1658,7 @@ type Query
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
+  blocks(where: BlocksFilter): [Block!]! @join__field(graph: JOURNEYS)
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
@@ -1637,6 +1729,8 @@ type Query
   getMyCloudflareVideo(id: ID!): CloudflareVideo @join__field(graph: MEDIA)
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
+  batches(where: BatchFilter): [Batch!] @join__field(graph: NEXUS)
+  batch(id: ID!): Batch! @join__field(graph: NEXUS)
   channels(where: ChannelFilter): [Channel!] @join__field(graph: NEXUS)
   channel(id: ID!): Channel! @join__field(graph: NEXUS)
   nexuses(where: NexusFilter): [Nexus!]! @join__field(graph: NEXUS)
@@ -1644,7 +1738,7 @@ type Query
   resources(where: ResourceFilter): [Resource!] @join__field(graph: NEXUS)
   resource(id: ID!): Resource! @join__field(graph: NEXUS)
   tags: [Tag!]! @join__field(graph: TAGS)
-  me: User @join__field(graph: USERS)
+  me(input: MeInput): User @join__field(graph: USERS)
   user(id: ID!): User @join__field(graph: USERS)
   userByEmail(email: String!): User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
@@ -1747,7 +1841,7 @@ type Resource
   createdAt: DateTime!
   updatedAt: DateTime
   deletedAt: DateTime
-  googleDriveLink: String!
+  googleDriveLink: String
   category: String!
   privacy: PrivacyStatus!
   sourceType: SourceType!
@@ -1945,6 +2039,18 @@ type StepBlock implements Block
   locked: Boolean!
   parentBlockId: ID
   parentOrder: Int
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 input StepBlockCreateInput
@@ -1954,6 +2060,18 @@ input StepBlockCreateInput
   journeyId: ID!
   nextBlockId: ID
   locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 input StepBlockUpdateInput
@@ -1961,6 +2079,18 @@ input StepBlockUpdateInput
 {
   nextBlockId: ID
   locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 type StepNextEvent implements Event
