@@ -29,6 +29,7 @@ type Journey @key(fields: "id") {
   team: Team
   strategySlug: String
   tags: [Tag!]!
+  journeyCollections: [JourneyCollection!]!
 }
 
 enum IdType {
@@ -58,6 +59,15 @@ input JourneysFilter {
   does not have a custom domain.
   """
   hostname: String
+}
+
+input JourneysQueryOptions {
+  """
+  hostname filters journeys to those that belong to a team with a custom domain
+  matching the hostname.
+  """
+  hostname: String
+  embedded: Boolean
 }
 
 enum JourneysReportType {
@@ -108,17 +118,8 @@ extend type Query {
   ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
-  journeys(where: JourneysFilter): [Journey!]!
-  journey(
-    id: ID!
-    idType: IdType
-    """
-    hostname is required if the journey being searched for belongs to a team with
-    a custom domain. Not providing it will search journeys where the team does
-    not have a custom domain.
-    """
-    hostname: String
-  ): Journey!
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
 }
 
 input JourneyCreateInput {

@@ -48,6 +48,14 @@ const nextConfig = {
         'node_modules/esbuild-linux-64/bin'
       ]
     }
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/graphql',
+        destination: process.env.GATEWAY_URL
+      }
+    ]
   }
 }
 module.exports = composePlugins(withNx)(nextConfig)

@@ -36,6 +36,13 @@ interface Block
   parentOrder: Int
 }
 
+input BlocksFilter
+  @join__type(graph: JOURNEYS)
+{
+  journeyIds: [ID!]
+  typenames: [String!]
+}
+
 type Browser
   @join__type(graph: JOURNEYS)
 {
@@ -350,6 +357,43 @@ input CreateVerificationRequestInput
   @join__type(graph: USERS)
 {
   redirect: String
+}
+
+type CustomDomain
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  team: Team!
+  name: String!
+  apexName: String!
+  journeyCollection: JourneyCollection
+  verification: CustomDomainVerification
+  routeAllTeamJourneys: Boolean!
+}
+
+input CustomDomainCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  teamId: String!
+  name: String!
+  journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
+}
+
+input CustomDomainUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  name: String
+  journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
+}
+
+type CustomDomainVerification
+  @join__type(graph: JOURNEYS)
+{
+  verified: Boolean!
+  verification: [VercelDomainVerification]
 }
 
 scalar DateTime
@@ -725,7 +769,36 @@ type Journey
   team: Team
   strategySlug: String
   tags: [Tag!]!
+  journeyCollections: [JourneyCollection!]!
   userJourneys: [UserJourney!]
+}
+
+type JourneyCollection
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  team: Team!
+  title: String
+  customDomains: [CustomDomain!]
+  journeys: [Journey!]
+}
+
+input JourneyCollectionCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID
+  teamId: String!
+  title: String
+  journeyIds: [String!]
+  customDomain: CustomDomainCreateInput
+}
+
+input JourneyCollectionUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  title: String
+  journeyIds: [String!]
 }
 
 input JourneyCreateInput
@@ -801,6 +874,17 @@ input JourneysFilter
   does not have a custom domain.
   """
   hostname: String
+}
+
+input JourneysQueryOptions
+  @join__type(graph: JOURNEYS)
+{
+  """
+  hostname filters journeys to those that belong to a team with a custom domain
+  matching the hostname.
+  """
+  hostname: String
+  embedded: Boolean
 }
 
 enum JourneysReportType
@@ -1237,6 +1321,9 @@ type Mutation
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainUpdate(input: CustomDomainUpdateInput!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainDelete(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
@@ -1280,6 +1367,9 @@ type Mutation
 
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
+  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyCollectionUpdate(input: JourneyCollectionUpdateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyCollectionDelete(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
@@ -1428,7 +1518,10 @@ type Query
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
+  blocks(where: BlocksFilter): [Block!]! @join__field(graph: JOURNEYS)
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
+  customDomain(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomains(teamId: ID!): [CustomDomain!]! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
   """
@@ -1447,18 +1540,10 @@ type Query
   ): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   adminJourney(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
-  journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
-  journey(
-    id: ID!
-    idType: IdType
-
-    """
-    hostname is required if the journey being searched for belongs to a team with
-    a custom domain. Not providing it will search journeys where the team does
-    not have a custom domain.
-    """
-    hostname: String
-  ): Journey! @join__field(graph: JOURNEYS)
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]! @join__field(graph: JOURNEYS)
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey! @join__field(graph: JOURNEYS)
+  journeyCollection(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyCollections(teamId: ID!): [JourneyCollection]! @join__field(graph: JOURNEYS)
   getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
 
   """Get a list of Visitor Information by Journey"""
@@ -1724,6 +1809,18 @@ type StepBlock implements Block
   locked: Boolean!
   parentBlockId: ID
   parentOrder: Int
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 input StepBlockCreateInput
@@ -1733,6 +1830,18 @@ input StepBlockCreateInput
   journeyId: ID!
   nextBlockId: ID
   locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 input StepBlockUpdateInput
@@ -1740,6 +1849,18 @@ input StepBlockUpdateInput
 {
   nextBlockId: ID
   locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 type StepNextEvent implements Event
@@ -1875,6 +1996,7 @@ type Team
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
+  customDomains: [CustomDomain!]!
 }
 
 input TeamCreateInput
@@ -2299,6 +2421,15 @@ input UserTeamUpdateInput
   @join__type(graph: JOURNEYS)
 {
   role: UserTeamRole!
+}
+
+type VercelDomainVerification
+  @join__type(graph: JOURNEYS)
+{
+  type: String
+  domain: String
+  value: String
+  reason: String
 }
 
 type Video

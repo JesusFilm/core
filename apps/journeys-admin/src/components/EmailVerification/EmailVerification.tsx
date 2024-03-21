@@ -3,6 +3,7 @@ import Button from '@mui/material/Button'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
@@ -16,8 +17,8 @@ interface EmailVerificationDialogProps {
 }
 
 export const CREATE_VERIFICATION_REQUEST = gql`
-  mutation CreateVerificationRequest {
-    createVerificationRequest
+  mutation CreateVerificationRequest($input: CreateVerificationRequestInput) {
+    createVerificationRequest(input: $input)
   }
 `
 
@@ -29,9 +30,13 @@ export function EmailVerification({
   const [buttonDisabled, setButtonDisabled] = useState(false)
   const [createVerificationRequest, { error }] =
     useMutation<CreateVerificationRequest>(CREATE_VERIFICATION_REQUEST)
+  const router = useRouter()
+
   const onSendverificationEmail = async (): Promise<void> => {
     setButtonDisabled(true)
-    await createVerificationRequest()
+    await createVerificationRequest({
+      variables: { input: { redirect: router.query.redirect } }
+    })
     setTimeout(() => {
       setButtonDisabled(false)
     }, 3000)
