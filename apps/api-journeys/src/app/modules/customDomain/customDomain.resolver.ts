@@ -22,8 +22,7 @@ import {
   CustomDomainCreateInput,
   CustomDomain as CustomDomainGQL,
   CustomDomainUpdateInput,
-  CustomDomainVerification,
-  JourneyCollection as JourneyCollectionGQL
+  CustomDomainVerification
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'

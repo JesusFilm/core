@@ -673,6 +673,45 @@ describe('JourneyResolver', () => {
         orderBy: { publishedAt: 'desc' }
       })
     })
+
+    it('returns empty when embedded and hostname are provided', async () => {
+      expect(
+        await resolver.journeys(undefined, {
+          embedded: true,
+          hostname: 'example.com'
+        })
+      ).toEqual([])
+    })
+
+    it('handles hostname', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(
+        await resolver.journeys(undefined, { hostname: 'example.com' })
+      ).toEqual([journey, journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published',
+          OR: [
+            {
+              team: {
+                customDomains: {
+                  some: { name: 'example.com', routeAllTeamJourneys: true }
+                }
+              }
+            },
+            {
+              journeyCollectionJourneys: {
+                some: {
+                  journeyCollection: {
+                    customDomains: { some: { name: 'example.com' } }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      })
+    })
   })
 
   describe('journey', () => {
