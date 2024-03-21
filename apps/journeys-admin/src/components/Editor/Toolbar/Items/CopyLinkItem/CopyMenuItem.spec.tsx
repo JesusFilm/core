@@ -38,7 +38,7 @@ describe('CopyLinkItem', () => {
                 variant: 'admin'
               }}
             >
-              <CopyLinkItem variant="button" onClose={onClose} />
+              <CopyLinkItem variant="menu-item" onClose={onClose} />
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>
@@ -76,7 +76,7 @@ describe('CopyLinkItem', () => {
                 variant: 'admin'
               }}
             >
-              <CopyLinkItem variant="button" onClose={onClose} />
+              <CopyLinkItem variant="menu-item" onClose={onClose} />
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>

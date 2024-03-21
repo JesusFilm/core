@@ -1,5 +1,6 @@
+import Box from '@mui/material/Box'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Play3Icon from '@core/shared/ui/icons/Play3'
@@ -18,12 +19,14 @@ export function PreviewItem({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   return (
-    <Item
-      variant={variant}
-      href={`/api/preview?slug=${journey?.slug}`}
-      label={t('Preview')}
-      icon={<Play3Icon />}
-      onClick={onClick}
-    />
+    <Box data-testid="PreviewItem">
+      <Item
+        variant={variant}
+        href={`/api/preview?slug=${journey?.slug}`}
+        label={t('Preview')}
+        icon={<Play3Icon />}
+        onClick={onClick}
+      />
+    </Box>
   )
 }

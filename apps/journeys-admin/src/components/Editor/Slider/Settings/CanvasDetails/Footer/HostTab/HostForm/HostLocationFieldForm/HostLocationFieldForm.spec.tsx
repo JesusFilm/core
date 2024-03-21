@@ -3,7 +3,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import {
+  JourneyFields_host as Host,
+  JourneyFields as Journey
+} from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation'
 import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
@@ -69,10 +72,15 @@ describe('HostLocationFieldForm', () => {
     )
   })
 
-  it('should clear the field', () => {
+  it('should clear the field if host is null', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider
+          value={{
+            journey: { ...journey, host: null },
+            variant: 'admin'
+          }}
+        >
           <HostLocationFieldForm />
         </JourneyProvider>
       </MockedProvider>
@@ -84,10 +92,41 @@ describe('HostLocationFieldForm', () => {
     )
   })
 
-  it('should disable the field', () => {
+  it('should clear the field if host location is null', () => {
+    const hostWithNoLocation: Host = {
+      id: 'hostId',
+      __typename: 'Host',
+      teamId: 'teamId',
+      title: 'Cru International',
+      location: null,
+      src1: null,
+      src2: null
+    }
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider
+          value={{
+            journey: { ...journey, host: hostWithNoLocation },
+            variant: 'admin'
+          }}
+        >
+          <HostLocationFieldForm />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('textbox', { name: 'Location' })).toHaveAttribute(
+      'value',
+      ''
+    )
+  })
+
+  it('should disable the field if host is null', () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+        >
           <HostLocationFieldForm />
         </JourneyProvider>
       </MockedProvider>
