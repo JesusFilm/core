@@ -13,7 +13,7 @@ import { ShareItem } from './ShareItem'
 const ShareItemStory: Meta<typeof ShareItem> = {
   ...simpleComponentConfig,
   component: ShareItem,
-  title: 'Journeys-Admin/JourneyView/ShareItem'
+  title: 'Journeys-Admin/Editor/Toolbar/Items/ShareItem'
 }
 
 const Template: StoryObj<typeof ShareItem> = {

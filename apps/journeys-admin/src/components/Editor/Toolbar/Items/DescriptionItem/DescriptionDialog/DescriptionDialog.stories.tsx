@@ -13,7 +13,7 @@ import { DescriptionDialog, JOURNEY_DESC_UPDATE } from './DescriptionDialog'
 const DescriptionDialogStory: Meta<typeof DescriptionDialog> = {
   ...journeysAdminConfig,
   component: DescriptionDialog,
-  title: 'Journeys-Admin/JourneyView/Menu/DescriptionDialog',
+  title: 'Journeys-Admin/Editor/Toolbar/Items/DescriptionDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'

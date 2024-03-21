@@ -15,7 +15,7 @@ import { TemplateSettingsDialog } from './TemplateSettingsDialog'
 const TemplateSettingsDialogStory: Meta<typeof TemplateSettingsDialog> = {
   ...journeysAdminConfig,
   component: TemplateSettingsDialog,
-  title: 'Journeys-Admin/TemplateSettingsDialog',
+  title: 'Journeys-Admin/Editor/Toolbar/Items/TemplateSettingsDialog',
   parameters: {
     ...journeysAdminConfig.parameters
   }

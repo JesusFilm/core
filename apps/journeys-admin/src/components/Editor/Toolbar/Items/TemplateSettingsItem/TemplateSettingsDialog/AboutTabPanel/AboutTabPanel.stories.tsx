@@ -14,7 +14,8 @@ import { AboutTabPanel } from './AboutTabPanel'
 const AboutTabPanelStory: Meta<typeof AboutTabPanel> = {
   ...simpleComponentConfig,
   component: AboutTabPanel,
-  title: 'Journeys-Admin/AboutTabPanel',
+  title:
+    'Journeys-Admin/Editor/Toolbar/Items/TemplateSettingsDialog/AboutTabPanel',
   parameters: {
     ...simpleComponentConfig.parameters
   }
