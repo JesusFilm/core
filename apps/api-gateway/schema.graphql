@@ -867,13 +867,6 @@ input JourneysFilter
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
-
-  """
-  hostname filters journeys to those that belong to a team with a custom domain
-  matching the hostname. Not providing it will search journeys where the team
-  does not have a custom domain.
-  """
-  hostname: String
 }
 
 input JourneysQueryOptions

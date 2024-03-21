@@ -642,7 +642,6 @@ export class JourneysFilter {
     languageIds?: Nullable<string[]>;
     limit?: Nullable<number>;
     orderByRecent?: Nullable<boolean>;
-    hostname?: Nullable<string>;
 }
 
 export class JourneysQueryOptions {
