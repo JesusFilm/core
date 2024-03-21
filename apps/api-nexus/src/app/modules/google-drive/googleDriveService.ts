@@ -202,22 +202,22 @@ export class GoogleDriveService {
     }
 
     console.log('Authorize');
-    const authClient = this.youtubeService.authorize(accessToken);
+    // const authClient = this.youtubeService.authorize(accessToken);
 
     console.log('Find Files');
-    const files = await this.findFiles(authClient, drivefolderId);
+    // const files = await this.findFiles(authClient, drivefolderId);
 
     console.log('Authorize spreadsheetRows');
-    for (const spreadsheetRow of spreadsheetRows) {
-      spreadsheetRow.driveFile = files?.find((file) => {
-        return file.name === spreadsheetRow.filename;
-      });
-      console.log('spreadsheetRow.driveFile', spreadsheetRow.driveFile);
-      spreadsheetRow.channelData = (await this.prismaService.channel.findFirst({
-        where: { youtube: { youtubeId: spreadsheetRow.channel as string } },
-        include: { youtube: true },
-      })) as Channel | undefined;
-    }
+    // for (const spreadsheetRow of spreadsheetRows) {
+    //   spreadsheetRow.driveFile = files?.find((file) => {
+    //     return file.name === spreadsheetRow.filename;
+    //   });
+    //   console.log('spreadsheetRow.driveFile', spreadsheetRow.driveFile);
+    //   spreadsheetRow.channelData = (await this.prismaService.channel.findFirst({
+    //     where: { youtube: { youtubeId: spreadsheetRow.channel as string } },
+    //     include: { youtube: true },
+    //   })) as Channel | undefined;
+    // }
 
     return spreadsheetRows;
   }
