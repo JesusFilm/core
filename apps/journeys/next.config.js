@@ -49,7 +49,7 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/graphql',
+        source: '/api/graphql',
         destination: process.env.GATEWAY_URL,
         locale: false
       }
