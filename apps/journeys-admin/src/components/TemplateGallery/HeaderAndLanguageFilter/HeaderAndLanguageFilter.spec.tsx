@@ -6,8 +6,6 @@ import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery/useLanguagesQuery
 
 import { HeaderAndLanguageFilter } from '.'
 
-import '../../../../test/i18n'
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
@@ -119,8 +117,11 @@ describe('HeaderAndLanguageFilter', () => {
     )
     await waitFor(() => {
       expect(getAllByText('Journey Templates')[0]).toBeInTheDocument()
-      fireEvent.click(getAllByRole('heading', { name: 'All Languages' })[0])
     })
+    // "All Languages" text is handled by the translation file /locale/en/journeys-admin.json
+    // Manually add the below line to the translation file if can't find the text
+    // "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
+    fireEvent.click(getAllByRole('heading', { name: 'All Languages' })[0])
     fireEvent.click(getByRole('button', { name: 'German, Standard Deutsch' }))
     await waitFor(() => expect(onChange).toHaveBeenCalledTimes(1))
     fireEvent.click(getByRole('button', { name: 'French Français' }))
