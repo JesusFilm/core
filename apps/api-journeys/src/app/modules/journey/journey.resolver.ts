@@ -988,14 +988,6 @@ export class JourneyResolver {
     })
   }
 
-  @ResolveReference()
-  async resolveReference(reference: {
-    __typename: 'Journey'
-    id: string
-  }): Promise<Journey | null> {
-    return await this.journey(reference.id, IdType.databaseId)
-  }
-
   @ResolveField()
   async journeyCollections(
     @Parent() parent: Journey
