@@ -1,12 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
+import { render, screen, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { ActiveCanvasDetailsDrawer, ActiveContent, ActiveFab, ActiveSlide, EditorState, useEditor } from '@core/journeys/ui/EditorProvider'
 
-
-import { journey } from './data'
 import { GoalDetails } from './GoalDetails'
 
 
@@ -15,16 +11,40 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn(() => false)
 }))
 
+jest.mock('@core/journeys/ui/EditorProvider', () => {
+  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
+  return {
+    __esModule: true,
+    ...originalModule,
+    useEditor: jest.fn()
+  }
+})
+
+const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
+
 describe('GoalDetails', () => {
+
+  const dispatch = jest.fn()
+
+  const state: EditorState = {
+    activeFab: ActiveFab.Add,
+    activeSlide: ActiveSlide.JourneyFlow,
+    activeContent: ActiveContent.Goals,
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+  }
+
+  beforeEach(() => {
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch
+    })
+  })
+
   it('should return placeholder text', () => {
     render(
-      <MockedProvider>
-        <EditorProvider >
-          <GoalDetails/>
-        </EditorProvider>
-      </MockedProvider>
+      <MockedProvider><GoalDetails /></MockedProvider>
     )
-
+    state.selectedGoalUrl = undefined;
     expect(screen.getByText('Information')).toBeInTheDocument()
     expect(screen.getByText('What are Goals?')).toBeInTheDocument()
     expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
@@ -32,28 +52,21 @@ describe('GoalDetails', () => {
     expect(screen.getByText('Link to Bible')).toBeInTheDocument()
   })
 
-  it('should return action editor', () => {
-    render(
-      <MockedProvider>
-        <EditorProvider >
-          <GoalDetails />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    expect(screen.getByDisplayValue('https://www.google.com/')).toBeInTheDocument()
-    expect(screen.getByText('Visit a website')).toBeInTheDocument()
-  })
+  it('should render ActionInformation when selectedGoalUrl is null', () => {
+    state.selectedGoalUrl = undefined;
+    render(<MockedProvider><GoalDetails /></MockedProvider>);
 
-  it('should return action cards', () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <GoalDetails />
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(getByText('Appears on the cards')).toBeInTheDocument()
-  })
+    expect(screen.getByTestId('ActionInformation')).toBeInTheDocument();
+ });
+
+ it('should render ActionEditor and ActionCards when selectedGoalUrl is not null', async () => {
+  state.selectedGoalUrl = 'url';
+  render(<MockedProvider><GoalDetails /></MockedProvider>);
+
+  await waitFor(() => {
+    expect(screen.queryByTestId('ActionEditor')).toBeInTheDocument();
+    expect(screen.queryByTestId('ActionCards')).toBeInTheDocument();
+  });
+});
+  
 })

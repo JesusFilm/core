@@ -1,6 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, getByTestId, render, screen } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import {
@@ -11,12 +9,9 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
-  ActiveSlide,
-  EditorProvider
+  ActiveSlide
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
-import { TestEditorState } from '../../../../../../libs/TestEditorState'
-import { GoalDetails } from '../../../Settings/GoalDetails'
 import { Goal } from '../Goals'
 
 import { GoalsList } from './GoalsList'
@@ -75,26 +70,26 @@ describe('GoalsList', () => {
   })
 
   describe('GoalsList', () => {
- 
-    it('should render the component title and subtitle', () => {
+
+    it('should render title and subtitle', () => {
       const { getByText } = render(<GoalsList goals={goals} />)
       expect(getByText('The Journey Goals')).toBeInTheDocument()
     
     })
 
-    it('should call dispatch with a URL', () => {
+    it('should call dispatch with a URL when "Learn More" button is clicked', () => {
       const { getByRole } = render(<GoalsList goals={goals} />)
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
       expect(useEditor().dispatch).toHaveBeenCalledWith({ type: 'SetSelectedGoalUrlAction' });
     })
 
-    it('should render the goal URL subtitle', () => {
+    it('should render goal URL subtitle', () => {
       const { getAllByText } = render(<GoalsList goals={goals} />)
       expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
       expect(getAllByText('Visit a Website')[0]).toBeInTheDocument()
     })
 
-    it('should open the drawer or dispatch on click', () => {
+    it('should open drawer or dispatch on click', () => {
       const { getAllByTestId } = render(<GoalsList goals={goals} />)
       fireEvent.click(getAllByTestId('Edit2Icon')[0])
       expect(dispatch).toHaveBeenCalled()
