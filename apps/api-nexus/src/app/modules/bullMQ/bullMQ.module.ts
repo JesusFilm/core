@@ -46,8 +46,7 @@ import { NexusJobListener } from './listener/jobListener';
     YoutubeService,
     BucketService,
     PrismaService,
-    NexusJobListener
-    
+    NexusJobListener,
   ],
   exports: [BullMQService],
 })
