@@ -40,23 +40,23 @@ export class CustomDomainService {
       gitBranch: process.env.GIT_BRANCH
     }
 
-    const response = await fetch(
-      `https://api.vercel.com/v10/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains?teamId=${process.env.VERCEL_TEAM_ID}`,
-      {
-        body: JSON.stringify(body),
-        headers: {
-          Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
-        },
-        method: 'POST'
-      }
-    )
-    const json = await response.json()
-    if (json.error?.message != null)
-      throw new GraphQLError(json.error.message, {
+    try {
+      const response = await fetch(
+        `https://api.vercel.com/v10/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains?teamId=${process.env.VERCEL_TEAM_ID}`,
+        {
+          body: JSON.stringify(body),
+          headers: {
+            Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
+          },
+          method: 'POST'
+        }
+      )
+      return await response.json()
+    } catch (e) {
+      throw new GraphQLError(e.message, {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })
-
-    return json
+    }
   }
 
   async verifyVercelDomain(name: string): Promise<VercelResponse> {

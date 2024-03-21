@@ -877,7 +877,7 @@ input JourneysQueryOptions
   matching the hostname.
   """
   hostname: String
-  embeded: Boolean
+  embedded: Boolean
 }
 
 enum JourneysReportType

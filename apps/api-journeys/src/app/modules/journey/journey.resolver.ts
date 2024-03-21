@@ -192,10 +192,10 @@ export class JourneyResolver {
     @Args('options')
     options: JourneysQueryOptions = {
       hostname: null,
-      embeded: false
+      embedded: false
     }
   ): Promise<Journey[]> {
-    if (options.embeded === true && options.hostname != null) return []
+    if (options.embedded === true && options.hostname != null) return []
 
     const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
     if (where?.template != null) filter.template = where.template
@@ -213,7 +213,7 @@ export class JourneyResolver {
         }
       }))
     }
-    if (options.embeded !== true) {
+    if (options.embedded !== true) {
       if (options.hostname != null) {
         OR.push({
           team: {
@@ -264,14 +264,14 @@ export class JourneyResolver {
     @Args('options')
     options: JourneysQueryOptions = {
       hostname: null,
-      embeded: false
+      embedded: false
     }
   ): Promise<Journey | null> {
-    if (options.embeded === true && options.hostname != null) return null
+    if (options.embedded === true && options.hostname != null) return null
 
     const filter: Prisma.JourneyWhereUniqueInput =
       idType === IdType.slug ? { slug: id } : { id }
-    if (options.embeded !== true) {
+    if (options.embedded !== true) {
       if (options.hostname != null) {
         filter.team = {
           OR: [

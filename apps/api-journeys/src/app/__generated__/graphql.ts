@@ -646,7 +646,7 @@ export class JourneysFilter {
 
 export class JourneysQueryOptions {
     hostname?: Nullable<string>;
-    embeded?: Nullable<boolean>;
+    embedded?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {

@@ -203,26 +203,6 @@ describe('customDomainService', () => {
         }
       )
     })
-
-    it.skip('should handle error', async () => {
-      process.env = {
-        ...originalEnv,
-        VERCEL_TOKEN: 'abc',
-        VERCEL_TEAM_ID: 'teamId',
-        VERCEL_JOURNEYS_PROJECT_ID: 'projectId',
-        GIT_BRANCH: 'main'
-      }
-
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => await Promise.resolve({ error: { message: 'error' } })
-      } as unknown as Response)
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
-      await expect(service.verifyVercelDomain('name.com')).rejects.toThrow(
-        'error'
-      )
-    })
   })
 
   describe('deleteVercelDomain', () => {
