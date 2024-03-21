@@ -8,15 +8,15 @@ import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvi
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { publishedJourney } from '../../../data'
 
-import { ShareItem } from './ShareItem'
+import { StrategyItem } from './StrategyItem'
 
-const Demo: Meta<typeof ShareItem> = {
+const Demo: Meta<typeof StrategyItem> = {
   ...simpleComponentConfig,
-  component: ShareItem,
-  title: 'Journeys-Admin/Editor/Toolbar/Items/ShareItem'
+  component: StrategyItem,
+  title: 'Journeys-Admin/Editor/Toolbar/Items/StrategyItem'
 }
 
-const Template: StoryObj<typeof ShareItem> = {
+const Template: StoryObj<typeof StrategyItem> = {
   render: ({ ...args }) => (
     <ApolloLoadingProvider>
       <MockedProvider>
@@ -29,7 +29,7 @@ const Template: StoryObj<typeof ShareItem> = {
               backgroundColor: 'background.paper'
             }}
           >
-            <ShareItem {...args} />
+            <StrategyItem {...args} />
           </Box>
         </JourneyProvider>
       </MockedProvider>
