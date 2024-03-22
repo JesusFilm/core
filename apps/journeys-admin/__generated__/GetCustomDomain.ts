@@ -21,6 +21,11 @@ export interface GetCustomDomain_customDomains_verification {
   verification: (GetCustomDomain_customDomains_verification_verification | null)[] | null;
 }
 
+export interface GetCustomDomain_customDomains_configuration {
+  __typename: "VercelDomainConfiguration";
+  misconfigured: boolean | null;
+}
+
 export interface GetCustomDomain_customDomains_journeyCollection_journeys {
   __typename: "Journey";
   title: string;
@@ -38,6 +43,7 @@ export interface GetCustomDomain_customDomains {
   id: string;
   apexName: string;
   verification: GetCustomDomain_customDomains_verification | null;
+  configuration: GetCustomDomain_customDomains_configuration | null;
   name: string;
   journeyCollection: GetCustomDomain_customDomains_journeyCollection | null;
 }

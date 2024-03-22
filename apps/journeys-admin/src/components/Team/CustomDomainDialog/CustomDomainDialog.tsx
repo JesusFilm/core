@@ -45,6 +45,9 @@ export const GET_CUSTOM_DOMAIN = gql`
           value
         }
       }
+      configuration {
+        misconfigured
+      }
       name
       journeyCollection {
         id
@@ -71,6 +74,9 @@ export const CREATE_CUSTOM_DOMAIN = gql`
           type
           value
         }
+      }
+      configuration {
+        misconfigured
       }
       journeyCollection {
         id
