@@ -27,6 +27,12 @@ const createResult = {
   verified: true
 }
 
+const configurationResult = {
+  acceptedChallenges: ['http-01', 'dns-01'],
+  configuredBy: 'http',
+  misconfigured: false
+}
+
 describe('customDomainService', () => {
   let service: CustomDomainService
   let prismaService: DeepMockProxy<PrismaService>
@@ -66,6 +72,7 @@ describe('customDomainService', () => {
 
   afterEach(() => {
     process.env = originalEnv
+    jest.clearAllMocks()
   })
 
   describe('addVercelDomain', () => {
@@ -200,6 +207,40 @@ describe('customDomainService', () => {
         {
           headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` },
           method: 'POST'
+        }
+      )
+    })
+  })
+
+  describe('getVercelDomainConfiguration', () => {
+    it('should get verification status of a vercel domain locally', async () => {
+      const result = await service.getVercelDomainConfiguration('name.com')
+
+      expect(result).toEqual(configurationResult)
+    })
+
+    it('should get configuration of a vercel domain in deployment', async () => {
+      process.env = {
+        ...originalEnv,
+        VERCEL_TOKEN: 'abc',
+        VERCEL_TEAM_ID: 'teamId',
+        VERCEL_JOURNEYS_PROJECT_ID: 'projectId',
+        GIT_BRANCH: 'main'
+      }
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => await Promise.resolve(configurationResult)
+      } as unknown as Response)
+
+      const result = await service.getVercelDomainConfiguration('name.com')
+
+      expect(result).toEqual(configurationResult)
+      expect(mockFetch).toHaveBeenCalledWith(
+        `https://api.vercel.com/v6/domains/name.com/config?strict=true&teamId=${process.env.VERCEL_TEAM_ID}`,
+        {
+          headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` },
+          method: 'GET'
         }
       )
     })

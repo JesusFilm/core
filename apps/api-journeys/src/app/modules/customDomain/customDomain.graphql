@@ -5,6 +5,7 @@ type CustomDomain {
   apexName: String!
   journeyCollection: JourneyCollection
   verification: CustomDomainVerification
+  configuration: VercelDomainConfiguration
   routeAllTeamJourneys: Boolean!
 }
 
@@ -27,6 +28,12 @@ type VercelDomainVerification {
   domain: String
   value: String
   reason: String
+}
+
+type VercelDomainConfiguration {
+  acceptedChallenges: [String]
+  configuredBy: String
+  misconfigured: Boolean
 }
 
 type CustomDomainVerification {
