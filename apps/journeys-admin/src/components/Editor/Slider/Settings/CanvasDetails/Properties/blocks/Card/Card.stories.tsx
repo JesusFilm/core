@@ -1,7 +1,7 @@
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -9,13 +9,15 @@ import {
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { Card } from '.'
 
-const CardStory: Meta<typeof Card> = {
+const Demo: Meta<typeof Card> = {
   ...journeysAdminConfig,
   component: Card,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card'
 }
 
 export const Default: StoryObj<typeof Card> = {
@@ -34,17 +36,11 @@ export const Default: StoryObj<typeof Card> = {
     }
 
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <Card {...block} />
-      </Stack>
+      <EditorProvider initialState={{ selectedBlock: block }}>
+        <Drawer title="Card Properties">
+          <Card {...block} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
@@ -58,7 +54,7 @@ export const Populated: StoryObj<typeof Card> = {
       coverBlockId: 'image1.id',
       parentOrder: 0,
       backgroundColor: '#00ccff',
-      themeMode: ThemeMode.light,
+      themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: true,
       children: [
@@ -78,19 +74,13 @@ export const Populated: StoryObj<typeof Card> = {
     }
 
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <Card {...block} />
-      </Stack>
+      <EditorProvider initialState={{ selectedBlock: block }}>
+        <Drawer title="Card Properties">
+          <Card {...block} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
 
-export default CardStory
+export default Demo
