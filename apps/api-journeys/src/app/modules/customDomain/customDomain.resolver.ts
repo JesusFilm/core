@@ -22,7 +22,8 @@ import {
   CustomDomainCreateInput,
   CustomDomain as CustomDomainGQL,
   CustomDomainUpdateInput,
-  CustomDomainVerification
+  CustomDomainVerification,
+  VercelDomainConfiguration
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
@@ -136,6 +137,19 @@ export class CustomDomainResolver {
     return {
       ...omit(result, 'journeyCollectionJourneys'),
       journeys: result.journeyCollectionJourneys.map(({ journey }) => journey)
+    }
+  }
+
+  @ResolveField()
+  async configuration(
+    @Parent() customDomain: CustomDomainGQL
+  ): Promise<VercelDomainConfiguration> {
+    const configResult =
+      await this.customDomainService.getVercelDomainConfiguration(
+        customDomain.name
+      )
+    return {
+      ...configResult
     }
   }
 
