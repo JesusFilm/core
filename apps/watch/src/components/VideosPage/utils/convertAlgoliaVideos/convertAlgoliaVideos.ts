@@ -1,19 +1,5 @@
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 
-interface VideoVariant {
-  objectID: string
-}
-
-// interface Hit {
-//   readonly objectID: string
-//   readonly _highlightResult?: Record<string, unknown> | undefined
-//   readonly _snippetResult?: Record<string, unknown> | undefined
-//   readonly _rankingInfo?: RankingInfo | undefined
-//   readonly _distinctSeqID?: number | undefined
-// }
-
-// interface Hits extends Array<Hit> {}
-
 export function convertAlgoliaVideos(hits): VideoChildFields[] {
   return hits.map((videoVariant) => {
     return {

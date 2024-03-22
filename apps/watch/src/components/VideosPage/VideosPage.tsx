@@ -4,13 +4,15 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import algoliasearch from 'algoliasearch'
+import { RankingInfo } from 'instantsearch.js'
+import identity from 'lodash/identity'
 import isEqual from 'lodash/isEqual'
+import some from 'lodash/some'
 import { useRouter } from 'next/router'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
-import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 
@@ -18,20 +20,6 @@ import { FilterList } from './FilterList'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 import { convertAlgoliaVideos } from './utils'
-
-export const GET_VIDEOS = gql`
-  ${VIDEO_CHILD_FIELDS}
-  query GetVideos(
-    $where: VideosFilter
-    $offset: Int
-    $limit: Int
-    $languageId: ID
-  ) {
-    videos(where: $where, offset: $offset, limit: $limit) {
-      ...VideoChildFields
-    }
-  }
-`
 
 export const GET_LANGUAGES = gql`
   query GetLanguages($languageId: ID) {
@@ -45,10 +33,11 @@ export const GET_LANGUAGES = gql`
   }
 `
 
-function isAtEnd(currentPage: number, totalPages: number): boolean {
-  if (currentPage === totalPages) return true
-  return false
-}
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_KEY ?? '',
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+)
+const index = searchClient.initIndex('video-variants')
 
 export interface VideoPageFilter {
   availableVariantLanguageIds?: string[]
@@ -56,51 +45,69 @@ export interface VideoPageFilter {
   title?: string
 }
 
+interface Hit {
+  readonly objectID: string
+  readonly _highlightResult?: Record<string, unknown> | undefined
+  readonly _snippetResult?: Record<string, unknown> | undefined
+  readonly _rankingInfo?: RankingInfo | undefined
+  readonly _distinctSeqID?: number | undefined
+}
+
+interface Hits extends Array<Hit> {}
+
 interface VideoProps {
   videos: VideoChildFields[]
 }
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_KEY ?? '',
-  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
-)
-
-const index = searchClient.initIndex('video-variants')
-
 export function VideosPage({ videos }: VideoProps): ReactElement {
   const router = useRouter()
-  const [hits, setHits] = useState([])
+  const [hits, setHits] = useState<Hits>([])
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState<number | undefined>()
+  const [loading, setLoading] = useState(false)
   const [isEnd, setIsEnd] = useState(false)
+
+  const localVideos = videos.filter((video) => video !== null)
+  const algoliaVideos = convertAlgoliaVideos(hits)
+
+  const { data: languagesData, loading: languagesLoading } =
+    useQuery<GetLanguages>(GET_LANGUAGES, {
+      variables: { languageId: '529' }
+    })
 
   // we intentionally use window.location.search to prevent multiple renders
   // which occurs when using const { query } = useRouter()
-  const query = useMemo(() => {
-    return new URLSearchParams(
-      typeof window !== 'undefined'
-        ? window.location.search.split('?')[1]
-        : undefined
-    )
-  }, [router])
-
-  const getQueryParamArray = (param: string | null): string[] | undefined =>
-    param != null ? [param] : undefined
+  const searchString =
+    typeof window !== 'undefined' ? window.location.search : undefined
 
   const filter: VideoPageFilter = useMemo(() => {
+    const query = new URLSearchParams(searchString?.split('?')[1])
+
+    const getQueryParamArray = (param: string | null): string[] | undefined =>
+      param != null ? [param] : undefined
+
     return {
       availableVariantLanguageIds: getQueryParamArray(query.get('languages')),
       subtitleLanguageIds: getQueryParamArray(query.get('subtitles')),
-      title:
-        query.get('title') != null ? (query.get('title') as string) : undefined
+      title: query.get('title') ?? undefined
     }
-  }, [query])
+  }, [searchString])
+
+  const filterApplied = some(
+    [
+      filter.title,
+      filter.availableVariantLanguageIds,
+      filter.subtitleLanguageIds
+    ],
+    identity
+  )
 
   const handleSearch = useCallback(
     async ({
       availableVariantLanguageIds,
       subtitleLanguageIds,
-      title
+      title,
+      page
     }): Promise<void> => {
       const previousFilter: VideoPageFilter = {
         availableVariantLanguageIds,
@@ -108,9 +115,8 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
         title
       }
 
-      console.log(availableVariantLanguageIds, subtitleLanguageIds, title)
-
       try {
+        setLoading(true)
         const subtitleString =
           subtitleLanguageIds !== undefined
             ? ` AND subtitles:${subtitleLanguageIds}`
@@ -118,10 +124,10 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
 
         const {
           hits: resultHits,
-          page,
+          page: pageNumber,
           nbPages: totalPages
         } = await index.search(title, {
-          page: currentPage,
+          page,
           filters: `languageId:${
             availableVariantLanguageIds ?? '529'
           }${subtitleString}`
@@ -132,19 +138,21 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
           : resultHits
 
         setHits(newHits)
-
-        setCurrentPage(page)
+        setCurrentPage(pageNumber)
         setTotalPages(totalPages)
       } catch (error) {
         console.error('Error occurred while searching:', error)
+      } finally {
+        setLoading(false)
       }
     },
-    [currentPage, filter, hits]
+    [filter, hits]
   )
 
-  useEffect(() => {
-    setIsEnd(isAtEnd(currentPage ?? 0, totalPages ?? 0))
-  }, [filter, setIsEnd, currentPage, totalPages, handleSearch])
+  function isAtEnd(currentPage: number, totalPages: number): boolean {
+    if (currentPage === totalPages) return true
+    return false
+  }
 
   function handleFilterChange(filter: VideoPageFilter): void {
     const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
@@ -166,32 +174,38 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
 
     void handleSearch({
       title,
-      availableVariantLanguageIds: availableVariantLanguageIds?.[0],
-      subtitleLanguageIds: subtitleLanguageIds?.[0]
+      availableVariantLanguageIds,
+      subtitleLanguageIds,
+      page: 0
     })
   }
 
-  const algoliaVideos = convertAlgoliaVideos(hits)
-
-  // when user has query, and no results, don't return local
-  const localVideos = videos.filter((video) => video !== null)
-
-  const { data: languagesData, loading: languagesLoading } =
-    useQuery<GetLanguages>(GET_LANGUAGES, {
-      variables: { languageId: '529' }
-    })
-
-  const handleLoadMore = async (): Promise<void> => {
+  function handleLoadMore(): void {
     const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
-
     if (isEnd) return
-    setCurrentPage(currentPage + 1)
     void handleSearch({
       title,
-      availableVariantLanguageIds: availableVariantLanguageIds?.[0],
-      subtitleLanguageIds: subtitleLanguageIds?.[0]
+      availableVariantLanguageIds,
+      subtitleLanguageIds,
+      page: currentPage + 1
     })
   }
+
+  useEffect(() => {
+    const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
+    if (filterApplied)
+      void handleSearch({
+        title,
+        availableVariantLanguageIds,
+        subtitleLanguageIds,
+        page: 0
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    setIsEnd(isAtEnd(currentPage ?? 0, totalPages ?? 0))
+  }, [setIsEnd, currentPage, totalPages])
 
   return (
     <PageWrapper hero={<VideosHero />} testId="VideosPage">
@@ -214,9 +228,9 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
           </Box>
           <Box sx={{ width: '100%' }}>
             <VideoGrid
-              videos={hits.length === 0 ? localVideos : algoliaVideos}
+              videos={filterApplied ? algoliaVideos : localVideos}
               onLoadMore={handleLoadMore}
-              loading={hits.length === 0}
+              loading={loading}
               hasNextPage={!isEnd}
               variant="expanded"
             />
