@@ -42,8 +42,7 @@ export class CustomDomainService {
       }
 
     const body = {
-      name,
-      gitBranch: process.env.GIT_BRANCH
+      name
     }
 
     try {

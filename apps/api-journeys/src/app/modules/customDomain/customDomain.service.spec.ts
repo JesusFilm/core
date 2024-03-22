@@ -103,8 +103,7 @@ describe('customDomainService', () => {
         `https://api.vercel.com/v10/projects/projectId/domains?teamId=${process.env.VERCEL_TEAM_ID}`,
         {
           body: JSON.stringify({
-            name: 'name.com',
-            gitBranch: process.env.GIT_BRANCH
+            name: 'name.com'
           }),
           headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` },
           method: 'POST'
