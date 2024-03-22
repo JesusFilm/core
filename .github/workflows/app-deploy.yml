@@ -43,8 +43,20 @@ jobs:
   deploy-preview:
     name: Deploy Preview and Test
     needs: affected
-    # feature branch, stage branch, or pull request
-    if: ${{ needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' && (github.ref != 'refs/heads/main' || github.event_name == 'pull_request') }}
+    # if branch is not main or is a pull request
+    # and not stage branch, push and journeys app
+    if: |
+      ${{
+        needs.affected.outputs.matrix != '[]' &&
+        needs.affected.outputs.matrix != '' && (
+          github.ref != 'refs/heads/main' || 
+          github.event_name == 'pull_request'
+        ) && !(
+          github.ref == 'refs/heads/stage' &&
+          github.event_name == 'push' &&
+          fromJson(needs.affected.outputs.matrix) == 'journeys'
+        )
+      }}
     strategy:
       fail-fast: false
       matrix:
@@ -86,7 +98,7 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
-          JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_VERCEL_PROJECT_ID }}
+          JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
           NEXUS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.NEXUS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
@@ -177,8 +189,23 @@ jobs:
         run: exit 1
   deploy-production:
     name: Deploy Production
-    # main branch and not a pull request
-    if: ${{ needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && fromJson(needs.affected.outputs.matrix) != 'journeys-admin' }}
+    # if not a pull request
+    # and main branch where app is not journeys-admin
+    # or stage branch where app is journeys
+    if: |
+      ${{
+        github.event_name != 'pull_request' &&
+        needs.affected.outputs.matrix != '[]' &&
+        needs.affected.outputs.matrix != '' && (
+          (
+            github.ref == 'refs/heads/main' &&
+            fromJson(needs.affected.outputs.matrix) != 'journeys-admin'
+          ) || (
+            github.ref == 'refs/heads/stage' &&
+            fromJson(needs.affected.outputs.matrix) == 'journeys'
+          )
+        )
+      }}
     needs: affected
     strategy:
       fail-fast: false
@@ -220,7 +247,7 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
-          JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_VERCEL_PROJECT_ID }}
+          JOURNEYS_VERCEL_PROJECT_ID: ${{ github.ref == 'refs/heads/stage' && secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID || secrets.JOURNEYS_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
           NEXUS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.NEXUS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
