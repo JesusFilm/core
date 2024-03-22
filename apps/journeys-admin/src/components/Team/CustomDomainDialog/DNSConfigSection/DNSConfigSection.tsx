@@ -23,6 +23,7 @@ interface DomainError {
 
 interface DNSConfigSectionProps {
   verified: boolean
+  misconfigured: boolean
   name?: string
   apexName?: string
   domainError?: DomainError | null
@@ -36,6 +37,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 export function DNSConfigSection({
   verified,
+  misconfigured,
   name,
   apexName,
   domainError
@@ -60,11 +62,13 @@ export function DNSConfigSection({
           <Stack direction="row" spacing={2} sx={{ mr: 3 }}>
             <Typography
               variant="body2"
-              sx={{ color: verified ? 'success.main' : 'error.main' }}
+              sx={{
+                color: verified || misconfigured ? 'success.main' : 'error.main'
+              }}
             >
               {t('Status')}
             </Typography>
-            {verified ? (
+            {verified || misconfigured ? (
               <Check
                 sx={{
                   borderRadius: 777,

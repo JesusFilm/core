@@ -358,6 +358,10 @@ export function CustomDomainDialog({
                     customDomainData?.customDomains[0]?.verification
                       ?.verified ?? false
                   }
+                  misconfigured={
+                    customDomainData?.customDomains[0]?.configuration
+                      ?.misconfigured ?? true
+                  }
                   name={customDomainData?.customDomains[0]?.name}
                   apexName={customDomainData?.customDomains[0]?.apexName}
                   domainError={

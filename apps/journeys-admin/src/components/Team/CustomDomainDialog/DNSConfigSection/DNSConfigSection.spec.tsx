@@ -23,6 +23,7 @@ describe('DNSConfigSection', () => {
           name="www.example.com"
           apexName="www.example.com"
           verified
+          misconfigured={false}
         />
       </SnackbarProvider>
     )
@@ -41,6 +42,7 @@ describe('DNSConfigSection', () => {
           name="www.mock.example.com"
           apexName="www.example.com"
           verified
+          misconfigured={false}
         />
       </SnackbarProvider>
     )
@@ -61,6 +63,7 @@ describe('DNSConfigSection', () => {
           name="www.example.com"
           apexName="www.example.com"
           verified={false}
+          misconfigured={false}
           domainError={{
             type: 'TXT',
             domain: 'www.example.com',
