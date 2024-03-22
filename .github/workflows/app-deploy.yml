@@ -218,15 +218,6 @@ jobs:
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_EVENT_NAME: ${{  github.event_name }}
-          GITHUB_REF: ${{ github.ref }}
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
-        run: |
-          echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
-          echo "GITHUB_REF: $GITHUB_REF"
-          echo "MATRIX_CONTEXT: $MATRIX_CONTEXT"
       - name: start deployment
         uses: chrnorm/deployment-action@v2
         id: deployment
