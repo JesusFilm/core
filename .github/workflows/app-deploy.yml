@@ -44,7 +44,10 @@ jobs:
     name: Deploy Preview and Test
     needs: affected
     # if branch is not main or is a pull request
-    # and not stage branch, push and journeys app
+    # and not:
+    # - stage branch
+    # - push
+    # - journeys app
     if: |
       ${{
         needs.affected.outputs.matrix != '[]' &&
@@ -194,9 +197,9 @@ jobs:
     # or stage branch where app is journeys
     if: |
       ${{
-        github.event_name != 'pull_request' &&
         needs.affected.outputs.matrix != '[]' &&
-        needs.affected.outputs.matrix != '' && (
+        needs.affected.outputs.matrix != '' &&
+        github.event_name != 'pull_request' && (
           (
             github.ref == 'refs/heads/main' &&
             fromJson(needs.affected.outputs.matrix) != 'journeys-admin'
@@ -219,6 +222,15 @@ jobs:
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
     steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_EVENT_NAME: ${{  github.event_name }}
+          GITHUB_REF: ${{ github.ref }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: |
+          echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "MATRIX_CONTEXT: $MATRIX_CONTEXT"
       - name: start deployment
         uses: chrnorm/deployment-action@v2
         id: deployment
