@@ -42,6 +42,8 @@ export function Slider(): ReactElement {
     }
   }
 
+  console.log('ACTIVE: ', activeSlide)
+
   function handlePrev(): void {
     dispatch({
       type: 'SetActiveSlideAction',
@@ -112,7 +114,10 @@ export function Slider(): ReactElement {
       {/* back (desktop left) button */}
       <Box
         slot="container-start"
-        onClick={handlePrev}
+        onClick={() => {
+          console.log('CLICK')
+          handlePrev()
+        }}
         sx={{
           position: 'fixed',
           top: EDIT_TOOLBAR_HEIGHT,
