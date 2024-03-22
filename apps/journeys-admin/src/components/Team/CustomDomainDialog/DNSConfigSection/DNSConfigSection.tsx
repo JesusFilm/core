@@ -63,12 +63,13 @@ export function DNSConfigSection({
             <Typography
               variant="body2"
               sx={{
-                color: verified || misconfigured ? 'success.main' : 'error.main'
+                color:
+                  verified && !misconfigured ? 'success.main' : 'error.main'
               }}
             >
               {t('Status')}
             </Typography>
-            {verified || misconfigured ? (
+            {verified && !misconfigured ? (
               <Check
                 sx={{
                   borderRadius: 777,

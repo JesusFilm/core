@@ -99,6 +99,10 @@ describe('CustomDomainDialog', () => {
               verified: true,
               verification: []
             },
+            configuration: {
+              __typename: 'VercelDomainConfiguration',
+              misconfigured: false
+            },
             journeyCollection: {
               __typename: 'JourneyCollection',
               id: 'journeyCollectionId',
@@ -131,6 +135,10 @@ describe('CustomDomainDialog', () => {
                 __typename: 'CustomDomainVerification',
                 verified: true,
                 verification: []
+              },
+              configuration: {
+                __typename: 'VercelDomainConfiguration',
+                misconfigured: false
               },
               journeyCollection: {
                 __typename: 'JourneyCollection',
@@ -191,6 +199,10 @@ describe('CustomDomainDialog', () => {
             __typename: 'CustomDomainVerification',
             verified: true,
             verification: []
+          },
+          configuration: {
+            __typename: 'VercelDomainConfiguration',
+            misconfigured: false
           },
           journeyCollection: null
         }
@@ -326,6 +338,10 @@ describe('CustomDomainDialog', () => {
         __typename: 'CustomDomainVerification',
         verification: [],
         verified: true
+      },
+      configuration: {
+        __typename: 'VercelDomainConfiguration',
+        misconfigured: false
       }
     })
   })

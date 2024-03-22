@@ -90,6 +90,10 @@ const getCustomDomainMockVerifiedFalse: MockedResponse<GetCustomDomain> = {
             __typename: 'JourneyCollection',
             id: 'journeyCollectionId',
             journeys: []
+          },
+          configuration: {
+            __typename: 'VercelDomainConfiguration',
+            misconfigured: false
           }
         }
       ]
@@ -121,6 +125,10 @@ const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
             __typename: 'JourneyCollection',
             id: 'journeyCollectionId',
             journeys: []
+          },
+          configuration: {
+            __typename: 'VercelDomainConfiguration',
+            misconfigured: false
           }
         }
       ]
@@ -152,6 +160,10 @@ const getCustomDomainMockCName: MockedResponse<GetCustomDomain> = {
             __typename: 'JourneyCollection',
             id: 'journeyCollectionId',
             journeys: []
+          },
+          configuration: {
+            __typename: 'VercelDomainConfiguration',
+            misconfigured: false
           }
         }
       ]
