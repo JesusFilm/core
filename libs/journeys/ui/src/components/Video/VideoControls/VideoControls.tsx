@@ -214,11 +214,11 @@ export function VideoControls({
         setShowHeaderFooter(!fullscreen)
       }
 
-      if (!fullscreen && variant === 'embed' && !iPhone()) {
+      if (!fullscreen && variant === 'embed' && !iPhone() && activeStep) {
         player.pause()
       }
 
-      if (fullscreen && variant === 'embed' && !iPhone()) {
+      if (fullscreen && variant === 'embed' && !iPhone() && activeStep) {
         void player.play()
       }
     }
