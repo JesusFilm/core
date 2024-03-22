@@ -1,7 +1,7 @@
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -13,13 +13,15 @@ import {
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { Button } from '.'
 
-const ButtonStory: Meta<typeof Button> = {
+const Demo: Meta<typeof Button> = {
   ...simpleComponentConfig,
   component: Button,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Button'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Button'
 }
 
 export const Default: StoryObj<typeof Button> = {
@@ -39,17 +41,11 @@ export const Default: StoryObj<typeof Button> = {
       children: []
     }
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <Button {...block} />
-      </Stack>
+      <EditorProvider>
+        <Drawer title="Button">
+          <Button {...block} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
@@ -96,19 +92,13 @@ export const Filled: StoryObj<typeof Button> = {
       ]
     }
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <Button {...block} />
-      </Stack>
+      <EditorProvider initialState={{ selectedBlock: block }}>
+        <Drawer title="Button">
+          <Button {...block} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
 
-export default ButtonStory
+export default Demo
