@@ -150,7 +150,7 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
   )
 
   function isAtEnd(currentPage: number, totalPages: number): boolean {
-    if (currentPage === totalPages) return true
+    if (currentPage + 1 === totalPages) return true
     return false
   }
 
