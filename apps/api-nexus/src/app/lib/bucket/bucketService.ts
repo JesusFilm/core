@@ -32,7 +32,7 @@ export class BucketService {
       if (progressCallback != null) {
         await progressCallback(percentage);
       }
-      console.log(`Uploading: ${percentage} %`);
+      console.log('Uploading:', percentage, '%');
     });
     return await bucketFile.promise();
   }
