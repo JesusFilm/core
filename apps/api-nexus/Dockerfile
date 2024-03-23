@@ -13,6 +13,7 @@ COPY ./dist/apps/api-nexus .
 
 # dependencies that nestjs needs
 RUN npm install --production --silent
+RUN npm install -g pino-pretty@^10.2.0
 
 WORKDIR /prisma
 COPY ./apps/api-nexus/db .
@@ -21,4 +22,4 @@ RUN npx prisma@^5.2.0 generate
 WORKDIR /app
 
 RUN npm install tslib@^2.6.2 @nestjs/mapped-types prisma@^5.2.0 @prisma/client@^5.2.0 pino-pretty@^10.2.0
-CMD npx prisma@^5.2.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+CMD npx prisma@^5.2.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js | pino-pretty
