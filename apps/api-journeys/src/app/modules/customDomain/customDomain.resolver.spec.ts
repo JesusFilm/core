@@ -261,8 +261,6 @@ describe('CustomDomainResolver', () => {
     })
   })
 
-<<<<<<< HEAD
-=======
   describe('configuration', () => {
     it('should return a custom domain configuration', async () => {
       const configuration = {
@@ -281,7 +279,6 @@ describe('CustomDomainResolver', () => {
     })
   })
 
->>>>>>> main
   describe('journeyCollection', () => {
     it('should return a journey collection', async () => {
       const jcFindSpy = jest.spyOn(prismaService.journeyCollection, 'findFirst')

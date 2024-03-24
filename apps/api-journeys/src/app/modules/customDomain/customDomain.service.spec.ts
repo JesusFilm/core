@@ -27,15 +27,12 @@ const createResult = {
   verified: true
 }
 
-<<<<<<< HEAD
-=======
 const configurationResult = {
   acceptedChallenges: ['http-01', 'dns-01'],
   configuredBy: 'http',
   misconfigured: false
 }
 
->>>>>>> main
 describe('customDomainService', () => {
   let service: CustomDomainService
   let prismaService: DeepMockProxy<PrismaService>
@@ -75,10 +72,7 @@ describe('customDomainService', () => {
 
   afterEach(() => {
     process.env = originalEnv
-<<<<<<< HEAD
-=======
     jest.clearAllMocks()
->>>>>>> main
   })
 
   describe('addVercelDomain', () => {
@@ -109,12 +103,7 @@ describe('customDomainService', () => {
         `https://api.vercel.com/v10/projects/projectId/domains?teamId=${process.env.VERCEL_TEAM_ID}`,
         {
           body: JSON.stringify({
-<<<<<<< HEAD
-            name: 'name.com',
-            gitBranch: process.env.GIT_BRANCH
-=======
             name: 'name.com'
->>>>>>> main
           }),
           headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` },
           method: 'POST'
@@ -222,8 +211,6 @@ describe('customDomainService', () => {
     })
   })
 
-<<<<<<< HEAD
-=======
   describe('getVercelDomainConfiguration', () => {
     it('should get verification status of a vercel domain locally', async () => {
       const result = await service.getVercelDomainConfiguration('name.com')
@@ -258,7 +245,6 @@ describe('customDomainService', () => {
     })
   })
 
->>>>>>> main
   describe('deleteVercelDomain', () => {
     it('should delete a vercel domain locally', async () => {
       const result = await service.deleteVercelDomain('name.com')

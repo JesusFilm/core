@@ -22,12 +22,8 @@ import {
   CustomDomainCreateInput,
   CustomDomain as CustomDomainGQL,
   CustomDomainUpdateInput,
-<<<<<<< HEAD
-  CustomDomainVerification
-=======
   CustomDomainVerification,
   VercelDomainConfiguration
->>>>>>> main
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
@@ -145,8 +141,6 @@ export class CustomDomainResolver {
   }
 
   @ResolveField()
-<<<<<<< HEAD
-=======
   async configuration(
     @Parent() customDomain: CustomDomainGQL
   ): Promise<VercelDomainConfiguration> {
@@ -160,7 +154,6 @@ export class CustomDomainResolver {
   }
 
   @ResolveField()
->>>>>>> main
   async verification(
     @Parent() customDomain: CustomDomainGQL
   ): Promise<CustomDomainVerification> {

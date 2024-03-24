@@ -106,10 +106,6 @@ describe('JourneyCollectionResolver', () => {
         journeyIds: ['journeyId']
       }
       const collection = { id: 'id', teamId: 'teamId', title: 'title' }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
       const createSpy = jest.spyOn(prismaService.journeyCollection, 'create')
       createSpy.mockResolvedValue(collection)
 
@@ -134,33 +130,6 @@ describe('JourneyCollectionResolver', () => {
       })
     })
 
-<<<<<<< HEAD
-=======
-    it('should create a simplified journey collection', async () => {
-      const input = {
-        id: 'id',
-        teamId: 'teamId',
-        title: 'title'
-      }
-      const collection = { id: 'id', teamId: 'teamId', title: 'title' }
-
-      const createSpy = jest.spyOn(prismaService.journeyCollection, 'create')
-      createSpy.mockResolvedValue(collection)
-
-      const result = await resolver.journeyCollectionCreate(input, ability)
-
-      expect(result).toEqual(collection)
-      expect(createSpy).toHaveBeenCalledWith({
-        data: {
-          id: input.id,
-          team: { connect: { id: input.teamId } },
-          title: input.title
-        },
-        include: { team: { include: { userTeams: true } } }
-      })
-    })
-
->>>>>>> main
     it('should handle not can', () => {
       const input = {
         id: 'id',
