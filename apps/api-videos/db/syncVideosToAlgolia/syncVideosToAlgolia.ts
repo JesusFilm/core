@@ -15,18 +15,21 @@ export async function syncVideosToAlgolia(): Promise<void> {
   console.log('syncing videos to algolia...')
 
   let offset = 0
-  let nextPage = true
   const totalRecords = await prisma.videoVariant.count()
 
-  while (nextPage) {
+  while (true) {
     const videoVariants = await prisma.videoVariant.findMany({
-      take: 15001,
+      take: 15000,
       skip: offset,
       include: {
         video: { include: { title: true } },
         subtitle: true
       }
     })
+
+    if (videoVariants.length === 0) {
+      break
+    }
 
     const transformedVideos = videoVariants.map((videoVariant) => {
       return {
@@ -55,8 +58,7 @@ export async function syncVideosToAlgolia(): Promise<void> {
     const index = client.initIndex('video-variants')
     await index.saveObjects(transformedVideos).wait()
 
-    if (videoVariants.length === 15001) offset += 15000
-    else nextPage = false
+    offset += 15000
   }
 
   console.log('synced videos to algolia')
