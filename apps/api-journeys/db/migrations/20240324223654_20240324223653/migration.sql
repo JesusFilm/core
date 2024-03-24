@@ -4,8 +4,8 @@ CREATE TABLE "CustomDomain" (
     "teamId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "apexName" TEXT NOT NULL,
-    "allowOutsideJourneys" BOOLEAN NOT NULL DEFAULT false,
     "journeyCollectionId" TEXT,
+    "routeAllTeamJourneys" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "CustomDomain_pkey" PRIMARY KEY ("id")
 );
@@ -48,7 +48,7 @@ ALTER TABLE "CustomDomain" ADD CONSTRAINT "CustomDomain_teamId_fkey" FOREIGN KEY
 ALTER TABLE "JourneyCollection" ADD CONSTRAINT "JourneyCollection_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "JourneyCollectionJourneys" ADD CONSTRAINT "JourneyCollectionJourneys_journeyCollectionId_fkey" FOREIGN KEY ("journeyCollectionId") REFERENCES "JourneyCollection"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "JourneyCollectionJourneys" ADD CONSTRAINT "JourneyCollectionJourneys_journeyCollectionId_fkey" FOREIGN KEY ("journeyCollectionId") REFERENCES "JourneyCollection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "JourneyCollectionJourneys" ADD CONSTRAINT "JourneyCollectionJourneys_journeyId_fkey" FOREIGN KEY ("journeyId") REFERENCES "Journey"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "JourneyCollectionJourneys" ADD CONSTRAINT "JourneyCollectionJourneys_journeyId_fkey" FOREIGN KEY ("journeyId") REFERENCES "Journey"("id") ON DELETE CASCADE ON UPDATE CASCADE;
