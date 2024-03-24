@@ -9,8 +9,8 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
@@ -66,7 +66,6 @@ export function GoalsList({ goals }: GoalsListProps): ReactElement {
                 mb: { xs: 4, sm: 0 }
               }}
               onClick={() => handleClick()}
-              name="Learn More"
             >
               <Typography variant="subtitle2">{t('Learn More')}</Typography>
             </Button>
@@ -116,7 +115,7 @@ export function GoalsList({ goals }: GoalsListProps): ReactElement {
                 />
               </TableRow>
             </TableHead>
-            <TableBody data-testid="GoalsListBody">
+            <TableBody>
               {goals?.map((goal) => (
                 <GoalsListItem key={goal.url} goal={goal} />
               ))}

@@ -16,12 +16,10 @@ import { Goal } from '../Goals'
 
 import { GoalsList } from './GoalsList'
 
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn(() => false)
 }))
-
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
   const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
@@ -70,23 +68,23 @@ describe('GoalsList', () => {
   })
 
   describe('GoalsList', () => {
-
     it('should render title and subtitle', () => {
       const { getByText } = render(<GoalsList goals={goals} />)
       expect(getByText('The Journey Goals')).toBeInTheDocument()
-    
     })
 
     it('should call dispatch with a URL when "Learn More" button is clicked', () => {
       const { getByRole } = render(<GoalsList goals={goals} />)
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
-      expect(useEditor().dispatch).toHaveBeenCalledWith({ type: 'SetSelectedGoalUrlAction' });
+      expect(useEditor().dispatch).toHaveBeenCalledWith({
+        type: 'SetSelectedGoalUrlAction'
+      })
     })
 
     it('should render goal URL subtitle', () => {
-      const { getAllByText } = render(<GoalsList goals={goals} />)
-      expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
-      expect(getAllByText('Visit a Website')[0]).toBeInTheDocument()
+      const { getByText } = render(<GoalsList goals={goals} />)
+      expect(getByText('https://www.google.com/')).toBeInTheDocument()
+      expect(getByText('Visit a Website')).toBeInTheDocument()
     })
 
     it('should open drawer or dispatch on click', () => {
@@ -96,9 +94,9 @@ describe('GoalsList', () => {
     })
 
     it('should render the table titles', () => {
-      const { getAllByText } = render(<GoalsList goals={goals} />)
-      expect(getAllByText('Target and Goal')[0]).toBeInTheDocument()
-      expect(getAllByText('Appears on')[0]).toBeInTheDocument()
+      const { getByText } = render(<GoalsList goals={goals} />)
+      expect(getByText('Target and Goal')).toBeInTheDocument()
+      expect(getByText('Appears on')).toBeInTheDocument()
     })
   })
 })

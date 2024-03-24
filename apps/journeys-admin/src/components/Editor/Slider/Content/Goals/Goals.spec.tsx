@@ -15,8 +15,6 @@ import {
 
 import { Goals } from '.'
 
-import '../../../../../../test/i18n'
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
@@ -160,7 +158,7 @@ describe('Goals', () => {
   it('should render a list of actions', () => {
     const { getByText, getAllByText, getAllByTestId } = render(
       <JourneyProvider
-        value={{  
+        value={{
           journey: {
             ...journey,
             blocks
