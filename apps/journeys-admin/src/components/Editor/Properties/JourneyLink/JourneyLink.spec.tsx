@@ -45,6 +45,10 @@ describe('JourneyLink', () => {
             apexName: 'mockdomain.com',
             id: 'customDomainId',
             teamId: 'teamId',
+            configuration: {
+              __typename: 'VercelDomainConfiguration',
+              misconfigured: false
+            },
             verification: {
               __typename: 'CustomDomainVerification',
               verified: true,
