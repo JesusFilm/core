@@ -7,7 +7,8 @@ import { Credentials } from '.'
 const CredentialsDemo: Meta<typeof Credentials> = {
   ...simpleComponentConfig,
   component: Credentials,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Form/Credentials'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Form/Credentials'
 }
 
 const Template: StoryObj = {

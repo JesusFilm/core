@@ -1,31 +1,30 @@
 import { Form as FormType } from '@formium/types'
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
+import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { Form } from '.'
 
-const FormDemo: Meta<typeof Form> = {
+const Demo: Meta<typeof Form> = {
   ...simpleComponentConfig,
   component: Form,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Form'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Form'
 }
 
 const Template: StoryObj<ComponentProps<typeof Form>> = {
   render: ({ ...args }) => (
-    <Stack
-      direction="row"
-      spacing={4}
-      sx={{
-        overflowX: 'auto',
-        py: 5,
-        px: 6
-      }}
-    >
-      <Form {...args} />
-    </Stack>
+    <EditorProvider initialState={{ selectedBlock: filledFormBlock }}>
+      <Drawer title="Form Properties">
+        <Form {...args} />
+      </Drawer>
+    </EditorProvider>
   )
 }
 
@@ -38,21 +37,40 @@ export const Default = {
   }
 }
 
+const filledFormBlock: TreeBlock<FormBlock> = {
+  id: 'formBlock.id',
+  __typename: 'FormBlock',
+  parentBlockId: 'step0.id',
+  parentOrder: 0,
+  form: {
+    id: 'formiumForm.id',
+    name: 'form name'
+  } as unknown as FormType,
+  action: {
+    __typename: 'NavigateToBlockAction',
+    parentBlockId: 'formBlock.id',
+    gtmEventName: 'navigateToBlock',
+    blockId: 'step1.id'
+  },
+  children: []
+}
+
 export const Filled = {
   ...Template,
   args: {
-    id: 'id',
-    form: {
-      id: 'form.id',
-      name: 'form name'
-    } as unknown as FormType,
-    action: {
-      __typename: 'NavigateToBlockAction',
-      parentBlockId: 'button1.id',
-      gtmEventName: 'navigateToBlock',
-      blockId: 'step2.id'
-    }
+    // id: 'id',
+    // form: {
+    //   id: 'form.id',
+    //   name: 'form name'
+    // } as unknown as FormType,
+    // action: {
+    //   __typename: 'NavigateToBlockAction',
+    //   parentBlockId: 'button1.id',
+    //   gtmEventName: 'navigateToBlock',
+    //   blockId: 'step2.id'
+    // }
+    ...filledFormBlock
   }
 }
 
-export default FormDemo
+export default Demo
