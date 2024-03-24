@@ -368,6 +368,10 @@ type CustomDomain
   apexName: String!
   journeyCollection: JourneyCollection
   verification: CustomDomainVerification
+<<<<<<< HEAD
+=======
+  configuration: VercelDomainConfiguration
+>>>>>>> main
   routeAllTeamJourneys: Boolean!
 }
 
@@ -2416,6 +2420,17 @@ input UserTeamUpdateInput
   role: UserTeamRole!
 }
 
+<<<<<<< HEAD
+=======
+type VercelDomainConfiguration
+  @join__type(graph: JOURNEYS)
+{
+  acceptedChallenges: [String]
+  configuredBy: String
+  misconfigured: Boolean
+}
+
+>>>>>>> main
 type VercelDomainVerification
   @join__type(graph: JOURNEYS)
 {

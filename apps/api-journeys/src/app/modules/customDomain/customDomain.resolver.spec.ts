@@ -261,6 +261,27 @@ describe('CustomDomainResolver', () => {
     })
   })
 
+<<<<<<< HEAD
+=======
+  describe('configuration', () => {
+    it('should return a custom domain configuration', async () => {
+      const configuration = {
+        acceptedChallenges: ['http-01', 'dns-01'],
+        configuredBy: 'http',
+        misconfigured: false
+      }
+      customDomainService.getVercelDomainConfiguration = jest
+        .fn()
+        .mockResolvedValue(configuration)
+
+      const result = await resolver.configuration(
+        customDomain as unknown as CustomDomain
+      )
+      expect(result).toEqual(configuration)
+    })
+  })
+
+>>>>>>> main
   describe('journeyCollection', () => {
     it('should return a journey collection', async () => {
       const jcFindSpy = jest.spyOn(prismaService.journeyCollection, 'findFirst')

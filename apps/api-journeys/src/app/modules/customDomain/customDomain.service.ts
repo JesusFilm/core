@@ -21,6 +21,15 @@ interface VercelResponse {
   verification: VercelDomainVerification[]
 }
 
+<<<<<<< HEAD
+=======
+interface VercelConfigResponse {
+  acceptedChallenges: string[]
+  configuredBy: 'CNAME' | 'A' | 'http' | 'dns-01' | null
+  misconfigured: boolean
+}
+
+>>>>>>> main
 @Injectable()
 export class CustomDomainService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -36,8 +45,12 @@ export class CustomDomainService {
       }
 
     const body = {
+<<<<<<< HEAD
       name,
       gitBranch: process.env.GIT_BRANCH
+=======
+      name
+>>>>>>> main
     }
 
     try {
@@ -59,6 +72,38 @@ export class CustomDomainService {
     }
   }
 
+<<<<<<< HEAD
+=======
+  async getVercelDomainConfiguration(
+    domainName: string
+  ): Promise<VercelConfigResponse> {
+    // Don't hit vercel outside of deployed environments
+    if (process.env.VERCEL_JOURNEYS_PROJECT_ID == null)
+      return {
+        acceptedChallenges: ['http-01', 'dns-01'],
+        configuredBy: 'http',
+        misconfigured: false
+      }
+
+    try {
+      const response = await fetch(
+        `https://api.vercel.com/v6/domains/${domainName}/config?strict=true&teamId=${process.env.VERCEL_TEAM_ID}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
+          },
+          method: 'GET'
+        }
+      )
+      return await response.json()
+    } catch (e) {
+      throw new GraphQLError(e.message, {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
+    }
+  }
+
+>>>>>>> main
   async verifyVercelDomain(name: string): Promise<VercelResponse> {
     // Don't hit vercel outside of deployed environments
     if (process.env.VERCEL_JOURNEYS_PROJECT_ID == null)

@@ -44,19 +44,20 @@ jobs:
     name: Deploy Preview and Test
     needs: affected
     # if branch is not main or is a pull request
-    # and not stage branch, push and journeys app
+    # and not:
+    # - stage branch
+    # - push
+    # - journeys app
     if: |
-      ${{
-        needs.affected.outputs.matrix != '[]' &&
-        needs.affected.outputs.matrix != '' && (
-          github.ref != 'refs/heads/main' || 
-          github.event_name == 'pull_request'
-        ) && !(
-          github.ref == 'refs/heads/stage' &&
-          github.event_name == 'push' &&
-          fromJson(needs.affected.outputs.matrix) == 'journeys'
-        )
-      }}
+      needs.affected.outputs.matrix != '[]' &&
+      needs.affected.outputs.matrix != '' && (
+        github.ref != 'refs/heads/main' || 
+        github.event_name == 'pull_request'
+      ) && !(
+        github.ref == 'refs/heads/stage' &&
+        github.event_name == 'push' &&
+        fromJson(needs.affected.outputs.matrix) == 'journeys'
+      )
     strategy:
       fail-fast: false
       matrix:
@@ -193,19 +194,17 @@ jobs:
     # and main branch where app is not journeys-admin
     # or stage branch where app is journeys
     if: |
-      ${{
-        github.event_name != 'pull_request' &&
-        needs.affected.outputs.matrix != '[]' &&
-        needs.affected.outputs.matrix != '' && (
-          (
-            github.ref == 'refs/heads/main' &&
-            fromJson(needs.affected.outputs.matrix) != 'journeys-admin'
-          ) || (
-            github.ref == 'refs/heads/stage' &&
-            fromJson(needs.affected.outputs.matrix) == 'journeys'
-          )
+      needs.affected.outputs.matrix != '[]' &&
+      needs.affected.outputs.matrix != '' &&
+      github.event_name != 'pull_request' && (
+        (
+          github.ref == 'refs/heads/main' &&
+          fromJson(needs.affected.outputs.matrix) != 'journeys-admin'
+        ) || (
+          github.ref == 'refs/heads/stage' &&
+          fromJson(needs.affected.outputs.matrix) == 'journeys'
         )
-      }}
+      )
     needs: affected
     strategy:
       fail-fast: false

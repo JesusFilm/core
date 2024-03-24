@@ -1111,6 +1111,10 @@ export class CustomDomain {
     apexName: string;
     journeyCollection?: Nullable<JourneyCollection>;
     verification?: Nullable<CustomDomainVerification>;
+<<<<<<< HEAD
+=======
+    configuration?: Nullable<VercelDomainConfiguration>;
+>>>>>>> main
     routeAllTeamJourneys: boolean;
 }
 
@@ -1122,6 +1126,16 @@ export class VercelDomainVerification {
     reason?: Nullable<string>;
 }
 
+<<<<<<< HEAD
+=======
+export class VercelDomainConfiguration {
+    __typename?: 'VercelDomainConfiguration';
+    acceptedChallenges?: Nullable<Nullable<string>[]>;
+    configuredBy?: Nullable<string>;
+    misconfigured?: Nullable<boolean>;
+}
+
+>>>>>>> main
 export class CustomDomainVerification {
     __typename?: 'CustomDomainVerification';
     verified: boolean;
