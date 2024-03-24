@@ -101,7 +101,9 @@ export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
       query: GET_JOURNEY,
       variables: {
         id: context.params?.journeySlug?.toString() ?? '',
-        hostname: context.params?.hostname?.toString() ?? ''
+        options: {
+          hostname: context.params?.hostname?.toString() ?? ''
+        }
       }
     })
     const { rtl, locale } = getJourneyRTL(data.journey)

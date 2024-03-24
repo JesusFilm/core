@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { JourneysQueryOptions } from "./globalTypes";
+
 // ====================================================
 // GraphQL query operation: GetJourneys
 // ====================================================
@@ -20,5 +22,5 @@ export interface GetJourneys {
 
 export interface GetJourneysVariables {
   featured?: boolean | null;
-  hostname?: string | null;
+  options?: JourneysQueryOptions | null;
 }

@@ -99,7 +99,10 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
     const { data } = await apolloClient.query<GetJourney, GetJourneyVariables>({
       query: GET_JOURNEY,
       variables: {
-        id: context.params?.journeySlug?.toString() ?? ''
+        id: context.params?.journeySlug?.toString() ?? '',
+        options: {
+          embedded: true
+        }
       }
     })
     const { rtl, locale } = getJourneyRTL(data.journey)

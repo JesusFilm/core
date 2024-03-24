@@ -143,9 +143,10 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
 }
 
 export const GET_JOURNEYS = gql`
-  query GetJourneys($featured: Boolean, $hostname: String) {
+  query GetJourneys($featured: Boolean, $options: JourneysQueryOptions) {
     journeys(
-      where: { featured: $featured, template: false, hostname: $hostname }
+      where: { featured: $featured, template: false }
+      options: $options
     ) {
       id
       title
