@@ -30,7 +30,7 @@ interface JourneysPageProps {
   journeys: Journey[]
 }
 
-const StyledIframe = styled('iframe')(({ theme }) => ({}))
+const StyledIframe = styled('iframe')(() => ({}))
 
 function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys')
