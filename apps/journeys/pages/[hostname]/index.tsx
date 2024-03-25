@@ -53,10 +53,7 @@ function HostJourneysPage({ journeys }: HostJourneysPageProps): ReactElement {
                       >
                         <Fade in timeout={(index + 1) * 1000}>
                           <StyledIframe
-                            src={`https://${
-                              process.env.NEXT_PUBLIC_VERCEL_URL ??
-                              'your.nextstep.is'
-                            }/embed/${slug}`}
+                            src={`/embed/${slug}`}
                             sx={{
                               width: '100%',
                               height: 600,
