@@ -75,10 +75,15 @@ function getBrowserLanguage(req: NextRequest): string {
 
 function handleRedirect(req: NextRequest, locale?: string): NextResponse {
   const redirectUrl = new URL(
-    `/${locale}${req.nextUrl.pathname}${req.nextUrl.search}`,
+    `${locale !== DEFAULT_LOCALE ? `/${locale}` : ''}${req.nextUrl.pathname}${
+      req.nextUrl.search
+    }`,
     req.url
   )
-  const response = NextResponse.redirect(redirectUrl)
+  const response =
+    redirectUrl.toString() === req.url.toString()
+      ? NextResponse.next()
+      : NextResponse.redirect(redirectUrl)
   response.cookies.set('NEXT_LOCALE', `${COOKIE_FINGERPRINT}---${locale}`)
   return response
 }
