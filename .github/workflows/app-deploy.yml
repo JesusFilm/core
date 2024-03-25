@@ -53,8 +53,8 @@ jobs:
       fail-fast: false
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
-        github-ref-name: ${{ github.ref_name }}
-        github-event-name: ${{ github.event_name }}
+        github-ref-name: ['${{ github.ref_name }}']
+        github-event-name: ['${{ github.event_name }}']
         node-version: [18]
         exclude:
           - app: journeys
@@ -199,7 +199,7 @@ jobs:
       fail-fast: false
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
-        github-ref-name: ${{ github.ref_name }}
+        github-ref-name: ['${{ github.ref_name }}']
         node-version: [18]
         exclude:
           - app: journeys-admin
