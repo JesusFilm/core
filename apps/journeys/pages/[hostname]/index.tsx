@@ -112,6 +112,14 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
       notFound: true,
       revalidate: 60
     }
+  } else if (data.journeys.length === 1) {
+    return {
+      redirect: {
+        destination: `/${data.journeys[0].slug}`,
+        permanent: false
+      },
+      revalidate: 60
+    }
   } else {
     return {
       props: {
