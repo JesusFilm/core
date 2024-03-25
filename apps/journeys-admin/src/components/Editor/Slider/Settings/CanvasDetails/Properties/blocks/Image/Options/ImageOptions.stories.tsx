@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import MuiDrawer from '@mui/material/Drawer'
 import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -8,13 +7,15 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
+import { Drawer } from '../../../../../Drawer'
 
 import { ImageOptions } from './ImageOptions'
 
-const ImageOptionsStory: Meta<typeof ImageOptions> = {
+const Demo: Meta<typeof ImageOptions> = {
   ...journeysAdminConfig,
   component: ImageOptions,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Image/ImageOptions',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Image/ImageOptions',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -43,37 +44,13 @@ export const Default: StoryObj<typeof ImageOptions> = {
             selectedBlock: image
           }}
         >
-          <MuiDrawer
-            anchor="right"
-            variant="permanent"
-            sx={{
-              display: { xs: 'none', sm: 'block' },
-              '& .MuiDrawer-paper': {
-                boxSizing: 'border-box',
-                width: 328
-              }
-            }}
-            ModalProps={{
-              keepMounted: true
-            }}
-            open
-          >
+          <Drawer title="Image Options">
             <ImageOptions />
-          </MuiDrawer>
-          <MuiDrawer
-            anchor="bottom"
-            variant="temporary"
-            open
-            sx={{
-              display: { xs: 'block', sm: 'none' }
-            }}
-          >
-            <ImageOptions />
-          </MuiDrawer>
+          </Drawer>
         </EditorProvider>
       </ThemeProvider>
     </MockedProvider>
   )
 }
 
-export default ImageOptionsStory
+export default Demo

@@ -1,17 +1,21 @@
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { Image } from './Image'
 
-const ImageStory: Meta<typeof Image> = {
+const Demo: Meta<typeof Image> = {
   ...simpleComponentConfig,
   component: Image,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Image'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Image'
 }
 
 export const Default: StoryObj<typeof Image> = {
@@ -30,17 +34,11 @@ export const Default: StoryObj<typeof Image> = {
     }
     /* eslint-disable */
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <Image {...image} />
-      </Stack>
+      <EditorProvider>
+        <Drawer title="Image Properties">
+          <Image {...image} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
@@ -61,19 +59,15 @@ export const Filled: StoryObj<typeof Image> = {
     }
 
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <Image {...image} />
-      </Stack>
+      <EditorProvider>
+        <Box>
+          <Drawer title="Image Properties">
+            <Image {...image} />
+          </Drawer>
+        </Box>
+      </EditorProvider>
     )
   }
 }
 
-export default ImageStory
+export default Demo
