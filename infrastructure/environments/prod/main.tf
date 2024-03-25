@@ -91,6 +91,23 @@ module "api-videos" {
   vpc_security_group_id = module.prod.private_rds_security_group_id
 }
 
+module "algolia" {
+  source        = "../../../infrastructure/modules/aws/ecs-scheduled-task"
+  name          = "api-videos-prod-alogolia-seed"
+  doppler_token = data.aws_ssm_parameter.doppler_api_videos_prod_token.value
+  environment_variables = [
+    "ALGOLIA_APP_ID",
+    "ALGOLIA_API_KEY",
+    "PG_DATABASE_URL_VIDEOS"
+  ]
+  cpu                            = 1024
+  memory                         = 4096
+  task_execution_role_arn        = local.internal_ecs_config.task_execution_role_arn
+  cloudwatch_schedule_expression = "cron(0 2 * * ? *)"
+  cluster_arn                    = local.internal_ecs_config.cluster.arn
+  subnet_ids                     = local.internal_ecs_config.subnets
+}
+
 module "api-media" {
   source                = "../../../apps/api-media/infrastructure"
   ecs_config            = local.internal_ecs_config
@@ -193,3 +210,4 @@ module "journeys-admin" {
   })
   doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_prod_token.value
 }
+
