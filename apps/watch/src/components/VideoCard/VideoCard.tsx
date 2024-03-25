@@ -47,14 +47,24 @@ export function getSlug(
   label: VideoLabel | undefined,
   variantSlug: string | undefined
 ): string {
+  console.log(
+    'containerSlug:',
+    containerSlug,
+    'label:',
+    label,
+    'variantSlug:',
+    variantSlug
+  )
   if (
     containerSlug != null &&
     label !== undefined &&
     ![VideoLabel.collection, VideoLabel.series].includes(label)
   ) {
+    console.log(`/${containerSlug}.html/${variantSlug ?? ''}.html`)
     return `/${containerSlug}.html/${variantSlug ?? ''}.html`
   } else {
     const [videoId, languageId] = (variantSlug ?? '').split('/')
+    console.log(`/${videoId}.html/${languageId}.html`)
     return `/${videoId}.html/${languageId}.html`
   }
 }

@@ -207,7 +207,6 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     setIsEnd(isAtEnd(currentPage ?? 0, totalPages ?? 1))
   }, [setIsEnd, currentPage, totalPages])
 
-  console.log('algoliaVideos', algoliaVideos)
   return (
     <PageWrapper hero={<VideosHero />} testId="VideosPage">
       <Container maxWidth="xxl">
