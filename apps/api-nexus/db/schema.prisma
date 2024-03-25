@@ -1,0 +1,159 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = env("PRISMA_LOCATION_NEXUS")
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("PG_DATABASE_URL_NEXUS")
+}
+
+model Nexus {
+    id          String      @id @default(uuid())
+    name        String
+    description String?
+    createdAt   DateTime    @default(now())
+    deletedAt   DateTime?
+    status      NexusStatus @default(published)
+    userNexuses UserNexus[]
+    channels    Channel[]
+    resources   Resource[]
+    Batch       Batch[]
+}
+
+enum NexusStatus {
+    deleted
+    published
+}
+
+model UserNexus {
+    id      String @id @default(uuid())
+    userId  String
+    nexusId String
+    nexus   Nexus  @relation(fields: [nexusId], references: [id])
+    role    String
+}
+
+model Channel {
+    id        String          @id @default(uuid())
+    nexusId   String
+    name      String
+    platform  String
+    connected Boolean         @default(false)
+    nexus     Nexus           @relation(fields: [nexusId], references: [id])
+    youtube   ChannelYoutube?
+    status    NexusStatus     @default(published)
+    createdAt DateTime        @default(now())
+    deletedAt DateTime?
+    Batch     Batch[]
+}
+
+model ChannelYoutube {
+    id           String  @id @default(uuid())
+    channelId    String  @unique
+    channel      Channel @relation(fields: [channelId], references: [id])
+    title        String
+    description  String
+    youtubeId    String
+    imageUrl     String
+    refreshToken String
+}
+
+model Resource {
+    id            String                 @id @default(uuid())
+    nexusId       String
+    name          String
+    nexus         Nexus                  @relation(fields: [nexusId], references: [id])
+    status        ResourceStatus         @default(published)
+    createdAt     DateTime               @default(now())
+    updatedAt     DateTime               @updatedAt
+    deletedAt     DateTime?
+    category      String?
+    privacy       PrivacyStatus?
+    sourceType    SourceType
+    localizations ResourceLocalization[]
+    googleDrive   GoogleDriveResource?
+    batches       BatchResource[]
+}
+
+model GoogleDriveResource {
+    id           String   @id @default(uuid())
+    resourceId   String   @unique
+    driveId      String
+    mimeType     String
+    refreshToken String
+    resource     Resource @relation(fields: [resourceId], references: [id])
+}
+
+model ResourceLocalization {
+    id          String   @id @default(uuid())
+    resourceId  String
+    title       String
+    description String
+    keywords    String
+    language    String
+    resource    Resource @relation(fields: [resourceId], references: [id])
+}
+
+enum ResourceStatus {
+    deleted
+    published
+    processing
+    error
+    uploaded
+}
+
+enum SourceType {
+    googleDrive
+    template
+    archlight
+    other
+}
+
+enum PrivacyStatus {
+    public
+    unlisted
+    private
+}
+
+model GoogleAccessToken {
+    id           String @id @default(uuid())
+    refreshToken String
+}
+
+model Batch {
+    id        String          @id @default(uuid())
+    nexusId   String
+    channelId String
+    name      String
+    status    BatchStatus     @default(pending)
+    nexus     Nexus           @relation(fields: [nexusId], references: [id])
+    channel   Channel         @relation(fields: [channelId], references: [id])
+    resources BatchResource[]
+    createdAt DateTime        @default(now())
+}
+
+enum BatchStatus {
+    pending
+    running
+    completed
+    failed
+    cancelled
+    paused
+    error
+    warning
+    scheduled
+}
+
+model BatchResource {
+    id          String   @id @default(uuid())
+    batchId     String
+    resourceId  String
+    isCompleted Boolean  @default(false)
+    error       String?
+    percent     Float    @default(0.0)
+    batch       Batch    @relation(fields: [batchId], references: [id])
+    resource    Resource @relation(fields: [resourceId], references: [id])
+
+    @@unique([batchId, resourceId])
+}
