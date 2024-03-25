@@ -56,7 +56,7 @@ jobs:
       ) && !(
         github.ref == 'refs/heads/stage' &&
         github.event_name == 'push' &&
-        fromJson(needs.affected.outputs.matrix) == 'journeys'
+        matrix.app == 'journeys'
       )
     strategy:
       fail-fast: false
@@ -71,11 +71,6 @@ jobs:
       deployments: write
       contents: write
     steps:
-      - name: echo conditional variables
-        run: |
-          echo "github.ref: ${{ github.ref }}"
-          echo "github.event_name: ${{ github.event_name }}"
-          echo "app: ${{ fromJson(needs.affected.outputs.matrix) }}"
       - name: start deployment
         uses: chrnorm/deployment-action@v2
         id: deployment
@@ -204,10 +199,10 @@ jobs:
       github.event_name != 'pull_request' && (
         (
           github.ref == 'refs/heads/main' &&
-          fromJson(needs.affected.outputs.matrix) != 'journeys-admin'
+          matrix.app != 'journeys-admin'
         ) || (
           github.ref == 'refs/heads/stage' &&
-          fromJson(needs.affected.outputs.matrix) == 'journeys'
+          matrix.app == 'journeys'
         )
       )
     needs: affected
