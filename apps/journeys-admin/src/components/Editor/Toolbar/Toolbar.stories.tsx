@@ -9,12 +9,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 
 import { Toolbar } from '.'
 
 const Demo: Meta<typeof Toolbar> = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: Toolbar,
   title: 'Journeys-Admin/Editor/Toolbar'
 }
