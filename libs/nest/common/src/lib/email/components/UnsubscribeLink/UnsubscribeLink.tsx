@@ -21,6 +21,9 @@ export function UnsubscribeLink({
             <Link
               href={`${process.env.JOURNEYS_ADMIN_URL}/email-preferences/${recipientEmail}`}
               className="text-[#26262E] no-underline p-[2px]"
+              style={{
+                font: '12px "Open Sans", sans-serif'
+              }}
             >
               Change Notifications Setting
             </Link>
@@ -28,6 +31,9 @@ export function UnsubscribeLink({
             <Link
               href={`${process.env.JOURNEYS_ADMIN_URL}/email-preferences/${recipientEmail}?unsubscribeAll`}
               className="text-[#26262E] no-underline p-[2px]"
+              style={{
+                font: '12px "Open Sans", sans-serif'
+              }}
             >
               Unsubscribe
             </Link>

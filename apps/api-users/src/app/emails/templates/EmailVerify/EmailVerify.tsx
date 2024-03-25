@@ -85,7 +85,7 @@ export const EmailVerifyEmail = ({
                   {token}
                 </Text>
                 <Link href={inviteLink} style={{ textDecoration: 'none' }}>
-                  <Text className="text-center mt-[24px] text-[#C52D3A] font-[400] text-[12px] leading-[16px]">
+                  <Text className="text-center mt-[24px] mb-[0px] text-[#C52D3A] font-[400] text-[12px] leading-[16px]">
                     {inviteLink}
                   </Text>
                 </Link>

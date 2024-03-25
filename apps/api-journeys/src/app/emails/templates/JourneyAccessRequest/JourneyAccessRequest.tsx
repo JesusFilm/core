@@ -67,7 +67,7 @@ export const JourneyAccessRequestEmail = ({
               <Row>
                 <th>
                   <Text
-                    className="font-semibold text-[20px] leading-[28px] mt-[0px] mb-[20px] text-center"
+                    className="font-semibold text-[20px] leading-[28px] mt-[0px] mb-[16px] text-center"
                     style={{
                       font: '20px "Open Sans", sans-serif'
                     }}
