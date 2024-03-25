@@ -6,8 +6,8 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
