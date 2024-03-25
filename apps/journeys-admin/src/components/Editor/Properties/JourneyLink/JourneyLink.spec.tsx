@@ -7,10 +7,10 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { GetCustomDomain } from '../../../../../__generated__/GetCustomDomain'
+import { CustomDomainProvider } from '../../../CustomDomainProvider'
 import { defaultJourney } from '../../data'
 
 import { JourneyLink } from './JourneyLink'
-import { CustomDomainProvider } from '../../../CustomDomainProvider'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

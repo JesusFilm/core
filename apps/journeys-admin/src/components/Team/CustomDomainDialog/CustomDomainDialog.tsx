@@ -148,11 +148,22 @@ export function CustomDomainDialog({
     useLastActiveTeamId: true
   })
 
-  const { data: customDomainData, refetch: refetchCustomDomains } =
-    useQuery<GetCustomDomain>(GET_CUSTOM_DOMAIN, {
-      variables: { teamId: activeTeam?.id },
-      onCompleted: () => setLoading(false)
-    })
+  const {
+    data: customDomainData,
+    refetch: refetchCustomDomains,
+    startPolling,
+    stopPolling
+  } = useQuery<GetCustomDomain>(GET_CUSTOM_DOMAIN, {
+    variables: { teamId: activeTeam?.id },
+    onCompleted: (data) => {
+      setLoading(false)
+      if (data?.customDomains?.length !== 0 && data?.customDomains != null) {
+        data.customDomains?.[0].configuration?.misconfigured === true
+          ? startPolling(1000)
+          : stopPolling()
+      }
+    }
+  })
 
   const [createCustomDomain, { error }] =
     useMutation<CreateCustomDomain>(CREATE_CUSTOM_DOMAIN)
