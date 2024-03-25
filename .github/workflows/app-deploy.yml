@@ -188,8 +188,6 @@ jobs:
   deploy-production:
     name: Deploy Production
     # if not a pull request
-    # and main branch where app is not journeys-admin
-    # or stage branch where app is journeys
     if: |
       needs.affected.outputs.matrix != '[]' &&
       needs.affected.outputs.matrix != '' &&
@@ -203,7 +201,7 @@ jobs:
         node-version: [18]
         exclude:
           - app: journeys-admin
-            github-ref-name: main
+          - github-ref-name: stage
         include:
           - app: journeys
             github-ref-name: stage
