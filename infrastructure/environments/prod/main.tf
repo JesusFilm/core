@@ -93,7 +93,7 @@ module "api-videos" {
 
 module "algolia" {
   source        = "../../../infrastructure/modules/aws/ecs-scheduled-task"
-  name          = "api-videos-prod-alogolia-seed"
+  name          = "api-videos-alogolia-seed-prod"
   doppler_token = data.aws_ssm_parameter.doppler_api_videos_prod_token.value
   environment_variables = [
     "ALGOLIA_APP_ID",
