@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 
-import { middleware } from './middleware'
+import { COOKIE_FINGERPRINT, middleware } from './middleware'
 
 describe('middleware', () => {
   const url = 'http://localhost:4200/'
@@ -9,6 +9,21 @@ describe('middleware', () => {
   }
 
   describe('no cookie set', () => {
+    it('should set browsers language to default locale when no accept headers', async () => {
+      const request = new Request(url, {
+        headers: new Headers({})
+      })
+      const req = new NextRequest(request, requestInit)
+      const result = await middleware(req)
+
+      expect(req.cookies.get('NEXT_LOCALE')?.value).toBeUndefined()
+      expect(result?.status).toBe(307) // checks for temporary redirect
+      expect(result?.headers.get('location')).toBe('http://localhost:4200/en/')
+      expect(result?.headers.get('set-cookie')).toBe(
+        `NEXT_LOCALE=${COOKIE_FINGERPRINT}---en; Path=/`
+      )
+    })
+
     it('should set browsers language as cookie, and redirect to that locale', async () => {
       const request = new Request(url, {
         headers: new Headers({
@@ -23,7 +38,7 @@ describe('middleware', () => {
       expect(result?.status).toBe(307) // checks for temporary redirect
       expect(result?.headers.get('location')).toBe('http://localhost:4200/zh/')
       expect(result?.headers.get('set-cookie')).toBe(
-        'NEXT_LOCALE=00002-zh; Path=/'
+        `NEXT_LOCALE=${COOKIE_FINGERPRINT}---zh; Path=/`
       )
     })
 
@@ -41,7 +56,7 @@ describe('middleware', () => {
       expect(result?.status).toBe(307) // checks for temporary redirect
       expect(result?.headers.get('location')).toBe('http://localhost:4200/ja/')
       expect(result?.headers.get('set-cookie')).toBe(
-        'NEXT_LOCALE=00002-ja; Path=/'
+        `NEXT_LOCALE=${COOKIE_FINGERPRINT}---ja; Path=/`
       )
     })
 
@@ -61,7 +76,7 @@ describe('middleware', () => {
         'http://localhost:4200/zh-Hans-CN/'
       )
       expect(result?.headers.get('set-cookie')).toBe(
-        'NEXT_LOCALE=00002-zh-Hans-CN; Path=/'
+        `NEXT_LOCALE=${COOKIE_FINGERPRINT}---zh-Hans-CN; Path=/`
       )
     })
   })
@@ -71,14 +86,16 @@ describe('middleware', () => {
       const request = new Request(url, {
         headers: new Headers({
           'accept-language': 'af,zh;q=0.9',
-          cookie: 'NEXT_LOCALE=00002-ja'
+          cookie: `NEXT_LOCALE=${COOKIE_FINGERPRINT}---ja`
         })
       })
       const req = new NextRequest(request, requestInit)
       const result = await middleware(req)
 
       expect(req.nextUrl.locale).toBe('en')
-      expect(req.cookies.get('NEXT_LOCALE')?.value).toBe('00002-ja')
+      expect(req.cookies.get('NEXT_LOCALE')?.value).toBe(
+        `${COOKIE_FINGERPRINT}---ja`
+      )
       expect(result?.status).toBe(307) // checks for temporary redirect
       expect(result?.headers.get('location')).toBe('http://localhost:4200/ja/')
     })
@@ -87,18 +104,20 @@ describe('middleware', () => {
       const request = new Request(url, {
         headers: new Headers({
           'accept-language': 'af,zh;q=0.9',
-          cookie: 'NEXT_LOCALE=00002-es-CO'
+          cookie: `NEXT_LOCALE=${COOKIE_FINGERPRINT}---es-CO`
         })
       })
       const req = new NextRequest(request, requestInit)
       const result = await middleware(req)
 
       expect(req.nextUrl.locale).toBe('en')
-      expect(req.cookies.get('NEXT_LOCALE')?.value).toBe('00002-es-CO')
+      expect(req.cookies.get('NEXT_LOCALE')?.value).toBe(
+        `${COOKIE_FINGERPRINT}---es-CO`
+      )
       expect(result?.status).toBe(307) // checks for temporary redirect
       expect(result?.headers.get('location')).toBe('http://localhost:4200/es/')
       expect(result?.headers.get('set-cookie')).toBe(
-        'NEXT_LOCALE=00002-es; Path=/'
+        `NEXT_LOCALE=${COOKIE_FINGERPRINT}---es; Path=/`
       )
     })
 
@@ -106,20 +125,22 @@ describe('middleware', () => {
       const request = new Request(url, {
         headers: new Headers({
           'accept-language': 'af,zh;q=0.9',
-          cookie: 'NEXT_LOCALE=00002-zh-Hans-CN'
+          cookie: `NEXT_LOCALE=${COOKIE_FINGERPRINT}---zh-Hans-CN`
         })
       })
       const req = new NextRequest(request, requestInit)
       const result = await middleware(req)
 
       expect(req.nextUrl.locale).toBe('en')
-      expect(req.cookies.get('NEXT_LOCALE')?.value).toBe('00002-zh-Hans-CN')
+      expect(req.cookies.get('NEXT_LOCALE')?.value).toBe(
+        `${COOKIE_FINGERPRINT}---zh-Hans-CN`
+      )
       expect(result?.status).toBe(307) // checks for temporary redirect
       expect(result?.headers.get('location')).toBe(
         'http://localhost:4200/zh-Hans-CN/'
       )
       expect(result?.headers.get('set-cookie')).toBe(
-        'NEXT_LOCALE=00002-zh-Hans-CN; Path=/'
+        `NEXT_LOCALE=${COOKIE_FINGERPRINT}---zh-Hans-CN; Path=/`
       )
     })
   })
