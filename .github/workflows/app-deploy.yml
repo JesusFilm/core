@@ -44,25 +44,22 @@ jobs:
     name: Deploy Preview and Test
     needs: affected
     # if branch is not main or is a pull request
-    # and not:
-    # - stage branch
-    # - push
-    # - journeys app
     if: |
       needs.affected.outputs.matrix != '[]' &&
       needs.affected.outputs.matrix != '' && (
-        github.ref != 'refs/heads/main' || 
-        github.event_name == 'pull_request'
-      ) && !(
-        github.ref == 'refs/heads/stage' &&
-        github.event_name == 'push' &&
-        matrix.app == 'journeys'
+        github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
       )
     strategy:
       fail-fast: false
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
+        github-ref: ${{ github.ref }}
+        github-event-name: ${{ github.event_name }}
         node-version: [18]
+        exclude:
+          - app: journeys
+            github-ref: refs/heads/stage
+            github-event-name: push
     runs-on: ubuntu-latest
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
@@ -196,21 +193,20 @@ jobs:
     if: |
       needs.affected.outputs.matrix != '[]' &&
       needs.affected.outputs.matrix != '' &&
-      github.event_name != 'pull_request' && (
-        (
-          github.ref == 'refs/heads/main' &&
-          matrix.app != 'journeys-admin'
-        ) || (
-          github.ref == 'refs/heads/stage' &&
-          matrix.app == 'journeys'
-        )
-      )
+      github.event_name != 'pull_request'
     needs: affected
     strategy:
       fail-fast: false
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
+        github-ref: ${{ github.ref }}
         node-version: [18]
+        exclude:
+          - app: journeys-admin
+            github-ref: refs/heads/main
+        include:
+          - app: journeys
+            github-ref: refs/heads/stage
     runs-on: ubuntu-latest
     permissions:
       deployments: write
