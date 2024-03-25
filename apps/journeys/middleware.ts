@@ -19,21 +19,17 @@ export default async function middleware(
 ): Promise<NextResponse> {
   const url = req.nextUrl
 
-  // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
-  let hostname =
-    req.headers
-      .get('host')
-      ?.replace('.localhost:4100', `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) ??
-    ''
+  // Get hostname of request
+  // (e.g. your.nextstep.is, localhost:4100, example.com)
+  let hostname = req.headers.get('host') ?? ''
 
   // special case for Vercel preview deployment URLs
   if (
-    hostname.includes('---') &&
-    hostname.endsWith(`.${process.env.NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX}`)
+    process.env.NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX != null &&
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN != null &&
+    hostname.endsWith(process.env.NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX)
   ) {
-    hostname = `${hostname.split('---')[0]}.${
-      process.env.NEXT_PUBLIC_ROOT_DOMAIN
-    }`
+    hostname = process.env.NEXT_PUBLIC_ROOT_DOMAIN
   }
 
   const searchParams = req.nextUrl.searchParams.toString()
@@ -44,7 +40,7 @@ export default async function middleware(
 
   // rewrite root application to `/home` folder
   if (
-    hostname === 'localhost:4100' ||
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN != null &&
     hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
   ) {
     return NextResponse.rewrite(
@@ -52,6 +48,6 @@ export default async function middleware(
     )
   }
 
-  // rewrite everything else to `/[domain]/[slug] dynamic route
+  // rewrite everything else to `/[hostname]/[slug] dynamic route
   return NextResponse.rewrite(new URL(`/${hostname}${path}`, req.url))
 }
