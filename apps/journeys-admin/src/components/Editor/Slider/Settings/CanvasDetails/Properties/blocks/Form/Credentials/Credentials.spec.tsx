@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -15,6 +15,10 @@ import {
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import {
+  GetFormBlock,
+  GetFormBlockVariables
+} from '../../../../../../../../../../__generated__/GetFormBlock'
 
 import { Credentials, GET_FORM_BLOCK } from './Credentials'
 
@@ -48,6 +52,40 @@ const state: EditorState = {
   activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
 }
 
+const getFormBlockMock: MockedResponse<GetFormBlock, GetFormBlockVariables> = {
+  request: {
+    query: GET_FORM_BLOCK,
+    variables: {
+      id: block.id
+    }
+  },
+  result: {
+    data: {
+      block: {
+        id: 'formBlock.id',
+        __typename: 'FormBlock',
+        projects: [
+          {
+            __typename: 'FormiumProject',
+            id: 'projectId',
+            name: 'project name'
+          }
+        ],
+        projectId: 'projectId',
+        formSlug: 'FilledFormSlug',
+        forms: [
+          {
+            __typename: 'FormiumForm',
+            slug: 'FilledFormSlug',
+            name: 'Filled Form Name'
+          }
+        ],
+        apiTokenExists: true
+      }
+    }
+  }
+}
+
 describe('Credentials', () => {
   beforeEach(() => {
     mockUseEditor.mockReturnValue({
@@ -58,43 +96,11 @@ describe('Credentials', () => {
 
   it('shows credentials', async () => {
     const result = jest.fn(() => ({
-      data: {
-        block: {
-          __typename: 'FormBlock',
-          id: 'formBlock.id',
-          projectId: 'projectId',
-          formSlug: 'formSlug',
-          projects: [
-            {
-              __typename: 'FormiumProject',
-              id: 'projectId',
-              name: 'projectName'
-            }
-          ],
-          forms: [
-            {
-              __typename: 'FormiumForm',
-              slug: 'formSlug',
-              name: 'formName'
-            }
-          ]
-        },
-        apiTokenExists: true
-      }
+      ...getFormBlockMock.result
     }))
 
     const { getByRole, getByLabelText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_FORM_BLOCK,
-              variables: { id: 'formBlock.id' }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[{ ...getFormBlockMock, result }]}>
         <SnackbarProvider>
           <Credentials />
         </SnackbarProvider>
@@ -104,24 +110,28 @@ describe('Credentials', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(getByLabelText('Api Token')).toBeInTheDocument()
-    expect(getByRole('button', { name: 'projectName' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'formName' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'project name' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Filled Form Name' })
+    ).toBeInTheDocument()
   })
 
-  it('shows info message', () => {
+  it('shows info message', async () => {
     const { getByText } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[getFormBlockMock]}>
         <SnackbarProvider>
           <Credentials />
         </SnackbarProvider>
       </MockedProvider>
     )
 
-    expect(
-      getByText('Click here for formium docs on finding your api token')
-    ).toHaveAttribute(
-      'href',
-      'https://formium.io/docs/react/frameworks/next-js#add-your-credentials'
+    await waitFor(() =>
+      expect(
+        getByText('Click here for formium docs on finding your api token')
+      ).toHaveAttribute(
+        'href',
+        'https://formium.io/docs/react/frameworks/next-js#add-your-credentials'
+      )
     )
   })
 })

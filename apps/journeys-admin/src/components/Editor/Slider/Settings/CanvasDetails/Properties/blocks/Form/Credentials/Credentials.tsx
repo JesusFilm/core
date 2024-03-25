@@ -10,6 +10,10 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import {
+  GetFormBlock,
+  GetFormBlockVariables
+} from '../../../../../../../../../../__generated__/GetFormBlock'
 
 import { ApiTokenTextField } from './ApiTokenTextField'
 import { FormSlugSelect } from './FormSlugSelect'
@@ -41,15 +45,18 @@ export function Credentials(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as TreeBlock<FormBlock> | undefined
-  const { data, loading } = useQuery(GET_FORM_BLOCK, {
-    variables: { id: selectedBlock?.id }
-  })
+  const { data, loading } = useQuery<GetFormBlock, GetFormBlockVariables>(
+    GET_FORM_BLOCK,
+    {
+      variables: { id: selectedBlock?.id ?? '' }
+    }
+  )
 
-  return (
+  return data?.block.__typename === 'FormBlock' ? (
     <Stack spacing={6} sx={{ p: 4, pt: 0 }} data-testid="Credentials">
       <ApiTokenTextField
         id={selectedBlock?.id}
-        apiTokenExists={data?.block?.apiTokenExists}
+        apiTokenExists={data.block.apiTokenExists}
         loading={loading}
       />
       <ProjectIdSelect
@@ -83,5 +90,7 @@ export function Credentials(): ReactElement {
         </NextLink>
       </Stack>
     </Stack>
+  ) : (
+    <></>
   )
 }
