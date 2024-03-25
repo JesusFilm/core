@@ -12,13 +12,14 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
   GetJourney,
+  GetJourneyVariables,
   GetJourney_journey as Journey
-} from '../../__generated__/GetJourney'
-import { GetJourneySlugs } from '../../__generated__/GetJourneySlugs'
-import { StepFields } from '../../__generated__/StepFields'
-import i18nConfig from '../../next-i18next.config'
-import { EmbeddedPreview } from '../../src/components/EmbeddedPreview'
-import { createApolloClient } from '../../src/libs/apolloClient'
+} from '../../../__generated__/GetJourney'
+import { GetJourneySlugs } from '../../../__generated__/GetJourneySlugs'
+import { StepFields } from '../../../__generated__/StepFields'
+import i18nConfig from '../../../next-i18next.config'
+import { EmbeddedPreview } from '../../../src/components/EmbeddedPreview'
+import { createApolloClient } from '../../../src/libs/apolloClient'
 import { GET_JOURNEY, GET_JOURNEY_SLUGS } from '../[journeySlug]'
 
 interface JourneyPageProps {
@@ -95,10 +96,13 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
 ) => {
   const apolloClient = createApolloClient()
   try {
-    const { data } = await apolloClient.query<GetJourney>({
+    const { data } = await apolloClient.query<GetJourney, GetJourneyVariables>({
       query: GET_JOURNEY,
       variables: {
-        id: context.params?.journeySlug
+        id: context.params?.journeySlug?.toString() ?? '',
+        options: {
+          embedded: true
+        }
       }
     })
     const { rtl, locale } = getJourneyRTL(data.journey)
