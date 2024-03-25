@@ -2,6 +2,10 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { styled, useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import take from 'lodash/take'
+import { useUser } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -21,6 +25,7 @@ import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { CardWrapper } from '../../../CardPreview/CardList/CardWrapper'
 import { VideoWrapper } from '../../../Editor/Canvas/VideoWrapper'
 import { FramePortal } from '../../../FramePortal'
+import { CreateJourneyButton } from '../../CreateJourneyButton'
 
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
@@ -31,6 +36,7 @@ interface TemplateCardPreviewItemProps {
 }
 
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
+const StyledSwiper = styled(Swiper)(() => ({}))
 
 function TemplateCardPreviewItem({
   step
@@ -106,6 +112,8 @@ export function TemplateCardPreview({
   steps
 }: TemplateCardPreviewProps): ReactElement {
   const { breakpoints } = useTheme()
+  const { t } = useTranslation('apps-journeys-admin')
+  const user = useUser()
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
       spaceBetween: 12
@@ -115,8 +123,10 @@ export function TemplateCardPreview({
     }
   }
 
+  const slidesToRender: Array<TreeBlock<StepBlock>> | undefined = take(steps, 7)
+
   return steps != null ? (
-    <Swiper
+    <StyledSwiper
       modules={[Mousewheel, FreeMode, A11y]}
       mousewheel={{
         forceToAxis: true
@@ -128,13 +138,13 @@ export function TemplateCardPreview({
       observer
       observeParents
       breakpoints={swiperBreakpoints}
-      autoHeight
-      style={{
+      sx={{
         overflow: 'visible',
-        zIndex: 2
+        zIndex: 2,
+        height: { xs: 295, sm: 404 }
       }}
     >
-      {steps.map((step) => {
+      {slidesToRender.map((step) => {
         return (
           <StyledSwiperSlide
             data-testid="TemplateCardsSwiperSlide"
@@ -149,7 +159,77 @@ export function TemplateCardPreview({
           </StyledSwiperSlide>
         )
       })}
-    </Swiper>
+      {steps.length > slidesToRender.length && (
+        <StyledSwiperSlide
+          data-testid="UseTemplatesSlide"
+          sx={{
+            width: 'unset !important',
+            cursor: 'grab',
+            zIndex: 2
+          }}
+        >
+          <Stack
+            alignItems="center"
+            justifyContent="center"
+            gap={2}
+            sx={{
+              width: { xs: 194, sm: 267 },
+              mr: { xs: 3, sm: 7 },
+              height: { xs: 295, sm: 404 },
+              borderRadius: 2,
+              backgroundColor: 'secondary.main',
+              px: 1
+            }}
+          >
+            <Typography
+              variant="overline2"
+              color="background.paper"
+              textAlign="center"
+            >
+              {t(`+${steps.length - 7} more cards`)}
+            </Typography>
+            <Typography
+              variant="overline2"
+              color="background.paper"
+              textAlign="center"
+            >
+              {t('Use this template to see more!')}
+            </Typography>
+            <CreateJourneyButton signedIn={user?.id != null} />
+          </Stack>
+          <Box
+            alignItems="center"
+            justifyContent="center"
+            sx={{
+              position: 'relative',
+              bottom: { xs: 290, sm: 400 },
+              left: 10,
+              zIndex: -1,
+              minWidth: { xs: 194, sm: 267 },
+              mr: { xs: 3, sm: 7 },
+              height: { xs: 295, sm: 404 },
+              borderRadius: 2,
+              backgroundColor: 'secondary.light'
+            }}
+          />
+          <Box
+            alignItems="center"
+            justifyContent="center"
+            sx={{
+              position: 'absolute',
+              bottom: { xs: -10, sm: -10 },
+              left: 30,
+              zIndex: -2,
+              minWidth: { xs: 194, sm: 267 },
+              mr: { xs: 3, sm: 7 },
+              height: { xs: 295, sm: 404 },
+              borderRadius: 2,
+              backgroundColor: 'divider'
+            }}
+          />
+        </StyledSwiperSlide>
+      )}
+    </StyledSwiper>
   ) : (
     <Stack
       data-testid="TemplateCardsPreviewPlaceholder"
