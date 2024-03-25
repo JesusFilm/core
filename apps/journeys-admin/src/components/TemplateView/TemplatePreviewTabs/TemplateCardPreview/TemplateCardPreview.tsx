@@ -198,8 +198,6 @@ export function TemplateCardPreview({
             <CreateJourneyButton signedIn={user?.id != null} />
           </Stack>
           <Box
-            alignItems="center"
-            justifyContent="center"
             sx={{
               position: 'relative',
               bottom: { xs: 290, sm: 400 },
@@ -213,8 +211,6 @@ export function TemplateCardPreview({
             }}
           />
           <Box
-            alignItems="center"
-            justifyContent="center"
             sx={{
               position: 'absolute',
               bottom: { xs: -10, sm: -10 },
