@@ -171,7 +171,7 @@ describe('Goals', () => {
     )
     expect(getByText('The Journey Goals')).toBeInTheDocument()
 
-    expect(getAllByText('https://m.me/some_user')[0]).toBeInTheDocument()
+    expect(getByText('https://m.me/some_user')).toBeInTheDocument()
     expect(getByText('Start a Conversation')).toBeInTheDocument()
 
     expect(getAllByText('https://www.bible.com/')[0]).toBeInTheDocument()

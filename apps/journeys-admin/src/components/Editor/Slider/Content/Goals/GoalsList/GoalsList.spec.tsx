@@ -18,7 +18,7 @@ import { GoalsList } from './GoalsList'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn(() => false)
+  default: jest.fn()
 }))
 
 jest.mock('@core/journeys/ui/EditorProvider', () => {
@@ -76,7 +76,7 @@ describe('GoalsList', () => {
     it('should call dispatch with a URL when "Learn More" button is clicked', () => {
       const { getByRole } = render(<GoalsList goals={goals} />)
       fireEvent.click(getByRole('button', { name: 'Learn More' }))
-      expect(useEditor().dispatch).toHaveBeenCalledWith({
+      expect(dispatch).toHaveBeenCalledWith({
         type: 'SetSelectedGoalUrlAction'
       })
     })
