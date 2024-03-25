@@ -71,6 +71,11 @@ jobs:
       deployments: write
       contents: write
     steps:
+      - name: echo conditional variables
+        run: |
+          echo "github.ref: ${{ github.ref }}"
+          echo "github.event_name: ${{ github.event_name }}"
+          echo "app: ${{ fromJson(needs.affected.outputs.matrix }}"
       - name: start deployment
         uses: chrnorm/deployment-action@v2
         id: deployment
