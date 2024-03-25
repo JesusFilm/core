@@ -31,3 +31,21 @@ module "database" {
   vpc_security_group_id   = var.vpc_security_group_id
   PG_DATABASE_URL_ENV_VAR = "PG_DATABASE_URL_VIDEOS"
 }
+
+module "algolia" {
+  source        = "../../../infrastructure/modules/aws/ecs-scheduled-task"
+  name          = "${local.service_config.name}-alogolia-seed"
+  doppler_token = var.doppler_token
+  environment_variables = [
+    "ALGOLIA_APP_ID",
+    "ALGOLIA_API_KEY",
+    "PG_DATABASE_URL_VIDEOS"
+  ]
+  cpu                            = 1024
+  memory                         = 4096
+  task_execution_role_arn        = var.ecs_config.task_execution_role_arn
+  env                            = var.env
+  cloudwatch_schedule_expression = "cron(0 2 * * ? *)"
+  cluster_arn                    = var.ecs_config.cluster.arn
+  subnet_ids                     = var.ecs_config.subnets
+}
