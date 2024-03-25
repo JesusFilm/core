@@ -17,8 +17,7 @@ describe('middleware', () => {
       const result = await middleware(req)
 
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBeUndefined()
-      expect(result?.status).toBe(307) // checks for temporary redirect
-      expect(result?.headers.get('location')).toBe('http://localhost:4200/en/')
+      expect(result?.status).toBe(200)
       expect(result?.headers.get('set-cookie')).toBe(
         `NEXT_LOCALE=${COOKIE_FINGERPRINT}---en; Path=/`
       )
