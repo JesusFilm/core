@@ -45,8 +45,8 @@ function TemplateCardPreviewItem({
     <Box
       sx={{
         position: 'relative',
-        width: { xs: 194, sm: 267 },
-        height: { xs: 295, sm: 404 },
+        width: { xs: 94, sm: 167 },
+        height: { xs: 195, sm: 304 },
         backgroundColor: 'background.default',
         borderRadius: 3
       }}
@@ -62,16 +62,16 @@ function TemplateCardPreviewItem({
           sx={{
             position: 'absolute',
             display: 'block',
-            width: { xs: 485, sm: 445 },
-            height: { xs: 738, sm: 673 },
+            width: { xs: 385, sm: 345 },
+            height: { xs: 638, sm: 573 },
             zIndex: 2,
             cursor: 'grab'
           }}
         />
         <FramePortal
           sx={{
-            width: { xs: 485, sm: 445 },
-            height: { xs: 738, sm: 673 }
+            width: { xs: 385, sm: 345 },
+            height: { xs: 638, sm: 573 }
           }}
           dir={rtl ? 'rtl' : 'ltr'}
         >
