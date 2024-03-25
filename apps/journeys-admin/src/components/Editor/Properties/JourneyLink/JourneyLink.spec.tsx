@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -7,10 +7,10 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { GetCustomDomain } from '../../../../../__generated__/GetCustomDomain'
-import { GET_CUSTOM_DOMAIN } from '../../../Team/CustomDomainDialog/CustomDomainDialog'
 import { defaultJourney } from '../../data'
 
 import { JourneyLink } from './JourneyLink'
+import { CustomDomainProvider } from '../../../CustomDomainProvider'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -29,41 +29,6 @@ describe('JourneyLink', () => {
   const on = jest.fn()
 
   const journeyWithTeam = { ...defaultJourney, team: { id: 'teamId' } }
-  const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
-    request: {
-      query: GET_CUSTOM_DOMAIN,
-      variables: {
-        teamId: journeyWithTeam.team.id
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        customDomains: [
-          {
-            __typename: 'CustomDomain',
-            name: 'mockdomain.com',
-            apexName: 'mockdomain.com',
-            id: 'customDomainId',
-            teamId: 'teamId',
-            configuration: {
-              __typename: 'VercelDomainConfiguration',
-              misconfigured: false
-            },
-            verification: {
-              __typename: 'CustomDomainVerification',
-              verified: true,
-              verification: []
-            },
-            journeyCollection: {
-              __typename: 'JourneyCollection',
-              id: 'journeyCollectionId',
-              journeys: []
-            }
-          }
-        ]
-      }
-    }))
-  }
 
   afterEach(() => {
     jest.clearAllMocks()
@@ -164,21 +129,39 @@ describe('JourneyLink', () => {
     } as unknown as NextRouter)
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getCustomDomainMockARecord]}>
-          <JourneyProvider
+        <MockedProvider>
+          <CustomDomainProvider
             value={{
-              journey: journeyWithTeam as JourneyFields,
-              variant: 'admin'
+              customDomains: {
+                customDomains: [
+                  {
+                    __typename: 'CustomDomain' as const,
+                    name: 'mockdomain.com',
+                    apexName: 'mockdomain.com',
+                    id: 'customDomainId',
+                    verification: {
+                      __typename: 'CustomDomainVerification' as const,
+                      verified: true,
+                      verification: []
+                    }
+                  }
+                ]
+              } as unknown as GetCustomDomain
             }}
           >
-            <JourneyLink />
-          </JourneyProvider>
+            <JourneyProvider
+              value={{
+                journey: journeyWithTeam as JourneyFields,
+                variant: 'admin'
+              }}
+            >
+              <JourneyLink />
+            </JourneyProvider>
+          </CustomDomainProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
-    await waitFor(() =>
-      expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
-    )
+
     expect(getByRole('textbox')).toHaveValue('https://mockdomain.com/default')
   })
 })

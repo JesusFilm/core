@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
@@ -13,9 +12,8 @@ import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import Code1Icon from '@core/shared/ui/icons/Code1'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
-import { GetCustomDomain } from '../../../../../__generated__/GetCustomDomain'
 import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
-import { GET_CUSTOM_DOMAIN } from '../../../Team/CustomDomainDialog/CustomDomainDialog'
+import { useCustomDomain } from '../../../CustomDomainProvider/CustomDomainProvider'
 
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 import { SlugDialog } from './SlugDialog'
@@ -24,12 +22,7 @@ export function JourneyLink(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
-  const { data: customDomainData } = useQuery<GetCustomDomain>(
-    GET_CUSTOM_DOMAIN,
-    {
-      variables: { teamId: journey?.team?.id }
-    }
-  )
+  const { customDomains } = useCustomDomain()
 
   const [showSlugDialog, setShowSlugDialog] = useState(false)
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
@@ -45,8 +38,8 @@ export function JourneyLink(): ReactElement {
   }
 
   const hasCustomDomain =
-    customDomainData?.customDomains[0]?.name != null &&
-    customDomainData.customDomains[0]?.verification?.verified === true
+    customDomains?.customDomains[0]?.name != null &&
+    customDomains.customDomains[0]?.verification?.verified === true
 
   return (
     <>
@@ -60,7 +53,7 @@ export function JourneyLink(): ReactElement {
           journey?.slug != null
             ? `${
                 hasCustomDomain
-                  ? 'https://' + customDomainData.customDomains[0].name
+                  ? 'https://' + customDomains.customDomains[0].name
                   : process.env.NEXT_PUBLIC_JOURNEYS_URL ??
                     'https://your.nextstep.is'
               }/${journey.slug}`
@@ -104,12 +97,12 @@ export function JourneyLink(): ReactElement {
       <SlugDialog
         open={showSlugDialog}
         onClose={() => setShowSlugDialog(false)}
-        customDomainName={customDomainData?.customDomains[0]?.name}
+        customDomainName={customDomains?.customDomains[0]?.name}
       />
       <EmbedJourneyDialog
         open={showEmbedDialog}
         onClose={() => setShowEmbedDialog(false)}
-        customDomainName={customDomainData?.customDomains[0]?.name}
+        customDomainName={customDomains?.customDomains[0]?.name}
       />
     </>
   )

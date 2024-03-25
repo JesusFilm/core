@@ -9,10 +9,12 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { GetCustomDomain } from '../../../../__generated__/GetCustomDomain'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
+import { CustomDomainProvider } from '../../CustomDomainProvider'
 
 import { EditToolbar } from '.'
 
@@ -59,27 +61,86 @@ describe('Edit Toolbar', () => {
     expect(getByLabelText('Analytics')).toBeInTheDocument()
   })
 
-  it('should render Preview Button', () => {
+  it('should render Preview Button with custom domain link', () => {
     const { getAllByRole, getAllByTestId } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider
+          <CustomDomainProvider
             value={{
-              journey: {
-                slug: 'untitled-journey',
-                tags: []
-              } as unknown as Journey,
-              variant: 'admin'
+              customDomains: {
+                customDomains: [
+                  {
+                    __typename: 'CustomDomain' as const,
+                    name: 'mockdomain.com',
+                    apexName: 'mockdomain.com',
+                    id: 'customDomainId',
+                    verification: {
+                      __typename: 'CustomDomainVerification' as const,
+                      verified: true,
+                      verification: []
+                    }
+                  }
+                ]
+              } as unknown as GetCustomDomain
             }}
           >
-            <EditToolbar />
-          </JourneyProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  slug: 'untitled-journey',
+                  tags: []
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <EditToolbar />
+            </JourneyProvider>
+          </CustomDomainProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
     const button = getAllByRole('link', { name: 'Preview' })[0]
     expect(button).toContainElement(getAllByTestId('EyeOpenIcon')[0])
-    expect(button).toHaveAttribute('href', '/api/preview?slug=untitled-journey')
+    expect(button).toHaveAttribute(
+      'href',
+      '/api/preview?slug=untitled-journey&hostName=mockdomain.com'
+    )
+    expect(button).toHaveAttribute('target', '_blank')
+    expect(button).not.toBeDisabled()
+  })
+
+  it('should render Preview Button', () => {
+    const { getAllByRole, getAllByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <CustomDomainProvider
+            value={{
+              customDomains: {
+                customDomains: []
+              }
+            }}
+          >
+            <JourneyProvider
+              value={{
+                journey: {
+                  slug: 'untitled-journey',
+                  tags: []
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <EditToolbar />
+            </JourneyProvider>
+          </CustomDomainProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    const button = getAllByRole('link', { name: 'Preview' })[0]
+    expect(button).toContainElement(getAllByTestId('EyeOpenIcon')[0])
+    expect(button).toHaveAttribute(
+      'href',
+      '/api/preview?slug=untitled-journey&hostName=undefined'
+    )
     expect(button).toHaveAttribute('target', '_blank')
     expect(button).not.toBeDisabled()
   })

@@ -1,4 +1,4 @@
-import { ApolloQueryResult } from '@apollo/client'
+import { ApolloQueryResult, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -10,9 +10,12 @@ import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
+import { GetCustomDomain } from '../../../../../../__generated__/GetCustomDomain'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
+import { GET_CUSTOM_DOMAIN } from '../../../../Team/CustomDomainDialog/CustomDomainDialog'
+import { useTeam } from '../../../../Team/TeamProvider'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
@@ -43,6 +46,22 @@ export function DefaultMenu({
   refetch
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { activeTeam } = useTeam()
+  const { data: customDomainData } = useQuery<GetCustomDomain>(
+    GET_CUSTOM_DOMAIN,
+    {
+      variables: { teamId: activeTeam?.id }
+    }
+  )
+
+  const hasCustomDomain =
+    customDomainData?.customDomains[0]?.name != null &&
+    customDomainData.customDomains[0]?.verification?.verified === true
+
+  const hostName = hasCustomDomain
+    ? new URL('https://' + customDomainData?.customDomains[0].name).hostname
+    : undefined
+
   return (
     <>
       <NextLink
@@ -68,7 +87,7 @@ export function DefaultMenu({
         />
       )}
       <NextLink
-        href={`/api/preview?slug=${slug}`}
+        href={`/api/preview?slug=${slug}&hostName=${hostName}`}
         passHref
         legacyBehavior
         prefetch={false}

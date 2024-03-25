@@ -8,6 +8,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
+import { GetCustomDomain } from '../../../../../__generated__/GetCustomDomain'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -15,6 +16,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
+import { CustomDomainProvider } from '../../../CustomDomainProvider'
 import { BLOCK_DUPLICATE } from '../DuplicateBlock/DuplicateBlock'
 
 import { GET_ROLE } from './Menu'
@@ -313,6 +315,65 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+  })
+
+  it('should provide customDomain hostname to preview button', () => {
+    const selectedBlock: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'stepId',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+
+    const { getByRole, getByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <CustomDomainProvider
+            value={{
+              customDomains: {
+                customDomains: [
+                  {
+                    __typename: 'CustomDomain' as const,
+                    name: 'mockdomain.com',
+                    apexName: 'mockdomain.com',
+                    id: 'customDomainId',
+                    verification: {
+                      __typename: 'CustomDomainVerification' as const,
+                      verified: true,
+                      verification: []
+                    }
+                  }
+                ]
+              } as unknown as GetCustomDomain
+            }}
+          >
+            <JourneyProvider
+              value={{
+                journey: {
+                  status: JourneyStatus.draft,
+                  tags: []
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <EditorProvider initialState={{ selectedBlock }}>
+                <Menu />
+              </EditorProvider>
+            </JourneyProvider>
+          </CustomDomainProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menu')).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+      'href',
+      '/api/preview?slug=&hostName=mockdomain.com'
+    )
   })
 
   it('should close the menu upon clicking duplicating from menu', async () => {

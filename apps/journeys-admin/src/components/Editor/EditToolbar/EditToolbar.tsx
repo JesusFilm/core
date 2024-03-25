@@ -11,6 +11,8 @@ import {
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 
+import { useCustomDomain } from '../../CustomDomainProvider/CustomDomainProvider'
+
 import { Analytics } from './Analytics'
 import { DeleteBlock } from './DeleteBlock'
 import { DuplicateBlock } from './DuplicateBlock'
@@ -20,6 +22,14 @@ export function EditToolbar(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { state } = useEditor()
+  const { customDomains } = useCustomDomain()
+  const hasCustomDomain =
+    customDomains?.customDomains[0]?.name != null &&
+    customDomains.customDomains[0]?.verification?.verified === true
+
+  const hostName = hasCustomDomain
+    ? new URL('https://' + customDomains?.customDomains[0].name).hostname
+    : undefined
 
   return (
     <Stack
@@ -35,7 +45,7 @@ export function EditToolbar(): ReactElement {
             icon={<EyeOpenIcon />}
             label={t('Preview')}
             component="a"
-            href={`/api/preview?slug=${journey.slug}`}
+            href={`/api/preview?slug=${journey.slug}&hostName=${hostName}`}
             target="_blank"
             variant="outlined"
             clickable
@@ -48,7 +58,7 @@ export function EditToolbar(): ReactElement {
           />
           <IconButton
             aria-label="Preview"
-            href={`/api/preview?slug=${journey.slug}`}
+            href={`/api/preview?slug=${journey.slug}&hostName=${hostName}`}
             target="_blank"
             sx={{
               display: {

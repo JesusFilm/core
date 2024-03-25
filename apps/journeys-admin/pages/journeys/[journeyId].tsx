@@ -44,7 +44,7 @@ export const USER_JOURNEY_OPEN = gql`
   }
 `
 
-function JourneyEditPage({ status }): ReactElement {
+function JourneyEditPage({ status, customDomains }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const user = useUser()
@@ -71,6 +71,7 @@ function JourneyEditPage({ status }): ReactElement {
         <AccessDenied />
       ) : (
         <Editor
+          customDomains={customDomains}
           journey={data?.journey ?? undefined}
           selectedStepId={router.query.stepId as string | undefined}
           view={router.query.view as ActiveJourneyEditContent | undefined}
@@ -92,6 +93,7 @@ function JourneyEditPage({ status }): ReactElement {
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ user, locale, query, resolvedUrl }) => {
+  let customDomains: GetCustomDomain | undefined
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
@@ -113,12 +115,15 @@ export const getServerSideProps = withUserTokenSSR({
 
     if (data.journey?.team?.id != null) {
       // from: src/components/Editor/Properties/JourneyLink/JourneyLink.tsx
-      await apolloClient.query<GetCustomDomain>({
-        query: GET_CUSTOM_DOMAIN,
-        variables: {
-          teamId: data.journey.team.id
-        }
-      })
+      const { data: customDomainsData } =
+        await apolloClient.query<GetCustomDomain>({
+          query: GET_CUSTOM_DOMAIN,
+          variables: {
+            teamId: data.journey.team.id
+          }
+        })
+
+      customDomains = customDomainsData
     }
 
     if (data.journey?.template === true) {
@@ -157,6 +162,7 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
+      customDomains,
       status: 'success',
       ...translations,
       flags,
