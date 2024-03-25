@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -147,16 +147,16 @@ describe('Goals', () => {
   }
 
   it('should render placeholder', () => {
-    const { getByText } = render(
+    render(
       <JourneyProvider value={{ journey, variant: 'admin' }}>
         <Goals />
       </JourneyProvider>
     )
-    expect(getByText('Every Journey has a goal')).toBeInTheDocument()
+    expect(screen.getByText('Every Journey has a goal')).toBeInTheDocument()
   })
 
   it('should render a list of actions', () => {
-    const { getByText, getAllByText, getAllByTestId } = render(
+    render(
       <JourneyProvider
         value={{
           journey: {
@@ -169,17 +169,17 @@ describe('Goals', () => {
         <Goals />
       </JourneyProvider>
     )
-    expect(getByText('The Journey Goals')).toBeInTheDocument()
+    expect(screen.getByText('The Journey Goals')).toBeInTheDocument()
 
-    expect(getByText('https://m.me/some_user')).toBeInTheDocument()
-    expect(getByText('Start a Conversation')).toBeInTheDocument()
+    expect(screen.getByText('https://m.me/some_user')).toBeInTheDocument()
+    expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
 
-    expect(getAllByText('https://www.bible.com/')[0]).toBeInTheDocument()
-    expect(getByText('Link to Bible')).toBeInTheDocument()
+    expect(screen.getByText('https://www.bible.com/')).toBeInTheDocument()
+    expect(screen.getByText('Link to Bible')).toBeInTheDocument()
 
-    expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
-    expect(getByText('Visit a Website')).toBeInTheDocument()
+    expect(screen.getByText('https://www.google.com/')).toBeInTheDocument()
+    expect(screen.getByText('Visit a Website')).toBeInTheDocument()
 
-    expect(getAllByTestId('Edit2Icon')).toHaveLength(3)
+    expect(screen.getAllByTestId('Edit2Icon')).toHaveLength(3)
   })
 })

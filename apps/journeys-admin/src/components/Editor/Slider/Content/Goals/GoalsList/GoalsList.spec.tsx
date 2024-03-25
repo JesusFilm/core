@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import {
@@ -69,34 +69,34 @@ describe('GoalsList', () => {
 
   describe('GoalsList', () => {
     it('should render title and subtitle', () => {
-      const { getByText } = render(<GoalsList goals={goals} />)
-      expect(getByText('The Journey Goals')).toBeInTheDocument()
+      render(<GoalsList goals={goals} />)
+      expect(screen.getByText('The Journey Goals')).toBeInTheDocument()
     })
 
     it('should call dispatch with a URL when "Learn More" button is clicked', () => {
-      const { getByRole } = render(<GoalsList goals={goals} />)
-      fireEvent.click(getByRole('button', { name: 'Learn More' }))
+      render(<GoalsList goals={goals} />)
+      fireEvent.click(screen.getByRole('button', { name: 'Learn More' }))
       expect(dispatch).toHaveBeenCalledWith({
         type: 'SetSelectedGoalUrlAction'
       })
     })
 
     it('should render goal URL subtitle', () => {
-      const { getByText } = render(<GoalsList goals={goals} />)
-      expect(getByText('https://www.google.com/')).toBeInTheDocument()
-      expect(getByText('Visit a Website')).toBeInTheDocument()
+      render(<GoalsList goals={goals} />)
+      expect(screen.getByText('https://www.google.com/')).toBeInTheDocument()
+      expect(screen.getByText('Visit a Website')).toBeInTheDocument()
     })
 
     it('should open drawer or dispatch on click', () => {
-      const { getAllByTestId } = render(<GoalsList goals={goals} />)
-      fireEvent.click(getAllByTestId('Edit2Icon')[0])
+      render(<GoalsList goals={goals} />)
+      fireEvent.click(screen.getAllByTestId('Edit2Icon')[0])
       expect(dispatch).toHaveBeenCalled()
     })
 
     it('should render the table titles', () => {
-      const { getByText } = render(<GoalsList goals={goals} />)
-      expect(getByText('Target and Goal')).toBeInTheDocument()
-      expect(getByText('Appears on')).toBeInTheDocument()
+      render(<GoalsList goals={goals} />)
+      expect(screen.getByText('Target and Goal')).toBeInTheDocument()
+      expect(screen.getByText('Appears on')).toBeInTheDocument()
     })
   })
 })
