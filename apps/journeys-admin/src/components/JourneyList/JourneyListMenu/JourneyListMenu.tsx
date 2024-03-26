@@ -1,8 +1,8 @@
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import FileShredIcon from '@core/shared/ui/icons/FileShred'
@@ -43,7 +43,7 @@ export function JourneyListMenu({
           <IconButton
             edge="end"
             color="inherit"
-            sx={{ mx: 1 }}
+            sx={{ mx: 3 }}
             onClick={handleShowMenu}
           >
             <MoreIcon />

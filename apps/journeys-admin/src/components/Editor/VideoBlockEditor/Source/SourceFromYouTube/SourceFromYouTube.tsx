@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -16,6 +17,7 @@ interface SourceFromYouTubeProps {
 export function SourceFromYouTube({
   selectedBlock
 }: SourceFromYouTubeProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <Box>
@@ -47,7 +49,7 @@ export function SourceFromYouTube({
             overflow: 'hidden'
           }}
         >
-          YouTube &nbsp;
+          {t('YouTube')}
         </Typography>
       </Box>
       <Edit2Icon color="primary" />

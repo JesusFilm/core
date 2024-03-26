@@ -16,15 +16,6 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 import { CopyToTeamMenuItem } from './CopyToTeamMenuItem'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
@@ -142,13 +133,17 @@ describe('DuplicateJourneys', () => {
     expect(getByText('Journey Copied')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'copy-journey' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'copy-journey' },
+          push,
+          events: {
+            on
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 })

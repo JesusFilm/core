@@ -37,7 +37,6 @@ export function StepFooter({
   return (
     <Box
       data-testid="JourneysStepFooter"
-      className="swiper-no-swiping"
       sx={{
         position: { xs: 'absolute', lg: 'relative' },
         zIndex: 1,
@@ -61,7 +60,8 @@ export function StepFooter({
           pt: { xs: 3, sm: 0 },
           flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
           justifyContent: 'space-between',
-          alignItems: { xs: 'flex-start', lg: 'center' }
+          alignItems: { xs: 'flex-start', lg: 'center' },
+          width: '100%'
         }}
       >
         <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
@@ -87,11 +87,9 @@ export function StepFooter({
             gap={2}
           >
             {hasAvatar && <HostAvatars hasPlaceholder={variant === 'admin'} />}
-            <Stack
-              sx={{ py: 1.5, flex: '1 1 100%', minWidth: 0 }}
-              spacing={-1.5}
-            >
+            <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
               <Typography
+                variant="subtitle1"
                 sx={{
                   zIndex: 1,
                   // Always dark mode on lg breakpoint

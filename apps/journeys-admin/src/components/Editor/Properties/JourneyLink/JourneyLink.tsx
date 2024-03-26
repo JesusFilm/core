@@ -4,8 +4,8 @@ import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
@@ -27,7 +27,7 @@ export function JourneyLink(): ReactElement {
 
   function setRoute(param: string): void {
     router.query.param = param
-    void router.push(router)
+    void router.push(router, undefined, { shallow: true })
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })

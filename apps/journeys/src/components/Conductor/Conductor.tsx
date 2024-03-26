@@ -1,33 +1,28 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
-import { SxProps, styled, useTheme } from '@mui/material/styles'
-import { useRouter } from 'next/router'
-import { ReactElement, useEffect, useState } from 'react'
-import { use100vh } from 'react-div-100vh'
+import { SxProps, useTheme } from '@mui/material/styles'
+import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
-import { Pagination } from 'swiper/modules'
-import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBlocks } from '@core/journeys/ui/block'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-
-// Used to resolve dynamic viewport height on Safari
+import { ThemeName } from '@core/shared/ui/themes'
 
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
 
+import { DynamicCardList } from './DynamicCardList'
 import { NavigationButton } from './NavigationButton'
+import { SwipeNavigation } from './SwipeNavigation'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -37,22 +32,6 @@ export const JOURNEY_VIEW_EVENT_CREATE = gql`
   }
 `
 
-const StyledSwiperContainer = styled(Swiper)(({ theme }) => ({
-  background: theme.palette.grey[900],
-  height: 'inherit',
-  '.swiper-pagination': {
-    height: 16,
-    top: 16,
-    width: '84px !important'
-  },
-  '.swiper-pagination-bullet': {
-    background: theme.palette.common.white,
-    opacity: '60%'
-  },
-  '.swiper-pagination-bullet-active': {
-    opacity: '100%'
-  }
-}))
 export const JOURNEY_VISITOR_UPDATE = gql`
   mutation VisitorUpdateForCurrentUser($input: VisitorUpdateInput!) {
     visitorUpdateForCurrentUser(input: $input) {
@@ -65,18 +44,8 @@ interface ConductorProps {
 }
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
-  const {
-    setTreeBlocks,
-    setShowNavigation,
-    setShowHeaderFooter,
-    treeBlocks,
-    blockHistory,
-    showHeaderFooter
-  } = useBlocks()
-  const [swiper, setSwiper] = useState<SwiperClass>()
+  const { setTreeBlocks, blockHistory, showHeaderFooter } = useBlocks()
   const theme = useTheme()
-  const viewportHeight = use100vh()
-  const router = useRouter()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const activeBlock = blockHistory[
@@ -150,125 +119,73 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     setTreeBlocks(blocks)
   }, [setTreeBlocks, blocks])
 
-  // Update Swiper - navigate to activeBlock after NavigateBlockAction & going back to node of a branch
-  useEffect(() => {
-    if (
-      swiper != null &&
-      blockHistory.length > 0 &&
-      blockHistory[blockHistory.length - 1] != null
-    ) {
-      const activeIndex = blockHistory[blockHistory.length - 1].parentOrder
-      if (activeIndex != null && swiper.activeIndex !== activeIndex) {
-        const allowFurtherOnSlideChange = false
-        swiper.slideTo(activeIndex, 0, allowFurtherOnSlideChange)
-      }
-    }
-  }, [swiper, blockHistory])
-
   const mobileNotchStyling: SxProps = {
     width: {
       xs:
-        variant === 'default'
+        variant === 'default' || variant === 'embed'
           ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
           : '100%',
       lg: 'auto'
     },
-    left: variant === 'default' ? 'env(safe-area-inset-left)' : undefined,
-    right: variant === 'default' ? 'env(safe-area-inset-right)' : undefined
+    left:
+      variant === 'default' || variant === 'embed'
+        ? 'env(safe-area-inset-left)'
+        : undefined,
+    right:
+      variant === 'default' || variant === 'embed'
+        ? 'env(safe-area-inset-right)'
+        : undefined
   }
 
+  const stepTheme = getStepTheme(activeBlock, journey)
+
   return (
-    <Box
-      sx={{
-        height: viewportHeight ?? '100vh',
-        minHeight: '-webkit-fill-available',
-        [theme.breakpoints.down('md')]: { overflowY: 'auto' },
-        overflow: 'hidden'
-      }}
+    <ThemeProvider
+      themeName={ThemeName.journeyUi}
+      themeMode={stepTheme.themeMode}
+      locale={locale}
+      rtl={rtl}
+      nested
     >
       <Stack
+        data-testid="Conductor"
         sx={{
           justifyContent: 'center',
-          height: '100%',
-          background: theme.palette.grey[900]
+          height: '100svh',
+          background: theme.palette.grey[900],
+          overflow: 'hidden'
         }}
-        data-testid="Conductor"
       >
         <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
-          <StyledSwiperContainer
-            modules={[Pagination]}
-            dir={!rtl ? 'ltr' : 'rtl'}
-            pagination={{ dynamicBullets: true }}
-            slidesPerView="auto"
-            centeredSlides
-            centeredSlidesBounds
-            resizeObserver
-            onSwiper={(swiper) => setSwiper(swiper)}
-            allowTouchMove={false}
-            onSlideChange={() => setShowHeaderFooter(true)}
+          <Stack
             sx={{
-              '.swiper-pagination': {
-                display: showHeaderFooter ? 'block' : 'none'
-              }
+              maxHeight: {
+                xs: '100svh',
+                // 80px to allow for the gap between card and top/bottom of the viewport
+                lg: 'calc(100svh - 80px)'
+              },
+              height: {
+                xs: 'inherit',
+                // 102px to allow for the gap between card and top/bottom of the viewport
+                lg: 'calc(54.25vw + 102px)'
+              },
+              px: { lg: 6 }
             }}
           >
-            {treeBlocks.map((block) => {
-              const theme = getStepTheme(
-                block as TreeBlock<StepFields>,
-                journey
-              )
-              return (
-                <SwiperSlide
-                  key={block.id}
-                  onClick={() => setShowNavigation(true)}
-                >
-                  {({ isActive }) =>
-                    isActive && (
-                      <ThemeProvider
-                        {...theme}
-                        locale={locale}
-                        rtl={rtl}
-                        nested
-                      >
-                        <Fade
-                          in={activeBlock?.id === block.id}
-                          mountOnEnter
-                          unmountOnExit
-                        >
-                          <Stack
-                            justifyContent="center"
-                            sx={{
-                              maxHeight: {
-                                xs: '100vh',
-                                lg: 'calc(100vh - 80px)'
-                              },
-                              height: {
-                                xs: 'inherit',
-                                lg: 'calc(54.25vw + 102px)'
-                              },
-                              px: { lg: 6 }
-                            }}
-                          >
-                            {showHeaderFooter && router.query.noi == null && (
-                              <StepHeader sx={{ ...mobileNotchStyling }} />
-                            )}
-                            <BlockRenderer block={block} />
-                            <StepFooter
-                              sx={{
-                                visibility: showHeaderFooter
-                                  ? 'visible'
-                                  : 'hidden',
-                                ...mobileNotchStyling
-                              }}
-                            />
-                          </Stack>
-                        </Fade>
-                      </ThemeProvider>
-                    )
-                  }
-                </SwiperSlide>
-              )
-            })}
+            <StepHeader
+              sx={{
+                ...mobileNotchStyling,
+                display: {
+                  xs: showHeaderFooter ? 'flex' : 'none',
+                  lg: 'flex'
+                }
+              }}
+            />
+            <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+              <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
+                <DynamicCardList />
+              </SwipeNavigation>
+            </ThemeProvider>
             <NavigationButton
               variant={rtl ? 'next' : 'previous'}
               alignment="left"
@@ -277,9 +194,18 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               variant={rtl ? 'previous' : 'next'}
               alignment="right"
             />
-          </StyledSwiperContainer>
+            <StepFooter
+              sx={{
+                ...mobileNotchStyling,
+                display: {
+                  xs: showHeaderFooter ? 'flex' : 'none',
+                  lg: 'flex'
+                }
+              }}
+            />
+          </Stack>
         </Box>
       </Stack>
-    </Box>
+    </ThemeProvider>
   )
 }

@@ -1,6 +1,7 @@
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 export interface DownloadButtonProps {
@@ -12,6 +13,7 @@ export function DownloadButton({
   variant,
   onClick
 }: DownloadButtonProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
   return variant === 'button' ? (
     <Button
       variant="outlined"
@@ -24,7 +26,7 @@ export function DownloadButton({
       }}
       data-testid="DownloadButton"
     >
-      Download
+      {t('Download')}
     </Button>
   ) : (
     <IconButton onClick={onClick}>

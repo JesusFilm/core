@@ -11,7 +11,6 @@ import {
 } from '../../../../__generated__/GetJourney'
 import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
 import { listUnsplashCollectionMock } from '../ImageBlockEditor/UnsplashGallery/data'
-import { SocialProvider } from '../SocialProvider'
 
 import {
   ImageEdit,
@@ -56,18 +55,16 @@ describe('ImageEdit', () => {
   it('should disaply placeholder icon when no image set', () => {
     const { getAllByTestId } = render(
       <MockedProvider>
-        <SocialProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: { primaryImageBlockId: null } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <ImageEdit />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </SocialProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { primaryImageBlockId: null } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <ImageEdit />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getAllByTestId('Edit2Icon')).toHaveLength(1)
@@ -76,23 +73,21 @@ describe('ImageEdit', () => {
   it('should display the primaryImage', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <SocialProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: {
-                  primaryImageBlock: {
-                    src: 'img.src',
-                    alt: 'image.alt'
-                  }
-                } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <ImageEdit size="small" />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </SocialProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                primaryImageBlock: {
+                  src: 'img.src',
+                  alt: 'image.alt'
+                }
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <ImageEdit size="small" />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByRole('img')).toBeInTheDocument()
@@ -168,18 +163,16 @@ describe('ImageEdit', () => {
           }
         ]}
       >
-        <SocialProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: { id: 'journey.id' } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <ImageEdit />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </SocialProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journey.id' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <ImageEdit />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
@@ -266,18 +259,16 @@ describe('ImageEdit', () => {
           }
         ]}
       >
-        <SocialProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: { id: 'journey.id' } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <ImageEdit target="creator" />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </SocialProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journey.id' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <ImageEdit target="creator" />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
@@ -357,21 +348,19 @@ describe('ImageEdit', () => {
           }
         ]}
       >
-        <SocialProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: {
-                  id: 'journey.id',
-                  primaryImageBlock: { ...image }
-                } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <ImageEdit />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </SocialProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journey.id',
+                primaryImageBlock: { ...image }
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <ImageEdit />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
@@ -444,21 +433,19 @@ describe('ImageEdit', () => {
           }
         ]}
       >
-        <SocialProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: {
-                  id: 'journey.id',
-                  creatorImageBlock: { ...image }
-                } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <ImageEdit target="creator" />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </SocialProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journey.id',
+                creatorImageBlock: { ...image }
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <ImageEdit target="creator" />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
@@ -508,24 +495,22 @@ describe('ImageEdit', () => {
           }
         ]}
       >
-        <SocialProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: {
-                  id: 'journey.id',
-                  primaryImageBlock: {
-                    ...image,
-                    src: 'https://imagedelivery.net/cloudflare-key/uploadId/public2'
-                  }
-                } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <ImageEdit />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </SocialProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journey.id',
+                primaryImageBlock: {
+                  ...image,
+                  src: 'https://imagedelivery.net/cloudflare-key/uploadId/public2'
+                }
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <ImageEdit />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))

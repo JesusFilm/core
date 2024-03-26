@@ -3,6 +3,7 @@ import Paper from '@mui/material/Paper'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import {
   Dispatch,
   ReactElement,
@@ -40,21 +41,22 @@ export function StatusTabPanel({
   setSortOrder,
   sortOrder
 }: StatusTabPanelProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const journeyStatusTabs: StatusOptions[] = [
     {
       queryParam: 'active',
-      displayValue: 'Active',
+      displayValue: t('Active'),
       tabIndex: 0
     },
     {
       queryParam: 'archived',
-      displayValue: 'Archived',
+      displayValue: t('Archived'),
       tabIndex: 1
     },
     {
       queryParam: 'trashed',
-      displayValue: 'Trash',
+      displayValue: t('Trash'),
       tabIndex: 2
     }
   ]

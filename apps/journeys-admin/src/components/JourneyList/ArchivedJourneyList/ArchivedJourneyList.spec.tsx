@@ -117,7 +117,7 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1English'
+        'a lower case titleJanuary 1, 2021English'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(

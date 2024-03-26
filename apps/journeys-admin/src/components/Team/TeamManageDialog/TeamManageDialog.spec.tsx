@@ -29,14 +29,6 @@ jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
     }
   })
 }))
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
 
 describe('TeamManageDialog', () => {
   const handleClose = jest.fn()
@@ -100,6 +92,7 @@ describe('TeamManageDialog', () => {
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: 'teamId'
         }
       }

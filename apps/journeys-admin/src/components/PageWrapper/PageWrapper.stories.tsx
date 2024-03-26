@@ -67,7 +67,8 @@ const Template: StoryObj<typeof PageWrapper> = {
         mocks={[
           {
             request: {
-              query: GET_ME
+              query: GET_ME,
+              variables: { input: { redirect: undefined } }
             },
             result: {
               data: {

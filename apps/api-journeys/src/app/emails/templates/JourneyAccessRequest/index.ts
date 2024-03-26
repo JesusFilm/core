@@ -1,0 +1,1 @@
+export { JourneyAccessRequestEmail } from './JourneyAccessRequest'

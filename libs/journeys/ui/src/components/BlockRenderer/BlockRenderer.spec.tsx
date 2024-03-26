@@ -12,15 +12,6 @@ import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
 
 import { BlockRenderer } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()

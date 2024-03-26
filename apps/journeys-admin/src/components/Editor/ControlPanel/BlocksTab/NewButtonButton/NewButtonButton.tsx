@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -49,6 +50,7 @@ export const BUTTON_BLOCK_CREATE = gql`
 `
 
 export function NewButtonButton(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [buttonBlockCreate] =
     useMutation<ButtonBlockCreate>(BUTTON_BLOCK_CREATE)
   const { journey } = useJourney()
@@ -157,7 +159,7 @@ export function NewButtonButton(): ReactElement {
   return (
     <Button
       icon={<Cursor6Icon />}
-      value="Button"
+      value={t('Button')}
       onClick={handleClick}
       testId="NewButton"
     />

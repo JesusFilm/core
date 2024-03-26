@@ -2,6 +2,7 @@ import AppBar from '@mui/material/AppBar'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
@@ -15,6 +16,7 @@ interface SidePanelProps {
   children: ReactNode
   title?: ReactNode
   open?: boolean
+  selectHostPanel?: boolean
   // TODO: Remove if admin edit page uses SidePanel instead of Drawer
   withAdminDrawer?: boolean
   onClose?: () => void
@@ -84,10 +86,12 @@ export function SidePanel({
   children,
   title,
   open = true,
+  selectHostPanel = false,
   withAdminDrawer = false,
   onClose
 }: SidePanelProps): ReactElement {
   const { toolbar, sidePanel } = usePageWrapperStyles()
+  const { zIndex } = useTheme()
 
   const {
     state: { mobileDrawerOpen },
@@ -98,6 +102,7 @@ export function SidePanel({
     display: { xs: 'none', md: 'flex' },
     width: sidePanel.width,
     flexShrink: 1,
+    zIndex: selectHostPanel ? zIndex.modal : zIndex.drawer,
     '& .MuiDrawer-paper': {
       overflowX: 'hidden',
       boxSizing: 'border-box',

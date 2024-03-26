@@ -86,7 +86,8 @@ describe('NavigationDrawer', () => {
 
     const getMeMock: MockedResponse<GetMe> = {
       request: {
-        query: GET_ME
+        query: GET_ME,
+        variables: { input: { redirect: undefined } }
       },
       result: {
         data: {
@@ -97,6 +98,7 @@ describe('NavigationDrawer', () => {
             imageUrl: 'https://bit.ly/3Gth4Yf',
             email: 'amin@email.com',
             superAdmin: true,
+            emailVerified: true,
             __typename: 'User'
           }
         }

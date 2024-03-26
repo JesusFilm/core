@@ -1,5 +1,5 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -24,10 +24,10 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Action',
+      title: t('Action'),
       children: <Action />
     })
-  }, [dispatch, id])
+  }, [dispatch, id, t])
 
   return (
     <>
@@ -35,7 +35,7 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
         id={`${id}-form-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={selectedAction?.label ?? 'None'}
+        value={t(selectedAction?.label ?? 'None')}
         description={t('Action')}
         onClick={() => {
           dispatch({

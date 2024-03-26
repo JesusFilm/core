@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
@@ -48,7 +48,7 @@ export function CopyToTeamMenuItem({
 
   function setRoute(param: string): void {
     router.query.param = param
-    void router.push(router)
+    void router.push(router, undefined, { shallow: true })
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })

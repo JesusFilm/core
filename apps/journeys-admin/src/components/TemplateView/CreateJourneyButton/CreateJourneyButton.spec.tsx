@@ -21,15 +21,6 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../Team/TeamSelect/TeamSelect'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
@@ -118,10 +109,11 @@ describe('CreateJourneyButton', () => {
         <CreateJourneyButton signedIn />
       </MockedProvider>
     )
-
-    expect(
-      getByRole('dialog', { name: 'Add Journey to Team' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('dialog', { name: 'Add Journey to Team' })
+      ).toBeInTheDocument()
+    )
   })
 
   it('should open team dialog on button click if signed in', () => {
@@ -314,7 +306,16 @@ describe('CreateJourneyButton', () => {
       query: { createNew: false }
     } as unknown as NextRouter)
     const { getByRole } = render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          }
+        ]}
+      >
         <TeamProvider>
           <JourneyProvider value={{}}>
             <CreateJourneyButton signedIn />

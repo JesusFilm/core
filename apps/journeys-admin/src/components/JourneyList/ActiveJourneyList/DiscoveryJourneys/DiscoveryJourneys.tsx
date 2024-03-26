@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { Trans, useTranslation } from 'react-i18next'
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
@@ -24,6 +24,7 @@ export function DiscoveryJourneys(): ReactElement {
       data-testid="JourneysAdminDiscoveryJourneys"
     >
       <EmbedJourney slug="admin-left">
+        {/* eslint-disable-next-line i18next/no-literal-string */}
         <Typography variant="h1" gutterBottom textAlign="center">
           ⚠️
         </Typography>

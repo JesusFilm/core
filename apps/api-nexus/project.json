@@ -1,0 +1,159 @@
+{
+  "name": "api-nexus",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api-nexus/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/api-nexus",
+        "main": "apps/api-nexus/src/main.ts",
+        "tsConfig": "apps/api-nexus/tsconfig.app.json",
+        "assets": [
+          "apps/api-nexus/src/assets",
+          {
+            "glob": "**/*.graphql",
+            "input": "apps/api-nexus/src/app/",
+            "output": "./assets"
+          }
+        ],
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "apps/api-nexus/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/api-nexus/src/environments/environment.ts",
+              "with": "apps/api-nexus/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "api-nexus:build",
+        "inspect": false
+      }
+    },
+    "watcher": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node tools/scripts/generate-typings.ts api-nexus"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/api-nexus"],
+      "options": {
+        "jestConfig": "apps/api-nexus/jest.config.ts",
+        "fileReplacements": [
+          {
+            "replace": "apps/api-nexus/src/environments/environment.ts",
+            "with": "apps/api-nexus/src/environments/environment.testing.ts"
+          }
+        ]
+      }
+    },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rover subgraph introspect http://localhost:4007/graphql > apps/api-nexus/schema.graphql"
+      }
+    },
+    "subgraph-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-nexus --schema apps/api-nexus/schema.graphql"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_NEXUS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-nexus > apps/api-nexus/.env"
+      }
+    },
+    "prisma-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "npx prisma generate --schema apps/api-nexus/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "bash -c 'npx prisma migrate dev --schema apps/api-nexus/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "npx prisma migrate deploy --schema apps/api-nexus/db/schema.prisma"
+          ]
+        }
+      }
+    },
+    "prisma-reset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma migrate reset --schema apps/api-nexus/db/schema.prisma --force"
+        ]
+      }
+    },
+    "prisma-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npm run ts-node apps/api-nexus/db/seed.ts"]
+      }
+    },
+    "prisma-studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma studio --schema apps/api-nexus/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma validate --schema apps/api-nexus/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-resolve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma migrate resolve --schema apps/api-nexus/db/schema.prisma --applied 20230711193802_20230711193801"
+        ]
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/api-nexus/tsconfig.json"
+      }
+    }
+  },
+  "tags": []
+}

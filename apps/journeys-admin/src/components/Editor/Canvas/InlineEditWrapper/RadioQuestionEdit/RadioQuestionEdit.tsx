@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -74,6 +75,8 @@ export function RadioQuestionEdit({
     })
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   const addRadioOption = (
     // Box mimics wrappers on RadioOptions so all ButtonGroup children have same type for class styling
     <Box>
@@ -88,7 +91,7 @@ export function RadioQuestionEdit({
         onClick={handleCreateOption}
         sx={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}
       >
-        Add New Option
+        {t('Add New Option')}
       </StyledRadioOption>
     </Box>
   )

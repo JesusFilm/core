@@ -30,6 +30,8 @@ describe('EventService', () => {
         switch (userId) {
           case visitor.userId:
             return { visitor, journeyVisitor }
+          default:
+            return null
         }
       })
     })
@@ -96,6 +98,13 @@ describe('EventService', () => {
             step.id
           )
       ).rejects.toThrow('Block does not exist')
+    })
+
+    it('should throw user input error if visitor does not exist', async () => {
+      await expect(
+        async () =>
+          await service.validateBlockEvent('anotherUser.id', block.id, step.id)
+      ).rejects.toThrow('Visitor does not exist')
     })
 
     it('should throw user input error if step block does not belong to the same journey as the block', async () => {

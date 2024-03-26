@@ -3,8 +3,8 @@ import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import MoreIcon from '@core/shared/ui/icons/More'
@@ -59,7 +59,7 @@ export function TeamMenu(): ReactElement {
 
   function setRoute(param: string): void {
     router.query.param = param
-    void router.push(router)
+    void router.push(router, undefined, { shallow: true })
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })

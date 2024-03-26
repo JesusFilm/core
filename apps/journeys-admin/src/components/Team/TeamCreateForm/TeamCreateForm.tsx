@@ -1,8 +1,8 @@
 import { ApolloError } from '@apollo/client'
 import { Formik, FormikConfig, FormikHelpers } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { ObjectSchema, object, string } from 'yup'
 
 import { TeamCreateInput } from '../../../../__generated__/globalTypes'
@@ -26,12 +26,9 @@ export function TeamCreateForm({
   const teamCreateSchema: ObjectSchema<TeamCreateInput> = object({
     title: string()
       .required(t('Team Name must be at least one character.'))
-      .max(40, t('Max {{ count }} Characters', { count: 40 }))
-      .matches(/^(?!\s+$).*/g, 'This field cannot contain only blankspaces'),
-    publicTitle: string().max(
-      40,
-      t('Max {{ count }} Characters', { count: 40 })
-    )
+      .max(40, t('Max 40 Characters'))
+      .matches(/^(?!\s+$).*/g, t('This field cannot contain only blankspaces')),
+    publicTitle: string().max(40, t('Max 40 Characters'))
   })
   const [teamCreate] = useTeamCreateMutation()
   const { enqueueSnackbar } = useSnackbar()
@@ -45,9 +42,11 @@ export function TeamCreateForm({
         variables: { input }
       })
       enqueueSnackbar(
-        t('{{ teamName }} created.', {
-          teamName: data?.teamCreate.title ?? 'Team'
-        }),
+        data !== null && data !== undefined && data?.teamCreate.title !== ''
+          ? t('{{ teamName }} created.', {
+              teamName: data.teamCreate.title
+            })
+          : t('Team created.'),
         {
           variant: 'success',
           preventDuplicate: true

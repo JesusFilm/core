@@ -1,5 +1,6 @@
 import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
@@ -13,8 +14,10 @@ export function ManageAccessAvatar({
   diameter,
   fontSize
 }: ManageAccessAvatarProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
-    <Tooltip title="Manage Access">
+    <Tooltip title={t('Manage Access')}>
       <Avatar
         alt="Manage Access"
         sx={{

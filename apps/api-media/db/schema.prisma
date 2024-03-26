@@ -1,11 +1,19 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
-  output   = env("PRISMA_LOCATION")
+  output   = env("PRISMA_LOCATION_MEDIA")
+}
+
+generator erd {
+  provider    = "prisma-erd-generator"
+  ignoreEnums = true
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL")
+  url      = env("PG_DATABASE_URL_MEDIA")
 }
 
 model CloudflareImage {

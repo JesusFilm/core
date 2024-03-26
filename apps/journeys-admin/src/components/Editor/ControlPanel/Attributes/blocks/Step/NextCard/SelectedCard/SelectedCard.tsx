@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import last from 'lodash/last'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -87,6 +88,8 @@ export function SelectedCard(): ReactElement {
     })
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <Stack
       direction="row"
@@ -134,23 +137,23 @@ export function SelectedCard(): ReactElement {
           </Box>
         </Box>
         <Stack direction="column" justifyContent="center">
-          <Typography variant="subtitle2">Selected Step</Typography>
+          <Typography variant="subtitle2">{t('Selected Step')}</Typography>
           {locked && (
             <Stack direction="row" spacing={1}>
               <Lock1Icon sx={{ fontSize: '18px', color: 'secondary.light' }} />
               <Typography variant="caption" sx={{ color: 'secondary.light' }}>
-                Locked With Interaction
+                {t('Locked With Interaction')}
               </Typography>
             </Stack>
           )}
           {nextBlockId == null && lastStep !== selectedBlock && (
             <Typography variant="caption" sx={{ color: 'secondary.light' }}>
-              Default next step in journey
+              {t('Default next step in journey')}
             </Typography>
           )}
           {lastStep === selectedBlock && (
             <Typography variant="caption" sx={{ color: 'secondary.light' }}>
-              No next step in journey
+              {t('No next step in journey')}
             </Typography>
           )}
         </Stack>

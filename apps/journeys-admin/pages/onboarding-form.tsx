@@ -5,9 +5,9 @@ import {
   withUser,
   withUserTokenSSR
 } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { formiumClient } from '@core/shared/ui/formiumClient'
 
@@ -41,7 +41,7 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { redirect, translations } = await initAndAuthApp({
+  const { redirect, translations, apolloClient } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -55,6 +55,7 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
+      initialApolloState: apolloClient.cache.extract(),
       form,
       ...translations
     }

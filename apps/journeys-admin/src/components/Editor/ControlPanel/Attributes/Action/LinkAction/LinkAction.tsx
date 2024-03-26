@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
@@ -27,6 +28,7 @@ export const LINK_ACTION_UPDATE = gql`
 `
 
 export function LinkAction(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { state } = useEditor()
   const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
@@ -57,8 +59,8 @@ export function LinkAction(): ReactElement {
 
   const linkActionSchema = object({
     link: string()
-      .required('Required')
-      .test('valid-url', 'Invalid URL', checkURL)
+      .required(t('Required'))
+      .test('valid-url', t('Invalid URL'), checkURL)
   })
 
   async function handleSubmit(src: string): Promise<void> {
@@ -95,7 +97,7 @@ export function LinkAction(): ReactElement {
     <Box sx={{ pt: 8 }} data-testid="LinkAction">
       <TextFieldForm
         id="link"
-        label="Paste URL here..."
+        label={t('Paste URL here...')}
         initialValue={linkAction?.url}
         validationSchema={linkActionSchema}
         onSubmit={handleSubmit}

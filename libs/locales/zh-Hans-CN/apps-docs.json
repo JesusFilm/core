@@ -1,0 +1,10 @@
+{
+  "Deploy Quickly": "快速部署",
+  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "我们的持续集成和持续交付管道可让您更频繁、更可靠地交付代码变更。",
+  "Common Environment": "共同环境",
+  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "我们在 Docker 上运行。这意味着每位开发人员都能共享与生产环境相似的环境，使协作变得简单。",
+  "Powered by Typescript": "由 Typescript 提供",
+  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScript 是建立在 JavaScript 基础上的强类型编程语言，可在任何规模上为您提供更好的工具。",
+  "Core Development Kit Documentation": "核心开发工具包文档",
+  "Welcome - 5min ": "欢迎 - 5 分钟 "
+}

@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import last from 'lodash/last'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -19,6 +20,7 @@ import { MenuItem } from '../../../MenuItem'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
+  handleClick?: () => void
   disabled?: boolean
 }
 
@@ -32,8 +34,10 @@ export const BLOCK_DUPLICATE = gql`
 
 export function DuplicateBlock({
   variant,
+  handleClick,
   disabled = false
 }: DuplicateBlockProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
 
   const {
@@ -42,8 +46,7 @@ export function DuplicateBlock({
   } = useEditor()
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
-  const blockLabel =
-    selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
+  const blockType = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const disableAction = selectedBlock == null || disabled
 
   const handleDuplicateBlock = async (): Promise<void> => {
@@ -60,6 +63,7 @@ export function DuplicateBlock({
         },
         update(cache, { data }) {
           if (data?.blockDuplicate != null) {
+            handleClick?.()
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
@@ -115,31 +119,38 @@ export function DuplicateBlock({
         }
       }
     }
-    enqueueSnackbar(`${blockLabel} Duplicated`, {
-      variant: 'success',
-      preventDuplicate: true
-    })
+    enqueueSnackbar(
+      t('{{ blockLabel }} Duplicated', {
+        blockLabel: blockType === 'Card' ? t('Card') : t('Block')
+      }),
+      {
+        variant: 'success',
+        preventDuplicate: true
+      }
+    )
   }
 
   return (
     <>
       {variant === 'button' ? (
         <IconButton
-          id={`duplicate-${blockLabel}-actions`}
-          aria-label={`Duplicate ${blockLabel} Actions`}
+          id={`duplicate-${blockType}-actions`}
+          aria-label={`Duplicate ${blockType} Actions`}
           disabled={disableAction}
           onClick={handleDuplicateBlock}
-          data-testId={`Duplicate-${blockLabel}`}
+          data-testId={`Duplicate-${blockType}`}
         >
           <CopyLeftIcon />
         </IconButton>
       ) : (
         <MenuItem
-          label={`Duplicate ${blockLabel}`}
+          label={t('Duplicate {{ blockLabel }}', {
+            blockLabel: blockType === 'Card' ? t('Card') : t('Block')
+          })}
           icon={<CopyLeftIcon color="inherit" />}
           disabled={disableAction}
           onClick={handleDuplicateBlock}
-          testId={`Duplicate-${blockLabel}`}
+          testId={`Duplicate-${blockType}`}
         />
       )}
     </>

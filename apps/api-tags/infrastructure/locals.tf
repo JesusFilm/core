@@ -1,8 +1,7 @@
 locals {
   port = 4006
   environment_variables = [
-    "PG_DATABASE_URL",
-    "PRISMA_LOCATION"
+    "PG_DATABASE_URL_TAGS",
   ]
   service_config = {
     name           = "api-tags"

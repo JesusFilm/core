@@ -8,13 +8,11 @@ import { Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { SocialPreviewMessage } from './Message/SocialPreviewMessage'
 import { SocialPreviewPost } from './Post/SocialPreviewPost'
 
 export function SocialPreview(): ReactElement {
-  const { journey } = useJourney()
   const { dispatch } = useEditor()
   // uses usemediaquery to force component reload for sizing
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
@@ -41,8 +39,8 @@ export function SocialPreview(): ReactElement {
               />
             }
           >
-            <SocialPreviewPost journey={journey} />
-            <SocialPreviewMessage journey={journey} />
+            <SocialPreviewPost />
+            <SocialPreviewMessage />
           </Stack>
         </Box>
       ) : (
@@ -61,14 +59,14 @@ export function SocialPreview(): ReactElement {
               onClick={handleSocialEditFabClick}
               style={{ cursor: 'pointer' }}
             >
-              <SocialPreviewPost journey={journey} />
+              <SocialPreviewPost />
             </SwiperSlide>
             <SwiperSlide
               key={1}
               onClick={handleSocialEditFabClick}
               style={{ cursor: 'pointer' }}
             >
-              <SocialPreviewMessage journey={journey} />
+              <SocialPreviewMessage />
             </SwiperSlide>
           </Swiper>
         </Box>

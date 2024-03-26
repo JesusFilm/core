@@ -21,3 +21,7 @@ variable "doppler_project" {
 variable "vpc_security_group_id" {
   type = string
 }
+
+variable "PG_DATABASE_URL_ENV_VAR" {
+  type = string
+}

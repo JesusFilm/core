@@ -13,18 +13,21 @@ const nextConfig = {
   },
   i18n,
   images: {
-    domains: [
-      'images.unsplash.com',
-      'localhost',
-      'unsplash.com',
-      'imagizer.imageshack.com',
+    remotePatterns: [
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'unsplash.com' },
+      { protocol: 'https', hostname: 'imagizer.imageshack.com' },
       // arclight image provider - cloudfront
-      'd1wl257kev7hsz.cloudfront.net',
-      'i.ytimg.com',
+      { protocol: 'https', hostname: 'd1wl257kev7hsz.cloudfront.net' },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
       // cloudflare
-      'imagedelivery.net',
-      'customer-209o3ptmsiaetvfx.cloudflarestream.com',
-      'cloudflarestream.com'
+      { protocol: 'https', hostname: 'imagedelivery.net' },
+      {
+        protocol: 'https',
+        hostname: 'customer-209o3ptmsiaetvfx.cloudflarestream.com'
+      },
+      { protocol: 'https', hostname: 'cloudflarestream.com' }
     ]
   },
   productionBrowserSourceMaps: true,
@@ -45,6 +48,14 @@ const nextConfig = {
         'node_modules/esbuild-linux-64/bin'
       ]
     }
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/graphql',
+        destination: process.env.GATEWAY_URL
+      }
+    ]
   }
 }
 module.exports = composePlugins(withNx)(nextConfig)

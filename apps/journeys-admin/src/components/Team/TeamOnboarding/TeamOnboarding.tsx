@@ -10,8 +10,8 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form } from 'formik'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
@@ -145,9 +145,9 @@ export function TeamOnboarding(): ReactElement {
                       helperText={
                         errors.title !== undefined
                           ? errors.title
-                          : 'Private: Visible only to your team'
+                          : t('Private: Visible only to your team')
                       }
-                      label="Team Name"
+                      label={t('Team Name')}
                     />
                     <TextField
                       id="publicTitle"
@@ -160,9 +160,9 @@ export function TeamOnboarding(): ReactElement {
                       helperText={
                         errors.publicTitle !== undefined
                           ? errors.publicTitle
-                          : 'Public: Anyone can view it'
+                          : t('Public: Anyone can view it')
                       }
-                      label="Legal Name"
+                      label={t('Legal Name')}
                       placeholder={values.title}
                     />
 

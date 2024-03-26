@@ -21,6 +21,8 @@ import {
 import { JourneyCard } from './JourneyCard'
 import { JourneyCardVariant } from './journeyCardVariant'
 
+import '../../../../test/i18n'
+
 const TestStory: Meta<typeof JourneyCard> = {
   ...journeysAdminConfig,
   component: JourneyCard,

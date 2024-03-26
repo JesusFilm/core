@@ -1,8 +1,8 @@
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
@@ -37,8 +37,10 @@ export function JourneyCardInfo({
   const usersRequestingAccess =
     inviteRequested != null
       ? inviteRequested.length === 1
-        ? `${inviteRequested.length} ${t('user')}`
-        : `${inviteRequested.length} ${t('users')}`
+        ? t('1 user')
+        : t('{{ numberOfUsers }} users', {
+            numberOfUsers: inviteRequested.length
+          })
       : ''
 
   return (
@@ -58,19 +60,21 @@ export function JourneyCardInfo({
         <>
           {inviteRequested != null ? (
             <Stack direction="row" sx={{ width: '70%' }}>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: 'warning.main',
-                  fontWeight: 700,
-                  minWidth: '56px'
-                }}
-              >
-                {usersRequestingAccess}
-              </Typography>
-              <Typography variant="body2" noWrap>
-                {t(`requested editing rights for your journey`)}
-              </Typography>
+              <Trans t={t} usersRequestingAccess={usersRequestingAccess}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'warning.main',
+                    fontWeight: 700,
+                    minWidth: '56px'
+                  }}
+                >
+                  {usersRequestingAccess}
+                </Typography>
+                <Typography variant="body2" noWrap>
+                  requested editing rights for your journey
+                </Typography>
+              </Trans>
             </Stack>
           ) : (
             <Skeleton variant="text" width={60} />

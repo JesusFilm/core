@@ -19,15 +19,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('Action', () => {
   const selectedStep = steps[1]
   const selectedBlock = selectedStep?.children[0].children[3]
