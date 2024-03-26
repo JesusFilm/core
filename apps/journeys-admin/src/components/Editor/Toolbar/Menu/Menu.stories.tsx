@@ -14,8 +14,6 @@ import { GET_ROLE } from './Menu'
 
 import { Menu } from '.'
 
-import '../../../../../test/i18n'
-
 const Demo: Meta<typeof Menu> = {
   ...journeysAdminConfig,
   component: Menu,
