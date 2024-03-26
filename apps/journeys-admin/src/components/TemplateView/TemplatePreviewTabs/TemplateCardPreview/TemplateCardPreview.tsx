@@ -186,7 +186,9 @@ export function TemplateCardPreview({
               color="background.paper"
               textAlign="center"
             >
-              {t(`+${steps.length - 7} more cards`)}
+              {t('{{count}} more cards', {
+                count: steps.length - slidesToRender.length
+              })}
             </Typography>
             <Typography
               variant="overline2"
