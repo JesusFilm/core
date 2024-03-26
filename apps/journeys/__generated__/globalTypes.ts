@@ -208,6 +208,7 @@ export interface JourneyViewEventCreateInput {
 export interface JourneysQueryOptions {
   hostname?: string | null;
   embedded?: boolean | null;
+  journeyCollection?: boolean | null;
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {
