@@ -1,5 +1,4 @@
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import {
@@ -68,65 +67,36 @@ describe('GoalsList', () => {
     })
   })
 
-  describe('mdUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
-    )
-
-    it('should render the information drawer on the right', () => {
-      const { getByTestId, getByRole } = render(<GoalsList goals={goals} />)
-      fireEvent.click(getByRole('button', { name: 'Learn More' }))
-      expect(getByTestId('GoalInformation').parentElement).toHaveClass(
-        'MuiDrawer-paperAnchorRight'
-      )
+  describe('GoalsList', () => {
+    it('should render title and subtitle', () => {
+      render(<GoalsList goals={goals} />)
+      expect(screen.getByText('The Journey Goals')).toBeInTheDocument()
     })
 
-    it('should close information drawer on close icon click', () => {
-      const { getByTestId, getByText, getByRole } = render(
-        <GoalsList goals={goals} />
-      )
-      fireEvent.click(getByRole('button', { name: 'Learn More' }))
-      expect(getByText('Information')).toBeInTheDocument()
-      fireEvent.click(getByTestId('X2Icon'))
-      expect(getByTestId('GoalInformation').parentElement).not.toHaveClass(
-        'MuiDrawer-parentAnchorRight'
-      )
+    it('should call dispatch with a URL when "Learn More" button is clicked', () => {
+      render(<GoalsList goals={goals} />)
+      fireEvent.click(screen.getByRole('button', { name: 'Learn More' }))
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'SetSelectedGoalUrlAction'
+      })
     })
 
-    it('should render a list of goals', () => {
-      const { getAllByText } = render(<GoalsList goals={goals} />)
-      expect(getAllByText('https://www.google.com/')[0]).toBeInTheDocument()
-      expect(getAllByText('Visit a website')[0]).toBeInTheDocument()
-      expect(getAllByText(2)[0]).toBeInTheDocument()
+    it('should render goal URL subtitle', () => {
+      render(<GoalsList goals={goals} />)
+      expect(screen.getByText('https://www.google.com/')).toBeInTheDocument()
+      expect(screen.getByText('Visit a Website')).toBeInTheDocument()
     })
 
-    it('should open the drawer or dispatch on click', () => {
-      const { getAllByTestId } = render(<GoalsList goals={goals} />)
-      fireEvent.click(getAllByTestId('Edit2Icon')[0])
+    it('should open drawer or dispatch on click', () => {
+      render(<GoalsList goals={goals} />)
+      fireEvent.click(screen.getAllByTestId('Edit2Icon')[0])
       expect(dispatch).toHaveBeenCalled()
     })
-  })
 
-  describe('mdDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
-    )
-
-    it('should render the information drawer from the bottom', () => {
-      const { getByTestId, getByText, getByRole } = render(
-        <GoalsList goals={goals} />
-      )
-      fireEvent.click(getByRole('button', { name: 'Learn More' }))
-      expect(getByText('Information')).toBeInTheDocument()
-      expect(getByTestId('GoalInformation').parentElement).toHaveClass(
-        'MuiPaper-root MuiPaper-elevation MuiPaper-elevation0 MuiDrawer-paper MuiDrawer-paperAnchorBottom css-1mdfdy2-MuiPaper-root-MuiDrawer-paper'
-      )
-    })
-
-    it('should render the goals list in mobile view', () => {
-      const { getAllByText } = render(<GoalsList goals={goals} />)
-      expect(getAllByText('Target and Goal')[0]).toBeInTheDocument()
-      expect(getAllByText('Appears on')).not.toHaveLength(2)
+    it('should render the table titles', () => {
+      render(<GoalsList goals={goals} />)
+      expect(screen.getByText('Target and Goal')).toBeInTheDocument()
+      expect(screen.getByText('Appears on')).toBeInTheDocument()
     })
   })
 })

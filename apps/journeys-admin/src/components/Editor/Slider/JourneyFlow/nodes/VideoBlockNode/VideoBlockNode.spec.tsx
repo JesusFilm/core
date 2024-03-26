@@ -15,7 +15,6 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 
-import '../../../../../../../test/i18n'
 import { VideoBlockNode } from './VideoBlockNode'
 
 describe('VideoBlockNode', () => {

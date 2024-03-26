@@ -8,11 +8,6 @@ import {
   getBezierPath
 } from 'reactflow'
 
-// const onEdgeClick = (evt, id): void => {
-//   evt.stopPropagation()
-//   alert(`remove ${id}`)
-// }
-
 export default function CustomEdge({
   id,
   sourceX,
