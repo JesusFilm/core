@@ -183,7 +183,7 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Preview' })).not.toBeDisabled()
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'href',
-      '/api/preview?slug=journey-slug&hostName=undefined'
+      '/api/preview?slug=journey-slug&hostname=undefined'
     )
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'target',
@@ -220,7 +220,7 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Preview' })).not.toBeDisabled()
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'href',
-      '/api/preview?slug=journey-slug&hostName=mockdomain.com'
+      '/api/preview?slug=journey-slug&hostname=mockdomain.com'
     )
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'target',

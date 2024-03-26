@@ -101,7 +101,7 @@ export function DNSConfigSection({
                     <StyledTableCell align="left">
                       {apexName === name ? t('A') : t('CNAME')}
                     </StyledTableCell>
-                    <StyledTableCell align="left">{apexName}</StyledTableCell>
+                    <StyledTableCell align="left">{name}</StyledTableCell>
                     <StyledTableCell align="left">
                       <Stack
                         direction="row"

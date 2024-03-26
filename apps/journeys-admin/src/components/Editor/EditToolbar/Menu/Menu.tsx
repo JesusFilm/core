@@ -156,7 +156,7 @@ export function Menu(): ReactElement {
         }}
       >
         <NextLink
-          href={`/api/preview?slug=${journey?.slug ?? ''}&hostName=${hostName}`}
+          href={`/api/preview?slug=${journey?.slug ?? ''}&hostname=${hostName}`}
           passHref
           legacyBehavior
           prefetch={false}

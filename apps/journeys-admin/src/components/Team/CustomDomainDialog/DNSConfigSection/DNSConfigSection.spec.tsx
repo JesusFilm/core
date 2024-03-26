@@ -20,8 +20,8 @@ describe('DNSConfigSection', () => {
     const { getAllByRole, getByText } = render(
       <SnackbarProvider>
         <DNSConfigSection
-          name="www.example.com"
-          apexName="www.example.com"
+          name="example.com"
+          apexName="example.com"
           verified
           misconfigured={false}
         />
@@ -39,8 +39,8 @@ describe('DNSConfigSection', () => {
     const { getAllByRole, getByText } = render(
       <SnackbarProvider>
         <DNSConfigSection
-          name="www.mock.example.com"
-          apexName="www.example.com"
+          name="www.example.com"
+          apexName="example.com"
           verified
           misconfigured={false}
         />
@@ -61,7 +61,7 @@ describe('DNSConfigSection', () => {
       <SnackbarProvider>
         <DNSConfigSection
           name="www.example.com"
-          apexName="www.example.com"
+          apexName="example.com"
           verified={false}
           misconfigured={false}
           domainError={{

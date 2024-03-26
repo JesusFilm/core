@@ -87,7 +87,7 @@ export function DefaultMenu({
         />
       )}
       <NextLink
-        href={`/api/preview?slug=${slug}&hostName=${hostName}`}
+        href={`/api/preview?slug=${slug}&hostname=${hostName}`}
         passHref
         legacyBehavior
         prefetch={false}

@@ -45,7 +45,7 @@ export function EditToolbar(): ReactElement {
             icon={<EyeOpenIcon />}
             label={t('Preview')}
             component="a"
-            href={`/api/preview?slug=${journey.slug}&hostName=${hostName}`}
+            href={`/api/preview?slug=${journey.slug}&hostname=${hostName}`}
             target="_blank"
             variant="outlined"
             clickable
@@ -58,7 +58,7 @@ export function EditToolbar(): ReactElement {
           />
           <IconButton
             aria-label="Preview"
-            href={`/api/preview?slug=${journey.slug}&hostName=${hostName}`}
+            href={`/api/preview?slug=${journey.slug}&hostname=${hostName}`}
             target="_blank"
             sx={{
               display: {
