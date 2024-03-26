@@ -15,8 +15,6 @@ import { GET_ROLE } from './Menu'
 
 import { Menu } from '.'
 
-import '../../../../../test/i18n'
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true

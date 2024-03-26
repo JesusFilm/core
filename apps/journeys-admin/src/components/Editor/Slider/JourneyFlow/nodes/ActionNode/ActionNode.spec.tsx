@@ -94,6 +94,15 @@ describe('ActionNode', () => {
     steps: [mockStep]
   } satisfies EditorState
 
+  const mockDispatch = jest.fn()
+
+  beforeEach(() => {
+    mockUseEditor.mockReturnValue({
+      state: mockUseEditorState,
+      dispatch: mockDispatch
+    })
+  })
+
   afterEach(() => {
     jest.clearAllMocks()
   })
