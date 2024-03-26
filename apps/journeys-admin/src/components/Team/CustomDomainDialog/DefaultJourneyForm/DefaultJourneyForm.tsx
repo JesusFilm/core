@@ -47,7 +47,7 @@ export function DefaultJourneyForm({
                   </MenuItem>
                 ))}
               </Select>
-              <FormHelperText>
+              <FormHelperText sx={{ wordBreak: 'break-all' }}>
                 {t(`The default Journey will be available at ${domainName}`)}
               </FormHelperText>
             </FormControl>
