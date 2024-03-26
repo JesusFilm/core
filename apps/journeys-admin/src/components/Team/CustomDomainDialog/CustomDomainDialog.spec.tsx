@@ -346,6 +346,44 @@ describe('CustomDomainDialog', () => {
     })
   })
 
+  it('validates form', async () => {
+    const cache = new InMemoryCache()
+    const { getByRole, getByText } = render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          getLastActiveTeamIdAndTeamsMock,
+          getAdminJourneysMock,
+          mockCreateCustomDomain,
+          getCustomDomainMockEmpty
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <CustomDomainDialog open onClose={onClose} />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: '-www.example.com' }
+    })
+    fireEvent.click(getByText('Apply'))
+
+    await waitFor(() =>
+      expect(getByText('must be a valid URL')).toBeInTheDocument()
+    )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: '' }
+    })
+    await waitFor(() =>
+      expect(getByText('Domain name is a required field')).toBeInTheDocument()
+    )
+    await waitFor(() =>
+      expect(mockCreateCustomDomain.result).not.toHaveBeenCalled()
+    )
+  })
+
   it('deletes a custom domain', async () => {
     const cache = new InMemoryCache()
     const { getByRole } = render(

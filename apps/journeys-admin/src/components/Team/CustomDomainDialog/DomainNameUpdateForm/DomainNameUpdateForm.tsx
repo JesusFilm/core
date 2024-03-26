@@ -87,10 +87,10 @@ export function DomainNameUpdateForm({
           value={values.domainName.toLocaleLowerCase().replace(/\s/g, '')}
           placeholder="your.nextstep.is"
           variant="outlined"
-          error={formErrors.domainName !== undefined || errorMessage != null}
+          error={formErrors.domainName != null || errorMessage != null}
           onChange={handleChange}
           helperText={
-            formErrors.domainName !== undefined || errorMessage != null
+            formErrors.domainName != null || errorMessage != null
               ? formErrors.domainName ?? errorMessage
               : null
           }

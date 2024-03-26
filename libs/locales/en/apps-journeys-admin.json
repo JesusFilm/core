@@ -605,6 +605,7 @@
   "Custom domain updated": "Custom domain updated",
   "Default journey set": "Default journey set",
   "Domain name is a required field": "Domain name is a required field",
+  "must be a valid URL": "must be a valid URL",
   "Domain Settings": "Domain Settings",
   "Default Journey": "Default Journey",
   "DNS Config": "DNS Config",

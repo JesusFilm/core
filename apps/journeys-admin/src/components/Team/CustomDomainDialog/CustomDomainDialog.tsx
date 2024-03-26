@@ -311,10 +311,16 @@ export function CustomDomainDialog({
     customDomainData?.customDomains?.length !== 0 &&
     customDomainData?.customDomains != null
 
-  const validationSchema = object({}).shape({
+  const validationSchema = object({
     domainName: string()
       .trim()
       .nonNullable()
+      .test('valid-custom-domain', t('must be a valid URL'), (value) => {
+        if (value == null) return true
+        const domainRegex =
+          /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g
+        return domainRegex.test(value)
+      })
       .required(t('Domain name is a required field'))
   })
 
