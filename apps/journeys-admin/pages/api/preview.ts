@@ -36,11 +36,14 @@ export default async function handler(
   }
 
   const slug = req.query.slug as string
+  const hostname = req?.query?.hostname?.toString()
+  console.log(hostname)
 
   try {
     const response = await fetch(
       `${process.env.JOURNEYS_URL}/api/revalidate?${new URLSearchParams({
         accessToken: process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
+        hostname: hostname ?? '',
         slug
       }).toString()}`
     )
@@ -53,5 +56,10 @@ export default async function handler(
   // 300ms required to invalidate edge caches
   await sleep(300)
 
-  res.redirect(307, `${process.env.JOURNEYS_URL}/${slug}`)
+  res.redirect(
+    307,
+    `${
+      hostname != null ? 'https://' + hostname : process.env.JOURNEYS_URL
+    }/${slug}`
+  )
 }
