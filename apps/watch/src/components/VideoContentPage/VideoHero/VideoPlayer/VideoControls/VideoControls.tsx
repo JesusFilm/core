@@ -12,6 +12,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
+import Skeleton from '@mui/material/Skeleton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -440,8 +441,18 @@ export function VideoControls({
                   }}
                 />
                 {player != null && (
-                  <Typography variant="body2" color="secondary.contrastText">
-                    {currentTime}/{duration}
+                  <Typography
+                    variant="body2"
+                    color="secondary.contrastText"
+                    sx={{ display: 'flex', gap: 1 }}
+                  >
+                    <span>{currentTime ?? '0:00'}</span>
+                    <span>/</span>
+                    {duration === '0:00' ? (
+                      <Skeleton width={27} sx={{ bgcolor: 'grey.800' }} />
+                    ) : (
+                      <span>{duration}</span>
+                    )}
                   </Typography>
                 )}
                 <Stack direction="row" spacing={2}>
