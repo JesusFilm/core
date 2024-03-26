@@ -5,10 +5,7 @@ import { ReactElement, useEffect, useRef } from 'react'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
-import {
-  ActiveSlide,
-  useEditor
-} from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
@@ -42,8 +39,6 @@ export function Slider(): ReactElement {
     }
   }
 
-  console.log('ACTIVE: ', activeSlide)
-
   function handlePrev(): void {
     dispatch({
       type: 'SetActiveSlideAction',
@@ -67,6 +62,7 @@ export function Slider(): ReactElement {
       slidesPerView="auto"
       breakpoints={swiperBreakpoints}
       onActiveIndexChange={(swiper) => {
+        console.log('CALLED')
         dispatch({
           type: 'SetActiveSlideAction',
           activeSlide: swiper.activeIndex
@@ -114,10 +110,7 @@ export function Slider(): ReactElement {
       {/* back (desktop left) button */}
       <Box
         slot="container-start"
-        onClick={() => {
-          console.log('CLICK')
-          handlePrev()
-        }}
+        onClick={handlePrev}
         sx={{
           position: 'fixed',
           top: EDIT_TOOLBAR_HEIGHT,
