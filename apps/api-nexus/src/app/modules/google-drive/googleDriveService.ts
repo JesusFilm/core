@@ -228,6 +228,7 @@ export class GoogleDriveService {
     // const files = await this.findFiles(authClient, drivefolderId);
 
     console.log('Authorize spreadsheetRows');
+    const templateType = "";
     // for (const spreadsheetRow of spreadsheetRows) {
     //   spreadsheetRow.driveFile = files?.find((file) => {
     //     return file.name === spreadsheetRow.filename;
