@@ -116,6 +116,7 @@ export function TeamMenu(): ReactElement {
         <Stack
           direction="row"
           alignItems="center"
+          justifyContent={'flex-end'}
           gap={1}
           sx={{
             mr: { xs: 0, sm: 4 },
