@@ -119,7 +119,8 @@ export function TeamMenu(): ReactElement {
           gap={1}
           sx={{
             mr: { xs: 0, sm: 4 },
-            display: { xs: 'none', sm: 'flex' }
+            display: { xs: 'none', sm: 'flex' },
+            width: { xs: 0, sm: 300, md: 250 }
           }}
         >
           <GlobeIcon sx={{ color: 'primary.main' }} />
@@ -128,7 +129,9 @@ export function TeamMenu(): ReactElement {
             variant="subtitle3"
             sx={{
               whiteSpace: 'nowrap',
-              color: 'primary.main'
+              color: 'primary.main',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
             }}
           >
             {activeTeam.customDomains[0].name}

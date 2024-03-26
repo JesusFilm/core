@@ -318,7 +318,7 @@ export function CustomDomainDialog({
     domainName: string()
       .trim()
       .nonNullable()
-      .test('valid-custom-domain', t('must be a valid URL'), (value) => {
+      .test('valid-custom-domain', t('Must be a valid URL'), (value) => {
         if (value == null) return true
         const domainRegex =
           /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g

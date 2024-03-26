@@ -47,7 +47,7 @@ export function DNSConfigSection({
 
   async function handleCopyClick(value): Promise<void> {
     await navigator.clipboard.writeText(value ?? '')
-    enqueueSnackbar('Address copied', {
+    enqueueSnackbar(t('Copied'), {
       variant: 'success',
       preventDuplicate: true
     })
@@ -95,13 +95,37 @@ export function DNSConfigSection({
         <Stack spacing={4}>
           {domainError == null && (
             <>
+              {/* show in desktop */}
               <TableContainer sx={{ display: { xs: 'none', sm: 'block' } }}>
                 <Table>
                   <TableRow>
                     <StyledTableCell align="left">
                       {apexName === name ? t('A') : t('CNAME')}
                     </StyledTableCell>
-                    <StyledTableCell align="left">{name}</StyledTableCell>
+                    <StyledTableCell align="left" sx={{ maxWidth: 200 }}>
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                      >
+                        <Typography
+                          sx={{
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}
+                        >
+                          {name}
+                        </Typography>
+                        <IconButton
+                          onClick={async () => await handleCopyClick(name)}
+                          aria-label="Copy"
+                          sx={{ mr: -3 }}
+                        >
+                          <CopyLeft />
+                        </IconButton>
+                      </Stack>
+                    </StyledTableCell>
                     <StyledTableCell align="left">
                       <Stack
                         direction="row"
@@ -129,6 +153,7 @@ export function DNSConfigSection({
                   </TableRow>
                 </Table>
               </TableContainer>
+              {/* show in mobile */}
               <TableContainer sx={{ display: { xs: 'block', sm: 'none' } }}>
                 <Table>
                   <TableRow>
@@ -137,7 +162,30 @@ export function DNSConfigSection({
                     </StyledTableCell>
                   </TableRow>
                   <TableRow>
-                    <StyledTableCell align="left">{apexName}</StyledTableCell>
+                    <StyledTableCell align="left" sx={{ maxWidth: 200 }}>
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                      >
+                        <Typography
+                          sx={{
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}
+                        >
+                          {name}
+                        </Typography>
+                        <IconButton
+                          onClick={async () => await handleCopyClick(name)}
+                          aria-label="Copy"
+                          sx={{ mr: -3 }}
+                        >
+                          <CopyLeft />
+                        </IconButton>
+                      </Stack>
+                    </StyledTableCell>
                   </TableRow>
                   <TableRow>
                     <StyledTableCell align="left">

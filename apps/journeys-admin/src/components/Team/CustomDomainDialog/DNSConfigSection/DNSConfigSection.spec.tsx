@@ -28,11 +28,17 @@ describe('DNSConfigSection', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getAllByRole('button', { name: 'Copy' })[0])
+    fireEvent.click(getAllByRole('button', { name: 'Copy' })[1])
     await waitFor(() =>
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith('76.76.21.21')
     )
-    expect(getByText('Address copied')).toBeInTheDocument()
+    expect(getByText('Copied')).toBeInTheDocument()
+    jest.clearAllMocks()
+    fireEvent.click(getAllByRole('button', { name: 'Copy' })[0])
+    await waitFor(() =>
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith('example.com')
+    )
+    expect(getByText('Copied')).toBeInTheDocument()
   })
 
   it('should show copy CNAME value to clipboard', async () => {
@@ -47,13 +53,21 @@ describe('DNSConfigSection', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getAllByRole('button', { name: 'Copy' })[0])
+    fireEvent.click(getAllByRole('button', { name: 'Copy' })[1])
     await waitFor(() =>
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
         'cname.vercel-dns.com'
       )
     )
-    expect(getByText('Address copied')).toBeInTheDocument()
+    expect(getByText('Copied')).toBeInTheDocument()
+    jest.clearAllMocks()
+    fireEvent.click(getAllByRole('button', { name: 'Copy' })[0])
+    await waitFor(() =>
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+        'www.example.com'
+      )
+    )
+    expect(getByText('Copied')).toBeInTheDocument()
   })
 
   it('should show copy TXT value to clipboard', async () => {
@@ -79,6 +93,6 @@ describe('DNSConfigSection', () => {
         'vc-domain-verify=example.com,61eb769fc89e3d03578a'
       )
     )
-    expect(getByText('Address copied')).toBeInTheDocument()
+    expect(getByText('Copied')).toBeInTheDocument()
   })
 })
