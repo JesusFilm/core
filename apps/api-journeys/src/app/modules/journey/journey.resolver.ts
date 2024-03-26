@@ -216,7 +216,7 @@ export class JourneyResolver {
     }
     if (options.embedded !== true) {
       if (options.hostname != null) {
-        if (options.journeyCollection !== false) {
+        if (options.journeyCollection !== true) {
           OR.push({
             team: {
               customDomains: {

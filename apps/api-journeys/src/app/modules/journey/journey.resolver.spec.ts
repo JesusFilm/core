@@ -727,13 +727,6 @@ describe('JourneyResolver', () => {
           status: 'published',
           OR: [
             {
-              team: {
-                customDomains: {
-                  some: { name: 'example.com', routeAllTeamJourneys: true }
-                }
-              }
-            },
-            {
               journeyCollectionJourneys: {
                 some: {
                   journeyCollection: {
