@@ -59,7 +59,8 @@
           "lodash",
           "@mui/material",
           "@mui/system",
-          "@mui/icons-material"
+          "@mui/icons-material",
+          "react-i18next"
         ],
         "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*"]
       }
@@ -110,7 +111,9 @@
     },
     {
       "files": ["*.tsx", "*.jsx"],
+      "extends": ["plugin:i18next/recommended"],
       "rules": {
+        "react/react-in-jsx-scope": "off",
         "react/jsx-indent": ["error", 2],
         "react/self-closing-comp": [
           "error",
@@ -136,7 +139,8 @@
       ],
       "rules": {
         "jest/no-disabled-tests": "off",
-        "jest/require-top-level-describe": "error"
+        "jest/require-top-level-describe": "error",
+        "i18next/no-literal-string": "off"
       }
     },
     {
@@ -147,7 +151,10 @@
         "*.stories.jsx"
       ],
       "plugins": ["storybook"],
-      "extends": ["plugin:storybook/recommended"]
+      "extends": ["plugin:storybook/recommended"],
+      "rules": {
+        "i18next/no-literal-string": "off"
+      }
     }
   ]
 }

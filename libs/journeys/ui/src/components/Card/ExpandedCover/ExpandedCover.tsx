@@ -63,7 +63,8 @@ export function ExpandedCover({
           backdropFilter: 'blur(20px)',
           background,
           borderRadius: 'inherit',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          boxSizing: 'content-box'
         }}
       >
         <Stack

@@ -35,6 +35,8 @@
     "shared-ui",
     "journeys-ui",
     "journeys",
-    "journeys-admin"
+    "journeys-admin",
+    "api-journeys",
+    "api-users"
   ]
 }

@@ -26,4 +26,4 @@ async function bootstrap(): Promise<void> {
   server.headersTimeout = 62000;
 }
 
-bootstrap().catch((err) => console.log(err));
+bootstrap().catch((err) => console.log('bootstrap error:', err));

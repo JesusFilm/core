@@ -134,6 +134,15 @@ module "api-media" {
   vpc_security_group_id = module.stage.private_rds_security_group_id
 }
 
+module "api-nexus" {
+  source                = "../../../apps/api-nexus/infrastructure"
+  ecs_config            = local.internal_ecs_config
+  env                   = "stage"
+  doppler_token         = data.aws_ssm_parameter.doppler_api_nexus_stage_token.value
+  subnet_group_name     = module.stage.vpc.db_subnet_group_name
+  vpc_security_group_id = module.stage.private_rds_security_group_id
+}
+
 module "bastion" {
   source             = "../../modules/aws/ec2-bastion"
   name               = "bastion"
@@ -198,10 +207,13 @@ module "datadog_aurora" {
 }
 
 module "redis" {
-  source     = "../../modules/aws/elasticache"
-  cluster_id = "redis-stage"
-  subnet_ids = module.stage.vpc.internal_subnets
-  env        = "stage"
+  source            = "../../modules/aws/elasticache"
+  cluster_id        = "redis-stage"
+  subnet_ids        = module.stage.vpc.internal_subnets
+  env               = "stage"
+  security_group_id = module.stage.ecs.internal_ecs_security_group_id
+  cidr              = module.stage.cidr
+  vpc_id            = module.stage.vpc.id
 }
 
 module "journeys-admin" {

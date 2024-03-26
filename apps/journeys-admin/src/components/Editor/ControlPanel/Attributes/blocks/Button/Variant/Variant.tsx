@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -24,6 +25,7 @@ export const BUTTON_BLOCK_UPDATE = gql`
 `
 
 export function Variant(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [buttonBlockUpdate] =
     useMutation<ButtonBlockUpdateVariant>(BUTTON_BLOCK_UPDATE)
 
@@ -55,11 +57,11 @@ export function Variant(): ReactElement {
   const options = [
     {
       value: ButtonVariant.contained,
-      label: 'Contained'
+      label: t('Contained')
     },
     {
       value: ButtonVariant.text,
-      label: 'Text'
+      label: t('Text')
     }
   ]
 

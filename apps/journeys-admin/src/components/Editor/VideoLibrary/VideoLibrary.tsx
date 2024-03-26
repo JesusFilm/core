@@ -2,7 +2,7 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
-import { Theme } from '@mui/material/styles'
+import { Theme, useTheme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Toolbar from '@mui/material/Toolbar'
@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -66,6 +67,7 @@ export function VideoLibrary({
   const [openVideoDetails, setOpenVideoDetails] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const router = useRouter()
+  const { zIndex } = useTheme()
 
   useEffect(() => {
     // opens video details if videoId is not null
@@ -83,7 +85,7 @@ export function VideoLibrary({
 
   function setRoute(param: string): void {
     router.query.param = param
-    void router.push(router)
+    void router.push(router, undefined, { shallow: true })
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })
@@ -108,7 +110,7 @@ export function VideoLibrary({
     setOpenVideoDetails(false)
     if (closeParent === true) onClose?.()
   }
-
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <Drawer
@@ -119,6 +121,7 @@ export function VideoLibrary({
         elevation={smUp ? 1 : 0}
         hideBackdrop
         sx={{
+          zIndex: zIndex.modal,
           left: {
             xs: 0,
             sm: 'unset'
@@ -139,7 +142,7 @@ export function VideoLibrary({
               component="div"
               sx={{ flexGrow: 1 }}
             >
-              Video Library
+              {t('Video Library')}
             </Typography>
             <IconButton
               onClick={onClose}
@@ -165,19 +168,19 @@ export function VideoLibrary({
           >
             <Tab
               icon={<MediaStrip1Icon />}
-              label="Library"
+              label={t('Library')}
               {...tabA11yProps('video-from-local', 0)}
               sx={{ flexGrow: 1 }}
             />
             <Tab
               icon={<YoutubeIcon />}
-              label="YouTube"
+              label={t('YouTube')}
               {...tabA11yProps('video-from-youtube', 1)}
               sx={{ flexGrow: 1 }}
             />
             <Tab
               icon={<Upload1Icon />}
-              label="Upload"
+              label={t('Upload')}
               {...tabA11yProps('video-from-cloudflare', 2)}
               sx={{ flexGrow: 1 }}
             />

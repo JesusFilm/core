@@ -1,26 +1,28 @@
-import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
-import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
-import PauseRounded from '@mui/icons-material/PauseRounded'
-import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
-import VolumeDownOutlined from '@mui/icons-material/VolumeDownOutlined'
-import VolumeMuteOutlined from '@mui/icons-material/VolumeMuteOutlined'
-import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
-import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
 import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'
-import IconButton from '@mui/material/IconButton'
-import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import fscreen from 'fscreen'
-import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
+import {
+  MouseEventHandler,
+  ReactElement,
+  useEffect,
+  useReducer,
+  useState
+} from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useBlocks } from '../../../libs/block'
+import { useJourney } from '../../../libs/JourneyProvider'
+
+import { DesktopControls } from './DesktopControls'
+import { MobileControls } from './MobileControls'
+import { PlaybackIcon } from './PlaybackIcon'
+import { PlaybackEvent, playbackReducer } from './utils/playbackReducer'
 
 interface VideoControlProps {
   player: Player
@@ -30,11 +32,25 @@ interface VideoControlProps {
   loading?: boolean
   autoplay?: boolean
   muted?: boolean
+  activeStep?: boolean
 }
 
 function isIOS(): boolean {
+  if (typeof navigator === 'undefined') return false
+
   const userAgent = navigator.userAgent
   return /iPad|iPhone|Macintosh|iPod/.test(userAgent)
+}
+
+function iPhone(): boolean {
+  if (
+    typeof navigator === 'undefined' ||
+    typeof navigator.userAgent === 'undefined'
+  )
+    return false
+
+  const userAgent = navigator.userAgent
+  return userAgent.includes('iPhone')
 }
 
 export function VideoControls({
@@ -43,20 +59,31 @@ export function VideoControls({
   endAt,
   isYoutube = false,
   loading = false,
-  autoplay = false,
-  muted: mute = false
+  muted: initialMuted = false,
+  activeStep = false
 }: VideoControlProps): ReactElement {
-  const [playing, setPlaying] = useState(false)
+  const { variant } = useJourney()
   const [active, setActive] = useState(true)
   const [displayTime, setDisplayTime] = useState('0:00')
   const [progress, setProgress] = useState(0)
   const [volume, setVolume] = useState((player.volume() ?? 1) * 100)
-  // Explicit muted state since player.muted state lags when video paused
-  const [muted, setMuted] = useState(mute)
+  const [state, dispatch] = useReducer(playbackReducer, {
+    // Explicit muted state since player.muted state lags when video paused
+    muted: initialMuted,
+    playing: false,
+    action: 'play'
+  })
+
   // Explicit fullscreen state since player.fullscreen state lags when video paused
   const [fullscreen, setFullscreen] = useState(
     fscreen.fullscreenElement != null || (player.isFullscreen() ?? false)
   )
+
+  const theme = useTheme()
+  const isMobile = useMediaQuery(
+    `(max-width:${theme.breakpoints.values.lg - 0.5}px)`
+  )
+
   const {
     showHeaderFooter,
     setShowHeaderFooter,
@@ -71,7 +98,7 @@ export function VideoControls({
       ? null
       : secondsToTimeFormat(durationSeconds, { trimZeroes: true })
 
-  const visible = !playing || active || loading
+  const visible = !state.playing || active || loading
 
   // Hide navigation when invisible, show navigation when paused or active
   useEffect(() => {
@@ -85,9 +112,9 @@ export function VideoControls({
     const handleVideoPlay = (): void => {
       // Always mute first video
       if (player.muted() ?? false) {
-        setMuted(true)
+        dispatch({ type: PlaybackEvent.MUTE })
       }
-      setPlaying(true)
+      dispatch({ type: PlaybackEvent.PLAY })
       if (startAt > 0 && (player.currentTime() ?? 0) < startAt) {
         setProgress(startAt)
       }
@@ -109,10 +136,9 @@ export function VideoControls({
   // Handle pause event
   useEffect(() => {
     const handleVideoPause = (): void => {
-      setPlaying(false)
-
-      const videoHasClashingUI = isYoutube && (player.userActive() ?? true)
-      if (videoHasClashingUI) {
+      dispatch({ type: PlaybackEvent.PAUSE })
+      const videoHasClashingUI = isYoutube
+      if (videoHasClashingUI && activeStep) {
         setShowHeaderFooter(false)
       }
     }
@@ -120,7 +146,7 @@ export function VideoControls({
     return () => {
       player.off('pause', handleVideoPause)
     }
-  }, [player, isYoutube, setShowHeaderFooter])
+  }, [player, isYoutube, setShowHeaderFooter, activeStep])
 
   // Handle time update event
   useEffect(() => {
@@ -181,11 +207,19 @@ export function VideoControls({
       setFullscreen(fullscreen)
 
       const videoHasClashingUI =
-        isYoutube && !playing && (player.userActive() ?? true)
+        isYoutube && !state.playing && (player.userActive() ?? true)
       if (videoHasClashingUI) {
         setShowHeaderFooter(false)
       } else {
         setShowHeaderFooter(!fullscreen)
+      }
+
+      if (!fullscreen && variant === 'embed' && !iPhone() && activeStep) {
+        player.pause()
+      }
+
+      if (fullscreen && variant === 'embed' && !iPhone() && activeStep) {
+        void player.play()
       }
     }
 
@@ -201,21 +235,44 @@ export function VideoControls({
         player.off('fullscreenchange', handleFullscreenChange)
       }
     }
-  }, [player, isYoutube, playing, setShowHeaderFooter, setShowNavigation])
+  }, [
+    player,
+    isYoutube,
+    state,
+    setShowHeaderFooter,
+    setShowNavigation,
+    variant
+  ])
 
   function handlePlay(): void {
-    if (!playing) {
+    if (!state.playing) {
       void player.play()
       // Youtube breaks when this is gone
-      setPlaying(true)
+      dispatch({ type: PlaybackEvent.PLAY })
     } else {
       void player.pause()
-      setPlaying(false)
       setShowNavigation(true)
+      dispatch({ type: PlaybackEvent.PAUSE })
+    }
+  }
+
+  const handlePlaybackEvent = (): void => {
+    // Ensures desktop only uses play/pause events
+    if (!isMobile) {
+      handlePlay()
+    } else {
+      const mobileActions = {
+        play: handlePlay,
+        pause: handlePlay,
+        unmute: handleMute
+      }
+
+      mobileActions[state.action]()
     }
   }
 
   function handleFullscreen(): void {
+    if (variant === 'embed' && !iPhone()) return
     if (fullscreen) {
       if (fscreen.fullscreenEnabled) {
         void fscreen.exitFullscreen()
@@ -225,7 +282,7 @@ export function VideoControls({
     } else {
       if (fscreen.fullscreenEnabled) {
         const activeCard = document.querySelectorAll(
-          '.swiper-slide-active .MuiPaper-root'
+          '.active-card .MuiBox-root'
         )[0]
         if (activeCard != null) {
           void fscreen.requestFullscreen(activeCard)
@@ -244,16 +301,27 @@ export function VideoControls({
   }
 
   function handleMute(): void {
-    setMuted(!muted)
-    player.muted(!muted)
+    state.muted
+      ? dispatch({ type: PlaybackEvent.UNMUTE })
+      : dispatch({ type: PlaybackEvent.MUTE })
+
+    player.muted(!state.muted)
   }
 
   function handleVolume(e: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
-      player.muted(false)
-      setMuted(false)
-      setVolume(value)
-      player.volume(value / 100)
+      // Should mute when volume is zero to prevent extra click on unmute button when volume is dragged to zero
+      if (value > 0) {
+        player.muted(false)
+        setVolume(value)
+        dispatch({ type: PlaybackEvent.UNMUTE })
+        player.volume(value / 100)
+      } else {
+        player.muted(true)
+        dispatch({ type: PlaybackEvent.MUTE })
+        setVolume(0)
+        player.volume(0)
+      }
     }
   }
 
@@ -294,7 +362,7 @@ export function VideoControls({
         userSelect: 'none',
         WebkitUserSelect: 'none'
       }}
-      onClick={getClickHandler(handlePlay, handleFullscreen)}
+      onClick={getClickHandler(handlePlaybackEvent, handleFullscreen)}
       onMouseMove={() => player.userActive(true)}
       onTouchEnd={(e) => {
         const target = e.target as Element
@@ -308,65 +376,26 @@ export function VideoControls({
         // iOS: pause video on first click, default just shows controls.
         if (controlsHidden && videoControlsNotClicked && isIOS()) {
           void player.pause()
-          setPlaying(false)
+          dispatch({ type: PlaybackEvent.PAUSE })
         }
         player.userActive(true)
       }}
       data-testid="JourneysVideoControls"
     >
-      <Fade
-        in={visible}
-        style={{ transitionDuration: '500ms' }}
-        timeout={{ exit: 3000 }}
+      <Stack
+        justifyContent="center"
+        sx={{ height: '100%' }}
+        flexGrow={1}
+        alignItems="center"
       >
-        <Stack justifyContent="flex-end" sx={{ height: '100%' }}>
-          {/* Mute / Unmute */}
-          <Stack
-            flexDirection="row"
-            justifyContent="flex-end"
-            sx={{ mt: 15, display: { lg: 'none' } }}
-          >
-            <IconButton
-              aria-label="mute"
-              sx={{
-                mx: 4,
-                mt: 1,
-                backgroundColor: '#ffffff29',
-                ':hover': {
-                  background: '#ffffff3d'
-                }
-              }}
-              onClick={handleMute}
-            >
-              {muted ? <VolumeOffOutlined /> : <VolumeUpOutlined />}
-            </IconButton>
-          </Stack>
-          {/* Play/Pause */}
-          <Stack flexGrow={1} alignItems="center" justifyContent="center">
-            {!loading ? (
-              <IconButton
-                aria-label={
-                  playing ? 'center-pause-button' : 'center-play-button'
-                }
-                sx={{
-                  fontSize: 50,
-                  display: { xs: 'flex', lg: 'none' },
-                  p: { xs: 2, sm: 0, md: 2 }
-                }}
-              >
-                {playing ? (
-                  <PauseRounded fontSize="inherit" />
-                ) : (
-                  <PlayArrowRounded fontSize="inherit" />
-                )}
-              </IconButton>
-            ) : (
-              <CircularProgress size={65} />
-            )}
-          </Stack>
-          {/* Progress Bar */}
+        <PlaybackIcon state={state} loading={loading} visible={visible} />
+        <Fade
+          in
+          style={{ transitionDuration: '500ms' }}
+          timeout={{ exit: 3000 }}
+        >
+          {/* Mobile and Desktop Video Controls */}
           <Container
-            className="swiper-no-swiping"
             data-testid="vjs-jfp-custom-controls"
             maxWidth="xxl"
             sx={{
@@ -376,164 +405,47 @@ export function VideoControls({
                 xs: showHeaderFooter || isYoutube ? 28 : 2,
                 sm: showHeaderFooter || isYoutube ? 15 : 2,
                 lg: 2
-              }
+              },
+              position: 'absolute',
+              bottom: 0
             }}
             onClick={(event) => event.stopPropagation()}
           >
-            <Stack
-              direction="row"
-              gap={5}
-              justifyContent={{ xs: 'space-between', lg: 'none' }}
-              alignItems="center"
-            >
-              <IconButton
-                aria-label={playing ? 'bar-pause-button' : 'bar-play-button'}
-                onClick={handlePlay}
-                sx={{
-                  display: { xs: 'none', lg: 'flex' },
-                  ml: { xs: 0, lg: -1 }
-                }}
-              >
-                {!playing ? <PlayArrowRounded /> : <PauseRounded />}
-              </IconButton>
-              <Slider
-                aria-label="desktop-progress-control"
-                min={startAt}
-                max={endAt - 0.25}
-                value={progress}
-                valueLabelFormat={displayTime}
-                valueLabelDisplay="auto"
-                onChange={handleSeek}
-                sx={{
-                  height: 8,
-                  display: { xs: 'none', lg: 'flex' },
-                  '& .MuiSlider-thumb': {
-                    width: 13,
-                    height: 13,
-                    mr: -3
-                  },
-                  '& .MuiSlider-rail': {
-                    backgroundColor: 'secondary.main'
-                  },
-                  '& .MuiSlider-track': {
-                    border: 'none'
-                  }
-                }}
-              />
-              {player != null && duration != null && (
-                <Typography
-                  variant="caption"
-                  color="secondary.main"
-                  noWrap
-                  overflow="unset"
-                  sx={{ p: 2 }}
-                >
-                  {displayTime} / {duration}
-                </Typography>
-              )}
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="flex-end"
-                sx={{ width: { xs: '100%', lg: 'unset' }, p: 1.5 }}
-              >
-                <Stack
-                  alignItems="center"
-                  spacing={2}
-                  direction="row"
-                  sx={{
-                    display: { xs: 'none', lg: 'flex' },
-                    '> .MuiSlider-root': {
-                      width: 0,
-                      opacity: 0,
-                      transition: 'all 0.2s ease-out'
-                    },
-                    '&:hover': {
-                      '> .MuiSlider-root': {
-                        width: 70,
-                        mx: 3,
-                        opacity: 1
-                      }
-                    }
-                  }}
-                >
-                  <IconButton onClick={handleMute} sx={{ p: 0 }}>
-                    {muted || volume === 0 ? (
-                      <VolumeOffOutlined />
-                    ) : volume > 60 ? (
-                      <VolumeUpOutlined />
-                    ) : volume > 30 ? (
-                      <VolumeDownOutlined />
-                    ) : (
-                      <VolumeMuteOutlined />
-                    )}
-                  </IconButton>
-                  <Slider
-                    aria-label="volume-control"
-                    min={0}
-                    max={100}
-                    value={player.muted() ?? false ? 0 : volume}
-                    valueLabelFormat={(value) => {
-                      return `${Math.round(value)}%`
-                    }}
-                    valueLabelDisplay="auto"
-                    onChange={handleVolume}
-                    sx={{
-                      '& .MuiSlider-thumb': {
-                        width: 10,
-                        height: 10,
-                        mr: -3
-                      },
-                      '& .MuiSlider-rail': {
-                        backgroundColor: 'secondary.main'
-                      }
-                    }}
-                  />
-                </Stack>
-                <IconButton
-                  aria-label="fullscreen"
-                  onClick={handleFullscreen}
-                  sx={{ py: 0, px: 2 }}
-                >
-                  {fullscreen ? (
-                    <FullscreenExitRounded />
-                  ) : (
-                    <FullscreenRounded />
-                  )}
-                </IconButton>
-              </Stack>
-            </Stack>
-            <Slider
-              aria-label="mobile-progress-control"
-              min={startAt}
-              max={endAt - 0.25}
-              value={progress}
-              valueLabelFormat={displayTime}
-              valueLabelDisplay="auto"
-              onChange={handleSeek}
-              disabled={!player.hasStarted_}
-              sx={{
-                width: 'initial',
-                height: 5,
-                mx: 2.5,
-                py: 2,
-                display: { xs: 'flex', lg: 'none' },
-                '& .MuiSlider-thumb': {
-                  width: 10,
-                  height: 10,
-                  mr: -3
-                },
-                '& .MuiSlider-rail': {
-                  backgroundColor: 'secondary.main'
-                },
-                '& .MuiSlider-track': {
-                  border: 'none'
-                }
-              }}
+            <MobileControls
+              showTime={player != null && duration != null}
+              displayTime={displayTime}
+              duration={duration}
+              startAt={startAt}
+              endAt={endAt}
+              progress={progress}
+              handleSeek={handleSeek}
+              disableProgress={!player.hasStarted_}
+              showFullscreenButton={variant !== 'embed' || iPhone()}
+              fullscreen={fullscreen}
+              handleFullscreen={handleFullscreen}
+            />
+            <DesktopControls
+              playing={state.playing}
+              handlePlay={handlePlay}
+              showTime={player != null && duration != null}
+              displayTime={displayTime}
+              duration={duration}
+              startAt={startAt}
+              endAt={endAt}
+              progress={progress}
+              handleSeek={handleSeek}
+              volume={volume}
+              handleVolume={handleVolume}
+              muted={state.muted}
+              handleMute={handleMute}
+              playerMuted={player.muted() ?? false}
+              showFullscreenButton={variant !== 'embed' || iPhone()}
+              fullscreen={fullscreen}
+              handleFullscreen={handleFullscreen}
             />
           </Container>
-        </Stack>
-      </Fade>
+        </Fade>
+      </Stack>
     </Box>
   )
 }

@@ -7,9 +7,10 @@ import ListItemText from '@mui/material/ListItemText'
 import compact from 'lodash/compact'
 import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import BoxIcon from '@core/shared/ui/icons/Box'
 import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
@@ -40,14 +41,15 @@ const UserMenu = dynamic(
 )
 
 export const GET_ME = gql`
-  query GetMe {
-    me {
+  query GetMe($input: MeInput) {
+    me(input: $input) {
       id
       firstName
       lastName
       email
       imageUrl
       superAdmin
+      emailVerified
     }
   }
 `
@@ -64,7 +66,10 @@ export function UserNavigation({
   setTooltip
 }: UserNavigationProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
-  const { data } = useSuspenseQuery<GetMe>(GET_ME)
+  const router = useRouter()
+  const { data } = useSuspenseQuery<GetMe>(GET_ME, {
+    variables: { input: { redirect: router?.query?.redirect } }
+  })
   const { data: userRoleData } = useUserRoleSuspenseQuery()
   const { data: journeysData } = useAdminJourneysSuspenseQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
@@ -118,7 +123,10 @@ export function UserNavigation({
             <ListItemIcon>
               <BoxIcon />
             </ListItemIcon>
-            <ListItemText primary={t('Publisher')} />
+            <ListItemText
+              primary={t('Publisher')}
+              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            />
           </ListItemButton>
         </NextLink>
       )}
@@ -130,7 +138,10 @@ export function UserNavigation({
           <ListItemIcon>
             <UserProfile3Icon />
           </ListItemIcon>
-          <ListItemText primary={t('Impersonate')} />
+          <ListItemText
+            primary={t('Impersonate')}
+            primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+          />
         </ListItemButton>
       )}
       <ListItemButton
@@ -144,7 +155,10 @@ export function UserNavigation({
             sx={{ width: 24, height: 24 }}
           />
         </ListItemIcon>
-        <ListItemText primary={t('Profile')} />
+        <ListItemText
+          primary={t('Profile')}
+          primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+        />
       </ListItemButton>
       {profileAnchorEl !== undefined && (
         <UserMenu

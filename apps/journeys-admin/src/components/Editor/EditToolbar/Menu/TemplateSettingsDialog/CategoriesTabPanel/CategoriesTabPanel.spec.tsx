@@ -14,15 +14,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => false
 }))
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('CategoriesTabPanel', () => {
   const topicTag = {
     __typename: 'Tag' as const,

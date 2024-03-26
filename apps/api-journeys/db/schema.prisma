@@ -1,11 +1,19 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
-  output   = env("PRISMA_LOCATION")
+  output   = env("PRISMA_LOCATION_JOURNEYS")
+}
+
+generator erd {
+  provider    = "prisma-erd-generator"
+  ignoreEnums = true
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL")
+  url      = env("PG_DATABASE_URL_JOURNEYS")
 }
 
 enum ChatPlatform {
@@ -118,7 +126,7 @@ model Event {
 }
 
 model Visitor {
-  id                        String           @id
+  id                        String           @id @default(uuid())
   createdAt                 DateTime         @default(now())
   countryCode               String?
   duration                  Int              @default(0)
@@ -144,6 +152,7 @@ model Visitor {
   journeyVisitors           JourneyVisitor[]
   team                      Team             @relation(fields: [teamId], references: [id])
 
+  @@unique([teamId, userId])
   @@index(teamId)
   @@index(createdAt(sort: Desc))
   @@index(userId)
@@ -196,16 +205,18 @@ model JourneyVisitor {
 }
 
 model Team {
-  id              String           @id @default(uuid())
-  title           String
-  publicTitle     String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  visitors        Visitor[]
-  userTeams       UserTeam[]
-  journeys        Journey[]
-  hosts           Host[]
-  UserTeamInvites UserTeamInvite[]
+  id                 String              @id @default(uuid())
+  title              String
+  publicTitle        String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  visitors           Visitor[]
+  userTeams          UserTeam[]
+  journeys           Journey[]
+  hosts              Host[]
+  UserTeamInvites    UserTeamInvite[]
+  journeyCollections JourneyCollection[]
+  customDomains      CustomDomain[]
 
   @@index(title)
 }
@@ -295,41 +306,42 @@ enum ThemeName {
 }
 
 model Journey {
-  id                  String           @id @default(uuid())
-  title               String
-  languageId          String
-  description         String?
-  slug                String           @unique
-  archivedAt          DateTime?
-  createdAt           DateTime         @default(now())
-  deletedAt           DateTime?
-  publishedAt         DateTime?
-  trashedAt           DateTime?
-  featuredAt          DateTime?
-  status              JourneyStatus
-  seoTitle            String?
-  seoDescription      String?
-  primaryImageBlockId String?          @unique
-  creatorImageBlockId String?          @unique
-  creatorDescription  String?
-  template            Boolean?         @default(false)
-  teamId              String
-  hostId              String?
-  themeMode           ThemeMode?       @default(light)
-  themeName           ThemeName?       @default(base)
-  updatedAt           DateTime         @default(now()) @updatedAt
-  userJourneys        UserJourney[]
-  team                Team             @relation(fields: [teamId], references: [id])
-  userInvites         UserInvite[]
-  blocks              Block[]
-  chatButtons         ChatButton[]
-  host                Host?            @relation(fields: [hostId], references: [id])
-  journeyTags         JourneyTag[]
-  actions             Action[]
-  primaryImageBlock   Block?           @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id], onDelete: SetNull)
-  creatorImageBlock   Block?           @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
-  journeyVisitors     JourneyVisitor[]
-  strategySlug        String?
+  id                        String                      @id @default(uuid())
+  title                     String
+  languageId                String
+  description               String?
+  slug                      String                      @unique
+  archivedAt                DateTime?
+  createdAt                 DateTime                    @default(now())
+  deletedAt                 DateTime?
+  publishedAt               DateTime?
+  trashedAt                 DateTime?
+  featuredAt                DateTime?
+  status                    JourneyStatus
+  seoTitle                  String?
+  seoDescription            String?
+  primaryImageBlockId       String?                     @unique
+  creatorImageBlockId       String?                     @unique
+  creatorDescription        String?
+  template                  Boolean?                    @default(false)
+  teamId                    String
+  hostId                    String?
+  themeMode                 ThemeMode?                  @default(light)
+  themeName                 ThemeName?                  @default(base)
+  updatedAt                 DateTime                    @default(now()) @updatedAt
+  userJourneys              UserJourney[]
+  team                      Team                        @relation(fields: [teamId], references: [id])
+  userInvites               UserInvite[]
+  blocks                    Block[]
+  chatButtons               ChatButton[]
+  host                      Host?                       @relation(fields: [hostId], references: [id])
+  journeyTags               JourneyTag[]
+  actions                   Action[]
+  primaryImageBlock         Block?                      @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id], onDelete: SetNull)
+  creatorImageBlock         Block?                      @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
+  journeyVisitors           JourneyVisitor[]
+  strategySlug              String?
+  journeyCollectionJourneys JourneyCollectionJourneys[]
 
   @@index(title)
 }
@@ -433,6 +445,8 @@ model Block {
   projectId               String?
   apiToken                String?
   formSlug                String?
+  x                       Int?
+  y                       Int?
   updatedAt               DateTime             @default(now()) @updatedAt
   journey                 Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
@@ -466,4 +480,44 @@ model Action {
   block         Block?   @relation("Block", fields: [blockId], references: [id])
 
   @@index(parentBlockId)
+}
+
+model JourneysEmailPreference {
+  email                String  @id @unique
+  unsubscribeAll       Boolean @default(false)
+  accountNotifications Boolean @default(true)
+
+  @@index(email)
+}
+
+model CustomDomain {
+  id                   String             @id @default(uuid())
+  teamId               String
+  name                 String             @unique
+  apexName             String
+  journeyCollectionId  String?
+  routeAllTeamJourneys Boolean            @default(true)
+  journeyCollection    JourneyCollection? @relation(fields: [journeyCollectionId], references: [id])
+  team                 Team               @relation(fields: [teamId], references: [id])
+}
+
+model JourneyCollection {
+  id                        String                      @id @default(uuid())
+  teamId                    String
+  title                     String?
+  customDomains             CustomDomain[]
+  team                      Team                        @relation(fields: [teamId], references: [id])
+  journeyCollectionJourneys JourneyCollectionJourneys[]
+}
+
+model JourneyCollectionJourneys {
+  id                  String            @id @default(uuid())
+  journeyCollectionId String
+  journeyId           String
+  order               Int
+  journeyCollection   JourneyCollection @relation(fields: [journeyCollectionId], references: [id], onDelete: Cascade)
+  journey             Journey           @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@unique([journeyCollectionId, journeyId])
+  @@unique([journeyCollectionId, order])
 }

@@ -41,7 +41,7 @@ apps/api-gateway/router
 .DS_Store
 Thumbs.db
 
-#local .env files
+# local .env files
 .env
 .env*local
 
@@ -69,5 +69,12 @@ terraform.tfstate.backup
 **/test-results/
 **/playwright-report/
 **/playwright/.cache/
+**/apps/journeys-admin-e2e/user.json
+
+# ignore old locale files
+/libs/locales/**/*_old.json
 
 .nx/cache
+
+# react-email
+.react-email

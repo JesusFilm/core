@@ -3,6 +3,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
+import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
@@ -78,6 +79,7 @@ export function YouTubeDetails({
   }, [data])
 
   const loading = data == null && error == null
+  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Stack spacing={4} sx={{ p: 6 }} data-testid="YoutubeDetails">
@@ -156,7 +158,7 @@ export function YouTubeDetails({
           disabled={loading}
           sx={{ backgroundColor: 'secondary.dark' }}
         >
-          Select
+          {t('Select')}
         </Button>
       </Stack>
     </Stack>

@@ -3,8 +3,8 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 interface AIPromptProps {
@@ -52,7 +52,7 @@ export function AIPrompt({
               variant="filled"
               onChange={handleChange}
               disabled={isSubmitting}
-              label="Prompt"
+              label={t('Prompt')}
               error={Boolean(errors.prompt)}
               value={values.prompt}
               helperText={<>{errors.prompt}</>}
@@ -65,7 +65,7 @@ export function AIPrompt({
               disabled={!isValid || isSubmitting || loading}
               variant="outlined"
             >
-              Prompt
+              {t('Prompt')}
             </Button>
           </Form>
         )}

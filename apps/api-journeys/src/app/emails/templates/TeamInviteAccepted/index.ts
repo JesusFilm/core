@@ -1,0 +1,1 @@
+export { TeamInviteAcceptedEmail } from './TeamInviteAccepted'

@@ -4,9 +4,9 @@ import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
@@ -15,7 +15,6 @@ import { LoadingJourneyList } from '../LoadingJourneyList'
 
 import { ActivePriorityList } from './ActivePriorityList'
 import { AddJourneyButton } from './AddJourneyButton'
-import { DiscoveryJourneys } from './DiscoveryJourneys'
 
 const Dialog = dynamic(
   async () =>
@@ -174,7 +173,6 @@ export function ActiveJourneyList({
           )}
         </Box>
       )}
-      <DiscoveryJourneys />
       <Stack alignItems="center">
         <Typography
           variant="caption"

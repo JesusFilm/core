@@ -222,169 +222,22 @@ export class GoogleDriveService {
     }
 
     console.log('Authorize');
-    const authClient = this.youtubeService.authorize(accessToken);
+    // const authClient = this.youtubeService.authorize(accessToken);
 
     console.log('Find Files');
-    const files = await this.findFiles(authClient, drivefolderId);
+    // const files = await this.findFiles(authClient, drivefolderId);
 
     console.log('Authorize spreadsheetRows');
-    for (const spreadsheetRow of spreadsheetRows) {
-      if (spreadsheetRow.filename != null) {
-        spreadsheetRow.driveFile = files?.find(
-          (file) => file.name === spreadsheetRow.filename,
-        );
-      }
-
-      if (spreadsheetRow.caption_file != null) {
-        spreadsheetRow.captionDriveFile = files?.find(
-          (file) => file.name === spreadsheetRow.caption_file,
-        );
-      }
-
-      if (spreadsheetRow.audio_track_file != null) {
-        spreadsheetRow.audioTrackDriveFile = files?.find(
-          (file) => file.name === spreadsheetRow.audio_track_file,
-        );
-      }
-
-      if (spreadsheetRow.channel != null) {
-        spreadsheetRow.channelData =
-          (await this.prismaService.channel.findFirst({
-            where: { youtube: { youtubeId: spreadsheetRow.channel } },
-            include: { youtube: true },
-          })) as unknown as Channel | undefined;
-      }
-
-      if (spreadsheetRow.video_id != null) {
-        spreadsheetRow.channelData =
-          (await this.prismaService.channel.findFirst({
-            where: {
-              resourceYoutubeChannel: {
-                every: { youtubeId: spreadsheetRow.video_id },
-              },
-            },
-            include: { youtube: true },
-          })) as unknown as Channel | undefined;
-      }
-    }
-
-    return spreadsheetRows;
-  }
-
-  async getSpreadsheetData(
-    tokenId: string,
-    spreadsheetId: string,
-  ): Promise<{ accessToken: string; data: SpreadsheetRow[] }> {
-    const googleAccessToken =
-      await this.prismaService.googleAccessToken.findUnique({
-        where: { id: tokenId },
-      });
-
-    if (googleAccessToken === null) {
-      throw new Error('Invalid tokenId');
-    }
-
-    console.log('Get Refreshed Access Token');
-    const accessToken = await this.googleOAuthService.getNewAccessToken(
-      googleAccessToken.refreshToken,
-    );
-
-    const firstSheetName = await this.googleSheetsService.getFirstSheetName(
-      spreadsheetId,
-      accessToken,
-    );
-
-    console.log('Get Spreadsheet Data');
-    const spreadsheetData = await this.googleSheetsService.downloadSpreadsheet(
-      spreadsheetId,
-      firstSheetName,
-      accessToken,
-    );
-
-    let spreadsheetRows: SpreadsheetRow[] = [];
-    if (spreadsheetData.length > 0) {
-      const header = spreadsheetData[0] as string[];
-      spreadsheetRows = spreadsheetData.slice(1).map((row) => {
-        const rowObject = {};
-        row.forEach((value, index) => {
-          rowObject[header[index]] = value;
-        });
-        return rowObject as SpreadsheetRow;
-      });
-    }
-    return { accessToken, data: spreadsheetRows };
-  }
-
-  async populateSpreadsheetData(
-    accessToken: string,
-    driveId: string,
-    spreadsheetRows: SpreadsheetRow[],
-  ): Promise<{
-    templateType: SpreadsheetTemplateType;
-    spreadsheetData: SpreadsheetRow[];
-  }> {
-    console.log('Authorize Google Service');
-    const authClient = this.youtubeService.authorize(accessToken);
-
-    console.log('Find Drive Files');
-    const files = await this.findFiles(authClient, driveId);
-
-    let templateType = SpreadsheetTemplateType.UPLOAD;
-
-    for (const spreadsheetRow of spreadsheetRows) {
-      if (spreadsheetRow.filename != null) {
-        templateType = SpreadsheetTemplateType.UPLOAD;
-        spreadsheetRow.driveFile = files?.find(
-          (file) => file.name === spreadsheetRow.filename,
-        );
-      }
-
-      if (spreadsheetRow.custom_thumbnail != null) {
-        spreadsheetRow.customThumbnailDriveFile = files?.find(
-          (file) => file.name === spreadsheetRow.custom_thumbnail,
-        );
-      }
-
-      if (spreadsheetRow.caption_file != null) {
-        spreadsheetRow.captionDriveFile = files?.find(
-          (file) => file.name === spreadsheetRow.caption_file,
-        );
-      }
-
-      if (spreadsheetRow.audio_track_file != null) {
-        spreadsheetRow.audioTrackDriveFile = files?.find(
-          (file) => file.name === spreadsheetRow.audio_track_file,
-        );
-      }
-
-      if (spreadsheetRow.channel != null) {
-        const rowChannel = await this.prismaService.channel.findFirst({
-          where: { youtube: { youtubeId: spreadsheetRow.channel } },
-          include: { youtube: true },
-        });
-        if (rowChannel !== null) {
-          spreadsheetRow.channelData = rowChannel;
-        }
-      }
-
-      if (spreadsheetRow.video_id != null) {
-        console.log('video_id', spreadsheetRow.video_id);
-        templateType = SpreadsheetTemplateType.LOCALIZATION;
-        const rowChannel = await this.prismaService.channel.findFirst({
-          where: {
-            resourceYoutubeChannel: {
-              some: { youtubeId: spreadsheetRow.video_id },
-            },
-          },
-          include: { youtube: true },
-        });
-
-        console.log('rowChannel', rowChannel);
-        if (rowChannel !== null) {
-          spreadsheetRow.channelData = rowChannel;
-        }
-      }
-    }
+    // for (const spreadsheetRow of spreadsheetRows) {
+    //   spreadsheetRow.driveFile = files?.find((file) => {
+    //     return file.name === spreadsheetRow.filename;
+    //   });
+    //   console.log('spreadsheetRow.driveFile', spreadsheetRow.driveFile);
+    //   spreadsheetRow.channelData = (await this.prismaService.channel.findFirst({
+    //     where: { youtube: { youtubeId: spreadsheetRow.channel as string } },
+    //     include: { youtube: true },
+    //   })) as Channel | undefined;
+    // }
 
     return { templateType, spreadsheetData: spreadsheetRows };
   }

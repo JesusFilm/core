@@ -3,21 +3,27 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = env("PRISMA_LOCATION")
+  output   = env("PRISMA_LOCATION_USERS")
+}
+
+generator erd {
+  provider    = "prisma-erd-generator"
+  ignoreEnums = true
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL")
+  url      = env("PG_DATABASE_URL_USERS")
 }
 
 model User {
-  id         String   @id @default(uuid())
-  userId     String   @unique
-  firstName  String
-  lastName   String?
-  email      String   @unique
-  imageUrl   String?
-  createdAt  DateTime @default(now())
-  superAdmin Boolean  @default(false)
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  firstName     String
+  lastName      String?
+  email         String   @unique
+  imageUrl      String?
+  createdAt     DateTime @default(now())
+  superAdmin    Boolean  @default(false)
+  emailVerified Boolean  @default(true)
 }

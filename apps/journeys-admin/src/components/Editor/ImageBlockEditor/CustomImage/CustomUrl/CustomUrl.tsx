@@ -5,8 +5,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Button from '@mui/material/ListItemButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ClipboardEvent, ReactElement, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
@@ -71,7 +71,7 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
       >
         <LinkIcon />
         <Typography variant="subtitle2" sx={{ pl: 2, pr: 1 }}>
-          Add image by URL
+          {t('Add image by URL')}
         </Typography>
         {open ? (
           <ChevronUpIcon sx={{ ml: 'auto' }} />

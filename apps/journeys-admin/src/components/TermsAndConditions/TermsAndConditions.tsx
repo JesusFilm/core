@@ -8,6 +8,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
@@ -43,12 +44,12 @@ export function TermsAndConditions(): ReactElement {
       query: { redirect: router.query.redirect }
     })
   }
-
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      <Typography variant="h4">Before You Start</Typography>
+      <Typography variant="h4">{t('Before You Start')}</Typography>
       <Typography variant="body1" sx={{ mt: 3 }}>
-        Please review these documents:
+        {t('Please review these documents:')}
       </Typography>
       <List
         sx={{
@@ -62,19 +63,19 @@ export function TermsAndConditions(): ReactElement {
         <TermsListItem
           link="https://your.nextstep.is/terms-of-use"
           icon={<AlertCircleIcon sx={{ color: 'secondary.light' }} />}
-          text="Terms of Use"
+          text={t('Terms of Use')}
         />
         <Divider component="li" />
         <TermsListItem
           link="https://your.nextstep.is/end-user-license-agreement"
           icon={<UsersProfiles2Icon sx={{ color: 'secondary.light' }} />}
-          text="End User License Agreement"
+          text={t('End User License Agreement')}
         />
         <Divider component="li" />
         <TermsListItem
           link="https://your.nextstep.is/community-guidelines"
           icon={<CheckSquareBrokenIcon sx={{ color: 'secondary.light' }} />}
-          text="Community Guidelines"
+          text={t('Community Guidelines')}
         />
         <Divider component="li" />
         <ListItemButton onClick={() => setAccepted(!accepted)}>
@@ -92,7 +93,7 @@ export function TermsAndConditions(): ReactElement {
             id="i-agree-label"
             primary={
               <Typography variant="body1" color="secondary.dark">
-                I agree with listed above conditions and requirements
+                {t('I agree with listed above conditions and requirements')}
               </Typography>
             }
           />
@@ -115,7 +116,7 @@ export function TermsAndConditions(): ReactElement {
         }}
         endIcon={<ArrowRightSmIcon />}
       >
-        Next
+        {t('Next')}
       </Button>
     </>
   )

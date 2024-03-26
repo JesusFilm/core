@@ -43,13 +43,28 @@ jobs:
   deploy-preview:
     name: Deploy Preview and Test
     needs: affected
-    # feature branch, stage branch, or pull request
-    if: ${{ needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' && (github.ref != 'refs/heads/main' || github.event_name == 'pull_request') }}
+    # if branch is not main or is a pull request
+    if: |
+      needs.affected.outputs.matrix != '[]' &&
+      needs.affected.outputs.matrix != '' && (
+        github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
+      )
     strategy:
       fail-fast: false
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
+        github-ref-name: ['${{ github.ref_name }}']
+        github-event-name: ['${{ github.event_name }}']
         node-version: [18]
+        exclude:
+          # handled by production job below
+          - app: journeys
+            github-ref-name: stage
+            github-event-name: push
+          # handled by ecs-frontend-deploy-stage
+          - app: journeys-admin
+            github-ref-name: stage
+            github-event-name: push
     runs-on: ubuntu-latest
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
@@ -86,7 +101,7 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
-          JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_VERCEL_PROJECT_ID }}
+          JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
           NEXUS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.NEXUS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
@@ -152,12 +167,17 @@ jobs:
         run: npx nx run ${{ matrix.app }}-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
+          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
+          PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: ${{ matrix.app }}-playwright-report
           path: |
             playwright-report/
+            test-results/
           retention-days: 30
   deploy-status:
     runs-on: ubuntu-latest
@@ -172,14 +192,26 @@ jobs:
         run: exit 1
   deploy-production:
     name: Deploy Production
-    # main branch and not a pull request
-    if: ${{ needs.affected.outputs.matrix != '[]' && needs.affected.outputs.matrix != '' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && fromJson(needs.affected.outputs.matrix) != 'journeys-admin' }}
+    # if not a pull request
+    if: |
+      needs.affected.outputs.matrix != '[]' &&
+      needs.affected.outputs.matrix != '' &&
+      github.event_name != 'pull_request'
     needs: affected
     strategy:
       fail-fast: false
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
+        github-ref-name: ['${{ github.ref_name }}']
         node-version: [18]
+        exclude:
+          # handled by ecs-frontend-deploy-prod
+          - app: journeys-admin
+          # handled by deploy-preview job above
+          - github-ref-name: stage
+        include:
+          - app: journeys
+            github-ref-name: stage
     runs-on: ubuntu-latest
     permissions:
       deployments: write
@@ -215,7 +247,7 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
-          JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_VERCEL_PROJECT_ID }}
+          JOURNEYS_VERCEL_PROJECT_ID: ${{ github.ref == 'refs/heads/stage' && secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID || secrets.JOURNEYS_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
           NEXUS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.NEXUS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}

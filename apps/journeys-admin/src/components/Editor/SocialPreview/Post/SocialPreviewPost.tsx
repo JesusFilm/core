@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -18,6 +19,7 @@ import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
 export function SocialPreviewPost(): ReactElement {
   const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Box
       width={256}
@@ -27,7 +29,7 @@ export function SocialPreviewPost(): ReactElement {
     >
       <Stack direction="column" justifyContent="start" alignContent="center">
         <Typography variant="caption" pb={4} textAlign="center">
-          Social App View
+          {t('Social App View')}
         </Typography>
         {journey != null && (
           <Card

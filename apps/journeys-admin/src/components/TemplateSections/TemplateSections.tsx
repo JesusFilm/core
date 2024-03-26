@@ -4,8 +4,8 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import map from 'lodash/map'
 import take from 'lodash/take'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { SwiperOptions } from 'swiper/types'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
@@ -100,22 +100,23 @@ export function TemplateSections({
 
   return (
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
-      {(loading || (collection != null && collection.length > 0)) && (
-        <TemplateGalleryCarousel
-          priority
-          heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
-          items={collection}
-          renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
-          breakpoints={swiperBreakpoints}
-          loading={loading}
-          slidesOffsetBefore={-8}
-          cardSpacing={{
-            xs: 1,
-            md: 8,
-            xl: 11
-          }}
-        />
-      )}
+      {tagIds?.length !== 1 &&
+        (loading || (collection != null && collection.length > 0)) && (
+          <TemplateGalleryCarousel
+            priority
+            heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
+            items={collection}
+            renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+            breakpoints={swiperBreakpoints}
+            loading={loading}
+            slidesOffsetBefore={-8}
+            cardSpacing={{
+              xs: 1,
+              md: 8,
+              xl: 11
+            }}
+          />
+        )}
       {!loading && collection != null && collection.length === 0 && (
         <Paper
           elevation={0}

@@ -293,6 +293,10 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface CreateVerificationRequestInput {
+  redirect?: string | null;
+}
+
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
@@ -395,6 +399,12 @@ export interface JourneyVisitorFilter {
   countryCode?: string | null;
 }
 
+export interface JourneysEmailPreferenceUpdateInput {
+  email: string;
+  preference: string;
+  value: boolean;
+}
+
 export interface JourneysFilter {
   featured?: boolean | null;
   template?: boolean | null;
@@ -413,6 +423,10 @@ export interface LinkActionInput {
   gtmEventName?: string | null;
   url: string;
   target?: string | null;
+}
+
+export interface MeInput {
+  redirect?: string | null;
 }
 
 export interface NavigateActionInput {
@@ -482,11 +496,15 @@ export interface StepBlockCreateInput {
   journeyId: string;
   nextBlockId?: string | null;
   locked?: boolean | null;
+  x?: number | null;
+  y?: number | null;
 }
 
 export interface StepBlockUpdateInput {
   nextBlockId?: string | null;
   locked?: boolean | null;
+  x?: number | null;
+  y?: number | null;
 }
 
 export interface StepNextEventCreateInput {

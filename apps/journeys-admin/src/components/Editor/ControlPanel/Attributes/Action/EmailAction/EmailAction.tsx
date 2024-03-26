@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
@@ -26,6 +27,7 @@ export const EMAIL_ACTION_UPDATE = gql`
 `
 
 export function EmailAction(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { state } = useEditor()
   const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
@@ -41,8 +43,8 @@ export function EmailAction(): ReactElement {
 
   const emailActionSchema = object({
     email: string()
-      .required('Invalid Email')
-      .email('Email must be a valid email')
+      .required(t('Invalid Email'))
+      .email(t('Email must be a valid email'))
   })
 
   async function handleSubmit(src: string): Promise<void> {
@@ -77,7 +79,7 @@ export function EmailAction(): ReactElement {
     <Box sx={{ pt: 8 }} data-testid="EmailAction">
       <TextFieldForm
         id="email"
-        label="Paste Email here..."
+        label={t('Paste Email here...')}
         initialValue={emailAction?.email}
         validationSchema={emailActionSchema}
         onSubmit={handleSubmit}

@@ -2,7 +2,7 @@ FROM node:18-alpine3.18
 
 EXPOSE 4006
 
-ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-tags-client
+ENV PRISMA_LOCATION_TAGS=/app/node_modules/.prisma/api-tags-client
 
 RUN apk upgrade --update-cache --available && \
     apk add openssl1.1-compat && \
@@ -16,7 +16,7 @@ RUN npm install --production --silent
 
 WORKDIR /prisma
 COPY ./apps/api-tags/db .
-RUN npx prisma@^5.2.0 generate
+RUN npx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
 RUN npm install tslib@^2.6.2 @nestjs/mapped-types @prisma/client@^5.2.0 pino-pretty@^10.2.0

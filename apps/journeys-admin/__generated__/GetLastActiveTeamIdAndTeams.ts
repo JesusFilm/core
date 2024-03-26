@@ -9,6 +9,7 @@
 
 export interface GetLastActiveTeamIdAndTeams_getJourneyProfile {
   __typename: "JourneyProfile";
+  id: string;
   lastActiveTeamId: string | null;
 }
 

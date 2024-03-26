@@ -1,3 +1,4 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -14,6 +15,7 @@ export function HostLocationFieldForm({
   empty = false,
   disabled
 }: HostLocationFieldFormProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { updateHost } = useHostUpdateMutation()
   const { journey } = useJourney()
   const host = journey?.host
@@ -28,7 +30,7 @@ export function HostLocationFieldForm({
   return (
     <TextFieldForm
       id="hostLocation"
-      label="Location"
+      label={t('Location')}
       disabled={disabled}
       initialValue={empty ? undefined : host?.location ?? ''}
       onSubmit={handleSubmit}

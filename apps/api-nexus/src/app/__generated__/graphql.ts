@@ -176,22 +176,23 @@ export class Batch {
     __typename?: 'Batch';
     id: string;
     nexusId: string;
+    channelId: string;
+    channel?: Nullable<Channel>;
+    resources?: Nullable<Nullable<BatchResource>[]>;
     name: string;
     status: BatchStatus;
-    tasks: BatchTask[];
-    progress?: Nullable<number>;
+    averagePercent?: Nullable<number>;
     createdAt: DateTime;
 }
 
-export class BatchTask {
-    __typename?: 'BatchTask';
+export class BatchResource {
+    __typename?: 'BatchResource';
     id: string;
     batchId: string;
-    type: BatchTaskType;
-    status: TaskStatus;
-    progress?: Nullable<number>;
-    metadata?: Nullable<Object>;
+    resourceId: string;
+    isCompleted?: Nullable<boolean>;
     error?: Nullable<string>;
+    percent?: Nullable<number>;
 }
 
 export abstract class IQuery {

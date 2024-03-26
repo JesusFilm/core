@@ -6,8 +6,8 @@ import Tabs from '@mui/material/Tabs'
 import Tooltip from '@mui/material/Tooltip'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
@@ -72,7 +72,7 @@ export function ControlPanel(): ReactElement {
 
   function setRoute(param: string): void {
     router.query.param = param
-    void router.push(router)
+    void router.push(router, undefined, { shallow: true })
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })

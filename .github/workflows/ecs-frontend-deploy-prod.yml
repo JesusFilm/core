@@ -5,7 +5,7 @@ on:
       - main
 jobs:
   journeys-admin:
-    uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-worker.yml@main
+    uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-prod-worker.yml@main
     with:
       name: journeys-admin
       env: prod
@@ -21,6 +21,7 @@ jobs:
       DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
       DOPPLER_API_VIDEOS_TOKEN: ${{ secrets.DOPPLER_API_VIDEOS_TOKEN }}
       DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
+      DOPPLER_API_NEXUS_TOKEN: ${{ secrets.DOPPLER_API_NEXUS_TOKEN }}
       DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
       DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
       DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}

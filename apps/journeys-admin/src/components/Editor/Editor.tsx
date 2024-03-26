@@ -1,6 +1,7 @@
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/system/createTheme'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -62,6 +63,7 @@ export function Editor({
   view,
   PageWrapperProps
 }: EditorProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -78,7 +80,7 @@ export function Editor({
         initialState={{
           steps,
           selectedStep,
-          drawerTitle: 'Properties',
+          drawerTitle: t('Properties'),
           drawerChildren: <Properties isPublisher={false} />,
           journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
         }}

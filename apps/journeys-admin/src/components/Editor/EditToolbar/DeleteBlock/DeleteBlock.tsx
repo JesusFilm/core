@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
@@ -35,6 +36,7 @@ export function DeleteBlock({
   closeMenu,
   disabled = false
 }: DeleteBlockProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
   const { enqueueSnackbar } = useSnackbar()
 
@@ -44,7 +46,7 @@ export function DeleteBlock({
     dispatch
   } = useEditor()
 
-  const label = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
+  const blockType = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const [openDialog, setOpenDialog] = useState(false)
   const handleOpenDialog = (): void => setOpenDialog(true)
   const handleCloseDialog = (): void => {
@@ -87,11 +89,11 @@ export function DeleteBlock({
     handleCloseDialog()
 
     deletedBlockType !== 'StepBlock'
-      ? enqueueSnackbar('Block Deleted', {
+      ? enqueueSnackbar(t('Block Deleted'), {
           variant: 'success',
           preventDuplicate: true
         })
-      : enqueueSnackbar('Card Deleted', {
+      : enqueueSnackbar(t('Card Deleted'), {
           variant: 'success',
           preventDuplicate: true
         })
@@ -102,15 +104,15 @@ export function DeleteBlock({
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
-        dialogTitle={{ title: 'Delete Card?' }}
+        dialogTitle={{ title: t('Delete Card?') }}
         dialogAction={{
           onSubmit: handleDeleteBlock,
-          submitLabel: 'Delete',
-          closeLabel: 'Cancel'
+          submitLabel: t('Delete'),
+          closeLabel: t('Cancel')
         }}
       >
         <Typography>
-          Are you sure you would like to delete this card?
+          {t('Are you sure you would like to delete this card?')}
         </Typography>
       </Dialog>
       {variant === 'button' ? (
@@ -121,16 +123,18 @@ export function DeleteBlock({
           aria-haspopup="true"
           aria-expanded="true"
           disabled={disableAction}
-          onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
+          onClick={blockType === 'Card' ? handleOpenDialog : handleDeleteBlock}
         >
           <Trash2Icon />
         </IconButton>
       ) : (
         <MenuItem
-          label={`Delete ${label}`}
+          label={t('Delete {{ label }}', {
+            label: blockType === 'Card' ? t('Card') : t('Block')
+          })}
           icon={<Trash2Icon />}
           disabled={disableAction}
-          onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
+          onClick={blockType === 'Card' ? handleOpenDialog : handleDeleteBlock}
         />
       )}
     </>

@@ -2,7 +2,7 @@ FROM node:18-alpine3.18
 
 EXPOSE 4005
 
-ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-media-client
+ENV PRISMA_LOCATION_MEDIA=/app/node_modules/.prisma/api-media-client
 
 RUN apk upgrade --update-cache --available && \
     apk add openssl1.1-compat && \
@@ -16,7 +16,7 @@ RUN npm install --production --silent
 
 WORKDIR /prisma
 COPY ./apps/api-media/db .
-RUN npx prisma@^5.2.0 generate
+RUN npx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
 

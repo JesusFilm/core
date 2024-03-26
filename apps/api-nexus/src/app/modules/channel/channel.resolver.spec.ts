@@ -58,7 +58,11 @@ describe('ChannelResolver', () => {
   describe('channels', () => {
     it('fetches channels based on filter', async () => {
       prismaService.channel.findMany.mockResolvedValue([channelExample]);
-      const filter: ChannelFilter = { status: ChannelStatus.published, nexusId: 'nexusId', limit: 10 };
+      const filter: ChannelFilter = {
+        status: ChannelStatus.published,
+        nexusId: 'nexusId',
+        limit: 10,
+      };
 
       const channels = await resolver.channels(filter);
       expect(prismaService.channel.findMany).toHaveBeenCalledWith({
@@ -229,7 +233,7 @@ describe('ChannelResolver', () => {
           },
         ],
         kind: 'youtube#channelListResponse',
-        etag: '"etagListResponse"', 
+        etag: '"etagListResponse"',
       };
 
       googleOAuthService.getAccessToken.mockResolvedValue(authResponse);

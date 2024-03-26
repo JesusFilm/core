@@ -6,20 +6,25 @@ import {
   withUser,
   withUserTokenSSR
 } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables
 } from '../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../__generated__/globalTypes'
+import {
+  UpdateLastActiveTeamId,
+  UpdateLastActiveTeamIdVariables
+} from '../__generated__/UpdateLastActiveTeamId'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../src/components/Team/TeamSelect/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEYS } from '../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 
@@ -91,6 +96,18 @@ export const getServerSideProps = withUserTokenSSR({
         useLastActiveTeamId: true
       }
       break
+  }
+
+  if (query?.activeTeam != null) {
+    await apolloClient.mutate<
+      UpdateLastActiveTeamId,
+      UpdateLastActiveTeamIdVariables
+    >({
+      mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: {
+        input: { lastActiveTeamId: query.activeTeam as string }
+      }
+    })
   }
 
   await apolloClient.query<GetAdminJourneys, GetAdminJourneysVariables>({

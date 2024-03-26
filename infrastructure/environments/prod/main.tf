@@ -91,10 +91,35 @@ module "api-videos" {
   vpc_security_group_id = module.prod.private_rds_security_group_id
 }
 
+module "algolia" {
+  source        = "../../../infrastructure/modules/aws/ecs-scheduled-task"
+  name          = "api-videos-alogolia-seed"
+  doppler_token = data.aws_ssm_parameter.doppler_api_videos_prod_token.value
+  environment_variables = [
+    "ALGOLIA_APP_ID",
+    "ALGOLIA_API_KEY",
+    "PG_DATABASE_URL_VIDEOS"
+  ]
+  cpu                            = 1024
+  memory                         = 4096
+  task_execution_role_arn        = local.internal_ecs_config.task_execution_role_arn
+  cloudwatch_schedule_expression = "cron(0 2 * * ? *)"
+  cluster_arn                    = local.internal_ecs_config.cluster.arn
+  subnet_ids                     = local.internal_ecs_config.subnets
+}
+
 module "api-media" {
   source                = "../../../apps/api-media/infrastructure"
   ecs_config            = local.internal_ecs_config
   doppler_token         = data.aws_ssm_parameter.doppler_api_media_prod_token.value
+  subnet_group_name     = module.prod.vpc.db_subnet_group_name
+  vpc_security_group_id = module.prod.private_rds_security_group_id
+}
+
+module "api-nexus" {
+  source                = "../../../apps/api-nexus/infrastructure"
+  ecs_config            = local.internal_ecs_config
+  doppler_token         = data.aws_ssm_parameter.doppler_api_nexus_prod_token.value
   subnet_group_name     = module.prod.vpc.db_subnet_group_name
   vpc_security_group_id = module.prod.private_rds_security_group_id
 }
@@ -163,9 +188,12 @@ module "datadog_aurora" {
 }
 
 module "redis" {
-  source     = "../../modules/aws/elasticache"
-  cluster_id = "redis-prod"
-  subnet_ids = module.prod.vpc.internal_subnets
+  source            = "../../modules/aws/elasticache"
+  cluster_id        = "redis-prod"
+  subnet_ids        = module.prod.vpc.internal_subnets
+  security_group_id = module.prod.ecs.internal_ecs_security_group_id
+  cidr              = module.prod.cidr
+  vpc_id            = module.prod.vpc.id
 }
 
 module "journeys-admin" {
@@ -182,3 +210,4 @@ module "journeys-admin" {
   })
   doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_prod_token.value
 }
+

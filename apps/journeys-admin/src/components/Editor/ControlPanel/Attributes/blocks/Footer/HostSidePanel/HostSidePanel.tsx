@@ -3,8 +3,8 @@ import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
@@ -113,9 +113,9 @@ export function HostSidePanel(): ReactElement {
                   <Typography variant="subtitle2">
                     {data?.userTeams.length === 0
                       ? t('Cannot edit hosts for this old journey')
-                      : `${t('Only')} ${team.title} ${t(
-                          'members can edit this'
-                        )}`}
+                      : t('Only {{ title }} members can edit this', {
+                          title: team.title
+                        })}
                   </Typography>
                 </Stack>
               </SidePanelContainer>
@@ -130,6 +130,7 @@ export function HostSidePanel(): ReactElement {
         open={openSelect}
         withAdminDrawer
         onClose={() => setOpenSelect(false)}
+        selectHostPanel
       >
         {openSelect && !openCreateHost && !openInfo && (
           <>

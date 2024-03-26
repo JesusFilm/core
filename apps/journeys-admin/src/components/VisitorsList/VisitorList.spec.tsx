@@ -12,15 +12,6 @@ import { GET_VISITORS } from './VisitorsList'
 
 import { VisitorsList } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
@@ -82,6 +73,7 @@ describe('VisitorList', () => {
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: 'teamId'
         }
       }

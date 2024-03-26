@@ -17,15 +17,6 @@ import { USER_TEAM_INVITE_CREATE } from './UserTeamInviteForm'
 
 import { UserTeamInviteForm } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
   useCurrentUserLazyQuery: jest.fn().mockReturnValue({
@@ -57,6 +48,7 @@ describe('UserTeamInviteForm', () => {
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: 'teamId'
         }
       }

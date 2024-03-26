@@ -37,6 +37,7 @@ jobs:
       ECS_SERVICE: ${{ inputs.name}}-${{ inputs.env }}-service
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       ECR_SEED_REPOSITORY: jfp-${{ inputs.name }}-seed-${{ inputs.env }}
+      ECR_SEED_ALGOLIA_REPOSITORY: jfp-${{ inputs.name }}-alogolia-seed-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
     runs-on: ubuntu-latest
     strategy:
@@ -68,7 +69,7 @@ jobs:
         run: npm install -g nx --silent
 
       - name: rover Install
-        run: npm install -g @apollo/rover@0.16.2
+        run: npm install -g @apollo/rover@0.22.0
 
       - name: Get affected apps
         run: |
@@ -89,7 +90,8 @@ jobs:
           targets: prisma-generate
           projects: ${{ inputs.name }}
           parallel: 1
-
+        env:
+          DISABLE_ERD: true
       - name: Build ${{ inputs.name }}
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
@@ -100,7 +102,6 @@ jobs:
 
       # ECS Deployment
       - name: Configure ECS AWS credentials
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
@@ -108,7 +109,6 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Login to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v1
 
@@ -159,3 +159,19 @@ jobs:
         if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
         run: |
           aws ecs run-task --task-definition $ECR_SEED_REPOSITORY --cluster $ECS_CLUSTER --launch-type FARGATE --network-configuration "${{ secrets.AWS_NETWORK_CONFIG }}"
+
+      - name: Get affected alogolia seed
+        run: echo "dockerfile=$(git diff --name-only HEAD~1 HEAD | grep 'apps/${{ inputs.name }}/db/Dockerfile.Algolia')" >> $GITHUB_OUTPUT
+        id: affected-dockerfile-alogolia
+
+      - name: Build, tag, and push the image to Amazon ECR
+        if: env == 'prod' && (contains(steps.affected-dbs.outputs.dbs, inputs.name) || contains(steps.affected-dockerfile-alogolia.outputs.dockerfile, inputs.name))
+        id: build-image-ecs-seed-algolia
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
+        run: |
+          # Build a docker container and push it to ECR 
+          docker build -t $ECR_REGISTRY/$ECR_SEED_ALGOLIA_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_SEED_ALGOLIA_REPOSITORY:latest . -f apps/${{ inputs.name }}/db/Dockerfile.Algolia
+          echo "Pushing image to ECR..."
+          docker push -a $ECR_REGISTRY/$ECR_SEED_ALGOLIA_REPOSITORY
+          echo "image=$ECR_REGISTRY/$ECR_SEED_ALGOLIA_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT

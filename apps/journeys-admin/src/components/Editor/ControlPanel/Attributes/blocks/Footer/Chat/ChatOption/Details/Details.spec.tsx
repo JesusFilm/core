@@ -9,15 +9,6 @@ import { JOURNEY_CHAT_BUTTON_UPDATE } from './Details'
 
 import { Details } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('Details', () => {
   const defaultProps = {
     journeyId: 'journeyId',

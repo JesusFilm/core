@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -15,6 +16,7 @@ import { ActionDetails } from '../../ActionDetails'
 export function ActionsBanner(): ReactElement {
   const theme = useTheme()
   const { dispatch } = useEditor()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const ActionPoint = ({
     description
@@ -35,7 +37,7 @@ export function ActionsBanner(): ReactElement {
     dispatch({
       type: 'SetDrawerPropsAction',
       mobileOpen: true,
-      title: 'Information',
+      title: t('Information'),
       children: <ActionDetails />
     })
   }
@@ -84,7 +86,7 @@ export function ActionsBanner(): ReactElement {
           pb={3}
         >
           <Typography variant="overline" color="secondary.light">
-            Goals
+            {t('Goals')}
           </Typography>
           <Button
             variant="outlined"
@@ -101,12 +103,12 @@ export function ActionsBanner(): ReactElement {
             }}
             onClick={openActionDetails}
           >
-            <Typography variant="subtitle2">Learn More</Typography>
+            <Typography variant="subtitle2">{t('Learn More')}</Typography>
           </Button>
         </Stack>
         <Box pb={6}>
           <Typography variant="h1" gutterBottom>
-            Every Journey has a goal
+            {t('Every Journey has a goal')}
           </Typography>
           <Typography
             variant="body2"
@@ -117,14 +119,20 @@ export function ActionsBanner(): ReactElement {
               }
             }}
           >
-            On this screen you will see all your goals and actions listed in a
-            single table. Create cards with some actions like buttons. We will
-            list all your links and actions here so you can:
+            {t(
+              'On this screen you will see all your goals and actions listed in a ' +
+                'single table. Create cards with some actions like buttons. We will ' +
+                'list all your links and actions here so you can:'
+            )}
           </Typography>
         </Box>
-        <ActionPoint description="Check all URLs and actions used in the journey" />
-        <ActionPoint description="Assign a goal to each action and monitor it" />
-        <ActionPoint description="Change all URLs in a single place" />
+        <ActionPoint
+          description={t('Check all URLs and actions used in the journey')}
+        />
+        <ActionPoint
+          description={t('Assign a goal to each action and monitor it')}
+        />
+        <ActionPoint description={t('Change all URLs in a single place')} />
       </Stack>
     </Box>
   )

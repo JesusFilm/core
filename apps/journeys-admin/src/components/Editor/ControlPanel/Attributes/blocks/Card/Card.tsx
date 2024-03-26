@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -63,6 +64,7 @@ export function Card({
   coverBlockId,
   children
 }: TreeBlock<CardBlock>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { dispatch } = useEditor()
   const { journey } = useJourney()
@@ -84,7 +86,7 @@ export function Card({
   const handleBackgroundMediaClick = (param: string): void => {
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Background Media Properties',
+      title: t('Background Media'),
       mobileOpen: true,
       children: <BackgroundMedia />
     })
@@ -114,13 +116,13 @@ export function Card({
             />
           </Paper>
         }
-        name="Color"
+        name={t('Color')}
         value={selectedCardColor.toUpperCase()}
-        description="Background Color"
+        description={t('Background Color')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Background Color Properties',
+            title: t('Background Color Properties'),
             mobileOpen: true,
             children: <BackgroundColor />
           })
@@ -130,12 +132,12 @@ export function Card({
         <Attribute
           id={`${id}-cover-block`}
           icon={<Image3Icon />}
-          name="Background"
+          name={t('Background')}
           value={coverBlock.src.substring(
             coverBlock.src.lastIndexOf('/') + 1,
             coverBlock.src.length
           )}
-          description="Background Image"
+          description={t('Background Image')}
           onClick={() => handleBackgroundMediaClick('background-image')}
         />
       )}
@@ -143,9 +145,9 @@ export function Card({
         <Attribute
           id={`${id}-cover-block`}
           icon={<VideoOnIcon />}
-          name="Background"
+          name={t('Background')}
           value={coverBlock.video?.title?.[0]?.value ?? coverBlock.title ?? ''}
-          description="Background Video"
+          description={t('Background Video')}
           onClick={() => handleBackgroundMediaClick('background-video')}
         />
       )}
@@ -153,28 +155,28 @@ export function Card({
         <Attribute
           id={`${id}-cover-block`}
           icon={<Image3Icon />}
-          name="Background"
-          value="None"
-          description="Background Media"
+          name={t('Background')}
+          value={t('None')}
+          description={t('Background Media')}
           onClick={() => handleBackgroundMediaClick('background-video')}
         />
       )}
       <Attribute
         icon={<PaletteIcon />}
         id={`${id}-theme-mode`}
-        name="Style"
+        name={t('Style')}
         value={
           themeMode == null
-            ? 'Default'
+            ? t('Default')
             : themeMode === ThemeMode.light
-            ? 'Light'
-            : 'Dark'
+            ? t('Light')
+            : t('Dark')
         }
-        description="Card Styling"
+        description={t('Card Styling')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Card Style Property',
+            title: t('Card Style Property'),
             mobileOpen: true,
             children: <CardStyling />
           })
@@ -183,13 +185,13 @@ export function Card({
       <Attribute
         icon={<FlexAlignBottom1Icon />}
         id={`${id}-fullscreen`}
-        name="Layout"
-        value={fullscreen ? 'Expanded' : 'Contained'}
-        description="Content Appearance"
+        name={t('Layout')}
+        value={fullscreen ? t('Expanded') : t('Contained')}
+        description={t('Content Appearance')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Card Layout Property',
+            title: t('Card Layout Property'),
             mobileOpen: true,
             children: <CardLayout />
           })

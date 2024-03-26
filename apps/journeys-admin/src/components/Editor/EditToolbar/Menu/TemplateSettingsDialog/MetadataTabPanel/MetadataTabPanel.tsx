@@ -4,8 +4,8 @@ import FormGroup from '@mui/material/FormGroup'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { format, parseISO } from 'date-fns'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
@@ -20,7 +20,7 @@ export function MetadataTabPanel(): ReactElement {
   const { values, handleChange, setFieldValue } = useTemplateSettingsForm()
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
   const { journey } = useJourney()
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
 
   async function handleOnChange(value: LanguageOption): Promise<void> {
     const { id } = value

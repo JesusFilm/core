@@ -35,6 +35,7 @@ interface TeamProviderProps {
 export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
   query GetLastActiveTeamIdAndTeams {
     getJourneyProfile {
+      id
       lastActiveTeamId
     }
     teams {

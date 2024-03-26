@@ -22,6 +22,8 @@ import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
+import { init, t } from 'i18next'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -38,87 +40,93 @@ import { IconFields } from '../../../../../../__generated__/IconFields'
 
 import { Color } from './Color'
 
+void init({ defaultNS: 'apps-journeys-admin', fallbackLng: 'en' })
+
 // icons is equivalent to IconName from global types"
 export const icons = [
   {
     value: IconName.ArrowForwardRounded,
-    label: 'Arrow Right',
+    label: t('Arrow Right'),
     display: <ArrowForwardRounded />
   },
   {
     value: IconName.ArrowBackRounded,
-    label: 'Arrow Left',
+    label: t('Arrow Left'),
     display: <ArrowBackRounded />
   },
   {
     value: IconName.BeenhereRounded,
-    label: 'Been Here',
+    label: t('Been Here'),
     display: <BeenhereRounded />
   },
   {
     value: IconName.ChatBubbleOutlineRounded,
-    label: 'Chat Bubble',
+    label: t('Chat Bubble'),
     display: <ChatBubbleOutlineRounded />
   },
   {
     value: IconName.CheckCircleRounded,
-    label: 'Check Circle',
+    label: t('Check Circle'),
     display: <CheckCircleRounded />
   },
   {
     value: IconName.ChevronRightRounded,
-    label: 'Chevron Right',
+    label: t('Chevron Right'),
     display: <ChevronRightRounded />
   },
   {
     value: IconName.ChevronLeftRounded,
-    label: 'Chevron Left',
+    label: t('Chevron Left'),
     display: <ChevronLeftRounded />
   },
   {
     value: IconName.ContactSupportRounded,
-    label: 'Contact Support',
+    label: t('Contact Support'),
     display: <ContactSupportRounded />
   },
   {
     value: IconName.FormatQuoteRounded,
-    label: 'Format Quote',
+    label: t('Format Quote'),
     display: <FormatQuoteRounded />
   },
   {
     value: IconName.LiveTvRounded,
-    label: 'Live Tv',
+    label: t('Live Tv'),
     display: <LiveTvRounded />
   },
   {
     value: IconName.LockOpenRounded,
-    label: 'Lock Open',
+    label: t('Lock Open'),
     display: <LockOpenRounded />
   },
   {
     value: IconName.MenuBookRounded,
-    label: 'Menu Book',
+    label: t('Menu Book'),
     display: <MenuBookRounded />
   },
   {
     value: IconName.PlayArrowRounded,
-    label: 'Play Arrow',
+    label: t('Play Arrow'),
     display: <PlayArrowRounded />
   },
   {
     value: IconName.RadioButtonUncheckedRounded,
-    label: 'Radio Button Uncheked',
+    label: t('Radio Button Uncheked'),
     display: <RadioButtonUncheckedRounded />
   },
-  { value: IconName.SendRounded, label: 'Send', display: <SendRounded /> },
+  {
+    value: IconName.SendRounded,
+    label: t('Send'),
+    display: <SendRounded />
+  },
   {
     value: IconName.SubscriptionsRounded,
-    label: 'Subscription',
+    label: t('Subscription'),
     display: <SubscriptionsRounded />
   },
   {
     value: IconName.TranslateRounded,
-    label: 'Translate',
+    label: t('Translate'),
     display: <TranslateRounded />
   }
 ]
@@ -183,6 +191,8 @@ export function Icon({ id }: IconProps): ReactElement {
     }
   }
 
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <FormControl
@@ -201,13 +211,13 @@ export function Icon({ id }: IconProps): ReactElement {
           IconComponent={KeyboardArrowDownRoundedIcon}
           inputProps={{ 'aria-label': 'icon-name' }}
         >
-          <MenuItem value="">Select an icon...</MenuItem>
+          <MenuItem value="">{t('Select an icon...')}</MenuItem>
           {icons.map(({ value, label, display }) => {
             return (
               <MenuItem key={`button-icon-name-${value}`} value={value}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   {display}
-                  <Typography sx={{ pl: 3 }}>{label}</Typography>
+                  <Typography sx={{ pl: 3 }}>{t(label)}</Typography>
                 </Box>
               </MenuItem>
             )
@@ -218,7 +228,7 @@ export function Icon({ id }: IconProps): ReactElement {
       {iconName !== '' && (
         <Box>
           <Typography variant="subtitle2" sx={{ px: 6 }}>
-            Color
+            {t('Color')}
           </Typography>
           <Color id={id} iconColor={iconBlock.iconColor ?? IconColor.inherit} />
         </Box>

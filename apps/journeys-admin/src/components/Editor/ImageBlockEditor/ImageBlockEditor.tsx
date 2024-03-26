@@ -4,6 +4,7 @@ import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
@@ -59,6 +60,7 @@ export function ImageBlockEditor({
   showAdd,
   error
 }: ImageBlockEditorProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [tabValue, setTabValue] = useState(0)
   const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
@@ -68,7 +70,7 @@ export function ImageBlockEditor({
 
   function setRoute(param: string): void {
     router.query.param = param
-    void router.push(router)
+    void router.push(router, undefined, { shallow: true })
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })
@@ -84,7 +86,7 @@ export function ImageBlockEditor({
   }
 
   const srcSchema = object().shape({
-    src: string().url('Please enter a valid url').required('Required')
+    src: string().url(t('Please enter a valid url')).required(t('Required'))
   })
 
   const handleSrcChange = async (
@@ -155,17 +157,17 @@ export function ImageBlockEditor({
         >
           <Tab
             icon={<Grid1Icon />}
-            label={<Typography variant="subtitle2">Gallery</Typography>}
+            label={<Typography variant="subtitle2">{t('Gallery')}</Typography>}
             {...tabA11yProps('gallery', 0)}
           />
           <Tab
             icon={<Image3Icon />}
-            label={<Typography variant="subtitle2">Custom</Typography>}
+            label={<Typography variant="subtitle2">{t('Custom')}</Typography>}
             {...tabA11yProps('custom', 1)}
           />
           <Tab
             icon={<StarsIcon />}
-            label={<Typography variant="subtitle2">AI</Typography>}
+            label={<Typography variant="subtitle2">{t('AI')}</Typography>}
             {...tabA11yProps('custom', 3)}
           />
         </Tabs>

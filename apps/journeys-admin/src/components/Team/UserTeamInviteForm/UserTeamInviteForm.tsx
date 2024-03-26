@@ -6,8 +6,8 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { ObjectSchema, object, string } from 'yup'
 
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
@@ -164,7 +164,7 @@ export function UserTeamInviteForm({
             </Box>
             <Typography sx={{ color: 'secondary.light' }} variant="body2">
               {t(
-                'No email notifications. New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.'
+                'New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.'
               )}
             </Typography>
           </Stack>

@@ -1,9 +1,11 @@
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 export function SeeAllVideos(): ReactElement {
+  const { t } = useTranslation('apps-watch')
   return (
     <Stack sx={{ pt: '54px', alignItems: 'center' }}>
       <NextLink href="/videos" passHref legacyBehavior>
@@ -17,7 +19,7 @@ export function SeeAllVideos(): ReactElement {
           }}
           data-testid="SeeAllVideos"
         >
-          See All
+          {t('See All')}
         </Button>
       </NextLink>
     </Stack>

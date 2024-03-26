@@ -24,15 +24,6 @@ jest.mock('../../libs/useCurrentUserLazyQuery', () => ({
   })
 }))
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 const mocks = [
   {
     request: {

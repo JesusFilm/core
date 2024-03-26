@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { FormikValues } from 'formik'
 import { useRouter } from 'next/router'
+import { Trans, useTranslation } from 'next-i18next'
 import {
   ComponentProps,
   ReactElement,
@@ -14,7 +15,6 @@ import {
   useMemo,
   useState
 } from 'react'
-import { Trans, useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -180,7 +180,11 @@ export function HeaderAndLanguageFilter({
         '584', // Português, Portuguese, Brazil
         '21028', // Español, Spanish, Latin American
         '20615', // 普通話, Chinese, Mandarin
-        '3934' // Русский, Russian
+        '3934', // Русский, Russian
+        '22658', // Arabic Modern
+        '7083', // Japanese
+        '16639', // Bahasa Indonesia
+        '3887' // Vietnamese
       ]
     }
   })
