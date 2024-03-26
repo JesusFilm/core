@@ -9,7 +9,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetCustomDomain } from '../../../../__generated__/GetCustomDomain'
+import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
@@ -81,7 +81,7 @@ describe('Edit Toolbar', () => {
                     }
                   }
                 ]
-              } as unknown as GetCustomDomain
+              } as unknown as GetCustomDomains
             }}
           >
             <JourneyProvider

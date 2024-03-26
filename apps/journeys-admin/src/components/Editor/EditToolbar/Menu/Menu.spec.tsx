@@ -8,7 +8,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
-import { GetCustomDomain } from '../../../../../__generated__/GetCustomDomain'
+import { GetCustomDomains } from '../../../../../__generated__/GetCustomDomains'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -347,7 +347,7 @@ describe('EditToolbar Menu', () => {
                     }
                   }
                 ]
-              } as unknown as GetCustomDomain
+              } as unknown as GetCustomDomains
             }}
           >
             <JourneyProvider

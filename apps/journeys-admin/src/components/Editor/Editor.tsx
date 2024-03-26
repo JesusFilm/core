@@ -13,7 +13,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import { GetCustomDomain } from '../../../__generated__/GetCustomDomain'
+import { GetCustomDomains } from '../../../__generated__/GetCustomDomains'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { CustomDomainProvider } from '../CustomDomainProvider'
 import { PageWrapper } from '../PageWrapper'
@@ -40,7 +40,7 @@ const SocialPreview = dynamic(
 
 interface EditorProps {
   journey?: Journey
-  customDomains?: GetCustomDomain
+  customDomains?: GetCustomDomains
   selectedStepId?: string
   view?: ActiveJourneyEditContent
   PageWrapperProps?: ComponentProps<typeof PageWrapper>

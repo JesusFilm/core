@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { GetCustomDomain } from '../../../../../__generated__/GetCustomDomain'
+import { GetCustomDomains } from '../../../../../__generated__/GetCustomDomains'
 import { CustomDomainProvider } from '../../../CustomDomainProvider'
 import { defaultJourney } from '../../data'
 
@@ -146,7 +146,7 @@ describe('JourneyLink', () => {
                     }
                   }
                 ]
-              } as unknown as GetCustomDomain
+              } as unknown as GetCustomDomains
             }}
           >
             <JourneyProvider

@@ -1,9 +1,9 @@
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
-import { GetCustomDomain } from '../../../__generated__/GetCustomDomain'
+import { GetCustomDomains } from '../../../__generated__/GetCustomDomains'
 
 interface Context {
-  customDomains?: GetCustomDomain
+  customDomains?: GetCustomDomains
 }
 
 const CustomDomainContext = createContext<Context>({})
