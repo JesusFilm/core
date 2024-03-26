@@ -1,4 +1,3 @@
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -37,22 +36,12 @@ const Template: StoryObj<typeof Footer> = {
           variant: 'admin'
         }}
       >
-        <Stack
-          direction="row"
-          spacing={4}
-          sx={{
-            overflowX: 'auto',
-            py: 5,
-            px: 6
-          }}
-        >
-          <Footer />
-        </Stack>
+        <Footer />
       </JourneyProvider>
     )
   }
 }
 
-export const Default = { ...Template, args: { host: null } }
+export const Default = { ...Template }
 
 export default Demo
