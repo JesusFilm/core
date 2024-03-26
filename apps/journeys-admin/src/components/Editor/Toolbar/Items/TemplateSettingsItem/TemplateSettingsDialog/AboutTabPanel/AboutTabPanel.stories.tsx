@@ -15,7 +15,7 @@ const AboutTabPanelStory: Meta<typeof AboutTabPanel> = {
   ...simpleComponentConfig,
   component: AboutTabPanel,
   title:
-    'Journeys-Admin/Editor/Toolbar/Items/TemplateSettingsDialog/AboutTabPanel',
+    'Journeys-Admin/Editor/Toolbar/Items/TemplateSettingsItem/TemplateSettingsDialog/AboutTabPanel',
   parameters: {
     ...simpleComponentConfig.parameters
   }
