@@ -12,6 +12,8 @@ export function TestEditorState(): ReactElement {
       {/* eslint-disable-next-line i18next/no-literal-string */}
       <div>selectedBlock: {state.selectedBlock?.id}</div>
       {/* eslint-disable-next-line i18next/no-literal-string */}
+      <div>selectedStep: {state.selectedStep?.id}</div>
+      {/* eslint-disable-next-line i18next/no-literal-string */}
       <div>activeFab: {ActiveFab[state.activeFab]}</div>
       {/* eslint-disable-next-line i18next/no-literal-string */}
       <div>selectedAttributeId: {state.selectedAttributeId}</div>
