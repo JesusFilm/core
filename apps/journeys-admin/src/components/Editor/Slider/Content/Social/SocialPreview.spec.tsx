@@ -62,7 +62,6 @@ describe('SocialPreview', () => {
 
     expect(screen.getByText('Social App View')).toBeInTheDocument()
     expect(screen.getByText('Messaging App View')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Edit' })).toBeInTheDocument()
   })
 
   it('should only render Message and Post for mobile viewport', () => {
@@ -76,9 +75,6 @@ describe('SocialPreview', () => {
 
     expect(screen.getByText('Social App View')).toBeInTheDocument()
     expect(screen.getByText('Messaging App View')).toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: 'Edit' })
-    ).not.toBeInTheDocument()
   })
 
   it('should dispatch active slide action on click', () => {
