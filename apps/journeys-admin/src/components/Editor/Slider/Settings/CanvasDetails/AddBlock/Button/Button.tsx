@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import Plus2 from '@core/shared/ui/icons/Plus2'
+import Plus2sIcon from '@core/shared/ui/icons/Plus2'
 
 interface ButtonProps {
   icon: ReactElement
@@ -118,7 +118,7 @@ export function Button({
                   {icon}
                   <Typography>{t(value)}</Typography>
                 </Stack>
-                <Plus2
+                <Plus2sIcon
                   color="primary"
                   className="plus2-icon"
                   sx={{
