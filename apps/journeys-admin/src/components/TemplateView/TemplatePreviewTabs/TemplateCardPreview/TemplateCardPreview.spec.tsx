@@ -14,11 +14,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-jest.mock('next-firebase-auth', () => ({
-  __esModule: true,
-  useUser: jest.fn(() => ({ id: 'userId', name: 'userName' }))
-}))
-
 describe('TemplateCardPreview', () => {
   it('renders correct number of cards', async () => {
     ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(false)

@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -22,7 +23,11 @@ const TemplateCardPreviewStory: Meta<typeof TemplateCardPreview> = {
 const steps = transformer(journeyVideoBlocks) as Array<TreeBlock<StepBlock>>
 
 const Template: StoryObj<typeof TemplateCardPreview> = {
-  render: (args) => <TemplateCardPreview steps={args.steps} />
+  render: (args) => (
+    <MockedProvider>
+      <TemplateCardPreview steps={args.steps} />
+    </MockedProvider>
+  )
 }
 
 export const Default = {

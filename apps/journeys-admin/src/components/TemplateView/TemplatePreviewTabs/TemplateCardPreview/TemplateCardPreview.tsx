@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import take from 'lodash/take'
-import { useUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
@@ -29,6 +29,7 @@ import { CreateJourneyButton } from '../../CreateJourneyButton'
 
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
+  authUser?: User
 }
 
 interface TemplateCardPreviewItemProps {
@@ -109,11 +110,11 @@ function TemplateCardPreviewItem({
 }
 
 export function TemplateCardPreview({
-  steps
+  steps,
+  authUser
 }: TemplateCardPreviewProps): ReactElement {
   const { breakpoints } = useTheme()
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
       spaceBetween: 12
@@ -197,7 +198,7 @@ export function TemplateCardPreview({
             >
               {t('Use this template to see more!')}
             </Typography>
-            <CreateJourneyButton signedIn={user?.id != null} />
+            <CreateJourneyButton signedIn={authUser?.id != null} />
           </Stack>
           <Box
             sx={{
