@@ -62,7 +62,6 @@ export function Slider(): ReactElement {
       slidesPerView="auto"
       breakpoints={swiperBreakpoints}
       onActiveIndexChange={(swiper) => {
-        console.log('CALLED')
         dispatch({
           type: 'SetActiveSlideAction',
           activeSlide: swiper.activeIndex

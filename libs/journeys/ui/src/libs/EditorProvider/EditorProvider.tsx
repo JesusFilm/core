@@ -222,10 +222,7 @@ export const EditorContext = createContext<{
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas
   },
-  dispatch: (args) => {
-    console.log('called', args)
-    // null
-  }
+  dispatch: () => null
 })
 
 interface EditorProviderProps {
