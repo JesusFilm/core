@@ -714,16 +714,35 @@ describe('JourneyResolver', () => {
       })
     })
 
-    it('handles firstCollectionJourney', async () => {
+    it('handles journeyCollection option', async () => {
       prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
       expect(
-        await resolver.journeys(undefined, { firstCollectionJourney: true })
+        await resolver.journeys(undefined, {
+          hostname: 'example.com',
+          journeyCollection: true
+        })
       ).toEqual([journey, journey])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           status: 'published',
-          journeyCollectionJourneys: { none: {} },
-          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
+          OR: [
+            {
+              team: {
+                customDomains: {
+                  some: { name: 'example.com', routeAllTeamJourneys: true }
+                }
+              }
+            },
+            {
+              journeyCollectionJourneys: {
+                some: {
+                  journeyCollection: {
+                    customDomains: { some: { name: 'example.com' } }
+                  }
+                }
+              }
+            }
+          ]
         }
       })
     })
