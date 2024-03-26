@@ -1,8 +1,8 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
-import Head from 'next/head'
-import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -131,7 +131,8 @@ export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
             i18nConfig
           ))
         },
-        notFound: true
+        notFound: true,
+        revalidate: 0
       }
     }
     throw e

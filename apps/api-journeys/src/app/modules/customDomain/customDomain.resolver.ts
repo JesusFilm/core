@@ -8,6 +8,7 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql'
+import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
 import {
@@ -58,6 +59,8 @@ export class CustomDomainResolver {
     @Args('input') input: CustomDomainCreateInput,
     @CaslAbility() ability: AppAbility
   ): Promise<CustomDomain & { verification: CustomDomainVerification }> {
+    if (!this.customDomainService.isDomainValid(input.name))
+      throw new Error('Invalid domain name')
     return await this.customDomainService.customDomainCreate(input, ability)
   }
 
@@ -67,6 +70,12 @@ export class CustomDomainResolver {
     @Args('input') input: CustomDomainUpdateInput,
     @CaslAbility() ability: AppAbility
   ): Promise<CustomDomainUpdateInput> {
+    if (
+      input.name != null &&
+      !this.customDomainService.isDomainValid(input.name)
+    )
+      throw new Error('Invalid domain name')
+
     const customDomain = await this.prismaService.customDomain.findUnique({
       where: { id: input.id },
       include: { team: { include: { userTeams: true } } }

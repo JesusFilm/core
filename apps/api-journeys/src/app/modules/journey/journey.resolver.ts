@@ -192,7 +192,8 @@ export class JourneyResolver {
     @Args('options')
     options: JourneysQueryOptions = {
       hostname: null,
-      embedded: false
+      embedded: false,
+      journeyCollection: false
     }
   ): Promise<Journey[]> {
     if (options.embedded === true && options.hostname != null) return []
@@ -215,13 +216,15 @@ export class JourneyResolver {
     }
     if (options.embedded !== true) {
       if (options.hostname != null) {
-        OR.push({
-          team: {
-            customDomains: {
-              some: { name: options.hostname, routeAllTeamJourneys: true }
+        if (options.journeyCollection !== true) {
+          OR.push({
+            team: {
+              customDomains: {
+                some: { name: options.hostname, routeAllTeamJourneys: true }
+              }
             }
-          }
-        })
+          })
+        }
         OR.push({
           journeyCollectionJourneys: {
             some: {

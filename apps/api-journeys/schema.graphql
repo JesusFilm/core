@@ -1987,7 +1987,14 @@ input JourneysQueryOptions {
   matching the hostname.
   """
   hostname: String
+
+  """is this being requested from an embed url"""
   embedded: Boolean
+
+  """
+  limit results to journeys in a journey collection (currently only available when using hostname option)
+  """
+  journeyCollection: Boolean
 }
 
 enum JourneysReportType {
