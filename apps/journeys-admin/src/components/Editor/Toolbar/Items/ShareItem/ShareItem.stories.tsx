@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -41,6 +42,17 @@ export const Default = {
   ...Template,
   args: {
     variant: 'button'
+  }
+}
+
+export const Open = {
+  ...Template,
+  args: {
+    variant: 'button'
+  },
+  play: async () => {
+    const button = screen.getByRole('button', { name: 'Share' })
+    await userEvent.click(button)
   }
 }
 
