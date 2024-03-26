@@ -1,39 +1,25 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
-import { ThemeProvider } from '../../../../../../ThemeProvider'
+import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
 
 import { Button } from '.'
 
 describe('Button', () => {
   it('should render button', () => {
-    const { getByText } = render(<Button icon={<>test</>} value="value" />)
-    expect(getByText('test')).toBeInTheDocument()
+    render(<Button icon={<Cursor6Icon />} value="test value" />)
+    expect(screen.getByText('test value')).toBeInTheDocument()
+    expect(screen.getByTestId('Cursor6Icon')).toBeInTheDocument()
+    expect(screen.getByTestId('Plus2Icon')).toBeInTheDocument()
   })
 
-  it('should render empty value button', () => {
-    const { getByText } = render(<Button icon={<>test</>} value="" />)
-    expect(getByText('None')).toBeInTheDocument()
-  })
-
-  it('selects attribute', () => {
+  it('should handle click', () => {
     const handleClick = jest.fn()
-    const { getByRole, baseElement, rerender } = render(
-      <ThemeProvider>
-        <Button icon={<>test</>} value="value" onClick={handleClick} />
-      </ThemeProvider>
+
+    render(
+      <Button icon={<Cursor6Icon />} value="test value" onClick={handleClick} />
     )
-    expect(baseElement.getElementsByTagName('hr')[0]).toHaveStyle(
-      'border-color: #dedfe0'
-    )
-    fireEvent.click(getByRole('button'))
+
+    fireEvent.click(screen.getByRole('button', { name: 'test value' }))
     expect(handleClick).toHaveBeenCalled()
-    rerender(
-      <ThemeProvider>
-        <Button icon={<>test</>} value="value" onClick={handleClick} />
-      </ThemeProvider>
-    )
-    expect(baseElement.getElementsByTagName('hr')[0]).toHaveStyle(
-      'border-color: #c52d3a'
-    )
   })
 })
