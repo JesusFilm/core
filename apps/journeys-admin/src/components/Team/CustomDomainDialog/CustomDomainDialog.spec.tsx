@@ -9,7 +9,7 @@ import {
   GetAdminJourneys,
   GetAdminJourneysVariables
 } from '../../../../__generated__/GetAdminJourneys'
-import { GetCustomDomain } from '../../../../__generated__/GetCustomDomain'
+import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
@@ -28,7 +28,7 @@ import {
   CREATE_CUSTOM_DOMAIN,
   CustomDomainDialog,
   DELETE_CUSTOM_DOMAIN,
-  GET_CUSTOM_DOMAIN,
+  GET_CUSTOM_DOMAINS,
   JOURNEY_COLLECTION_CREATE,
   UPDATE_JOURNEY_COLLECTION
 } from './CustomDomainDialog'
@@ -64,9 +64,9 @@ describe('CustomDomainDialog', () => {
     }))
   }
 
-  const getCustomDomainMockEmpty: MockedResponse<GetCustomDomain> = {
+  const getCustomDomainMockEmpty: MockedResponse<GetCustomDomains> = {
     request: {
-      query: GET_CUSTOM_DOMAIN,
+      query: GET_CUSTOM_DOMAINS,
       variables: {
         teamId: 'teamId'
       }
@@ -78,9 +78,9 @@ describe('CustomDomainDialog', () => {
     }))
   }
 
-  const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
+  const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
     request: {
-      query: GET_CUSTOM_DOMAIN,
+      query: GET_CUSTOM_DOMAINS,
       variables: {
         teamId: 'teamId'
       }
@@ -114,10 +114,10 @@ describe('CustomDomainDialog', () => {
     }))
   }
 
-  const getCustomDomainMockCNameAndJourneyCollection: MockedResponse<GetCustomDomain> =
+  const getCustomDomainMockCNameAndJourneyCollection: MockedResponse<GetCustomDomains> =
     {
       request: {
-        query: GET_CUSTOM_DOMAIN,
+        query: GET_CUSTOM_DOMAINS,
         variables: {
           teamId: 'teamId'
         }
@@ -371,7 +371,7 @@ describe('CustomDomainDialog', () => {
     fireEvent.click(getByText('Apply'))
 
     await waitFor(() =>
-      expect(getByText('must be a valid URL')).toBeInTheDocument()
+      expect(getByText('Must be a valid URL')).toBeInTheDocument()
     )
     fireEvent.change(getByRole('textbox'), {
       target: { value: '' }
