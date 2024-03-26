@@ -713,6 +713,20 @@ describe('JourneyResolver', () => {
         }
       })
     })
+
+    it('handles firstCollectionJourney', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(
+        await resolver.journeys(undefined, { firstCollectionJourney: true })
+      ).toEqual([journey, journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
+        }
+      })
+    })
   })
 
   describe('journey', () => {

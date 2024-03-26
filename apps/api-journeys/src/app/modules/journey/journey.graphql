@@ -62,6 +62,7 @@ input JourneysQueryOptions {
   """
   hostname: String
   embedded: Boolean
+  firstCollectionJourney: Boolean
 }
 
 enum JourneysReportType {

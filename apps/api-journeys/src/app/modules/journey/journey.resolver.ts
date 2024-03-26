@@ -214,6 +214,9 @@ export class JourneyResolver {
       }))
     }
     if (options.embedded !== true) {
+      if (options.firstCollectionJourney === true) {
+        filter.journeyCollectionJourneys = { every: { order: 0 } }
+      }
       if (options.hostname != null) {
         OR.push({
           team: {
