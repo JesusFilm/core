@@ -278,4 +278,18 @@ describe('customDomainService', () => {
       )
     })
   })
+
+  describe('isDomainValid', () => {
+    it('should return true for valid domain', () => {
+      const result = service.isDomainValid('name.com')
+
+      expect(result).toBe(true)
+    })
+
+    it('should return false for invalid domain', () => {
+      const result = service.isDomainValid('name')
+
+      expect(result).toBe(false)
+    })
+  })
 })
