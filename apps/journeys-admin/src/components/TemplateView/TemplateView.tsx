@@ -98,7 +98,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
         <Stack sx={{ gap: { xs: 3, sm: 7 } }}>
           <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
           <TemplateTags tags={journey?.tags} />
-          <TemplatePreviewTabs />
+          <TemplatePreviewTabs authUser={authUser} />
           <Typography
             variant="body2"
             sx={{ display: { xs: 'block', sm: 'none' } }}
