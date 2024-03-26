@@ -27,6 +27,84 @@ interface Action
   gtmEventName: String
 }
 
+input AddResourceFromGoogleDriveInput
+  @join__type(graph: NEXUS)
+{
+  accessToken: String!
+  fileId: String!
+  nexusId: String!
+}
+
+type Batch
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  nexusId: String!
+  channelId: String!
+  channel: Channel
+  resources: [BatchResource]
+  name: String!
+  status: BatchStatus!
+  averagePercent: Float
+  createdAt: DateTime!
+}
+
+input BatchFilter
+  @join__type(graph: NEXUS)
+{
+  ids: [ID!]
+  name: String
+  nexusId: String
+  status: BatchStatus
+  limit: Int
+}
+
+input BatchJobBatch
+  @join__type(graph: NEXUS)
+{
+  id: ID!
+  batchName: String!
+}
+
+input BatchJobInput
+  @join__type(graph: NEXUS)
+{
+  batch: BatchJobBatch!
+  resources: [BatchJobResource]!
+}
+
+input BatchJobResource
+  @join__type(graph: NEXUS)
+{
+  resource: ID!
+  channel: ID!
+}
+
+type BatchResource
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  batchId: String!
+  resourceId: String!
+  isCompleted: Boolean
+  error: String
+  percent: Float
+}
+
+enum BatchStatus
+  @join__type(graph: NEXUS)
+{
+  pending @join__enumValue(graph: NEXUS)
+  running @join__enumValue(graph: NEXUS)
+  completed @join__enumValue(graph: NEXUS)
+  failed @join__enumValue(graph: NEXUS)
+  cancelled @join__enumValue(graph: NEXUS)
+  paused @join__enumValue(graph: NEXUS)
+  error @join__enumValue(graph: NEXUS)
+  warning @join__enumValue(graph: NEXUS)
+  scheduled @join__enumValue(graph: NEXUS)
+}
+
 interface Block
   @join__type(graph: JOURNEYS)
 {
@@ -256,6 +334,66 @@ input CardBlockUpdateInput
   themeName: ThemeName
 }
 
+type Channel
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  nexusId: String!
+  name: String!
+  platform: String
+  connected: Boolean
+  youtube: ChannelYoutube
+  status: ChannelStatus!
+  createdAt: DateTime!
+}
+
+input ChannelCreateInput
+  @join__type(graph: NEXUS)
+{
+  nexusId: String!
+  name: String!
+  platform: String!
+}
+
+input ChannelFilter
+  @join__type(graph: NEXUS)
+{
+  ids: [ID!]
+  name: String
+  nexusId: String
+  limit: Int
+  connected: Boolean
+  status: ChannelStatus
+}
+
+enum ChannelStatus
+  @join__type(graph: NEXUS)
+{
+  deleted @join__enumValue(graph: NEXUS)
+  published @join__enumValue(graph: NEXUS)
+}
+
+input ChannelUpdateInput
+  @join__type(graph: NEXUS)
+{
+  name: String
+  nexusId: String
+  platform: String
+}
+
+type ChannelYoutube
+  @join__type(graph: NEXUS)
+{
+  id: ID!
+  channelId: String
+  channel: Channel
+  title: String
+  description: String
+  youtubeId: String
+  imageUrl: String
+  refreshToken: String
+}
+
 type ChatButton
   @join__type(graph: JOURNEYS)
 {
@@ -353,6 +491,14 @@ type CloudflareVideo
   readyToStream: Boolean!
 }
 
+input ConnectYoutubeChannelInput
+  @join__type(graph: NEXUS)
+{
+  channelId: String!
+  authCode: String!
+  redirectUri: String!
+}
+
 input CreateVerificationRequestInput
   @join__type(graph: USERS)
 {
@@ -399,6 +545,7 @@ type CustomDomainVerification
 
 scalar DateTime
   @join__type(graph: JOURNEYS)
+  @join__type(graph: NEXUS)
 
 type Device
   @join__type(graph: JOURNEYS)
@@ -496,6 +643,20 @@ type FormiumProject
 
   """The name of the project"""
   name: String!
+}
+
+input GoogleAuthInput
+  @join__type(graph: NEXUS)
+{
+  authCode: String!
+  url: String!
+}
+
+type GoogleAuthResponse
+  @join__type(graph: NEXUS)
+{
+  id: ID!
+  accessToken: String!
 }
 
 enum GridAlignItems
@@ -736,6 +897,7 @@ enum join__Graph {
   JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
   LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql")
   MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")
+  NEXUS @join__graph(name: "nexus", url: "http://127.0.0.1:4007/graphql")
   TAGS @join__graph(name: "tags", url: "http://127.0.0.1:4006/graphql")
   USERS @join__graph(name: "users", url: "http://127.0.0.1:4002/graphql")
   VIDEOS @join__graph(name: "videos", url: "http://127.0.0.1:4004/graphql")
@@ -1188,6 +1350,7 @@ enum MessagePlatform
 type Mutation
   @join__type(graph: JOURNEYS)
   @join__type(graph: MEDIA)
+  @join__type(graph: NEXUS)
   @join__type(graph: USERS)
 {
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
@@ -1415,6 +1578,21 @@ type Mutation
   deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage @join__field(graph: MEDIA)
   triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
+  channelCreate(input: ChannelCreateInput!): Channel! @join__field(graph: NEXUS)
+  channelUpdate(id: ID!, input: ChannelUpdateInput!): Channel! @join__field(graph: NEXUS)
+  channelDelete(id: ID!): Channel! @join__field(graph: NEXUS)
+  connectYoutubeChannel(input: ConnectYoutubeChannelInput!): Channel! @join__field(graph: NEXUS)
+  nexusCreate(input: NexusCreateInput!): Nexus! @join__field(graph: NEXUS)
+  nexusUpdate(id: ID!, input: NexusUpdateInput!): Nexus! @join__field(graph: NEXUS)
+  nexusDelete(id: ID!): Boolean! @join__field(graph: NEXUS)
+  resourceCreate(input: ResourceCreateInput!): Resource! @join__field(graph: NEXUS)
+  resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource! @join__field(graph: NEXUS)
+  resourceDelete(id: ID!): Resource! @join__field(graph: NEXUS)
+  resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!] @join__field(graph: NEXUS)
+  resourceFromTemplate(nexusId: String!, tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!] @join__field(graph: NEXUS)
+  getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse! @join__field(graph: NEXUS)
+  uploadToYoutube(channelId: String!, resourceId: String!): Boolean @join__field(graph: NEXUS)
+  resourceBatchJob(input: BatchJobInput!): String @join__field(graph: NEXUS)
   userImpersonate(email: String!): String @join__field(graph: USERS)
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean @join__field(graph: USERS)
   validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
@@ -1471,6 +1649,49 @@ input NavigateToJourneyActionInput
   journeyId: String!
 }
 
+type Nexus
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  name: String!
+  description: String
+  createdAt: DateTime!
+  deletedAt: DateTime
+  status: NexusStatus!
+}
+
+input NexusCreateInput
+  @join__type(graph: NEXUS)
+{
+  name: String!
+  description: String
+}
+
+input NexusFilter
+  @join__type(graph: NEXUS)
+{
+  ids: [ID!]
+  name: String
+  description: String
+  createdAt: DateTime
+  limit: Int
+  orderByRecent: Boolean
+}
+
+enum NexusStatus
+  @join__type(graph: NEXUS)
+{
+  deleted @join__enumValue(graph: NEXUS)
+  published @join__enumValue(graph: NEXUS)
+}
+
+input NexusUpdateInput
+  @join__type(graph: NEXUS)
+{
+  name: String
+  description: String
+}
+
 type OperatingSystem
   @join__type(graph: JOURNEYS)
 {
@@ -1511,10 +1732,19 @@ type PowerBiEmbed
   expiration: String!
 }
 
+enum PrivacyStatus
+  @join__type(graph: NEXUS)
+{
+  public @join__enumValue(graph: NEXUS)
+  unlisted @join__enumValue(graph: NEXUS)
+  private @join__enumValue(graph: NEXUS)
+}
+
 type Query
   @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
+  @join__type(graph: NEXUS)
   @join__type(graph: TAGS)
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
@@ -1594,6 +1824,14 @@ type Query
   getMyCloudflareVideo(id: ID!): CloudflareVideo @join__field(graph: MEDIA)
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
+  batches(where: BatchFilter): [Batch!] @join__field(graph: NEXUS)
+  batch(id: ID!): Batch! @join__field(graph: NEXUS)
+  channels(where: ChannelFilter): [Channel!] @join__field(graph: NEXUS)
+  channel(id: ID!): Channel! @join__field(graph: NEXUS)
+  nexuses(where: NexusFilter): [Nexus!]! @join__field(graph: NEXUS)
+  nexus(id: ID!): Nexus! @join__field(graph: NEXUS)
+  resources(where: ResourceFilter): [Resource!] @join__field(graph: NEXUS)
+  resource(id: ID!): Resource! @join__field(graph: NEXUS)
   tags: [Tag!]! @join__field(graph: TAGS)
   me(input: MeInput): User @join__field(graph: USERS)
   user(id: ID!): User @join__field(graph: USERS)
@@ -1685,6 +1923,83 @@ input RadioQuestionSubmissionEventCreateInput
 
   """label of the selected radioOption block"""
   value: String
+}
+
+type Resource
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  nexusId: String!
+  nexus: Nexus!
+  name: String!
+  status: ResourceStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
+  googleDriveLink: String
+  category: String!
+  privacy: PrivacyStatus!
+  sourceType: SourceType!
+  localizations: [ResourceLocalization]!
+}
+
+input ResourceCreateInput
+  @join__type(graph: NEXUS)
+{
+  nexusId: String!
+  name: String!
+}
+
+input ResourceFilter
+  @join__type(graph: NEXUS)
+{
+  ids: [ID!]
+  name: String
+  nexusId: String
+  status: ResourceStatus
+  limit: Int
+}
+
+input ResourceFromGoogleDriveInput
+  @join__type(graph: NEXUS)
+{
+  fileIds: [String!]!
+  authCode: String!
+  nexusId: String!
+}
+
+input ResourceFromSpreadsheetInput
+  @join__type(graph: NEXUS)
+{
+  file: Upload
+  nexusId: String!
+}
+
+type ResourceLocalization
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  resourceId: String!
+  title: String!
+  description: String!
+  keywords: String!
+  language: String!
+}
+
+enum ResourceStatus
+  @join__type(graph: NEXUS)
+{
+  deleted @join__enumValue(graph: NEXUS)
+  published @join__enumValue(graph: NEXUS)
+  processing @join__enumValue(graph: NEXUS)
+  error @join__enumValue(graph: NEXUS)
+  uploaded @join__enumValue(graph: NEXUS)
+}
+
+input ResourceUpdateInput
+  @join__type(graph: NEXUS)
+{
+  name: String
 }
 
 enum Role
@@ -1786,6 +2101,15 @@ input SignUpSubmissionEventCreateInput
 
   """email from the signUpBlock form"""
   email: String!
+}
+
+enum SourceType
+  @join__type(graph: NEXUS)
+{
+  googleDrive @join__enumValue(graph: NEXUS)
+  template @join__enumValue(graph: NEXUS)
+  archlight @join__enumValue(graph: NEXUS)
+  other @join__enumValue(graph: NEXUS)
 }
 
 type StepBlock implements Block
@@ -2311,6 +2635,9 @@ type UnsplashUserLinks
   following: String!
   followers: String!
 }
+
+scalar Upload
+  @join__type(graph: NEXUS)
 
 type User
   @join__type(graph: JOURNEYS, key: "id")
