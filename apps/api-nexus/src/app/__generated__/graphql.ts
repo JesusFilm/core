@@ -190,6 +190,8 @@ export class BatchTask {
     type: BatchTaskType;
     status: TaskStatus;
     progress?: Nullable<number>;
+    metadata?: Nullable<Object>;
+    error?: Nullable<string>;
 }
 
 export abstract class IQuery {
@@ -323,5 +325,6 @@ export class Language {
 }
 
 export type DateTime = String;
+export type Object = any;
 export type Upload = any;
 type Nullable<T> = T | null;
