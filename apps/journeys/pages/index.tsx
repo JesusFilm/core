@@ -10,10 +10,10 @@ import Typography from '@mui/material/Typography'
 import { GetStaticProps } from 'next'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
@@ -30,7 +30,7 @@ interface JourneysPageProps {
   journeys: Journey[]
 }
 
-const StyledIframe = styled('iframe')(({ theme }) => ({}))
+const StyledIframe = styled('iframe')(() => ({}))
 
 function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys')

@@ -2,16 +2,36 @@ import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 import { UserRecord, getAuth } from 'firebase-admin/auth'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import omit from 'lodash/omit'
 
 import { User } from '.prisma/api-users-client'
+import { auth } from '@core/nest/common/firebaseClient'
 
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserService } from './user.service'
 
+const authUser = {
+  displayName: 'fo sho',
+  email: 'tho@no.co',
+  photoURL: 'p',
+  emailVerified: true,
+  updateUser: jest.fn().mockResolvedValue({} as unknown as UserRecord)
+}
+
+const user = {
+  id: 'userId',
+  firstName: 'fo',
+  lastName: 'sho',
+  email: 'tho@no.co',
+  imageUrl: 'po',
+  emailVerified: true
+} as unknown as User
+
 describe('UserService', () => {
-  let userService: UserService, prismaService: PrismaService
+  let userService: UserService, prismaService: DeepMockProxy<PrismaService>
   let emailQueue
+
   const removeJob = jest.fn()
 
   beforeEach(async () => {
@@ -21,6 +41,7 @@ describe('UserService', () => {
         remove: removeJob
       }))
     }
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
@@ -130,6 +151,72 @@ describe('UserService', () => {
       )
 
       expect(validateEmailRes).toBe(false)
+    })
+  })
+
+  describe('findOrFetchUser', () => {
+    jest
+      .spyOn(auth, 'getUser')
+      .mockResolvedValue(authUser as unknown as UserRecord)
+
+    it('returns User', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(user)
+      expect(await userService.findOrFetchUser('userId')).toEqual(user)
+      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { userId: user.id }
+      })
+    })
+
+    it('updates User', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(null)
+      prismaService.user.create.mockRejectedValueOnce(
+        new Error('user already exists')
+      )
+      await userService.findOrFetchUser('userId')
+      expect(prismaService.user.update).toHaveBeenCalled()
+    })
+
+    it('returns email verified status always', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(
+        omit(user, ['emailVerified']) as User
+      )
+      prismaService.user.update.mockResolvedValue(user)
+      expect(await userService.findOrFetchUser('userId')).toEqual(user)
+      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { userId: user.id }
+      })
+    })
+
+    it('fetches user from firebase', async () => {
+      const verifyUserSpy = jest.spyOn(UserService.prototype, 'verifyUser')
+      jest.spyOn(auth, 'getUser').mockResolvedValue({
+        ...authUser,
+        emailVerified: false
+      } as unknown as UserRecord)
+      prismaService.user.findUnique.mockResolvedValueOnce(null)
+      prismaService.user.create.mockResolvedValueOnce({
+        ...user,
+        emailVerified: false
+      })
+      expect(await userService.findOrFetchUser('userId')).toEqual({
+        ...user,
+        emailVerified: false
+      })
+      expect(prismaService.user.create).toHaveBeenCalledWith({
+        data: {
+          email: 'tho@no.co',
+          firstName: 'fo',
+          imageUrl: 'p',
+          lastName: 'sho',
+          userId: 'userId',
+          emailVerified: false
+        }
+      })
+      expect(verifyUserSpy).toHaveBeenCalledWith(
+        'userId',
+        'tho@no.co',
+        undefined
+      )
     })
   })
 })

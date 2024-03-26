@@ -16,15 +16,6 @@ import { defaultJourney } from '../Editor/data'
 import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true

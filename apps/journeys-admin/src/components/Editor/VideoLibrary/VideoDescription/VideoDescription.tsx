@@ -1,8 +1,8 @@
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
+import { useTranslation } from 'next-i18next'
 import { Dispatch, ReactElement, SetStateAction, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 interface ShowMoreButtonProps {
   displayMore: boolean

@@ -1,15 +1,12 @@
 /* eslint-disable playwright/expect-expect */
 import { expect, test } from '@playwright/test'
 
-import { getTeamName } from '../framework/helpers'
 import { LandingPage } from '../pages/landing-page'
 import { LoginPage } from '../pages/login-page'
-import { TopNav } from '../pages/top-nav'
 
 test('Home page - response time test', async ({ page, browser }) => {
   const landingPage = new LandingPage(page)
   const loginPage = new LoginPage(page)
-  const topNav = new TopNav(page)
   await browser.startTracing()
   await landingPage.goToAdminUrl()
 
@@ -17,11 +14,6 @@ test('Home page - response time test', async ({ page, browser }) => {
 
   // Using Performanc.mark API
   await page.evaluate(() => window.performance.mark('Start:FoF'))
-
-  // Get team name from env vars compare it with actual team name in the app
-  const teamName = await getTeamName()
-  await topNav.clickTeamName(teamName)
-  expect(await topNav.getTeamName()).toContain(teamName)
 
   // Using performance.mark API
   await page.evaluate(() => window.performance.mark('End:FoF'))

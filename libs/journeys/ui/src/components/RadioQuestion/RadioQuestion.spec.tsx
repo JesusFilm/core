@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
 
 import type { TreeBlock } from '../../libs/block'
@@ -30,15 +30,6 @@ jest.mock('react-gtm-module', () => ({
 const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
 
 const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
@@ -256,5 +247,46 @@ describe('RadioQuestion', () => {
         }
       })
     )
+  })
+
+  it('should set selectedId to null when  is false', () => {
+    blockHistoryVar([activeBlock])
+
+    const { getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1',
+                  stepId: 'step.id',
+                  label: 'Untitled',
+                  value: 'Option 1'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <RadioQuestion {...block} uuid={() => 'uuid'} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const buttons = getAllByRole('button')
+
+    buttons.forEach((button) => {
+      expect(button).not.toBeDisabled()
+      const icon = within(button).getByTestId(
+        'RadioOptionRadioButtonUncheckedIcon'
+      )
+      expect(icon).toBeInTheDocument()
+      expect(button).toContainElement(icon)
+    })
   })
 })

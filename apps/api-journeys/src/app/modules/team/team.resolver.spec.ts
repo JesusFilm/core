@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import {
+  CustomDomain,
   Prisma,
   Team,
   UserTeam,
@@ -54,7 +55,8 @@ describe('TeamResolver', () => {
       expect(prismaService.team.findMany).toHaveBeenCalledWith({
         where: {
           AND: [{ OR: [{}] }]
-        }
+        },
+        include: { customDomains: { select: { id: true } } }
       })
       expect(teams).toEqual([team])
     })
@@ -200,6 +202,41 @@ describe('TeamResolver', () => {
 
     it('returns empty userTeams array when ability is undefined', async () => {
       expect(await resolver.userTeams(team, undefined)).toEqual([])
+    })
+  })
+
+  describe('customDomains', () => {
+    it('returns customDomain links of parent', async () => {
+      const customDomainsSpy = jest.spyOn(
+        prismaService.customDomain,
+        'findMany'
+      )
+      customDomainsSpy.mockResolvedValue([
+        { id: 'id' } as unknown as CustomDomain
+      ])
+
+      expect(
+        await resolver.customDomains({
+          ...team,
+          customDomains: [{ id: 'id' }]
+        })
+      ).toEqual([{ id: 'id' }])
+    })
+  })
+
+  describe('resolveReference', () => {
+    it('fetches team by id', async () => {
+      prismaService.team.findUnique.mockResolvedValue(team)
+      await expect(
+        resolver.resolveReference({ __typename: 'Team', id: 'teamId' })
+      ).resolves.toEqual(team)
+    })
+
+    it('returns null if team is not found', async () => {
+      prismaService.team.findUnique.mockResolvedValue(null)
+      await expect(
+        resolver.resolveReference({ __typename: 'Team', id: 'teamId' })
+      ).resolves.toBeNull()
     })
   })
 })

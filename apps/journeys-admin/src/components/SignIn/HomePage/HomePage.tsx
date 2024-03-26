@@ -7,8 +7,8 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { fetchSignInMethodsForEmail, getAuth } from 'firebase/auth'
 import { Form, Formik } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { InferType, object, string } from 'yup'
 
 import { SignInServiceButton } from '../SignInServiceButton'
@@ -19,7 +19,7 @@ export function HomePage({
   setUserEmail,
   setUserPassword
 }: PageProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const validationSchema = object().shape({
     email: string()
       .trim()
