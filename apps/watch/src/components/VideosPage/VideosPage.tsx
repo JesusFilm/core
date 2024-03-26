@@ -5,9 +5,7 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import algoliasearch from 'algoliasearch'
 import { RankingInfo } from 'instantsearch.js'
-import identity from 'lodash/identity'
 import isEqual from 'lodash/isEqual'
-import some from 'lodash/some'
 import { useRouter } from 'next/router'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -93,15 +91,6 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     }
   }, [searchString])
 
-  // const filterApplied = some(
-  //   [
-  //     filter.title,
-  //     filter.availableVariantLanguageIds,
-  //     filter.subtitleLanguageIds
-  //   ],
-  //   identity
-  // )
-
   function checkFilterApplied(filter: VideoPageFilter): boolean {
     const filterToCheck = [
       filter.title,
@@ -109,7 +98,6 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
       filter.subtitleLanguageIds
     ]
 
-    console.log('filterToCheck', filterToCheck)
     return filterToCheck.some(
       (value) => value !== undefined && value != null && value !== ''
     )
@@ -127,9 +115,6 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
         subtitleLanguageIds,
         title
       }
-
-      console.log('previousFilter', previousFilter)
-      console.log('filter', filter)
 
       if (!checkFilterApplied(previousFilter)) {
         setHits([])
@@ -158,7 +143,6 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
           ? [...hits, ...resultHits]
           : resultHits
 
-        console.log('newHits', newHits)
         setHits(newHits)
         setCurrentPage(pageNumber)
         setTotalPages(totalPages)
@@ -170,8 +154,6 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     },
     [filter, hits]
   )
-
-  console.log('globalFilter', filter)
 
   function isAtEnd(currentPage: number, totalPages: number): boolean {
     if (currentPage + 1 === totalPages) return true
@@ -192,12 +174,9 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     setQueryParam('subtitles', filter.subtitleLanguageIds?.[0])
     setQueryParam('title', filter.title)
 
-    console.log('paramsSet', params.toString())
-
     void router.push(`/videos?${params.toString()}`, undefined, {
       shallow: true
     })
-    console.log('handleFilterChange', filter)
     void handleSearch({
       title,
       availableVariantLanguageIds,
@@ -208,7 +187,6 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
 
   function handleLoadMore(): void {
     const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
-    console.log('handleLoadMore Filter', filter)
     if (isEnd) return
     if (checkFilterApplied(filter)) {
       void handleSearch({
@@ -222,9 +200,6 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
 
   useEffect(() => {
     const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
-    console.log('filter', filter)
-    console.log(checkFilterApplied(filter))
-
     if (checkFilterApplied(filter)) {
       void handleSearch({
         title,
