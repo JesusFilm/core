@@ -15,7 +15,7 @@ import { Dialog } from '@core/shared/ui/Dialog/Dialog'
 
 import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
 import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
-import { GetCustomDomain } from '../../../../__generated__/GetCustomDomain'
+import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
 import { UpdateJourneyCollection } from '../../../../__generated__/UpdateJourneyCollection'
@@ -31,8 +31,8 @@ interface CustomDomainDialogProps {
   onClose: () => void
 }
 
-export const GET_CUSTOM_DOMAIN = gql`
-  query GetCustomDomain($teamId: ID!) {
+export const GET_CUSTOM_DOMAINS = gql`
+  query GetCustomDomains($teamId: ID!) {
     customDomains(teamId: $teamId) {
       id
       apexName
@@ -153,13 +153,14 @@ export function CustomDomainDialog({
     refetch: refetchCustomDomains,
     startPolling,
     stopPolling
-  } = useQuery<GetCustomDomain>(GET_CUSTOM_DOMAIN, {
+  } = useQuery<GetCustomDomains>(GET_CUSTOM_DOMAINS, {
     variables: { teamId: activeTeam?.id },
+    notifyOnNetworkStatusChange: true,
     onCompleted: (data) => {
       setLoading(false)
       if (data?.customDomains?.length !== 0 && data?.customDomains != null) {
         data.customDomains?.[0].configuration?.misconfigured === true
-          ? startPolling(1000)
+          ? startPolling(1000 * 60 /* poll every minute */)
           : stopPolling()
       }
     }
@@ -172,8 +173,10 @@ export function CustomDomainDialog({
     UPDATE_JOURNEY_COLLECTION
   )
 
-  const [deleteCustomDomain] =
-    useMutation<DeleteCustomDomain>(DELETE_CUSTOM_DOMAIN)
+  const [deleteCustomDomain] = useMutation<DeleteCustomDomain>(
+    DELETE_CUSTOM_DOMAIN,
+    { onCompleted: () => stopPolling() }
+  )
 
   const [journeyCollectionCreate] = useMutation<JourneyCollectionCreate>(
     JOURNEY_COLLECTION_CREATE

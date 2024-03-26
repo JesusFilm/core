@@ -17,7 +17,6 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { MenuItem } from '../../MenuItem'
-import { CustomDomainDialog } from '../CustomDomainDialog'
 import { TeamAvatars } from '../TeamAvatars'
 import { useTeam } from '../TeamProvider'
 
@@ -43,6 +42,15 @@ const DynamicTeamManageDialog = dynamic(
       /* webpackChunkName: "TeamManageDialog" */
       '../TeamManageDialog'
     ).then((mod) => mod.TeamManageDialog),
+  { ssr: false }
+)
+
+const DynamicCustomDomainDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CustomDomainDialog" */
+      '../CustomDomainDialog'
+    ).then((mod) => mod.CustomDomainDialog),
   { ssr: false }
 )
 
@@ -98,7 +106,7 @@ export function TeamMenu(): ReactElement {
         />
       )}
       {customDomainOpen != null && flags.customDomain && (
-        <CustomDomainDialog
+        <DynamicCustomDomainDialog
           open={customDomainOpen}
           onClose={() => setCustomDomainOpen(false)}
         />
@@ -181,6 +189,7 @@ export function TeamMenu(): ReactElement {
             onClick={() => {
               setRoute('custom-domain')
               setCustomDomainOpen(true)
+              setAnchorEl(null)
             }}
           />
         )}
