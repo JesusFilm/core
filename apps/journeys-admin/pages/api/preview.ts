@@ -37,13 +37,12 @@ export default async function handler(
 
   const slug = req.query.slug as string
   const hostname = req?.query?.hostname?.toString()
-  console.log(hostname)
 
   try {
     const response = await fetch(
       `${process.env.JOURNEYS_URL}/api/revalidate?${new URLSearchParams({
         accessToken: process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
-        hostname: hostname ?? '',
+        hostname: hostname as unknown as string,
         slug
       }).toString()}`
     )
