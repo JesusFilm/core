@@ -7,7 +7,7 @@ import {
   GetAdminJourneys,
   GetAdminJourneysVariables
 } from '../../../../__generated__/GetAdminJourneys'
-import { GetCustomDomain } from '../../../../__generated__/GetCustomDomain'
+import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
@@ -18,7 +18,7 @@ import {
   TeamProvider
 } from '../TeamProvider'
 
-import { CustomDomainDialog, GET_CUSTOM_DOMAIN } from './CustomDomainDialog'
+import { CustomDomainDialog, GET_CUSTOM_DOMAINS } from './CustomDomainDialog'
 
 const CustomDomainDialogsStory: Meta<typeof CustomDomainDialog> = {
   ...journeysAdminConfig,
@@ -44,9 +44,9 @@ const getAdminJourneysMock: MockedResponse<
   }
 }
 
-const getCustomDomainMockEmpty: MockedResponse<GetCustomDomain> = {
+const getCustomDomainMockEmpty: MockedResponse<GetCustomDomains> = {
   request: {
-    query: GET_CUSTOM_DOMAIN,
+    query: GET_CUSTOM_DOMAINS,
     variables: {
       teamId: 'teamId'
     }
@@ -58,9 +58,9 @@ const getCustomDomainMockEmpty: MockedResponse<GetCustomDomain> = {
   }
 }
 
-const getCustomDomainMockVerifiedFalse: MockedResponse<GetCustomDomain> = {
+const getCustomDomainMockVerifiedFalse: MockedResponse<GetCustomDomains> = {
   request: {
-    query: GET_CUSTOM_DOMAIN,
+    query: GET_CUSTOM_DOMAINS,
     variables: {
       teamId: 'teamId'
     }
@@ -101,9 +101,9 @@ const getCustomDomainMockVerifiedFalse: MockedResponse<GetCustomDomain> = {
   }
 }
 
-const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
+const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
   request: {
-    query: GET_CUSTOM_DOMAIN,
+    query: GET_CUSTOM_DOMAINS,
     variables: {
       teamId: 'teamId'
     }
@@ -136,9 +136,9 @@ const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
   }
 }
 
-const getCustomDomainMockCName: MockedResponse<GetCustomDomain> = {
+const getCustomDomainMockCName: MockedResponse<GetCustomDomains> = {
   request: {
-    query: GET_CUSTOM_DOMAIN,
+    query: GET_CUSTOM_DOMAINS,
     variables: {
       teamId: 'teamId'
     }

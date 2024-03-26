@@ -3,10 +3,10 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
-import { GetCustomDomain } from '../../../../../../__generated__/GetCustomDomain'
+import { GetCustomDomains } from '../../../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { GET_CUSTOM_DOMAIN } from '../../../../Team/CustomDomainDialog/CustomDomainDialog'
+import { GET_CUSTOM_DOMAINS } from '../../../../Team/CustomDomainDialog/CustomDomainDialog'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -14,9 +14,9 @@ import {
 
 import { DefaultMenu } from '.'
 
-const getCustomDomainMockARecord: MockedResponse<GetCustomDomain> = {
+const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
   request: {
-    query: GET_CUSTOM_DOMAIN,
+    query: GET_CUSTOM_DOMAINS,
     variables: {
       teamId: 'teamId'
     }

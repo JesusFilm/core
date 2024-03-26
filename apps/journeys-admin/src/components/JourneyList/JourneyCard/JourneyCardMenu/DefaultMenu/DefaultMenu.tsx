@@ -10,11 +10,11 @@ import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
-import { GetCustomDomain } from '../../../../../../__generated__/GetCustomDomain'
+import { GetCustomDomains } from '../../../../../../__generated__/GetCustomDomains'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
-import { GET_CUSTOM_DOMAIN } from '../../../../Team/CustomDomainDialog/CustomDomainDialog'
+import { GET_CUSTOM_DOMAINS } from '../../../../Team/CustomDomainDialog/CustomDomainDialog'
 import { useTeam } from '../../../../Team/TeamProvider'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
@@ -47,8 +47,8 @@ export function DefaultMenu({
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  const { data: customDomainData } = useQuery<GetCustomDomain>(
-    GET_CUSTOM_DOMAIN,
+  const { data: customDomainData } = useQuery<GetCustomDomains>(
+    GET_CUSTOM_DOMAINS,
     {
       variables: { teamId: activeTeam?.id }
     }

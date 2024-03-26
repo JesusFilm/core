@@ -17,14 +17,14 @@ import {
   GetAdminJourney,
   GetAdminJourneyVariables
 } from '../../__generated__/GetAdminJourney'
-import { GetCustomDomain } from '../../__generated__/GetCustomDomain'
+import { GetCustomDomains } from '../../__generated__/GetCustomDomains'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
 import { ControlPanel } from '../../src/components/Editor/ControlPanel'
 import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
-import { GET_CUSTOM_DOMAIN } from '../../src/components/Team/CustomDomainDialog/CustomDomainDialog'
+import { GET_CUSTOM_DOMAINS } from '../../src/components/Team/CustomDomainDialog/CustomDomainDialog'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 export const GET_ADMIN_JOURNEY = gql`
@@ -93,7 +93,7 @@ function JourneyEditPage({ status, customDomains }): ReactElement {
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ user, locale, query, resolvedUrl }) => {
-  let customDomains: GetCustomDomain | undefined
+  let customDomains: GetCustomDomains | undefined
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
@@ -116,8 +116,8 @@ export const getServerSideProps = withUserTokenSSR({
     if (data.journey?.team?.id != null) {
       // from: src/components/Editor/Properties/JourneyLink/JourneyLink.tsx
       const { data: customDomainsData } =
-        await apolloClient.query<GetCustomDomain>({
-          query: GET_CUSTOM_DOMAIN,
+        await apolloClient.query<GetCustomDomains>({
+          query: GET_CUSTOM_DOMAINS,
           variables: {
             teamId: data.journey.team.id
           }
