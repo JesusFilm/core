@@ -14,12 +14,13 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
   GetJourney,
+  GetJourneyVariables,
   GetJourney_journey as Journey
-} from '../__generated__/GetJourney'
-import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
-import i18nConfig from '../next-i18next.config'
-import { Conductor } from '../src/components/Conductor'
-import { createApolloClient } from '../src/libs/apolloClient'
+} from '../../__generated__/GetJourney'
+import { GetJourneySlugs } from '../../__generated__/GetJourneySlugs'
+import i18nConfig from '../../next-i18next.config'
+import { Conductor } from '../../src/components/Conductor'
+import { createApolloClient } from '../../src/libs/apolloClient'
 
 interface JourneyPageProps {
   journey: Journey
@@ -102,8 +103,8 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
-  query GetJourney($id: ID!) {
-    journey(id: $id, idType: slug) {
+  query GetJourney($id: ID!, $options: JourneysQueryOptions) {
+    journey(id: $id, idType: slug, options: $options) {
       ...JourneyFields
     }
   }
@@ -114,10 +115,10 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
 ) => {
   const apolloClient = createApolloClient()
   try {
-    const { data } = await apolloClient.query<GetJourney>({
+    const { data } = await apolloClient.query<GetJourney, GetJourneyVariables>({
       query: GET_JOURNEY,
       variables: {
-        id: context.params?.journeySlug
+        id: context.params?.journeySlug?.toString() ?? ''
       }
     })
     const { rtl, locale } = getJourneyRTL(data.journey)

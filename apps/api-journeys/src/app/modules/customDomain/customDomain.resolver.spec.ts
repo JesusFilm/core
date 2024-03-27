@@ -37,6 +37,8 @@ describe('CustomDomainResolver', () => {
     routeAllTeamJourneys: true
   })
 
+  const validDomainSpy = jest.fn().mockReturnValue(true)
+
   beforeEach(async () => {
     ability = {
       can: jest.fn().mockResolvedValue(true)
@@ -53,7 +55,8 @@ describe('CustomDomainResolver', () => {
         {
           provide: CustomDomainService,
           useValue: {
-            customDomainCreate: customDomainSpy
+            customDomainCreate: customDomainSpy,
+            isDomainValid: validDomainSpy
           }
         }
       ]
@@ -101,6 +104,7 @@ describe('CustomDomainResolver', () => {
 
       const result = await resolver.customDomainCreate(input, ability)
 
+      expect(validDomainSpy).toHaveBeenCalledWith('name')
       expect(result).toEqual(customDomain)
       expect(customDomainSpy).toHaveBeenCalledWith(input, ability)
     })
@@ -123,6 +127,7 @@ describe('CustomDomainResolver', () => {
 
       const result = await resolver.customDomainUpdate(input, ability)
 
+      expect(validDomainSpy).toHaveBeenCalledWith('name')
       expect(result).toEqual(customDomain)
       expect(updateSpy).toHaveBeenCalledWith({
         data: {
