@@ -58,7 +58,13 @@ export function DomainNameUpdateForm({
             <Typography variant="subtitle1">
               {t('Custom Domain Setup')}
             </Typography>
-            <Button endIcon={<LinkExternal />} variant="text" sx={{ py: 0 }}>
+            <Button
+              endIcon={<LinkExternal />}
+              variant="text"
+              sx={{ py: 0 }}
+              href="https://support.nextstep.is/article/1365-custom-domains"
+              target="_blank"
+            >
               <Typography variant="body2"> {t('Instructions')}</Typography>
             </Button>
           </Stack>
