@@ -6,12 +6,13 @@ import {
   ActiveContent,
   ActiveFab,
   ActiveSlide,
-  EditorState,
-  useEditor
+  EditorProvider,
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { TestEditorState } from '../../../../../libs/TestEditorState'
 
 import { GoalDetails } from './GoalDetails'
 
@@ -20,20 +21,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn(() => false)
 }))
 
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
-
 describe('GoalDetails', () => {
-  const dispatch = jest.fn()
-
   const state: EditorState = {
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
@@ -41,16 +29,7 @@ describe('GoalDetails', () => {
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
-  beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-  })
-
   it('should return placeholder text', () => {
-    state.selectedGoalUrl = undefined
-
     render(<GoalDetails />)
 
     expect(screen.getByText('Information')).toBeInTheDocument()
@@ -61,19 +40,22 @@ describe('GoalDetails', () => {
   })
 
   it('should render ActionInformation when selectedGoalUrl is null', () => {
-    state.selectedGoalUrl = undefined
-
     render(<GoalDetails />)
 
     expect(screen.getByTestId('ActionInformation')).toBeInTheDocument()
   })
 
   it('should render ActionEditor and ActionCards when selectedGoalUrl is not null', () => {
-    state.selectedGoalUrl = 'url'
+    const stateWithGoal = {
+      ...state,
+      selectedGoalUrl: 'https://initialUrl.com'
+    }
 
     render(
       <MockedProvider>
-        <GoalDetails />
+        <EditorProvider initialState={stateWithGoal}>
+          <GoalDetails />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -82,7 +64,10 @@ describe('GoalDetails', () => {
   })
 
   it('should dispatch SetSelectedGoalUrl with selectedGoalUrl', async () => {
-    state.selectedGoalUrl = 'https://url'
+    const stateWithGoal = {
+      ...state,
+      selectedGoalUrl: 'https://initialUrl.com'
+    }
     const journey = {
       id: 'journey.id',
       __typename: 'Journey',
@@ -94,18 +79,26 @@ describe('GoalDetails', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey }}>
-          <GoalDetails />
+          <EditorProvider initialState={stateWithGoal}>
+            <TestEditorState />
+            <GoalDetails />
+          </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
     )
 
-    fireEvent.submit(screen.getByRole('textbox', { name: 'Navigate to' }))
+    expect(
+      screen.getByText('selectedGoalUrl: https://initialUrl.com')
+    ).toBeInTheDocument()
+
+    const form = screen.getByRole('textbox', { name: 'Navigate to' })
+    fireEvent.change(form, { target: { value: 'https://newUrl.com' } })
+    fireEvent.submit(form)
 
     await waitFor(() => {
-      expect(dispatch).toHaveBeenCalledWith({
-        type: 'SetSelectedGoalUrlAction',
-        selectedGoalUrl: 'https://url'
-      })
+      expect(
+        screen.getByText('selectedGoalUrl: https://newUrl.com')
+      ).toBeInTheDocument()
     })
   })
 })
