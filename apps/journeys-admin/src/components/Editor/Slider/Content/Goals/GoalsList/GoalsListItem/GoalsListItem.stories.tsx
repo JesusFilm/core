@@ -3,6 +3,7 @@ import { userEvent, within } from '@storybook/testing-library';
 import { ComponentProps } from 'react'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal/getLinkActionGoal'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider';
 
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 
@@ -19,8 +20,10 @@ type Story = StoryObj<ComponentProps<typeof GoalsListItem> >
 
 const Template: Story = {
   render: (args) => (
-    <GoalsListItem goal={args.goal}  />
-  )
+    <EditorProvider>
+      <GoalsListItem goal={args.goal}  />
+    </EditorProvider>
+    )
 }
 
 export const Website = {
@@ -65,7 +68,6 @@ export const Chat = {
  export const Selected = {
   ...Template,
   args: {
-    
      goal: {
        url: 'https://www.ClickedSelected.com/',
        count: 1,
