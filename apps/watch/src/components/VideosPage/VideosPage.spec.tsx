@@ -26,7 +26,7 @@ jest.mock('algoliasearch', () => {
             ],
             duration: 7914,
             languageId: '496',
-            subtitles: ['22658', '529'],
+            subtitles: ['22658', '529', '496'],
             slug: 'the-savior/french',
             label: 'shortFilm',
             image:
@@ -56,8 +56,16 @@ jest.mock('algoliasearch', () => {
                 matchedWords: []
               },
               subtitles: [
-                { value: '22658', matchLevel: 'none', matchedWords: [] },
-                { value: '529', matchLevel: 'none', matchedWords: [] }
+                {
+                  value: '22658',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: '529',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
               ]
             }
           }
@@ -148,6 +156,9 @@ describe('VideosPage', () => {
           shallow: true
         })
       )
+      await waitFor(() => {
+        expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
+      })
     })
 
     it('should handle subtitle language filter', async () => {
@@ -195,6 +206,9 @@ describe('VideosPage', () => {
           shallow: true
         })
       )
+      await waitFor(() => {
+        expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
+      })
     })
 
     it('should handle title filter', async () => {
@@ -216,6 +230,73 @@ describe('VideosPage', () => {
           }
         )
       )
+    })
+
+    it('should disable load more button if there are no more local videos', async () => {
+      const { getByRole } = render(
+        <MockedProvider>
+          <VideosPage videos={videos} />
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
+      })
+    })
+
+    it('should disable load more button if there are no more algolia videos', async () => {
+      const { getByRole, getAllByRole } = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_LANGUAGES,
+                variables: {
+                  languageId: '529'
+                }
+              },
+              result: {
+                data: {
+                  languages: [
+                    {
+                      id: '496',
+                      name: [
+                        {
+                          value: 'French',
+                          primary: true
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ]}
+        >
+          <VideosPage videos={[]} />
+        </MockedProvider>
+      )
+
+      const comboboxEl = getAllByRole('combobox', {
+        name: 'Search Languages'
+      })[0]
+      fireEvent.focus(comboboxEl)
+      fireEvent.keyDown(comboboxEl, { key: 'ArrowDown' })
+      await waitFor(() => getByRole('option', { name: 'French' }))
+      fireEvent.click(getByRole('option', { name: 'French' }))
+      expect(comboboxEl).toHaveValue('French')
+
+      await waitFor(() =>
+        expect(push).toHaveBeenCalledWith('/videos?languages=496', undefined, {
+          shallow: true
+        })
+      )
+      await waitFor(() => {
+        expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
+      })
+      await waitFor(() => {
+        expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
+      })
     })
   })
 })
