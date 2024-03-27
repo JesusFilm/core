@@ -46,7 +46,7 @@ export function useVideoSearch({
 }: useVideoSearchProps): UseVideoSearchResult {
   const [hits, setHits] = useState<Hits>([])
   const [currentPage, setCurrentPage] = useState(0)
-  const [totalPages, setTotalPages] = useState<number | undefined>()
+  const [totalPages, setTotalPages] = useState(0)
   const [loading, setLoading] = useState(false)
 
   const handleSearch = useCallback(

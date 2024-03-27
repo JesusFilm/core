@@ -124,7 +124,11 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
   }, [])
 
   useEffect(() => {
-    setIsEnd(isAtEnd(currentPage ?? 0, totalPages ?? 1))
+    if (currentPage === 0 && totalPages === 0) {
+      setIsEnd(true)
+    } else {
+      setIsEnd(isAtEnd(currentPage ?? 0, totalPages ?? 1))
+    }
   }, [setIsEnd, currentPage, totalPages])
 
   return (
@@ -148,7 +152,11 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
           </Box>
           <Box sx={{ width: '100%' }}>
             <VideoGrid
-              videos={algoliaVideos.length !== 0 ? algoliaVideos : localVideos}
+              videos={
+                algoliaVideos.length === 0 && !checkFilterApplied(filter)
+                  ? localVideos
+                  : algoliaVideos
+              }
               onLoadMore={handleLoadMore}
               loading={loading}
               hasNextPage={!isEnd}
