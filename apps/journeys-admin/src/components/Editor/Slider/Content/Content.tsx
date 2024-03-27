@@ -54,6 +54,7 @@ export function Content(): ReactElement {
         classNames="journey-edit-content-component"
       >
         <Box
+          data-testid="Content"
           sx={{
             position: 'absolute',
             top: 0,
