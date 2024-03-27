@@ -2,11 +2,8 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal/getLinkActionGoal'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
-import { journey } from '../../../Settings/GoalDetails/data'
 
 import { GoalsList } from './GoalsList'
 
@@ -14,25 +11,20 @@ import { GoalsList } from './GoalsList'
 const GoalsListStory: Meta<typeof GoalsList> = {
   ...journeysAdminConfig,
   component: GoalsList,
-  title: 'Journeys-Admin/Editor/Slider/Content/GoalsList'
+  title: 'Journeys-Admin/Editor/Slider/Content/Goals/GoalsList'
 }
 
-type Story = StoryObj<ComponentProps<typeof GoalsList> & { journey: Journey }>
+type Story = StoryObj<ComponentProps<typeof GoalsList> >
 
 const Template: Story = {
   render: (args) => (
-    <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-      <GoalsList goals={args.goals} />
-    </JourneyProvider>
+    <GoalsList goals={args.goals} />
   )
 }
 
 export const Default = {
   ...Template,
   args: {
-    journey: {
-      ...journey
-    },
     goals : [
       {
         url: 'https://www.google.com/',
@@ -50,15 +42,6 @@ export const Default = {
         goalType: GoalType.Chat
       }
     ]
-  }
-}
-
-export const Empty = {
-  ...Template, goals: [] ,
-  args: {
-    journey: {
-      ...journey,
-    },
   }
 }
 
