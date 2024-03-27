@@ -110,4 +110,38 @@ describe('DomainNameUpdateForm', () => {
 
     expect(getByText('domain name already exists')).toBeInTheDocument()
   })
+
+  it('should have the proper link for instructions button', () => {
+    const { getByRole } = render(
+      <FormikProvider
+        value={
+          {
+            values: { domainName: 'mockdomain.com' },
+            errors: { domainName: undefined },
+            handleSubmit,
+            handleChange
+          } as unknown as FormikContextType<{ domainName: string }>
+        }
+      >
+        <DomainNameUpdateForm
+          loading={false}
+          showDeleteButton={false}
+          errors={
+            {
+              message: 'Unique constraint failed on the fields: (`name`)'
+            } as unknown as ApolloError
+          }
+        />
+      </FormikProvider>
+    )
+
+    expect(getByRole('link', { name: 'Instructions' })).toHaveAttribute(
+      'href',
+      'https://support.nextstep.is/article/1365-custom-domains'
+    )
+    expect(getByRole('link', { name: 'Instructions' })).toHaveAttribute(
+      'target',
+      '_blank'
+    )
+  })
 })
