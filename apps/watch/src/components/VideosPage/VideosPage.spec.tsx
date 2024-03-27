@@ -203,50 +203,23 @@ describe('VideosPage', () => {
     })
 
     it('should disable load more button if there are no more algolia videos', async () => {
-      const { getByRole, getAllByRole } = render(
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_LANGUAGES,
-                variables: {
-                  languageId: '529'
-                }
-              },
-              result: {
-                data: {
-                  languages: [
-                    {
-                      id: '496',
-                      name: [
-                        {
-                          value: 'French',
-                          primary: true
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
-            }
-          ]}
-        >
+      const { getByRole } = render(
+        <MockedProvider>
           <VideosPage videos={[]} />
         </MockedProvider>
       )
 
-      const comboboxEl = getAllByRole('combobox', {
-        name: 'Search Languages'
-      })[0]
-      fireEvent.focus(comboboxEl)
-      fireEvent.keyDown(comboboxEl, { key: 'ArrowDown' })
-      await waitFor(() => getByRole('option', { name: 'French' }))
-      fireEvent.click(getByRole('option', { name: 'French' }))
-      expect(comboboxEl).toHaveValue('French')
+      fireEvent.change(getByRole('textbox', { name: 'Search Titles' }), {
+        target: { value: 'The Savior' }
+      })
       await waitFor(() =>
-        expect(push).toHaveBeenCalledWith('/videos?languages=496', undefined, {
-          shallow: true
-        })
+        expect(push).toHaveBeenCalledWith(
+          '/videos?title=The+Savior',
+          undefined,
+          {
+            shallow: true
+          }
+        )
       )
       expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
       expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
