@@ -6,13 +6,14 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { Drawer } from '../Drawer'
 
 import { ImageBlockHeader } from './ImageBlockHeader'
 
 const ImageEditorStory: Meta<typeof ImageBlockHeader> = {
   ...simpleComponentConfig,
   component: ImageBlockHeader,
-  title: 'Journeys-Admin/Editor/ImageBlockHeader',
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/ImageBlockHeader',
   parameters: {
     ...simpleComponentConfig.parameters,
     layout: 'fullscreen'
@@ -29,7 +30,9 @@ const Template: Story = {
   render: (args) => {
     return (
       <Box bgcolor="white">
-        <ImageBlockHeader {...args} />
+        <Drawer>
+          <ImageBlockHeader {...args} />
+        </Drawer>
       </Box>
     )
   }
