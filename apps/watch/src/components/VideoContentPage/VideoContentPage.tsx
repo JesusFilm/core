@@ -34,7 +34,6 @@ export function VideoContentPage(): ReactElement {
     container,
     childrenCount
   } = useVideo()
-
   const { loading, children } = useVideoChildren(
     container?.variant?.slug ?? variant?.slug
   )
