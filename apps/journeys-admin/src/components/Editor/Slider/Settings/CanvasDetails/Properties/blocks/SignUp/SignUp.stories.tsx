@@ -1,7 +1,7 @@
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_SignUpBlock as SignUpBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -10,13 +10,15 @@ import {
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { SignUp } from '.'
 
-const SignUpStory: Meta<typeof SignUp> = {
+const Demo: Meta<typeof SignUp> = {
   ...simpleComponentConfig,
   component: SignUp,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/SignUp'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/SignUp'
 }
 
 export const Default: StoryObj<typeof SignUp> = {
@@ -32,17 +34,11 @@ export const Default: StoryObj<typeof SignUp> = {
       children: []
     }
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <SignUp {...block} />
-      </Stack>
+      <EditorProvider initialState={{ selectedBlock: { ...block } }}>
+        <Drawer title="Subscribe Properties">
+          <SignUp {...block} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
@@ -76,18 +72,12 @@ export const Filled: StoryObj<typeof SignUp> = {
       ]
     }
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <SignUp {...block} />
-      </Stack>
+      <EditorProvider initialState={{ selectedBlock: { ...block } }}>
+        <Drawer title="Subscribe Properties">
+          <SignUp {...block} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
-export default SignUpStory
+export default Demo
