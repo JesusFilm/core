@@ -28,8 +28,6 @@ function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
-
-  console.log(user)
   const { data } = useQuery<GetMe>(GET_ME)
 
   if (data?.me?.id != null && !data?.me?.emailVerified) {
