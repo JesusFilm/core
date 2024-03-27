@@ -58,6 +58,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       variables: {
         languageId: '529',
         where: {
+          // make sure theese variables are the same as in HeaderAndLanguageFilter.tsx
           ids: [
             '529', // English
             '4415', // Italiano, Italian
@@ -68,7 +69,12 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
             '584', // Português, Portuguese, Brazil
             '21028', // Español, Spanish, Latin American
             '20615', // 普通話, Chinese, Mandarin
-            '3934' // Русский, Russian
+            '3934', // Русский, Russian
+            '22658', // Arabic Modern
+            '7083', // Japanese
+            '16639', // Bahasa Indonesia
+            '3887', // Vietnamese
+            '13169' // Thai
           ]
         }
       }
