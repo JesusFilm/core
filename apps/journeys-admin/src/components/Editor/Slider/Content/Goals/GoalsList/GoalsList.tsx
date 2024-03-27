@@ -9,8 +9,8 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
@@ -25,7 +25,6 @@ interface GoalsListProps {
 
 export function GoalsList({ goals }: GoalsListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
   const { dispatch } = useEditor()
 
   function handleClick(): void {
