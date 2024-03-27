@@ -1,4 +1,3 @@
-import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import noop from 'lodash/noop'
@@ -7,9 +6,9 @@ import { ComponentProps } from 'react'
 import '../../../../test/i18n'
 
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { getLanguagesMock } from '../data'
 
 import { HeaderAndLanguageFilter } from '.'
-import { getLanguagesMock } from '../data'
 
 const HeaderAndLanguageFilterStory: Meta<typeof HeaderAndLanguageFilter> = {
   ...journeysAdminConfig,

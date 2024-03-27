@@ -2,10 +2,11 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
+import { getLanguagesMock } from '../data'
+
 import { HeaderAndLanguageFilter } from '.'
 
 import '../../../../test/i18n'
-import { getLanguagesMock } from '../data'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
