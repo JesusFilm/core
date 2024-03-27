@@ -20,7 +20,7 @@ import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import { VideoBlockNode } from '.'
 
 const VideoBlockNodeStory: Meta<typeof VideoBlockNode> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: VideoBlockNode,
   title: 'Journeys-Admin/Editor/Slider/JourneyFlow/nodes/VideoBlockNode'
 }
