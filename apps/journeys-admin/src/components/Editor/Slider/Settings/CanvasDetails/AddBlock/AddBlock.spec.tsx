@@ -1,14 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  BlockFields_StepBlock as StepBlock,
-  BlockFields_TypographyBlock as TypographyBlock
-} from '../../../../../../../__generated__/BlockFields'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
   TypographyAlign,
   TypographyColor,
@@ -53,6 +50,7 @@ describe('AddNewBlock', () => {
       }
     ]
   }
+
   it('renders add blocks toolbar properly', async () => {
     const { getByTestId } = render(
       <MockedProvider>
