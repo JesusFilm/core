@@ -1,8 +1,9 @@
+import ClearIcon from '@mui/icons-material/Clear'
+import Autocomplete from '@mui/material/Autocomplete'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
-import MenuItem from '@mui/material/MenuItem'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -12,7 +13,7 @@ import Computer from '@core/shared/ui/icons/Computer'
 import { GetAdminJourneys_journeys as Journeys } from '../../../../../__generated__/GetAdminJourneys'
 
 interface DefaultJourneyFormProps {
-  handleOnChange: (e: SelectChangeEvent) => Promise<void>
+  handleOnChange: (e: Journeys) => Promise<void>
   defaultValue?: string
   journeys?: Journeys[]
   domainName: string
@@ -33,20 +34,24 @@ export function DefaultJourneyForm({
           <Typography variant="subtitle1">{t('Default Journey')}</Typography>
           <Stack direction="row" justifyContent="space-between">
             <FormControl variant="filled" fullWidth hiddenLabel>
-              <Select
+              <Autocomplete
                 data-testid="DefaultJourneySelect"
                 id="defaultJourney"
-                name="defaultJourney"
-                onChange={handleOnChange}
-                defaultValue={defaultValue}
-                variant="outlined"
-              >
-                {journeys?.map((journey) => (
-                  <MenuItem value={journey.id} key={journey.id}>
-                    {journey.title}
-                  </MenuItem>
-                ))}
-              </Select>
+                onChange={async (_e, option) =>
+                  await handleOnChange(option as Journeys)
+                }
+                getOptionLabel={(options) => options.title}
+                options={journeys ?? []}
+                renderInput={(params) => <TextField {...params} />}
+                blurOnSelect
+                clearIcon={
+                  // this MUI icon is the default value for this prop so we use this instead of stratis icon
+                  <ClearIcon
+                    fontSize="small"
+                    data-testid="DefaultJourneyClearButton"
+                  />
+                }
+              />
               <FormHelperText sx={{ wordBreak: 'break-all' }}>
                 {t(`The default Journey will be available at ${domainName}`)}
               </FormHelperText>

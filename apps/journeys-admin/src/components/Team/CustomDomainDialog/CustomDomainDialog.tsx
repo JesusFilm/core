@@ -1,6 +1,5 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
-import { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -15,9 +14,11 @@ import { Dialog } from '@core/shared/ui/Dialog/Dialog'
 
 import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
 import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
+import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
+import { JourneyCollectionDelete } from '../../../../__generated__/JourneyCollectionDelete'
 import { UpdateJourneyCollection } from '../../../../__generated__/UpdateJourneyCollection'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { useTeam } from '../TeamProvider'
@@ -133,6 +134,20 @@ export const JOURNEY_COLLECTION_CREATE = gql`
   }
 `
 
+export const JOURNEY_COLLECTION_DELETE = gql`
+  mutation JourneyCollectionDelete($id: ID!) {
+    journeyCollectionDelete(id: $id) {
+      id
+      customDomains {
+        id
+        journeyCollection {
+          id
+        }
+      }
+    }
+  }
+`
+
 export function CustomDomainDialog({
   open,
   onClose
@@ -180,6 +195,10 @@ export function CustomDomainDialog({
 
   const [journeyCollectionCreate] = useMutation<JourneyCollectionCreate>(
     JOURNEY_COLLECTION_CREATE
+  )
+
+  const [journeyCollectionDelete] = useMutation<JourneyCollectionDelete>(
+    JOURNEY_COLLECTION_DELETE
   )
 
   async function handleSubmit(value, { setValues }): Promise<void> {
@@ -265,26 +284,55 @@ export function CustomDomainDialog({
     setLoading(false)
   }
 
-  useEffect(() => {
-    // update UI on team switch
-    void refetchCustomDomains()
-  }, [activeTeam, refetchCustomDomains])
-
-  async function handleOnChange(e: SelectChangeEvent): Promise<void> {
+  async function handleOnChange(journey: Journey): Promise<void> {
+    // delete
+    if (
+      journey == null &&
+      customDomainData?.customDomains[0]?.journeyCollection?.id != null
+    )
+      await journeyCollectionDelete({
+        variables: {
+          id: customDomainData.customDomains[0].journeyCollection.id
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Default journey deleted'), {
+            variant: 'success',
+            preventDuplicate: false
+          })
+        },
+        update: (cache, { data: journeyCollectionDelete }) => {
+          cache.evict({
+            id: cache.identify({
+              __typename:
+                journeyCollectionDelete?.journeyCollectionDelete.__typename,
+              id: journeyCollectionDelete?.journeyCollectionDelete.id
+            })
+          })
+          cache.gc()
+        }
+      })
+    // upsert
     if (
       customDomainData?.customDomains[0]?.journeyCollection?.journeys
         ?.length !== 0 &&
-      customDomainData?.customDomains[0]?.journeyCollection?.journeys != null
+      customDomainData?.customDomains[0]?.journeyCollection?.journeys != null &&
+      journey != null
     ) {
       await updateJourneyCollection({
         variables: {
           input: {
-            journeyIds: [e.target.value],
-            id: customDomainData?.customDomains[0].journeyCollection.id
+            id: customDomainData?.customDomains[0].journeyCollection.id,
+            journeyIds: [journey.id]
           }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Default journey set'), {
+            variant: 'success',
+            preventDuplicate: false
+          })
         }
       })
-    } else {
+    } else if (journey != null) {
       if (activeTeam?.id != null && customDomainData != null) {
         const id = uuidv4()
         await journeyCollectionCreate({
@@ -292,7 +340,7 @@ export function CustomDomainDialog({
             journeyCollectionInput: {
               id,
               teamId: activeTeam.id,
-              journeyIds: [e.target.value]
+              journeyIds: [journey.id]
             },
             customDomainUpdateInput: {
               id: customDomainData.customDomains[0].id,
@@ -309,6 +357,11 @@ export function CustomDomainDialog({
       }
     }
   }
+
+  useEffect(() => {
+    // update UI on team switch
+    void refetchCustomDomains()
+  }, [activeTeam, refetchCustomDomains])
 
   const hasCustomDomain: boolean =
     customDomainData?.customDomains?.length !== 0 &&

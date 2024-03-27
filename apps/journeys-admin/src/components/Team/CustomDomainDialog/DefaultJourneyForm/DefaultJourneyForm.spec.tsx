@@ -22,7 +22,7 @@ describe('DefaultJourneyForm', () => {
       />
     )
 
-    fireEvent.mouseDown(getByRole('button'))
+    fireEvent.mouseDown(getByRole('combobox'))
     fireEvent.click(getByRole('option', { name: 'Journey2' }))
     expect(handleOnchange).toHaveBeenCalled()
   })

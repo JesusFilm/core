@@ -13,6 +13,7 @@ import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
+import { JourneyCollectionDelete } from '../../../../__generated__/JourneyCollectionDelete'
 import { UpdateJourneyCollection } from '../../../../__generated__/UpdateJourneyCollection'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import {
@@ -30,6 +31,7 @@ import {
   DELETE_CUSTOM_DOMAIN,
   GET_CUSTOM_DOMAINS,
   JOURNEY_COLLECTION_CREATE,
+  JOURNEY_COLLECTION_DELETE,
   UPDATE_JOURNEY_COLLECTION
 } from './CustomDomainDialog'
 
@@ -293,6 +295,22 @@ describe('CustomDomainDialog', () => {
     }))
   }
 
+  const mockJourneyCollectionDelete: MockedResponse<JourneyCollectionDelete> = {
+    request: {
+      query: JOURNEY_COLLECTION_DELETE,
+      variables: { id: 'journeyCollectionId' }
+    },
+    result: jest.fn(() => ({
+      data: {
+        journeyCollectionDelete: {
+          id: 'journeyCollectionId',
+          customDomains: [],
+          __typename: 'JourneyCollection'
+        }
+      }
+    }))
+  }
+
   afterEach(() => {
     jest.clearAllMocks()
   })
@@ -434,7 +452,7 @@ describe('CustomDomainDialog', () => {
     await waitFor(() =>
       expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
     )
-    fireEvent.mouseDown(getByRole('button', { expanded: false }))
+    fireEvent.mouseDown(getByRole('combobox', { expanded: false }))
     fireEvent.click(getByRole('option', { name: 'Default Journey Heading' }))
     await waitFor(() =>
       expect(mockJourneyCollectionCreate.result).toHaveBeenCalled()
@@ -463,10 +481,51 @@ describe('CustomDomainDialog', () => {
         getCustomDomainMockCNameAndJourneyCollection.result
       ).toHaveBeenCalled()
     )
-    fireEvent.mouseDown(getByRole('button', { expanded: false }))
+    fireEvent.mouseDown(getByRole('combobox'))
     fireEvent.click(getByRole('option', { name: 'Published Journey Heading' }))
     await waitFor(() =>
       expect(mockJourneyCollectionUpdate.result).toHaveBeenCalled()
+    )
+  })
+
+  it('deletes a custom journey', async () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          getLastActiveTeamIdAndTeamsMock,
+          getAdminJourneysMock,
+          getCustomDomainMockCNameAndJourneyCollection,
+          mockJourneyCollectionUpdate,
+          mockJourneyCollectionDelete
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <CustomDomainDialog open onClose={onClose} />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(
+        getCustomDomainMockCNameAndJourneyCollection.result
+      ).toHaveBeenCalled()
+    )
+
+    await waitFor(() =>
+      fireEvent.mouseDown(getByRole('combobox', { expanded: false }))
+    )
+    fireEvent.click(getByRole('option', { name: 'Published Journey Heading' }))
+    await waitFor(() =>
+      expect(mockJourneyCollectionUpdate.result).toHaveBeenCalled()
+    )
+    await waitFor(() =>
+      fireEvent.mouseDown(getByRole('combobox', { expanded: false }))
+    )
+    fireEvent.click(getByTestId('DefaultJourneyClearButton'))
+
+    await waitFor(() =>
+      expect(mockJourneyCollectionDelete.result).toHaveBeenCalled()
     )
   })
 })
