@@ -13,7 +13,7 @@ export function PageWrapper({ children }: PageWrapperProps): ReactElement {
       maxWidth="md"
       disableGutters
       data-testid="PageWrapper"
-      sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      sx={{ display: 'flex', flexDirection: 'column', px: 2 }}
     >
       {children}
     </Container>

@@ -1,0 +1,1 @@
+export { OnboardingTemplateCard } from './OnboardingTemplateCard'

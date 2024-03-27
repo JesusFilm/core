@@ -49,6 +49,9 @@ function TemplateDetailsPage(): ReactElement {
           backHref="/templates"
           backHrefHistory
           mainBodyPadding={false}
+          showMainHeader={user?.id != null}
+          showAppHeader={user?.id != null}
+          showNavBar={user?.id != null}
         >
           <TemplateView authUser={user} />
         </PageWrapper>

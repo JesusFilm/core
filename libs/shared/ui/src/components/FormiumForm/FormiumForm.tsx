@@ -21,7 +21,6 @@ import { SubmitButton } from './formComponents/SubmitButton'
 import { Textarea } from './formComponents/Textarea'
 import { TextInput } from './formComponents/TextInput'
 import { FormiumProvider, FormiumProviderContext } from './FormiumProvider'
-import { ElementsWrapper } from './wrappers/ElementsWrapper'
 import { FieldWrapper } from './wrappers/FieldWrapper'
 import { FooterWrapper } from './wrappers/FooterWrapper'
 import { PageWrapper } from './wrappers/PageWrapper'
@@ -34,7 +33,6 @@ const formiumComponents: FormiumComponents = {
   Checkbox,
   RadioGroup,
   FormControl,
-  ElementsWrapper,
   PageWrapper,
   FooterWrapper,
   Header,
