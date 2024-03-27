@@ -1,5 +1,3 @@
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -25,7 +23,7 @@ export const Default: StoryObj<typeof Image> = {
       __typename: 'ImageBlock',
       parentBlockId: 'card.id',
       parentOrder: 0,
-      src: 'https://example.com/image.jpg',
+      src: null,
       alt: '',
       width: 1920,
       height: 1080,
@@ -50,7 +48,7 @@ export const Filled: StoryObj<typeof Image> = {
       __typename: 'ImageBlock',
       parentBlockId: 'card.id',
       parentOrder: 0,
-      src: 'https://example.com/image.jpg',
+      src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3',
       alt: 'Unsplash Image',
       width: 1920,
       height: 1080,
@@ -59,12 +57,10 @@ export const Filled: StoryObj<typeof Image> = {
     }
 
     return (
-      <EditorProvider>
-        <Box>
-          <Drawer title="Image Properties">
-            <Image {...image} />
-          </Drawer>
-        </Box>
+      <EditorProvider initialState={{ selectedBlock: image }}>
+        <Drawer title="Image Properties">
+          <Image {...image} />
+        </Drawer>
       </EditorProvider>
     )
   }
