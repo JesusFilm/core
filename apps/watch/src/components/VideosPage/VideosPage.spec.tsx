@@ -6,76 +6,38 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { GET_LANGUAGES, VideosPage } from './VideosPage'
 
+jest.mock('algoliasearch', () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    initIndex: jest.fn().mockReturnValue({
+      search: jest.fn().mockResolvedValue({
+        hits: [
+          {
+            languageId: '496',
+            subtitles: ['22658', '529', '496'],
+            slug: 'the-savior/french',
+            titles: ['The Savior'],
+            label: 'shortFilm',
+            image:
+              'https://d1wl257kev7hsz.cloudfront.net/cinematics/9_0-The_Savior.mobileCinematicHigh.jpg',
+            imageAlt: 'The Savior',
+            childrenCount: 0,
+            objectID: '9_496-0-TheSavior'
+          }
+        ],
+        page: 0,
+        nbPages: 1
+      })
+    })
+  }))
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({
     push: jest.fn()
   }))
 }))
-
-jest.mock('algoliasearch', () => {
-  return jest.fn(() => ({
-    initIndex: jest.fn(() => ({
-      search: jest.fn(() => ({
-        hits: [
-          {
-            videoId: '9_0-TheSavior',
-            titles: ['The Savior'],
-            description: [
-              'The Savior provides an introduction to Jesus through the Gospel of Luke, during the time when Rome ruled much of the world. This was a time of political strife and social unrest, and it was into this environment that Jesus was born. Much is recorded in the Gospels but little is known about his quiet time of growing up in Nazareth. Later he teaches in parables no one really understands, gives sight to the blind, and helps those who no one sees as worth helping. The Savior is a fresh portrayal of the life of Jesus with dialogue taken directly from the Gospel of Luke. It follows Jesus from his upbringing to his death and resurrection.'
-            ],
-            duration: 7914,
-            languageId: '496',
-            subtitles: ['22658', '529', '496'],
-            slug: 'the-savior/french',
-            label: 'shortFilm',
-            image:
-              'https://d1wl257kev7hsz.cloudfront.net/cinematics/9_0-The_Savior.mobileCinematicHigh.jpg',
-            imageAlt: 'The Savior',
-            childrenCount: 0,
-            objectID: '9_496-0-TheSavior',
-            _highlightResult: {
-              titles: [
-                {
-                  value: 'The Savior',
-                  matchLevel: 'none',
-                  matchedWords: []
-                }
-              ],
-              description: [
-                {
-                  value:
-                    'The Savior provides an introduction to Jesus through the Gospel of Luke, during the time when Rome ruled much of the world. This was a time of political strife and social unrest, and it was into this environment that Jesus was born. Much is recorded in the Gospels but little is known about his quiet time of growing up in Nazareth. Later he teaches in parables no one really understands, gives sight to the blind, and helps those who no one sees as worth helping. The Savior is a fresh portrayal of the life of Jesus with dialogue taken directly from the Gospel of Luke. It follows Jesus from his upbringing to his death and resurrection.',
-                  matchLevel: 'none',
-                  matchedWords: []
-                }
-              ],
-              languageId: {
-                value: '496',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              subtitles: [
-                {
-                  value: '22658',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: '529',
-                  matchLevel: 'none',
-                  matchedWords: []
-                }
-              ]
-            }
-          }
-        ],
-        page: 0,
-        nbPage: 1
-      }))
-    }))
-  }))
-})
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
@@ -109,6 +71,7 @@ describe('VideosPage', () => {
     beforeEach(() => {
       push = jest.fn()
       mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+      jest.clearAllMocks()
     })
 
     it('should handle audio language filter', async () => {
@@ -156,9 +119,7 @@ describe('VideosPage', () => {
           shallow: true
         })
       )
-      await waitFor(() => {
-        expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
-      })
+      expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
     })
 
     it('should handle subtitle language filter', async () => {
@@ -206,9 +167,7 @@ describe('VideosPage', () => {
           shallow: true
         })
       )
-      await waitFor(() => {
-        expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
-      })
+      expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
     })
 
     it('should handle title filter', async () => {
@@ -217,7 +176,6 @@ describe('VideosPage', () => {
           <VideosPage videos={[]} />
         </MockedProvider>
       )
-
       fireEvent.change(getByRole('textbox', { name: 'Search Titles' }), {
         target: { value: 'The Savior' }
       })
@@ -230,6 +188,7 @@ describe('VideosPage', () => {
           }
         )
       )
+      expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
     })
 
     it('should disable load more button if there are no more local videos', async () => {
@@ -238,7 +197,6 @@ describe('VideosPage', () => {
           <VideosPage videos={videos} />
         </MockedProvider>
       )
-
       await waitFor(() => {
         expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
       })
@@ -285,18 +243,15 @@ describe('VideosPage', () => {
       await waitFor(() => getByRole('option', { name: 'French' }))
       fireEvent.click(getByRole('option', { name: 'French' }))
       expect(comboboxEl).toHaveValue('French')
-
       await waitFor(() =>
         expect(push).toHaveBeenCalledWith('/videos?languages=496', undefined, {
           shallow: true
         })
       )
-      await waitFor(() => {
-        expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
-      })
-      await waitFor(() => {
-        expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
-      })
+      expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
+      expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
     })
   })
+
+  // TODO: add test for load more button
 })
