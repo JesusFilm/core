@@ -28,7 +28,7 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${id}-image-options`
     })
-  }, [dispatch, id, t])
+  }, [dispatch, id])
 
   return (
     <Box data-testid="ImageProperties">
