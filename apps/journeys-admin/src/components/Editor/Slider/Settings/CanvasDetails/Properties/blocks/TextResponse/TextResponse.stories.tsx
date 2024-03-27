@@ -1,8 +1,8 @@
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -11,13 +11,15 @@ import {
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { TextResponse } from './TextResponse'
 
-const TextResponseStory: Meta<typeof TextResponse> = {
+const Demo: Meta<typeof TextResponse> = {
   ...journeysAdminConfig,
   component: TextResponse,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/TextResponse',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/TextResponse',
   // do not remove these parameters for this story, see: https://github.com/storybookjs/storybook/issues/17025
   parameters: {
     docs: {
@@ -26,24 +28,16 @@ const TextResponseStory: Meta<typeof TextResponse> = {
   }
 }
 
-type Story = StoryObj<
+const Template: StoryObj<
   ComponentProps<typeof TextResponse> & { block: TreeBlock<TextResponseBlock> }
->
-
-const Template: Story = {
+> = {
   render: ({ ...args }) => {
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <TextResponse {...args.block} />
-      </Stack>
+      <EditorProvider initialState={{ selectedBlock: { ...args.block } }}>
+        <Drawer title="Feedback Properties">
+          <TextResponse {...args.block} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
@@ -79,7 +73,7 @@ export const Complete = {
         url: 'https://www.google.com'
       },
       submitIconId: 'icon.id',
-      label: 'label',
+      label: 'complete label',
       hint: 'hint text',
       minRows: 2,
       children: [
@@ -98,4 +92,4 @@ export const Complete = {
   }
 }
 
-export default TextResponseStory
+export default Demo
