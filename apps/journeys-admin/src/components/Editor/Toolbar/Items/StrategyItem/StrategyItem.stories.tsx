@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -9,15 +8,15 @@ import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvi
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { publishedJourney } from '../../../data'
 
-import { ShareItem } from './ShareItem'
+import { StrategyItem } from './StrategyItem'
 
-const Demo: Meta<typeof ShareItem> = {
+const Demo: Meta<typeof StrategyItem> = {
   ...simpleComponentConfig,
-  component: ShareItem,
-  title: 'Journeys-Admin/Editor/Toolbar/Items/ShareItem'
+  component: StrategyItem,
+  title: 'Journeys-Admin/Editor/Toolbar/Items/StrategyItem'
 }
 
-const Template: StoryObj<typeof ShareItem> = {
+const Template: StoryObj<typeof StrategyItem> = {
   render: ({ ...args }) => (
     <ApolloLoadingProvider>
       <MockedProvider>
@@ -30,7 +29,7 @@ const Template: StoryObj<typeof ShareItem> = {
               backgroundColor: 'background.paper'
             }}
           >
-            <ShareItem {...args} />
+            <StrategyItem {...args} />
           </Box>
         </JourneyProvider>
       </MockedProvider>
@@ -42,17 +41,6 @@ export const Default = {
   ...Template,
   args: {
     variant: 'button'
-  }
-}
-
-export const Open = {
-  ...Template,
-  args: {
-    variant: 'button'
-  },
-  play: async () => {
-    const button = screen.getByRole('button', { name: 'Share' })
-    await userEvent.click(button)
   }
 }
 
