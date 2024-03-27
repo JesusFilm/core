@@ -4,14 +4,15 @@ import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import {
   ActiveContent,
   ActiveFab,
-  EditorState,
-  useEditor
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
-  ActiveSlide
+  ActiveSlide,
+  EditorProvider
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { Goal } from '../Goals'
 
 import { GoalsList } from './GoalsList'
@@ -20,17 +21,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
-
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 describe('GoalsList', () => {
   const goals: Goal[] = [
@@ -51,21 +41,13 @@ describe('GoalsList', () => {
     }
   ]
 
-  const dispatch = jest.fn()
-
   const state: EditorState = {
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Goals,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+    selectedGoalUrl: 'initialUrl'
   }
-
-  beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-  })
 
   describe('GoalsList', () => {
     it('should render title and subtitle', () => {
@@ -73,24 +55,25 @@ describe('GoalsList', () => {
       expect(screen.getByText('The Journey Goals')).toBeInTheDocument()
     })
 
-    it('should call dispatch with a URL when "Learn More" button is clicked', () => {
-      render(<GoalsList goals={goals} />)
+    it('should setSelectedGoalUrl to null when "Learn More" button is clicked', () => {
+      render(
+        <EditorProvider initialState={state}>
+          <TestEditorState />
+          <GoalsList goals={goals} />
+        </EditorProvider>
+      )
+
+      expect(
+        screen.getByText('selectedGoalUrl: initialUrl')
+      ).toBeInTheDocument()
       fireEvent.click(screen.getByRole('button', { name: 'Learn More' }))
-      expect(dispatch).toHaveBeenCalledWith({
-        type: 'SetSelectedGoalUrlAction'
-      })
+      expect(screen.getByText('selectedGoalUrl:')).toBeInTheDocument()
     })
 
     it('should render goal URL subtitle', () => {
       render(<GoalsList goals={goals} />)
       expect(screen.getByText('https://www.google.com/')).toBeInTheDocument()
       expect(screen.getByText('Visit a Website')).toBeInTheDocument()
-    })
-
-    it('should open drawer or dispatch on click', () => {
-      render(<GoalsList goals={goals} />)
-      fireEvent.click(screen.getAllByTestId('Edit2Icon')[0])
-      expect(dispatch).toHaveBeenCalled()
     })
 
     it('should render the table titles', () => {

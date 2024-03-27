@@ -13,7 +13,7 @@ import { JOURNEY_TITLE_UPDATE, TitleDialog } from './TitleDialog'
 const TitleDialogStory: Meta<typeof TitleDialog> = {
   ...journeysAdminConfig,
   component: TitleDialog,
-  title: 'Journeys-Admin/JourneyView/Menu/TitleDialog',
+  title: 'Journeys-Admin/Editor/Toolbar/Items/TitleItem/TitleDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
