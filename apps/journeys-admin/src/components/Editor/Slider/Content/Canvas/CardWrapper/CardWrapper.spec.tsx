@@ -19,7 +19,7 @@ jest.mock('@core/journeys/ui/Card', () => ({
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: jest.fn(() => true)
 }))
 
 describe('CardWrapper', () => {

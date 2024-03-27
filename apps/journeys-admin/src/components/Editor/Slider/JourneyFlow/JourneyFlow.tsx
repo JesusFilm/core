@@ -391,7 +391,7 @@ export function JourneyFlow(): ReactElement {
   }
 
   return (
-    <Box sx={{ width: '100%', height: '100%' }}>
+    <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">
       <ReactFlow
         nodes={nodes}
         edges={edges}
