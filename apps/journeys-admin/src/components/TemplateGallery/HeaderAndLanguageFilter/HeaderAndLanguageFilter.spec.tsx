@@ -2,8 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
-import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery/useLanguagesQuery'
-
 import { HeaderAndLanguageFilter } from '.'
 
 import '../../../../test/i18n'
