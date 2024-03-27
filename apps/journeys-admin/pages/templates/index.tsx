@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client'
 import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import { useUser, withUser } from 'next-firebase-auth'
@@ -13,8 +14,10 @@ import {
   GetLanguages,
   GetLanguagesVariables
 } from '../../__generated__/GetLanguages'
+import { GetMe } from '../../__generated__/GetMe'
 import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
+import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { TemplateGallery } from '../../src/components/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_JOURNEYS } from '../../src/libs/useJourneysQuery/useJourneysQuery'
@@ -25,10 +28,10 @@ function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
+  const { data } = useQuery<GetMe>(GET_ME)
 
-  if (user.id != null && !user.emailVerified) {
+  if (data?.me?.id != null && !data?.me?.emailVerified) {
     void router.push('/users/verify?redirect=/templates')
-    return <></>
   }
 
   return (
