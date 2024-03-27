@@ -12,7 +12,7 @@ import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 const EmbedJourneyDialogStory: Meta<typeof EmbedJourneyDialog> = {
   ...journeysAdminConfig,
   component: EmbedJourneyDialog,
-  title: 'Journeys-Admin/JourneyView/JourneyLink/EmbedJourneyDialog',
+  title: 'Journeys-Admin/Editor/Toolbar/Items/ShareItem/EmbedJourneyDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
