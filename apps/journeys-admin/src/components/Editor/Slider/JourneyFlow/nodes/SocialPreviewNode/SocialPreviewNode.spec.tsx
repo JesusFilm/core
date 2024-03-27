@@ -1,15 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import {
-  ActiveFab,
-  EditorState,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveFab, EditorState } from '@core/journeys/ui/EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveSlide
+  ActiveSlide,
+  EditorProvider
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -22,37 +19,11 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
-import { SocialPreviewNode } from './SocialPreviewNode'
-
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
+import { SocialPreviewNode } from '.'
 
 describe('SocialPreviewNode', () => {
-  const state: EditorState = {
-    activeFab: ActiveFab.Add,
-    activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Social,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-  }
-
-  const dispatch = jest.fn()
-
-  beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-  })
-
   const image: ImageBlock = {
     id: 'image1.id',
     __typename: 'ImageBlock',
@@ -148,19 +119,26 @@ describe('SocialPreviewNode', () => {
   })
 
   it('calls dispatch on social media node click', async () => {
+    const state: EditorState = {
+      activeFab: ActiveFab.Add,
+      activeSlide: ActiveSlide.JourneyFlow,
+      activeContent: ActiveContent.Canvas,
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    }
+
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: blankSeoJourney }}>
-          <SocialPreviewNode />
+          <EditorProvider initialState={state}>
+            <TestEditorState />
+            <SocialPreviewNode />
+          </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
     )
 
+    expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('SocialPreviewNode'))
-
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetActiveContentAction',
-      activeContent: ActiveContent.Social
-    })
+    expect(screen.getByText('activeContent: social')).toBeInTheDocument()
   })
 })
