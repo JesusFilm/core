@@ -1,76 +1,64 @@
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { RadioOption } from '.'
 
-const RadioOptionStory: Meta<typeof RadioOption> = {
+const Demo: Meta<typeof RadioOption> = {
   ...simpleComponentConfig,
   component: RadioOption,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/RadioOption'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/RadioOption'
 }
 
-export const Default: StoryObj<typeof RadioOption> = {
-  render: () => {
-    const block: TreeBlock<RadioOptionBlock> = {
-      id: 'radioOption1.id',
-      __typename: 'RadioOptionBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      label: 'Radio Option',
-      action: null,
-      children: []
-    }
+const block: TreeBlock<RadioOptionBlock> = {
+  id: 'radioOption1.id',
+  __typename: 'RadioOptionBlock',
+  parentBlockId: 'step1.id',
+  parentOrder: 0,
+  label: 'Radio Option',
+  action: null,
+  children: []
+}
+
+const Template: StoryObj<
+  ComponentProps<typeof RadioOption> & { block: TreeBlock<RadioOptionBlock> }
+> = {
+  render: (block) => {
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <RadioOption {...block} />
-      </Stack>
+      <EditorProvider initialState={{ selectedBlock: { ...block } }}>
+        <Drawer title="Poll Option Properties">
+          <RadioOption {...block} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
 
-export const Filled: StoryObj<typeof RadioOption> = {
-  render: () => {
-    const block: TreeBlock<RadioOptionBlock> = {
-      id: 'radioOption1.id',
-      __typename: 'RadioOptionBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      label: 'Radio Option',
-      action: {
-        __typename: 'NavigateToBlockAction',
-        parentBlockId: 'radioOption1.id',
-        gtmEventName: 'navigateToBlock',
-        blockId: 'step2.id'
-      },
-      children: []
-    }
-    return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <RadioOption {...block} />
-      </Stack>
-    )
+export const Default = {
+  ...Template,
+  args: {
+    block
   }
 }
 
-export default RadioOptionStory
+export const Filled = {
+  ...Template,
+  args: {
+    ...block,
+    action: {
+      __typename: 'NavigateToBlockAction',
+      parentBlockId: 'radioOption1.id',
+      gtmEventName: 'navigateToBlock',
+      blockId: 'step2.id'
+    }
+  }
+}
+
+export default Demo

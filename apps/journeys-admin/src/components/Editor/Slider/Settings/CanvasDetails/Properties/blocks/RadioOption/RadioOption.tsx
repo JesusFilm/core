@@ -22,7 +22,7 @@ export function RadioOption({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${id}-radio-option-action`
     })
-  }, [dispatch, id, t])
+  }, [dispatch, id])
 
   return (
     <Box data-testid="RadioOptionProperties">
