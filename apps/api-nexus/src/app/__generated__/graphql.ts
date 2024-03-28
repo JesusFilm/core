@@ -20,6 +20,19 @@ export enum BatchStatus {
     scheduled = "scheduled"
 }
 
+export enum BatchTaskType {
+    video_upload = "video_upload",
+    caption_processing = "caption_processing",
+    localization = "localization"
+}
+
+export enum TaskStatus {
+    pending = "pending",
+    processing = "processing",
+    completed = "completed",
+    failed = "failed"
+}
+
 export enum ChannelStatus {
     deleted = "deleted",
     published = "published"
@@ -163,23 +176,22 @@ export class Batch {
     __typename?: 'Batch';
     id: string;
     nexusId: string;
-    channelId: string;
-    channel?: Nullable<Channel>;
-    resources?: Nullable<Nullable<BatchResource>[]>;
     name: string;
     status: BatchStatus;
-    averagePercent?: Nullable<number>;
+    tasks: BatchTask[];
+    progress?: Nullable<number>;
     createdAt: DateTime;
 }
 
-export class BatchResource {
-    __typename?: 'BatchResource';
+export class BatchTask {
+    __typename?: 'BatchTask';
     id: string;
     batchId: string;
-    resourceId: string;
-    isCompleted?: Nullable<boolean>;
+    type: BatchTaskType;
+    status: TaskStatus;
+    progress?: Nullable<number>;
+    metadata?: Nullable<Object>;
     error?: Nullable<string>;
-    percent?: Nullable<number>;
 }
 
 export abstract class IQuery {
@@ -313,5 +325,6 @@ export class Language {
 }
 
 export type DateTime = String;
+export type Object = any;
 export type Upload = any;
 type Nullable<T> = T | null;

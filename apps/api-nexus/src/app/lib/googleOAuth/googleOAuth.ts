@@ -94,6 +94,8 @@ export class GoogleOAuthService {
       grant_type: 'authorization_code',
     });
 
+    console.log(reqBody);
+
     const response = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: {

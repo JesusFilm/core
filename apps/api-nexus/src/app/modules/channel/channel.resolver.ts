@@ -153,10 +153,10 @@ export class ChannelResolver {
     const youtubeChannel = await this.prismaService.channelYoutube.create({
       data: {
         channelId: channel?.id,
-        title: youtubeChannels.items[0].snippet.title,
-        description: youtubeChannels.items[0].snippet.description,
-        youtubeId: youtubeChannels.items[0].id,
-        imageUrl: youtubeChannels.items[0].snippet.thumbnails.high.url,
+        title: youtubeChannels.items?.[0].snippet.title,
+        description: youtubeChannels.items?.[0].snippet.description,
+        youtubeId: youtubeChannels.items?.[0].id,
+        imageUrl: youtubeChannels.items?.[0].snippet.thumbnails.high.url,
         refreshToken: authResponse.refresh_token,
       },
     });

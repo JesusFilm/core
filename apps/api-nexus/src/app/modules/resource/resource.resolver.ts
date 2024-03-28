@@ -8,22 +8,23 @@ import { CurrentUser } from '@core/nest/decorators/CurrentUser';
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId';
 
 import {
-  Channel,
   GoogleAuthInput,
   GoogleAuthResponse,
-  PrivacyStatus,
   ResourceCreateInput,
   ResourceFilter,
   ResourceFromGoogleDriveInput,
   ResourceUpdateInput,
 } from '../../__generated__/graphql';
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
-import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
 import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
 import { PrismaService } from '../../lib/prisma.service';
 import { YoutubeService } from '../../lib/youtube/youtubeService';
+import { BatchService } from '../batch/batchService';
 import { BullMQService } from '../bullMQ/bullMQ.service';
-import { GoogleDriveService } from '../google-drive/googleDriveService';
+import {
+  GoogleDriveService,
+  SpreadsheetTemplateType,
+} from '../google-drive/googleDriveService';
 
 @Resolver('Resource')
 export class ResourceResolver {
@@ -34,7 +35,7 @@ export class ResourceResolver {
     private readonly cloudFlareService: CloudFlareService,
     private readonly youtubeService: YoutubeService,
     private readonly bullMQService: BullMQService,
-    private readonly googleSheetsService: GoogleSheetsService,
+    private readonly batchService: BatchService,
   ) {}
 
   @Query()
@@ -81,17 +82,18 @@ export class ResourceResolver {
         id,
         AND: [filter, { nexus: { userNexuses: { every: { userId } } } }],
       },
+      include: { localizations: true },
     });
     return resource;
   }
 
   @Mutation()
   async resourceCreate(
-    @CurrentUserId() userId: string,
+    // @CurrentUserId() userId: string,
     @Args('input') input: ResourceCreateInput,
   ): Promise<Resource | undefined> {
     const nexus = await this.prismaService.nexus.findUnique({
-      where: { id: input.nexusId, userNexuses: { every: { userId } } },
+      where: { id: input.nexusId },
     });
     if (nexus == null)
       throw new GraphQLError('nexus not found', {
@@ -236,77 +238,71 @@ export class ResourceResolver {
     if (googleAccessToken === null) {
       throw new Error('Invalid tokenId');
     }
-    console.log('Downloading Template . . .');
-    const rows = await this.googleDriveService.handleGoogleDriveOperations(
-      tokenId,
-      spreadsheetId,
-      drivefolderId,
-    );
-    console.log('Total Data', rows.length);
 
-    const batchResources: Array<{ resource: Resource; channel?: Channel }> = [];
+    const { accessToken, data } =
+      await this.googleDriveService.getSpreadsheetData(tokenId, spreadsheetId);
 
-    for (const row of rows) {
-      const resource = await this.prismaService.resource.create({
-        data: {
-          id: uuidv4(),
-          name: row.filename ?? '',
-          nexusId: nexus.id,
-          status: row.channelData?.id !== null ? 'processing' : 'published',
-          sourceType: 'template',
-          createdAt: new Date(),
-          category: row.category,
-          privacy: row.privacy as PrivacyStatus,
-          localizations: {
-            create: {
-              title: row.title ?? '',
-              description: row.description ?? '',
-              keywords: row.keywords ?? '',
-              language: row.spoken_language ?? '',
-            },
-          },
-          googleDrive: {
-            create: {
-              mimeType: row.driveFile?.mimeType ?? '',
-              driveId: row.driveFile?.id ?? '',
-              refreshToken: googleAccessToken.refreshToken,
-            },
-          },
-        },
-      });
-      if (row.channelData?.id !== undefined) {
-        batchResources.push({ resource, channel: row.channelData });
-      }
-    }
-
-    const channels = batchResources
-      .filter((item, index, self) => {
-        return (
-          index === self.findIndex((t) => t.channel?.id === item.channel?.id) &&
-          item.channel !== undefined
-        );
-      })
-      .map((item) => item.channel);
-
-    console.log('Batches', channels.length);
-
-    for (const channel of channels) {
-      if (channel === undefined) continue;
-      const resources = batchResources
-        .filter((item) => {
-          return item.channel?.id === channel.id;
-        })
-        .map((item) => item.resource);
-      console.log('Batche Count: ', resources.length);
-      await this.bullMQService.createBatch(
-        uuidv4(),
-        nexusId,
-        channel,
-        resources,
+    const { templateType, spreadsheetData } =
+      await this.googleDriveService.populateSpreadsheetData(
+        accessToken,
+        drivefolderId,
+        data,
       );
-    }
 
-    return batchResources.map((item) => item.resource);
+    if (templateType === SpreadsheetTemplateType.UPLOAD) {
+      console.log('IN UPLOAD');
+      console.log('spreadsheetData', spreadsheetData);
+      const batchResources =
+        await this.batchService.createUploadResourceFromSpreadsheet(
+          nexus.id,
+          googleAccessToken.refreshToken,
+          spreadsheetData,
+        );
+
+      console.log('batchResources', batchResources);
+
+      const preparedBatchJobs =
+        this.batchService.prepareBatchResourcesForUploadBatchJob(
+          batchResources,
+        );
+
+      console.log('preparedBatchJobs', preparedBatchJobs);
+
+      for (const preparedBatchJob of preparedBatchJobs) {
+        await this.bullMQService.createUploadBatch(
+          uuidv4(),
+          nexusId,
+          preparedBatchJob.channel,
+          preparedBatchJob.resources,
+        );
+      }
+      return batchResources.map((item) => item.resource);
+    } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
+      console.log('IN LOCALIZATION');
+      console.log('spreadsheetData', spreadsheetData);
+      const batchLocalizations =
+        await this.batchService.createResourcesLocalization(
+          googleAccessToken.refreshToken,
+          spreadsheetData,
+        );
+      console.log('batchLocalizations', batchLocalizations);
+      const preparedBatchJobs =
+        this.batchService.prepareBatchResourceLocalizationsForBatchJob(
+          batchLocalizations,
+        );
+      console.log('preparedBatchJobs', preparedBatchJobs);
+      for (const preparedBatchJob of preparedBatchJobs) {
+        await this.bullMQService.createLocalizationBatch(
+          uuidv4(),
+          nexusId,
+          preparedBatchJob.videoId,
+          preparedBatchJob.channel,
+          preparedBatchJob.localizations,
+        );
+      }
+      return [];
+    }
+    return [];
   }
 
   @Mutation()
