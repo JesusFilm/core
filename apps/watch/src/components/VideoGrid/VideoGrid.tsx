@@ -11,7 +11,7 @@ interface VideoGridProps {
   videos?: VideoChildFields[]
   loading?: boolean
   hasNextPage?: boolean
-  onLoadMore?: () => Promise<void>
+  onLoadMore?: () => void
   containerSlug?: string
   variant?: ComponentProps<typeof VideoCard>['variant']
 }

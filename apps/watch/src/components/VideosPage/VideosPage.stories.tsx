@@ -1,11 +1,10 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/__generated__/testData'
 
-import { GET_VIDEOS, VideosPage } from './VideosPage'
+import { VideosPage } from './VideosPage'
 
 const VideosStory: Meta<typeof VideosPage> = {
   ...watchConfig,
@@ -16,40 +15,13 @@ const VideosStory: Meta<typeof VideosPage> = {
 const Template: StoryObj<
   ComponentProps<typeof VideosPage> & { limit: number }
 > = {
-  render: ({ ...args }) => {
-    return (
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_VIDEOS,
-              variables: {
-                where: {
-                  availableVariantLanguageIds: ['529']
-                },
-                page: 1,
-                limit: args.limit
-              }
-            },
-            result: {
-              data: {
-                videos
-              }
-            }
-          }
-        ]}
-      >
-        <VideosPage videos={videos} />
-      </MockedProvider>
-    )
+  render: () => {
+    return <VideosPage videos={videos} />
   }
 }
 
 export const Default = {
-  ...Template,
-  args: {
-    limit: 20
-  }
+  ...Template
 }
 
 export default VideosStory
