@@ -1,10 +1,3 @@
-import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
-
-export default function IndexPage(): ReactElement {
-  const { t } = useTranslation('apps-nexus-admin')
-  return <h1>{t('Welcome to Nexus Admin')}</h1>
-}
 import { gql, useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
