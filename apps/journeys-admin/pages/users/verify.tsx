@@ -4,7 +4,6 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Button from '@mui/material/Button'
-import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -30,6 +29,7 @@ import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrappe
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { useTeam } from '../../src/components/Team/TeamProvider'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 
 interface ValidateEmailProps {
   email?: string
@@ -75,6 +75,8 @@ function ValidateEmail({
     }
   )
 
+  useHandleNewAccountRedirect()
+
   const validationSchema = object().shape({
     token: number().min(100000).max(999999).required(t('Required'))
   })
@@ -111,7 +113,10 @@ function ValidateEmail({
   }
 
   return (
-    <OnboardingPageWrapper emailSubject={t('Validate NextStep Email')}>
+    <OnboardingPageWrapper
+      title={t('Verify Your Email')}
+      emailSubject={t('Validate NextStep Email')}
+    >
       <Formik
         initialValues={{ token }}
         onSubmit={handleReValidateEmail}
@@ -120,29 +125,23 @@ function ValidateEmail({
         {({ values, handleChange, handleBlur, errors, touched }) => (
           <Form noValidate autoComplete="off" data-testid="EmailInviteForm">
             <Stack textAlign="center">
-              <Typography variant="h4">{t('Verify Your Email')}</Typography>
-              <Typography variant="body1">
-                {t('To start making NextSteps journeys')}
-              </Typography>
-              <Paper sx={{ padding: '30px', mt: 7, borderRadius: '8px' }}>
-                <Stack textAlign="left" spacing={4}>
-                  <Typography variant="subtitle2">{email}</Typography>
-                  <Typography variant="body1">
-                    {t(
-                      'Email has been sent to this address with a link to verify your account. If you have not received the email after a few minutes, please check your spam folder.'
-                    )}
-                  </Typography>
-                  <Button
-                    onClick={handleResendValidationEmail}
-                    variant="contained"
-                    disabled={disableResendButton}
-                    color="secondary"
-                    fullWidth
-                  >
-                    {t('Resend Validation Email')}
-                  </Button>
-                </Stack>
-              </Paper>
+              <Stack textAlign="left" spacing={4}>
+                <Typography variant="subtitle2">{email}</Typography>
+                <Typography variant="body1">
+                  {t(
+                    'Email has been sent to this address with a link to verify your account. If you have not received the email after a few minutes, please check your spam folder.'
+                  )}
+                </Typography>
+                <Button
+                  onClick={handleResendValidationEmail}
+                  variant="contained"
+                  disabled={disableResendButton}
+                  color="secondary"
+                  fullWidth
+                >
+                  {t('Resend Validation Email')}
+                </Button>
+              </Stack>
               <Accordion
                 sx={{
                   mt: 7,

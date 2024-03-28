@@ -6,11 +6,7 @@ describe('SignIn', () => {
   it('should render sign in page', () => {
     const { getByRole } = render(<SignIn />)
     expect(
-      getByRole('link', { name: 'Feedback & Support' })
+      getByRole('heading', { name: 'Log in or Sign up' })
     ).toBeInTheDocument()
-    expect(getByRole('link', { name: 'Feedback & Support' })).toHaveAttribute(
-      'href',
-      'mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request'
-    )
   })
 })
