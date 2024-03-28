@@ -111,7 +111,7 @@ export function FilterList({
   const initialValues = {
     language: languageOptionFromIds(filter.availableVariantLanguageIds),
     subtitleLanguage: languageOptionFromIds(filter.subtitleLanguageIds),
-    title: filter.title
+    title: filter.title ?? ''
   }
 
   function handleSubmit(values: typeof initialValues): void {
