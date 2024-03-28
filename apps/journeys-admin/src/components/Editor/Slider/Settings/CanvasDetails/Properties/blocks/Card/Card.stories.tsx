@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -20,32 +21,39 @@ const Demo: Meta<typeof Card> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card'
 }
 
-export const Default: StoryObj<typeof Card> = {
-  render: () => {
-    const block: TreeBlock<CardBlock> = {
-      id: 'card1.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step1.id',
-      coverBlockId: null,
-      parentOrder: 0,
-      backgroundColor: null,
-      themeMode: ThemeMode.light,
-      themeName: ThemeName.base,
-      fullscreen: false,
-      children: []
-    }
+const block: TreeBlock<CardBlock> = {
+  id: 'card1.id',
+  __typename: 'CardBlock',
+  parentBlockId: 'step1.id',
+  coverBlockId: null,
+  parentOrder: 0,
+  backgroundColor: null,
+  themeMode: ThemeMode.light,
+  themeName: ThemeName.base,
+  fullscreen: false,
+  children: []
+}
 
+const Template: StoryObj<ComponentProps<typeof Card>> = {
+  render: (args) => {
     return (
-      <EditorProvider initialState={{ selectedBlock: block }}>
+      <EditorProvider initialState={{ selectedBlock: args }}>
         <Drawer title="Card Properties">
-          <Card {...block} />
+          <Card {...args} />
         </Drawer>
       </EditorProvider>
     )
   }
 }
 
-export const Populated: StoryObj<typeof Card> = {
+export const Default = {
+  ...Template,
+  args: {
+    ...block
+  }
+}
+
+export const Filled: StoryObj<typeof Card> = {
   render: () => {
     const block: TreeBlock<CardBlock> = {
       id: 'card1.id',
