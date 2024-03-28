@@ -5,20 +5,35 @@ import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../libs/storybook'
-import { GET_JOURNEY } from '../../libs/useJourneyQuery/useJourneyQuery'
+} from '../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../libs/storybook'
+import { GET_JOURNEY } from '../../../libs/useJourneyQuery/useJourneyQuery'
 
-import { OnboardingPageWrapper } from '.'
+import { OnboardingDrawer } from './OnboardingDrawer'
 
-const OnboardingPageWrapperStory: Meta<typeof OnboardingPageWrapper> = {
+const OnboardingDrawerStory: Meta<typeof OnboardingDrawer> = {
   ...simpleComponentConfig,
-  component: OnboardingPageWrapper,
-  title: 'Journeys-Admin/OnboardingPageWrapper',
+  component: OnboardingDrawer,
+  title: 'Journeys-Admin/OnboardingPageWrapper/OnboardingDrawer',
   parameters: {
     ...simpleComponentConfig.parameters,
     layout: 'fullscreen'
   }
+}
+
+const Template: StoryObj<typeof OnboardingDrawer> = {
+  render: ({ ...args }) => (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white'
+      }}
+    >
+      <OnboardingDrawer {...args} />
+    </Box>
+  )
 }
 
 const getJourneyMock = {
@@ -75,52 +90,25 @@ const getJourneyMock = {
   }
 }
 
-const Template: StoryObj<typeof OnboardingPageWrapper> = {
-  render: ({ ...args }) => {
-    return <OnboardingPageWrapper {...args} />
-  }
-}
-
 export const Default = {
+  ...Template
+}
+
+export const WithStepper = {
   ...Template,
-  args: {
-    emailSubject: 'a question about onboarding',
-    children: (
-      <Box
-        sx={{
-          height: '400px',
-          border: '1px solid black',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'white'
-        }}
-      >
-        Child Content
-      </Box>
-    )
+  parameters: {
+    nextjs: {
+      router: {
+        query: {
+          newAccount: 'true'
+        }
+      }
+    }
   }
 }
 
-export const Completed = {
+export const WithTemplateAndStepper = {
   ...Template,
-  args: {
-    emailSubject: 'a question about onboarding',
-    children: (
-      <Box
-        sx={{
-          height: '400px',
-          border: '1px solid black',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'white'
-        }}
-      >
-        Child Content
-      </Box>
-    )
-  },
   parameters: {
     apolloClient: {
       mocks: [getJourneyMock]
@@ -135,4 +123,4 @@ export const Completed = {
   }
 }
 
-export default OnboardingPageWrapperStory
+export default OnboardingDrawerStory
