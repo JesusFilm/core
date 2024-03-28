@@ -19,7 +19,7 @@ const Template: StoryObj<typeof CardTemplateDrawer> = {
     return (
       <MockedProvider>
         <EditorProvider>
-          <Drawer>
+          <Drawer title="Card Templates">
             <CardTemplateDrawer />
           </Drawer>
         </EditorProvider>
