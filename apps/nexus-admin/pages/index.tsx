@@ -33,7 +33,7 @@ export const GET_NEXUSES = gql`
   }
 `
 
-export function Index(): ReactElement {
+function Index(): ReactElement {
   const [nexusApps, setNexusApps] = useState<Nexuses_nexuses[]>([])
   const [openCreateNexusModal, setOpenCreateNexusModal] =
     useState<boolean>(false)
