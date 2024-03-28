@@ -16,7 +16,7 @@ import { ImageSource } from './ImageSource'
 const ImageEditorStory: Meta<typeof ImageSource> = {
   ...simpleComponentConfig,
   component: ImageSource,
-  title: 'Journeys-Admin/Editor/ImageSource',
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/ImageSource',
   parameters: {
     ...simpleComponentConfig.parameters,
     layout: 'fullscreen'

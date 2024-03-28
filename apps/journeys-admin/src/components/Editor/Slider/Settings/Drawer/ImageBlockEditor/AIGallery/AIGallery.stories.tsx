@@ -10,7 +10,8 @@ import { AIGallery } from '.'
 const AIGalleryStory: Meta<typeof AIGallery> = {
   ...simpleComponentConfig,
   component: AIGallery,
-  title: 'Journeys-Admin/Editor/ImageBlockEditor/AIGallery'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/ImageBlockEditor/AIGallery'
 }
 
 const Template: StoryObj<typeof AIGallery> = {

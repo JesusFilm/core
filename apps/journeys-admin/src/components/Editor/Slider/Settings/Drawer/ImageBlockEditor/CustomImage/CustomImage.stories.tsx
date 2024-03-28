@@ -10,7 +10,8 @@ import { CustomImage } from '.'
 const CustomImageStory: Meta<typeof CustomImage> = {
   ...simpleComponentConfig,
   component: CustomImage,
-  title: 'Journeys-Admin/Editor/ImageBlockEditor/CustomImage'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/ImageBlockEditor/CustomImage'
 }
 
 const Template: StoryObj<typeof CustomImage> = {

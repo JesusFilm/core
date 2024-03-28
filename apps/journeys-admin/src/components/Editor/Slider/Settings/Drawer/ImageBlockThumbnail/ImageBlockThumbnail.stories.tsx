@@ -15,7 +15,7 @@ import { ImageBlockThumbnail } from './ImageBlockThumbnail'
 const ImageEditorStory: Meta<typeof ImageBlockThumbnail> = {
   ...simpleComponentConfig,
   component: ImageBlockThumbnail,
-  title: 'Journeys-Admin/Editor/ImageBlockThumbnail',
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/ImageBlockThumbnail',
   parameters: {
     ...simpleComponentConfig.parameters,
     layout: 'fullscreen'
