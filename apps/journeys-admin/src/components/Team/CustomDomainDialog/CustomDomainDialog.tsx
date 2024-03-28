@@ -419,7 +419,7 @@ export function CustomDomainDialog({
                     handleOnChange={handleOnChange}
                     defaultValue={
                       customDomainData?.customDomains[0]?.journeyCollection
-                        ?.journeys?.[0]?.id ?? undefined
+                        ?.journeys?.[0] ?? undefined
                     }
                     journeys={journeysData?.journeys}
                     domainName={customDomainData?.customDomains[0]?.name}

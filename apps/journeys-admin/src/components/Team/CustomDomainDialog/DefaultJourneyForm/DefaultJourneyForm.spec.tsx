@@ -12,7 +12,7 @@ describe('DefaultJourneyForm', () => {
       <DefaultJourneyForm
         handleOnChange={handleOnchange}
         domainName="www.mockDomain.com"
-        defaultValue="1"
+        defaultValue={{ __typename: 'Journey', id: '1', title: 'Journey1' }}
         journeys={
           [
             { id: '1', title: 'Journey1' },

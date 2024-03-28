@@ -1,4 +1,3 @@
-import ClearIcon from '@mui/icons-material/Clear'
 import Autocomplete from '@mui/material/Autocomplete'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
@@ -14,7 +13,7 @@ import { GetAdminJourneys_journeys as Journeys } from '../../../../../__generate
 
 interface DefaultJourneyFormProps {
   handleOnChange: (e: Journeys) => Promise<void>
-  defaultValue?: string
+  defaultValue?: Pick<Journeys, 'id' | 'title' | '__typename'>
   journeys?: Journeys[]
   domainName: string
 }
@@ -37,6 +36,7 @@ export function DefaultJourneyForm({
               <Autocomplete
                 data-testid="DefaultJourneySelect"
                 id="defaultJourney"
+                defaultValue={defaultValue}
                 onChange={async (_e, option) =>
                   await handleOnChange(option as Journeys)
                 }
@@ -44,13 +44,6 @@ export function DefaultJourneyForm({
                 options={journeys ?? []}
                 renderInput={(params) => <TextField {...params} />}
                 blurOnSelect
-                clearIcon={
-                  // this MUI icon is the default value for this prop so we use this instead of stratis icon
-                  <ClearIcon
-                    fontSize="small"
-                    data-testid="DefaultJourneyClearButton"
-                  />
-                }
               />
               <FormHelperText sx={{ wordBreak: 'break-all' }}>
                 {t(`The default Journey will be available at ${domainName}`)}

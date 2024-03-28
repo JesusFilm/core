@@ -489,13 +489,12 @@ describe('CustomDomainDialog', () => {
   })
 
   it('deletes a custom journey', async () => {
-    const { getByRole, getByTestId } = render(
+    const { getByRole, getByLabelText } = render(
       <MockedProvider
         mocks={[
           getLastActiveTeamIdAndTeamsMock,
           getAdminJourneysMock,
           getCustomDomainMockCNameAndJourneyCollection,
-          mockJourneyCollectionUpdate,
           mockJourneyCollectionDelete
         ]}
       >
@@ -515,15 +514,7 @@ describe('CustomDomainDialog', () => {
     await waitFor(() =>
       fireEvent.mouseDown(getByRole('combobox', { expanded: false }))
     )
-    fireEvent.click(getByRole('option', { name: 'Published Journey Heading' }))
-    await waitFor(() =>
-      expect(mockJourneyCollectionUpdate.result).toHaveBeenCalled()
-    )
-    await waitFor(() =>
-      fireEvent.mouseDown(getByRole('combobox', { expanded: false }))
-    )
-    fireEvent.click(getByTestId('DefaultJourneyClearButton'))
-
+    fireEvent.click(getByLabelText('Clear'))
     await waitFor(() =>
       expect(mockJourneyCollectionDelete.result).toHaveBeenCalled()
     )
