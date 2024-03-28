@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -24,31 +25,40 @@ const Demo: Meta<typeof Button> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Button'
 }
 
-export const Default: StoryObj<typeof Button> = {
-  render: () => {
-    const block: TreeBlock<ButtonBlock> = {
-      id: 'button.id',
-      __typename: 'ButtonBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      label: 'Button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      action: null,
-      children: []
-    }
+const block: TreeBlock<ButtonBlock> = {
+  id: 'button.id',
+  __typename: 'ButtonBlock',
+  parentBlockId: 'step1.id',
+  parentOrder: 0,
+  label: 'Button',
+  buttonVariant: null,
+  buttonColor: null,
+  size: null,
+  startIconId: null,
+  endIconId: null,
+  action: null,
+  children: []
+}
+
+const Template: StoryObj<ComponentProps<typeof Button>> = {
+  render: (args) => {
     return (
       <EditorProvider>
         <Drawer title="Button">
-          <Button {...block} />
+          <Button {...args} />
         </Drawer>
       </EditorProvider>
     )
   }
 }
+
+export const Default = {
+  ...Template,
+  args: {
+    ...block
+  }
+}
+
 export const Filled: StoryObj<typeof Button> = {
   render: () => {
     const block: TreeBlock<ButtonBlock> = {
