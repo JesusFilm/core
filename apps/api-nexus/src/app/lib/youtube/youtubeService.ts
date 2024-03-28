@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { createReadStream, statSync } from 'fs';
 
-import { BadRequestException , Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { google, youtube_v3 } from 'googleapis';
 import { GaxiosPromise, OAuth2Client } from 'googleapis-common';
 

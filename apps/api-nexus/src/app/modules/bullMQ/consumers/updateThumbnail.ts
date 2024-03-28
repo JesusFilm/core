@@ -17,9 +17,7 @@ export class UpdateThumbnail {
   ) {}
 
   @Process('update_thumbnail')
-  async process(
-    job: Job<UpdateVideoThumbnail>,
-  ): Promise<UpdateVideoThumbnail> {
+  async process(job: Job<UpdateVideoThumbnail>): Promise<UpdateVideoThumbnail> {
     const driveToken = await this.googleOAuthService.getNewAccessToken(
       job.data.resource.refreshToken,
     );
@@ -50,7 +48,7 @@ export class UpdateThumbnail {
       token: youtubeToken,
       videoId: job.data.resource.videoId,
       thumbnailPath: filePath,
-      mimeType: 'image/jpeg'
+      mimeType: 'image/jpeg',
     });
     console.log('YOUTUBE RESPONSE UPDATE THUMBNAIL: ', youtubeResponse);
     await job.progress(100);
