@@ -1,7 +1,8 @@
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -13,46 +14,51 @@ import {
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { Button } from '.'
 
-const ButtonStory: Meta<typeof Button> = {
+const Demo: Meta<typeof Button> = {
   ...simpleComponentConfig,
   component: Button,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Button'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Button'
 }
 
-export const Default: StoryObj<typeof Button> = {
-  render: () => {
-    const block: TreeBlock<ButtonBlock> = {
-      id: 'button.id',
-      __typename: 'ButtonBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      label: 'Button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      action: null,
-      children: []
-    }
+const block: TreeBlock<ButtonBlock> = {
+  id: 'button.id',
+  __typename: 'ButtonBlock',
+  parentBlockId: 'step1.id',
+  parentOrder: 0,
+  label: 'Button',
+  buttonVariant: null,
+  buttonColor: null,
+  size: null,
+  startIconId: null,
+  endIconId: null,
+  action: null,
+  children: []
+}
+
+const Template: StoryObj<ComponentProps<typeof Button>> = {
+  render: (args) => {
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <Button {...block} />
-      </Stack>
+      <EditorProvider>
+        <Drawer title="Button">
+          <Button {...args} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
+
+export const Default = {
+  ...Template,
+  args: {
+    ...block
+  }
+}
+
 export const Filled: StoryObj<typeof Button> = {
   render: () => {
     const block: TreeBlock<ButtonBlock> = {
@@ -96,19 +102,13 @@ export const Filled: StoryObj<typeof Button> = {
       ]
     }
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <Button {...block} />
-      </Stack>
+      <EditorProvider initialState={{ selectedBlock: block }}>
+        <Drawer title="Button">
+          <Button {...block} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
 
-export default ButtonStory
+export default Demo
