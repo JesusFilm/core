@@ -1,5 +1,7 @@
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
-import { ComponentProps, ReactElement, useState } from 'react'
+import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 
@@ -11,18 +13,25 @@ const DrawerStory: Meta<typeof Drawer> = {
   title: 'Journeys-Admin/Editor/Slider/Settings/Drawer'
 }
 
-const DrawerComponent = (args): ReactElement => {
-  const [open, setOpen] = useState(true)
-
-  return <Drawer open={open} onClose={() => setOpen(false)} {...args} />
-}
-
 const Template: StoryObj<ComponentProps<typeof Drawer>> = {
-  render: ({ ...args }) => <DrawerComponent {...args} />
+  render: ({ ...args }) => (
+    <Drawer {...args}>
+      <Stack justifyContent="center" alignItems="center" height="100%">
+        <Stack direction="row" justifyContent="center" alignItems="center">
+          <Typography variant="body1" p="2">
+            Drawer Content
+          </Typography>
+        </Stack>
+      </Stack>
+    </Drawer>
+  )
 }
 
 export const Default = {
-  ...Template
+  ...Template,
+  args: {
+    title: 'Drawer Title'
+  }
 }
 
 export default DrawerStory
