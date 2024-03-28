@@ -37,3 +37,11 @@ export async function getTeamName(): Promise<string> {
   }
   return teamName
 }
+
+export async function getBaseUrl(): Promise<string> {
+  const baseUrl = process.env.BASE_URL?.toString()
+  if (!baseUrl || baseUrl === '') {
+    throw new Error('baseUrl was not provided via environment variable')
+  }
+  return baseUrl
+}
