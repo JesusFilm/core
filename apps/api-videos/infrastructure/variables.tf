@@ -22,6 +22,7 @@ variable "ecs_config" {
     cluster = object({
       id   = string
       name = string
+      arn  = string
     })
   })
 }

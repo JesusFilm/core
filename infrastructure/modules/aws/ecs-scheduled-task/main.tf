@@ -1,11 +1,11 @@
 
 module "task" {
   source                  = "../ecs-task-job"
-  name                    = var.task_name
+  name                    = var.name
   doppler_token           = var.doppler_token
   environment_variables   = var.environment_variables
-  cpu                     = var.task_cpu
-  memory                  = var.task_memory
+  cpu                     = var.cpu
+  memory                  = var.memory
   task_execution_role_arn = var.task_execution_role_arn
   env                     = var.env
 }
@@ -16,7 +16,7 @@ resource "aws_cloudwatch_event_rule" "default" {
 }
 
 resource "aws_cloudwatch_event_target" "default" {
-  target_id = var.task_name
+  target_id = var.name
   arn       = var.cluster_arn
   rule      = aws_cloudwatch_event_rule.default.name
   role_arn  = aws_iam_role.ecs_event.arn
@@ -32,7 +32,7 @@ resource "aws_cloudwatch_event_target" "default" {
 }
 
 resource "aws_iam_role" "ecs_event" {
-  name               = "${var.task_name}-ecs-event-role"
+  name               = "${var.name}-ecs-event-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_events_assume_role_policy.json
 }
 
