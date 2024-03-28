@@ -666,6 +666,7 @@
   "Use This Template": "このテンプレートを使用する",
   "Add Journey to Team": "ジャーニーをチームに加える",
   "Use this template to make it your journey": "このテンプレートを使って、あなたの旅を作ろう",
+  "Use this template to see more!": "もっと見るにはこのテンプレートを使ってください！",
   "Related Templates": "関連テンプレート",
   "Before You Start": "始める前に",
   "Please review these documents:": "これらの書類をご確認ください：",
@@ -702,6 +703,7 @@
   "Polls": "世論調査",
   "<0>Appears on <2>{{ count }}</2> card</0>_other": "<0>カード <2>{{ count }}</2>カード</0>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>旅のテンプレート</0><1>言語</1><2>{{count}} 言語</2>",
+  "{{count}} more cards_other": "{{count}} その他のカード",
   "{{count}} Cards_other": "{{count}} カード",
   "{{count}} Videos_other": "{{count}} ビデオ"
 }

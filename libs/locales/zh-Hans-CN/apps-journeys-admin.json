@@ -666,6 +666,7 @@
   "Use This Template": "使用此模板",
   "Add Journey to Team": "将旅程添加到团队",
   "Use this template to make it your journey": "使用此模板使其成为您的旅程",
+  "Use this template to see more!": "使用此模板查看更多内容！",
   "Related Templates": "相关模板",
   "Before You Start": "在你开始之前",
   "Please review these documents:": "请查看这些文件：",
@@ -702,6 +703,7 @@
   "Polls": "民意调查",
   "<0>Appears on <2>{{ count }}</2> card</0>_other": "<0>出现在 <2>{{ count }}</2>卡片</0>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>旅程模板</0><1>在</1><2>所有语言</2>",
+  "{{count}} more cards_other": "{{count}} 更多贺卡",
   "{{count}} Cards_other": "{{count}} 牌",
   "{{count}} Videos_other": "{{count}} 视频"
 }

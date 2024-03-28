@@ -666,6 +666,7 @@
   "Use This Template": "Gunakan Templat Ini",
   "Add Journey to Team": "Tambahkan Perjalanan ke Tim",
   "Use this template to make it your journey": "Gunakan templat ini untuk membuat perjalanan Anda",
+  "Use this template to see more!": "Gunakan templat ini untuk melihat lebih banyak!",
   "Related Templates": "Templat Terkait",
   "Before You Start": "Sebelum Anda Mulai",
   "Please review these documents:": "Silakan tinjau dokumen-dokumen ini:",
@@ -702,6 +703,7 @@
   "Polls": "Jajak pendapat",
   "<0>Appears on <2>{{ count }}</2> card</0>_other": "<0>Muncul di <2>{{ count }}</2> kartu</0>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Templat Perjalanan</0><1>dalam</1><2>{{count}} bahasa</2>",
+  "{{count}} more cards_other": "{{count}} lebih banyak kartu",
   "{{count}} Cards_other": "{{count}} Kartu",
   "{{count}} Videos_other": "{{count}} Video"
 }
