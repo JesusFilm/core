@@ -10,7 +10,7 @@ import landingIllustration from '../../../../public/landing-illustration.png'
 import logo from '../../../../public/logo.svg'
 
 import { OnboardingStepper } from './OnboardingStepper'
-import { OnboardingTemplateCard } from './OnboardingTemplateCard/OnboardingTemplateCard'
+import { OnboardingTemplateCard } from './OnboardingTemplateCard'
 
 export function OnboardingDrawer(): ReactElement {
   const router = useRouter()
@@ -25,11 +25,9 @@ export function OnboardingDrawer(): ReactElement {
     if (url == null) return
 
     const redirect = decodeURIComponent(url)
-    const pathnameParts = redirect?.split('/')
-    if (redirect?.includes('templates') && pathnameParts != null) {
-      const idIndex = pathnameParts.indexOf('templates') + 1
-      const id = pathnameParts[idIndex]
-      return id.split('?')[0]
+    const match = redirect.match(/\/templates\/([^/?]+)/)
+    if (match != null) {
+      return match[1]
     }
   }
 
@@ -44,7 +42,7 @@ export function OnboardingDrawer(): ReactElement {
         mt: { xs: 5 },
         my: { md: 10 },
         mx: { md: 20 },
-        width: { xs: '100%', md: '37%' },
+        width: { xs: '100%', md: '32%' },
         mb: { xs: templateId == null ? 0 : 5 }
       }}
       data-testid="JourneysAdminOnboardingDrawer"
@@ -65,8 +63,7 @@ export function OnboardingDrawer(): ReactElement {
         <Box
           sx={{
             overflow: 'hidden',
-            aspectRatio: '1260/1340.16',
-            flexGrow: 1,
+            height: 444,
             display: { xs: 'none', md: 'flex' }
           }}
         >

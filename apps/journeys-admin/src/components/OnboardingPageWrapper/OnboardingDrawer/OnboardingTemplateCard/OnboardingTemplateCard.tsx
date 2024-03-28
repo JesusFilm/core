@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -85,7 +84,9 @@ function OnboardingTemplateCardDetails({
       data-testid="OnboardingTemplateCardDetails"
       direction="column"
       sx={{
-        p: { md: 3 },
+        px: { xs: 0, sm: 5 },
+        pb: { xs: 0, sm: 5 },
+        pt: { xs: 0, sm: 4 },
         borderWidth: { xs: 0, md: 1 },
         borderStyle: 'solid',
         borderColor: 'divider',
@@ -102,56 +103,48 @@ function OnboardingTemplateCardDetails({
       >
         {t('Journey Template')}
       </Typography>
-      <Box
+      <Typography
+        variant="subtitle1"
         sx={{
-          height: { xs: 26, md: 46 },
-          overflow: 'hidden',
-          textOverflow: 'ellipsis'
+          my: 1,
+          display: { xs: 'none', sm: 'block' }
         }}
       >
-        <Typography
-          variant="subtitle1"
-          sx={{
-            my: 1,
-            display: { xs: 'none', sm: 'block' }
-          }}
-        >
-          {journey?.title != null ? (
-            journey?.title
-          ) : (
-            <Skeleton
-              data-testid="OnboardingTemplateCardDetails"
-              sx={{
-                transform: 'scale(1, 0.8)',
-                width: '100%',
-                height: 26,
-                maxWidth: 200
-              }}
-            />
-          )}
-        </Typography>
-        <Typography
-          variant="subtitle2"
-          sx={{
-            my: 1,
-            display: { xs: 'block', sm: 'none' }
-          }}
-        >
-          {journey?.title != null ? (
-            journey?.title
-          ) : (
-            <Skeleton
-              data-testid="OnboardingTemplateCardDetails"
-              sx={{
-                transform: 'scale(1, 0.8)',
-                width: '100%',
-                height: 26,
-                maxWidth: 200
-              }}
-            />
-          )}
-        </Typography>
-      </Box>
+        {journey?.title != null ? (
+          journey?.title
+        ) : (
+          <Skeleton
+            data-testid="OnboardingTemplateCardDetails"
+            sx={{
+              transform: 'scale(1, 0.8)',
+              width: '100%',
+              height: 46,
+              maxWidth: 200
+            }}
+          />
+        )}
+      </Typography>
+      <Typography
+        variant="subtitle2"
+        sx={{
+          my: 1,
+          display: { xs: 'block', sm: 'none' }
+        }}
+      >
+        {journey?.title != null ? (
+          journey?.title
+        ) : (
+          <Skeleton
+            data-testid="OnboardingTemplateCardDetails"
+            sx={{
+              transform: 'scale(1, 0.8)',
+              width: '100%',
+              height: 46,
+              maxWidth: 200
+            }}
+          />
+        )}
+      </Typography>
     </Stack>
   )
 }

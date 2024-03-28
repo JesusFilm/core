@@ -31,7 +31,7 @@ export function TeamOnboarding(): ReactElement {
   async function handleSubmit(data?: TeamCreate | null): Promise<void> {
     const redirect =
       router.query.redirect != null
-        ? new URL(`${window.location.origin}${router.query.redirect as string}`)
+        ? `${router.query.redirect as string}`
         : '/?onboarding=true'
 
     if (data?.teamCreate.id == null) return
