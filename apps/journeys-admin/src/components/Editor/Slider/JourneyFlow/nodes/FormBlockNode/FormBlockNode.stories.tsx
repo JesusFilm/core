@@ -14,12 +14,12 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
 
 import { FormBlockNode } from '.'
 
 const FormBlockNodeStory: Meta<typeof FormBlockNode> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: FormBlockNode,
   title: 'Journeys-Admin/Editor/Slider/JourneyFlow/nodes/FormBlockNode'
 }
