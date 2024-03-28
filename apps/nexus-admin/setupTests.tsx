@@ -4,6 +4,8 @@ import { TextEncoder } from 'util'
 
 import { configure } from '@testing-library/react'
 
+import './test/i18n'
+
 global.TextEncoder = TextEncoder
 
 configure({ asyncUtilTimeout: 2500 })
