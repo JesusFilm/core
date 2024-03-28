@@ -56,7 +56,16 @@ export class CustomDomainService {
           method: 'POST'
         }
       )
-      return await response.json()
+
+      const json = await response.json()
+
+      if (response.status !== 200) {
+        throw new GraphQLError(json.error.message, {
+          extensions: { code: json.error.code }
+        })
+      }
+
+      return json
     } catch (e) {
       throw new GraphQLError(e.message, {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
@@ -85,7 +94,16 @@ export class CustomDomainService {
           method: 'GET'
         }
       )
-      return await response.json()
+
+      const json = await response.json()
+
+      if (response.status !== 200) {
+        throw new GraphQLError(json.error.message, {
+          extensions: { code: json.error.code }
+        })
+      }
+
+      return json
     } catch (e) {
       throw new GraphQLError(e.message, {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
@@ -112,7 +130,16 @@ export class CustomDomainService {
         method: 'POST'
       }
     )
-    return await response.json()
+
+    const json = await response.json()
+
+    if (response.status !== 200) {
+      throw new GraphQLError(json.error.message, {
+        extensions: { code: json.error.code }
+      })
+    }
+
+    return json
   }
 
   async deleteVercelDomain(name: string): Promise<boolean> {
@@ -128,7 +155,16 @@ export class CustomDomainService {
         method: 'DELETE'
       }
     )
-    return response.status === 200
+
+    const json = await response.json()
+
+    if (response.status !== 200) {
+      throw new GraphQLError(json.error.message, {
+        extensions: { code: json.error.code }
+      })
+    }
+
+    return true
   }
 
   async customDomainCreate(
