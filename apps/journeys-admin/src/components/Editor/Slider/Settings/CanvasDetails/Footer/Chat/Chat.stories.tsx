@@ -3,19 +3,22 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { Drawer } from '../../../Drawer'
 
 import { Chat } from '.'
 
 const ChatStory: Meta<typeof Chat> = {
   ...simpleComponentConfig,
   component: Chat,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/Chat'
+  title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/Chat'
 }
 
 const Template: StoryObj<typeof Chat> = {
   render: () => (
     <MockedProvider>
-      <Chat />
+      <Drawer title="Chat">
+        <Chat />
+      </Drawer>
     </MockedProvider>
   )
 }
