@@ -14,12 +14,12 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
 
 import { RadioOptionBlockNode } from '.'
 
 const RadioOptionBlockNodeStory: Meta<typeof RadioOptionBlockNode> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: RadioOptionBlockNode,
   title: 'Journeys-Admin/Editor/Slider/JourneyFlow/nodes/RadioOptionBlockNode'
 }
@@ -29,7 +29,7 @@ const block: TreeBlock<RadioOptionBlock> = {
   id: 'RadioOptionBlock.id',
   parentBlockId: 'CardBlock.id',
   parentOrder: 0,
-  label: null,
+  label: 'Option Label',
   action: null,
   children: []
 }
@@ -89,32 +89,6 @@ export const Default = {
         id: block.id,
         data: {
           ...block,
-          step
-        },
-        type: block.__typename,
-        position: {
-          x: 0,
-          y: 0
-        },
-        selectable: false
-      }
-    ],
-    nodeTypes: {
-      RadioOptionBlock: RadioOptionBlockNode
-    }
-  }
-}
-
-export const WithLabel = {
-  ...Template,
-  args: {
-    ...defaultFlowProps,
-    nodes: [
-      {
-        id: block.id,
-        data: {
-          ...block,
-          label: 'Option label',
           step
         },
         type: block.__typename,
