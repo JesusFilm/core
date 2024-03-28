@@ -7,25 +7,22 @@ import { journeysAdminConfig } from '../../../../../../libs/storybook'
 
 import { GoalsList } from './GoalsList'
 
-
 const GoalsListStory: Meta<typeof GoalsList> = {
   ...journeysAdminConfig,
   component: GoalsList,
   title: 'Journeys-Admin/Editor/Slider/Content/Goals/GoalsList'
 }
 
-type Story = StoryObj<ComponentProps<typeof GoalsList> >
+type Story = StoryObj<ComponentProps<typeof GoalsList>>
 
 const Template: Story = {
-  render: (args) => (
-    <GoalsList {...args} />
-  )
+  render: (args) => <GoalsList {...args} />
 }
 
 export const Default = {
   ...Template,
   args: {
-    goals : [
+    goals: [
       {
         url: 'https://www.google.com/',
         count: 2,
@@ -46,4 +43,3 @@ export const Default = {
 }
 
 export default GoalsListStory
- 

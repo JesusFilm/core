@@ -6,7 +6,6 @@ import { journeysAdminConfig } from '../../../../../../libs/storybook'
 
 import { GoalsBanner } from './GoalsBanner'
 
-
 const GoalsBannerStory: Meta<typeof GoalsBanner> = {
   ...journeysAdminConfig,
   component: GoalsBanner,
@@ -16,14 +15,11 @@ const GoalsBannerStory: Meta<typeof GoalsBanner> = {
 type Story = StoryObj<ComponentProps<typeof GoalsBanner> & { journey: Journey }>
 
 const Template: Story = {
-  render: () => (
-    <GoalsBanner/>
-  )
+  render: () => <GoalsBanner />
 }
 
 export const Default = {
   ...Template
 }
-
 
 export default GoalsBannerStory

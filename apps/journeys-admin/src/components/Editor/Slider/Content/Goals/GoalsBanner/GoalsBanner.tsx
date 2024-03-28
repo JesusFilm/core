@@ -117,4 +117,3 @@ export function GoalsBanner(): ReactElement {
     </Box>
   )
 }
-
