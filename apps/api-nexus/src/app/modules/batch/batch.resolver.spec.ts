@@ -26,18 +26,21 @@ describe('BatchResolver', () => {
   });
 
   describe('batches', () => {
-    it('should return an array of batches with average percentages', async () => {
+    it('should return an array of batches', async () => {
       const userId = 'someUserId';
       const mockBatches = [
         {
           id: 'batch1',
           nexusId: 'nexus1',
-          channelId: 'channel1',
           name: 'Batch 1',
           status: BatchStatus.completed,
-          createdAt: new Date(),
-          resources: [{ percent: 50 }, { percent: 100 }],
-          averagePercent: 75,
+          totalTasks: 0,
+          completedTasks: 0,
+          failedTasks: 0,
+          progress: 0,
+          tasks: [],
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
         },
       ];
 
@@ -50,10 +53,15 @@ describe('BatchResolver', () => {
           expect.objectContaining({
             id: 'batch1',
             nexusId: 'nexus1',
-            channelId: 'channel1',
             name: 'Batch 1',
             status: BatchStatus.completed,
-            averagePercent: 75,
+            totalTasks: 0,
+            completedTasks: 0,
+            failedTasks: 0,
+            progress: 0,
+            tasks: [],
+            createdAt: new Date(),
+            updatedAt: new Date(),
           }),
         ]),
       );

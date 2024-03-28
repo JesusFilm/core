@@ -8,6 +8,7 @@ import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
 import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
 import { PrismaService } from '../../lib/prisma.service';
 import { YoutubeService } from '../../lib/youtube/youtubeService';
+import { BatchService } from '../batch/batchService';
 import { BullMQService } from '../bullMQ/bullMQ.service';
 import { GoogleDriveService } from '../google-drive/googleDriveService';
 
@@ -37,6 +38,7 @@ describe('ResourceResolver', () => {
           provide: GoogleSheetsService,
           useValue: mockDeep<GoogleSheetsService>(),
         },
+        { provide: BatchService, useValue: mockDeep<BatchService>() },
       ],
     }).compile();
 
@@ -61,6 +63,16 @@ describe('ResourceResolver', () => {
           category: 'Example Category',
           privacy: null,
           sourceType: SourceType.other,
+          // localizations: [],
+          // resourceYoutubeChannel: [],
+          // Include the missing properties with mock or null values as appropriate
+          spokenLanguage: null, // Assuming this can be null
+          customThumbnail: null, // Assuming this can be null
+          notifySubscribers: null, // Assuming this can be null or provide a mock value
+          playlistId: null, // Assuming this can be null or provide a mock value
+          isMadeForKids: null, // Assuming this can be null or provide a mock value
+          mediaComponentId: null, // Assuming this can be null or provide a mock value
+          // Include other properties as needed, matching the 'Resource' model
         },
       ];
       prismaService.resource.findMany.mockResolvedValue(mockResources);
