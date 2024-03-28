@@ -8,8 +8,8 @@ import {
   ActiveContent,
   ActiveFab,
   ActiveSlide,
-  EditorState,
-  useEditor
+  EditorProvider,
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
 
 import {
@@ -21,23 +21,12 @@ import {
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { ActionNode } from './ActionNode'
 
-jest.mock('@core/journeys/ui/EditorProvider', () => ({
-  __esModule: true,
-  ...jest.requireActual('@core/journeys/ui/EditorProvider'),
-  useEditor: jest.fn()
-}))
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
-
 describe('ActionNode', () => {
-  beforeEach(() => {
-    mockReactFlow()
-  })
-
-  const mockBlock = {
+  const mockBlock: TreeBlock<RadioOptionBlock> = {
     __typename: 'RadioOptionBlock',
     id: 'RadioOptionBlock.id',
     children: [],
@@ -45,9 +34,9 @@ describe('ActionNode', () => {
     parentOrder: 1,
     label: 'Option 1',
     action: null
-  } satisfies TreeBlock<RadioOptionBlock>
+  }
 
-  const mockStep = {
+  const mockStep: TreeBlock<StepBlock> = {
     __typename: 'StepBlock' as const,
     id: 'StepBlock.id',
     locked: false,
@@ -76,7 +65,7 @@ describe('ActionNode', () => {
         ]
       }
     ]
-  } satisfies TreeBlock<StepBlock>
+  }
 
   const defaultProps = {
     title: mockBlock.label,
@@ -84,15 +73,9 @@ describe('ActionNode', () => {
     step: mockStep
   }
 
-  const mockUseEditorState = {
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-    activeContent: ActiveContent.Canvas,
-    activeFab: ActiveFab.Add,
-    activeSlide: ActiveSlide.JourneyFlow,
-    selectedBlock: mockBlock,
-    selectedStep: mockStep,
-    steps: [mockStep]
-  } satisfies EditorState
+  beforeEach(() => {
+    mockReactFlow()
+  })
 
   afterEach(() => {
     jest.clearAllMocks()
@@ -111,29 +94,35 @@ describe('ActionNode', () => {
   })
 
   it('should dispatch editor actions on click', () => {
-    const mockDispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state: mockUseEditorState,
-      dispatch: mockDispatch
-    })
+    const state: EditorState = {
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+      activeContent: ActiveContent.Canvas,
+      activeFab: ActiveFab.Add,
+      activeSlide: ActiveSlide.JourneyFlow,
+      selectedBlock: undefined,
+      selectedStep: undefined,
+      steps: [mockStep]
+    }
 
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <ActionNode {...defaultProps} />
+          <EditorProvider initialState={state}>
+            <TestEditorState />
+            <ActionNode {...defaultProps} />
+          </EditorProvider>
         </MockedProvider>
       </ReactFlowProvider>
     )
 
+    expect(screen.getByText('selectedBlock: StepBlock.id')).toBeInTheDocument()
+    expect(screen.getByText('selectedStep: StepBlock.id')).toBeInTheDocument()
+
     fireEvent.click(screen.getByText('Option 1'))
 
-    expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedStepAction',
-      selectedStep: mockStep
-    })
-    expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedBlockAction',
-      selectedBlock: mockBlock
-    })
+    expect(
+      screen.getByText('selectedBlock: RadioOptionBlock.id')
+    ).toBeInTheDocument()
+    expect(screen.getByText('selectedStep: StepBlock.id')).toBeInTheDocument()
   })
 })

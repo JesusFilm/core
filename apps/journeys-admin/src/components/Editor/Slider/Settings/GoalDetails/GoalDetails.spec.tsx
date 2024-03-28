@@ -1,45 +1,104 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import {
+  ActiveCanvasDetailsDrawer,
+  ActiveContent,
+  ActiveFab,
+  ActiveSlide,
+  EditorProvider,
+  EditorState
+} from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { journey } from './data'
+import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { TestEditorState } from '../../../../../libs/TestEditorState'
+
 import { GoalDetails } from './GoalDetails'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn(() => false)
+}))
+
 describe('GoalDetails', () => {
+  const state: EditorState = {
+    activeFab: ActiveFab.Add,
+    activeSlide: ActiveSlide.JourneyFlow,
+    activeContent: ActiveContent.Goals,
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+  }
+
   it('should return placeholder text', () => {
-    const { getByText } = render(
-      <MockedProvider>
-        <GoalDetails />
-      </MockedProvider>
-    )
-    expect(getByText('What are Goals?')).toBeInTheDocument()
-    expect(getByText('Start a Conversation')).toBeInTheDocument()
-    expect(getByText('Visit a Website')).toBeInTheDocument()
-    expect(getByText('Link to Bible')).toBeInTheDocument()
+    render(<GoalDetails />)
+
+    expect(screen.getByText('Information')).toBeInTheDocument()
+    expect(screen.getByText('What are Goals?')).toBeInTheDocument()
+    expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
+    expect(screen.getByText('Visit a Website')).toBeInTheDocument()
+    expect(screen.getByText('Link to Bible')).toBeInTheDocument()
   })
 
-  it('should return action editor', () => {
-    const { getByDisplayValue, getByText } = render(
-      <MockedProvider>
-        <GoalDetails />
-      </MockedProvider>
-    )
-    expect(getByDisplayValue('https://www.google.com/')).toBeInTheDocument()
-    expect(getByText('Visit a website')).toBeInTheDocument()
+  it('should render ActionInformation when selectedGoalUrl is null', () => {
+    render(<GoalDetails />)
+
+    expect(screen.getByTestId('ActionInformation')).toBeInTheDocument()
   })
 
-  it('should return action cards', () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+  it('should render ActionEditor and ActionCards when selectedGoalUrl is not null', () => {
+    const stateWithGoal = {
+      ...state,
+      selectedGoalUrl: 'https://initialUrl.com'
+    }
+
+    render(
+      <MockedProvider>
+        <EditorProvider initialState={stateWithGoal}>
+          <GoalDetails />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('ActionEditor')).toBeInTheDocument()
+    expect(screen.getByTestId('ActionCards')).toBeInTheDocument()
+  })
+
+  it('should dispatch SetSelectedGoalUrl with selectedGoalUrl', async () => {
+    const stateWithGoal = {
+      ...state,
+      selectedGoalUrl: 'https://initialUrl.com'
+    }
+    const journey = {
+      id: 'journey.id',
+      __typename: 'Journey',
+      language: {
+        bcp: null
+      }
+    } as unknown as Journey
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <EditorProvider initialState={stateWithGoal}>
+            <TestEditorState />
             <GoalDetails />
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
     )
-    expect(getByText('Appears on the cards')).toBeInTheDocument()
+
+    expect(
+      screen.getByText('selectedGoalUrl: https://initialUrl.com')
+    ).toBeInTheDocument()
+
+    const form = screen.getByRole('textbox', { name: 'Navigate to' })
+    fireEvent.change(form, { target: { value: 'https://newUrl.com' } })
+    fireEvent.submit(form)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('selectedGoalUrl: https://newUrl.com')
+      ).toBeInTheDocument()
+    })
   })
 })

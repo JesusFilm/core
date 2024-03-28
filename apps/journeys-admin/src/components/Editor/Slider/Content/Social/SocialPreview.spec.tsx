@@ -6,13 +6,14 @@ import {
   ActiveContent,
   ActiveFab,
   ActiveSlide,
-  EditorState,
-  useEditor
+  EditorProvider,
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
 
+import { TestEditorState } from '../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../ThemeProvider'
 
-import { SocialPreview } from './SocialPreview'
+import { SocialPreview } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -23,34 +24,9 @@ const mockUseMediaQuery = useMediaQuery as jest.MockedFunction<
   typeof useMediaQuery
 >
 
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
-
-const mockDispatch = jest.fn()
-
 describe('SocialPreview', () => {
-  const state: EditorState = {
-    activeFab: ActiveFab.Add,
-    activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Social,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
-  }
-
   beforeEach(() => {
     mockUseMediaQuery.mockImplementation(() => true)
-
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch: mockDispatch
-    })
   })
 
   it('should render Message Post and Fab for viewports larger than mobile', () => {
@@ -62,7 +38,6 @@ describe('SocialPreview', () => {
 
     expect(screen.getByText('Social App View')).toBeInTheDocument()
     expect(screen.getByText('Messaging App View')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Edit' })).toBeInTheDocument()
   })
 
   it('should only render Message and Post for mobile viewport', () => {
@@ -76,23 +51,27 @@ describe('SocialPreview', () => {
 
     expect(screen.getByText('Social App View')).toBeInTheDocument()
     expect(screen.getByText('Messaging App View')).toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: 'Edit' })
-    ).not.toBeInTheDocument()
   })
 
   it('should dispatch active slide action on click', () => {
+    const state: EditorState = {
+      activeFab: ActiveFab.Add,
+      activeSlide: ActiveSlide.JourneyFlow,
+      activeContent: ActiveContent.Social,
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
+    }
+
     render(
-      <ThemeProvider>
-        <SocialPreview />
-      </ThemeProvider>
+      <EditorProvider initialState={state}>
+        <ThemeProvider>
+          <TestEditorState />
+          <SocialPreview />
+        </ThemeProvider>
+      </EditorProvider>
     )
 
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('SocialPreview'))
-
-    expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Content
-    })
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
   })
 })

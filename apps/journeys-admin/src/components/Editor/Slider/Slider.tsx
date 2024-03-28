@@ -5,10 +5,7 @@ import { ReactElement, useEffect, useRef } from 'react'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
-import {
-  ActiveSlide,
-  useEditor
-} from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
