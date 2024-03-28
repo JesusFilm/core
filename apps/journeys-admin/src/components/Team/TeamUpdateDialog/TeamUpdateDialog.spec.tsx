@@ -28,7 +28,8 @@ describe('TeamUpdateDialog', () => {
             title: 'Jesus Film Project',
             publicTitle: '',
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           }
         ],
         getJourneyProfile: {

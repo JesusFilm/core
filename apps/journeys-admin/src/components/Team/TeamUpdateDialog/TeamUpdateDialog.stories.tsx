@@ -35,7 +35,8 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
           title: 'My Team',
           publicTitle: '',
           __typename: 'Team',
-          userTeams: []
+          userTeams: [],
+          customDomains: []
         }
       ],
       getJourneyProfile: {

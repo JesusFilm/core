@@ -1,10 +1,13 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { GetCustomDomains } from '../../../../../__generated__/GetCustomDomains'
+import { GET_CUSTOM_DOMAINS } from '../../../Team/CustomDomainDialog/CustomDomainDialog'
 import { defaultJourney } from '../../data'
 
 import { JourneyLink } from './JourneyLink'
@@ -21,9 +24,51 @@ jest.mock('next/router', () => ({
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
+const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
+  request: {
+    query: GET_CUSTOM_DOMAINS,
+    variables: {
+      teamId: 'teamId'
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      customDomains: [
+        {
+          __typename: 'CustomDomain',
+          name: 'mockdomain.com',
+          apexName: 'mockdomain.com',
+          id: 'customDomainId',
+          teamId: 'teamId',
+          verification: {
+            __typename: 'CustomDomainVerification',
+            verified: true,
+            verification: []
+          },
+          configuration: {
+            __typename: 'VercelDomainConfiguration',
+            misconfigured: false
+          },
+          journeyCollection: {
+            __typename: 'JourneyCollection',
+            id: 'journeyCollectionId',
+            journeys: []
+          }
+        }
+      ]
+    }
+  }))
+}
+
 describe('JourneyLink', () => {
   const push = jest.fn()
   const on = jest.fn()
+
+  const journeyWithTeam = { ...defaultJourney, team: { id: 'teamId' } }
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
 
   it('should handle edit journey slug', async () => {
     mockedUseRouter.mockReturnValue({
@@ -108,5 +153,33 @@ describe('JourneyLink', () => {
         { shallow: true }
       )
     })
+  })
+
+  it('should show custom domain if it exists', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[getCustomDomainMockARecord]}>
+          <JourneyProvider
+            value={{
+              journey: journeyWithTeam as JourneyFields,
+              variant: 'admin'
+            }}
+          >
+            <JourneyLink />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
+    )
+    expect(getByRole('textbox')).toHaveValue('https://mockdomain.com/default')
   })
 })

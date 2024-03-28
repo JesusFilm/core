@@ -1,12 +1,16 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
+import Typography from '@mui/material/Typography'
+import Stack from '@mui/system/Stack'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import GlobeIcon from '@core/shared/ui/icons/Globe'
 import MoreIcon from '@core/shared/ui/icons/More'
 import Plus1Icon from '@core/shared/ui/icons/Plus1'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
@@ -41,13 +45,28 @@ const DynamicTeamManageDialog = dynamic(
   { ssr: false }
 )
 
+const DynamicCustomDomainDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CustomDomainDialog" */
+      '../CustomDomainDialog'
+    ).then((mod) => mod.CustomDomainDialog),
+  { ssr: false }
+)
+
 export function TeamMenu(): ReactElement {
+  const flags = useFlags()
+
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
+
   const [teamCreateOpen, setTeamCreateOpen] = useState<boolean | undefined>()
   const [teamUpdateOpen, setTeamUpdateOpen] = useState<boolean | undefined>()
   const [teamManageOpen, setTeamManageOpen] = useState<boolean | undefined>()
+  const [customDomainOpen, setCustomDomainOpen] = useState<
+    boolean | undefined
+  >()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -86,7 +105,40 @@ export function TeamMenu(): ReactElement {
           onClose={() => setTeamManageOpen(false)}
         />
       )}
+      {customDomainOpen != null && flags.customDomain && (
+        <DynamicCustomDomainDialog
+          open={customDomainOpen}
+          onClose={() => setCustomDomainOpen(false)}
+        />
+      )}
 
+      {activeTeam != null && activeTeam?.customDomains[0]?.name != null && (
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="flex-end"
+          gap={1}
+          sx={{
+            mr: { xs: 0, sm: 4 },
+            display: { xs: 'none', sm: 'flex' },
+            width: { xs: 0, sm: 300, md: 250 }
+          }}
+        >
+          <GlobeIcon sx={{ color: 'primary.main' }} />
+          <Typography
+            component="a"
+            variant="subtitle3"
+            sx={{
+              whiteSpace: 'nowrap',
+              color: 'primary.main',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
+          >
+            {activeTeam.customDomains[0].name}
+          </Typography>
+        </Stack>
+      )}
       {activeTeam != null && (
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
           <TeamAvatars
@@ -99,6 +151,7 @@ export function TeamMenu(): ReactElement {
           />
         </Box>
       )}
+
       <IconButton edge="end" color="inherit" onClick={handleShowMenu}>
         <MoreIcon />
       </IconButton>
@@ -131,6 +184,19 @@ export function TeamMenu(): ReactElement {
             setAnchorEl(null)
           }}
         />
+        {flags.customDomain && (
+          <MenuItem
+            disabled={activeTeam == null}
+            key="custom-domain"
+            label={t('Custom Domain')}
+            icon={<GlobeIcon />}
+            onClick={() => {
+              setRoute('custom-domain')
+              setCustomDomainOpen(true)
+              setAnchorEl(null)
+            }}
+          />
+        )}
         <MenuItem
           disabled={activeTeam == null}
           key="rename-team"

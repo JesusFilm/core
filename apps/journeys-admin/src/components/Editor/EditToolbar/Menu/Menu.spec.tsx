@@ -8,6 +8,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
+import { GetCustomDomains } from '../../../../../__generated__/GetCustomDomains'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -15,6 +16,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
+import { GET_CUSTOM_DOMAINS } from '../../../Team/CustomDomainDialog/CustomDomainDialog'
 import { BLOCK_DUPLICATE } from '../DuplicateBlock/DuplicateBlock'
 
 import { GET_ROLE } from './Menu'
@@ -32,6 +34,42 @@ jest.mock('next/router', () => ({
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
+const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
+  request: {
+    query: GET_CUSTOM_DOMAINS,
+    variables: {
+      teamId: 'teamId'
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      customDomains: [
+        {
+          __typename: 'CustomDomain',
+          name: 'mockdomain.com',
+          apexName: 'mockdomain.com',
+          id: 'customDomainId',
+          teamId: 'teamId',
+          verification: {
+            __typename: 'CustomDomainVerification',
+            verified: true,
+            verification: []
+          },
+          configuration: {
+            __typename: 'VercelDomainConfiguration',
+            misconfigured: false
+          },
+          journeyCollection: {
+            __typename: 'JourneyCollection',
+            id: 'journeyCollectionId',
+            journeys: []
+          }
+        }
+      ]
+    }
+  }))
+}
 
 describe('EditToolbar Menu', () => {
   const push = jest.fn()
@@ -313,6 +351,51 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+  })
+
+  it('should provide customDomain hostname to preview button', async () => {
+    const selectedBlock: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'stepId',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+
+    const { getByRole, getByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[getCustomDomainMockARecord]}>
+          <JourneyProvider
+            value={{
+              journey: {
+                status: JourneyStatus.draft,
+                tags: [],
+                team: {
+                  id: 'teamId'
+                }
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock }}>
+              <Menu />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
+    )
+    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menu')).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+      'href',
+      '/api/preview?slug=&hostname=mockdomain.com'
+    )
   })
 
   it('should close the menu upon clicking duplicating from menu', async () => {

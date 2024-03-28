@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { SidePanel } from '../../PageWrapper/SidePanel'
 import { SidePanelContainer } from '../../PageWrapper/SidePanelContainer'
@@ -7,8 +7,6 @@ import { SidePanelContainer } from '../../PageWrapper/SidePanelContainer'
 import { AccessControl } from './AccessControl'
 import { JourneyDetails } from './JourneyDetails'
 import { JourneyLink } from './JourneyLink'
-import { EmbedJourneyDialog } from './JourneyLink/EmbedJourneyDialog'
-import { SlugDialog } from './JourneyLink/SlugDialog'
 
 interface PropertiesProps {
   isPublisher?: boolean
@@ -16,9 +14,6 @@ interface PropertiesProps {
 
 export function Properties({ isPublisher }: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
-  const [showSlugDialog, setShowSlugDialog] = useState(false)
-  const [showEmbedDialog, setShowEmbedDialog] = useState(false)
 
   return (
     <>
@@ -33,14 +28,6 @@ export function Properties({ isPublisher }: PropertiesProps): ReactElement {
           <JourneyLink />
         </SidePanelContainer>
       </SidePanel>
-      <SlugDialog
-        open={showSlugDialog}
-        onClose={() => setShowSlugDialog(false)}
-      />
-      <EmbedJourneyDialog
-        open={showEmbedDialog}
-        onClose={() => setShowEmbedDialog(false)}
-      />
     </>
   )
 }

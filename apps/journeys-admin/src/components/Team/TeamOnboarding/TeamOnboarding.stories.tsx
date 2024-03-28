@@ -39,7 +39,8 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
         title: 'Jesus Film Project',
         publicTitle: null,
         __typename: 'Team',
-        userTeams: []
+        userTeams: [],
+        customDomains: []
       }
     }
   }
@@ -57,7 +58,8 @@ const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
           title: 'Team Title',
           publicTitle: null,
           __typename: 'Team',
-          userTeams: []
+          userTeams: [],
+          customDomains: []
         }
       ],
       getJourneyProfile: {

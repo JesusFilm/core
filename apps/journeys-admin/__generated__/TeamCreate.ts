@@ -23,12 +23,19 @@ export interface TeamCreate_teamCreate_userTeams {
   user: TeamCreate_teamCreate_userTeams_user;
 }
 
+export interface TeamCreate_teamCreate_customDomains {
+  __typename: "CustomDomain";
+  id: string;
+  name: string;
+}
+
 export interface TeamCreate_teamCreate {
   __typename: "Team";
   id: string;
   title: string;
   publicTitle: string | null;
   userTeams: TeamCreate_teamCreate_userTeams[];
+  customDomains: TeamCreate_teamCreate_customDomains[];
 }
 
 export interface TeamCreate {

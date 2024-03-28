@@ -1,0 +1,1 @@
+export { useCustomDomainsQuery } from './useCustomDomainsQuery'

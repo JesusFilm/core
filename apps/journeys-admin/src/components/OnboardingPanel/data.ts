@@ -83,7 +83,8 @@ export const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
           title: 'Team Title',
           __typename: 'Team',
           publicTitle: 'Public Team Title',
-          userTeams: []
+          userTeams: [],
+          customDomains: []
         }
       ],
       getJourneyProfile: {

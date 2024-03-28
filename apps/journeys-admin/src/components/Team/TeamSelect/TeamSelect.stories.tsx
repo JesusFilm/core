@@ -36,14 +36,16 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
           title: 'Jesus Film Project',
           publicTitle: null,
           __typename: 'Team',
-          userTeams: []
+          userTeams: [],
+          customDomains: []
         },
         {
           id: 'teamId1',
           title: "Brian's Team",
           publicTitle: null,
           __typename: 'Team',
-          userTeams: []
+          userTeams: [],
+          customDomains: []
         }
       ],
       getJourneyProfile: {

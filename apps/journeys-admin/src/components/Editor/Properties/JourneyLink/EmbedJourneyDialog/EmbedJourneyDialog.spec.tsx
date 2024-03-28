@@ -14,7 +14,11 @@ describe('embedJourneyDialog', () => {
   it('closes the modal on cancel click', () => {
     const { getByRole } = render(
       <SnackbarProvider>
-        <EmbedJourneyDialog open onClose={onClose} />
+        <EmbedJourneyDialog
+          open
+          onClose={onClose}
+          customDomainName={undefined}
+        />
       </SnackbarProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
@@ -24,7 +28,11 @@ describe('embedJourneyDialog', () => {
   it('should have the terms and conditions link', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <EmbedJourneyDialog open onClose={onClose} />
+        <EmbedJourneyDialog
+          open
+          onClose={onClose}
+          customDomainName={undefined}
+        />
       </SnackbarProvider>
     )
     expect(getByText('Terms of agreement').closest('a')).toHaveAttribute(
@@ -58,7 +66,11 @@ describe('embedJourneyDialog', () => {
       const embedCode = `<iframe src="${process.env.NEXT_PUBLIC_JOURNEYS_URL}/embed/undefined" style="border: 0; width: 360px; height: 640px;" allow="fullscreen; autoplay" allowfullscreen></iframe>`
       const { getByText, getByRole } = render(
         <SnackbarProvider>
-          <EmbedJourneyDialog open onClose={onClose} />
+          <EmbedJourneyDialog
+            open
+            onClose={onClose}
+            customDomainName={undefined}
+          />
         </SnackbarProvider>
       )
       expect(getByRole('textbox')).toHaveValue(embedCode)

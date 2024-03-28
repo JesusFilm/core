@@ -297,6 +297,20 @@ export interface CreateVerificationRequestInput {
   redirect?: string | null;
 }
 
+export interface CustomDomainCreateInput {
+  teamId: string;
+  name: string;
+  journeyCollectionId?: string | null;
+  routeAllTeamJourneys?: boolean | null;
+}
+
+export interface CustomDomainUpdateInput {
+  id: string;
+  name?: string | null;
+  journeyCollectionId?: string | null;
+  routeAllTeamJourneys?: boolean | null;
+}
+
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
@@ -362,6 +376,20 @@ export interface ImageBlockUpdateInput {
   blurhash?: string | null;
   width?: number | null;
   height?: number | null;
+}
+
+export interface JourneyCollectionCreateInput {
+  id?: string | null;
+  teamId: string;
+  title?: string | null;
+  journeyIds?: string[] | null;
+  customDomain?: CustomDomainCreateInput | null;
+}
+
+export interface JourneyCollectionUpdateInput {
+  id: string;
+  title?: string | null;
+  journeyIds?: string[] | null;
 }
 
 export interface JourneyProfileUpdateInput {
