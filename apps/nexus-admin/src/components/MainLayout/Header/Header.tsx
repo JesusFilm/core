@@ -9,8 +9,9 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useUser } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
+import { useUser } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { FC, MouseEvent, useState } from 'react'
 
 interface HeaderProps {
@@ -23,6 +24,7 @@ export const Header: FC<HeaderProps> = ({ title, hasBack }) => {
   const accountMenuOpen = Boolean(accountMenu)
   const user = useUser()
   const router = useRouter()
+  const { t } = useTranslation()
 
   const handleAccountMenuOpen = (event: MouseEvent<HTMLElement>): void => {
     setAccountMenu(event.currentTarget)
@@ -39,7 +41,7 @@ export const Header: FC<HeaderProps> = ({ title, hasBack }) => {
   return (
     <Stack direction="row" alignItems="center" justifyContent="space-between">
       <Stack direction="row" alignItems="center">
-        {hasBack && (
+        {hasBack === true && (
           <IconButton onClick={() => router.back()}>
             <KeyboardArrowLeftIcon
               sx={{
@@ -97,7 +99,9 @@ export const Header: FC<HeaderProps> = ({ title, hasBack }) => {
             px: 4
           }}
         >
-          <Typography variant="subtitle3">Hi {user?.displayName},</Typography>
+          <Typography variant="subtitle3">
+            {t('Hi')} {user?.displayName},
+          </Typography>
           <Typography variant="caption">{user?.email}</Typography>
         </Stack>
         <Divider />
@@ -108,7 +112,7 @@ export const Header: FC<HeaderProps> = ({ title, hasBack }) => {
           }}
           onClick={logout}
         >
-          Logout
+          {t('Logout')}
         </MenuItem>
       </Menu>
     </Stack>

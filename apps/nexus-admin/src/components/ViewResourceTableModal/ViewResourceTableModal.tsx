@@ -3,6 +3,7 @@ import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 
 import { Modal } from '../Modal'
@@ -24,6 +25,8 @@ export const ViewResourceTableModal: FC<ViewResourceTableModalProps> = ({
   allColumnsVisibility,
   resetColumnsVisibility
 }) => {
+  const { t } = useTranslation()
+
   return (
     <Modal
       title="Select Columns"
@@ -32,8 +35,8 @@ export const ViewResourceTableModal: FC<ViewResourceTableModalProps> = ({
       handleClose={closeModal}
       actions={
         <Stack direction="row" justifyContent="flex-end" spacing={2}>
-          <Button onClick={closeModal}>Cancel</Button>
-          <Button onClick={resetColumnsVisibility}>Reset</Button>
+          <Button onClick={closeModal}>{t('Cancel')}</Button>
+          <Button onClick={resetColumnsVisibility}>{t('Reset')}</Button>
         </Stack>
       }
     >

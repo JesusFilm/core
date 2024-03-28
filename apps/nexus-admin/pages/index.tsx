@@ -10,6 +10,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { Nexuses, Nexuses_nexuses } from '../__generated__/Nexuses'
@@ -33,6 +34,7 @@ function Index(): ReactElement {
   const router = useRouter()
 
   const { data, loading } = useQuery<Nexuses>(GET_NEXUSES)
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (data !== undefined) {
@@ -76,7 +78,7 @@ function Index(): ReactElement {
                 </CardContent>
                 <CardActions>
                   <Button onClick={() => redirectToDashboard(nexusApp.id)}>
-                    Select
+                    {t('Select')}
                   </Button>
                 </CardActions>
               </Card>
@@ -85,8 +87,9 @@ function Index(): ReactElement {
         </Box>
       ) : (
         <Typography>
-          You currently don&apos;t have nexus apps. Please start by creating
-          one.
+          {t(
+            "You currently don't have nexus apps. Please start by creating one"
+          )}
         </Typography>
       )}
       <Fab color="primary" onClick={() => setOpenCreateNexusModal(true)}>

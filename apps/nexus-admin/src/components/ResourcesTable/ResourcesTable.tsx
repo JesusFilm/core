@@ -9,6 +9,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { DataGrid, GridCellParams } from '@mui/x-data-grid'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { FC, useState } from 'react'
 
 import { Resources_resources } from '../../../__generated__/Resources'
@@ -37,6 +38,7 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
     pageSize: 10
   })
   const router = useRouter()
+  const { t } = useTranslation()
 
   const defaultColumnsVisibility = {
     status: true,
@@ -182,7 +184,7 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
             }}
           >
             <BorderColorOutlinedIcon />
-            <Typography>Edit</Typography>
+            <Typography>{t('Edit')}</Typography>
           </Stack>
           <Stack
             direction="row"
@@ -195,7 +197,7 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
             }}
           >
             <DeleteOutlineOutlinedIcon />
-            <Typography>Delete</Typography>
+            <Typography>{t('Delete')}</Typography>
           </Stack>
         </Stack>
       </Popover>

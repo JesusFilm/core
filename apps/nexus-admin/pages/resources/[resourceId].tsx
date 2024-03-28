@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -8,13 +8,15 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { FC, SyntheticEvent, useEffect, useState } from 'react'
 
 import { ChannelTable } from '../../src/components/ChannelTable'
 import { LocalizationTable } from '../../src/components/LocalizationTable/LocalizationTable'
 import { MainLayout } from '../../src/components/MainLayout'
+
 import { GET_RESOURCE } from '.'
 
 const ResourceDetailsPage: FC = () => {
@@ -22,6 +24,7 @@ const ResourceDetailsPage: FC = () => {
   const router = useRouter()
   const { resourceId } = router.query
   const [localizations, setLocalizations] = useState([])
+  const { t } = useTranslation()
 
   const { data, loading } = useQuery(GET_RESOURCE, {
     skip: String(resourceId) === '',
@@ -44,7 +47,7 @@ const ResourceDetailsPage: FC = () => {
   }
 
   return (
-    <MainLayout title="Video Details" hasBack={true}>
+    <MainLayout title="Video Details" hasBack>
       <Stack
         sx={{
           pt: 4
@@ -62,7 +65,7 @@ const ResourceDetailsPage: FC = () => {
           />
           <Stack direction="row" alignItems="center" spacing={1}>
             <InfoOutlinedIcon />
-            <Typography>Thumbnail for Jesus Film</Typography>
+            <Typography>{t('Thumbnail for Jesus Film')}</Typography>
           </Stack>
         </Stack>
         <Paper>
@@ -75,9 +78,9 @@ const ResourceDetailsPage: FC = () => {
             }}
           >
             <Stack spacing={2}>
-              <Typography variant="h5">Video Details</Typography>
+              <Typography variant="h5">{t('Video Details')}</Typography>
               <Typography variant="subtitle3">
-                Additional description if required
+                {t('Additional description if required')}
               </Typography>
             </Stack>
             <Stack
@@ -93,7 +96,7 @@ const ResourceDetailsPage: FC = () => {
                   flex: 1
                 }}
               />
-              <Button variant="contained">Search</Button>
+              <Button variant="contained">{t('Search')}</Button>
             </Stack>
           </Stack>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

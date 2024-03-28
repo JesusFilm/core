@@ -11,6 +11,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { DataGrid, GridCellParams } from '@mui/x-data-grid'
 import { useGoogleLogin } from '@react-oauth/google'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { FC, useState } from 'react'
 
@@ -51,6 +52,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
     pageSize: 10
   })
   const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation()
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
@@ -185,7 +187,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
             }}
           >
             <BorderColorOutlinedIcon />
-            <Typography>Edit</Typography>
+            <Typography>{t('Edit')}</Typography>
           </Stack>
           <Stack
             direction="row"
@@ -198,7 +200,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
             }}
           >
             <DeleteOutlineOutlinedIcon />
-            <Typography>Delete</Typography>
+            <Typography>{t('Delete')}</Typography>
           </Stack>
         </Stack>
       </Popover>

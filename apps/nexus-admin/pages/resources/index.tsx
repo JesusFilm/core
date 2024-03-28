@@ -1,8 +1,9 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
@@ -114,6 +115,7 @@ const ResourcesPage: FC = () => {
   const nexusId = isSSRMode ? localStorage.getItem('nexusId') : ''
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation()
 
   const { data, loading } = useQuery<Resources>(GET_RESOURCES, {
     variables: {
@@ -234,7 +236,7 @@ const ResourcesPage: FC = () => {
             variant="contained"
             onClick={async () => await openGooglePicker()}
           >
-            Load from Google drive
+            {t('Load from Google drive')}
           </Button>
           <Button
             variant="contained"
@@ -242,7 +244,7 @@ const ResourcesPage: FC = () => {
               void router.push('/resources/import-youtube-template')
             }}
           >
-            Import from Youtube Template
+            {t('Import from Youtube Template')}
           </Button>
         </Stack>
         <ResourcesTable

@@ -2,6 +2,7 @@ import CircleIcon from '@mui/icons-material/Circle'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Box from '@mui/material/Box'
+import Chip, { ChipOwnProps } from '@mui/material/Chip'
 import CircularProgress, {
   CircularProgressProps
 } from '@mui/material/CircularProgress'
@@ -15,14 +16,14 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TablePagination from '@mui/material/TablePagination'
 import TableRow from '@mui/material/TableRow'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { format, parseISO } from 'date-fns'
+import { useTranslation } from 'next-i18next'
 import { FC, ReactElement, useState } from 'react'
 
 import { Batches_batches } from '../../../__generated__/Batches'
 
-import Chip from '@mui/material/Chip'
-import Tooltip from '@mui/material/Tooltip'
 import { BatchesTableHeader } from './BatchesTableHeader'
 
 interface BatchesTableProps {
@@ -33,6 +34,7 @@ interface BatchesTableProps {
 export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
   const [page, setPage] = useState(0)
   const [pageSize, setPageSize] = useState(10)
+  const { t } = useTranslation()
 
   return (
     <TableContainer component={Paper}>
@@ -49,7 +51,7 @@ export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
                   fontFamily: 'Montserrat'
                 }}
               >
-                Batch Number
+                {t('Batch Number')}
               </Typography>
             </TableCell>
             <TableCell>
@@ -60,7 +62,7 @@ export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
                   fontFamily: 'Montserrat'
                 }}
               >
-                Status
+                {t('Status')}
               </Typography>
             </TableCell>
             <TableCell>
@@ -71,7 +73,7 @@ export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
                   fontFamily: 'Montserrat'
                 }}
               >
-                Progress
+                {t('Progress')}
               </Typography>
             </TableCell>
             <TableCell>
@@ -82,7 +84,7 @@ export const BatchesTable: FC<BatchesTableProps> = ({ data, loading }) => {
                   fontFamily: 'Montserrat'
                 }}
               >
-                Created At
+                {t('Created At')}
               </Typography>
             </TableCell>
           </TableRow>
@@ -138,8 +140,9 @@ const CircularProgressWithLabel = (
 
 const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
   const [open, setOpen] = useState(false)
+  const { t } = useTranslation()
 
-  const getChipColor = (status: string) => {
+  const getChipColor = (status: string): ChipOwnProps['color'] => {
     if (status === 'completed') return 'success'
     if (status === 'failed') return 'error'
     return 'warning'
@@ -173,7 +176,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                       fontFamily: 'Montserrat'
                     }}
                   >
-                    Type
+                    {t('Type')}
                   </TableCell>
                   <TableCell
                     sx={{
@@ -182,7 +185,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                       fontFamily: 'Montserrat'
                     }}
                   >
-                    Status
+                    {t('Status')}
                   </TableCell>
                   <TableCell
                     sx={{
@@ -191,7 +194,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                       fontFamily: 'Montserrat'
                     }}
                   >
-                    Progress
+                    {t('Progress')}
                   </TableCell>
                   <TableCell
                     sx={{
@@ -200,7 +203,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                       fontFamily: 'Montserrat'
                     }}
                   >
-                    Channel ID
+                    {t('Channel ID')}
                   </TableCell>
                   <TableCell
                     sx={{
@@ -209,7 +212,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                       fontFamily: 'Montserrat'
                     }}
                   >
-                    Video ID
+                    {t('Video ID')}
                   </TableCell>
                   <TableCell
                     sx={{
@@ -218,7 +221,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                       fontFamily: 'Montserrat'
                     }}
                   >
-                    Error
+                    {t('Error')}
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -241,7 +244,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                       {task.metadata?.localization?.videoId}
                     </TableCell>
                     <TableCell>
-                      {task.error ? (
+                      {task.error !== undefined ? (
                         <Tooltip title={task.error}>
                           <IconButton>
                             <CircleIcon

@@ -7,6 +7,7 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useFormik } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 import { object, string } from 'yup'
 
@@ -40,6 +41,7 @@ export const CreateChannelModal: FC<CreateChannelModalProps> = ({
       formik.resetForm()
     }
   })
+  const { t } = useTranslation()
 
   const closeModal = (): void => {
     onClose()
@@ -53,8 +55,8 @@ export const CreateChannelModal: FC<CreateChannelModalProps> = ({
       handleClose={closeModal}
       actions={
         <Stack direction="row" justifyContent="flex-end" spacing={2}>
-          <Button onClick={closeModal}>Cancel</Button>
-          <Button onClick={formik.submitForm}>Create</Button>
+          <Button onClick={closeModal}>{t('Cancel')}</Button>
+          <Button onClick={formik.submitForm}>{t('Create')}</Button>
         </Stack>
       }
     >
@@ -71,7 +73,7 @@ export const CreateChannelModal: FC<CreateChannelModalProps> = ({
           helperText={Boolean(formik.touched.name) && formik.errors.name}
         />
         <FormControl variant="filled" sx={{ m: 1, minWidth: 120 }}>
-          <InputLabel>Platform Type</InputLabel>
+          <InputLabel>{t('Platform Type')}</InputLabel>
           <Select
             id="name"
             name="platform"
@@ -83,7 +85,7 @@ export const CreateChannelModal: FC<CreateChannelModalProps> = ({
               Boolean(formik.errors.platform)
             }
           >
-            <MenuItem value="youtube">Youtube</MenuItem>
+            <MenuItem value="youtube">{t('Youtube')}</MenuItem>
           </Select>
         </FormControl>
         {Boolean(formik.touched.platform) &&

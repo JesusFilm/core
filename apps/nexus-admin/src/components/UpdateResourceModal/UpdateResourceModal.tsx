@@ -2,6 +2,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useFormik } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { FC, useEffect } from 'react'
 import { object, string } from 'yup'
 
@@ -35,6 +36,7 @@ export const UpdateResourceModal: FC<UpdateResourceModalProps> = ({
       formik.resetForm()
     }
   })
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (data !== undefined) {
@@ -56,8 +58,8 @@ export const UpdateResourceModal: FC<UpdateResourceModalProps> = ({
       handleClose={closeModal}
       actions={
         <Stack direction="row" justifyContent="flex-end" spacing={2}>
-          <Button onClick={closeModal}>Cancel</Button>
-          <Button onClick={formik.submitForm}>Update</Button>
+          <Button onClick={closeModal}>{t('Cancel')}</Button>
+          <Button onClick={formik.submitForm}>{t('Update')}</Button>
         </Stack>
       }
     >

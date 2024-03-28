@@ -3,6 +3,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useFormik } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 import { object, string } from 'yup'
 
@@ -34,6 +35,7 @@ export const CreateNexusModal: FC<CreateNexusModalProps> = ({
   onClose
 }) => {
   const [nexusCreate] = useMutation(NEXUS_CREATE)
+  const { t } = useTranslation()
 
   const formik = useFormik({
     initialValues: {
@@ -61,8 +63,8 @@ export const CreateNexusModal: FC<CreateNexusModalProps> = ({
       handleClose={onClose}
       actions={
         <Stack direction="row" justifyContent="flex-end" spacing={2}>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={formik.submitForm}>Create</Button>
+          <Button onClick={onClose}>{t('Cancel')}</Button>
+          <Button onClick={formik.submitForm}>{t('Create')}</Button>
         </Stack>
       }
     >

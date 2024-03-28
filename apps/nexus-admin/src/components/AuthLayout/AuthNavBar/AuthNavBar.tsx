@@ -1,8 +1,11 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 
 export const AuthNavBar: FC = () => {
+  const { t } = useTranslation()
+
   return (
     <Stack
       direction="row"
@@ -25,7 +28,7 @@ export const AuthNavBar: FC = () => {
           mr: 2
         }}
       >
-        Nexus
+        {t('Nexus')}
       </Typography>
       <Typography
         sx={{
@@ -35,7 +38,7 @@ export const AuthNavBar: FC = () => {
           color: '#ffffff'
         }}
       >
-        Youtube Uploader
+        {t('Youtube Uploader')}
       </Typography>
     </Stack>
   )

@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { getApp } from 'firebase/app'
 import { GoogleAuthProvider, getAuth } from 'firebase/auth'
+import { useTranslation } from 'next-i18next'
 import { FC, useEffect, useState } from 'react'
 
 import { StyledFirebaseAuth } from '@core/shared/ui/StyledFirebaseAuth'
@@ -11,6 +12,7 @@ export const Login: FC = () => {
   // Do not SSR FirebaseUI, because it is not supported.
   // https://github.com/firebase/firebaseui-web/issues/213
   const [renderAuth, setRenderAuth] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -59,7 +61,7 @@ export const Login: FC = () => {
                 fontWeight: 700
               }}
             >
-              Login
+              {t('Login')}
             </Typography>
             <Typography
               sx={{
@@ -70,7 +72,7 @@ export const Login: FC = () => {
                 fontWeight: 400
               }}
             >
-              Welcome to Nexus
+              {t('Welcome to Nexus')}
             </Typography>
           </Stack>
           <Box

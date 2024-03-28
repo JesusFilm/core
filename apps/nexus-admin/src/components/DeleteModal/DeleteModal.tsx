@@ -1,6 +1,7 @@
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 
 import { Modal } from '../Modal'
@@ -18,6 +19,8 @@ export const DeleteModal: FC<DeleteModalProps> = ({
   onClose,
   onDelete
 }) => {
+  const { t } = useTranslation()
+
   return (
     <Modal
       title="Delete"
@@ -25,8 +28,8 @@ export const DeleteModal: FC<DeleteModalProps> = ({
       handleClose={onClose}
       actions={
         <Stack direction="row" justifyContent="flex-end" spacing={2}>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={onDelete}>Delete</Button>
+          <Button onClick={onClose}>{t('Cancel')}</Button>
+          <Button onClick={onDelete}>{t('Delete')}</Button>
         </Stack>
       }
     >

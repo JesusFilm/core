@@ -8,8 +8,9 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useGoogleLogin } from '@react-oauth/google'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
@@ -65,6 +66,7 @@ const ImportYouTubeTemplatePage: FC = () => {
     typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation()
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
@@ -165,7 +167,7 @@ const ImportYouTubeTemplatePage: FC = () => {
         <Stack spacing={8}>
           <Stack alignItems="flex-start" spacing={2}>
             <Typography variant="h6">
-              Pick Template From Google Drive
+              {t('Pick Template From Google Drive')}
             </Typography>
             {selectedTemplateFile === null && (
               <Button
@@ -181,7 +183,7 @@ const ImportYouTubeTemplatePage: FC = () => {
                   }
                 }}
               >
-                Upload Youtube Template
+                {t('Upload Youtube Template')}
               </Button>
             )}
             {selectedTemplateFile !== null && (
@@ -196,7 +198,7 @@ const ImportYouTubeTemplatePage: FC = () => {
           </Stack>
           <Stack alignItems="flex-start" spacing={2}>
             <Typography variant="h6">
-              Pick Google Drive Directory For Videos
+              {t('Pick Google Drive Directory For Videos')}
             </Typography>
             {selectedVideosDirectory === null && (
               <Button
@@ -212,7 +214,7 @@ const ImportYouTubeTemplatePage: FC = () => {
                   }
                 }}
               >
-                Choose Video Folder
+                {t('Choose Video Folder')}
               </Button>
             )}
             {selectedVideosDirectory !== null && (
@@ -236,7 +238,7 @@ const ImportYouTubeTemplatePage: FC = () => {
               disabled={loading}
               onClick={router.back}
             >
-              Cancel
+              {t('Cancel')}
             </Button>
             <Button
               variant="contained"
@@ -248,7 +250,7 @@ const ImportYouTubeTemplatePage: FC = () => {
               }
               onClick={uploadYoutubeTemplate}
             >
-              Upload Youtube Template
+              {t('Upload Youtube Template')}
             </Button>
           </Stack>
         </Stack>
