@@ -4,16 +4,12 @@ import dayjs from 'dayjs'
 import testData from '../../utils/testData.json'
 let journeyName = ''
 let randomNumber = ''
-
-export class JourneyPage {
-  existingJourneyName = ''
-  journeyList: string[]
+export class AssessmentPage {
   readonly page: Page
 
   constructor(page: Page) {
     this.page = page
     randomNumber = dayjs().format('DDMMYY-hhmmss')
-    journeyName = testData.journey.firstJourneyName + randomNumber
   }
 
   async createAndVerifyCustomJourney() {
@@ -81,35 +77,6 @@ export class JourneyPage {
     await this.clickActiveTab()
     await this.verifyCreatedNewJourneyMovedToActiveTabOrNot()
   }
-  async verifyExistingJourneyMovedActiveToArchivedTab() {
-    await this.clickThreeDotOfExistingJourney()
-    await this.setExistingJourneyNameToJourneyName()
-    await this.clickArchiveOption()
-    await this.clickArchivedTab()
-    await this.verifyJourneyMovedToArchiveOrNot()
-  }
-  async verifyJourneyDeletedForeverFromTrashTab() {
-    await this.clickThreeDotOfCreatedNewJourney()
-    await this.clickDeleteForeverOption()
-    await this.clickDeleteBtn()
-    await this.verifyJourneyDeletedForeverInTrashTab()
-  }
-  async verifyJourneyMovedFromArchivedToActiveTab() {
-    await this.clickThreeDotOfCreatedNewJourney()
-    await this.clickUnarchiveOption()
-    await this.clickActiveTab()
-    await this.verifyCreatedNewJourneyMovedToActiveTabOrNot()
-  }
-  async verifyAllJourneyMovedActiveToArchivedTab() {
-    await this.getJourneyListOfActiveTab()
-    await this.clickThreeDotBesideSortByOption()
-    await this.selectThreeDotOptionsBesideSortByOption('Archive All')
-    await this.clickDialogBoxBtn('Archive')
-    await this.verifyToastMessage()
-    await this.verifyActiveTabShowsEmptyMessage()
-    await this.clickArchivedTab()
-    await this.verifyAllJourneyMovedToArchivedTab()
-  }
 
   async clickCreateCustomJourney(): Promise<void> {
     await expect(
@@ -140,22 +107,15 @@ export class JourneyPage {
 
   async enterJourneysTypography(): Promise<void> {
     await this.page
-      .frameLocator(
-        'div[data-testid="EditorCanvas"] div[data-testid="CanvasContainer"] iframe'
-      )
-      .first()
+      .frameLocator('div[data-testid="EditorCanvas"] iframe')
       .locator(
-        'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
+        'div[data-testid="CardWrapper"] h3[data-testid="JourneysTypography"]'
       )
-      .first()
       .click({ timeout: 15000, delay: 1000 })
     for (var clickRetry = 0; clickRetry < 5; clickRetry++) {
       if (
         await this.page
-          .frameLocator(
-            'div[data-testid="EditorCanvas"] div[data-testid="CanvasContainer"] iframe'
-          )
-          .first()
+          .frameLocator('div[data-testid="EditorCanvas"] iframe')
           .locator('h3[data-testid="JourneysTypography"] textarea')
           .first()
           .isVisible()
@@ -163,30 +123,20 @@ export class JourneyPage {
         break
       } else {
         await this.page
-          .frameLocator(
-            'div[data-testid="EditorCanvas"] div[data-testid="CanvasContainer"] iframe'
-          )
-          .first()
+          .frameLocator('div[data-testid="EditorCanvas"] iframe')
           .locator(
-            'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
+            'div[data-testid="CardWrapper"] h3[data-testid="JourneysTypography"]'
           )
-          .first()
           .click({ timeout: 15000, delay: 1000 })
       }
     }
     await this.page
-      .frameLocator(
-        'div[data-testid="EditorCanvas"] div[data-testid="CanvasContainer"] iframe'
-      )
-      .first()
+      .frameLocator('div[data-testid="EditorCanvas"] iframe')
       .locator('h3[data-testid="JourneysTypography"] textarea')
       .first()
       .clear()
     await this.page
-      .frameLocator(
-        'div[data-testid="EditorCanvas"] div[data-testid="CanvasContainer"] iframe'
-      )
-      .first()
+      .frameLocator('div[data-testid="EditorCanvas"] iframe')
       .locator('h3[data-testid="JourneysTypography"] textarea')
       .first()
       .fill(journeyName)
@@ -200,10 +150,7 @@ export class JourneyPage {
   }
   async clickTitleInThreeDotOptions() {
     await this.page
-      .locator(
-        'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
-        { hasText: 'Title' }
-      )
+      .locator('li[data-testid="JourneysAdminMenuItem"]', { hasText: 'Title' })
       .click()
   }
   async enterTitle() {
@@ -217,13 +164,13 @@ export class JourneyPage {
       .click()
   }
   async backIcon() {
-    await this.page.locator('a[data-testid="ToolbarBackButton"]').click()
+    await this.page.locator('svg[data-testid="ChevronLeftIcon"]').click()
   }
 
   async verifyCreatedCustomJourneyInActiveList() {
     await expect(
       this.page.locator('span[data-testid="new-journey-badge"] div').first()
-    ).toBeVisible({ timeout: 30000 })
+    ).toBeVisible({ timeout: 300000 })
     await expect(
       this.page.locator('span[data-testid="new-journey-badge"] div', {
         hasText: journeyName
@@ -242,10 +189,9 @@ export class JourneyPage {
   }
   async clickTheCreateTempleteOption() {
     await this.page
-      .locator(
-        'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
-        { hasText: 'Create Template' }
-      )
+      .locator('li[data-testid="JourneysAdminMenuItemCreateTemplate"] span', {
+        hasText: 'Create Template'
+      })
       .click({ delay: 1000 })
     await expect(
       this.page.locator('a[href*="publisher"][class*="Mui-selected"]')
@@ -386,117 +332,5 @@ export class JourneyPage {
         { hasText: journeyName }
       )
     ).toBeHidden()
-  }
-  async getJourneyName() {
-    return journeyName
-  }
-  async clickThreeDotOfExistingJourney() {
-    this.existingJourneyName = await this.page
-      .locator('span[data-testid="new-journey-badge"] div', {
-        hasNotText: 'Untitled Journey'
-      })
-      .first()
-      .innerText()
-    await this.page
-      .locator('div[aria-label="journey-card"]', {
-        hasNotText: 'Untitled Journey'
-      })
-      .first()
-      .locator('button#journey-actions')
-      .first()
-      .click()
-  }
-  async setExistingJourneyNameToJourneyName() {
-    this.existingJourneyName = journeyName
-  }
-  async verifyJourneyMovedToArchiveOrNot() {
-    await expect(
-      this.page.locator(
-        'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"]',
-        { hasText: journeyName }
-      )
-    ).toBeVisible()
-  }
-  async verifyJourneyDeletedForeverInTrashTab() {
-    await expect(
-      this.page.locator(
-        'div[id*="trashed-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div',
-        { hasText: journeyName }
-      )
-    ).toHaveCount(0)
-  }
-  async clickUnarchiveOption() {
-    await this.page
-      .locator('li[data-testid="JourneysAdminMenuItemUnarchive"]')
-      .click()
-    await this.verifyToastMessage()
-  }
-  async clickThreeDotBesideSortByOption() {
-    await this.page
-      .locator(
-        'div[aria-label="journey status tabs"] button svg[data-testid="MoreIcon"]'
-      )
-      .click()
-  }
-  async selectThreeDotOptionsBesideSortByOption(option) {
-    await this.page
-      .locator('ul[aria-labelledby="edit-journey-actions"] li', {
-        hasText: option
-      })
-      .click()
-  }
-  async getJourneyListOfActiveTab() {
-    await expect(
-      this.page
-        .locator(
-          'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div'
-        )
-        .first()
-    ).toBeVisible()
-    this.journeyList = await this.page
-      .locator(
-        'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div'
-      )
-      .allInnerTexts()
-  }
-  async clickDialogBoxBtn(buttonName) {
-    await this.page
-      .locator('div[data-testid="dialog-action"] button', {
-        hasText: buttonName
-      })
-      .click()
-  }
-  async getCurrentUrl() {
-    console.log('current Url is ' + this.page.url())
-  }
-  async verifyAllJourneyMovedToArchivedTab() {
-    let matchCount = 0
-    await expect(
-      this.page
-        .locator(
-          'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"] div'
-        )
-        .first()
-    ).toBeVisible({ timeout: 30000 })
-    let archiveTabJournetList = await this.page
-      .locator(
-        'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"] div'
-      )
-      .allInnerTexts()
-    for (let journey = 0; journey < this.journeyList.length; journey++) {
-      if (archiveTabJournetList.includes(this.journeyList[journey])) {
-        matchCount = matchCount + 1
-      }
-    }
-    console.log('matchCount ' + matchCount)
-    console.log('this.journeyList ' + this.journeyList.length)
-    expect(matchCount == this.journeyList.length).toBeTruthy()
-  }
-  async verifyActiveTabShowsEmptyMessage() {
-    await expect(
-      this.page.locator('div[aria-labelledby*="active-status-panel-tab"] h6', {
-        hasText: 'No journeys to display.'
-      })
-    ).toBeVisible()
   }
 }

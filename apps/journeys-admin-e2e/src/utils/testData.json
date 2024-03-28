@@ -1,0 +1,10 @@
+{
+  "journey": {
+    "firstJourneyName": "First journey",
+    "secondJourneyName": "Second journey"
+  },
+  "teams": {
+    "teamName": "Automation TeamName",
+    "teamRename": "Renamed Team"
+  }
+}
