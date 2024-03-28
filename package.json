@@ -93,6 +93,7 @@
     "form-data": "^4.0.0",
     "formik": "^2.4.4",
     "fscreen": "^1.2.0",
+    "gapi-script": "^1.2.0",
     "googleapis": "^130.0.0",
     "graphql": "^16.8.0",
     "i18next": "23.6.0",
