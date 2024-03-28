@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -13,14 +14,14 @@ import {
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
-import { Drawer } from '../../../../../Drawer'
 
 import { CardStyling } from '.'
 
-const CardStylingStory: Meta<typeof CardStyling> = {
+const Demo: Meta<typeof CardStyling> = {
   ...journeysAdminConfig,
   component: CardStyling,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/CardStyling',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/CardStyling',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -67,21 +68,25 @@ const journey: Journey = {
   tags: []
 }
 
-export const Default: StoryObj<typeof CardStyling> = {
-  render: () => {
-    const block: TreeBlock<CardBlock> = {
-      id: 'card1.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      coverBlockId: null,
-      backgroundColor: null,
-      themeMode: null,
-      themeName: null,
-      fullscreen: false,
-      children: []
-    }
+const block: TreeBlock<CardBlock> = {
+  id: 'card1.id',
+  __typename: 'CardBlock',
+  parentBlockId: 'step1.id',
+  parentOrder: 0,
+  coverBlockId: null,
+  backgroundColor: null,
+  themeMode: null,
+  themeName: null,
+  fullscreen: false,
+  children: []
+}
 
+const Template: StoryObj<
+  ComponentProps<typeof CardStyling> & {
+    block: TreeBlock<CardBlock>
+  }
+> = {
+  render: ({ block }) => {
     return (
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -90,7 +95,7 @@ export const Default: StoryObj<typeof CardStyling> = {
               selectedBlock: block
             }}
           >
-            <Drawer />
+            <CardStyling />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -98,66 +103,25 @@ export const Default: StoryObj<typeof CardStyling> = {
   }
 }
 
-export const Light: StoryObj<typeof CardStyling> = {
-  render: () => {
-    const block: TreeBlock<CardBlock> = {
-      id: 'card1.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      coverBlockId: null,
-      backgroundColor: null,
-      themeMode: ThemeMode.light,
-      themeName: null,
-      fullscreen: false,
-      children: []
-    }
-
-    return (
-      <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <EditorProvider
-            initialState={{
-              selectedBlock: block
-            }}
-          >
-            <Drawer />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
+export const Default = {
+  ...Template,
+  args: {
+    block
   }
 }
 
-export const Dark: StoryObj<typeof CardStyling> = {
-  render: () => {
-    const block: TreeBlock<CardBlock> = {
-      id: 'card1.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      coverBlockId: null,
-      backgroundColor: null,
-      themeMode: ThemeMode.dark,
-      themeName: null,
-      fullscreen: false,
-      children: []
-    }
-
-    return (
-      <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <EditorProvider
-            initialState={{
-              selectedBlock: block
-            }}
-          >
-            <Drawer />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
+export const Light = {
+  ...Template,
+  args: {
+    block: { ...block, themeMode: ThemeMode.light }
   }
 }
 
-export default CardStylingStory
+export const Dark = {
+  ...Template,
+  args: {
+    block: { ...block, themeMode: ThemeMode.dark }
+  }
+}
+
+export default Demo

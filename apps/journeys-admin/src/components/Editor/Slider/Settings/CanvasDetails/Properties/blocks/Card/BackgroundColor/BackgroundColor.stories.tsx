@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
+import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -14,14 +15,14 @@ import {
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
-import { Drawer } from '../../../../../Drawer'
 
 import { BackgroundColor } from '.'
 
-const BackgroundColorStory: Meta<typeof BackgroundColor> = {
+const Demo: Meta<typeof BackgroundColor> = {
   ...journeysAdminConfig,
   component: BackgroundColor,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/BackgroundColor',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/BackgroundColor',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -40,7 +41,7 @@ const step = (block: TreeBlock): TreeBlock<StepBlock> => {
   }
 }
 
-const cardLight: TreeBlock<CardBlock> = {
+const card: TreeBlock<CardBlock> = {
   id: 'card1.id',
   __typename: 'CardBlock',
   parentBlockId: 'step1.id',
@@ -53,49 +54,47 @@ const cardLight: TreeBlock<CardBlock> = {
   children: []
 }
 
-export const Light: StoryObj<typeof BackgroundColor> = {
-  render: () => {
+const Template: StoryObj<
+  ComponentProps<typeof BackgroundColor> & {
+    card: TreeBlock<CardBlock>
+  }
+> = {
+  render: ({ card }) => {
     return (
       <MockedProvider>
         <EditorProvider
           initialState={{
-            selectedStep: step(cardLight)
+            selectedStep: step(card)
           }}
         >
-          <Drawer />
+          <BackgroundColor />
         </EditorProvider>
       </MockedProvider>
     )
   }
 }
 
-const Template: StoryObj<typeof BackgroundColor> = {
-  render: () => {
-    const cardDark: TreeBlock<CardBlock> = {
-      ...cardLight,
+export const Light = {
+  ...Template,
+  args: {
+    card
+  }
+}
+
+export const Dark = {
+  ...Template,
+  args: {
+    card: {
+      ...card,
       backgroundColor: '#0277BD',
       themeName: ThemeName.base,
       themeMode: ThemeMode.dark
     }
-
-    return (
-      <MockedProvider>
-        <EditorProvider
-          initialState={{
-            selectedStep: step(cardDark)
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </MockedProvider>
-    )
   }
 }
 
-export const Dark = { ...Template }
-
 export const MobileColorPicker = {
-  ...Template,
+  ...Dark,
   parameters: {
     chromatic: {
       viewports: [360]
@@ -107,4 +106,4 @@ export const MobileColorPicker = {
   }
 }
 
-export default BackgroundColorStory
+export default Demo
