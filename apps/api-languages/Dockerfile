@@ -1,11 +1,10 @@
-FROM node:18-alpine3.18
+FROM node:18-alpine
 
 EXPOSE 4003
 
 ENV PRISMA_LOCATION_LANGUAGES=/app/node_modules/.prisma/api-languages-client
 
 RUN apk upgrade --update-cache --available && \
-    apk add openssl1.1-compat && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
