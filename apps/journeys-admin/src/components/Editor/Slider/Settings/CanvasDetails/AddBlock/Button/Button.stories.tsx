@@ -24,4 +24,21 @@ export const Empty: StoryObj<typeof Button> = {
   }
 }
 
+export const HoverState: StoryObj<typeof Button> = {
+  render: () => {
+    return (
+      <div className="simulate-hover">
+        <Button icon={<PaletteIcon />} value="Hover" />
+      </div>
+    )
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'This story simulates the hover state of the button.'
+      }
+    }
+  }
+}
+
 export default ButtonStory
