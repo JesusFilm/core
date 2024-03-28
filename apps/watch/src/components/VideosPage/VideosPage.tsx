@@ -15,7 +15,8 @@ import { FilterList } from './FilterList'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 import { checkFilterApplied } from './utils/checkFilterApplied'
-import { VideoPageFilter, getQueryParameters } from './utils/getQueryParameters'
+import { getQueryParameters } from './utils/getQueryParameters'
+import type { VideoPageFilter } from './utils/getQueryParameters'
 import { useVideoSearch } from './utils/useVideoSearch'
 
 export const GET_LANGUAGES = gql`
