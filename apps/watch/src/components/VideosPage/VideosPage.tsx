@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
@@ -15,8 +15,8 @@ import { FilterList } from './FilterList'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 import { checkFilterApplied } from './utils/checkFilterApplied'
+import { VideoPageFilter, getQueryParameters } from './utils/getQueryParameters'
 import { useVideoSearch } from './utils/useVideoSearch'
-import type { VideoPageFilter } from './utils/useVideoSearch'
 
 export const GET_LANGUAGES = gql`
   query GetLanguages($languageId: ID) {
@@ -45,23 +45,7 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
       variables: { languageId: '529' }
     })
 
-  // we intentionally use window.location.search to prevent multiple renders
-  // which occurs when using const { query } = useRouter()
-  const searchString =
-    typeof window !== 'undefined' ? window.location.search : undefined
-
-  const filter: VideoPageFilter = useMemo(() => {
-    const query = new URLSearchParams(searchString?.split('?')[1])
-
-    const getQueryParamArray = (param: string | null): string[] | undefined =>
-      param != null ? [param] : undefined
-
-    return {
-      availableVariantLanguageIds: getQueryParamArray(query.get('languages')),
-      subtitleLanguageIds: getQueryParamArray(query.get('subtitles')),
-      title: query.get('title') ?? undefined
-    }
-  }, [searchString])
+  const filter = getQueryParameters()
 
   const { algoliaVideos, currentPage, totalPages, loading, handleSearch } =
     useVideoSearch({ filter })

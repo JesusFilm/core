@@ -1,1 +1,1 @@
-export { convertAlgoliaVideos } from './convertAlgoliaVideos'
+export { convertAlgoliaVideos } from './transformAlgoliaVideos'

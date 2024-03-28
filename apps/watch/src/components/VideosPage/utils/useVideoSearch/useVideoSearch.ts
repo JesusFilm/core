@@ -5,7 +5,8 @@ import { useCallback, useState } from 'react'
 
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 import { checkFilterApplied } from '../checkFilterApplied'
-import { convertAlgoliaVideos } from '../convertAlgoliaVideos'
+import { VideoPageFilter } from '../getQueryParameters'
+import { transformAlgoliaVideos } from '../transformAlgoliaVideos'
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_KEY ?? '',
@@ -22,12 +23,6 @@ interface Hit {
 }
 
 interface Hits extends Array<Hit> {}
-
-export interface VideoPageFilter {
-  availableVariantLanguageIds?: string[]
-  subtitleLanguageIds?: string[]
-  title?: string
-}
 
 interface UseVideoSearchResult {
   algoliaVideos: VideoChildFields[]
@@ -100,7 +95,7 @@ export function useVideoSearch({
     [filter, hits]
   )
 
-  const algoliaVideos = convertAlgoliaVideos(hits)
+  const algoliaVideos = transformAlgoliaVideos(hits)
 
   return {
     algoliaVideos,

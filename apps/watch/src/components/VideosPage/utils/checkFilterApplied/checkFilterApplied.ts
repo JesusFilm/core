@@ -1,4 +1,4 @@
-import type { VideoPageFilter } from '../useVideoSearch'
+import { VideoPageFilter } from '../getQueryParameters'
 
 export function checkFilterApplied(filter: VideoPageFilter): boolean {
   const filterToCheck = [
