@@ -1,0 +1,127 @@
+scalar Upload
+
+type Resource @key(fields: "id") {
+  id: ID!
+  nexusId: String!
+  nexus: Nexus!
+  name: String!
+  status: ResourceStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
+  googleDriveLink: String
+  category: String!
+  privacy: PrivacyStatus!
+  sourceType: SourceType!
+  localizations: [ResourceLocalization]!
+}
+
+type ResourceLocalization @key(fields: "id") {
+  id: ID!
+  resourceId: String!
+  title: String!
+  description: String!
+  keywords: String!
+  language: String!
+}
+
+type GoogleAuthResponse {
+  id: ID!
+  accessToken: String!
+}
+
+enum PrivacyStatus {
+  public
+  unlisted
+  private
+}
+
+enum SourceType {
+  googleDrive
+  template
+  archlight
+  other
+}
+
+enum ResourceStatus {
+  deleted
+  published
+  processing
+  error
+  uploaded
+}
+
+input ResourceCreateInput {
+  nexusId: String!
+  name: String!
+}
+
+input ResourceUpdateInput {
+  name: String
+}
+
+input ResourceFromGoogleDriveInput {
+  fileIds: [String!]!
+  authCode: String!
+  nexusId: String!
+}
+
+input ResourceFilter {
+  ids: [ID!]
+  name: String
+  nexusId: String
+  status: ResourceStatus
+  limit: Int
+}
+
+input AddResourceFromGoogleDriveInput {
+  accessToken: String!
+  fileId: String!
+  nexusId: String!
+}
+
+input ResourceFromSpreadsheetInput {
+  file: Upload
+  nexusId: String!
+}
+
+input GoogleAuthInput {
+  authCode: String!
+  url: String!
+}
+
+input BatchJobBatch {
+  id: ID!
+  batchName: String!
+}
+
+input BatchJobResource {
+  resource: ID!
+  channel: ID!
+}
+
+input BatchJobInput {
+  batch: BatchJobBatch!
+  resources: [BatchJobResource]!
+}
+
+extend type Query {
+  resources(where: ResourceFilter): [Resource!]
+  resource(id: ID!): Resource!
+}
+
+extend type Mutation {
+  resourceCreate(input: ResourceCreateInput!): Resource!
+  resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
+  resourceDelete(id: ID!): Resource!
+  resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!]
+  resourceFromTemplate(
+    nexusId: String!
+    tokenId: String!
+    spreadsheetId: String!
+    drivefolderId: String!
+  ): [Resource!]
+  getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
+  uploadToYoutube(channelId: String!, resourceId: String!): Boolean
+  resourceBatchJob(input: BatchJobInput!): String
+}

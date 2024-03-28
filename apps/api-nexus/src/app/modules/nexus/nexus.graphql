@@ -1,0 +1,43 @@
+type Nexus @key(fields: "id") {
+  id: ID!
+  name: String!
+  description: String
+  createdAt: DateTime!
+  deletedAt: DateTime
+  status: NexusStatus!
+}
+
+enum NexusStatus {
+  deleted
+  published
+}
+
+input NexusCreateInput {
+  name: String!
+  description: String
+}
+
+input NexusUpdateInput {
+  name: String
+  description: String
+}
+
+input NexusFilter {
+  ids: [ID!]
+  name: String
+  description: String
+  createdAt: DateTime
+  limit: Int
+  orderByRecent: Boolean
+}
+
+extend type Query {
+  nexuses(where: NexusFilter): [Nexus!]!
+  nexus(id: ID!): Nexus!
+}
+
+extend type Mutation {
+  nexusCreate(input: NexusCreateInput!): Nexus!
+  nexusUpdate(id: ID!, input: NexusUpdateInput!): Nexus!
+  nexusDelete(id: ID!): Boolean!
+}

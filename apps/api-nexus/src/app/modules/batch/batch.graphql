@@ -1,0 +1,45 @@
+type Batch @key(fields: "id") {
+  id: ID!
+  nexusId: String!
+  channelId: String!
+  channel: Channel
+  resources: [BatchResource]
+  name: String!
+  status: BatchStatus!
+  averagePercent: Float
+  createdAt: DateTime!
+}
+
+enum BatchStatus {
+  pending
+  running
+  completed
+  failed
+  cancelled
+  paused
+  error
+  warning
+  scheduled
+}
+
+type BatchResource @key(fields: "id") {
+  id: ID!
+  batchId: String!
+  resourceId: String!
+  isCompleted: Boolean
+  error: String
+  percent: Float
+}
+
+input BatchFilter {
+  ids: [ID!]
+  name: String
+  nexusId: String
+  status: BatchStatus
+  limit: Int
+}
+
+extend type Query {
+  batches(where: BatchFilter): [Batch!]
+  batch(id: ID!): Batch!
+}
