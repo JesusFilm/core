@@ -26,8 +26,8 @@ export function EditToolbar(): ReactElement {
     variables: { teamId: journey?.team?.id as string }
   })
 
-  const hostName = hasCustomDomain
-    ? new URL('https://' + customDomains?.customDomains[0].name).hostname
+  const hostname = hasCustomDomain
+    ? new URL(`https://${customDomains?.customDomains[0].name}`).hostname
     : undefined
 
   return (
@@ -44,7 +44,7 @@ export function EditToolbar(): ReactElement {
             icon={<EyeOpenIcon />}
             label={t('Preview')}
             component="a"
-            href={`/api/preview?slug=${journey.slug}&hostname=${hostName}`}
+            href={`/api/preview?slug=${journey.slug}&hostname=${hostname}`}
             target="_blank"
             variant="outlined"
             clickable
@@ -57,7 +57,7 @@ export function EditToolbar(): ReactElement {
           />
           <IconButton
             aria-label="Preview"
-            href={`/api/preview?slug=${journey.slug}&hostname=${hostName}`}
+            href={`/api/preview?slug=${journey.slug}&hostname=${hostname}`}
             target="_blank"
             sx={{
               display: {

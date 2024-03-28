@@ -55,10 +55,10 @@ export default async function handler(
   // 300ms required to invalidate edge caches
   await sleep(300)
 
+  const proto = process.env.NODE_ENV === 'development' ? 'http://' : 'https://'
+
   res.redirect(
     307,
-    `${
-      hostname != null ? 'https://' + hostname : process.env.JOURNEYS_URL
-    }/${slug}`
+    `${hostname != null ? proto + hostname : process.env.JOURNEYS_URL}/${slug}`
   )
 }

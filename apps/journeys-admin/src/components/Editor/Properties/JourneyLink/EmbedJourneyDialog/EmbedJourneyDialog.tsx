@@ -39,7 +39,7 @@ export function EmbedJourneyDialog({
 
   // this should match apps/journeys/pages/api/oembed.ts
   const providerUrl = hasCustomDomain
-    ? 'https://' + customDomainName
+    ? `https://${customDomainName}`
     : process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
   const embedUrl = `${providerUrl}/embed/${journey?.slug as string}`
 

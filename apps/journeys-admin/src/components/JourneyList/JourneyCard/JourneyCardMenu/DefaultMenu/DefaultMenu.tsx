@@ -1,4 +1,4 @@
-import { ApolloQueryResult, useQuery } from '@apollo/client'
+import { ApolloQueryResult } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -10,11 +10,10 @@ import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
-import { GetCustomDomains } from '../../../../../../__generated__/GetCustomDomains'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
-import { GET_CUSTOM_DOMAINS } from '../../../../Team/CustomDomainDialog/CustomDomainDialog'
 import { useTeam } from '../../../../Team/TeamProvider'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
@@ -47,19 +46,12 @@ export function DefaultMenu({
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  const { data: customDomainData } = useQuery<GetCustomDomains>(
-    GET_CUSTOM_DOMAINS,
-    {
-      variables: { teamId: activeTeam?.id }
-    }
-  )
+  const { data: customDomainData, hasCustomDomain } = useCustomDomainsQuery({
+    variables: { teamId: activeTeam?.id as string }
+  })
 
-  const hasCustomDomain =
-    customDomainData?.customDomains[0]?.name != null &&
-    customDomainData.customDomains[0]?.verification?.verified === true
-
-  const hostName = hasCustomDomain
-    ? new URL('https://' + customDomainData?.customDomains[0].name).hostname
+  const hostname = hasCustomDomain
+    ? new URL(`https://${customDomainData?.customDomains[0].name}`).hostname
     : undefined
 
   return (
@@ -87,7 +79,7 @@ export function DefaultMenu({
         />
       )}
       <NextLink
-        href={`/api/preview?slug=${slug}&hostname=${hostName}`}
+        href={`/api/preview?slug=${slug}&hostname=${hostname}`}
         passHref
         legacyBehavior
         prefetch={false}
