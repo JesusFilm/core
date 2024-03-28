@@ -15,22 +15,7 @@ import { FC, SyntheticEvent, useEffect, useState } from 'react'
 import { ChannelTable } from '../../src/components/ChannelTable'
 import { LocalizationTable } from '../../src/components/LocalizationTable/LocalizationTable'
 import { MainLayout } from '../../src/components/MainLayout'
-
-const GET_RESOURCE = gql`
-  query Resource($resourceID: ID!) {
-    resource(id: $resourceID) {
-      id
-      name
-      localizations {
-        id
-        title
-        description
-        keywords
-        language
-      }
-    }
-  }
-`
+import { GET_RESOURCE } from '.'
 
 const ResourceDetailsPage: FC = () => {
   const [tabIndex, setTabIndex] = useState(0)

@@ -39,7 +39,7 @@ export const GET_RESOURCES = gql`
   }
 `
 
-const GET_RESOURCE = gql`
+export const GET_RESOURCE = gql`
   query Resource($resourceId: ID!) {
     resource(id: $resourceId) {
       id
