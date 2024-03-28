@@ -21,7 +21,7 @@ type Story = StoryObj<ComponentProps<typeof GoalsListItem> >
 const Template: Story = {
   render: (args) => (
     <EditorProvider>
-      <GoalsListItem goal={args.goal}  />
+      <GoalsListItem {...args}  />
     </EditorProvider>
     )
 }

@@ -18,7 +18,7 @@ type Story = StoryObj<ComponentProps<typeof GoalsList> >
 
 const Template: Story = {
   render: (args) => (
-    <GoalsList goals={args.goals} />
+    <GoalsList {...args} />
   )
 }
 
@@ -46,3 +46,4 @@ export const Default = {
 }
 
 export default GoalsListStory
+ 
