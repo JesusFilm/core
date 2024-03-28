@@ -1,37 +1,56 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { expect } from '@storybook/jest'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { screen, userEvent } from '@storybook/testing-library'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { GetRole } from '../../../../../__generated__/GetRole'
+import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../libs/storybook'
+
+import { GET_ROLE } from './Menu'
 
 import { Menu } from '.'
 
-const MenuStory: Meta<typeof Menu> = {
+const Demo: Meta<typeof Menu> = {
   ...journeysAdminConfig,
   component: Menu,
   title: 'Journeys-Admin/Editor/Toolbar/Menu'
 }
 
+const getUserRoleMock: MockedResponse<GetRole> = {
+  request: {
+    query: GET_ROLE
+  },
+  result: {
+    data: {
+      getUserRole: {
+        __typename: 'UserRole',
+        id: '1',
+        userId: 'userId',
+        roles: [Role.publisher]
+      }
+    }
+  }
+}
+
 const Template: StoryObj<typeof Menu> = {
-  render: ({ ...args }) => {
+  render: ({ mocks, template }) => {
     return (
-      <MockedProvider>
+      <MockedProvider mocks={mocks}>
         <JourneyProvider
           value={{
             journey: {
               status: JourneyStatus.draft,
-              tags: []
+              tags: [],
+              template
             } as unknown as Journey,
             variant: 'admin'
           }}
         >
-          <EditorProvider initialState={{ ...args }}>
+          <EditorProvider>
             <Menu />
           </EditorProvider>
         </JourneyProvider>
@@ -40,20 +59,18 @@ const Template: StoryObj<typeof Menu> = {
   }
 }
 
-export const Block = {
+export const Default = {
+  ...Template,
+  play: async () => {
+    const menuButton = screen.getByRole('button')
+    await userEvent.click(menuButton)
+  }
+}
+
+export const Publisher = {
   ...Template,
   args: {
-    selectedBlock: {
-      id: 'typography0.id',
-      __typename: 'TypographyBlock',
-      parentBlockId: 'card1.id',
-      parentOrder: 0,
-      content: 'Title',
-      variant: null,
-      color: null,
-      align: null,
-      children: []
-    }
+    mocks: [getUserRoleMock]
   },
   play: async () => {
     const menuButton = screen.getByRole('button')
@@ -61,18 +78,10 @@ export const Block = {
   }
 }
 
-export const Card = {
+export const TemplateMenu = {
   ...Template,
   args: {
-    selectedBlock: {
-      __typename: 'StepBlock',
-      id: 'stepId',
-      parentBlockId: 'journeyId',
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
+    template: true
   },
   play: async () => {
     const menuButton = screen.getByRole('button')
@@ -80,28 +89,4 @@ export const Card = {
   }
 }
 
-export const DeleteCardDialog = {
-  ...Template,
-  args: {
-    selectedBlock: {
-      __typename: 'StepBlock',
-      id: 'stepId',
-      parentBlockId: 'journeyId',
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
-  },
-  play: async () => {
-    await userEvent.click(screen.getByRole('button'))
-    await waitFor(async () => {
-      await expect(
-        screen.getByRole('menuitem', { name: 'Delete Card' })
-      ).toBeInTheDocument()
-    })
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
-  }
-}
-
-export default MenuStory
+export default Demo
