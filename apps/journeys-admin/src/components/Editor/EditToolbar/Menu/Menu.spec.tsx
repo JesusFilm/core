@@ -16,7 +16,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
-import { CustomDomainProvider } from '../../../CustomDomainProvider'
+import { GET_CUSTOM_DOMAINS } from '../../../Team/CustomDomainDialog/CustomDomainDialog'
 import { BLOCK_DUPLICATE } from '../DuplicateBlock/DuplicateBlock'
 
 import { GET_ROLE } from './Menu'
@@ -34,6 +34,42 @@ jest.mock('next/router', () => ({
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
+const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
+  request: {
+    query: GET_CUSTOM_DOMAINS,
+    variables: {
+      teamId: 'teamId'
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      customDomains: [
+        {
+          __typename: 'CustomDomain',
+          name: 'mockdomain.com',
+          apexName: 'mockdomain.com',
+          id: 'customDomainId',
+          teamId: 'teamId',
+          verification: {
+            __typename: 'CustomDomainVerification',
+            verified: true,
+            verification: []
+          },
+          configuration: {
+            __typename: 'VercelDomainConfiguration',
+            misconfigured: false
+          },
+          journeyCollection: {
+            __typename: 'JourneyCollection',
+            id: 'journeyCollectionId',
+            journeys: []
+          }
+        }
+      ]
+    }
+  }))
+}
 
 describe('EditToolbar Menu', () => {
   const push = jest.fn()
@@ -317,7 +353,7 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
   })
 
-  it('should provide customDomain hostname to preview button', () => {
+  it('should provide customDomain hostname to preview button', async () => {
     const selectedBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'stepId',
@@ -330,42 +366,28 @@ describe('EditToolbar Menu', () => {
 
     const { getByRole, getByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider>
-          <CustomDomainProvider
+        <MockedProvider mocks={[getCustomDomainMockARecord]}>
+          <JourneyProvider
             value={{
-              customDomains: {
-                customDomains: [
-                  {
-                    __typename: 'CustomDomain' as const,
-                    name: 'mockdomain.com',
-                    apexName: 'mockdomain.com',
-                    id: 'customDomainId',
-                    verification: {
-                      __typename: 'CustomDomainVerification' as const,
-                      verified: true,
-                      verification: []
-                    }
-                  }
-                ]
-              } as unknown as GetCustomDomains
+              journey: {
+                status: JourneyStatus.draft,
+                tags: [],
+                team: {
+                  id: 'teamId'
+                }
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
-            <JourneyProvider
-              value={{
-                journey: {
-                  status: JourneyStatus.draft,
-                  tags: []
-                } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <EditorProvider initialState={{ selectedBlock }}>
-                <Menu />
-              </EditorProvider>
-            </JourneyProvider>
-          </CustomDomainProvider>
+            <EditorProvider initialState={{ selectedBlock }}>
+              <Menu />
+            </EditorProvider>
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
     )
     expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
     fireEvent.click(getByRole('button'))

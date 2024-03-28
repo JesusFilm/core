@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
@@ -15,12 +15,12 @@ import { Dialog } from '@core/shared/ui/Dialog/Dialog'
 import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
 import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
-import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
 import { JourneyCollectionDelete } from '../../../../__generated__/JourneyCollectionDelete'
 import { UpdateJourneyCollection } from '../../../../__generated__/UpdateJourneyCollection'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { useCustomDomainsQuery } from '../../../libs/useCustomDomainsQuery'
 import { useTeam } from '../TeamProvider'
 
 import { DefaultJourneyForm } from './DefaultJourneyForm'
@@ -167,9 +167,10 @@ export function CustomDomainDialog({
     data: customDomainData,
     refetch: refetchCustomDomains,
     startPolling,
-    stopPolling
-  } = useQuery<GetCustomDomains>(GET_CUSTOM_DOMAINS, {
-    variables: { teamId: activeTeam?.id },
+    stopPolling,
+    hasCustomDomain
+  } = useCustomDomainsQuery({
+    variables: { teamId: activeTeam?.id as string },
     notifyOnNetworkStatusChange: true,
     onCompleted: (data) => {
       setLoading(false)
@@ -362,10 +363,6 @@ export function CustomDomainDialog({
     // update UI on team switch
     void refetchCustomDomains()
   }, [activeTeam, refetchCustomDomains])
-
-  const hasCustomDomain: boolean =
-    customDomainData?.customDomains?.length !== 0 &&
-    customDomainData?.customDomains != null
 
   const validationSchema = object({
     domainName: string()

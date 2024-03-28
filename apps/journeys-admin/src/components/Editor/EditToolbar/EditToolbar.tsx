@@ -11,7 +11,7 @@ import {
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 
-import { useCustomDomain } from '../../CustomDomainProvider/CustomDomainProvider'
+import { useCustomDomainsQuery } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
 
 import { Analytics } from './Analytics'
 import { DeleteBlock } from './DeleteBlock'
@@ -22,10 +22,9 @@ export function EditToolbar(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { state } = useEditor()
-  const { customDomains } = useCustomDomain()
-  const hasCustomDomain =
-    customDomains?.customDomains[0]?.name != null &&
-    customDomains.customDomains[0]?.verification?.verified === true
+  const { data: customDomains, hasCustomDomain } = useCustomDomainsQuery({
+    variables: { teamId: journey?.team?.id as string }
+  })
 
   const hostName = hasCustomDomain
     ? new URL('https://' + customDomains?.customDomains[0].name).hostname

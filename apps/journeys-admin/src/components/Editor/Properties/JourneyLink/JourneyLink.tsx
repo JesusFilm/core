@@ -13,7 +13,7 @@ import Code1Icon from '@core/shared/ui/icons/Code1'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
-import { useCustomDomain } from '../../../CustomDomainProvider/CustomDomainProvider'
+import { useCustomDomainsQuery } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
 
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 import { SlugDialog } from './SlugDialog'
@@ -21,8 +21,9 @@ import { SlugDialog } from './SlugDialog'
 export function JourneyLink(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-
-  const { customDomains } = useCustomDomain()
+  const { data: customDomains, hasCustomDomain } = useCustomDomainsQuery({
+    variables: { teamId: journey?.team?.id as string }
+  })
 
   const [showSlugDialog, setShowSlugDialog] = useState(false)
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
@@ -37,10 +38,6 @@ export function JourneyLink(): ReactElement {
     })
   }
 
-  const hasCustomDomain =
-    customDomains?.customDomains[0]?.name != null &&
-    customDomains.customDomains[0]?.verification?.verified === true
-
   return (
     <>
       {smUp && (
@@ -53,7 +50,7 @@ export function JourneyLink(): ReactElement {
           journey?.slug != null
             ? `${
                 hasCustomDomain
-                  ? 'https://' + customDomains.customDomains[0].name
+                  ? 'https://' + customDomains?.customDomains[0].name
                   : process.env.NEXT_PUBLIC_JOURNEYS_URL ??
                     'https://your.nextstep.is'
               }/${journey.slug}`

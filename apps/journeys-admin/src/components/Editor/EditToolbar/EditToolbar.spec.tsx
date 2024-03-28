@@ -14,7 +14,7 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
-import { CustomDomainProvider } from '../../CustomDomainProvider'
+import { CustomDomainProvider } from '../../../libs/useCustomDomainsQuery'
 
 import { EditToolbar } from '.'
 

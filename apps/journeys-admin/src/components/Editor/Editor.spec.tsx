@@ -75,39 +75,12 @@ describe('Editor', () => {
     tags: []
   }
 
-  const customDomains = {
-    customDomains: [
-      {
-        __typename: 'CustomDomain' as const,
-        name: 'mockdomain.com',
-        apexName: 'mockdomain.com',
-        id: 'customDomainId',
-        teamId: 'teamId',
-        verification: {
-          __typename: 'CustomDomainVerification' as const,
-          verified: true,
-          verification: []
-        },
-        configuration: {
-          __typename: 'VercelDomainConfiguration' as const,
-          misconfigured: false
-        },
-        journeyCollection: {
-          __typename: 'JourneyCollection' as const,
-          id: 'journeyCollectionId',
-          journeys: []
-        }
-      }
-    ]
-  }
-
   it('should render the element', () => {
     const { getByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
             <Editor
-              customDomains={customDomains}
               journey={journey}
               PageWrapperProps={{
                 bottomPanelChildren: <ControlPanel />,
@@ -128,7 +101,6 @@ describe('Editor', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <Editor
-              customDomains={customDomains}
               journey={journey}
               PageWrapperProps={{
                 bottomPanelChildren: <ControlPanel />,
@@ -150,7 +122,6 @@ describe('Editor', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <Editor
-              customDomains={customDomains}
               journey={journey}
               PageWrapperProps={{
                 bottomPanelChildren: <ControlPanel />,

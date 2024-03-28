@@ -13,9 +13,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import { GetCustomDomains } from '../../../__generated__/GetCustomDomains'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
-import { CustomDomainProvider } from '../CustomDomainProvider'
 import { PageWrapper } from '../PageWrapper'
 
 import { Canvas } from './Canvas'
@@ -40,7 +38,6 @@ const SocialPreview = dynamic(
 
 interface EditorProps {
   journey?: Journey
-  customDomains?: GetCustomDomains
   selectedStepId?: string
   view?: ActiveJourneyEditContent
   PageWrapperProps?: ComponentProps<typeof PageWrapper>
@@ -64,8 +61,7 @@ export function Editor({
   journey,
   selectedStepId,
   view,
-  PageWrapperProps,
-  customDomains
+  PageWrapperProps
 }: EditorProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const steps =
@@ -79,48 +75,42 @@ export function Editor({
   const [hasAction, setHasAction] = useState(false)
 
   return (
-    <CustomDomainProvider
-      value={{
-        customDomains
-      }}
-    >
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
-        <EditorProvider
-          initialState={{
-            steps,
-            selectedStep,
-            drawerTitle: t('Properties'),
-            drawerChildren: <Properties isPublisher={false} />,
-            journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
-          }}
-        >
-          {({ journeyEditContentComponent }) => (
-            <PageWrapper {...PageWrapperProps}>
-              <Stack
-                data-testid="journey-edit-content"
-                flexGrow={1}
-                justifyContent="center"
-                sx={{
-                  backgroundColor: (theme) =>
-                    bgColor(theme, journeyEditContentComponent, hasAction)
-                }}
-              >
+    <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <EditorProvider
+        initialState={{
+          steps,
+          selectedStep,
+          drawerTitle: t('Properties'),
+          drawerChildren: <Properties isPublisher={false} />,
+          journeyEditContentComponent: view ?? ActiveJourneyEditContent.Canvas
+        }}
+      >
+        {({ journeyEditContentComponent }) => (
+          <PageWrapper {...PageWrapperProps}>
+            <Stack
+              data-testid="journey-edit-content"
+              flexGrow={1}
+              justifyContent="center"
+              sx={{
+                backgroundColor: (theme) =>
+                  bgColor(theme, journeyEditContentComponent, hasAction)
+              }}
+            >
+              {
                 {
-                  {
-                    [ActiveJourneyEditContent.Canvas]: <Canvas />,
-                    [ActiveJourneyEditContent.Action]: (
-                      <ActionsTable
-                        hasAction={(action) => setHasAction(action)}
-                      />
-                    ),
-                    [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
-                  }[journeyEditContentComponent]
-                }
-              </Stack>
-            </PageWrapper>
-          )}
-        </EditorProvider>
-      </JourneyProvider>
-    </CustomDomainProvider>
+                  [ActiveJourneyEditContent.Canvas]: <Canvas />,
+                  [ActiveJourneyEditContent.Action]: (
+                    <ActionsTable
+                      hasAction={(action) => setHasAction(action)}
+                    />
+                  ),
+                  [ActiveJourneyEditContent.SocialPreview]: <SocialPreview />
+                }[journeyEditContentComponent]
+              }
+            </Stack>
+          </PageWrapper>
+        )}
+      </EditorProvider>
+    </JourneyProvider>
   )
 }

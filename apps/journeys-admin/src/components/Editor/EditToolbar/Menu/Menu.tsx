@@ -19,7 +19,7 @@ import SettingsIcon from '@core/shared/ui/icons/Settings'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
-import { useCustomDomain } from '../../../CustomDomainProvider/CustomDomainProvider'
+import { useCustomDomainsQuery } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
 import { MenuItem } from '../../../MenuItem'
 import { Analytics } from '../Analytics'
 import { DeleteBlock } from '../DeleteBlock'
@@ -70,7 +70,10 @@ export function Menu(): ReactElement {
   } = useEditor()
   const router = useRouter()
   const { journey } = useJourney()
-  const { customDomains } = useCustomDomain()
+  const { data: customDomains, hasCustomDomain } = useCustomDomainsQuery({
+    variables: { teamId: journey?.team?.id as string }
+  })
+
   const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
@@ -83,11 +86,7 @@ export function Menu(): ReactElement {
   >()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
-  const hasCustomDomain =
-    customDomains?.customDomains[0]?.name != null &&
-    customDomains.customDomains[0]?.verification?.verified === true
-
-  const hostName = hasCustomDomain
+  const hostname = hasCustomDomain
     ? new URL('https://' + customDomains?.customDomains[0].name).hostname
     : undefined
 
@@ -156,7 +155,7 @@ export function Menu(): ReactElement {
         }}
       >
         <NextLink
-          href={`/api/preview?slug=${journey?.slug ?? ''}&hostname=${hostName}`}
+          href={`/api/preview?slug=${journey?.slug ?? ''}&hostname=${hostname}`}
           passHref
           legacyBehavior
           prefetch={false}
