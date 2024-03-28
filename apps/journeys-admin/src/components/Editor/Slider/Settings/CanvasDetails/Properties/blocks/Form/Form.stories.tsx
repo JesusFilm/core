@@ -1,58 +1,148 @@
+import { MockedResponse } from '@apollo/client/testing'
 import { Form as FormType } from '@formium/types'
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
+import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../__generated__/BlockFields'
+import {
+  GetFormBlock,
+  GetFormBlockVariables
+} from '../../../../../../../../../__generated__/GetFormBlock'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
+
+import { GET_FORM_BLOCK } from './Credentials/Credentials'
 
 import { Form } from '.'
 
-const FormDemo: Meta<typeof Form> = {
+const Demo: Meta<typeof Form> = {
   ...simpleComponentConfig,
   component: Form,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Form'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Form'
+}
+
+const formBlock: TreeBlock<FormBlock> = {
+  id: 'formBlock.id',
+  __typename: 'FormBlock',
+  parentBlockId: 'step0.id',
+  parentOrder: 0,
+  form: null,
+  action: null,
+  children: []
+}
+
+const filledFormBlock: TreeBlock<FormBlock> = {
+  ...formBlock,
+  form: {
+    id: 'formiumForm.id',
+    name: 'form name'
+  } as unknown as FormType,
+  action: {
+    __typename: 'NavigateToBlockAction',
+    parentBlockId: 'formBlock.id',
+    gtmEventName: 'navigateToBlock',
+    blockId: 'step1.id'
+  }
+}
+
+const getDefaultFormBlockMock: MockedResponse<
+  GetFormBlock,
+  GetFormBlockVariables
+> = {
+  request: {
+    query: GET_FORM_BLOCK,
+    variables: {
+      id: filledFormBlock.id
+    }
+  },
+  result: {
+    data: {
+      block: {
+        id: 'formBlock.id',
+        __typename: 'FormBlock',
+        projects: [],
+        projectId: null,
+        formSlug: null,
+        forms: [],
+        apiTokenExists: false
+      }
+    }
+  }
+}
+
+const getFilledFormBlockMock: MockedResponse<
+  GetFormBlock,
+  GetFormBlockVariables
+> = {
+  request: {
+    query: GET_FORM_BLOCK,
+    variables: {
+      id: filledFormBlock.id
+    }
+  },
+  result: {
+    data: {
+      block: {
+        id: 'formBlock.id',
+        __typename: 'FormBlock',
+        projects: [
+          {
+            __typename: 'FormiumProject',
+            id: 'projectId',
+            name: 'project name'
+          }
+        ],
+        projectId: 'projectId',
+        formSlug: 'FilledFormSlug',
+        forms: [
+          {
+            __typename: 'FormiumForm',
+            slug: 'FilledFormSlug',
+            name: 'Filled Form Name'
+          }
+        ],
+        apiTokenExists: true
+      }
+    }
+  }
 }
 
 const Template: StoryObj<ComponentProps<typeof Form>> = {
-  render: ({ ...args }) => (
-    <Stack
-      direction="row"
-      spacing={4}
-      sx={{
-        overflowX: 'auto',
-        py: 5,
-        px: 6
-      }}
-    >
-      <Form {...args} />
-    </Stack>
+  render: (block) => (
+    <EditorProvider initialState={{ selectedBlock: { ...block } }}>
+      <Drawer title="Form Properties">
+        <Form {...block} />
+      </Drawer>
+    </EditorProvider>
   )
 }
 
 export const Default = {
   ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getDefaultFormBlockMock]
+    }
+  },
   args: {
-    id: 'id',
-    form: null,
-    action: null
+    ...formBlock
   }
 }
 
 export const Filled = {
   ...Template,
-  args: {
-    id: 'id',
-    form: {
-      id: 'form.id',
-      name: 'form name'
-    } as unknown as FormType,
-    action: {
-      __typename: 'NavigateToBlockAction',
-      parentBlockId: 'button1.id',
-      gtmEventName: 'navigateToBlock',
-      blockId: 'step2.id'
+  parameters: {
+    apolloClient: {
+      mocks: [getFilledFormBlockMock]
     }
+  },
+  args: {
+    ...filledFormBlock
   }
 }
 
-export default FormDemo
+export default Demo

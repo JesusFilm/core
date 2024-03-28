@@ -17,60 +17,63 @@ import { GetFormBlock } from '../../../../../../../../../../__generated__/GetFor
 
 import { Credentials, GET_FORM_BLOCK } from './Credentials'
 
+const block: TreeBlock<FormBlock> = {
+  id: 'formBlock.id',
+  __typename: 'FormBlock',
+  parentBlockId: 'step0.id',
+  parentOrder: 0,
+  form: null,
+  action: null,
+  children: []
+}
+
+const state: EditorState = {
+  selectedBlock: block,
+  activeFab: ActiveFab.Add,
+  activeSlide: ActiveSlide.Drawer,
+  activeContent: ActiveContent.Canvas,
+  activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+}
+
+const mockGetFormBlock: MockedResponse<GetFormBlock> = {
+  request: {
+    query: GET_FORM_BLOCK,
+    variables: { id: 'formBlock.id' }
+  },
+  result: {
+    data: {
+      block: {
+        __typename: 'FormBlock',
+        id: 'formBlock.id',
+        projectId: 'projectId',
+        formSlug: 'formSlug',
+        projects: [
+          {
+            __typename: 'FormiumProject',
+            id: 'projectId',
+            name: 'projectName'
+          }
+        ],
+        forms: [
+          {
+            __typename: 'FormiumForm',
+            slug: 'formSlug',
+            name: 'formName'
+          }
+        ],
+        apiTokenExists: true
+      }
+    }
+  }
+}
+
 describe('Credentials', () => {
   it('shows credentials', async () => {
-    const block: TreeBlock<FormBlock> = {
-      id: 'formBlock.id',
-      __typename: 'FormBlock',
-      parentBlockId: 'step0.id',
-      parentOrder: 0,
-      form: null,
-      action: null,
-      children: []
-    }
-
-    const state: EditorState = {
-      selectedBlock: block,
-      activeFab: ActiveFab.Add,
-      activeSlide: ActiveSlide.Drawer,
-      activeContent: ActiveContent.Canvas,
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-    }
-
-    const mockGetFormBlock: MockedResponse<GetFormBlock> = {
-      request: {
-        query: GET_FORM_BLOCK,
-        variables: { id: 'formBlock.id' }
-      },
-      result: jest.fn(() => ({
-        data: {
-          block: {
-            __typename: 'FormBlock',
-            id: 'formBlock.id',
-            projectId: 'projectId',
-            formSlug: 'formSlug',
-            projects: [
-              {
-                __typename: 'FormiumProject',
-                id: 'projectId',
-                name: 'projectName'
-              }
-            ],
-            forms: [
-              {
-                __typename: 'FormiumForm',
-                slug: 'formSlug',
-                name: 'formName'
-              }
-            ],
-            apiTokenExists: true
-          }
-        }
-      }))
-    }
-
+    const result = jest.fn(() => ({
+      ...mockGetFormBlock.result
+    }))
     render(
-      <MockedProvider mocks={[mockGetFormBlock]}>
+      <MockedProvider mocks={[{ ...mockGetFormBlock, result }]}>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
             <Credentials />
@@ -79,7 +82,7 @@ describe('Credentials', () => {
       </MockedProvider>
     )
 
-    await waitFor(() => expect(mockGetFormBlock.result).toHaveBeenCalled())
+    await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(screen.getByLabelText('Api Token')).toBeInTheDocument()
     expect(
@@ -88,20 +91,26 @@ describe('Credentials', () => {
     expect(screen.getByRole('button', { name: 'formName' })).toBeInTheDocument()
   })
 
-  it('shows info message', () => {
+  it('shows info message', async () => {
     render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <Credentials />
-        </SnackbarProvider>
+      <MockedProvider mocks={[mockGetFormBlock]}>
+        <EditorProvider initialState={state}>
+          <SnackbarProvider>
+            <Credentials />
+          </SnackbarProvider>
+        </EditorProvider>
       </MockedProvider>
     )
 
-    expect(
-      screen.getByText('Click here for formium docs on finding your api token')
-    ).toHaveAttribute(
-      'href',
-      'https://formium.io/docs/react/frameworks/next-js#add-your-credentials'
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          'Click here for formium docs on finding your api token'
+        )
+      ).toHaveAttribute(
+        'href',
+        'https://formium.io/docs/react/frameworks/next-js#add-your-credentials'
+      )
     )
   })
 })

@@ -10,7 +10,7 @@ const FormSlugSelectDemo: Meta<typeof FormSlugSelect> = {
   ...simpleComponentConfig,
   component: FormSlugSelect,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Form/Credentials/FormSlugSelect'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Form/Credentials/FormSlugSelect'
 }
 
 const Template: StoryObj<ComponentProps<typeof FormSlugSelect>> = {
