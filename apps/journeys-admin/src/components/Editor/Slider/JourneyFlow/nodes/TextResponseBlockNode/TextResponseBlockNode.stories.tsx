@@ -13,12 +13,12 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
 
 import { TextResponseBlockNode } from '.'
 
 const TextResponseBlockNodeStory: Meta<typeof TextResponseBlockNode> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: TextResponseBlockNode,
   title: 'Journeys-Admin/Editor/Slider/JourneyFlow/nodes/TextResponseBlockNode'
 }
