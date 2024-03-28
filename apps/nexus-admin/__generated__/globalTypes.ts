@@ -7,6 +7,24 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum BatchStatus {
+  cancelled = "cancelled",
+  completed = "completed",
+  error = "error",
+  failed = "failed",
+  paused = "paused",
+  pending = "pending",
+  running = "running",
+  scheduled = "scheduled",
+  warning = "warning",
+}
+
+export enum BatchTaskType {
+  caption_processing = "caption_processing",
+  localization = "localization",
+  video_upload = "video_upload",
+}
+
 export enum ButtonAction {
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
@@ -31,6 +49,11 @@ export enum ButtonSize {
 export enum ButtonVariant {
   contained = "contained",
   text = "text",
+}
+
+export enum ChannelStatus {
+  deleted = "deleted",
+  published = "published",
 }
 
 export enum ChatPlatform {
@@ -109,6 +132,21 @@ export enum MessagePlatform {
   whatsApp = "whatsApp",
 }
 
+export enum ResourceStatus {
+  deleted = "deleted",
+  error = "error",
+  processing = "processing",
+  published = "published",
+  uploaded = "uploaded",
+}
+
+export enum TaskStatus {
+  completed = "completed",
+  failed = "failed",
+  pending = "pending",
+  processing = "processing",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
@@ -163,6 +201,14 @@ export enum VideoBlockSource {
   youTube = "youTube",
 }
 
+export interface BatchFilter {
+  ids?: string[] | null;
+  name?: string | null;
+  nexusId?: string | null;
+  status?: BatchStatus | null;
+  limit?: number | null;
+}
+
 export interface ButtonClickEventCreateInput {
   id?: string | null;
   blockId: string;
@@ -173,11 +219,48 @@ export interface ButtonClickEventCreateInput {
   actionValue?: string | null;
 }
 
+export interface ChannelCreateInput {
+  nexusId: string;
+  name: string;
+  platform: string;
+}
+
+export interface ChannelFilter {
+  ids?: string[] | null;
+  name?: string | null;
+  nexusId?: string | null;
+  limit?: number | null;
+  connected?: boolean | null;
+  status?: ChannelStatus | null;
+}
+
+export interface ChannelUpdateInput {
+  name?: string | null;
+  nexusId?: string | null;
+  platform?: string | null;
+}
+
 export interface ChatOpenEventCreateInput {
   id?: string | null;
   blockId: string;
   stepId?: string | null;
   value?: MessagePlatform | null;
+}
+
+export interface ConnectYoutubeChannelInput {
+  channelId: string;
+  authCode: string;
+  redirectUri: string;
+}
+
+export interface GoogleAuthInput {
+  authCode: string;
+  url: string;
+}
+
+export interface NexusCreateInput {
+  name: string;
+  description?: string | null;
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {
@@ -187,6 +270,24 @@ export interface RadioQuestionSubmissionEventCreateInput {
   stepId?: string | null;
   label?: string | null;
   value?: string | null;
+}
+
+export interface ResourceFilter {
+  ids?: string[] | null;
+  name?: string | null;
+  nexusId?: string | null;
+  status?: ResourceStatus | null;
+  limit?: number | null;
+}
+
+export interface ResourceFromGoogleDriveInput {
+  fileIds: string[];
+  authCode: string;
+  nexusId: string;
+}
+
+export interface ResourceUpdateInput {
+  name?: string | null;
 }
 
 export interface SignUpSubmissionEventCreateInput {

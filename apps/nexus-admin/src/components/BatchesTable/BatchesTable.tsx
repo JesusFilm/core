@@ -159,7 +159,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
         <TableCell>{batch.id}</TableCell>
         <TableCell>{batch.status}</TableCell>
         <TableCell>
-          <CircularProgressWithLabel value={batch.progress} />
+          <CircularProgressWithLabel value={batch.progress ?? 0} />
         </TableCell>
         <TableCell>{format(parseISO(batch.createdAt), 'yyyy-MM-dd')}</TableCell>
       </TableRow>
