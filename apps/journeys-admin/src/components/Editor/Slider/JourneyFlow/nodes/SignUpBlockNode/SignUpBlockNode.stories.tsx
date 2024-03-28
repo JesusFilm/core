@@ -14,12 +14,12 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
 
 import { SignUpBlockNode } from '.'
 
 const SignUpBlockNodeStory: Meta<typeof SignUpBlockNode> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: SignUpBlockNode,
   title: 'Journeys-Admin/Editor/Slider/JourneyFlow/nodes/SignUpBlockNode'
 }
