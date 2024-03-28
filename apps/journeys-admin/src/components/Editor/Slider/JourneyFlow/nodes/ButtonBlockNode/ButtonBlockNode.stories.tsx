@@ -17,12 +17,12 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
 
 import { ButtonBlockNode } from '.'
 
 const ButtonBlockNodeStory: Meta<typeof ButtonBlockNode> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: ButtonBlockNode,
   title: 'Journeys-Admin/Editor/Slider/JourneyFlow/nodes/ButtonBlockNode'
 }
@@ -32,7 +32,7 @@ const block: TreeBlock<ButtonBlock> = {
   id: 'ButtonBlock.id',
   parentBlockId: 'CardBlock.id',
   parentOrder: 0,
-  label: '',
+  label: 'Click me',
   buttonVariant: ButtonVariant.contained,
   buttonColor: ButtonColor.primary,
   size: ButtonSize.medium,
@@ -97,32 +97,6 @@ export const Default = {
         id: block.id,
         data: {
           ...block,
-          step
-        },
-        type: block.__typename,
-        position: {
-          x: 0,
-          y: 0
-        },
-        selectable: false
-      }
-    ],
-    nodeTypes: {
-      ButtonBlock: ButtonBlockNode
-    }
-  }
-}
-
-export const WithLabel = {
-  ...Template,
-  args: {
-    ...defaultFlowProps,
-    nodes: [
-      {
-        id: block.id,
-        data: {
-          ...block,
-          label: 'Click Me',
           step
         },
         type: block.__typename,
