@@ -15,7 +15,7 @@ import {
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
 
 import { VideoBlockNode } from '.'
 
@@ -47,7 +47,12 @@ const block: TreeBlock<VideoBlock> = {
   video: {
     __typename: 'Video',
     id: 'video.id',
-    title: [],
+    title: [
+      {
+        __typename: 'Translation',
+        value: 'Video title'
+      }
+    ],
     image: null,
     variant: null
   },
@@ -110,69 +115,6 @@ export const Default = {
         id: block.id,
         data: {
           ...block,
-          step
-        },
-        type: block.__typename,
-        position: {
-          x: 0,
-          y: 0
-        },
-        selectable: false
-      }
-    ],
-    nodeTypes: {
-      VideoBlock: VideoBlockNode
-    }
-  }
-}
-
-export const BlockTitle = {
-  ...Template,
-  args: {
-    ...defaultFlowProps,
-    nodes: [
-      {
-        id: block.id,
-        data: {
-          ...block,
-          title: 'Video block title',
-          step
-        },
-        type: block.__typename,
-        position: {
-          x: 0,
-          y: 0
-        },
-        selectable: false
-      }
-    ],
-    nodeTypes: {
-      VideoBlock: VideoBlockNode
-    }
-  }
-}
-
-export const VideoTitle = {
-  ...Template,
-  args: {
-    ...defaultFlowProps,
-    nodes: [
-      {
-        id: block.id,
-        data: {
-          ...block,
-          video: {
-            __typename: 'Video',
-            id: 'video.id',
-            title: [
-              {
-                __typename: 'Translation',
-                value: 'Video title'
-              }
-            ],
-            image: null,
-            variant: null
-          },
           step
         },
         type: block.__typename,
