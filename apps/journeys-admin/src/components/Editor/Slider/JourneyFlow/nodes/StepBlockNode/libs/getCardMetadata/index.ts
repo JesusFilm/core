@@ -1,0 +1,1 @@
+export { getCardMetadata } from './getCardMetadata'

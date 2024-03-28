@@ -15,8 +15,7 @@ import {
   StepAndCardBlockCreate,
   StepAndCardBlockCreateVariables
 } from '../../../__generated__/StepAndCardBlockCreate'
-
-import { STEP_AND_CARD_BLOCK_CREATE } from './CardPreview'
+import { STEP_AND_CARD_BLOCK_CREATE } from '../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
 import { CardPreview } from '.'
 
@@ -199,7 +198,7 @@ describe('CardPreview', () => {
     })
   })
 
-  it('should navigate to actions table when clicked', async () => {
+  it('should navigate to goals table when clicked', async () => {
     const onSelect = jest.fn()
 
     const { getByTestId } = render(
@@ -225,7 +224,7 @@ describe('CardPreview', () => {
     )
     fireEvent.click(getByTestId('NavigationCardGoals'))
     await waitFor(() =>
-      expect(onSelect).toHaveBeenCalledWith({ view: 'action' })
+      expect(onSelect).toHaveBeenCalledWith({ view: 'goals' })
     )
   })
 

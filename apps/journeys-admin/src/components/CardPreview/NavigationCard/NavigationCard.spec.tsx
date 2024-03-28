@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 
 import { NavigationCard } from './NavigationCard'
 
@@ -10,7 +10,7 @@ describe('NavigationCard', () => {
       <NavigationCard
         id="social"
         title="Test"
-        destination={ActiveJourneyEditContent.Canvas}
+        destination={ActiveContent.Canvas}
         header={<div />}
       />
     )
@@ -22,7 +22,7 @@ describe('NavigationCard', () => {
       <NavigationCard
         id="social"
         title="Test"
-        destination={ActiveJourneyEditContent.Canvas}
+        destination={ActiveContent.Canvas}
         header={<div data-testid="header" />}
       />
     )

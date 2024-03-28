@@ -20,6 +20,9 @@ interface ContainedIconProps {
   disabled?: boolean
   loading?: boolean
   onClick: () => void
+  slots?: {
+    ImageThumbnail?: ReactNode
+  }
 }
 
 export function ContainedIconButton({
@@ -31,7 +34,8 @@ export function ContainedIconButton({
   imageAlt,
   disabled = false,
   loading = false,
-  onClick
+  onClick,
+  slots
 }: ContainedIconProps): ReactElement {
   return (
     <Card
@@ -42,12 +46,16 @@ export function ContainedIconButton({
       <CardActionArea onClick={onClick} disabled={disabled || loading}>
         <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
           <Box>
-            <ImageThumbnail
-              imageSrc={imageSrc}
-              imageAlt={imageAlt}
-              icon={thumbnailIcon}
-              loading={loading}
-            />
+            {slots?.ImageThumbnail != null ? (
+              <>{slots.ImageThumbnail}</>
+            ) : (
+              <ImageThumbnail
+                imageSrc={imageSrc}
+                imageAlt={imageAlt}
+                icon={thumbnailIcon}
+                loading={loading}
+              />
+            )}
           </Box>
           <Box flexGrow={1} minWidth={0}>
             <Typography variant="subtitle2">{label}</Typography>
