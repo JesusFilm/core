@@ -21,7 +21,8 @@ export class TeamsPage {
     await this.verifyTeamCreatedSnackbarMsg()
     await this.clickDiaLogBoxCloseBtn()
     await this.clickTeamSelectionDropDown()
-    await this.selectLastTeam() // due to bug
+    // Have to select last team due to the bug https://3.basecamp.com/3105655/buckets/36562260/todolists/7145232907
+    await this.selectLastTeam()
     await this.clickTeamSelectionDropDown()
     await this.selectCreatedNewTeam()
     await this.verifyTeamNameUpdatedInTeamSelectDropdown()
@@ -45,7 +46,7 @@ export class TeamsPage {
     await this.verifyMemberAddedInMemberList()
     await this.clickDiaLogBoxCloseBtn()
   }
-  async verfyMemberAddedViaPlusIconAtTopOfTheRightCorner() {
+  async verifyMemberAddedViaPlusIconAtTopOfTheRightCorner() {
     await this.clickMemberPlusIcon()
     await this.verifyMemberAdded()
   }
@@ -53,7 +54,7 @@ export class TeamsPage {
   async clickThreeDotOfTeams() {
     await this.page
       .locator(
-        'div[data-testid="TeamSelect"] + div + button svg[data-testid="MoreIcon"]'
+        'div[data-testid="TeamSelect"] ~  button svg[data-testid="MoreIcon"]'
       )
       .click()
   }
