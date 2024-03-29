@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test'
 import { Page } from 'playwright-core'
 import dayjs from 'dayjs'
-import testData from '../../utils/testData.json'
+import testData from '../utils/testData.json'
 let randomNumber = ''
 export class TeamsPage {
   readonly page: Page
