@@ -21,7 +21,7 @@ const ImageBlockEditorStory: Meta<typeof ImageBlockEditor> = {
 const Template: StoryObj<typeof ImageBlockEditor> = {
   render: (args) => (
     <MockedProvider mocks={[listUnsplashCollectionMock]}>
-      <Drawer>
+      <Drawer title="Image">
         <ImageBlockEditor {...args} />
       </Drawer>
     </MockedProvider>
@@ -60,6 +60,16 @@ export const Custom = {
 }
 Custom.play = async () => {
   await userEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+}
+
+export const CustomUrl = {
+  ...Template
+}
+CustomUrl.play = async () => {
+  await userEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Add image by URL' })
+  )
 }
 
 export const AI = {

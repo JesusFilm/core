@@ -30,7 +30,7 @@ const Template: Story = {
   render: (args) => {
     return (
       <Box bgcolor="white">
-        <Drawer>
+        <Drawer title="Image">
           <ImageBlockHeader {...args} />
         </Drawer>
       </Box>
