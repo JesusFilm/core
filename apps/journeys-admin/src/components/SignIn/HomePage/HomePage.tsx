@@ -1,10 +1,8 @@
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { fetchSignInMethodsForEmail, getAuth } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
@@ -57,14 +55,6 @@ export function HomePage({
   return (
     <>
       <SignInTabs />
-      <Box>
-        <Typography variant="h6" textAlign="center" gutterBottom>
-          {t('Log in or Sign up')}
-        </Typography>
-        <Typography variant="body2" textAlign="center" sx={{ mb: 2 }}>
-          {t("No account? We'll create one for you automatically.")}
-        </Typography>
-      </Box>
       <SignInServiceButton service="google.com" />
       <SignInServiceButton service="facebook.com" />
       <Divider sx={{ my: 3 }}>{t('OR')}</Divider>
@@ -130,7 +120,7 @@ export function HomePage({
                 type="submit"
                 disabled={!isValid || isSubmitting}
               >
-                {t('Sign in with email')}
+                {t('Continue with email')}
               </Button>
             </Stack>
           </Form>
