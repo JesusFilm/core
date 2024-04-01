@@ -1,4 +1,5 @@
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
@@ -54,9 +55,13 @@ export function HomePage({
   }
   return (
     <>
-      <SignInTabs />
-      <SignInServiceButton service="google.com" />
-      <SignInServiceButton service="facebook.com" />
+      <Box sx={{ pb: 3 }}>
+        <SignInTabs />
+      </Box>
+      <Stack spacing={3}>
+        <SignInServiceButton service="google.com" />
+        <SignInServiceButton service="facebook.com" />
+      </Stack>
       <Divider sx={{ my: 3 }}>{t('OR')}</Divider>
       <Formik
         initialValues={{ email: '' }}
