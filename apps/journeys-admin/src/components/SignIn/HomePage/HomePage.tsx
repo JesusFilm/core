@@ -12,6 +12,7 @@ import { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
 import { SignInServiceButton } from '../SignInServiceButton'
+import { SignInTabs } from '../SignInTabs'
 import { PageProps } from '../types'
 
 export function HomePage({
@@ -55,6 +56,7 @@ export function HomePage({
   }
   return (
     <>
+      <SignInTabs />
       <Box>
         <Typography variant="h6" textAlign="center" gutterBottom>
           {t('Log in or Sign up')}
