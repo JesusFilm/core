@@ -3,12 +3,12 @@ import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 
 import { Button } from '.'
 
 const ButtonStory: Meta<typeof Button> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: Button,
   title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/AddBlock/Button'
 }
