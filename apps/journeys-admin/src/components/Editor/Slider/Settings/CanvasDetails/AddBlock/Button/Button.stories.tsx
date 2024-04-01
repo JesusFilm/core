@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { ComponentProps } from 'react'
 
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 
@@ -13,7 +14,7 @@ const ButtonStory: Meta<typeof Button> = {
   title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/AddBlock/Button'
 }
 
-const Template: StoryObj<typeof Button> = {
+const Template: StoryObj<ComponentProps<typeof Button>> = {
   render: ({ ...args }) => {
     return <Button {...args} />
   }
