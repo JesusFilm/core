@@ -13,7 +13,7 @@ import { JOURNEY_SLUG_UPDATE, SlugDialog } from './SlugDialog'
 const SlugDialogStory: Meta<typeof SlugDialog> = {
   ...journeysAdminConfig,
   component: SlugDialog,
-  title: 'Journeys-Admin/JourneyView/JourneyLink/SlugDialog',
+  title: 'Journeys-Admin/Editor/Toolbar/Items/ShareItem/SlugDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'

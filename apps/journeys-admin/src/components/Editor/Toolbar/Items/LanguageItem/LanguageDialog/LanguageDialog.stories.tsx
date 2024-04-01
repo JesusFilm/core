@@ -16,7 +16,7 @@ import { LanguageDialog } from '.'
 const LanguageDialogStory: Meta<typeof LanguageDialog> = {
   ...journeysAdminConfig,
   component: LanguageDialog,
-  title: 'Journeys-Admin/JourneyView/Menu/LanguageDialog'
+  title: 'Journeys-Admin/Editor/Toolbar/Items/LanguageItem/LanguageDialog'
 }
 
 const LanguageDialogComponent = (): ReactElement => {

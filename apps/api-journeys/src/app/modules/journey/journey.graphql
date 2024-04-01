@@ -29,6 +29,7 @@ type Journey @key(fields: "id") {
   team: Team
   strategySlug: String
   tags: [Tag!]!
+  journeyCollections: [JourneyCollection!]!
 }
 
 enum IdType {
@@ -52,6 +53,22 @@ input JourneysFilter {
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
+}
+
+input JourneysQueryOptions {
+  """
+  hostname filters journeys to those that belong to a team with a custom domain
+  matching the hostname.
+  """
+  hostname: String
+  """
+  is this being requested from an embed url
+  """
+  embedded: Boolean
+  """
+  limit results to journeys in a journey collection (currently only available when using hostname option)
+  """
+  journeyCollection: Boolean
 }
 
 enum JourneysReportType {
@@ -102,8 +119,8 @@ extend type Query {
   ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
-  journeys(where: JourneysFilter): [Journey!]!
-  journey(id: ID!, idType: IdType): Journey!
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
 }
 
 input JourneyCreateInput {
