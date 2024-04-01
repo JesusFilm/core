@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 
@@ -10,6 +11,12 @@ const ButtonStory: Meta<typeof Button> = {
   ...journeysAdminConfig,
   component: Button,
   title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/AddBlock/Button'
+}
+
+const Template: StoryObj<typeof Button> = {
+  render: ({ ...args }) => {
+    return <Button {...args} />
+  }
 }
 
 export const Default: StoryObj<typeof Button> = {
@@ -24,20 +31,12 @@ export const Empty: StoryObj<typeof Button> = {
   }
 }
 
-export const HoverState: StoryObj<typeof Button> = {
-  render: () => {
-    return (
-      <div className="simulate-hover">
-        <Button icon={<PaletteIcon />} value="Hover" />
-      </div>
-    )
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'This story simulates the hover state of the button.'
-      }
-    }
+export const HoverState = {
+  ...Template,
+  play: async () => {
+    await waitFor(async () => {
+      await userEvent.hover(screen.getByRole('button'))
+    })
   }
 }
 
