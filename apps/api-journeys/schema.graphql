@@ -221,6 +221,9 @@ extend type Mutation {
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
+  customDomainUpdate(input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainDelete(id: ID!): CustomDomain!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -264,6 +267,9 @@ extend type Mutation {
 
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
+  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
+  journeyCollectionUpdate(input: JourneyCollectionUpdateInput!): JourneyCollection!
+  journeyCollectionDelete(id: ID!): JourneyCollection!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   journeyProfileOnboardingFormComplete: JourneyProfile!
@@ -337,6 +343,7 @@ type Journey
   team: Team
   strategySlug: String
   tags: [Tag!]!
+  journeyCollections: [JourneyCollection!]!
   userJourneys: [UserJourney!]
 }
 
@@ -353,6 +360,8 @@ type Query {
 extend type Query {
   blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block!
+  customDomain(id: ID!): CustomDomain!
+  customDomains(teamId: ID!): [CustomDomain!]!
   hosts(teamId: ID!): [Host!]!
 
   """
@@ -371,8 +380,10 @@ extend type Query {
   ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
-  journeys(where: JourneysFilter): [Journey!]!
-  journey(id: ID!, idType: IdType): Journey!
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
+  journeyCollection(id: ID!): JourneyCollection!
+  journeyCollections(teamId: ID!): [JourneyCollection]!
   getJourneyProfile: JourneyProfile
 
   """Get a list of Visitor Information by Journey"""
@@ -1203,6 +1214,49 @@ input ChatButtonUpdateInput {
   platform: ChatPlatform
 }
 
+type CustomDomain {
+  id: ID!
+  team: Team!
+  name: String!
+  apexName: String!
+  journeyCollection: JourneyCollection
+  verification: CustomDomainVerification
+  configuration: VercelDomainConfiguration
+  routeAllTeamJourneys: Boolean!
+}
+
+input CustomDomainCreateInput {
+  teamId: String!
+  name: String!
+  journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
+}
+
+input CustomDomainUpdateInput {
+  id: ID!
+  name: String
+  journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
+}
+
+type VercelDomainVerification {
+  type: String
+  domain: String
+  value: String
+  reason: String
+}
+
+type VercelDomainConfiguration {
+  acceptedChallenges: [String]
+  configuredBy: String
+  misconfigured: Boolean
+}
+
+type CustomDomainVerification {
+  verified: Boolean!
+  verification: [VercelDomainVerification]
+}
+
 enum ButtonAction {
   NavigateAction
   NavigateToBlockAction
@@ -1927,6 +1981,22 @@ input JourneysFilter {
   orderByRecent: Boolean
 }
 
+input JourneysQueryOptions {
+  """
+  hostname filters journeys to those that belong to a team with a custom domain
+  matching the hostname.
+  """
+  hostname: String
+
+  """is this being requested from an embed url"""
+  embedded: Boolean
+
+  """
+  limit results to journeys in a journey collection (currently only available when using hostname option)
+  """
+  journeyCollection: Boolean
+}
+
 enum JourneysReportType {
   multipleFull
   multipleSummary
@@ -2006,6 +2076,28 @@ type UserJourney
 
 input JourneyTemplateInput {
   template: Boolean
+}
+
+type JourneyCollection {
+  id: ID!
+  team: Team!
+  title: String
+  customDomains: [CustomDomain!]
+  journeys: [Journey!]
+}
+
+input JourneyCollectionCreateInput {
+  id: ID
+  teamId: String!
+  title: String
+  journeyIds: [String!]
+  customDomain: CustomDomainCreateInput
+}
+
+input JourneyCollectionUpdateInput {
+  id: ID!
+  title: String
+  journeyIds: [String!]
 }
 
 type JourneyProfile
@@ -2157,6 +2249,7 @@ type Team
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
+  customDomains: [CustomDomain!]!
 }
 
 input TeamCreateInput {

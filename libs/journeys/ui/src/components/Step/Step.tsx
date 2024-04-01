@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -38,14 +38,10 @@ export function Step({
   const { variant, journey } = useJourney()
   const { treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
-  const [activeJourneyStep, setActiveJourneyStep] = useState(false)
 
-  useEffect(() => {
-    setActiveJourneyStep(
-      (variant === 'default' || variant === 'embed') &&
-        isActiveBlockOrDescendant(blockId)
-    )
-  }, [blockId, variant])
+  const activeJourneyStep =
+    (variant === 'default' || variant === 'embed') &&
+    isActiveBlockOrDescendant(blockId)
 
   const heading = getStepHeading(blockId, children, treeBlocks, t)
 
