@@ -35,6 +35,7 @@ export function Fab({ variant }: FabProps): ReactElement {
     },
     dispatch
   } = useEditor()
+
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
