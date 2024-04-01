@@ -8,7 +8,8 @@ import { Size } from '.'
 const SizeStory: Meta<typeof Size> = {
   ...simpleComponentConfig,
   component: Size,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Button/Size'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Button/Size'
 }
 
 export const Default: StoryObj<typeof Size> = {
