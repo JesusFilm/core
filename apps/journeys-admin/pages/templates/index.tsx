@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client'
 import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import { useUser, withUser } from 'next-firebase-auth'
@@ -13,8 +14,10 @@ import {
   GetLanguages,
   GetLanguagesVariables
 } from '../../__generated__/GetLanguages'
+import { GetMe } from '../../__generated__/GetMe'
 import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
+import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { TemplateGallery } from '../../src/components/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_JOURNEYS } from '../../src/libs/useJourneysQuery/useJourneysQuery'
@@ -25,10 +28,10 @@ function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
+  const { data } = useQuery<GetMe>(GET_ME)
 
-  if (user.id != null && !user.emailVerified) {
+  if (data?.me?.id != null && !data?.me?.emailVerified) {
     void router.push('/users/verify?redirect=/templates')
-    return <></>
   }
 
   return (
@@ -58,6 +61,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       variables: {
         languageId: '529',
         where: {
+          // make sure theese variables are the same as in HeaderAndLanguageFilter.tsx
           ids: [
             '529', // English
             '4415', // Italiano, Italian
@@ -68,7 +72,12 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
             '584', // Português, Portuguese, Brazil
             '21028', // Español, Spanish, Latin American
             '20615', // 普通話, Chinese, Mandarin
-            '3934' // Русский, Russian
+            '3934', // Русский, Russian
+            '22658', // Arabic Modern
+            '7083', // Japanese
+            '16639', // Bahasa Indonesia
+            '3887', // Vietnamese
+            '13169' // Thai
           ]
         }
       }

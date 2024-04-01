@@ -19,12 +19,13 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
   GetJourneys,
+  GetJourneysVariables,
   GetJourneys_journeys as Journey
-} from '../__generated__/GetJourneys'
-import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
-import i18nConfig from '../next-i18next.config'
-import logo from '../public/logo.svg'
-import { createApolloClient } from '../src/libs/apolloClient'
+} from '../../__generated__/GetJourneys'
+import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
+import i18nConfig from '../../next-i18next.config'
+import logo from '../../public/logo.svg'
+import { createApolloClient } from '../../src/libs/apolloClient'
 
 interface JourneysPageProps {
   journeys: Journey[]
@@ -141,20 +142,28 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   )
 }
 
+export const GET_JOURNEYS = gql`
+  query GetJourneys($featured: Boolean, $options: JourneysQueryOptions) {
+    journeys(
+      where: { featured: $featured, template: false }
+      options: $options
+    ) {
+      id
+      title
+      slug
+    }
+  }
+`
+
 export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<GetJourneys>({
-    query: gql`
-      query GetJourneys {
-        journeys(where: { featured: true, template: false }) {
-          id
-          title
-          slug
-        }
-      }
-    `
+  const { data } = await apolloClient.query<GetJourneys, GetJourneysVariables>({
+    query: GET_JOURNEYS,
+    variables: {
+      featured: true
+    }
   })
 
   if (data.journeys === null) {

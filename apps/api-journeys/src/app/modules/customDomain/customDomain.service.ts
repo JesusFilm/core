@@ -167,4 +167,12 @@ export class CustomDomainService {
       }
     })
   }
+
+  isDomainValid(domain: string): boolean {
+    return (
+      domain.match(
+        /^((?:([a-z0-9]\.|[a-z0-9][a-z0-9-]{0,61}[a-z0-9])\.)+)([a-z0-9]{2,63}|(?:[a-z0-9][a-z0-9-]{0,61}[a-z0-9]))\.?$/
+      ) != null
+    )
+  }
 }
