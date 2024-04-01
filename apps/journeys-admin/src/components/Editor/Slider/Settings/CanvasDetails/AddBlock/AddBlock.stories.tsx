@@ -19,7 +19,6 @@ const meta: Meta<typeof AddBlock> = {
   component: AddBlock,
   title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/AddBlock'
 }
-export default meta
 
 type Story = StoryObj<ComponentProps<typeof AddBlock>>
 
@@ -76,3 +75,5 @@ export const DisabledNewVideo: Story = {
     selectedStep: disabledStep
   }
 }
+
+export default meta
