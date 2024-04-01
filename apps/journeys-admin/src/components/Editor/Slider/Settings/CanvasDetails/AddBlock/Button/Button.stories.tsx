@@ -9,7 +9,7 @@ import { Button } from '.'
 const ButtonStory: Meta<typeof Button> = {
   ...journeysAdminConfig,
   component: Button,
-  title: 'Journeys-Admin/Editor/ControlPanel/Button'
+  title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/AddBlock/Button'
 }
 
 export const Default: StoryObj<typeof Button> = {

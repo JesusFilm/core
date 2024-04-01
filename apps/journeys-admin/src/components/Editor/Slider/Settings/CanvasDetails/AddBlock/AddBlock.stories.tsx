@@ -11,7 +11,7 @@ import { AddBlock } from './AddBlock'
 const AddBlockStory: Meta<typeof AddBlock> = {
   ...journeysAdminConfig,
   component: AddBlock,
-  title: 'Journeys-Admin/Block/AddBlock'
+  title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/AddBlock'
 }
 
 export const Default: StoryObj<typeof AddBlock> = {
