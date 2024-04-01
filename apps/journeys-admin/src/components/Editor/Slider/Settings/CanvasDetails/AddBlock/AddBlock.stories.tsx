@@ -30,7 +30,7 @@ const Template: Story = {
   )
 }
 
-export const Default: Story = {
+export const Default = {
   ...Template
 }
 
