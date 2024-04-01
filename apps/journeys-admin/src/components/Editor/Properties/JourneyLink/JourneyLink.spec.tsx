@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -6,8 +6,7 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { GetCustomDomains } from '../../../../../__generated__/GetCustomDomains'
-import { GET_CUSTOM_DOMAINS } from '../../../Team/CustomDomainDialog/CustomDomainDialog'
+import { getCustomDomainMockARecord } from '../../../Team/CustomDomainDialog/data'
 import { defaultJourney } from '../../data'
 
 import { JourneyLink } from './JourneyLink'
@@ -23,42 +22,6 @@ jest.mock('next/router', () => ({
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-
-const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
-  request: {
-    query: GET_CUSTOM_DOMAINS,
-    variables: {
-      teamId: 'teamId'
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      customDomains: [
-        {
-          __typename: 'CustomDomain',
-          name: 'mockdomain.com',
-          apexName: 'mockdomain.com',
-          id: 'customDomainId',
-          teamId: 'teamId',
-          verification: {
-            __typename: 'CustomDomainVerification',
-            verified: true,
-            verification: []
-          },
-          configuration: {
-            __typename: 'VercelDomainConfiguration',
-            misconfigured: false
-          },
-          journeyCollection: {
-            __typename: 'JourneyCollection',
-            id: 'journeyCollectionId',
-            journeys: []
-          }
-        }
-      ]
-    }
-  }))
-}
 
 describe('JourneyLink', () => {
   const push = jest.fn()

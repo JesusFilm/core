@@ -1,18 +1,20 @@
 import { MockedResponse } from '@apollo/client/testing'
+
+import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
+import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
 import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
+import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
+import { JourneyCollectionDelete } from '../../../../__generated__/JourneyCollectionDelete'
+import { UpdateJourneyCollection } from '../../../../__generated__/UpdateJourneyCollection'
+import { GET_CUSTOM_DOMAINS } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
+
 import {
   CREATE_CUSTOM_DOMAIN,
   DELETE_CUSTOM_DOMAIN,
-  GET_CUSTOM_DOMAINS,
   JOURNEY_COLLECTION_CREATE,
   JOURNEY_COLLECTION_DELETE,
   UPDATE_JOURNEY_COLLECTION
 } from './CustomDomainDialog'
-import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
-import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
-import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
-import { UpdateJourneyCollection } from '../../../../__generated__/UpdateJourneyCollection'
-import { JourneyCollectionDelete } from '../../../../__generated__/JourneyCollectionDelete'
 
 export const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
   request: {

@@ -3,52 +3,15 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
-import { GetCustomDomains } from '../../../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { GET_CUSTOM_DOMAINS } from '../../../../Team/CustomDomainDialog/CustomDomainDialog'
+import { getCustomDomainMockARecord } from '../../../../Team/CustomDomainDialog/data'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../../../Team/TeamProvider'
 
 import { DefaultMenu } from '.'
-
-const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
-  request: {
-    query: GET_CUSTOM_DOMAINS,
-    variables: {
-      teamId: 'teamId'
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      customDomains: [
-        {
-          __typename: 'CustomDomain',
-          name: 'mockdomain.com',
-          apexName: 'mockdomain.com',
-          id: 'customDomainId',
-          teamId: 'teamId',
-          configuration: {
-            __typename: 'VercelDomainConfiguration',
-            misconfigured: false
-          },
-          verification: {
-            __typename: 'CustomDomainVerification',
-            verified: true,
-            verification: []
-          },
-          journeyCollection: {
-            __typename: 'JourneyCollection',
-            id: 'journeyCollectionId',
-            journeys: []
-          }
-        }
-      ]
-    }
-  }))
-}
 
 const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {

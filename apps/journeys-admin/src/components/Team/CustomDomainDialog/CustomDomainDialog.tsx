@@ -32,35 +32,6 @@ interface CustomDomainDialogProps {
   onClose: () => void
 }
 
-export const GET_CUSTOM_DOMAINS = gql`
-  query GetCustomDomains($teamId: ID!) {
-    customDomains(teamId: $teamId) {
-      id
-      apexName
-      verification {
-        verified
-        verification {
-          domain
-          reason
-          type
-          value
-        }
-      }
-      configuration {
-        misconfigured
-      }
-      name
-      journeyCollection {
-        id
-        journeys {
-          title
-          id
-        }
-      }
-    }
-  }
-`
-
 export const CREATE_CUSTOM_DOMAIN = gql`
   mutation CreateCustomDomain($input: CustomDomainCreateInput!) {
     customDomainCreate(input: $input) {

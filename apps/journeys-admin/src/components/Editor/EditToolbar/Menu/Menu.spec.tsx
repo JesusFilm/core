@@ -8,7 +8,6 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockDuplicate } from '../../../../../__generated__/BlockDuplicate'
-import { GetCustomDomains } from '../../../../../__generated__/GetCustomDomains'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -16,7 +15,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
-import { GET_CUSTOM_DOMAINS } from '../../../Team/CustomDomainDialog/CustomDomainDialog'
+import { getCustomDomainMockARecord } from '../../../Team/CustomDomainDialog/data'
 import { BLOCK_DUPLICATE } from '../DuplicateBlock/DuplicateBlock'
 
 import { GET_ROLE } from './Menu'
@@ -34,42 +33,6 @@ jest.mock('next/router', () => ({
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-
-const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
-  request: {
-    query: GET_CUSTOM_DOMAINS,
-    variables: {
-      teamId: 'teamId'
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      customDomains: [
-        {
-          __typename: 'CustomDomain',
-          name: 'mockdomain.com',
-          apexName: 'mockdomain.com',
-          id: 'customDomainId',
-          teamId: 'teamId',
-          verification: {
-            __typename: 'CustomDomainVerification',
-            verified: true,
-            verification: []
-          },
-          configuration: {
-            __typename: 'VercelDomainConfiguration',
-            misconfigured: false
-          },
-          journeyCollection: {
-            __typename: 'JourneyCollection',
-            id: 'journeyCollectionId',
-            journeys: []
-          }
-        }
-      ]
-    }
-  }))
-}
 
 describe('EditToolbar Menu', () => {
   const push = jest.fn()
