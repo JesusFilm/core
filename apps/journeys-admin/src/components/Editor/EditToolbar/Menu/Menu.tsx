@@ -87,7 +87,7 @@ export function Menu(): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   const hostname = hasCustomDomain
-    ? new URL('https://' + customDomains?.customDomains[0].name).hostname
+    ? new URL(`https://${customDomains?.customDomains[0].name}`).hostname
     : undefined
 
   function setRoute(param: string): void {
