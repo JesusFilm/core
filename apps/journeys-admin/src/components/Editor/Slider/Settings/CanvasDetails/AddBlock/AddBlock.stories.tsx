@@ -9,15 +9,17 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../../libs/storybook'
 
 import { AddBlock } from './AddBlock'
 
 const AddBlockStory: Meta<typeof AddBlock> = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: AddBlock,
   title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/AddBlock'
 }
+
+const Template: StoryObj<typeof AddBlock> = {
 
 export const Default: StoryObj<typeof AddBlock> = {
   render: () => {
