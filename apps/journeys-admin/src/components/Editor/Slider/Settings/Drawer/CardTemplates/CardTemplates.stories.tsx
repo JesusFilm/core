@@ -6,20 +6,22 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import { Drawer } from '../Drawer'
 
-import { CardTemplateDrawer } from '.'
+import { CardTemplates } from '.'
 
-const CardTemplateDrawerStory: Meta<typeof CardTemplateDrawer> = {
+const CardTemplatesStory: Meta<typeof CardTemplates> = {
   ...journeysAdminConfig,
-  component: CardTemplateDrawer,
-  title: 'Journeys-Admin/Editor/CardTemplateDrawer'
+  component: CardTemplates,
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/CardTemplates'
 }
 
-const Template: StoryObj<typeof CardTemplateDrawer> = {
+const Template: StoryObj<typeof CardTemplates> = {
   render: () => {
     return (
       <MockedProvider>
         <EditorProvider>
-          <Drawer />
+          <Drawer title="Card Templates">
+            <CardTemplates />
+          </Drawer>
         </EditorProvider>
       </MockedProvider>
     )
@@ -30,4 +32,4 @@ export const Default = {
   ...Template
 }
 
-export default CardTemplateDrawerStory
+export default CardTemplatesStory

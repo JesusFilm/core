@@ -8,9 +8,9 @@ import { CardPoll } from './Templates/CardPoll'
 import { CardQuote } from './Templates/CardQuote'
 import { CardVideo } from './Templates/CardVideo'
 
-export function CardTemplateDrawer(): ReactElement {
+export function CardTemplates(): ReactElement {
   return (
-    <Grid data-testid="CardTemplateDrawer" container spacing={5} sx={{ p: 5 }}>
+    <Grid data-testid="CardTemplates" container spacing={5} sx={{ p: 5 }}>
       <Grid item xs={6}>
         <CardVideo />
       </Grid>

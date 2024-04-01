@@ -14,14 +14,13 @@ import {
   ThemeName
 } from '../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
-import { Drawer } from '../Drawer'
 
 import { SocialDetails } from './SocialDetails'
 
 const SocialDetailsStory: Meta<typeof SocialDetails> = {
   ...journeysAdminConfig,
   component: SocialDetails,
-  title: 'Journeys-Admin/Editor/Drawer/SocialDetails',
+  title: 'Journeys-Admin/Editor/Slider/Settings/SocialDetails',
   // do not remove these parameters for this story, see: https://github.com/storybookjs/storybook/issues/17025
   parameters: {
     docs: {
@@ -88,7 +87,7 @@ const Template: StoryObj<typeof SocialDetails> = {
       <MockedProvider>
         <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
           <EditorProvider>
-            <Drawer />
+            <SocialDetails />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

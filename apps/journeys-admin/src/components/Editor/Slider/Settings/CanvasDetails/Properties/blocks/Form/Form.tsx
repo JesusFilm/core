@@ -23,7 +23,7 @@ export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${id}-form-action`
     })
-  }, [dispatch, id, t])
+  }, [dispatch, id])
 
   return (
     <Box data-testid="FormProperties">
