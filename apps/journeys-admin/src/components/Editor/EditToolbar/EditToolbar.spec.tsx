@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -9,14 +9,13 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
-import { CustomDomainProvider } from '../../../libs/useCustomDomainsQuery'
 
 import { EditToolbar } from '.'
+import { getCustomDomainMockARecord } from '../../Team/CustomDomainDialog/data'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -61,45 +60,32 @@ describe('Edit Toolbar', () => {
     expect(getByLabelText('Analytics')).toBeInTheDocument()
   })
 
-  it('should render Preview Button with custom domain link', () => {
+  it('should render Preview Button with custom domain link', async () => {
     const { getAllByRole, getAllByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider>
-          <CustomDomainProvider
+        <MockedProvider mocks={[getCustomDomainMockARecord]}>
+          <JourneyProvider
             value={{
-              customDomains: {
-                customDomains: [
-                  {
-                    __typename: 'CustomDomain' as const,
-                    name: 'mockdomain.com',
-                    apexName: 'mockdomain.com',
-                    id: 'customDomainId',
-                    verification: {
-                      __typename: 'CustomDomainVerification' as const,
-                      verified: true,
-                      verification: []
-                    }
-                  }
-                ]
-              } as unknown as GetCustomDomains
+              journey: {
+                slug: 'untitled-journey',
+                tags: [],
+                team: {
+                  id: 'teamId'
+                }
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
-            <JourneyProvider
-              value={{
-                journey: {
-                  slug: 'untitled-journey',
-                  tags: []
-                } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <EditToolbar />
-            </JourneyProvider>
-          </CustomDomainProvider>
+            <EditToolbar />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
+
     const button = getAllByRole('link', { name: 'Preview' })[0]
+    await waitFor(() =>
+      expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
+    )
     expect(button).toContainElement(getAllByTestId('EyeOpenIcon')[0])
     expect(button).toHaveAttribute(
       'href',
@@ -112,26 +98,18 @@ describe('Edit Toolbar', () => {
   it('should render Preview Button', () => {
     const { getAllByRole, getAllByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider>
-          <CustomDomainProvider
+        <MockedProvider mocks={[]}>
+          <JourneyProvider
             value={{
-              customDomains: {
-                customDomains: []
-              }
+              journey: {
+                slug: 'untitled-journey',
+                tags: []
+              } as unknown as Journey,
+              variant: 'admin'
             }}
           >
-            <JourneyProvider
-              value={{
-                journey: {
-                  slug: 'untitled-journey',
-                  tags: []
-                } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <EditToolbar />
-            </JourneyProvider>
-          </CustomDomainProvider>
+            <EditToolbar />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )

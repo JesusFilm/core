@@ -174,7 +174,15 @@ describe('JourneyView/Properties/SlugDialog', () => {
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: defaultJourney,
+              journey: {
+                ...defaultJourney,
+                team: {
+                  id: 'teamId',
+                  __typename: 'Team',
+                  title: 'Team',
+                  publicTitle: 'Team'
+                }
+              },
               variant: 'admin'
             }}
           >

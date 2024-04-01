@@ -114,7 +114,7 @@ export function SlugDialog({
                     values.slug !== '' ? (
                       <>
                         {hasCustomDomain
-                          ? `https://'${customDomainName}`
+                          ? `https://${customDomainName}`
                           : process.env.NEXT_PUBLIC_JOURNEYS_URL ??
                             'https://your.nextstep.is'}
                         /<strong>{values.slug}</strong>
