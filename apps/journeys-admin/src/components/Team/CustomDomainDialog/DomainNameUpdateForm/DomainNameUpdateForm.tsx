@@ -1,4 +1,3 @@
-import { ApolloError } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -20,14 +19,13 @@ interface DomainNameUpdateFormValues {
 interface DomainNameUpdateFormProps {
   showDeleteButton: boolean
   loading: boolean
-  errors: ApolloError | undefined
 }
 
 export function DomainNameUpdateForm({
   showDeleteButton,
-  loading,
-  errors
+  loading
 }: DomainNameUpdateFormProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     values,
     handleChange,
@@ -35,16 +33,6 @@ export function DomainNameUpdateForm({
     handleSubmit
   } = useFormikContext<DomainNameUpdateFormValues>()
 
-  const errorMessage =
-    errors != null
-      ? errors?.message.includes(
-          'Unique constraint failed on the fields: (`name`)'
-        )
-        ? 'domain name already exists'
-        : errors.message
-      : undefined
-
-  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Stack spacing={8}>
       <Stack direction="row" spacing={3}>
@@ -93,12 +81,10 @@ export function DomainNameUpdateForm({
           value={values.domainName.toLocaleLowerCase().replace(/\s/g, '')}
           placeholder="your.nextstep.is"
           variant="outlined"
-          error={formErrors.domainName != null || errorMessage != null}
+          error={formErrors.domainName != null}
           onChange={handleChange}
           helperText={
-            formErrors.domainName != null || errorMessage != null
-              ? formErrors.domainName ?? errorMessage
-              : null
+            formErrors.domainName != null ? formErrors.domainName : null
           }
           label={t('Domain Name')}
           size="medium"
@@ -136,7 +122,7 @@ export function DomainNameUpdateForm({
             }
             variant="outlined"
           >
-            {showDeleteButton ? t('Reset') : t('Apply')}
+            {showDeleteButton ? t('Disconnect') : t('Connect')}
           </Button>
         </Box>
       </Stack>

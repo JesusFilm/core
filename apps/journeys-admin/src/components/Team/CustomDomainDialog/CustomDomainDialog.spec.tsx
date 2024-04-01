@@ -340,7 +340,7 @@ describe('CustomDomainDialog', () => {
     fireEvent.change(getByRole('textbox'), {
       target: { value: 'www.example.com' }
     })
-    fireEvent.click(getByText('Apply'))
+    fireEvent.click(getByText('Connect'))
 
     await waitFor(() =>
       expect(mockCreateCustomDomain.result).toHaveBeenCalled()
@@ -386,7 +386,7 @@ describe('CustomDomainDialog', () => {
     fireEvent.change(getByRole('textbox'), {
       target: { value: '-www.example.com' }
     })
-    fireEvent.click(getByText('Apply'))
+    fireEvent.click(getByText('Connect'))
 
     await waitFor(() =>
       expect(getByText('Must be a valid URL')).toBeInTheDocument()
@@ -425,7 +425,7 @@ describe('CustomDomainDialog', () => {
       expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
     )
     expect(cache.extract()['CustomDomain:customDomainId']).toBeDefined()
-    fireEvent.click(getByRole('button', { name: 'Reset' }))
+    fireEvent.click(getByRole('button', { name: 'Disconnect' }))
     await waitFor(() =>
       expect(mockDeleteCustomDomain.result).toHaveBeenCalled()
     )

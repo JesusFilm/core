@@ -182,7 +182,7 @@ export function CustomDomainDialog({
     }
   })
 
-  const [createCustomDomain, { error }] =
+  const [createCustomDomain] =
     useMutation<CreateCustomDomain>(CREATE_CUSTOM_DOMAIN)
 
   const [updateJourneyCollection] = useMutation<UpdateJourneyCollection>(
@@ -267,9 +267,15 @@ export function CustomDomainDialog({
               }
             })
         },
-        onError: () => {
+        onError: (e) => {
           setLoading(false)
-          enqueueSnackbar(t('Domain name not updated'), {
+          const errorMessage = e?.message.includes(
+            'Unique constraint failed on the fields: (`name`)'
+          )
+            ? t('This domain is already connected to another NextSteps Team')
+            : t('Something went wrong, please reload the page and try again')
+
+          enqueueSnackbar(errorMessage, {
             variant: 'error',
             preventDuplicate: false
           })
@@ -406,7 +412,6 @@ export function CustomDomainDialog({
               <DomainNameUpdateForm
                 loading={loading}
                 showDeleteButton={hasCustomDomain}
-                errors={error}
               />
               {hasCustomDomain && <Divider />}
               {hasCustomDomain &&

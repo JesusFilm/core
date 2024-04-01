@@ -32,7 +32,7 @@ const customDomains = {
 }
 
 describe('useCustomDomainsQuery', () => {
-  it('should pass through the customDomain props', async () => {
+  it('should get custom domain for a team', async () => {
     const result = jest.fn(() => ({
       data: {
         customDomains

@@ -1,4 +1,3 @@
-import { ApolloError } from '@apollo/client'
 import { fireEvent, render } from '@testing-library/react'
 import { FormikContextType, FormikProvider } from 'formik'
 
@@ -24,15 +23,11 @@ describe('DomainNameUpdateForm', () => {
           } as unknown as FormikContextType<{ domainName: string }>
         }
       >
-        <DomainNameUpdateForm
-          loading={false}
-          showDeleteButton
-          errors={undefined}
-        />
+        <DomainNameUpdateForm loading={false} showDeleteButton />
       </FormikProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Reset' }))
+    fireEvent.click(getByRole('button', { name: 'Disconnect' }))
     expect(handleSubmit).toHaveBeenCalled()
   })
 
@@ -48,67 +43,32 @@ describe('DomainNameUpdateForm', () => {
           } as unknown as FormikContextType<{ domainName: string }>
         }
       >
-        <DomainNameUpdateForm
-          loading={false}
-          showDeleteButton={false}
-          errors={undefined}
-        />
+        <DomainNameUpdateForm loading={false} showDeleteButton={false} />
       </FormikProvider>
     )
 
     expect(queryByTestId('DeleteCustomDomainIcon')).not.toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Apply' }))
+    fireEvent.click(getByRole('button', { name: 'Connect' }))
     expect(handleSubmit).toHaveBeenCalled()
   })
 
-  it('should show error', () => {
+  it('should validate', () => {
     const { getByText } = render(
       <FormikProvider
         value={
           {
-            values: { domainName: 'mockdomain.com' },
-            errors: { domainName: undefined },
+            values: { domainName: '-mockdomain.-com' },
+            errors: { domainName: 'Invalid domain name' },
             handleSubmit,
             handleChange
           } as unknown as FormikContextType<{ domainName: string }>
         }
       >
-        <DomainNameUpdateForm
-          loading={false}
-          showDeleteButton={false}
-          errors={{ message: 'some error message' } as unknown as ApolloError}
-        />
+        <DomainNameUpdateForm loading={false} showDeleteButton={false} />
       </FormikProvider>
     )
 
-    expect(getByText('some error message')).toBeInTheDocument()
-  })
-
-  it('should notify user that the domain name is a duplicate', () => {
-    const { getByText } = render(
-      <FormikProvider
-        value={
-          {
-            values: { domainName: 'mockdomain.com' },
-            errors: { domainName: undefined },
-            handleSubmit,
-            handleChange
-          } as unknown as FormikContextType<{ domainName: string }>
-        }
-      >
-        <DomainNameUpdateForm
-          loading={false}
-          showDeleteButton={false}
-          errors={
-            {
-              message: 'Unique constraint failed on the fields: (`name`)'
-            } as unknown as ApolloError
-          }
-        />
-      </FormikProvider>
-    )
-
-    expect(getByText('domain name already exists')).toBeInTheDocument()
+    expect(getByText('Invalid domain name')).toBeInTheDocument()
   })
 
   it('should have the proper link for instructions button', () => {
@@ -123,15 +83,7 @@ describe('DomainNameUpdateForm', () => {
           } as unknown as FormikContextType<{ domainName: string }>
         }
       >
-        <DomainNameUpdateForm
-          loading={false}
-          showDeleteButton={false}
-          errors={
-            {
-              message: 'Unique constraint failed on the fields: (`name`)'
-            } as unknown as ApolloError
-          }
-        />
+        <DomainNameUpdateForm loading={false} showDeleteButton={false} />
       </FormikProvider>
     )
 
