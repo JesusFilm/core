@@ -12,13 +12,14 @@ import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastAc
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { GET_CUSTOM_DOMAINS } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
 import { defaultJourney } from '../../JourneyList/journeyListData'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../TeamProvider'
 
-import { CustomDomainDialog, GET_CUSTOM_DOMAINS } from './CustomDomainDialog'
+import { CustomDomainDialog } from './CustomDomainDialog'
 
 const CustomDomainDialogsStory: Meta<typeof CustomDomainDialog> = {
   ...journeysAdminConfig,
