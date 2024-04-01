@@ -281,7 +281,7 @@ describe('customDomainService', () => {
 
   describe('isDomainValid', () => {
     it('should return true for valid domain', () => {
-      const result = service.isDomainValid('name.com')
+      const result = service.isDomainValid('jesusfilmtestdomain.online')
 
       expect(result).toBe(true)
     })
