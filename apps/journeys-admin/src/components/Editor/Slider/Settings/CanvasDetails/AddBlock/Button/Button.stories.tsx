@@ -28,7 +28,10 @@ export const Default: StoryObj<typeof Button> = {
 
 export const HoverState = {
   ...Template,
-
+  args: {
+    icon: <PaletteIcon />,
+    value: 'Hover'
+  },
   play: async () => {
     await waitFor(async () => {
       await userEvent.hover(screen.getByRole('button'))
