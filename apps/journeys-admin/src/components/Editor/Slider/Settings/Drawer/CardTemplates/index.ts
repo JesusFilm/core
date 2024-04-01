@@ -1,1 +1,1 @@
-export { CardTemplateDrawer } from './CardTemplateDrawer'
+export { CardTemplates } from './CardTemplates'
