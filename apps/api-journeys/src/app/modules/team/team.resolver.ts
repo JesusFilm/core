@@ -6,12 +6,18 @@ import {
   Parent,
   Query,
   ResolveField,
+  ResolveReference,
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import filter from 'lodash/filter'
 
-import { Prisma, Team, UserTeam } from '.prisma/api-journeys-client'
+import {
+  CustomDomain,
+  Prisma,
+  Team,
+  UserTeam
+} from '.prisma/api-journeys-client'
 import {
   CaslAbility,
   CaslAccessible,
@@ -33,7 +39,8 @@ export class TeamResolver {
     @CaslAccessible('Team') accessibleTeams: Prisma.TeamWhereInput
   ): Promise<Team[]> {
     return await this.prismaService.team.findMany({
-      where: { AND: [accessibleTeams] }
+      where: { AND: [accessibleTeams] },
+      include: { customDomains: { select: { id: true } } }
     })
   }
 
@@ -45,7 +52,7 @@ export class TeamResolver {
   ): Promise<Team> {
     const team = await this.prismaService.team.findUnique({
       where: { id },
-      include: { userTeams: true }
+      include: { userTeams: true, customDomains: { select: { id: true } } }
     })
     if (team == null)
       throw new GraphQLError('team not found', {
@@ -78,7 +85,7 @@ export class TeamResolver {
   ): Promise<Team | undefined> {
     const team = await this.prismaService.team.findUnique({
       where: { id },
-      include: { userTeams: true }
+      include: { userTeams: true, customDomains: { select: { id: true } } }
     })
     if (team == null)
       throw new GraphQLError('team not found', {
@@ -108,5 +115,24 @@ export class TeamResolver {
     return filter(userTeams, (userTeam) =>
       ability.can(Action.Read, subject('UserTeam', userTeam))
     )
+  }
+
+  @ResolveField()
+  async customDomains(
+    @Parent() parent: Team & { customDomains: Array<{ id: string }> }
+  ): Promise<CustomDomain[]> {
+    return await this.prismaService.customDomain.findMany({
+      where: { teamId: parent.id }
+    })
+  }
+
+  @ResolveReference()
+  async resolveReference(reference: {
+    __typename: 'Team'
+    id: string
+  }): Promise<Team | null> {
+    return await this.prismaService.team.findUnique({
+      where: { id: reference.id }
+    })
   }
 }
