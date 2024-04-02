@@ -1,5 +1,4 @@
 {
-  "Welcome to Nexus Admin": "Welcome to Nexus Admin",
   "Create New Channel": "Create New Channel",
   "Select": "Select",
   "You currently don't have nexus apps. Please start by creating one": "You currently don't have nexus apps. Please start by creating one",
@@ -27,15 +26,16 @@
   "Batches": "Batches",
   "Edit": "Edit",
   "Delete": "Delete",
+  "Channels": "Channels",
   "Create": "Create",
   "Platform Type": "Platform Type",
   "Youtube": "Youtube",
   "Login": "Login",
   "Welcome to Nexus": "Welcome to Nexus",
+  "Hi": "Hi",
   "Logout": "Logout",
   "Resources": "Resources",
   "Table View": "Table View",
   "Update": "Update",
-  "Reset": "Reset",
-  "Hi": "Hi"
+  "Reset": "Reset"
 }
