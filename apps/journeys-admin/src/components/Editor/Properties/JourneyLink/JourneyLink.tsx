@@ -21,7 +21,7 @@ import { SlugDialog } from './SlugDialog'
 export function JourneyLink(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { data: customDomains, hasCustomDomain } = useCustomDomainsQuery({
+  const { data: customDomains, customDomainVerified } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id as string }
   })
 
@@ -49,7 +49,7 @@ export function JourneyLink(): ReactElement {
         value={
           journey?.slug != null
             ? `${
-                hasCustomDomain
+                customDomainVerified
                   ? 'https://' + customDomains?.customDomains[0].name
                   : process.env.NEXT_PUBLIC_JOURNEYS_URL ??
                     'https://your.nextstep.is'

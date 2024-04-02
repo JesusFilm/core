@@ -38,18 +38,23 @@ export function useCustomDomainsQuery(
   options?: QueryHookOptions<GetCustomDomains, GetCustomDomainsVariables>
 ): QueryResult<GetCustomDomains, GetCustomDomainsVariables> & {
   hasCustomDomain: boolean
+  customDomainVerified: boolean
 } {
   const query = useQuery<GetCustomDomains, GetCustomDomainsVariables>(
     GET_CUSTOM_DOMAINS,
     { ...options }
   )
 
-  const hasCustomDomain =
+  const customDomainVerified =
     query.data?.customDomains[0]?.name != null &&
     query.data?.customDomains[0]?.verification?.verified === true
 
+  const hasCustomDomain =
+    query.data?.customDomains?.length !== 0 && query.data?.customDomains != null
+
   return {
     ...query,
-    hasCustomDomain
+    hasCustomDomain,
+    customDomainVerified
   }
 }

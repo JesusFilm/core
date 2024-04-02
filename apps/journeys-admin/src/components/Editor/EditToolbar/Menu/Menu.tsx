@@ -70,7 +70,7 @@ export function Menu(): ReactElement {
   } = useEditor()
   const router = useRouter()
   const { journey } = useJourney()
-  const { data: customDomains, hasCustomDomain } = useCustomDomainsQuery({
+  const { data: customDomains, customDomainVerified } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id as string }
   })
 
@@ -86,7 +86,7 @@ export function Menu(): ReactElement {
   >()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
-  const hostname = hasCustomDomain
+  const hostname = customDomainVerified
     ? new URL(`https://${customDomains?.customDomains[0].name}`).hostname
     : undefined
 

@@ -22,11 +22,11 @@ export function EditToolbar(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { state } = useEditor()
-  const { data: customDomains, hasCustomDomain } = useCustomDomainsQuery({
+  const { data: customDomains, customDomainVerified } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id as string }
   })
 
-  const hostname = hasCustomDomain
+  const hostname = customDomainVerified
     ? new URL(`https://${customDomains?.customDomains[0].name}`).hostname
     : undefined
 
