@@ -327,7 +327,7 @@ describe('CustomDomainResolver', () => {
   })
 
   describe('customDomainCheck', () => {
-    it('should return a custom domain', async () => {
+    it('should return a custom domain check', async () => {
       prismaService.customDomain.findUnique.mockResolvedValueOnce(
         customDomainWithUserTeam
       )
@@ -338,7 +338,6 @@ describe('CustomDomainResolver', () => {
       expect(
         await resolver.customDomainCheck('customDomainId', ability)
       ).toEqual({
-        ...customDomainWithUserTeam,
         configured: true,
         verified: true
       })

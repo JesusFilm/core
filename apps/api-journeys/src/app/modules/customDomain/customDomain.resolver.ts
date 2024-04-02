@@ -21,8 +21,8 @@ import {
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
 import {
+  CustomDomainCheck,
   CustomDomainCreateInput,
-  CustomDomain as CustomDomainGQL,
   CustomDomainUpdateInput
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
@@ -190,13 +190,7 @@ export class CustomDomainResolver {
   async customDomainCheck(
     @Args('id') id: string,
     @CaslAbility() ability: AppAbility
-  ): Promise<
-    CustomDomain &
-      Pick<
-        CustomDomainGQL,
-        'configured' | 'verified' | 'verification' | 'verificationResponse'
-      >
-  > {
+  ): Promise<CustomDomainCheck> {
     const customDomain = await this.prismaService.customDomain.findUnique({
       where: { id },
       include: { team: { include: { userTeams: true } } }
@@ -209,10 +203,7 @@ export class CustomDomainResolver {
       throw new GraphQLError('user is not allowed to check custom domain', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return {
-      ...customDomain,
-      ...(await this.customDomainService.checkVercelDomain(customDomain))
-    }
+    return await this.customDomainService.checkVercelDomain(customDomain)
   }
 
   @ResolveField()

@@ -1109,8 +1109,12 @@ export class CustomDomain {
     apexName: string;
     journeyCollection?: Nullable<JourneyCollection>;
     routeAllTeamJourneys: boolean;
-    configured?: Nullable<boolean>;
-    verified?: Nullable<boolean>;
+}
+
+export class CustomDomainCheck {
+    __typename?: 'CustomDomainCheck';
+    configured: boolean;
+    verified: boolean;
     verification?: Nullable<CustomDomainVerification[]>;
     verificationResponse?: Nullable<CustomDomainVerificationResponse>;
 }
@@ -1579,7 +1583,7 @@ export abstract class IMutation {
 
     abstract customDomainDelete(id: string): CustomDomain | Promise<CustomDomain>;
 
-    abstract customDomainCheck(id: string): CustomDomain | Promise<CustomDomain>;
+    abstract customDomainCheck(id: string): CustomDomainCheck | Promise<CustomDomainCheck>;
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
