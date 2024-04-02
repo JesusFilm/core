@@ -163,10 +163,18 @@ export function SwipeNavigation({
     ]
   )
 
+  function isSliderElement(element: HTMLElement): boolean {
+    if (element.classList.contains('MuiSlider-root')) return true
+    if (element.classList.contains('MuiSlider-rail')) return true
+    if (element.classList.contains('MuiSlider-track')) return true
+    if (element.classList.contains('MuiSlider-thumb')) return true
+    return false
+  }
+
   const swipeHandlers = useSwipeable({
     onSwipedLeft: (eventData) => {
       const targetElement = eventData.event.target as HTMLElement
-      if (targetElement.classList.contains('MuiSlider-thumb')) return
+      if (isSliderElement(targetElement)) return
       if (rtl) {
         handleNavigation('previous')
       } else {
@@ -175,7 +183,7 @@ export function SwipeNavigation({
     },
     onSwipedRight: (eventData) => {
       const targetElement = eventData.event.target as HTMLElement
-      if (targetElement.classList.contains('MuiSlider-thumb')) return
+      if (isSliderElement(targetElement)) return
       if (rtl) {
         handleNavigation('next')
       } else {
