@@ -375,6 +375,7 @@ type CustomDomain
 input CustomDomainCreateInput
   @join__type(graph: JOURNEYS)
 {
+  id: ID!
   teamId: String!
   name: String!
   journeyCollectionId: String
@@ -384,8 +385,6 @@ input CustomDomainCreateInput
 input CustomDomainUpdateInput
   @join__type(graph: JOURNEYS)
 {
-  id: ID!
-  name: String
   journeyCollectionId: String
   routeAllTeamJourneys: Boolean
 }
@@ -1323,8 +1322,9 @@ type Mutation
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
   customDomainCreate(input: CustomDomainCreateInput!): CustomDomain! @join__field(graph: JOURNEYS)
-  customDomainUpdate(input: CustomDomainUpdateInput!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain! @join__field(graph: JOURNEYS)
   customDomainDelete(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainVerify(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)

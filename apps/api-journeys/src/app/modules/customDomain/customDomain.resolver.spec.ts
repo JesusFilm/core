@@ -2,10 +2,20 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 
-import { Journey, JourneyCollection, Team } from '.prisma/api-journeys-client'
+import {
+  CustomDomain,
+  Journey,
+  JourneyCollection,
+  Prisma,
+  Team
+} from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
-import { CustomDomain } from '../../__generated__/graphql'
+import {
+  CustomDomainCreateInput,
+  CustomDomainUpdateInput,
+  UserTeamRole
+} from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -13,59 +23,44 @@ import { CustomDomainResolver } from './customDomain.resolver'
 import { CustomDomainService } from './customDomain.service'
 
 describe('CustomDomainResolver', () => {
-  let resolver: CustomDomainResolver
-  let prismaService: DeepMockProxy<PrismaService>
-  let customDomainService: CustomDomainService
+  let resolver: CustomDomainResolver,
+    service: DeepMockProxy<CustomDomainService>,
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
-  let ability: AppAbility
-
-  const customDomain = {
-    id: 'cd',
+  const customDomain: CustomDomain = {
+    id: 'customDomainId',
     teamId: 'teamId',
     name: 'name.com',
     apexName: 'name.com',
     routeAllTeamJourneys: true,
     journeyCollectionId: null
   }
-
-  const customDomainSpy = jest.fn().mockResolvedValue({
-    id: 'cd',
-    teamId: 'teamId',
-    name: 'name.com',
-    apexName: 'name.com',
-    journeyCollectionId: null,
-    routeAllTeamJourneys: true
-  })
-
-  const validDomainSpy = jest.fn().mockReturnValue(true)
+  const customDomainWithUserTeam = {
+    ...customDomain,
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  }
 
   beforeEach(async () => {
-    ability = {
-      can: jest.fn().mockResolvedValue(true)
-    } as unknown as AppAbility
-
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         CustomDomainResolver,
         {
-          provide: PrismaService,
-          useValue: mockDeep<PrismaService>()
+          provide: CustomDomainService,
+          useValue: mockDeep<CustomDomainService>()
         },
         {
-          provide: CustomDomainService,
-          useValue: {
-            customDomainCreate: customDomainSpy,
-            isDomainValid: validDomainSpy
-          }
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
     resolver = module.get<CustomDomainResolver>(CustomDomainResolver)
-    customDomainService = module.get<CustomDomainService>(CustomDomainService)
-    prismaService = module.get<PrismaService>(
-      PrismaService
-    ) as DeepMockProxy<PrismaService>
+    service =
+      module.get<DeepMockProxy<CustomDomainService>>(CustomDomainService)
+    prismaService = module.get<DeepMockProxy<PrismaService>>(PrismaService)
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
   afterEach(() => {
@@ -74,220 +69,281 @@ describe('CustomDomainResolver', () => {
 
   describe('customDomain', () => {
     it('should return a custom domain', async () => {
-      const id = 'id'
-      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
-      findUniqueSpy.mockResolvedValue(customDomain)
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(
+        customDomainWithUserTeam
+      )
+      expect(await resolver.customDomain('customDomainId', ability)).toEqual(
+        customDomainWithUserTeam
+      )
+      expect(prismaService.customDomain.findUnique).toHaveBeenCalledWith({
+        where: { id: 'customDomainId' },
+        include: { team: { include: { userTeams: true } } }
+      })
+    })
 
-      const result = await resolver.customDomain(id)
+    it('should handle not found', async () => {
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.customDomain('customDomainId', ability)
+      ).rejects.toThrow('custom domain not found')
+    })
 
-      expect(result).toEqual(customDomain)
-      expect(findUniqueSpy).toHaveBeenCalledWith({ where: { id } })
+    it('should handle not allowed', async () => {
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(customDomain)
+      await expect(
+        resolver.customDomain('customDomainId', ability)
+      ).rejects.toThrow('user is not allowed to read custom domain')
     })
   })
 
   describe('customDomains', () => {
     it('should return custom domains', async () => {
-      const teamId = 'teamId'
-      const findManySpy = jest.spyOn(prismaService.customDomain, 'findMany')
-      findManySpy.mockResolvedValue([customDomain])
-
-      const result = await resolver.customDomains(teamId)
-
-      expect(result).toEqual([customDomain])
-      expect(findManySpy).toHaveBeenCalledWith({ where: { teamId } })
+      const accessibleCustomDomains: Prisma.CustomDomainWhereInput = {
+        OR: [{}]
+      }
+      prismaService.customDomain.findMany.mockResolvedValue([customDomain])
+      expect(
+        await resolver.customDomains('teamId', accessibleCustomDomains)
+      ).toEqual([customDomain])
+      expect(prismaService.customDomain.findMany).toHaveBeenCalledWith({
+        where: { AND: [{ OR: [{}] }, { teamId: 'teamId' }] }
+      })
     })
   })
 
   describe('customDomainCreate', () => {
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+    })
+
     it('should create a custom domain', async () => {
-      const input = { name: 'name', teamId: 'teamId' }
+      const input: CustomDomainCreateInput = {
+        name: 'www.example.com',
+        teamId: 'teamId'
+      }
+      service.isDomainValid.mockReturnValueOnce(true)
+      service.createVercelDomain.mockResolvedValue({
+        name: 'www.example.com',
+        apexName: 'example.com'
+      })
+      prismaService.customDomain.create.mockResolvedValue(
+        customDomainWithUserTeam
+      )
+      expect(await resolver.customDomainCreate(input, ability)).toEqual(
+        customDomainWithUserTeam
+      )
+    })
 
-      const result = await resolver.customDomainCreate(input, ability)
+    it('should create a custom domain with advanced input', async () => {
+      const input: CustomDomainCreateInput = {
+        id: 'customDomainId',
+        name: 'www.example.com',
+        teamId: 'teamId',
+        routeAllTeamJourneys: true,
+        journeyCollectionId: 'journeyCollectionId'
+      }
+      service.isDomainValid.mockReturnValueOnce(true)
+      service.createVercelDomain.mockResolvedValue({
+        name: 'www.example.com',
+        apexName: 'example.com'
+      })
+      prismaService.customDomain.create.mockResolvedValue(
+        customDomainWithUserTeam
+      )
+      expect(await resolver.customDomainCreate(input, ability)).toEqual(
+        customDomainWithUserTeam
+      )
+      expect(prismaService.customDomain.create).toHaveBeenCalledWith({
+        data: {
+          ...omit(input, ['teamId', 'journeyCollectionId']),
+          apexName: 'example.com',
+          team: { connect: { id: 'teamId' } },
+          journeyCollection: {
+            connect: { id: 'journeyCollectionId' }
+          }
+        },
+        include: { team: { include: { userTeams: true } } }
+      })
+    })
 
-      expect(validDomainSpy).toHaveBeenCalledWith('name')
-      expect(result).toEqual(customDomain)
-      expect(customDomainSpy).toHaveBeenCalledWith(input, ability)
+    it('should handle invalid domain name', async () => {
+      const input: CustomDomainCreateInput = {
+        name: 'www.example.com',
+        teamId: 'teamId'
+      }
+      service.isDomainValid.mockReturnValueOnce(false)
+      await expect(resolver.customDomainCreate(input, ability)).rejects.toThrow(
+        'custom domain has invalid domain name'
+      )
+    })
+
+    it('should handle not allowed', async () => {
+      const input: CustomDomainCreateInput = {
+        name: 'www.example.com',
+        teamId: 'teamId'
+      }
+      service.isDomainValid.mockReturnValueOnce(true)
+      service.createVercelDomain.mockResolvedValue({
+        name: 'www.example.com',
+        apexName: 'example.com'
+      })
+      prismaService.customDomain.create.mockResolvedValue(customDomain)
+      await expect(resolver.customDomainCreate(input, ability)).rejects.toThrow(
+        'user is not allowed to create custom domain'
+      )
     })
   })
 
   describe('customDomainUpdate', () => {
     it('should update a custom domain', async () => {
-      const input = {
-        id: 'cd',
-        name: 'name',
-        teamId: 'teamId',
+      const input: CustomDomainUpdateInput = {
         routeAllTeamJourneys: true,
         journeyCollectionId: 'id'
       }
-      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
-      findUniqueSpy.mockResolvedValue(customDomain)
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(
+        customDomainWithUserTeam
+      )
+      prismaService.customDomain.update.mockResolvedValueOnce(customDomain)
 
-      const updateSpy = jest.spyOn(prismaService.customDomain, 'update')
-      updateSpy.mockResolvedValue(customDomain)
+      const result = await resolver.customDomainUpdate(
+        'customDomainId',
+        input,
+        ability
+      )
 
-      const result = await resolver.customDomainUpdate(input, ability)
-
-      expect(validDomainSpy).toHaveBeenCalledWith('name')
       expect(result).toEqual(customDomain)
-      expect(updateSpy).toHaveBeenCalledWith({
+      expect(prismaService.customDomain.update).toHaveBeenCalledWith({
         data: {
           ...omit(input, 'journeyCollectionId'),
           journeyCollection: {
             connect: { id: input.journeyCollectionId }
           }
         },
-        where: { id: input.id }
+        where: { id: 'customDomainId' }
       })
     })
 
     it('should handle null values', async () => {
-      const input = {
-        id: 'cd',
-        name: null,
-        teamId: 'teamId',
+      const input: CustomDomainUpdateInput = {
         routeAllTeamJourneys: null,
         journeyCollectionId: null
       }
-      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
-      findUniqueSpy.mockResolvedValue(customDomain)
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(
+        customDomainWithUserTeam
+      )
+      prismaService.customDomain.update.mockResolvedValueOnce(customDomain)
 
-      const updateSpy = jest.spyOn(prismaService.customDomain, 'update')
-      updateSpy.mockResolvedValue(customDomain)
-
-      const result = await resolver.customDomainUpdate(input, ability)
-
-      expect(result).toEqual(customDomain)
-      expect(updateSpy).toHaveBeenCalledWith({
+      expect(
+        await resolver.customDomainUpdate('customDomainId', input, ability)
+      ).toEqual(customDomain)
+      expect(prismaService.customDomain.update).toHaveBeenCalledWith({
         data: {
-          id: input.id,
-          teamId: input.teamId,
+          routeAllTeamJourneys: undefined,
           journeyCollection: {
             connect: { id: undefined }
           }
         },
-        where: { id: input.id }
+        where: { id: 'customDomainId' }
       })
     })
 
-    it('should handle not found', () => {
-      const input = {
-        id: 'cd',
-        name: 'name',
-        teamId: 'teamId',
+    it('should handle not found', async () => {
+      const input: CustomDomainUpdateInput = {
         routeAllTeamJourneys: true,
         journeyCollectionId: 'id'
       }
-      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
-      findUniqueSpy.mockResolvedValue(null)
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
-      expect(resolver.customDomainUpdate(input, ability)).rejects.toThrow(
-        'Custom domain not found'
-      )
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.customDomainUpdate('customDomainId', input, ability)
+      ).rejects.toThrow('custom domain not found')
     })
 
-    it('should handle not allowed', () => {
-      const input = {
-        id: 'cd',
-        name: 'name',
-        teamId: 'teamId',
+    it('should handle not allowed', async () => {
+      const input: CustomDomainUpdateInput = {
         routeAllTeamJourneys: true,
         journeyCollectionId: 'id'
       }
-      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
-      findUniqueSpy.mockResolvedValue(customDomain)
-
-      ability.can = jest.fn().mockImplementation(() => false)
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
-      expect(resolver.customDomainUpdate(input, ability)).rejects.toThrow(
-        'user is not allowed to update custom domain'
-      )
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(customDomain)
+      await expect(
+        resolver.customDomainUpdate('customDomainId', input, ability)
+      ).rejects.toThrow('user is not allowed to update custom domain')
     })
   })
 
   describe('customDomainDelete', () => {
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+    })
+
     it('should delete a custom domain', async () => {
-      const id = 'id'
-      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
-      findUniqueSpy.mockResolvedValue(customDomain)
-
-      const deleteSpy = jest.spyOn(prismaService.customDomain, 'delete')
-      deleteSpy.mockResolvedValue(customDomain)
-
-      customDomainService.deleteVercelDomain = jest.fn().mockResolvedValue(true)
-
-      const result = await resolver.customDomainDelete(id, ability)
-
-      expect(result).toEqual(customDomain)
-      expect(deleteSpy).toHaveBeenCalledWith({ where: { id } })
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(
+        customDomainWithUserTeam
+      )
+      prismaService.customDomain.delete.mockResolvedValueOnce(customDomain)
+      service.deleteVercelDomain.mockResolvedValue(true)
+      expect(
+        await resolver.customDomainDelete('customDomainId', ability)
+      ).toEqual(customDomainWithUserTeam)
+      expect(prismaService.customDomain.delete).toHaveBeenCalledWith({
+        where: { id: 'customDomainId' }
+      })
     })
 
-    it('should handle not found', () => {
-      const id = 'id'
-      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
-      findUniqueSpy.mockResolvedValue(null)
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
-      expect(resolver.customDomainDelete(id, ability)).rejects.toThrow(
-        'Custom domain not found'
-      )
+    it('should handle not found', async () => {
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.customDomainDelete('customDomainId', ability)
+      ).rejects.toThrow('custom domain not found')
     })
 
-    it('should handle not allowed', () => {
-      const id = 'id'
-      const findUniqueSpy = jest.spyOn(prismaService.customDomain, 'findUnique')
-      findUniqueSpy.mockResolvedValue(customDomain)
-
-      ability.can = jest.fn().mockImplementation(() => false)
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
-      expect(resolver.customDomainDelete(id, ability)).rejects.toThrow(
-        'user is not allowed to delete custom domain'
-      )
+    it('should handle not allowed', async () => {
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(customDomain)
+      await expect(
+        resolver.customDomainDelete('customDomainId', ability)
+      ).rejects.toThrow('user is not allowed to delete custom domain')
     })
   })
 
-  describe('verification', () => {
-    it('should return a custom domain verification', async () => {
-      const verification = {
-        verified: true,
-        verification: 'verification'
-      }
-      customDomainService.verifyVercelDomain = jest
-        .fn()
-        .mockResolvedValue(verification)
-
-      const result = await resolver.verification(
-        customDomain as unknown as CustomDomain
+  describe('customDomainCheck', () => {
+    it('should return a custom domain', async () => {
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(
+        customDomainWithUserTeam
       )
-
-      expect(result).toEqual(verification)
+      service.checkVercelDomain.mockResolvedValue({
+        configured: true,
+        verified: true
+      })
+      expect(
+        await resolver.customDomainCheck('customDomainId', ability)
+      ).toEqual({
+        ...customDomainWithUserTeam,
+        configured: true,
+        verified: true
+      })
     })
-  })
 
-  describe('configuration', () => {
-    it('should return a custom domain configuration', async () => {
-      const configuration = {
-        acceptedChallenges: ['http-01', 'dns-01'],
-        configuredBy: 'http',
-        misconfigured: false
-      }
-      customDomainService.getVercelDomainConfiguration = jest
-        .fn()
-        .mockResolvedValue(configuration)
+    it('should handle not found', async () => {
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.customDomainCheck('customDomainId', ability)
+      ).rejects.toThrow('custom domain not found')
+    })
 
-      const result = await resolver.configuration(
-        customDomain as unknown as CustomDomain
-      )
-      expect(result).toEqual(configuration)
+    it('should handle not allowed', async () => {
+      prismaService.customDomain.findUnique.mockResolvedValueOnce(customDomain)
+      await expect(
+        resolver.customDomainCheck('customDomainId', ability)
+      ).rejects.toThrow('user is not allowed to check custom domain')
     })
   })
 
   describe('journeyCollection', () => {
     it('should return a journey collection', async () => {
-      const jcFindSpy = jest.spyOn(prismaService.journeyCollection, 'findFirst')
-      jcFindSpy.mockResolvedValue({
+      prismaService.journeyCollection.findFirst.mockResolvedValueOnce({
         id: 'id',
         team: {
           id: 'teamId'
@@ -303,12 +359,12 @@ describe('CustomDomainResolver', () => {
           }
         ]
       } as unknown as JourneyCollection)
-
-      const result = await resolver.journeyCollection({
-        ...customDomain,
-        journeyCollectionId: 'id'
-      })
-      expect(result).toEqual({
+      expect(
+        await resolver.journeyCollection({
+          ...customDomain,
+          journeyCollectionId: 'id'
+        })
+      ).toEqual({
         id: 'id',
         team: {
           id: 'teamId'
@@ -340,12 +396,8 @@ describe('CustomDomainResolver', () => {
         createdAt: new Date(),
         updatedAt: new Date()
       }
-      const teamSpy = jest.spyOn(prismaService.team, 'findUnique')
-      teamSpy.mockResolvedValue(team)
-
-      const result = await resolver.team(customDomain)
-
-      expect(result).toEqual(team)
+      prismaService.team.findUnique.mockResolvedValue(team)
+      expect(await resolver.team(customDomain)).toEqual(team)
     })
   })
 })
