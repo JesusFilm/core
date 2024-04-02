@@ -685,11 +685,9 @@ export class JourneyCollectionCreateInput {
     teamId: string;
     title?: Nullable<string>;
     journeyIds?: Nullable<string[]>;
-    customDomain?: Nullable<CustomDomainCreateInput>;
 }
 
 export class JourneyCollectionUpdateInput {
-    id: string;
     title?: Nullable<string>;
     journeyIds?: Nullable<string[]>;
 }
@@ -1643,7 +1641,7 @@ export abstract class IMutation {
 
     abstract journeyCollectionCreate(input: JourneyCollectionCreateInput): JourneyCollection | Promise<JourneyCollection>;
 
-    abstract journeyCollectionUpdate(input: JourneyCollectionUpdateInput): JourneyCollection | Promise<JourneyCollection>;
+    abstract journeyCollectionUpdate(id: string, input: JourneyCollectionUpdateInput): JourneyCollection | Promise<JourneyCollection>;
 
     abstract journeyCollectionDelete(id: string): JourneyCollection | Promise<JourneyCollection>;
 

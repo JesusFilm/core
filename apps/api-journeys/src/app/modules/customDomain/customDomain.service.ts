@@ -6,17 +6,16 @@ import { CustomDomain } from '.prisma/api-journeys-client'
 
 import { CustomDomain as CustomDomainGQL } from '../../__generated__/graphql'
 
-export type VercelCreateDomainResponse =
-  | {
-      name: string
-      apexName: string
-    }
-  | {
-      error: {
-        code: string
-        message: string
-      }
-    }
+export interface VercelCreateDomainResponse {
+  name: string
+  apexName: string
+}
+export interface VercelCreateDomainError {
+  error: {
+    code: string
+    message: string
+  }
+}
 
 export interface VercelConfigDomainResponse {
   configuredBy: string | null
@@ -49,25 +48,23 @@ export interface VercelDomainResponse {
   ]
 }
 
-export type VercelVerifyDomainResponse =
-  | {
-      name: string
-      apexName: string
-      projectId: string
-      redirect: null
-      redirectStatusCode: null
-      gitBranch: null
-      updatedAt: number
-      createdAt: number
-      verified: boolean
-    }
-  | {
-      error: {
-        code: string
-        message: string
-      }
-    }
-  | null
+export interface VercelVerifyDomainResponse {
+  name: string
+  apexName: string
+  projectId: string
+  redirect: null
+  redirectStatusCode: null
+  gitBranch: null
+  updatedAt: number
+  createdAt: number
+  verified: boolean
+}
+export interface VercelVerifyDomainError {
+  error: {
+    code: string
+    message: string
+  }
+}
 
 @Injectable()
 export class CustomDomainService {
@@ -92,7 +89,8 @@ export class CustomDomainService {
       }
     )
 
-    const data: VercelCreateDomainResponse = await response.json()
+    const data: VercelCreateDomainResponse | VercelCreateDomainError =
+      await response.json()
 
     if ('error' in data) {
       switch (response.status) {
@@ -189,7 +187,10 @@ export class CustomDomainService {
     const configData: VercelConfigDomainResponse = await configResponse.json()
     const domainData: VercelDomainResponse = await domainResponse.json()
 
-    let verifyData: VercelVerifyDomainResponse = null
+    let verifyData:
+      | VercelVerifyDomainResponse
+      | VercelVerifyDomainError
+      | null = null
     if (!domainData.verified) {
       const verifyResponse = await fetch(
         `https://api.vercel.com/v9/projects/${process.env.VERCEL_JOURNEYS_PROJECT_ID}/domains/${name}/verify?teamId=${process.env.VERCEL_TEAM_ID}`,

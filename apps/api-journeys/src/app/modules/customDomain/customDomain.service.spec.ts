@@ -8,8 +8,10 @@ import { CustomDomain } from '.prisma/api-journeys-client'
 import {
   CustomDomainService,
   VercelConfigDomainResponse,
+  VercelCreateDomainError,
   VercelCreateDomainResponse,
   VercelDomainResponse,
+  VercelVerifyDomainError,
   VercelVerifyDomainResponse
 } from './customDomain.service'
 
@@ -157,12 +159,13 @@ describe('customDomainService', () => {
       it('should throw an error when status not handled', async () => {
         mockFetch.mockResolvedValueOnce({
           ok: true,
-          json: async () => await Promise.resolve({
-            error: {
-              code: 'unauthorized',
-              message: 'You are not authorized.'
-            }
-          }),
+          json: async () =>
+            await Promise.resolve({
+              error: {
+                code: 'unauthorized',
+                message: 'You are not authorized.'
+              }
+            }),
           status: 401
         } as unknown as Response)
 
@@ -256,9 +259,12 @@ describe('customDomainService', () => {
   describe('checkVercelDomain', () => {
     function mockCheckVercelDomainFetch(
       name: string,
-      configData,
-      domainData,
-      verificationData
+      configData: VercelConfigDomainResponse,
+      domainData: VercelCreateDomainResponse | VercelCreateDomainError,
+      verificationData:
+        | VercelVerifyDomainResponse
+        | VercelVerifyDomainError
+        | null
     ) {
       return async (url: string) => {
         switch (url) {
@@ -339,7 +345,7 @@ describe('customDomainService', () => {
             }
           ]
         }
-        const verificationData: VercelVerifyDomainResponse = {
+        const verificationData: VercelVerifyDomainError = {
           error: {
             code: 'existing_project_domain',
             message:
@@ -426,7 +432,7 @@ describe('customDomainService', () => {
             }
           ]
         }
-        const verificationData: VercelVerifyDomainResponse = {
+        const verificationData: VercelVerifyDomainError = {
           error: {
             code: 'missing_txt_record',
             message:
@@ -575,7 +581,7 @@ describe('customDomainService', () => {
           createdAt: 1711138797591,
           verified: true
         }
-        const verificationData: VercelVerifyDomainResponse = null
+        const verificationData = null
 
         beforeEach(() => {
           mockFetch.mockImplementation(
@@ -626,7 +632,7 @@ describe('customDomainService', () => {
           createdAt: 1711591718992,
           verified: true
         }
-        const verificationData: VercelVerifyDomainResponse = null
+        const verificationData = null
 
         beforeEach(() => {
           mockFetch.mockImplementation(

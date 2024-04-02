@@ -45,7 +45,8 @@ export class CustomDomainResolver {
     @CaslAbility() ability: AppAbility
   ): Promise<CustomDomain> {
     const customDomain = await this.prismaService.customDomain.findUnique({
-      where: { id }
+      where: { id },
+      include: { team: { include: { userTeams: true } } }
     })
     if (customDomain == null)
       throw new GraphQLError('custom domain not found', {
