@@ -46,4 +46,15 @@ nx run-many --all --target=prisma-seed
 
 ### prisma-generate failing
 
-If prisma-generate is failing on Mac, please ensure Docker Desktop is updated to at least version 4.28.0
+If prisma-generate is failing on Mac, run the following reset command on api-journeys:
+
+```shell
+nx run prisma-reset api-journeys
+```
+
+```shell
+Command failed: "/workspaces/core/node_modules/-bin/mmdc" -i "/tmp/prisma-erd-q0 cpUx/prisma.mmd" -0 "/workspaces/core/apps/api-journeys/db/ERD.svg" -c"/tmp/pri
+sma-erd-qOcpUx/config-json" -p"/tmp/prisma-erd-qOcpUx/puppeteerConfig-json"
+```
+
+If you get see the above error, it means chromium is unable to allocate a namespace. Docker must be updated so that it can access these permissions from the Mac OS. Please update docker to at least version 4.28.0
