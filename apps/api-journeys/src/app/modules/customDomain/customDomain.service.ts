@@ -4,7 +4,7 @@ import fetch from 'node-fetch'
 
 import { CustomDomain } from '.prisma/api-journeys-client'
 
-import { CustomDomain as CustomDomainGQL } from '../../__generated__/graphql'
+import { CustomDomainCheck } from '../../__generated__/graphql'
 
 export interface VercelCreateDomainResponse {
   name: string
@@ -138,12 +138,7 @@ export class CustomDomainService {
 
   async checkVercelDomain(
     customDomain: CustomDomain
-  ): Promise<
-    Pick<
-      CustomDomainGQL,
-      'configured' | 'verified' | 'verification' | 'verificationResponse'
-    >
-  > {
+  ): Promise<CustomDomainCheck> {
     // Don't hit vercel outside of deployed environments
     if (process.env.VERCEL_JOURNEYS_PROJECT_ID == null)
       return {

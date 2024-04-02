@@ -7,17 +7,18 @@ import {
   Journey,
   JourneyCollection,
   Prisma,
-  Team
+  Team,
+  UserTeamRole
 } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
   CustomDomainCreateInput,
-  CustomDomainUpdateInput,
-  UserTeamRole
+  CustomDomainUpdateInput
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 
 import { CustomDomainResolver } from './customDomain.resolver'
 import { CustomDomainService } from './customDomain.service'
@@ -179,6 +180,27 @@ describe('CustomDomainResolver', () => {
       )
     })
 
+    it('should handle custom domain already exists', async () => {
+      const input: CustomDomainCreateInput = {
+        name: 'www.example.com',
+        teamId: 'teamId'
+      }
+      service.isDomainValid.mockReturnValueOnce(true)
+      service.createVercelDomain.mockResolvedValue({
+        name: 'www.example.com',
+        apexName: 'example.com'
+      })
+      prismaService.customDomain.create.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('', {
+          code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED,
+          clientVersion: ''
+        })
+      )
+      await expect(resolver.customDomainCreate(input, ability)).rejects.toThrow(
+        'custom domain already exists'
+      )
+    })
+
     it('should handle not allowed', async () => {
       const input: CustomDomainCreateInput = {
         name: 'www.example.com',
@@ -207,13 +229,9 @@ describe('CustomDomainResolver', () => {
       )
       prismaService.customDomain.update.mockResolvedValueOnce(customDomain)
 
-      const result = await resolver.customDomainUpdate(
-        'customDomainId',
-        input,
-        ability
-      )
-
-      expect(result).toEqual(customDomain)
+      expect(
+        await resolver.customDomainUpdate('customDomainId', input, ability)
+      ).toEqual(customDomain)
       expect(prismaService.customDomain.update).toHaveBeenCalledWith({
         data: {
           ...omit(input, 'journeyCollectionId'),
@@ -309,7 +327,7 @@ describe('CustomDomainResolver', () => {
   })
 
   describe('customDomainCheck', () => {
-    it('should return a custom domain', async () => {
+    it('should return a custom domain check', async () => {
       prismaService.customDomain.findUnique.mockResolvedValueOnce(
         customDomainWithUserTeam
       )
@@ -320,7 +338,6 @@ describe('CustomDomainResolver', () => {
       expect(
         await resolver.customDomainCheck('customDomainId', ability)
       ).toEqual({
-        ...customDomainWithUserTeam,
         configured: true,
         verified: true
       })
@@ -379,11 +396,12 @@ describe('CustomDomainResolver', () => {
     })
 
     it('should handle null', async () => {
-      const result = await resolver.journeyCollection({
-        ...customDomain,
-        journeyCollectionId: null
-      })
-      expect(result).toBeNull()
+      expect(
+        await resolver.journeyCollection({
+          ...customDomain,
+          journeyCollectionId: null
+        })
+      ).toBeNull()
     })
   })
 

@@ -43,7 +43,7 @@ export class JourneyCollectionResolver {
         include: { team: { include: { userTeams: true } } }
       })
     if (journeyCollection == null)
-      throw new GraphQLError('journey colleciton not found', {
+      throw new GraphQLError('journey collection not found', {
         extensions: { code: 'NOT_FOUND' }
       })
     if (
@@ -81,11 +81,15 @@ export class JourneyCollectionResolver {
       }
       if (input.journeyIds != null && input.journeyIds.length > 0) {
         const journeys = await tx.journey.findMany({
-          where: { id: { in: input.journeyIds }, teamId: input.teamId }
+          where: { id: { in: input.journeyIds }, teamId: input.teamId },
+          select: { id: true }
         })
+        const journeyIds = input.journeyIds.filter((id) =>
+          journeys.some((j) => j.id === id)
+        )
         data.journeyCollectionJourneys = {
           createMany: {
-            data: journeys.map(({ id: journeyId }, order) => ({
+            data: journeyIds.map((journeyId, order) => ({
               order,
               journeyId
             }))
@@ -102,37 +106,6 @@ export class JourneyCollectionResolver {
           { extensions: { code: 'FORBIDDEN' } }
         )
       return collection
-    })
-  }
-
-  @Mutation()
-  @UseGuards(AppCaslGuard)
-  async journeyCollectionDelete(
-    @Args('id') id: string,
-    @CaslAbility() ability: AppAbility
-  ): Promise<JourneyCollection> {
-    const journeyCollection =
-      await this.prismaService.journeyCollection.findUnique({
-        where: { id },
-        include: { team: { include: { userTeams: true } } }
-      })
-    if (journeyCollection == null) {
-      throw new GraphQLError('journey collection not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    }
-    if (
-      !ability.can(
-        Action.Delete,
-        subject('JourneyCollection', journeyCollection)
-      )
-    )
-      throw new GraphQLError(
-        'user is not allowed to delete journey collection',
-        { extensions: { code: 'FORBIDDEN' } }
-      )
-    return await this.prismaService.journeyCollection.delete({
-      where: { id }
     })
   }
 
@@ -174,10 +147,14 @@ export class JourneyCollectionResolver {
             where: {
               id: { in: input.journeyIds },
               teamId: journeyCollection.teamId
-            }
+            },
+            select: { id: true }
           })
+          const journeyIds = input.journeyIds.filter((id) =>
+            journeys.some((j) => j.id === id)
+          )
           await tx.journeyCollectionJourneys.createMany({
-            data: journeys.map(({ id: journeyId }, order) => ({
+            data: journeyIds.map((journeyId, order) => ({
               order,
               journeyId,
               journeyCollectionId: id
@@ -195,22 +172,54 @@ export class JourneyCollectionResolver {
     })
   }
 
-  @ResolveField()
-  async customDomains(
-    @Parent() { id }: JourneyCollection
-  ): Promise<CustomDomain[]> {
-    return await this.prismaService.customDomain.findMany({
-      where: { journeyCollectionId: id }
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async journeyCollectionDelete(
+    @Args('id') id: string,
+    @CaslAbility() ability: AppAbility
+  ): Promise<JourneyCollection> {
+    const journeyCollection =
+      await this.prismaService.journeyCollection.findUnique({
+        where: { id },
+        include: { team: { include: { userTeams: true } } }
+      })
+    if (journeyCollection == null) {
+      throw new GraphQLError('journey collection not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+    if (
+      !ability.can(
+        Action.Delete,
+        subject('JourneyCollection', journeyCollection)
+      )
+    )
+      throw new GraphQLError(
+        'user is not allowed to delete journey collection',
+        { extensions: { code: 'FORBIDDEN' } }
+      )
+    return await this.prismaService.journeyCollection.delete({
+      where: { id }
     })
   }
 
   @ResolveField()
-  async journeys(journeyCollection: JourneyCollection): Promise<Journey[]> {
-    const result = await this.prismaService.journeyCollectionJourneys.findMany({
-      where: { journeyCollectionId: journeyCollection.id },
-      include: { journey: true }
+  async customDomains(
+    @Parent() { id: journeyCollectionId }: JourneyCollection
+  ): Promise<CustomDomain[]> {
+    return await this.prismaService.customDomain.findMany({
+      where: { journeyCollectionId }
     })
+  }
 
-    return result?.map(({ journey }) => journey) ?? []
+  @ResolveField()
+  async journeys({
+    id: journeyCollectionId
+  }: JourneyCollection): Promise<Journey[]> {
+    return await this.prismaService.journey.findMany({
+      where: {
+        journeyCollectionJourneys: { some: { journeyCollectionId } }
+      }
+    })
   }
 }
