@@ -15,12 +15,11 @@ import {
   GetJourneyVariables,
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
-import { GetJourneySlugs } from '../../../__generated__/GetJourneySlugs'
 import { StepFields } from '../../../__generated__/StepFields'
 import i18nConfig from '../../../next-i18next.config'
 import { EmbeddedPreview } from '../../../src/components/EmbeddedPreview'
 import { createApolloClient } from '../../../src/libs/apolloClient'
-import { GET_JOURNEY, GET_JOURNEY_SLUGS } from '../[journeySlug]'
+import { GET_JOURNEY } from '../[journeySlug]'
 
 interface JourneyPageProps {
   journey: Journey
@@ -138,19 +137,8 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<GetJourneySlugs>({
-    query: GET_JOURNEY_SLUGS
-  })
-
-  const paths = data.journeys
-    .filter(({ slug: journeySlug }) => journeySlug.length > 0)
-    .map(({ slug: journeySlug }) => ({
-      params: { journeySlug }
-    }))
-
   return {
-    paths,
+    paths: [],
     fallback: 'blocking'
   }
 }

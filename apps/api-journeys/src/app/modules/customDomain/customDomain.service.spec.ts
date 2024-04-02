@@ -93,6 +93,7 @@ describe('customDomainService', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
+        status: 200,
         json: async () => await Promise.resolve(createResult)
       } as unknown as Response)
 
@@ -109,6 +110,28 @@ describe('customDomainService', () => {
           method: 'POST'
         }
       )
+    })
+
+    it('should throw an error if the response is not ok', async () => {
+      process.env = {
+        ...originalEnv,
+        VERCEL_TOKEN: 'abc',
+        VERCEL_TEAM_ID: 'teamId',
+        VERCEL_JOURNEYS_PROJECT_ID: 'projectId',
+        GIT_BRANCH: 'main'
+      }
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () =>
+          await Promise.resolve({
+            error: { message: 'error', code: 'error_code' }
+          }),
+        status: 409
+      } as unknown as Response)
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
+      expect(service.addVercelDomain('name.com')).rejects.toThrow('error')
     })
   })
 
@@ -195,6 +218,7 @@ describe('customDomainService', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
+        status: 200,
         json: async () => await Promise.resolve(createResult)
       } as unknown as Response)
 
@@ -208,6 +232,28 @@ describe('customDomainService', () => {
           method: 'POST'
         }
       )
+    })
+
+    it('should throw an error if the response is not ok', async () => {
+      process.env = {
+        ...originalEnv,
+        VERCEL_TOKEN: 'abc',
+        VERCEL_TEAM_ID: 'teamId',
+        VERCEL_JOURNEYS_PROJECT_ID: 'projectId',
+        GIT_BRANCH: 'main'
+      }
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 409,
+        json: async () =>
+          await Promise.resolve({
+            error: { message: 'error', code: 'error_code' }
+          })
+      } as unknown as Response)
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
+      expect(service.verifyVercelDomain('name.com')).rejects.toThrow('error')
     })
   })
 
@@ -229,6 +275,7 @@ describe('customDomainService', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
+        status: 200,
         json: async () => await Promise.resolve(configurationResult)
       } as unknown as Response)
 
@@ -263,7 +310,8 @@ describe('customDomainService', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        status: 200
+        status: 200,
+        json: async () => await Promise.resolve({})
       } as unknown as Response)
 
       const result = await service.deleteVercelDomain('name.com')
@@ -277,11 +325,33 @@ describe('customDomainService', () => {
         }
       )
     })
+
+    it('should throw an error if the response is not ok', async () => {
+      process.env = {
+        ...originalEnv,
+        VERCEL_TOKEN: 'abc',
+        VERCEL_TEAM_ID: 'teamId',
+        VERCEL_JOURNEYS_PROJECT_ID: 'projectId',
+        GIT_BRANCH: 'main'
+      }
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 408,
+        json: async () =>
+          await Promise.resolve({
+            error: { message: 'error', code: 'error_code' }
+          })
+      } as unknown as Response)
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
+      expect(service.deleteVercelDomain('name.com')).rejects.toThrow('error')
+    })
   })
 
   describe('isDomainValid', () => {
     it('should return true for valid domain', () => {
-      const result = service.isDomainValid('name.com')
+      const result = service.isDomainValid('jesusfilmtestdomain.online')
 
       expect(result).toBe(true)
     })

@@ -241,7 +241,8 @@ export function VideoControls({
     state,
     setShowHeaderFooter,
     setShowNavigation,
-    variant
+    variant,
+    activeStep
   ])
 
   function handlePlay(): void {
