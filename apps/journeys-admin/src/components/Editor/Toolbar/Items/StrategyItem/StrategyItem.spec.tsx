@@ -1,12 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
   ActiveContent,
   ActiveFab,
-  EditorState,
-  useEditor
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
@@ -16,50 +15,31 @@ import {
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
+import { TestEditorState } from '../../../../../libs/TestEditorState'
 
-import { StrategyItem } from './StrategyItem'
-
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
+import { StrategyItem } from '.'
 
 describe('StrategyItem', () => {
-  const mockJourney: JourneyFields = {
-    id: 'journeyId',
-    title: 'Some Title',
-    slug: 'journeySlug'
-  } as unknown as JourneyFields
-
-  const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
-
-  const dispatch = jest.fn()
-  const state: EditorState = {
-    activeFab: ActiveFab.Add,
-    activeSlide: ActiveSlide.Content,
-    activeContent: ActiveContent.Canvas,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-  }
-
-  beforeEach(() => {
-    jest.clearAllMocks()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-  })
-
-  it('should naivigate to goals and close menu on click', async () => {
+  it('should navigate to goals and close menu on click', async () => {
+    const state: EditorState = {
+      activeFab: ActiveFab.Add,
+      activeSlide: ActiveSlide.JourneyFlow,
+      activeContent: ActiveContent.Canvas,
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    }
+    const mockJourney: JourneyFields = {
+      id: 'journeyId',
+      title: 'Some Title',
+      slug: 'journeySlug'
+    } as unknown as JourneyFields
     const mockCloseMenu = jest.fn()
-    const { getByRole } = render(
+
+    render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider>
+          <EditorProvider initialState={state}>
             <JourneyProvider value={{ journey: mockJourney }}>
+              <TestEditorState />
               <StrategyItem variant="button" closeMenu={mockCloseMenu} />
             </JourneyProvider>
           </EditorProvider>
@@ -67,15 +47,13 @@ describe('StrategyItem', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button'))
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetActiveContentAction',
-      activeContent: ActiveContent.Goals
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Content
-    })
+    expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button'))
+
+    expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     expect(mockCloseMenu).toHaveBeenCalled()
   })
 })

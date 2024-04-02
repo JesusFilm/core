@@ -175,7 +175,7 @@ describe('Properties', () => {
     )
 
     await waitFor(() =>
-      expect(screen.getByTestId('CardTemplateDrawer')).toBeInTheDocument()
+      expect(screen.getByTestId('CardTemplates')).toBeInTheDocument()
     )
   })
 

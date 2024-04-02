@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
+import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo, useState } from 'react'
 
@@ -19,7 +20,13 @@ import {
 import { TemplateCardPreview } from './TemplateCardPreview/TemplateCardPreview'
 import { TemplateVideoPreview } from './TemplateVideoPreview'
 
-export function TemplatePreviewTabs(): ReactElement {
+interface TemplatePreviewTabsProps {
+  authUser?: User
+}
+
+export function TemplatePreviewTabs({
+  authUser
+}: TemplatePreviewTabsProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -86,7 +93,7 @@ export function TemplatePreviewTabs(): ReactElement {
         />
       </Tabs>
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>
-        <TemplateCardPreview steps={steps} />
+        <TemplateCardPreview steps={steps} authUser={authUser} />
       </TabPanel>
       <TabPanel name="videos-preview-tab" value={tabValue} index={1}>
         <TemplateVideoPreview videoBlocks={videos} />

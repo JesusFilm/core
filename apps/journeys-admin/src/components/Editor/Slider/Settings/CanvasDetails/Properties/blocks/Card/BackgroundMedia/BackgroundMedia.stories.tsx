@@ -20,15 +20,15 @@ import {
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
-import { Drawer } from '../../../../../Drawer'
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 
 import { BackgroundMedia } from '.'
 
-const BackgroundMediaStory: Meta<typeof BackgroundMedia> = {
+const Demo: Meta<typeof BackgroundMedia> = {
   ...journeysAdminConfig,
   component: BackgroundMedia,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/BackgroundMedia',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/BackgroundMedia',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen',
@@ -202,7 +202,7 @@ const Template: StoryObj<typeof BackgroundMedia> = {
               ...args
             }}
           >
-            <Drawer />
+            <BackgroundMedia />
           </EditorProvider>
         </JourneyProvider>
       </ThemeProvider>
@@ -232,4 +232,4 @@ export const Image = {
   }
 }
 
-export default BackgroundMediaStory
+export default Demo

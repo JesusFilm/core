@@ -4,6 +4,7 @@
 provider "registry.terraform.io/datadog/datadog" {
   version = "3.37.0"
   hashes = [
+    "h1:PJPfVBpXXpLV41tl7ptUqgcuI9TX9MEo4+I74iF104k=",
     "h1:jdFsEol6WemBS3648YrISDGo3cGDv4/aV3tc2PtI5pA=",
     "zh:0bf149256e2166d77a7cea60adcf1486bf18c65120caccba3f9caf643a0937a7",
     "zh:246c40bbb198f918a7380c059ac2e9110832215e0e00c06fdd8a5c34fb01f797",
@@ -25,6 +26,7 @@ provider "registry.terraform.io/datadog/datadog" {
 provider "registry.terraform.io/dopplerhq/doppler" {
   version = "1.6.2"
   hashes = [
+    "h1:CrSEsgqCzQZuZnCuHdddrv0MSLYHn2vJoL/nhdMZ6x8=",
     "h1:SgQ5KiOhSlooiaQznU3amK2Kz19aCQ1p/FZ1iKsXHHI=",
     "zh:025162d5dd9507b7ca7847657d3ee36a3904448ae049103ae53f30ebf921a686",
     "zh:11b294160c779eaf0058170b52beae29375fa48141829879e874314562bb1400",
@@ -92,6 +94,7 @@ provider "registry.terraform.io/hashicorp/random" {
   version = "3.6.0"
   hashes = [
     "h1:5KeoKSVKVHJW308uiTgslxFbjQAdWzBGUFK68vgMRWY=",
+    "h1:R5Ucn26riKIEijcsiOMBR3uOAjuOMfI1x7XvH4P6B1w=",
     "zh:03360ed3ecd31e8c5dac9c95fe0858be50f3e9a0d0c654b5e504109c2159287d",
     "zh:1c67ac51254ba2a2bb53a25e8ae7e4d076103483f55f39b426ec55e47d1fe211",
     "zh:24a17bba7f6d679538ff51b3a2f378cedadede97af8a1db7dad4fd8d6d50f829",
