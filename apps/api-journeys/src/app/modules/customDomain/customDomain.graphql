@@ -4,47 +4,43 @@ type CustomDomain {
   name: String!
   apexName: String!
   journeyCollection: JourneyCollection
-  verification: CustomDomainVerification
-  configuration: VercelDomainConfiguration
   routeAllTeamJourneys: Boolean!
+  configured: Boolean!
+  verified: Boolean!
+  verification: [CustomDomainVerification!]
+  verificationResponse: CustomDomainVerificationResponse
 }
 
 input CustomDomainCreateInput {
+  id: ID
   teamId: String!
   name: String!
-  journeyCollectionId: String
+  journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
 }
 
 input CustomDomainUpdateInput {
-  id: ID!
-  name: String
-  journeyCollectionId: String
+  journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
 }
 
-type VercelDomainVerification {
-  type: String
-  domain: String
-  value: String
-  reason: String
-}
-
-type VercelDomainConfiguration {
-  acceptedChallenges: [String]
-  configuredBy: String
-  misconfigured: Boolean
-}
-
 type CustomDomainVerification {
-  verified: Boolean!
-  verification: [VercelDomainVerification]
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse {
+  code: String!
+  message: String!
 }
 
 extend type Mutation {
   customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
-  customDomainUpdate(input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
   customDomainDelete(id: ID!): CustomDomain!
+  customDomainCheck(id: ID!): CustomDomain!
 }
 
 extend type Query {

@@ -91,20 +91,20 @@ export class JourneyCollectionResolver {
           }
         )
       }
-      let customDomain: CustomDomain | null = null
+      const customDomain: CustomDomain | null = null
       if (input.customDomain != null) {
-        customDomain = await this.customDomainService.customDomainCreate(
-          {
-            ...input.customDomain,
-            teamId: input.teamId
-          },
-          ability
-        )
-        return await tx.journeyCollection.update({
-          where: { id: collection.id },
-          data: { customDomains: { connect: { id: customDomain.id } } },
-          include: { customDomains: true }
-        })
+        // customDomain = await this.customDomainService.customDomainCreate(
+        //   {
+        //     ...input.customDomain,
+        //     teamId: input.teamId
+        //   },
+        //   ability
+        // )
+        // return await tx.journeyCollection.update({
+        //   where: { id: collection.id },
+        //   data: { customDomains: { connect: { id: customDomain.id } } },
+        //   include: { customDomains: true }
+        // })
       }
       return collection
     })

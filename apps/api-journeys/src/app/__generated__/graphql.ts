@@ -472,6 +472,7 @@ export class ChatButtonUpdateInput {
 }
 
 export class CustomDomainCreateInput {
+    id?: Nullable<string>;
     teamId: string;
     name: string;
     journeyCollectionId?: Nullable<string>;
@@ -479,8 +480,6 @@ export class CustomDomainCreateInput {
 }
 
 export class CustomDomainUpdateInput {
-    id: string;
-    name?: Nullable<string>;
     journeyCollectionId?: Nullable<string>;
     routeAllTeamJourneys?: Nullable<boolean>;
 }
@@ -1111,30 +1110,25 @@ export class CustomDomain {
     name: string;
     apexName: string;
     journeyCollection?: Nullable<JourneyCollection>;
-    verification?: Nullable<CustomDomainVerification>;
-    configuration?: Nullable<VercelDomainConfiguration>;
     routeAllTeamJourneys: boolean;
-}
-
-export class VercelDomainVerification {
-    __typename?: 'VercelDomainVerification';
-    type?: Nullable<string>;
-    domain?: Nullable<string>;
-    value?: Nullable<string>;
-    reason?: Nullable<string>;
-}
-
-export class VercelDomainConfiguration {
-    __typename?: 'VercelDomainConfiguration';
-    acceptedChallenges?: Nullable<Nullable<string>[]>;
-    configuredBy?: Nullable<string>;
-    misconfigured?: Nullable<boolean>;
+    configured: boolean;
+    verified: boolean;
+    verification?: Nullable<CustomDomainVerification[]>;
+    verificationResponse?: Nullable<CustomDomainVerificationResponse>;
 }
 
 export class CustomDomainVerification {
     __typename?: 'CustomDomainVerification';
-    verified: boolean;
-    verification?: Nullable<Nullable<VercelDomainVerification>[]>;
+    type: string;
+    domain: string;
+    value: string;
+    reason: string;
+}
+
+export class CustomDomainVerificationResponse {
+    __typename?: 'CustomDomainVerificationResponse';
+    code: string;
+    message: string;
 }
 
 export class ButtonClickEvent implements Event {
@@ -1583,9 +1577,11 @@ export abstract class IMutation {
 
     abstract customDomainCreate(input: CustomDomainCreateInput): CustomDomain | Promise<CustomDomain>;
 
-    abstract customDomainUpdate(input: CustomDomainUpdateInput): CustomDomain | Promise<CustomDomain>;
+    abstract customDomainUpdate(id: string, input: CustomDomainUpdateInput): CustomDomain | Promise<CustomDomain>;
 
     abstract customDomainDelete(id: string): CustomDomain | Promise<CustomDomain>;
+
+    abstract customDomainCheck(id: string): CustomDomain | Promise<CustomDomain>;
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 

@@ -222,8 +222,9 @@ extend type Mutation {
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
   customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
-  customDomainUpdate(input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
   customDomainDelete(id: ID!): CustomDomain!
+  customDomainVerify(id: ID!): CustomDomain!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -1226,6 +1227,7 @@ type CustomDomain {
 }
 
 input CustomDomainCreateInput {
+  id: ID!
   teamId: String!
   name: String!
   journeyCollectionId: String
@@ -1233,8 +1235,6 @@ input CustomDomainCreateInput {
 }
 
 input CustomDomainUpdateInput {
-  id: ID!
-  name: String
   journeyCollectionId: String
   routeAllTeamJourneys: Boolean
 }
