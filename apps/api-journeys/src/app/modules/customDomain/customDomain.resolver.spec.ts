@@ -312,10 +312,17 @@ describe('CustomDomainResolver', () => {
       prismaService.customDomain.findUnique.mockResolvedValueOnce(
         customDomainWithUserTeam
       )
-      service.checkVercelDomain.mockResolvedValue(customDomain)
+      service.checkVercelDomain.mockResolvedValue({
+        configured: true,
+        verified: true
+      })
       expect(
         await resolver.customDomainCheck('customDomainId', ability)
-      ).toEqual(customDomain)
+      ).toEqual({
+        ...customDomainWithUserTeam,
+        configured: true,
+        verified: true
+      })
     })
 
     it('should handle not found', async () => {
