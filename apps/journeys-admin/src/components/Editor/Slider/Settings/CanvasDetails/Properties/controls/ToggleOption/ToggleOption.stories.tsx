@@ -6,7 +6,6 @@ import noop from 'lodash/noop'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
-import { Drawer } from '../../../../Drawer'
 
 import { ToggleOptionProps } from './ToggleOption'
 
@@ -15,15 +14,16 @@ import { ToggleOption } from '.'
 const ToggleOptionStory: Meta<typeof ToggleOption> = {
   ...journeysAdminConfig,
   component: ToggleOption,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/ToggleOption'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/ToggleOption'
 }
 
 const Template: StoryObj<typeof ToggleOption> = {
-  render: ({ ...args }: ToggleOptionProps) => {
+  render: (args: ToggleOptionProps) => {
     return (
       <MockedProvider>
         <EditorProvider>
-          <Drawer />
+          <ToggleOption {...args} />
         </EditorProvider>
       </MockedProvider>
     )
