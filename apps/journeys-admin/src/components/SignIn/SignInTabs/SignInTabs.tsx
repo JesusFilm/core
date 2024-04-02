@@ -18,7 +18,12 @@ export function SignInTabs(): ReactElement {
   }
 
   return (
-    <Tabs value={tabValue} onChange={handleTabChange} variant="fullWidth">
+    <Tabs
+      value={tabValue}
+      onChange={handleTabChange}
+      variant="fullWidth"
+      sx={{ borderBottom: 1, borderColor: 'divider' }}
+    >
       <Tab label="New account" {...tabA11yProps('new-account-tab', 0)} />
       <Tab label="Log In" {...tabA11yProps('log-in-tab', 1)} />
     </Tabs>
