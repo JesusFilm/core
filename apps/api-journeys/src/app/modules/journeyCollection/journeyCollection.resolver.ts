@@ -43,7 +43,7 @@ export class JourneyCollectionResolver {
         include: { team: { include: { userTeams: true } } }
       })
     if (journeyCollection == null)
-      throw new GraphQLError('journey colleciton not found', {
+      throw new GraphQLError('journey collection not found', {
         extensions: { code: 'NOT_FOUND' }
       })
     if (
