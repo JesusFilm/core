@@ -2,12 +2,11 @@ import { MockedProvider } from '@apollo/client/testing'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
+import { ComponentPropsWithoutRef } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
-
-import { ToggleOptionProps } from './ToggleOption'
 
 import { ToggleOption } from '.'
 
@@ -18,8 +17,8 @@ const ToggleOptionStory: Meta<typeof ToggleOption> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/ToggleOption'
 }
 
-const Template: StoryObj<typeof ToggleOption> = {
-  render: (args: ToggleOptionProps) => {
+const Template: StoryObj<ComponentPropsWithoutRef<typeof ToggleOption>> = {
+  render: (args) => {
     return (
       <MockedProvider>
         <EditorProvider>

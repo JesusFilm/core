@@ -4,7 +4,7 @@ import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-export interface ToggleOptionProps {
+interface ToggleOptionProps {
   heading: string
   description?: string
   checked: boolean
