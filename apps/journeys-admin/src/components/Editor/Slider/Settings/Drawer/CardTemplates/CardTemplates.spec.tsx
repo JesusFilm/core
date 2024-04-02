@@ -11,14 +11,14 @@ import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { CARD_VIDEO_CREATE } from './Templates/CardVideo/CardVideo'
 
-import { CardTemplateDrawer } from '.'
+import { CardTemplates } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
 
-describe('CardTemplateDrawer', () => {
+describe('CardTemplates', () => {
   it('changes content of card to match template', async () => {
     const card: TreeBlock = {
       id: 'cardId',
@@ -74,7 +74,7 @@ describe('CardTemplateDrawer', () => {
         >
           <EditorProvider initialState={{ steps: [step] }}>
             <TestEditorState />
-            <CardTemplateDrawer />
+            <CardTemplates />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

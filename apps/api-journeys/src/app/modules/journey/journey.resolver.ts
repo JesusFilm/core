@@ -6,6 +6,7 @@ import {
   Parent,
   Query,
   ResolveField,
+  ResolveReference,
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
@@ -20,6 +21,7 @@ import {
   ChatButton,
   Host,
   Journey,
+  JourneyCollection,
   Prisma,
   Team,
   UserJourney,
@@ -40,6 +42,7 @@ import {
   JourneyTemplateInput,
   JourneyUpdateInput,
   JourneysFilter,
+  JourneysQueryOptions,
   JourneysReportType
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
@@ -184,15 +187,26 @@ export class JourneyResolver {
   }
 
   @Query()
-  async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
+  async journeys(
+    @Args('where') where?: JourneysFilter,
+    @Args('options')
+    options: JourneysQueryOptions = {
+      hostname: null,
+      embedded: false,
+      journeyCollection: false
+    }
+  ): Promise<Journey[]> {
+    if (options.embedded === true && options.hostname != null) return []
+
     const filter: Prisma.JourneyWhereInput = { status: JourneyStatus.published }
     if (where?.template != null) filter.template = where.template
     if (where?.featured != null)
       filter.featuredAt = where?.featured ? { not: null } : null
     if (where?.ids != null) filter.id = { in: where?.ids }
+    let OR: Prisma.JourneyWhereInput[] = []
     if (where?.tagIds != null) {
       // find every journey which has a journeyTag matching at least 1 tagId
-      filter.OR = where.tagIds.map((tagId) => ({
+      OR = where.tagIds.map((tagId) => ({
         journeyTags: {
           some: {
             tagId
@@ -200,8 +214,37 @@ export class JourneyResolver {
         }
       }))
     }
+    if (options.embedded !== true) {
+      if (options.hostname != null) {
+        if (options.journeyCollection !== true) {
+          OR.push({
+            team: {
+              customDomains: {
+                some: { name: options.hostname, routeAllTeamJourneys: true }
+              }
+            }
+          })
+        }
+        OR.push({
+          journeyCollectionJourneys: {
+            some: {
+              journeyCollection: {
+                customDomains: { some: { name: options.hostname } }
+              }
+            }
+          }
+        })
+      } else {
+        filter.journeyCollectionJourneys = { none: {} }
+        filter.team = {
+          customDomains: { none: { routeAllTeamJourneys: true } }
+        }
+      }
+    }
     if (where?.languageIds != null)
       filter.languageId = { in: where?.languageIds }
+
+    if (OR.length > 0) filter.OR = OR
 
     return await this.prismaService.journey.findMany({
       where: filter,
@@ -220,10 +263,42 @@ export class JourneyResolver {
   @Query()
   async journey(
     @Args('id') id: string,
-    @Args('idType') idType: IdType = IdType.slug
+    @Args('idType') idType: IdType = IdType.slug,
+    @Args('options')
+    options: JourneysQueryOptions = {
+      hostname: null,
+      embedded: false
+    }
   ): Promise<Journey | null> {
+    if (options.embedded === true && options.hostname != null) return null
+
     const filter: Prisma.JourneyWhereUniqueInput =
       idType === IdType.slug ? { slug: id } : { id }
+    if (options.embedded !== true) {
+      if (options.hostname != null) {
+        filter.team = {
+          OR: [
+            {
+              customDomains: {
+                some: { name: options.hostname, routeAllTeamJourneys: true }
+              }
+            },
+            {
+              journeyCollections: {
+                some: {
+                  customDomains: { some: { name: options.hostname } }
+                }
+              }
+            }
+          ]
+        }
+      } else {
+        filter.journeyCollectionJourneys = { none: {} }
+        filter.team = {
+          customDomains: { none: { routeAllTeamJourneys: true } }
+        }
+      }
+    }
     const journey = await this.prismaService.journey.findUnique({
       where: filter
     })
@@ -913,6 +988,17 @@ export class JourneyResolver {
 
     return journeyTags.map((tag) => {
       return { __typename: 'Tag', id: tag.tagId }
+    })
+  }
+
+  @ResolveField()
+  async journeyCollections(
+    @Parent() parent: Journey
+  ): Promise<JourneyCollection[]> {
+    return await this.prismaService.journeyCollection.findMany({
+      where: {
+        journeyCollectionJourneys: { some: { journeyId: parent.id } }
+      }
     })
   }
 }

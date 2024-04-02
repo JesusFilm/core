@@ -35,6 +35,13 @@ import { TagModule } from './modules/tag/tag.module'
     }),
     LoggerModule.forRoot({
       pinoHttp: {
+        formatters: {
+          level: (label, _number) => ({ level: label })
+        },
+        redact: ['req.headers.authorization'],
+        autoLogging: {
+          ignore: (req) => req.url === '/.well-known/apollo/server-health'
+        },
         transport:
           process.env.NODE_ENV !== 'production'
             ? {

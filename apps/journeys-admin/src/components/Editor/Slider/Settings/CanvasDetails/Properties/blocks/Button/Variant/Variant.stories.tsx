@@ -8,7 +8,8 @@ import { Variant } from '.'
 const VariantStory: Meta<typeof Variant> = {
   ...simpleComponentConfig,
   component: Variant,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Button/Variant'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Button/Variant'
 }
 
 export const Default: StoryObj<typeof Variant> = {
