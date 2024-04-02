@@ -1109,8 +1109,8 @@ export class CustomDomain {
     apexName: string;
     journeyCollection?: Nullable<JourneyCollection>;
     routeAllTeamJourneys: boolean;
-    configured: boolean;
-    verified: boolean;
+    configured?: Nullable<boolean>;
+    verified?: Nullable<boolean>;
     verification?: Nullable<CustomDomainVerification[]>;
     verificationResponse?: Nullable<CustomDomainVerificationResponse>;
 }

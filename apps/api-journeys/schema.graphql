@@ -1222,8 +1222,8 @@ type CustomDomain {
   apexName: String!
   journeyCollection: JourneyCollection
   routeAllTeamJourneys: Boolean!
-  configured: Boolean!
-  verified: Boolean!
+  configured: Boolean
+  verified: Boolean
   verification: [CustomDomainVerification!]
   verificationResponse: CustomDomainVerificationResponse
 }
