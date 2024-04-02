@@ -12,13 +12,13 @@ import {
   TypographyAlign,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
 import { Drawer } from '../../../../Drawer'
 
 import { Step } from '.'
 
 const Demo: Meta<typeof Step> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: Step,
   title:
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Step'
@@ -83,7 +83,7 @@ const Template: StoryObj<typeof Step> = {
   }
 }
 
-export const NewDefault = {
+export const Default = {
   ...Template,
   play: async () => {
     const StepAccordion = await screen.getByTestId('AccordionSummary')
