@@ -240,12 +240,23 @@ export function CustomDomainDialog({
         },
         onError: (e) => {
           setLoading(false)
-          const errorMessage = e?.message.includes(
-            'Unique constraint failed on the fields: (`name`)'
+          let errorMessage = t(
+            'Something went wrong, please reload the page and try again'
           )
-            ? t('This domain is already connected to another NextSteps Team')
-            : t('Something went wrong, please reload the page and try again')
-
+          if (
+            e.message.includes(
+              'Unique constraint failed on the fields: (`name`)'
+            )
+          ) {
+            errorMessage = t(
+              'This domain is already connected to another NextSteps Team'
+            )
+          }
+          if (e.message.includes("it's already in use by your account.")) {
+            errorMessage = t(
+              "Cannot add this domain since it's already in use by your accound"
+            )
+          }
           enqueueSnackbar(errorMessage, {
             variant: 'error',
             preventDuplicate: false
