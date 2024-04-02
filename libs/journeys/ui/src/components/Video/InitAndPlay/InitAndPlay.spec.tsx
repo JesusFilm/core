@@ -15,6 +15,13 @@ describe('InitAndPlay', () => {
   let defaultProps: ComponentProps<typeof InitAndPlay>
   let player: Player
 
+  const defaultStepBlock = {
+    __typename: 'StepBlock',
+    id: 'step1.id',
+    parentOrder: 0,
+    children: []
+  } as unknown as TreeBlock<StepBlock>
+
   beforeEach(() => {
     const video = document.createElement('video')
     document.body.appendChild(video)
@@ -58,11 +65,14 @@ describe('InitAndPlay', () => {
   })
 
   it('should set player', () => {
+    blockHistoryVar([defaultStepBlock])
+
     render(<InitAndPlay {...defaultProps} />)
     expect(defaultProps.setPlayer).toHaveBeenCalled()
   })
 
   it('should listen for player ready', () => {
+    blockHistoryVar([defaultStepBlock])
     render(<InitAndPlay {...defaultProps} />)
 
     act(() => {
@@ -74,6 +84,7 @@ describe('InitAndPlay', () => {
   })
 
   it('should listen for player seeked', () => {
+    blockHistoryVar([defaultStepBlock])
     render(<InitAndPlay {...defaultProps} />)
 
     act(() => {
@@ -85,6 +96,7 @@ describe('InitAndPlay', () => {
   })
 
   it('should listen for player canplay', () => {
+    blockHistoryVar([defaultStepBlock])
     render(<InitAndPlay {...defaultProps} />)
 
     act(() => {
@@ -95,6 +107,7 @@ describe('InitAndPlay', () => {
   })
 
   it('should listen for player playing', () => {
+    blockHistoryVar([defaultStepBlock])
     render(<InitAndPlay {...defaultProps} />)
 
     act(() => {
@@ -106,6 +119,7 @@ describe('InitAndPlay', () => {
   })
 
   it('should listen for player ended', () => {
+    blockHistoryVar([defaultStepBlock])
     render(<InitAndPlay {...defaultProps} />)
 
     act(() => {
@@ -118,6 +132,7 @@ describe('InitAndPlay', () => {
   })
 
   it('should handle player duration change', () => {
+    blockHistoryVar([defaultStepBlock])
     render(<InitAndPlay {...defaultProps} />)
 
     act(() => {
@@ -129,6 +144,7 @@ describe('InitAndPlay', () => {
   })
 
   it('should handle autoplay', () => {
+    blockHistoryVar([defaultStepBlock])
     const playStub = jest.spyOn(player, 'play')
 
     render(<InitAndPlay {...defaultProps} />)
@@ -140,7 +156,21 @@ describe('InitAndPlay', () => {
     const stepBlock = {
       __typename: 'StepBlock',
       id: 'step1.id',
-      parentOrder: 0
+      parentOrder: 0,
+      children: [
+        {
+          __typename: 'CardBlock',
+          id: 'card1.id',
+          parentOrder: 0,
+          children: [
+            {
+              __typename: 'VideoBlock',
+              id: 'blockId',
+              parentOrder: 0
+            }
+          ]
+        }
+      ]
     } as unknown as TreeBlock<StepBlock>
     blockHistoryVar([stepBlock])
 
@@ -153,11 +183,9 @@ describe('InitAndPlay', () => {
   })
 
   it('should pause player when inactive', () => {
-    const props = {
-      ...defaultProps
-    }
+    blockHistoryVar([defaultStepBlock])
 
-    render(<InitAndPlay {...props} />)
+    render(<InitAndPlay {...defaultProps} />)
     expect(player.paused()).toBe(true)
   })
 
@@ -165,13 +193,15 @@ describe('InitAndPlay', () => {
     const stepBlock = {
       __typename: 'StepBlock',
       id: 'step1.id',
-      parentOrder: 0
+      parentOrder: 0,
+      children: []
     } as unknown as TreeBlock<StepBlock>
 
     const props = {
       ...defaultProps,
       selectedBlock: stepBlock
     }
+    blockHistoryVar([stepBlock])
 
     render(<InitAndPlay {...props} />)
     expect(player.paused()).toBe(true)
