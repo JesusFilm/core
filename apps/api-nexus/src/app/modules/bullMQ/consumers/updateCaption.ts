@@ -63,7 +63,7 @@ export class UpdateCaption {
       name: '',
       captionFile: filePath,
       isDraft: false,
-      mimeType: job.data.resource.mimeType
+      mimeType: job.data.resource.mimeType,
     });
     console.log('YOUTUBE RESPONSE UPLOAD CAPTION: ', youtubeResponse);
     await job.progress(100);
