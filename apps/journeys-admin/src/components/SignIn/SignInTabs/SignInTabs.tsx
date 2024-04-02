@@ -4,8 +4,10 @@ import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { tabA11yProps } from '@core/shared/ui/TabPanel'
+import { useTranslation } from 'next-i18next'
 
 export function SignInTabs(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [tabValue, setTabValue] = useState(0)
 
@@ -24,8 +26,8 @@ export function SignInTabs(): ReactElement {
       variant="fullWidth"
       sx={{ borderBottom: 1, borderColor: 'divider' }}
     >
-      <Tab label="New account" {...tabA11yProps('new-account-tab', 0)} />
-      <Tab label="Log In" {...tabA11yProps('log-in-tab', 1)} />
+      <Tab label={t('New account')} {...tabA11yProps('new-account-tab', 0)} />
+      <Tab label={t('Log In')} {...tabA11yProps('log-in-tab', 1)} />
     </Tabs>
   )
 }
