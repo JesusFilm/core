@@ -24,8 +24,8 @@ import { Editor } from '../../src/components/Editor'
 import { ControlPanel } from '../../src/components/Editor/ControlPanel'
 import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
-import { GET_CUSTOM_DOMAINS } from '../../src/components/Team/CustomDomainDialog/CustomDomainDialog'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { GET_CUSTOM_DOMAINS } from '../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
 
 export const GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}
