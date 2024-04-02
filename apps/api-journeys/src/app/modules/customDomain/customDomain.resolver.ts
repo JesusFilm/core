@@ -28,6 +28,7 @@ import {
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 
 import { CustomDomainService } from './customDomain.service'
 
@@ -82,34 +83,48 @@ export class CustomDomainResolver {
         extensions: { code: 'BAD_USER_INPUT' }
       })
 
-    return await this.prismaService.$transaction(async (tx) => {
-      const { apexName } = await this.customDomainService.createVercelDomain(
-        input.name
-      )
-      const data: Prisma.CustomDomainCreateInput = {
-        ...omit(input, ['teamId', 'journeyCollectionId']),
-        id: input.id ?? undefined,
-        apexName,
-        team: { connect: { id: input.teamId } },
-        routeAllTeamJourneys: input.routeAllTeamJourneys ?? undefined
-      }
-      if (input.journeyCollectionId != null) {
-        data.journeyCollection = {
-          connect: { id: input.journeyCollectionId }
+    try {
+      return await this.prismaService.$transaction(async (tx) => {
+        const { apexName } = await this.customDomainService.createVercelDomain(
+          input.name
+        )
+        const data: Prisma.CustomDomainCreateInput = {
+          ...omit(input, ['teamId', 'journeyCollectionId']),
+          id: input.id ?? undefined,
+          apexName,
+          team: { connect: { id: input.teamId } },
+          routeAllTeamJourneys: input.routeAllTeamJourneys ?? undefined
         }
-      }
-      const customDomain = await tx.customDomain.create({
-        data,
-        include: { team: { include: { userTeams: true } } }
+        if (input.journeyCollectionId != null) {
+          data.journeyCollection = {
+            connect: { id: input.journeyCollectionId }
+          }
+        }
+        const customDomain = await tx.customDomain.create({
+          data,
+          include: { team: { include: { userTeams: true } } }
+        })
+        if (
+          !ability.can(Action.Create, subject('CustomDomain', customDomain))
+        ) {
+          await this.customDomainService.deleteVercelDomain(customDomain)
+          throw new GraphQLError(
+            'user is not allowed to create custom domain',
+            {
+              extensions: { code: 'FORBIDDEN' }
+            }
+          )
+        }
+        return customDomain
       })
-      if (!ability.can(Action.Create, subject('CustomDomain', customDomain))) {
-        await this.customDomainService.deleteVercelDomain(customDomain)
-        throw new GraphQLError('user is not allowed to create custom domain', {
-          extensions: { code: 'FORBIDDEN' }
+    } catch (err) {
+      if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
+        throw new GraphQLError('custom domain already exists', {
+          extensions: { code: 'BAD_USER_INPUT' }
         })
       }
-      return customDomain
-    })
+      throw err
+    }
   }
 
   @Mutation()

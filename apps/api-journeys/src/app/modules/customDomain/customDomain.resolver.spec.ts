@@ -18,6 +18,7 @@ import {
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 
 import { CustomDomainResolver } from './customDomain.resolver'
 import { CustomDomainService } from './customDomain.service'
@@ -176,6 +177,27 @@ describe('CustomDomainResolver', () => {
       service.isDomainValid.mockReturnValueOnce(false)
       await expect(resolver.customDomainCreate(input, ability)).rejects.toThrow(
         'custom domain has invalid domain name'
+      )
+    })
+
+    it('should handle custom domain already exists', async () => {
+      const input: CustomDomainCreateInput = {
+        name: 'www.example.com',
+        teamId: 'teamId'
+      }
+      service.isDomainValid.mockReturnValueOnce(true)
+      service.createVercelDomain.mockResolvedValue({
+        name: 'www.example.com',
+        apexName: 'example.com'
+      })
+      prismaService.customDomain.create.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('', {
+          code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED,
+          clientVersion: ''
+        })
+      )
+      await expect(resolver.customDomainCreate(input, ability)).rejects.toThrow(
+        'custom domain already exists'
       )
     })
 
