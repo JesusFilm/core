@@ -5,21 +5,17 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { Drawer } from '../../../../../Drawer'
 
 import { ImageOptions } from './ImageOptions'
 
 const Demo: Meta<typeof ImageOptions> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: ImageOptions,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Image/ImageOptions',
-  parameters: {
-    ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
-  }
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Image/ImageOptions'
 }
 
 const image: TreeBlock<ImageBlock> = {
@@ -35,22 +31,31 @@ const image: TreeBlock<ImageBlock> = {
   children: []
 }
 
-export const Default: StoryObj<typeof ImageOptions> = {
-  render: ({ ...args }) => (
-    <MockedProvider>
-      <ThemeProvider>
-        <EditorProvider
-          initialState={{
-            selectedBlock: image
-          }}
-        >
-          <Drawer title="Image Options">
-            <ImageOptions />
-          </Drawer>
-        </EditorProvider>
-      </ThemeProvider>
-    </MockedProvider>
-  )
+const Template: StoryObj<{ block: TreeBlock<ImageBlock> }> = {
+  render: ({ block }) => {
+    return (
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: block
+            }}
+          >
+            <Drawer title="Image Options">
+              <ImageOptions />
+            </Drawer>
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+  }
+}
+
+export const Default = {
+  ...Template,
+  args: {
+    ...image
+  }
 }
 
 export default Demo
