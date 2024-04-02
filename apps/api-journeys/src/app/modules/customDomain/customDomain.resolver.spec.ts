@@ -7,14 +7,14 @@ import {
   Journey,
   JourneyCollection,
   Prisma,
-  Team
+  Team,
+  UserTeamRole
 } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
   CustomDomainCreateInput,
-  CustomDomainUpdateInput,
-  UserTeamRole
+  CustomDomainUpdateInput
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
@@ -207,13 +207,9 @@ describe('CustomDomainResolver', () => {
       )
       prismaService.customDomain.update.mockResolvedValueOnce(customDomain)
 
-      const result = await resolver.customDomainUpdate(
-        'customDomainId',
-        input,
-        ability
-      )
-
-      expect(result).toEqual(customDomain)
+      expect(
+        await resolver.customDomainUpdate('customDomainId', input, ability)
+      ).toEqual(customDomain)
       expect(prismaService.customDomain.update).toHaveBeenCalledWith({
         data: {
           ...omit(input, 'journeyCollectionId'),
@@ -379,11 +375,12 @@ describe('CustomDomainResolver', () => {
     })
 
     it('should handle null', async () => {
-      const result = await resolver.journeyCollection({
-        ...customDomain,
-        journeyCollectionId: null
-      })
-      expect(result).toBeNull()
+      expect(
+        await resolver.journeyCollection({
+          ...customDomain,
+          journeyCollectionId: null
+        })
+      ).toBeNull()
     })
   })
 
