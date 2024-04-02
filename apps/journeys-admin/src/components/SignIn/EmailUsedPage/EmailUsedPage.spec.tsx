@@ -19,7 +19,7 @@ describe('EmailUsedPage', () => {
       getByText('Sign in with Google to continue', { exact: false })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Sign in with Google' })
+      getByRole('button', { name: 'Continue with Google' })
     ).toBeInTheDocument()
   })
 
@@ -39,7 +39,7 @@ describe('EmailUsedPage', () => {
       getByText('Sign in with Facebook to continue', { exact: false })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Sign in with Facebook' })
+      getByRole('button', { name: 'Continue with Facebook' })
     ).toBeInTheDocument()
   })
 })
