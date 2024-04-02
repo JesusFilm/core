@@ -1,11 +1,17 @@
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { ReactElement, useState } from 'react'
+import { useRouter } from 'next/router'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { tabA11yProps } from '@core/shared/ui/TabPanel'
 
 export function SignInTabs(): ReactElement {
+  const router = useRouter()
   const [tabValue, setTabValue] = useState(0)
+
+  useEffect(() => {
+    setTabValue(router.query.action === 'login' ? 1 : 0)
+  }, [router])
 
   function handleTabChange(_event, newValue): void {
     setTabValue(newValue)
@@ -13,7 +19,7 @@ export function SignInTabs(): ReactElement {
 
   return (
     <Tabs value={tabValue} onChange={handleTabChange} variant="fullWidth">
-      <Tab label="New account" {...tabA11yProps('new-ccount-tab', 0)} />
+      <Tab label="New account" {...tabA11yProps('new-account-tab', 0)} />
       <Tab label="Log In" {...tabA11yProps('log-in-tab', 1)} />
     </Tabs>
   )
