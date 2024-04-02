@@ -40,8 +40,8 @@ export function LanguageSwitcher({
     setPreviousLanguageCode(currentLanguageCode)
     setCurrentLanguageCode(languageCode)
 
-    const cookieFingerprint = '00002'
-    document.cookie = `NEXT_LOCALE=${cookieFingerprint}-${languageCode}; path=/`
+    const cookieFingerprint = '00003'
+    document.cookie = `NEXT_LOCALE=${cookieFingerprint}---${languageCode}; path=/`
     const path = router.asPath
     void router.push(path, path, { locale: languageCode })
   }
