@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -21,25 +22,33 @@ const Demo: Meta<typeof SignUp> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/SignUp'
 }
 
-export const Default: StoryObj<typeof SignUp> = {
-  render: () => {
-    const block: TreeBlock<SignUpBlock> = {
-      id: 'signup.id',
-      __typename: 'SignUpBlock',
-      parentBlockId: null,
-      parentOrder: 0,
-      submitLabel: null,
-      action: null,
-      submitIconId: null,
-      children: []
-    }
+const block: TreeBlock<SignUpBlock> = {
+  id: 'signup.id',
+  __typename: 'SignUpBlock',
+  parentBlockId: null,
+  parentOrder: 0,
+  submitLabel: null,
+  action: null,
+  submitIconId: null,
+  children: []
+}
+
+const Template: StoryObj<ComponentProps<typeof SignUp>> = {
+  render: (args) => {
     return (
-      <EditorProvider initialState={{ selectedBlock: { ...block } }}>
+      <EditorProvider initialState={{ selectedBlock: { ...args } }}>
         <Drawer title="Subscribe Properties">
-          <SignUp {...block} />
+          <SignUp {...args} />
         </Drawer>
       </EditorProvider>
     )
+  }
+}
+
+export const Default = {
+  ...Template,
+  args: {
+    ...block
   }
 }
 
