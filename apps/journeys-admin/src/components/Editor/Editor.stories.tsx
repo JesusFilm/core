@@ -673,8 +673,15 @@ export const Goals = {
   ...Template,
   args: { journey },
   play: async () => {
-    const button = screen.getByRole('button', { name: 'Strategy' })
-    await userEvent.click(button)
+    const button = screen.queryByRole('button', { name: 'Strategy' })
+    if (button != null) {
+      await userEvent.click(button)
+    } else {
+      const menu = screen.getByTestId('ToolbarMenuButton')
+      await userEvent.click(menu)
+      const menuItem = screen.getByRole('menuitem', { name: 'Strategy' })
+      await userEvent.click(menuItem)
+    }
     await waitFor(async () => {
       await screen.getByText('Every Journey has a goal')
     })
