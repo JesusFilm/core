@@ -143,6 +143,7 @@ export function DomainNameUpdateForm({
             })
         },
         onError: (e) => {
+          // asserting by string contains rather than error code as error code for duplicate domain name and invalid domain name are the same
           let errorMessage = t(
             'Something went wrong, please reload the page and try again'
           )

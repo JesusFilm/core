@@ -23,7 +23,7 @@ describe('DomainNameUpdateForm', () => {
           } as unknown as FormikContextType<{ domainName: string }>
         }
       >
-        <DomainNameUpdateForm loading={false} showDeleteButton />
+        <DomainNameUpdateForm />
       </FormikProvider>
     )
 
@@ -43,7 +43,7 @@ describe('DomainNameUpdateForm', () => {
           } as unknown as FormikContextType<{ domainName: string }>
         }
       >
-        <DomainNameUpdateForm loading={false} showDeleteButton={false} />
+        <DomainNameUpdateForm />
       </FormikProvider>
     )
 
@@ -64,7 +64,7 @@ describe('DomainNameUpdateForm', () => {
           } as unknown as FormikContextType<{ domainName: string }>
         }
       >
-        <DomainNameUpdateForm loading={false} showDeleteButton={false} />
+        <DomainNameUpdateForm />
       </FormikProvider>
     )
 
@@ -83,7 +83,7 @@ describe('DomainNameUpdateForm', () => {
           } as unknown as FormikContextType<{ domainName: string }>
         }
       >
-        <DomainNameUpdateForm loading={false} showDeleteButton={false} />
+        <DomainNameUpdateForm />
       </FormikProvider>
     )
 
