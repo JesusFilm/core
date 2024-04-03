@@ -12,17 +12,17 @@ directive @extends on OBJECT | INTERFACE
 
 scalar DateTime
 
+scalar Object
+
 type Batch
   @key(fields: "id")
 {
   id: ID!
   nexusId: String!
-  channelId: String!
-  channel: Channel
-  resources: [BatchResource]
   name: String!
   status: BatchStatus!
-  averagePercent: Float
+  tasks: [BatchTask!]!
+  progress: Float
   createdAt: DateTime!
 }
 
@@ -38,15 +38,29 @@ enum BatchStatus {
   scheduled
 }
 
-type BatchResource
+type BatchTask
   @key(fields: "id")
 {
   id: ID!
   batchId: String!
-  resourceId: String!
-  isCompleted: Boolean
+  type: BatchTaskType!
+  status: TaskStatus!
+  progress: Float
+  metadata: Object
   error: String
-  percent: Float
+}
+
+enum BatchTaskType {
+  video_upload
+  caption_processing
+  localization
+}
+
+enum TaskStatus {
+  pending
+  processing
+  completed
+  failed
 }
 
 input BatchFilter {
@@ -301,4 +315,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Batch | BatchResource | Channel | Nexus | Resource | ResourceLocalization
+union _Entity = Batch | BatchTask | Channel | Nexus | Resource | ResourceLocalization

@@ -1,61 +1,157 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Link from '@mui/material/Link'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useState } from 'react'
+import { use100vh } from 'react-div-100vh'
 
-import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { LanguageSwitcher } from '../LanguageSwitcher'
 
+import { OnboardingDrawer } from './OnboardingDrawer'
+
 interface OnboardingPageWrapperProps {
+  title?: string
   emailSubject: string
   children: ReactNode
 }
 
 export function OnboardingPageWrapper({
+  title,
   emailSubject,
   children
 }: OnboardingPageWrapperProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const { t } = useTranslation('apps-journeys-admin')
+  const viewportHeight = use100vh()
 
   return (
     <Stack
-      justifyContent="space-evenly"
-      alignItems="center"
-      sx={{ height: '100vh', minHeight: '600px' }}
-      data-testid="JourneysAdminOnboardingPageWrapper"
+      direction={{ xs: 'column', md: 'row' }}
+      sx={{
+        overflow: 'hidden',
+        height: viewportHeight ?? '100vh',
+        backgroundColor: { xs: 'background.default', md: 'background.paper' }
+      }}
     >
-      <Stack alignItems="center" sx={{ maxWidth: { xs: 311, md: 397 } }}>
-        <Box sx={{ mb: 10, flexShrink: 0 }}>
-          <Image
-            src={taskbarIcon}
-            alt="Next Steps"
-            height={43}
-            width={43}
-            style={{
-              maxWidth: '100%',
-              height: 'auto'
-            }}
-          />
-        </Box>
-        {children}
-      </Stack>
-      <Stack direction="row" alignItems="center" gap={4}>
-        <Link
-          variant="body2"
-          underline="none"
+      <OnboardingDrawer />
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        gap={10}
+        sx={{
+          m: { xs: 0, sm: 5 },
+          ml: { xs: 0, sm: 0 },
+          flexGrow: 1,
+          display: 'flex',
+          borderColor: 'divider',
+          flexDirection: 'column',
+          borderRadius: { xs: 2, sm: 4 },
+          borderStyle: { xs: 'none', sm: 'solid' },
+          backgroundColor: { xs: 'background.paper', md: 'background.default' }
+        }}
+        data-testid="JourneysAdminOnboardingPageWrapper"
+      >
+        <Typography variant="h1" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+          {title}
+        </Typography>
+        <Stack
+          alignItems="center"
           sx={{
-            color: 'primary.main',
-            cursor: 'pointer'
+            flexGrow: { xs: 1, sm: 0 },
+            maxWidth: { xs: '100%', sm: 397 }
           }}
-          href={`mailto:support@nextstep.is?subject=${emailSubject}`}
         >
-          {t('Feedback & Support')}
-        </Link>
+          <Card
+            sx={{
+              flexGrow: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              borderRadius: 2,
+              borderBottomLeftRadius: { xs: 0, sm: 8 },
+              borderBottomRightRadius: { xs: 0, sm: 8 },
+              width: { xs: '100vw', sm: 397 }
+            }}
+          >
+            <CardContent
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4,
+                p: 6,
+                pt: 7
+              }}
+            >
+              {children}
+            </CardContent>
+            <CardActions
+              sx={{
+                display: {
+                  xs: 'flex',
+                  sm: 'none'
+                },
+                mb: 5,
+                justifyContent: 'center'
+              }}
+            >
+              <OnboardingUtilities
+                open={open}
+                setOpen={setOpen}
+                emailSubject={emailSubject}
+              />
+            </CardActions>
+          </Card>
+        </Stack>
+        <OnboardingUtilities
+          open={open}
+          setOpen={setOpen}
+          emailSubject={emailSubject}
+          sx={{
+            display: { xs: 'none', sm: 'flex' }
+          }}
+        />
+      </Stack>
+    </Stack>
+  )
+}
+
+interface OnboardingUtilitiesProps {
+  open: boolean
+  setOpen: (open: boolean) => void
+  emailSubject: string
+  sx?: SxProps
+}
+
+function OnboardingUtilities({
+  open,
+  setOpen,
+  emailSubject,
+  sx
+}: OnboardingUtilitiesProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
+  return (
+    <>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        gap={4}
+        sx={{ ...sx }}
+      >
+        <Button size="small">
+          <Typography
+            variant="body2"
+            sx={{ color: 'primary.main', cursor: 'pointer' }}
+            component="a"
+            href={`mailto:support@nextstep.is?subject=${emailSubject}`}
+          >
+            {t('Feedback & Support')}
+          </Typography>
+        </Button>
         <Button size="small" onClick={() => setOpen(true)}>
           <Typography variant="body2">{t('Language')}</Typography>
         </Button>
@@ -63,6 +159,6 @@ export function OnboardingPageWrapper({
       {open && (
         <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
       )}
-    </Stack>
+    </>
   )
 }
