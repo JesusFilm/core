@@ -71,11 +71,94 @@ export const SaveMobile = {
   }
 }
 
-// AddDesktop
-// AddMobile
-// EditDesktop
-// EditMobile
-// DisabledDesktop
-// DisabledMobile
+export const AddDesktop = {
+  ...Template,
+  args: {
+    variant: 'canvas',
+    state: {
+      activeFab: ActiveFab.Add,
+      activeSlide: ActiveSlide.Content,
+      activeContent: ActiveContent.Canvas,
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
+      selectedStep: defaultStep,
+      steps: [defaultStep]
+    }
+  }
+}
+
+export const AddMobile = {
+  ...Template,
+  args: {
+    variant: 'mobile',
+    state: {
+      activeFab: ActiveFab.Add,
+      activeSlide: ActiveSlide.Content,
+      activeContent: ActiveContent.Canvas,
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
+      selectedStep: defaultStep,
+      steps: [defaultStep]
+    }
+  }
+}
+
+export const EditDesktop = {
+  ...Template,
+  args: {
+    variant: 'canvas',
+    state: {
+      activeFab: ActiveFab.Edit,
+      activeSlide: ActiveSlide.Content,
+      activeContent: ActiveContent.Canvas,
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
+      selectedStep: defaultStep,
+      steps: [defaultStep]
+    }
+  }
+}
+
+export const EditMobile = {
+  ...Template,
+  args: {
+    variant: 'mobile',
+    state: {
+      activeFab: ActiveFab.Edit,
+      activeSlide: ActiveSlide.Content,
+      activeContent: ActiveContent.Canvas,
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
+      selectedStep: defaultStep,
+      steps: [defaultStep]
+    }
+  }
+}
+
+export const DisabledDesktop = {
+  ...Template,
+  args: {
+    variant: 'canvas',
+    state: {
+      activeFab: ActiveFab.Save,
+      activeSlide: ActiveSlide.Content,
+      activeContent: ActiveContent.Canvas,
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
+      selectedStep: null,
+      steps: null
+    }
+  }
+}
+
+export const DisabledMobile = {
+  ...Template,
+  args: {
+    variant: 'mobile',
+    state: {
+      activeFab: ActiveFab.Save,
+      activeSlide: ActiveSlide.Content,
+      activeContent: ActiveContent.Canvas,
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
+      selectedStep: null,
+      steps: null
+    }
+  }
+}
 
 export default FabDemo
