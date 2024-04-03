@@ -39,7 +39,7 @@ export function MobileControls({
       sx={{
         display: {
           xs: 'block',
-          lg: 'none'
+          md: 'none'
         }
       }}
     >
