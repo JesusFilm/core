@@ -63,7 +63,7 @@ export function RegisterPage({
   ): Promise<void> {
     const auth = getAuth()
     await Promise.all([
-      await createUserWithEmailAndPassword(auth, email, password),
+      createUserWithEmailAndPassword(auth, email, password),
       updateProfile(auth.currentUser as User, {
         displayName: name
       }),
