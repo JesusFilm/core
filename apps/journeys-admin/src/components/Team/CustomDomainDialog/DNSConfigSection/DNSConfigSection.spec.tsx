@@ -8,9 +8,7 @@ import {
 } from '../../../../../__generated__/CheckCustomDomain'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 
-import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection'
-
-import { DNSConfigSection } from '.'
+import { CHECK_CUSTOM_DOMAIN, DNSConfigSection } from '.'
 
 const writeText = jest.fn()
 

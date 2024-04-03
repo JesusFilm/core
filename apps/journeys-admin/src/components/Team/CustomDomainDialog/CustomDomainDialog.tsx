@@ -12,7 +12,7 @@ import { useTeam } from '../TeamProvider'
 
 import { DefaultJourneyForm } from './DefaultJourneyForm'
 import { DNSConfigSection } from './DNSConfigSection'
-import { DomainNameUpdateForm } from './DomainNameUpdateForm'
+import { DomainNameForm } from './DomainNameForm'
 
 interface CustomDomainDialogProps {
   open: boolean
@@ -52,7 +52,7 @@ export function CustomDomainDialog({
     >
       <Form>
         <Stack spacing={10}>
-          <DomainNameUpdateForm customDomain={customDomain} loading={loading} />
+          <DomainNameForm customDomain={customDomain} loading={loading} />
           <DefaultJourneyForm customDomain={customDomain} loading={loading} />
           <DNSConfigSection customDomain={customDomain} loading={loading} />
         </Stack>
