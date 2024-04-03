@@ -62,7 +62,7 @@ describe('HostAvatars', () => {
   it('renders both avatars if both images are set', () => {
     const { getByTestId, getAllByRole } = render(
       <JourneyProvider value={{ journey }}>
-        <HostAvatars avatarSrc1={'avatar1.jpg'} avatarSrc2={'avatar2.jpg'} />
+        <HostAvatars avatarSrc1="avatar1.jpg" avatarSrc2="avatar2.jpg" />
       </JourneyProvider>
     )
 
