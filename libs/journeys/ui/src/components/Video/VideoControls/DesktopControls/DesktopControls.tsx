@@ -58,7 +58,7 @@ export function DesktopControls({
       alignItems="center"
       display={{
         xs: 'none',
-        lg: 'flex'
+        md: 'flex'
       }}
     >
       {/* Play/Pause Button  */}

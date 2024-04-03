@@ -82,7 +82,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           TLS         = "on"
           compress    = "gzip"
           dd_service  = var.service_config.name
-          dd_source   = "nestjs"
+          dd_source   = var.dd_source
           dd_tags     = "env:${var.env}"
           provider    = "ecs"
           retry_limit = "2"

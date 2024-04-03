@@ -169,6 +169,7 @@ export function HeaderAndLanguageFilter({
 
   const { data, loading } = useLanguagesQuery({
     languageId: '529',
+    // make sure these variables are the same as in pages/templates/index.ts
     where: {
       ids: [
         '529', // English
@@ -184,7 +185,8 @@ export function HeaderAndLanguageFilter({
         '22658', // Arabic Modern
         '7083', // Japanese
         '16639', // Bahasa Indonesia
-        '3887' // Vietnamese
+        '3887', // Vietnamese
+        '13169' // Thai
       ]
     }
   })

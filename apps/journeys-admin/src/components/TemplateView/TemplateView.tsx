@@ -104,7 +104,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
             setOpenTeamDialog={setOpenTeamDialog}
           />
           <TemplateTags tags={journey?.tags} />
-          <TemplatePreviewTabs />
+          <TemplatePreviewTabs authUser={authUser} />
           <Typography
             variant="body2"
             sx={{ display: { xs: 'block', sm: 'none' } }}
