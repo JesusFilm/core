@@ -2,7 +2,10 @@ import { MockedResponse } from '@apollo/client/testing'
 
 import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
 import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
-import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
+import {
+  GetCustomDomains,
+  GetCustomDomains_customDomains as CustomDomain
+} from '../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
 import { JourneyCollectionDelete } from '../../../../__generated__/JourneyCollectionDelete'
@@ -11,14 +14,22 @@ import { GET_CUSTOM_DOMAINS } from '../../../libs/useCustomDomainsQuery/useCusto
 import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '../TeamProvider'
 
 import {
-  JOURNEY_COLLECTION_CREATE,
-  JOURNEY_COLLECTION_DELETE,
-  UPDATE_JOURNEY_COLLECTION
-} from './CustomDomainDialog'
-import {
   CREATE_CUSTOM_DOMAIN,
   DELETE_CUSTOM_DOMAIN
 } from './DomainNameUpdateForm/DomainNameUpdateForm'
+import {
+  JOURNEY_COLLECTION_CREATE,
+  JOURNEY_COLLECTION_DELETE,
+  UPDATE_JOURNEY_COLLECTION
+} from './DefaultJourneyForm/DefaultJourneyForm'
+
+export const customDomain: CustomDomain = {
+  id: 'customDomainId',
+  __typename: 'CustomDomain' as const,
+  name: 'mockdomain.com',
+  apexName: 'mockdomain.com',
+  journeyCollection: null
+}
 
 export const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
   request: {
@@ -194,7 +205,8 @@ export const mockJourneyCollectionCreate: MockedResponse<JourneyCollectionCreate
         customDomainUpdateInput: {
           id: 'customDomainId',
           journeyCollectionId: 'uuid'
-        }
+        },
+        customDomainId: 'customDomainId'
       }
     },
     result: jest.fn(() => ({

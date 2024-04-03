@@ -4,6 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { TeamProvider } from '../../TeamProvider'
 import {
+  customDomain,
   getLastActiveTeamIdAndTeamsMock,
   mockCreateCustomDomain,
   mockDeleteCustomDomain
@@ -15,14 +16,6 @@ describe('DomainNameUpdateForm', () => {
   afterEach(() => {
     jest.clearAllMocks()
   })
-
-  const customDomain = {
-    id: 'customDomainId',
-    __typename: 'CustomDomain' as const,
-    name: 'mockdomain.com',
-    apexName: 'mockdomain.com',
-    journeyCollection: null
-  }
 
   it('should delete a custom domain', async () => {
     const { getByRole } = render(

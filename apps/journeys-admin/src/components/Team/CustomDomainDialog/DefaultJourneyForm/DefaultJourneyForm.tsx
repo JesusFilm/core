@@ -16,9 +16,11 @@ import {
   GetCustomDomains_customDomains as CustomDomain,
   GetCustomDomains_customDomains_journeyCollection_journeys as Journey
 } from '../../../../../__generated__/GetCustomDomains'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { JourneyCollectionCreate } from '../../../../../__generated__/JourneyCollectionCreate'
 import { JourneyCollectionDelete } from '../../../../../__generated__/JourneyCollectionDelete'
 import { UpdateJourneyCollection } from '../../../../../__generated__/UpdateJourneyCollection'
+import { useAdminJourneysQuery } from '../../../../libs/useAdminJourneysQuery'
 import { useTeam } from '../../TeamProvider'
 
 interface DefaultJourneyFormProps {
@@ -85,6 +87,10 @@ export function DefaultJourneyForm({
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { enqueueSnackbar } = useSnackbar()
+  const { data } = useAdminJourneysQuery({
+    status: [JourneyStatus.draft, JourneyStatus.published],
+    useLastActiveTeamId: true
+  })
 
   const [journeyCollectionDelete] = useMutation<JourneyCollectionDelete>(
     JOURNEY_COLLECTION_DELETE
@@ -155,7 +161,8 @@ export function DefaultJourneyForm({
             customDomainUpdateInput: {
               id: customDomain.id,
               journeyCollectionId: id
-            }
+            },
+            customDomainId: customDomain.id
           },
           onCompleted: () => {
             enqueueSnackbar(t('Default journey set'), {
@@ -182,7 +189,7 @@ export function DefaultJourneyForm({
                 id="defaultJourney"
                 defaultValue={customDomain?.journeyCollection?.journeys?.[0]}
                 onChange={async (_e, option) => await handleOnChange(option)}
-                options={customDomain?.journeyCollection?.journeys ?? []}
+                options={data?.journeys ?? []}
                 renderInput={(params) => <TextField {...params} />}
                 blurOnSelect
               />
