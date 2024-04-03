@@ -1,10 +1,8 @@
-import { ReactElement, useEffect, useState } from 'react'
-
-import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
-
+import Tabs from '@mui/material/Tabs'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { tabA11yProps } from '@core/shared/ui/TabPanel'
 
