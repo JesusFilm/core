@@ -1,0 +1,53 @@
+type CustomDomain {
+  id: ID!
+  team: Team!
+  name: String!
+  apexName: String!
+  journeyCollection: JourneyCollection
+  verification: CustomDomainVerification
+  configuration: VercelDomainConfiguration
+  routeAllTeamJourneys: Boolean!
+}
+
+input CustomDomainCreateInput {
+  teamId: String!
+  name: String!
+  journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
+}
+
+input CustomDomainUpdateInput {
+  id: ID!
+  name: String
+  journeyCollectionId: String
+  routeAllTeamJourneys: Boolean
+}
+
+type VercelDomainVerification {
+  type: String
+  domain: String
+  value: String
+  reason: String
+}
+
+type VercelDomainConfiguration {
+  acceptedChallenges: [String]
+  configuredBy: String
+  misconfigured: Boolean
+}
+
+type CustomDomainVerification {
+  verified: Boolean!
+  verification: [VercelDomainVerification]
+}
+
+extend type Mutation {
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
+  customDomainUpdate(input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainDelete(id: ID!): CustomDomain!
+}
+
+extend type Query {
+  customDomain(id: ID!): CustomDomain!
+  customDomains(teamId: ID!): [CustomDomain!]!
+}
