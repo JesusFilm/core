@@ -98,7 +98,7 @@ describe('TextResponse', () => {
     ).toBeInTheDocument()
   })
 
-  it('feedback edit accordion should be open on render', () => {
+  it('should have feedback edit accordion open on render', () => {
     const { getByText } = render(
       <MockedProvider>
         <ThemeProvider>

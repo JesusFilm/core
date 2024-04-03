@@ -28,14 +28,26 @@ const Demo: Meta<typeof TextResponse> = {
   }
 }
 
-const Template: StoryObj<
-  ComponentProps<typeof TextResponse> & { block: TreeBlock<TextResponseBlock> }
-> = {
+const block: TreeBlock<TextResponseBlock> = {
+  __typename: 'TextResponseBlock',
+  id: 'textResponseBlock.id',
+  parentBlockId: null,
+  parentOrder: null,
+  label: '',
+  hint: null,
+  minRows: null,
+  submitLabel: null,
+  submitIconId: null,
+  action: null,
+  children: []
+}
+
+const Template: StoryObj<ComponentProps<typeof TextResponse>> = {
   render: ({ ...args }) => {
     return (
-      <EditorProvider initialState={{ selectedBlock: { ...args.block } }}>
+      <EditorProvider initialState={{ selectedBlock: { ...args } }}>
         <Drawer title="Feedback Properties">
-          <TextResponse {...args.block} />
+          <TextResponse {...args} />
         </Drawer>
       </EditorProvider>
     )
@@ -45,50 +57,40 @@ const Template: StoryObj<
 export const Default = {
   ...Template,
   args: {
-    block: {
-      __typename: 'TextResponseBlock',
-      id: 'textResponseBlock.id',
-      parentBlockId: null,
-      parentOrder: null,
-      action: null,
-      submitIconId: null,
-      label: 'label',
-      children: []
-    }
+    ...block
   }
 }
 
 export const Complete = {
   ...Template,
   args: {
-    block: {
-      __typename: 'TextResponseBlock',
-      id: 'textResponseBlock.id',
-      parentBlockId: null,
-      parentOrder: null,
-      action: {
-        __typename: 'LinkAction',
-        parentBlockId: 'responseAction.id',
-        gtmEventName: 'responseAction',
-        url: 'https://www.google.com'
-      },
-      submitIconId: 'icon.id',
-      label: 'complete label',
-      hint: 'hint text',
-      minRows: 2,
-      children: [
-        {
-          id: 'icon.id',
-          __typename: 'IconBlock',
-          parentBlockId: 'button',
-          parentOrder: 0,
-          iconName: IconName.ArrowForwardRounded,
-          iconColor: IconColor.action,
-          iconSize: IconSize.lg,
-          children: []
-        }
-      ]
-    }
+    ...block,
+    __typename: 'TextResponseBlock',
+    id: 'textResponseBlock.id',
+    parentBlockId: null,
+    parentOrder: null,
+    label: 'complete label',
+    hint: 'hint text',
+    minRows: 2,
+    submitIconId: 'icon.id',
+    action: {
+      __typename: 'LinkAction',
+      parentBlockId: 'responseAction.id',
+      gtmEventName: 'responseAction',
+      url: 'https://www.google.com'
+    },
+    children: [
+      {
+        id: 'icon.id',
+        __typename: 'IconBlock',
+        parentBlockId: 'button',
+        parentOrder: 0,
+        iconName: IconName.ArrowForwardRounded,
+        iconColor: IconColor.action,
+        iconSize: IconSize.lg,
+        children: []
+      }
+    ]
   }
 }
 
