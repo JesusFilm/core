@@ -657,10 +657,12 @@ export const SocialPreview = {
   args: { journey },
   play: async () => {
     await waitFor(async () => {
-      screen.getByTestId('NavigationCardSocial')
+      screen.getByTestId('SocialPreviewNode')
     })
-    const button = screen.getByTestId('NavigationCardSocial')
-    await userEvent.click(button)
+
+    const socialPreviewNode = screen.getByTestId('SocialPreviewNode')
+    await userEvent.click(socialPreviewNode)
+
     await waitFor(async () => {
       await screen.getByText('Social App View')
     })
@@ -671,10 +673,7 @@ export const Goals = {
   ...Template,
   args: { journey },
   play: async () => {
-    await waitFor(async () => {
-      screen.getByTestId('NavigationCardGoals')
-    })
-    const button = screen.getByTestId('NavigationCardGoals')
+    const button = screen.getByRole('button', { name: 'Strategy' })
     await userEvent.click(button)
     await waitFor(async () => {
       await screen.getByText('Every Journey has a goal')
