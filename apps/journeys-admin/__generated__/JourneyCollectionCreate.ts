@@ -46,5 +46,6 @@ export interface JourneyCollectionCreate {
 
 export interface JourneyCollectionCreateVariables {
   journeyCollectionInput: JourneyCollectionCreateInput;
+  customDomainId: string;
   customDomainUpdateInput: CustomDomainUpdateInput;
 }

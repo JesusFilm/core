@@ -25,5 +25,6 @@ export interface UpdateJourneyCollection {
 }
 
 export interface UpdateJourneyCollectionVariables {
+  id: string;
   input: JourneyCollectionUpdateInput;
 }

@@ -12,6 +12,10 @@ import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog/Dialog'
 
+import {
+  CheckCustomDomain,
+  CheckCustomDomain_customDomainCheck_verification as CustomDomainVerification
+} from '../../../../__generated__/CheckCustomDomain'
 import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
 import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
@@ -38,18 +42,6 @@ export const CREATE_CUSTOM_DOMAIN = gql`
       id
       apexName
       name
-      verification {
-        verified
-        verification {
-          domain
-          reason
-          type
-          value
-        }
-      }
-      configuration {
-        misconfigured
-      }
       journeyCollection {
         id
         journeys {
@@ -62,8 +54,11 @@ export const CREATE_CUSTOM_DOMAIN = gql`
 `
 
 export const UPDATE_JOURNEY_COLLECTION = gql`
-  mutation UpdateJourneyCollection($input: JourneyCollectionUpdateInput!) {
-    journeyCollectionUpdate(input: $input) {
+  mutation UpdateJourneyCollection(
+    $id: ID!
+    $input: JourneyCollectionUpdateInput!
+  ) {
+    journeyCollectionUpdate(id: $id, input: $input) {
       id
       journeys {
         id
@@ -80,9 +75,29 @@ export const DELETE_CUSTOM_DOMAIN = gql`
   }
 `
 
+export const CHECK_CUSTOM_DOMAIN = gql`
+  mutation CheckCustomDomain($id: ID!) {
+    customDomainCheck(id: $id) {
+      configured
+      verification {
+        domain
+        reason
+        type
+        value
+      }
+      verified
+      verificationResponse {
+        code
+        message
+      }
+    }
+  }
+`
+
 export const JOURNEY_COLLECTION_CREATE = gql`
   mutation JourneyCollectionCreate(
     $journeyCollectionInput: JourneyCollectionCreateInput!
+    $customDomainId: ID!
     $customDomainUpdateInput: CustomDomainUpdateInput!
   ) {
     journeyCollectionCreate(input: $journeyCollectionInput) {
@@ -92,7 +107,7 @@ export const JOURNEY_COLLECTION_CREATE = gql`
         title
       }
     }
-    customDomainUpdate(input: $customDomainUpdateInput) {
+    customDomainUpdate(id: $customDomainId, input: $customDomainUpdateInput) {
       id
       journeyCollection {
         id
@@ -124,6 +139,7 @@ export function CustomDomainDialog({
   onClose
 }: CustomDomainDialogProps): ReactElement {
   const [loading, setLoading] = useState(true)
+  const [domainStatus, setDomainStatus] = useState<CustomDomainVerification>()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -134,22 +150,18 @@ export function CustomDomainDialog({
     useLastActiveTeamId: true
   })
 
+  const [checkCustomDomain] =
+    useMutation<CheckCustomDomain>(CHECK_CUSTOM_DOMAIN)
+
   const {
     data: customDomainData,
     refetch: refetchCustomDomains,
-    startPolling,
-    stopPolling,
     hasCustomDomain
   } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id as string },
     notifyOnNetworkStatusChange: true,
-    onCompleted: (data) => {
+    onCompleted: () => {
       setLoading(false)
-      if (data?.customDomains?.length !== 0 && data?.customDomains != null) {
-        data.customDomains?.[0].configuration?.misconfigured === true
-          ? startPolling(1000 * 60 /* poll every minute */)
-          : stopPolling()
-      }
     }
   })
 
@@ -160,10 +172,8 @@ export function CustomDomainDialog({
     UPDATE_JOURNEY_COLLECTION
   )
 
-  const [deleteCustomDomain] = useMutation<DeleteCustomDomain>(
-    DELETE_CUSTOM_DOMAIN,
-    { onCompleted: () => stopPolling() }
-  )
+  const [deleteCustomDomain] =
+    useMutation<DeleteCustomDomain>(DELETE_CUSTOM_DOMAIN)
 
   const [journeyCollectionCreate] = useMutation<JourneyCollectionCreate>(
     JOURNEY_COLLECTION_CREATE
@@ -352,6 +362,30 @@ export function CustomDomainDialog({
     void refetchCustomDomains()
   }, [activeTeam, refetchCustomDomains])
 
+  useEffect(() => {
+    // poll to check custom domain status
+    let interval
+    if (
+      customDomainData?.customDomains != null &&
+      customDomainData?.customDomains.length > 0
+    ) {
+      interval = setInterval(async () => {
+        const { data } = await checkCustomDomain({
+          variables: { id: customDomainData?.customDomains[0].id }
+        })
+        if (
+          data?.customDomainCheck.verification != null &&
+          data?.customDomainCheck?.verification?.length > 0
+        )
+          setDomainStatus(data.customDomainCheck.verification[0])
+      }, 1000 * 60 /* poll every minute */)
+    }
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [checkCustomDomain, customDomainData])
+
   const validationSchema = object({
     domainName: string()
       .trim()
@@ -397,8 +431,7 @@ export function CustomDomainDialog({
               />
               {hasCustomDomain && <Divider />}
               {hasCustomDomain &&
-                customDomainData?.customDomains[0]?.verification?.verified ===
-                  true && (
+                customDomainData?.customDomains[0]?.verified === true && (
                   <DefaultJourneyForm
                     handleOnChange={handleOnChange}
                     defaultValue={
@@ -412,18 +445,16 @@ export function CustomDomainDialog({
               {hasCustomDomain && (
                 <DNSConfigSection
                   verified={
-                    customDomainData?.customDomains[0]?.verification
-                      ?.verified ?? false
+                    customDomainData?.customDomains[0]?.verified ?? false
                   }
                   misconfigured={
-                    customDomainData?.customDomains[0]?.configuration
-                      ?.misconfigured ?? true
+                    customDomainData?.customDomains[0]?.configured === false ??
+                    true
                   }
                   name={customDomainData?.customDomains[0]?.name}
                   apexName={customDomainData?.customDomains[0]?.apexName}
                   domainError={
-                    customDomainData?.customDomains[0]?.verification
-                      ?.verification?.[0]
+                    customDomainData?.customDomains[0]?.verification?.[0]
                   }
                 />
               )}

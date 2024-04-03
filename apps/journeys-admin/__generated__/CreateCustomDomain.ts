@@ -9,25 +9,6 @@ import { CustomDomainCreateInput } from "./globalTypes";
 // GraphQL mutation operation: CreateCustomDomain
 // ====================================================
 
-export interface CreateCustomDomain_customDomainCreate_verification_verification {
-  __typename: "VercelDomainVerification";
-  domain: string | null;
-  reason: string | null;
-  type: string | null;
-  value: string | null;
-}
-
-export interface CreateCustomDomain_customDomainCreate_verification {
-  __typename: "CustomDomainVerification";
-  verified: boolean;
-  verification: (CreateCustomDomain_customDomainCreate_verification_verification | null)[] | null;
-}
-
-export interface CreateCustomDomain_customDomainCreate_configuration {
-  __typename: "VercelDomainConfiguration";
-  misconfigured: boolean | null;
-}
-
 export interface CreateCustomDomain_customDomainCreate_journeyCollection_journeys {
   __typename: "Journey";
   id: string;
@@ -45,8 +26,6 @@ export interface CreateCustomDomain_customDomainCreate {
   id: string;
   apexName: string;
   name: string;
-  verification: CreateCustomDomain_customDomainCreate_verification | null;
-  configuration: CreateCustomDomain_customDomainCreate_configuration | null;
   journeyCollection: CreateCustomDomain_customDomainCreate_journeyCollection | null;
 }
 

@@ -298,6 +298,7 @@ export interface CreateVerificationRequestInput {
 }
 
 export interface CustomDomainCreateInput {
+  id?: string | null;
   teamId: string;
   name: string;
   journeyCollectionId?: string | null;
@@ -305,8 +306,6 @@ export interface CustomDomainCreateInput {
 }
 
 export interface CustomDomainUpdateInput {
-  id: string;
-  name?: string | null;
   journeyCollectionId?: string | null;
   routeAllTeamJourneys?: boolean | null;
 }
@@ -383,11 +382,9 @@ export interface JourneyCollectionCreateInput {
   teamId: string;
   title?: string | null;
   journeyIds?: string[] | null;
-  customDomain?: CustomDomainCreateInput | null;
 }
 
 export interface JourneyCollectionUpdateInput {
-  id: string;
   title?: string | null;
   journeyIds?: string[] | null;
 }

@@ -10,18 +10,6 @@ export const GET_CUSTOM_DOMAINS = gql`
     customDomains(teamId: $teamId) {
       id
       apexName
-      verification {
-        verified
-        verification {
-          domain
-          reason
-          type
-          value
-        }
-      }
-      configuration {
-        misconfigured
-      }
       name
       journeyCollection {
         id
@@ -38,23 +26,17 @@ export function useCustomDomainsQuery(
   options?: QueryHookOptions<GetCustomDomains, GetCustomDomainsVariables>
 ): QueryResult<GetCustomDomains, GetCustomDomainsVariables> & {
   hasCustomDomain: boolean
-  customDomainVerified: boolean
 } {
   const query = useQuery<GetCustomDomains, GetCustomDomainsVariables>(
     GET_CUSTOM_DOMAINS,
     { ...options }
   )
 
-  const customDomainVerified =
-    query.data?.customDomains[0]?.name != null &&
-    query.data?.customDomains[0]?.verification?.verified === true
-
   const hasCustomDomain =
     query.data?.customDomains?.length !== 0 && query.data?.customDomains != null
 
   return {
     ...query,
-    hasCustomDomain,
-    customDomainVerified
+    hasCustomDomain
   }
 }
