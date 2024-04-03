@@ -23,7 +23,7 @@ const NavigateNextStory: Meta<typeof NavigateAction> = {
   ...simpleComponentConfig,
   component: NavigateAction,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates/NavigateAction'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/ActionStates/NavigateAction'
 }
 
 const journeyTheme = {
