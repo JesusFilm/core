@@ -98,7 +98,7 @@ export function DefaultJourneyForm({
     JOURNEY_COLLECTION_CREATE
   )
 
-  async function handleOnChange(journey: Journey): Promise<void> {
+  async function handleOnChange(journey: Journey | null): Promise<void> {
     // delete
     if (journey == null && customDomain?.journeyCollection?.id != null)
       await journeyCollectionDelete({
@@ -178,12 +178,10 @@ export function DefaultJourneyForm({
             <FormControl variant="filled" fullWidth hiddenLabel>
               <Autocomplete
                 data-testid="DefaultJourneySelect"
-                id="defaultJourney"
-                defaultValue={customDomain?.name}
-                onChange={async (_e, option) =>
-                  await handleOnChange(option as Journey)
-                }
                 getOptionLabel={(options) => options.title}
+                id="defaultJourney"
+                defaultValue={customDomain?.journeyCollection?.journeys?.[0]}
+                onChange={async (_e, option) => await handleOnChange(option)}
                 options={customDomain?.journeyCollection?.journeys ?? []}
                 renderInput={(params) => <TextField {...params} />}
                 blurOnSelect
