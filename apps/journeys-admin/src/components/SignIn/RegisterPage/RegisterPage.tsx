@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import {
+  User,
   createUserWithEmailAndPassword,
   getAuth,
   signInWithEmailAndPassword,
@@ -61,15 +62,13 @@ export function RegisterPage({
     password: string
   ): Promise<void> {
     const auth = getAuth()
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    )
-    await updateProfile(userCredential.user, {
-      displayName: name
-    })
-    await signInWithEmailAndPassword(auth, email, password)
+    await Promise.all([
+      await createUserWithEmailAndPassword(auth, email, password),
+      updateProfile(auth.currentUser as User, {
+        displayName: name
+      }),
+      signInWithEmailAndPassword(auth, email, password)
+    ])
   }
 
   async function handleCreateAccount(values, { setFieldError }): Promise<void> {
