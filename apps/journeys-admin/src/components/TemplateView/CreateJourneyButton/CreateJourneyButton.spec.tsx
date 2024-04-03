@@ -193,7 +193,7 @@ describe('CreateJourneyButton', () => {
           query: {
             redirect:
               'http://localhost:4200/templates/[journeyId]?createNew=true',
-            action: 'login'
+            login: true
           }
         },
         undefined,
@@ -253,7 +253,7 @@ describe('CreateJourneyButton', () => {
           query: {
             redirect:
               'http://localhost:4200/templates/[journeyId]?createNew=true',
-            action: 'signup'
+            login: false
           }
         },
         undefined,

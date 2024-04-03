@@ -1,10 +1,12 @@
-import Tab from '@mui/material/Tab'
-import Tabs from '@mui/material/Tabs'
-import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { tabA11yProps } from '@core/shared/ui/TabPanel'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
+
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+
+import { tabA11yProps } from '@core/shared/ui/TabPanel'
 
 export function SignInTabs(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -12,7 +14,7 @@ export function SignInTabs(): ReactElement {
   const [tabValue, setTabValue] = useState(0)
 
   useEffect(() => {
-    setTabValue(router.query.action === 'login' ? 1 : 0)
+    setTabValue(router.query.login === 'true' ? 1 : 0)
   }, [router])
 
   function handleTabChange(_event, newValue): void {

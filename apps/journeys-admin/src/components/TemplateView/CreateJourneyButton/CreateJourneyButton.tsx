@@ -77,7 +77,7 @@ export function CreateJourneyButton({
     }
   }
 
-  const handleSignIn = (action): void => {
+  const handleSignIn = (login): void => {
     const url = window.location.origin + router.asPath
     void router.push(
       {
@@ -86,7 +86,7 @@ export function CreateJourneyButton({
           redirect: url.includes('createNew')
             ? url
             : `${window.location.origin + router.asPath}?createNew=true`,
-          action: action === 'login' ? 'login' : 'signup'
+          login: login ?? false
         }
       },
       undefined,

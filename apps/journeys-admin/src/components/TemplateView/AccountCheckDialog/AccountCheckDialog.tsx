@@ -8,11 +8,10 @@ import { ReactElement } from 'react'
 import Key2 from '@core/shared/ui/icons/Key2'
 import UserProfileCircle from '@core/shared/ui/icons/UserProfileCircle'
 
-type SignInAction = 'login' | 'signup'
 interface AccountCheckDialogProps {
   open: boolean
   onClose: () => void
-  handleSignIn: (action: SignInAction) => void
+  handleSignIn: (login: boolean) => void
 }
 
 export function AccountCheckDialog({
@@ -56,7 +55,7 @@ export function AccountCheckDialog({
             variant="outlined"
             size="large"
             color="secondary"
-            onClick={() => handleSignIn('login')}
+            onClick={() => handleSignIn(true)}
           >
             {t('Login with my account')}
           </Button>
@@ -65,7 +64,7 @@ export function AccountCheckDialog({
             variant="outlined"
             size="large"
             color="secondary"
-            onClick={() => handleSignIn('signup')}
+            onClick={() => handleSignIn(false)}
           >
             {t('Create a new account')}
           </Button>
