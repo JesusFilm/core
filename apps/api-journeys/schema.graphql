@@ -224,7 +224,7 @@ extend type Mutation {
   customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
   customDomainDelete(id: ID!): CustomDomain!
-  customDomainCheck(id: ID!): CustomDomain!
+  customDomainCheck(id: ID!): CustomDomainCheck!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -1222,9 +1222,25 @@ type CustomDomain {
   apexName: String!
   journeyCollection: JourneyCollection
   routeAllTeamJourneys: Boolean!
-  configured: Boolean
-  verified: Boolean
+}
+
+type CustomDomainCheck {
+  """
+  Is the domain correctly configured in the DNS?
+  If false, A Record and CNAME Record should be added by the user.
+  """
+  configured: Boolean!
+
+  """
+  Does the domain belong to the team?
+  If false, verification and verificationResponse will be populated.
+  """
+  verified: Boolean!
+
+  """Verification records to be added to the DNS to confirm ownership."""
   verification: [CustomDomainVerification!]
+
+  """Reasoning as to why verification is required."""
   verificationResponse: CustomDomainVerificationResponse
 }
 
