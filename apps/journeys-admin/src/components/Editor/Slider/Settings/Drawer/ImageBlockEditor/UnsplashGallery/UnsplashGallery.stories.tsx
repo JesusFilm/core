@@ -3,7 +3,6 @@ import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
-import { Drawer } from '../../Drawer'
 
 import { listUnsplashCollectionMock } from './data'
 import { UnsplashGallery } from './UnsplashGallery'
@@ -18,9 +17,7 @@ const UnsplashGalleryStory: Meta<typeof UnsplashGallery> = {
 const Template: StoryObj<typeof UnsplashGallery> = {
   render: () => (
     <MockedProvider mocks={[listUnsplashCollectionMock]}>
-      <Drawer>
-        <UnsplashGallery onChange={noop} />
-      </Drawer>
+      <UnsplashGallery onChange={noop} />
     </MockedProvider>
   )
 }

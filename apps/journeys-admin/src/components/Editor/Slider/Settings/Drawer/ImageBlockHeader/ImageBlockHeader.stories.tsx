@@ -6,7 +6,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
-import { Drawer } from '../Drawer'
 
 import { ImageBlockHeader } from './ImageBlockHeader'
 
@@ -30,9 +29,7 @@ const Template: Story = {
   render: (args) => {
     return (
       <Box bgcolor="white">
-        <Drawer title="Image">
-          <ImageBlockHeader {...args} />
-        </Drawer>
+        <ImageBlockHeader {...args} />
       </Box>
     )
   }
