@@ -370,9 +370,27 @@ type CustomDomain
   apexName: String!
   journeyCollection: JourneyCollection
   routeAllTeamJourneys: Boolean!
-  configured: Boolean
-  verified: Boolean
+}
+
+type CustomDomainCheck
+  @join__type(graph: JOURNEYS)
+{
+  """
+  Is the domain correctly configured in the DNS?
+  If false, A Record and CNAME Record should be added by the user.
+  """
+  configured: Boolean!
+
+  """
+  Does the domain belong to the team?
+  If false, verification and verificationResponse will be populated.
+  """
+  verified: Boolean!
+
+  """Verification records to be added to the DNS to confirm ownership."""
   verification: [CustomDomainVerification!]
+
+  """Reasoning as to why verification is required."""
   verificationResponse: CustomDomainVerificationResponse
 }
 
@@ -1337,7 +1355,7 @@ type Mutation
   customDomainCreate(input: CustomDomainCreateInput!): CustomDomain! @join__field(graph: JOURNEYS)
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain! @join__field(graph: JOURNEYS)
   customDomainDelete(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
-  customDomainCheck(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainCheck(id: ID!): CustomDomainCheck! @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
