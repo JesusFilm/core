@@ -136,17 +136,13 @@ export class CustomDomainService {
     }
   }
 
-  async checkVercelDomain(
-    customDomain: CustomDomain
-  ): Promise<CustomDomainCheck> {
+  async checkVercelDomain({ name }: CustomDomain): Promise<CustomDomainCheck> {
     // Don't hit vercel outside of deployed environments
     if (process.env.VERCEL_JOURNEYS_PROJECT_ID == null)
       return {
         configured: true,
         verified: true
       }
-
-    const { name } = customDomain
 
     const [configResponse, domainResponse] = await Promise.all([
       fetch(
