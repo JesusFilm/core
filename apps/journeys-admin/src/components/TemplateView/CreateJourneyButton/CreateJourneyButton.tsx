@@ -77,7 +77,7 @@ export function CreateJourneyButton({
     }
   }
 
-  const handleSignIn = (): void => {
+  const handleSignIn = (login): void => {
     const url = window.location.origin + router.asPath
     void router.push(
       {
@@ -85,7 +85,8 @@ export function CreateJourneyButton({
         query: {
           redirect: url.includes('createNew')
             ? url
-            : `${window.location.origin + router.asPath}?createNew=true`
+            : `${window.location.origin + router.asPath}?createNew=true`,
+          login: login ?? false
         }
       },
       undefined,

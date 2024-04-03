@@ -11,7 +11,7 @@ import UserProfileCircle from '@core/shared/ui/icons/UserProfileCircle'
 interface AccountCheckDialogProps {
   open: boolean
   onClose: () => void
-  handleSignIn: () => void
+  handleSignIn: (login: boolean) => void
 }
 
 export function AccountCheckDialog({
@@ -56,7 +56,7 @@ export function AccountCheckDialog({
             variant="outlined"
             size="large"
             color="secondary"
-            onClick={handleSignIn}
+            onClick={() => handleSignIn(true)}
           >
             {t('Login with my account')}
           </Button>
@@ -65,7 +65,7 @@ export function AccountCheckDialog({
             variant="outlined"
             size="large"
             color="secondary"
-            onClick={handleSignIn}
+            onClick={() => handleSignIn(false)}
           >
             {t('Create a new account')}
           </Button>
