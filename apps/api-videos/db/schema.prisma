@@ -5,6 +5,7 @@ generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
   output          = env("PRISMA_LOCATION_VIDEOS")
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 generator erd {
