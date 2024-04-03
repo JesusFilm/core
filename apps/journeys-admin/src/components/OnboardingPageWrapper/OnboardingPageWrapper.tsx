@@ -70,9 +70,10 @@ export function OnboardingPageWrapper({
               display: 'flex',
               flexDirection: 'column',
               borderRadius: 2,
+              p: 4,
               borderBottomLeftRadius: { xs: 0, sm: 8 },
               borderBottomRightRadius: { xs: 0, sm: 8 },
-              width: { xs: '100vw', sm: 397 }
+              width: { xs: '100vw', sm: 418 }
             }}
           >
             <CardContent
@@ -80,9 +81,7 @@ export function OnboardingPageWrapper({
                 flexGrow: 1,
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 4,
-                p: 6,
-                pt: 7
+                gap: 4
               }}
             >
               {children}

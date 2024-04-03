@@ -55,7 +55,7 @@ export function HomePage({
   }
   return (
     <>
-      <Box sx={{ pb: 3 }}>
+      <Box sx={{ pb: 3, mt: -4 }}>
         <SignInTabs />
       </Box>
       <Stack spacing={3}>
