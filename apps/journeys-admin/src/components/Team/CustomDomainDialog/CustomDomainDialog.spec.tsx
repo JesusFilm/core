@@ -21,6 +21,7 @@ import {
 
 import { CustomDomainDialog } from './CustomDomainDialog'
 import {
+  checkCustomDomainMockConfiguredAndVerified,
   getCustomDomainMockARecord,
   getCustomDomainMockCNameAndJourneyCollection,
   getCustomDomainMockEmpty,
@@ -101,7 +102,8 @@ describe('CustomDomainDialog', () => {
           getLastActiveTeamIdAndTeamsMock,
           getAdminJourneysMock,
           mockCreateCustomDomain,
-          getCustomDomainMockEmpty
+          getCustomDomainMockEmpty,
+          checkCustomDomainMockConfiguredAndVerified
         ]}
       >
         <SnackbarProvider>
@@ -111,9 +113,11 @@ describe('CustomDomainDialog', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
+
     await waitFor(() =>
       expect(getCustomDomainMockEmpty.result).toHaveBeenCalled()
     )
+
     fireEvent.change(getByRole('textbox'), {
       target: { value: 'www.example.com' }
     })

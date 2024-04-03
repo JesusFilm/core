@@ -1,7 +1,6 @@
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { Form } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
@@ -50,13 +49,11 @@ export function CustomDomainDialog({
       fullscreen={!smUp}
       sx={{ '& .MuiDialogContent-dividers': { px: 6, py: 9 } }}
     >
-      <Form>
-        <Stack spacing={10}>
-          <DomainNameForm customDomain={customDomain} loading={loading} />
-          <DefaultJourneyForm customDomain={customDomain} loading={loading} />
-          <DNSConfigSection customDomain={customDomain} loading={loading} />
-        </Stack>
-      </Form>
+      <Stack spacing={10}>
+        <DomainNameForm customDomain={customDomain} loading={loading} />
+        <DefaultJourneyForm customDomain={customDomain} loading={loading} />
+        <DNSConfigSection customDomain={customDomain} loading={loading} />
+      </Stack>
     </Dialog>
   )
 }

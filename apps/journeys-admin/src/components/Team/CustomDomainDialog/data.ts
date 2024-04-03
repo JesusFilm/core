@@ -1,8 +1,12 @@
 import { MockedResponse } from '@apollo/client/testing'
 
+import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
 import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
 import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
-import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
+import {
+  GetCustomDomains_customDomains as CustomDomain,
+  GetCustomDomains
+} from '../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
 import { JourneyCollectionDelete } from '../../../../__generated__/JourneyCollectionDelete'
@@ -14,11 +18,19 @@ import {
   JOURNEY_COLLECTION_CREATE,
   JOURNEY_COLLECTION_DELETE,
   UPDATE_JOURNEY_COLLECTION
-} from './CustomDomainDialog'
+} from './DefaultJourneyForm/DefaultJourneyForm'
 import {
   CREATE_CUSTOM_DOMAIN,
   DELETE_CUSTOM_DOMAIN
 } from './DomainNameUpdateForm'
+
+export const customDomain: CustomDomain = {
+  id: 'customDomainId',
+  __typename: 'CustomDomain' as const,
+  name: 'mockdomain.com',
+  apexName: 'mockdomain.com',
+  journeyCollection: null
+}
 
 export const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
   request: {
@@ -155,6 +167,27 @@ export const mockDeleteCustomDomain: MockedResponse<DeleteCustomDomain> = {
   }))
 }
 
+export const checkCustomDomainMockConfiguredAndVerified: MockedResponse<CheckCustomDomain> =
+  {
+    request: {
+      query: GET_CUSTOM_DOMAINS,
+      variables: {
+        customDomainId: 'customDomainId'
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        customDomainCheck: {
+          __typename: 'CustomDomainCheck',
+          configured: true,
+          verified: true,
+          verification: null,
+          verificationResponse: null
+        }
+      }
+    }))
+  }
+
 export const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
   {
     request: {
@@ -192,9 +225,9 @@ export const mockJourneyCollectionCreate: MockedResponse<JourneyCollectionCreate
           journeyIds: ['journey-id']
         },
         customDomainUpdateInput: {
-          id: 'customDomainId',
           journeyCollectionId: 'uuid'
-        }
+        },
+        customDomainId: 'customDomainId'
       }
     },
     result: jest.fn(() => ({
@@ -234,8 +267,8 @@ export const mockJourneyCollectionUpdate: MockedResponse<UpdateJourneyCollection
     request: {
       query: UPDATE_JOURNEY_COLLECTION,
       variables: {
+        id: 'journeyCollectionId',
         input: {
-          id: 'journeyCollectionId',
           journeyIds: ['published-journey-id']
         }
       }
