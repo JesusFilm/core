@@ -72,6 +72,18 @@ export const Default = {
   }
 }
 
+export const Loading = {
+  ...Template,
+  args: {
+    customDomain
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [{ ...checkCustomDomainMock(), delay: 100000000000000 }]
+    }
+  }
+}
+
 export const WithSubdomain = {
   ...Template,
   args: {
