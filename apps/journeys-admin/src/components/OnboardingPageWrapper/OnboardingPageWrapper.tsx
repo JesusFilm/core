@@ -54,7 +54,11 @@ export function OnboardingPageWrapper({
         }}
         data-testid="JourneysAdminOnboardingPageWrapper"
       >
-        <Typography variant="h1" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+        <Typography
+          variant="h1"
+          textAlign="center"
+          sx={{ display: { xs: 'none', sm: 'flex' } }}
+        >
           {title}
         </Typography>
         <Stack
