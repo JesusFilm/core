@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { getApp } from 'firebase/app'
-import { GoogleAuthProvider, getAuth } from 'firebase/auth'
+import { EmailAuthProvider, GoogleAuthProvider, getAuth } from 'firebase/auth'
 import { useTranslation } from 'next-i18next'
 import { FC, useEffect, useState } from 'react'
 
@@ -29,6 +29,13 @@ export const Login: FC = () => {
           prompt: 'select_account'
         },
         fullLabel: 'Login with Google'
+      },
+      {
+        provider: EmailAuthProvider.PROVIDER_ID,
+        customParameters: {
+          prompt: 'select_account'
+        },
+        fullLabel: 'Login with Email'
       }
     ],
     callbacks: {
