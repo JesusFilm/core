@@ -1,24 +1,21 @@
 import { MockedProvider } from '@apollo/client/testing'
-import MuiDrawer from '@mui/material/Drawer'
 import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
+import { Drawer } from '../../../../../Drawer'
 
 import { ImageOptions } from './ImageOptions'
 
-const ImageOptionsStory: Meta<typeof ImageOptions> = {
-  ...journeysAdminConfig,
+const Demo: Meta<typeof ImageOptions> = {
+  ...simpleComponentConfig,
   component: ImageOptions,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Image/ImageOptions',
-  parameters: {
-    ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
-  }
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Image/ImageOptions'
 }
 
 const image: TreeBlock<ImageBlock> = {
@@ -34,46 +31,31 @@ const image: TreeBlock<ImageBlock> = {
   children: []
 }
 
-export const Default: StoryObj<typeof ImageOptions> = {
-  render: ({ ...args }) => (
-    <MockedProvider>
-      <ThemeProvider>
-        <EditorProvider
-          initialState={{
-            selectedBlock: image
-          }}
-        >
-          <MuiDrawer
-            anchor="right"
-            variant="permanent"
-            sx={{
-              display: { xs: 'none', sm: 'block' },
-              '& .MuiDrawer-paper': {
-                boxSizing: 'border-box',
-                width: 328
-              }
-            }}
-            ModalProps={{
-              keepMounted: true
-            }}
-            open
-          >
-            <ImageOptions />
-          </MuiDrawer>
-          <MuiDrawer
-            anchor="bottom"
-            variant="temporary"
-            open
-            sx={{
-              display: { xs: 'block', sm: 'none' }
+const Template: StoryObj<{ block: TreeBlock<ImageBlock> }> = {
+  render: ({ block }) => {
+    return (
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: block
             }}
           >
-            <ImageOptions />
-          </MuiDrawer>
-        </EditorProvider>
-      </ThemeProvider>
-    </MockedProvider>
-  )
+            <Drawer title="Image Options">
+              <ImageOptions />
+            </Drawer>
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+  }
 }
 
-export default ImageOptionsStory
+export const Default = {
+  ...Template,
+  args: {
+    ...image
+  }
+}
+
+export default Demo

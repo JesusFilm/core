@@ -25,7 +25,8 @@ import { NextCard } from '.'
 
 const NextCardStory: Meta<typeof NextCard> = {
   ...journeysAdminConfig,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Step/NextCard',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Step/NextCard',
   component: NextCard,
   // do not remove these parameters for this story, see: https://github.com/storybookjs/storybook/issues/17025
   parameters: {
@@ -129,7 +130,9 @@ const Template: Story = {
               steps: [block0, block1, block2, block3]
             }}
           >
-            <Drawer />
+            <Drawer title="Next Card">
+              <NextCard />
+            </Drawer>
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
