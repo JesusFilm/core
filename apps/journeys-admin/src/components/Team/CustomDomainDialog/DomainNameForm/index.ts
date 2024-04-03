@@ -1,5 +1,5 @@
 export {
-  DomainNameUpdateForm,
+  DomainNameForm,
   CREATE_CUSTOM_DOMAIN,
   DELETE_CUSTOM_DOMAIN
-} from './DomainNameUpdateForm'
+} from './DomainNameForm'

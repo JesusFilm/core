@@ -9,7 +9,7 @@ import {
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 
-import { CHECK_CUSTOM_DOMAIN, DNSConfigSection } from './DNSConfigSection'
+import { CHECK_CUSTOM_DOMAIN, DNSConfigSection } from '.'
 
 const DNSConfigSectionStory: Meta<typeof DNSConfigSection> = {
   ...journeysAdminConfig,

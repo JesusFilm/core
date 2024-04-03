@@ -23,7 +23,7 @@ import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection/DNSConfigSection'
 import {
   CREATE_CUSTOM_DOMAIN,
   DELETE_CUSTOM_DOMAIN
-} from './DomainNameUpdateForm/DomainNameUpdateForm'
+} from './DomainNameUpdateForm'
 
 export const customDomain: CustomDomain = {
   id: 'customDomainId',

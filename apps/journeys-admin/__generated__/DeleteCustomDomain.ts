@@ -17,5 +17,5 @@ export interface DeleteCustomDomain {
 }
 
 export interface DeleteCustomDomainVariables {
-  customDomainDeleteId: string;
+  customDomainId: string;
 }
