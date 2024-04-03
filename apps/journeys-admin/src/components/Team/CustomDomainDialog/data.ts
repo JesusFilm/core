@@ -19,10 +19,7 @@ import {
   JOURNEY_COLLECTION_DELETE,
   UPDATE_JOURNEY_COLLECTION
 } from './DefaultJourneyForm/DefaultJourneyForm'
-import {
-  CREATE_CUSTOM_DOMAIN,
-  DELETE_CUSTOM_DOMAIN
-} from './DomainNameUpdateForm'
+import { CREATE_CUSTOM_DOMAIN, DELETE_CUSTOM_DOMAIN } from './DomainNameForm'
 
 export const customDomain: CustomDomain = {
   id: 'customDomainId',

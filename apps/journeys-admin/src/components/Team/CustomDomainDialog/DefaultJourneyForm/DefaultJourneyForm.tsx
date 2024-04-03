@@ -24,8 +24,7 @@ import { useAdminJourneysQuery } from '../../../../libs/useAdminJourneysQuery'
 import { useTeam } from '../../TeamProvider'
 
 interface DefaultJourneyFormProps {
-  customDomain?: CustomDomain
-  loading?: boolean
+  customDomain: CustomDomain
 }
 export const JOURNEY_COLLECTION_DELETE = gql`
   mutation JourneyCollectionDelete($id: ID!) {

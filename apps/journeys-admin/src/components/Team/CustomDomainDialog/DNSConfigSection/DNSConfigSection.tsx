@@ -24,8 +24,7 @@ import {
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 
 interface DNSConfigSectionProps {
-  customDomain?: CustomDomain
-  loading?: boolean
+  customDomain: CustomDomain
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -89,7 +88,7 @@ export function DNSConfigSection({
     })
   }
 
-  return customDomain != null && data != null ? (
+  return data != null ? (
     <Stack spacing={4} direction="row">
       <Lightning2Icon sx={{ color: 'secondary.light' }} />
       <Stack spacing={4} flexGrow={1}>

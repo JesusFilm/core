@@ -51,8 +51,12 @@ export function CustomDomainDialog({
     >
       <Stack spacing={10}>
         <DomainNameForm customDomain={customDomain} loading={loading} />
-        <DefaultJourneyForm customDomain={customDomain} loading={loading} />
-        <DNSConfigSection customDomain={customDomain} loading={loading} />
+        {customDomain != null && (
+          <>
+            <DefaultJourneyForm customDomain={customDomain} />
+            <DNSConfigSection customDomain={customDomain} />
+          </>
+        )}
       </Stack>
     </Dialog>
   )
