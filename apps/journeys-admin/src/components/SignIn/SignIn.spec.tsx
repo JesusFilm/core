@@ -5,8 +5,8 @@ import { SignIn } from './SignIn'
 describe('SignIn', () => {
   it('should render sign in page', () => {
     const { getByRole } = render(<SignIn />)
-    expect(
-      getByRole('heading', { name: 'Log in or Sign up' })
-    ).toBeInTheDocument()
+    expect(getByRole('tab', { name: 'New account' })).toHaveTextContent(
+      'New account'
+    )
   })
 })
