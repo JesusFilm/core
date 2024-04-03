@@ -10,7 +10,7 @@ const ApiTokenTextFieldDemo: Meta<typeof ApiTokenTextField> = {
   ...simpleComponentConfig,
   component: ApiTokenTextField,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Form/Credentials/ApiTokenTextField'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Form/Credentials/ApiTokenTextField'
 }
 
 const Template: StoryObj<ComponentProps<typeof ApiTokenTextField>> = {

@@ -101,7 +101,7 @@ export const Default = {
     ],
     nodeTypes: {
       FormBlock: FormBlockNode
-    },
+    }
   }
 }
 

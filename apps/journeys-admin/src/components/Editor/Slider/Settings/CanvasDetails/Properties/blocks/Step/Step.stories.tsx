@@ -1,21 +1,57 @@
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_StepBlock as StepBlock
+} from '../../../../../../../../../__generated__/BlockFields'
+import {
+  TypographyAlign,
+  TypographyVariant
+} from '../../../../../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { Step } from '.'
 
-const StepStory: Meta<typeof Step> = {
-  ...journeysAdminConfig,
+const Demo: Meta<typeof Step> = {
+  ...simpleComponentConfig,
   component: Step,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Step'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Step'
 }
 
-export const Default: StoryObj<typeof Step> = {
+const card = (index: number): TreeBlock<CardBlock> => {
+  return {
+    id: `card${index}.id`,
+    __typename: 'CardBlock',
+    parentBlockId: `step${index}.id`,
+    parentOrder: 0,
+    backgroundColor: '#DDDDDD',
+    coverBlockId: null,
+    fullscreen: false,
+    themeMode: null,
+    themeName: null,
+    children: [
+      {
+        id: `typography${index}.id`,
+        __typename: 'TypographyBlock',
+        parentBlockId: `card${index}.id`,
+        parentOrder: 0,
+        align: TypographyAlign.center,
+        color: null,
+        content: `Card ${index + 1}`,
+        variant: TypographyVariant.h1,
+        children: []
+      }
+    ]
+  }
+}
+
+const Template: StoryObj<typeof Step> = {
   render: () => {
     const block: TreeBlock<StepBlock> = {
       id: 'step1.id',
@@ -24,28 +60,38 @@ export const Default: StoryObj<typeof Step> = {
       nextBlockId: null,
       parentOrder: 0,
       locked: false,
-      children: []
+      children: [card(0)]
+    }
+
+    const block2: TreeBlock<StepBlock> = {
+      id: 'step2.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      nextBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      children: [card(1)]
     }
 
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <EditorProvider initialState={{ steps: [block] }}>
+      <EditorProvider initialState={{ steps: [block, block2] }}>
+        <Drawer title="Step Properties">
           <Step {...block} />
-        </EditorProvider>
-      </Stack>
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
 
-export const Locked: StoryObj<typeof Step> = {
+export const Default = {
+  ...Template,
+  play: async () => {
+    const StepAccordion = await screen.getByTestId('AccordionSummary')
+    await userEvent.click(StepAccordion)
+  }
+}
+
+const LockedTemplate: StoryObj<typeof Step> = {
   render: () => {
     const block: TreeBlock<StepBlock> = {
       id: 'step1.id',
@@ -54,25 +100,35 @@ export const Locked: StoryObj<typeof Step> = {
       nextBlockId: null,
       parentOrder: 0,
       locked: true,
-      children: []
+      children: [card(0)]
+    }
+
+    const block2: TreeBlock<StepBlock> = {
+      id: 'step2.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      nextBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      children: [card(1)]
     }
 
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <EditorProvider initialState={{ steps: [block] }}>
+      <EditorProvider initialState={{ steps: [block, block2] }}>
+        <Drawer title="Step Properties">
           <Step {...block} />
-        </EditorProvider>
-      </Stack>
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
 
-export default StepStory
+export const Locked = {
+  ...LockedTemplate,
+  play: async () => {
+    const StepAccordion = await screen.getByTestId('AccordionSummary')
+    await userEvent.click(StepAccordion)
+  }
+}
+
+export default Demo
