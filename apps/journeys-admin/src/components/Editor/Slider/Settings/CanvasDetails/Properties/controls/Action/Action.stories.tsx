@@ -13,7 +13,6 @@ import {
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
-import { Drawer } from '../../../../Drawer'
 
 import { Action, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
@@ -107,7 +106,7 @@ const Template: StoryObj<typeof Action> = {
               ...args
             }}
           >
-            <Drawer />
+            <Action />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
