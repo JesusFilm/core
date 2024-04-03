@@ -1,18 +1,18 @@
-import type { TreeBlock } from '../block'
+import { renderHook } from '@testing-library/react'
 import { ReactNode, useContext } from 'react'
+
+import type { TreeBlock } from '../block'
+
+import { EditorContext, reducer } from './EditorProvider'
 
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
+  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
 } from '.'
-
-import { EditorContext, reducer } from './EditorProvider'
-
-import { ActiveFab } from '.'
-import { render, renderHook } from '@testing-library/react'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -444,7 +444,7 @@ describe('EditorContext', () => {
         selectedStep: block
       }
 
-      const wrapper = ({ children }: { children: ReactNode }) => (
+      const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
         <EditorProvider initialState={initialState}>{children}</EditorProvider>
       )
       const { result } = renderHook(() => useContext(EditorContext), {
