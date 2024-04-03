@@ -18,7 +18,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
     state: { selectedStep },
     dispatch
   } = useEditor()
-  const openCardTemplateDrawer = (e: MouseEvent): void => {
+  const openCardTemplates = (e: MouseEvent): void => {
     e.stopPropagation()
     dispatch({
       type: 'SetSelectedBlockAction',
@@ -79,7 +79,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
                 <Button
                   variant="contained"
                   size="large"
-                  onClick={openCardTemplateDrawer}
+                  onClick={openCardTemplates}
                   fullWidth
                 >
                   Select Card Template
