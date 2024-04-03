@@ -1,90 +1,104 @@
-import { fireEvent, render } from '@testing-library/react'
-import { FormikContextType, FormikProvider } from 'formik'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { TeamProvider } from '../../TeamProvider'
+import {
+  getLastActiveTeamIdAndTeamsMock,
+  mockCreateCustomDomain,
+  mockDeleteCustomDomain
+} from '../data'
 
 import { DomainNameUpdateForm } from './DomainNameUpdateForm'
 
 describe('DomainNameUpdateForm', () => {
-  const handleChange = jest.fn()
-  const handleSubmit = jest.fn()
-
   afterEach(() => {
     jest.clearAllMocks()
   })
 
-  it('should handleSubmit on delete', () => {
+  const customDomain = {
+    id: 'customDomainId',
+    __typename: 'CustomDomain' as const,
+    name: 'mockdomain.com',
+    apexName: 'mockdomain.com',
+    journeyCollection: null
+  }
+
+  it('should delete a custom domain', async () => {
     const { getByRole } = render(
-      <FormikProvider
-        value={
-          {
-            values: { domainName: 'mockdomain.com' },
-            errors: { domainName: undefined },
-            handleSubmit,
-            handleChange
-          } as unknown as FormikContextType<{ domainName: string }>
-        }
-      >
-        <DomainNameUpdateForm />
-      </FormikProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={[mockDeleteCustomDomain]}>
+          <DomainNameUpdateForm customDomain={customDomain} />
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     fireEvent.click(getByRole('button', { name: 'Disconnect' }))
-    expect(handleSubmit).toHaveBeenCalled()
+
+    await waitFor(() =>
+      expect(mockDeleteCustomDomain.result).toHaveBeenCalled()
+    )
   })
 
-  it('should handleSubmit when adding domain', () => {
+  it('should create a custom domain', async () => {
     const { queryByTestId, getByRole } = render(
-      <FormikProvider
-        value={
-          {
-            values: { domainName: 'mockdomain.com' },
-            errors: { domainName: undefined },
-            handleSubmit,
-            handleChange
-          } as unknown as FormikContextType<{ domainName: string }>
-        }
-      >
-        <DomainNameUpdateForm />
-      </FormikProvider>
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getLastActiveTeamIdAndTeamsMock, mockCreateCustomDomain]}
+        >
+          <TeamProvider>
+            <DomainNameUpdateForm />
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
-
+    await waitFor(() =>
+      expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
+    )
     expect(queryByTestId('DeleteCustomDomainIcon')).not.toBeInTheDocument()
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'www.example.com' }
+    })
     fireEvent.click(getByRole('button', { name: 'Connect' }))
-    expect(handleSubmit).toHaveBeenCalled()
+
+    await waitFor(() =>
+      expect(mockCreateCustomDomain.result).toHaveBeenCalled()
+    )
   })
 
-  it('should validate', () => {
-    const { getByText } = render(
-      <FormikProvider
-        value={
-          {
-            values: { domainName: '-mockdomain.-com' },
-            errors: { domainName: 'Invalid domain name' },
-            handleSubmit,
-            handleChange
-          } as unknown as FormikContextType<{ domainName: string }>
-        }
-      >
-        <DomainNameUpdateForm />
-      </FormikProvider>
+  it('should validate', async () => {
+    const { getByText, getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <TeamProvider>
+            <DomainNameUpdateForm />
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
-
-    expect(getByText('Invalid domain name')).toBeInTheDocument()
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: '_www.example.com' }
+    })
+    await waitFor(() =>
+      expect(getByText('Must be a valid URL')).toBeInTheDocument()
+    )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: '' }
+    })
+    await waitFor(() =>
+      expect(getByText('Domain name is a required field')).toBeInTheDocument()
+    )
   })
 
   it('should have the proper link for instructions button', () => {
     const { getByRole } = render(
-      <FormikProvider
-        value={
-          {
-            values: { domainName: 'mockdomain.com' },
-            errors: { domainName: undefined },
-            handleSubmit,
-            handleChange
-          } as unknown as FormikContextType<{ domainName: string }>
-        }
-      >
-        <DomainNameUpdateForm />
-      </FormikProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <TeamProvider>
+            <DomainNameUpdateForm />
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     expect(getByRole('link', { name: 'Instructions' })).toHaveAttribute(
