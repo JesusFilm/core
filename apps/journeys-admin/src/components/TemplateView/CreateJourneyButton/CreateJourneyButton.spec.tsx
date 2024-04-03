@@ -192,7 +192,8 @@ describe('CreateJourneyButton', () => {
           pathname: '/users/sign-in',
           query: {
             redirect:
-              'http://localhost:4200/templates/[journeyId]?createNew=true'
+              'http://localhost:4200/templates/[journeyId]?createNew=true',
+            login: true
           }
         },
         undefined,
@@ -251,7 +252,8 @@ describe('CreateJourneyButton', () => {
           pathname: '/users/sign-in',
           query: {
             redirect:
-              'http://localhost:4200/templates/[journeyId]?createNew=true'
+              'http://localhost:4200/templates/[journeyId]?createNew=true',
+            login: false
           }
         },
         undefined,
