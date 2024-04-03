@@ -132,16 +132,7 @@ describe('CustomDomainDialog', () => {
       apexName: 'www.example.com',
       id: 'customDomainId',
       journeyCollection: null,
-      name: 'www.example.com',
-      verification: {
-        __typename: 'CustomDomainVerification',
-        verification: [],
-        verified: true
-      },
-      configuration: {
-        __typename: 'VercelDomainConfiguration',
-        misconfigured: false
-      }
+      name: 'www.example.com'
     })
   })
 
@@ -192,7 +183,8 @@ describe('CustomDomainDialog', () => {
           getLastActiveTeamIdAndTeamsMock,
           getAdminJourneysMock,
           mockDeleteCustomDomain,
-          getCustomDomainMockARecord
+          getCustomDomainMockARecord,
+          checkCustomDomainMockConfiguredAndVerified
         ]}
       >
         <SnackbarProvider>
@@ -220,7 +212,8 @@ describe('CustomDomainDialog', () => {
           getLastActiveTeamIdAndTeamsMock,
           getAdminJourneysMock,
           getCustomDomainMockARecord,
-          mockJourneyCollectionCreate
+          mockJourneyCollectionCreate,
+          checkCustomDomainMockConfiguredAndVerified
         ]}
       >
         <SnackbarProvider>
@@ -247,7 +240,8 @@ describe('CustomDomainDialog', () => {
           getLastActiveTeamIdAndTeamsMock,
           getAdminJourneysMock,
           getCustomDomainMockCNameAndJourneyCollection,
-          mockJourneyCollectionUpdate
+          mockJourneyCollectionUpdate,
+          checkCustomDomainMockConfiguredAndVerified
         ]}
       >
         <SnackbarProvider>
