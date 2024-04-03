@@ -15,18 +15,10 @@ import CopyLeft from '@core/shared/ui/icons/CopyLeft'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
 import X3 from '@core/shared/ui/icons/X3'
 
-interface DomainError {
-  type: string | null
-  domain: string | null
-  value: string | null
-}
+import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 
 interface DNSConfigSectionProps {
-  verified: boolean
-  misconfigured: boolean
-  name?: string
-  apexName?: string
-  domainError?: DomainError | null
+  customDomain?: CustomDomain
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -36,11 +28,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }))
 
 export function DNSConfigSection({
-  verified,
-  misconfigured,
-  name,
-  apexName,
-  domainError
+  customDomain
 }: DNSConfigSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()

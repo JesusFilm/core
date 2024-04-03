@@ -10,19 +10,14 @@ import { ReactElement } from 'react'
 import Computer from '@core/shared/ui/icons/Computer'
 
 import { GetAdminJourneys_journeys as Journeys } from '../../../../../__generated__/GetAdminJourneys'
+import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 
 interface DefaultJourneyFormProps {
-  handleOnChange: (e: Journeys) => Promise<void>
-  defaultValue?: Pick<Journeys, 'id' | 'title' | '__typename'>
-  journeys?: Journeys[]
-  domainName: string
+  customDomain?: CustomDomain
 }
 
 export function DefaultJourneyForm({
-  handleOnChange,
-  defaultValue,
-  journeys,
-  domainName
+  customDomain
 }: DefaultJourneyFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (

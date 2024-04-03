@@ -12,18 +12,18 @@ import Globe2 from '@core/shared/ui/icons/Globe2'
 import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
+import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
+
 interface DomainNameUpdateFormValues {
   domainName: string
 }
 
 interface DomainNameUpdateFormProps {
-  showDeleteButton: boolean
-  loading: boolean
+  customDomain?: CustomDomain
 }
 
 export function DomainNameUpdateForm({
-  showDeleteButton,
-  loading
+  customDomain
 }: DomainNameUpdateFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
