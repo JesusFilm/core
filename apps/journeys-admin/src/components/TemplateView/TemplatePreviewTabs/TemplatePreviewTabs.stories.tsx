@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { fireEvent, within } from '@storybook/testing-library'
+import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -28,7 +29,7 @@ const Template: StoryObj<
   render: (args) => {
     return (
       <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-        <TemplatePreviewTabs />
+        <TemplatePreviewTabs openTeamDialog={false} setOpenTeamDialog={noop} />
       </JourneyProvider>
     )
   }
