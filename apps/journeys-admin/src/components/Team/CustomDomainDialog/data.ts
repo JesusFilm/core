@@ -20,10 +20,7 @@ import {
   UPDATE_JOURNEY_COLLECTION
 } from './DefaultJourneyForm/DefaultJourneyForm'
 import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection/DNSConfigSection'
-import {
-  CREATE_CUSTOM_DOMAIN,
-  DELETE_CUSTOM_DOMAIN
-} from './DomainNameUpdateForm'
+import { CREATE_CUSTOM_DOMAIN, DELETE_CUSTOM_DOMAIN } from './DomainNameForm'
 
 export const customDomain: CustomDomain = {
   id: 'customDomainId',
