@@ -33,6 +33,7 @@ export function CustomDomainDialog({
     })
 
   useEffect(() => {
+    // rerun query if user changes active team
     void refetchCustomDomains()
   }, [activeTeam, refetchCustomDomains])
 
