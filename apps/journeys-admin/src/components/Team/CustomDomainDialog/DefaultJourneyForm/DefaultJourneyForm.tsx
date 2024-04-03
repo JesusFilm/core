@@ -134,10 +134,11 @@ export function DefaultJourneyForm({
       customDomain?.journeyCollection?.journeys != null &&
       journey != null
     ) {
+      console.log(customDomain?.journeyCollection.id)
       await updateJourneyCollection({
         variables: {
+          id: customDomain?.journeyCollection.id,
           input: {
-            id: customDomain?.journeyCollection.id,
             journeyIds: [journey.id]
           }
         },
@@ -159,7 +160,6 @@ export function DefaultJourneyForm({
               journeyIds: [journey.id]
             },
             customDomainUpdateInput: {
-              id: customDomain.id,
               journeyCollectionId: id
             },
             customDomainId: customDomain.id

@@ -36,7 +36,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 export const CHECK_CUSTOM_DOMAIN = gql`
   mutation CheckCustomDomain($customDomainId: ID!) {
-    customDomainCheck(customDomainId: $id) {
+    customDomainCheck(id: $customDomainId) {
       configured
       verified
       verification {
