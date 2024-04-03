@@ -17,6 +17,7 @@ import useDrivePicker from 'react-google-drive-picker'
 import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
 
 import { MainLayout } from '../../src/components/MainLayout'
+import { getOrigin } from '../../utils/getOrigin'
 
 import { GET_RESOURCES } from '.'
 
@@ -64,9 +65,9 @@ const ImportYouTubeTemplatePage: FC = () => {
   )
   const nexusId =
     typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
-  const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation()
+  const router = useRouter()
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
@@ -76,9 +77,7 @@ const ImportYouTubeTemplatePage: FC = () => {
       void getGoogleAccessToken({
         variables: {
           input: {
-            url:
-              process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI ??
-              'http://localhost:4200',
+            url: getOrigin(),
             authCode: code
           }
         },
