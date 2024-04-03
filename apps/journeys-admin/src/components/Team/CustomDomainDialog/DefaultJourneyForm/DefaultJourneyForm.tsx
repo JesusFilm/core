@@ -32,7 +32,7 @@ export function DefaultJourneyForm({
               <Autocomplete
                 data-testid="DefaultJourneySelect"
                 id="defaultJourney"
-                defaultValue={defaultValue}
+                defaultValue={customDomain?.name}
                 onChange={async (_e, option) =>
                   await handleOnChange(option as Journeys)
                 }

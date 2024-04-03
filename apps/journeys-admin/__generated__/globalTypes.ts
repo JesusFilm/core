@@ -297,6 +297,14 @@ export interface CreateVerificationRequestInput {
   redirect?: string | null;
 }
 
+export interface CustomDomainCreateInput {
+  id?: string | null;
+  teamId: string;
+  name: string;
+  journeyCollectionId?: string | null;
+  routeAllTeamJourneys?: boolean | null;
+}
+
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
