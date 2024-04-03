@@ -19,10 +19,10 @@ import { TextResponseFields } from './TextResponseFields'
 
 export function TextResponse({
   id,
-  label,
-  submitIconId,
+  children,
   action,
-  children
+  submitIconId,
+  label
 }: TreeBlock<TextResponseBlock>): ReactElement {
   const submitIcon = children.find(
     (block) => block.id === submitIconId
