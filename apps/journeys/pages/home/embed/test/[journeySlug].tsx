@@ -11,7 +11,7 @@ import { ReactElement } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import logo from '../../../public/logo.svg'
+import logo from '../../../../public/logo.svg'
 
 export function IFrameTest(): ReactElement {
   const { query } = useRouter()

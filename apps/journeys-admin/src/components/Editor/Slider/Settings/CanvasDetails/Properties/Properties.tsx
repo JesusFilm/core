@@ -9,7 +9,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { Drawer } from '../../Drawer'
-import { CardTemplateDrawer } from '../../Drawer/CardTemplates/CardTemplateDrawer'
+import { CardTemplates } from '../../Drawer/CardTemplates/CardTemplates'
 
 const Card = dynamic(
   async () =>
@@ -124,7 +124,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
         )
       } else {
         title = t('Card Templates')
-        component = <CardTemplateDrawer />
+        component = <CardTemplates />
       }
       break
     }

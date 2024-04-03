@@ -10,7 +10,7 @@ const ProjectIdSelectDemo: Meta<typeof ProjectIdSelect> = {
   ...simpleComponentConfig,
   component: ProjectIdSelect,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Form/Credentials/ProjectIdSelect'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Form/Credentials/ProjectIdSelect'
 }
 
 const Template: StoryObj<ComponentProps<typeof ProjectIdSelect>> = {
