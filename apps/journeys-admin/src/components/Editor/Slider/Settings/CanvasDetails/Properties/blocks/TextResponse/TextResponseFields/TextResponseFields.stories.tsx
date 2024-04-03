@@ -13,7 +13,7 @@ const TextResponseStory: Meta<typeof TextResponseFields> = {
   ...journeysAdminConfig,
   component: TextResponseFields,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/TextResponse/TextResponseFields'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/TextResponse/TextResponseFields'
 }
 
 const Template: StoryObj<typeof TextResponseFields> = {
