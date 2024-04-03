@@ -110,6 +110,7 @@ describe('VideoBlockResolver', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+    prismaService.block.count.mockResolvedValue(0)
   })
 
   afterEach(() => {
@@ -414,6 +415,21 @@ describe('VideoBlockResolver', () => {
           }
         })
       })
+    })
+
+    it('should only allow one video block per parent', async () => {
+      prismaService.block.count.mockResolvedValueOnce(1)
+
+      await expect(
+        resolver.videoBlockCreate(ability, {
+          id: 'blockId',
+          journeyId: 'journeyId',
+          parentBlockId: 'parentBlockId',
+          videoId: 'videoId',
+          videoVariantLanguageId: 'videoVariantLanguageId',
+          source: VideoBlockSource.internal
+        })
+      ).rejects.toThrow('Parent block already has an existing video block')
     })
   })
 
