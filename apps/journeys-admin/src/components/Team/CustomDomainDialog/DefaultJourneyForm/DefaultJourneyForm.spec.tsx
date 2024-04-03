@@ -75,49 +75,8 @@ describe('DefaultJourneyForm', () => {
     )
   })
 
-  it('should set a default journey for custom domain', async () => {
-    const { getByRole, getByText } = render(
-      <MockedProvider
-        mocks={[
-          getAdminJourneysMock,
-          getLastActiveTeamIdAndTeamsMock,
-          mockJourneyCollectionUpdate
-        ]}
-      >
-        <TeamProvider>
-          <SnackbarProvider>
-            <DefaultJourneyForm
-              customDomain={{
-                ...customDomain,
-                journeyCollection: {
-                  __typename: 'JourneyCollection',
-                  id: 'journeyCollectionId',
-                  journeys: [
-                    {
-                      __typename: 'Journey',
-                      id: 'journey-id',
-                      title: 'Default Journey Heading'
-                    }
-                  ]
-                }
-              }}
-            />
-          </SnackbarProvider>
-        </TeamProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() => expect(getAdminJourneysMock.result).toHaveBeenCalled())
-
-    fireEvent.mouseDown(getByRole('combobox'))
-    fireEvent.click(getByRole('option', { name: 'Published Journey Heading' }))
-    await waitFor(() =>
-      expect(mockJourneyCollectionUpdate.result).toHaveBeenCalled()
-    )
-  })
-
-  it('should set a default journey for custom domain', async () => {
-    const { getByRole, getByText } = render(
+  it('should update defualt journey', async () => {
+    const { getByRole } = render(
       <MockedProvider
         mocks={[
           getAdminJourneysMock,
