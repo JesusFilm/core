@@ -19,6 +19,7 @@ import {
   JOURNEY_COLLECTION_DELETE,
   UPDATE_JOURNEY_COLLECTION
 } from './DefaultJourneyForm/DefaultJourneyForm'
+import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection/DNSConfigSection'
 import {
   CREATE_CUSTOM_DOMAIN,
   DELETE_CUSTOM_DOMAIN
@@ -170,7 +171,7 @@ export const mockDeleteCustomDomain: MockedResponse<DeleteCustomDomain> = {
 export const checkCustomDomainMockConfiguredAndVerified: MockedResponse<CheckCustomDomain> =
   {
     request: {
-      query: GET_CUSTOM_DOMAINS,
+      query: CHECK_CUSTOM_DOMAIN,
       variables: {
         customDomainId: 'customDomainId'
       }
