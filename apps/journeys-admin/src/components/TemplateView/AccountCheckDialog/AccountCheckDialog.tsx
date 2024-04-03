@@ -31,21 +31,22 @@ export function AccountCheckDialog({
           borderBottomLeftRadius: { xs: 0, sm: 8 },
           borderBottomRightRadius: { xs: 0, sm: 8 },
           justifyContent: { xs: 'flex-start', sm: 'center' },
-          height: 318,
           width: { xs: '100%', sm: 418 },
-          p: 8,
+          px: { xs: 6, sm: 8 },
+          pt: { xs: 6, sm: 9 },
+          pb: { xs: 12, sm: 9 },
           m: 0,
           position: { xs: 'fixed', sm: 'relative' },
           bottom: { xs: 0 }
         }
       }}
     >
-      <Stack gap={8}>
-        <Stack gap={4} px={3}>
-          <Typography variant="h4" align="center">
+      <Stack gap={9}>
+        <Stack gap={3} px={3}>
+          <Typography variant="h3" align="center">
             {t('We Like Your Choice!')}
           </Typography>
-          <Typography variant="body2" align="center">
+          <Typography variant="body1" align="center">
             {t('Create a new account or log in to use this template as yours.')}
           </Typography>
         </Stack>
