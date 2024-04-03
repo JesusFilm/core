@@ -22,7 +22,8 @@ import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction/NavigateToJourneyAc
 const ActionStory: Meta<typeof Action> = {
   ...journeysAdminConfig,
   component: Action,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action'
 }
 
 const journey: Journey = {
