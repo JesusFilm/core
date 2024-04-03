@@ -222,8 +222,9 @@ extend type Mutation {
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
   customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
-  customDomainUpdate(input: CustomDomainUpdateInput!): CustomDomain!
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
   customDomainDelete(id: ID!): CustomDomain!
+  customDomainCheck(id: ID!): CustomDomain!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
@@ -268,7 +269,7 @@ extend type Mutation {
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
-  journeyCollectionUpdate(input: JourneyCollectionUpdateInput!): JourneyCollection!
+  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
   journeyCollectionDelete(id: ID!): JourneyCollection!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
@@ -1220,41 +1221,36 @@ type CustomDomain {
   name: String!
   apexName: String!
   journeyCollection: JourneyCollection
-  verification: CustomDomainVerification
-  configuration: VercelDomainConfiguration
   routeAllTeamJourneys: Boolean!
+  configured: Boolean
+  verified: Boolean
+  verification: [CustomDomainVerification!]
+  verificationResponse: CustomDomainVerificationResponse
 }
 
 input CustomDomainCreateInput {
+  id: ID
   teamId: String!
   name: String!
-  journeyCollectionId: String
+  journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
 }
 
 input CustomDomainUpdateInput {
-  id: ID!
-  name: String
-  journeyCollectionId: String
+  journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
 }
 
-type VercelDomainVerification {
-  type: String
-  domain: String
-  value: String
-  reason: String
-}
-
-type VercelDomainConfiguration {
-  acceptedChallenges: [String]
-  configuredBy: String
-  misconfigured: Boolean
-}
-
 type CustomDomainVerification {
-  verified: Boolean!
-  verification: [VercelDomainVerification]
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse {
+  code: String!
+  message: String!
 }
 
 enum ButtonAction {
@@ -2091,11 +2087,9 @@ input JourneyCollectionCreateInput {
   teamId: String!
   title: String
   journeyIds: [String!]
-  customDomain: CustomDomainCreateInput
 }
 
 input JourneyCollectionUpdateInput {
-  id: ID!
   title: String
   journeyIds: [String!]
 }
