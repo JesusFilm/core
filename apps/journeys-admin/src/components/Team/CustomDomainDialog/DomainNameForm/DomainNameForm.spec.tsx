@@ -1,3 +1,4 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -104,9 +105,11 @@ describe('DomainNameForm', () => {
     }
 
   it('should delete a custom domain', async () => {
+    const cache = new InMemoryCache()
+
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={[deleteCustomDomainMock]}>
+        <MockedProvider cache={cache} mocks={[deleteCustomDomainMock]}>
           <DomainNameForm customDomain={customDomain} />
         </MockedProvider>
       </SnackbarProvider>
@@ -117,12 +120,16 @@ describe('DomainNameForm', () => {
     await waitFor(() =>
       expect(deleteCustomDomainMock.result).toHaveBeenCalled()
     )
+    expect(cache.extract()['CustomDomain:customDomainId']).toBeUndefined()
   })
 
   it('should create a custom domain', async () => {
+    const cache = new InMemoryCache()
+
     const { queryByTestId, getByRole } = render(
       <SnackbarProvider>
         <MockedProvider
+          cache={cache}
           mocks={[getLastActiveTeamIdAndTeamsMock, createCustomDomainMock]}
         >
           <TeamProvider>
@@ -143,6 +150,13 @@ describe('DomainNameForm', () => {
     await waitFor(() =>
       expect(createCustomDomainMock.result).toHaveBeenCalled()
     )
+    expect(cache.extract()['CustomDomain:customDomainId']).toEqual({
+      __typename: 'CustomDomain',
+      apexName: 'www.example.com',
+      id: 'customDomainId',
+      journeyCollection: null,
+      name: 'www.example.com'
+    })
   })
 
   it('should validate', async () => {
