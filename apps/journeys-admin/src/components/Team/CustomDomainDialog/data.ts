@@ -3,18 +3,22 @@ import { MockedResponse } from '@apollo/client/testing'
 import { CreateCustomDomain } from '../../../../__generated__/CreateCustomDomain'
 import { DeleteCustomDomain } from '../../../../__generated__/DeleteCustomDomain'
 import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyCollectionCreate } from '../../../../__generated__/JourneyCollectionCreate'
 import { JourneyCollectionDelete } from '../../../../__generated__/JourneyCollectionDelete'
 import { UpdateJourneyCollection } from '../../../../__generated__/UpdateJourneyCollection'
 import { GET_CUSTOM_DOMAINS } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '../TeamProvider'
 
 import {
-  CREATE_CUSTOM_DOMAIN,
-  DELETE_CUSTOM_DOMAIN,
   JOURNEY_COLLECTION_CREATE,
   JOURNEY_COLLECTION_DELETE,
   UPDATE_JOURNEY_COLLECTION
 } from './CustomDomainDialog'
+import {
+  CREATE_CUSTOM_DOMAIN,
+  DELETE_CUSTOM_DOMAIN
+} from './DomainNameUpdateForm/DomainNameUpdateForm'
 
 export const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
   request: {
@@ -150,6 +154,32 @@ export const mockDeleteCustomDomain: MockedResponse<DeleteCustomDomain> = {
     }
   }))
 }
+
+export const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
+  {
+    request: {
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+    },
+    result: jest.fn(() => ({
+      data: {
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: [],
+            publicTitle: 'Team Title',
+            customDomains: []
+          }
+        ],
+        getJourneyProfile: {
+          id: 'someId',
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
+  }
 
 export const mockJourneyCollectionCreate: MockedResponse<JourneyCollectionCreate> =
   {
