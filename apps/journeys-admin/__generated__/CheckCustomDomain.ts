@@ -29,14 +29,14 @@ export interface CheckCustomDomain_customDomainCheck {
    */
   configured: boolean;
   /**
-   * Verification records to be added to the DNS to confirm ownership.
-   */
-  verification: CheckCustomDomain_customDomainCheck_verification[] | null;
-  /**
    * Does the domain belong to the team?
    * If false, verification and verificationResponse will be populated.
    */
   verified: boolean;
+  /**
+   * Verification records to be added to the DNS to confirm ownership.
+   */
+  verification: CheckCustomDomain_customDomainCheck_verification[] | null;
   /**
    * Reasoning as to why verification is required.
    */
@@ -48,5 +48,5 @@ export interface CheckCustomDomain {
 }
 
 export interface CheckCustomDomainVariables {
-  id: string;
+  customDomainId: string;
 }
