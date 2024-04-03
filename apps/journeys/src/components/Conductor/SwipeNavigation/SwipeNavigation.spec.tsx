@@ -248,19 +248,49 @@ describe('SwipeNavigation', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SwipeNavigation activeBlock={step1} rtl={false}>
-          <Box data-testid="swipe-test-box" className="MuiSlider-thumb" />
+          <Box data-testid="swipe-test-box-root" className="MuiSlider-root" />
+          <Box data-testid="swipe-test-box-rail" className="MuiSlider-rail" />
+          <Box data-testid="swipe-test-box-track" className="MuiSlider-track" />
+          <Box data-testid="swipe-test-box-thumb" className="MuiSlider-thumb" />
         </SwipeNavigation>
       </MockedProvider>
     )
-    const swipeElement = getByTestId('swipe-test-box')
+    const swipeElementRoot = getByTestId('swipe-test-box-root')
+    const swipeElementRail = getByTestId('swipe-test-box-rail')
+    const swipeElementTrack = getByTestId('swipe-test-box-track')
+    const swipeElementThumb = getByTestId('swipe-test-box-thumb')
 
-    fireEvent.touchStart(swipeElement, {
+    fireEvent.touchStart(swipeElementRoot, {
       touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchMove(swipeElement, {
+    fireEvent.touchMove(swipeElementRoot, {
       touches: [{ clientX: swipeLeft, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement)
+    fireEvent.touchEnd(swipeElementRoot)
+
+    fireEvent.touchStart(swipeElementRail, {
+      touches: [{ clientX: 0, clientY: 0 }]
+    })
+    fireEvent.touchMove(swipeElementRail, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
+    })
+    fireEvent.touchEnd(swipeElementRail)
+
+    fireEvent.touchStart(swipeElementTrack, {
+      touches: [{ clientX: 0, clientY: 0 }]
+    })
+    fireEvent.touchMove(swipeElementTrack, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
+    })
+    fireEvent.touchEnd(swipeElementTrack)
+
+    fireEvent.touchStart(swipeElementThumb, {
+      touches: [{ clientX: 0, clientY: 0 }]
+    })
+    fireEvent.touchMove(swipeElementThumb, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
+    })
+    fireEvent.touchEnd(swipeElementThumb)
 
     expect(blockHistoryVar()).toHaveLength(1)
   })
@@ -272,19 +302,49 @@ describe('SwipeNavigation', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SwipeNavigation activeBlock={step2} rtl={false}>
-          <Box data-testid="swipe-test-box" className="MuiSlider-thumb" />
+          <Box data-testid="swipe-test-box-root" className="MuiSlider-root" />
+          <Box data-testid="swipe-test-box-rail" className="MuiSlider-rail" />
+          <Box data-testid="swipe-test-box-track" className="MuiSlider-track" />
+          <Box data-testid="swipe-test-box-thumb" className="MuiSlider-thumb" />
         </SwipeNavigation>
       </MockedProvider>
     )
-    const swipeElement = getByTestId('swipe-test-box')
+    const swipeElementRoot = getByTestId('swipe-test-box-root')
+    const swipeElementRail = getByTestId('swipe-test-box-rail')
+    const swipeElementTrack = getByTestId('swipe-test-box-track')
+    const swipeElementThumb = getByTestId('swipe-test-box-thumb')
 
-    fireEvent.touchStart(swipeElement, {
+    fireEvent.touchStart(swipeElementRoot, {
       touches: [{ clientX: 0, clientY: 0 }]
     })
-    fireEvent.touchMove(swipeElement, {
-      touches: [{ clientX: swipeRight, clientY: 0 }]
+    fireEvent.touchMove(swipeElementRoot, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
     })
-    fireEvent.touchEnd(swipeElement)
+    fireEvent.touchEnd(swipeElementRoot)
+
+    fireEvent.touchStart(swipeElementRail, {
+      touches: [{ clientX: 0, clientY: 0 }]
+    })
+    fireEvent.touchMove(swipeElementRail, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
+    })
+    fireEvent.touchEnd(swipeElementRail)
+
+    fireEvent.touchStart(swipeElementTrack, {
+      touches: [{ clientX: 0, clientY: 0 }]
+    })
+    fireEvent.touchMove(swipeElementTrack, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
+    })
+    fireEvent.touchEnd(swipeElementTrack)
+
+    fireEvent.touchStart(swipeElementThumb, {
+      touches: [{ clientX: 0, clientY: 0 }]
+    })
+    fireEvent.touchMove(swipeElementThumb, {
+      touches: [{ clientX: swipeLeft, clientY: 0 }]
+    })
+    fireEvent.touchEnd(swipeElementThumb)
 
     expect(blockHistoryVar()).toHaveLength(2)
   })
