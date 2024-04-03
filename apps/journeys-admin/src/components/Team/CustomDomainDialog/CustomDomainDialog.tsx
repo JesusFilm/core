@@ -26,18 +26,17 @@ export function CustomDomainDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const { data: customDomainData, refetch: refetchCustomDomains } =
-    useCustomDomainsQuery({
-      variables: { teamId: activeTeam?.id as string },
-      notifyOnNetworkStatusChange: true
-    })
+  const { data, refetch, loading } = useCustomDomainsQuery({
+    variables: { teamId: activeTeam?.id as string },
+    notifyOnNetworkStatusChange: true
+  })
 
   useEffect(() => {
     // rerun query if user changes active team
-    void refetchCustomDomains()
-  }, [activeTeam, refetchCustomDomains])
+    void refetch()
+  }, [activeTeam, refetch])
 
-  const customDomain = customDomainData?.customDomains[0]
+  const customDomain = data?.customDomains[0]
 
   return (
     <Dialog
@@ -53,9 +52,9 @@ export function CustomDomainDialog({
     >
       <Form>
         <Stack spacing={10}>
-          <DomainNameUpdateForm customDomain={customDomain} />
-          <DefaultJourneyForm customDomain={customDomain} />
-          <DNSConfigSection customDomain={customDomain} />
+          <DomainNameUpdateForm customDomain={customDomain} loading={loading} />
+          <DefaultJourneyForm customDomain={customDomain} loading={loading} />
+          <DNSConfigSection customDomain={customDomain} loading={loading} />
         </Stack>
       </Form>
     </Dialog>

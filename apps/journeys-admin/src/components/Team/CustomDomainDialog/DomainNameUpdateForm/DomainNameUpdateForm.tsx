@@ -20,6 +20,7 @@ interface DomainNameUpdateFormValues {
 
 interface DomainNameUpdateFormProps {
   customDomain?: CustomDomain
+  loading?: boolean
 }
 
 export function DomainNameUpdateForm({

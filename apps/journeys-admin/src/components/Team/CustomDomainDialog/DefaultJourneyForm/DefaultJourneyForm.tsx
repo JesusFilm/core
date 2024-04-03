@@ -14,6 +14,7 @@ import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../_
 
 interface DefaultJourneyFormProps {
   customDomain?: CustomDomain
+  loading?: boolean
 }
 
 export function DefaultJourneyForm({

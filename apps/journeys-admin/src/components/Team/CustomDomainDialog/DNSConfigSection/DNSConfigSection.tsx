@@ -19,6 +19,7 @@ import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../_
 
 interface DNSConfigSectionProps {
   customDomain?: CustomDomain
+  loading?: boolean
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
