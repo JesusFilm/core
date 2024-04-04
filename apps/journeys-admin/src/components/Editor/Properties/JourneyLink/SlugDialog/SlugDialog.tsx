@@ -21,8 +21,8 @@ export const JOURNEY_SLUG_UPDATE = gql`
 `
 
 interface SlugDialogProps {
-  open: boolean
-  onClose: () => void
+  open?: boolean
+  onClose?: () => void
   hostname?: string
 }
 

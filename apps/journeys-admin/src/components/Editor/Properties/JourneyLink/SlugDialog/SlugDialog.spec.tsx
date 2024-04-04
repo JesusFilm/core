@@ -8,10 +8,9 @@ import { defaultJourney } from '../../../data'
 
 import { JOURNEY_SLUG_UPDATE, SlugDialog } from '.'
 
-const onClose = jest.fn()
-
 describe('JourneyView/Properties/SlugDialog', () => {
   it('should not set journey slug on close', async () => {
+    const onClose = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
@@ -21,7 +20,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} hostname={undefined} />
+            <SlugDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -70,7 +69,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} hostname={undefined} />
+            <SlugDialog open />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -106,7 +105,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} hostname={undefined} />
+            <SlugDialog open />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -156,7 +155,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} hostname={undefined} />
+            <SlugDialog open />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -186,16 +185,14 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog
-              open
-              onClose={onClose}
-              hostname="www.customdomain.com"
-            />
+            <SlugDialog open hostname="www.customdomain.com" />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
-    expect(getByText('https://www.customdomain.com/')).toBeInTheDocument()
+    expect(
+      getByText('https://www.customdomain.com/').parentElement?.textContent
+    ).toBe('https://www.customdomain.com/default')
   })
 })
