@@ -6,7 +6,6 @@ import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 import { object, string } from 'yup'
 
-import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
@@ -18,6 +17,8 @@ import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
+
+import { Block, VideoBlockSource } from './.prisma/api-journeys-client'
 
 const videoBlockYouTubeSchema = object().shape({
   videoId: string().matches(
@@ -142,7 +143,8 @@ export class VideoBlockResolver {
       }
 
       const existingVideoOnParent = await tx.block.findFirst({
-        where: { parentBlockId: input.parentBlockId, typename: 'VideoBlock' }
+        where: { parentBlockId: input.parentBlockId, typename: 'VideoBlock' },
+        select: { id: true }
       })
       if (existingVideoOnParent != null)
         throw new GraphQLError(
@@ -202,6 +204,21 @@ export class VideoBlockResolver {
         throw new GraphQLError('user is not allowed to create block', {
           extensions: { code: 'FORBIDDEN' }
         })
+      // check for race condition (unlikely but possible)
+      const raceConditionCheck = await tx.block.findFirst({
+        where: {
+          parentBlockId: input.parentBlockId,
+          typename: 'VideoBlock',
+          id: { not: block.id }
+        }
+      })
+      if (raceConditionCheck != null)
+        throw new GraphQLError(
+          'Parent block already has an existing video block',
+          {
+            extensions: { code: 'BAD_USER_INPUT' }
+          }
+        )
       return block
     })
   }
