@@ -14,8 +14,8 @@ import { DNSConfigSection } from './DNSConfigSection'
 import { DomainNameForm } from './DomainNameForm'
 
 interface CustomDomainDialogProps {
-  open: boolean
-  onClose: () => void
+  open?: boolean
+  onClose?: () => void
 }
 
 export function CustomDomainDialog({

@@ -3,6 +3,7 @@ import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
+import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables
@@ -20,6 +21,7 @@ import {
 } from '../TeamProvider'
 
 import { CustomDomainDialog } from './CustomDomainDialog'
+import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection'
 
 const CustomDomainDialogsStory: Meta<typeof CustomDomainDialog> = {
   ...journeysAdminConfig,
@@ -59,32 +61,6 @@ const getCustomDomainMockEmpty: MockedResponse<GetCustomDomains> = {
   }
 }
 
-const getCustomDomainMockVerifiedFalse: MockedResponse<GetCustomDomains> = {
-  request: {
-    query: GET_CUSTOM_DOMAINS,
-    variables: {
-      teamId: 'teamId'
-    }
-  },
-  result: {
-    data: {
-      customDomains: [
-        {
-          __typename: 'CustomDomain',
-          name: 'mockdomain.com',
-          apexName: 'mockdomain.com',
-          id: 'customDomainId',
-          journeyCollection: {
-            __typename: 'JourneyCollection',
-            id: 'journeyCollectionId',
-            journeys: []
-          }
-        }
-      ]
-    }
-  }
-}
-
 const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
   request: {
     query: GET_CUSTOM_DOMAINS,
@@ -98,32 +74,6 @@ const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
         {
           __typename: 'CustomDomain',
           name: 'mockdomain.com',
-          apexName: 'mockdomain.com',
-          id: 'customDomainId',
-          journeyCollection: {
-            __typename: 'JourneyCollection',
-            id: 'journeyCollectionId',
-            journeys: []
-          }
-        }
-      ]
-    }
-  }
-}
-
-const getCustomDomainMockCName: MockedResponse<GetCustomDomains> = {
-  request: {
-    query: GET_CUSTOM_DOMAINS,
-    variables: {
-      teamId: 'teamId'
-    }
-  },
-  result: {
-    data: {
-      customDomains: [
-        {
-          __typename: 'CustomDomain',
-          name: 'tandem.mockdomain.com',
           apexName: 'mockdomain.com',
           id: 'customDomainId',
           journeyCollection: {
@@ -163,6 +113,26 @@ const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeam
     }
   }
 
+const checkCustomDomainMock: MockedResponse<CheckCustomDomain> = {
+  request: {
+    query: CHECK_CUSTOM_DOMAIN,
+    variables: {
+      customDomainId: 'customDomainId'
+    }
+  },
+  result: {
+    data: {
+      customDomainCheck: {
+        __typename: 'CustomDomainCheck',
+        configured: true,
+        verified: true,
+        verification: null,
+        verificationResponse: null
+      }
+    }
+  }
+}
+
 const Template: StoryObj<typeof CustomDomainDialog> = {
   render: () => (
     <TeamProvider>
@@ -175,49 +145,20 @@ export const Default = {
   ...Template,
   parameters: {
     apolloClient: {
-      mocks: [
-        getCustomDomainMockEmpty,
-        getAdminJourneysMock,
-        getLastActiveTeamIdAndTeamsMock
-      ]
+      mocks: [getCustomDomainMockEmpty]
     }
   }
 }
 
-export const WithTXT = {
+export const Filled = {
   ...Template,
   parameters: {
     apolloClient: {
       mocks: [
         getAdminJourneysMock,
         getLastActiveTeamIdAndTeamsMock,
-        getCustomDomainMockVerifiedFalse
-      ]
-    }
-  }
-}
-
-export const WithA = {
-  ...Template,
-  parameters: {
-    apolloClient: {
-      mocks: [
-        getAdminJourneysMock,
-        getLastActiveTeamIdAndTeamsMock,
-        getCustomDomainMockARecord
-      ]
-    }
-  }
-}
-
-export const WithCNAME = {
-  ...Template,
-  parameters: {
-    apolloClient: {
-      mocks: [
-        getAdminJourneysMock,
-        getLastActiveTeamIdAndTeamsMock,
-        getCustomDomainMockCName
+        getCustomDomainMockARecord,
+        checkCustomDomainMock
       ]
     }
   }

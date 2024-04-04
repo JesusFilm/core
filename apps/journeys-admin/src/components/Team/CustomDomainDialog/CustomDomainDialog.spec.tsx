@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
 import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { GET_CUSTOM_DOMAINS } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
@@ -11,17 +12,33 @@ import {
 } from '../TeamProvider'
 
 import { CustomDomainDialog } from './CustomDomainDialog'
-import { checkCustomDomainMockConfiguredAndVerified } from './data'
+import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
 
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn(() => 'uuid')
-}))
+const checkCustomDomainMockConfiguredAndVerified: MockedResponse<CheckCustomDomain> =
+  {
+    request: {
+      query: CHECK_CUSTOM_DOMAIN,
+      variables: {
+        customDomainId: 'customDomainId'
+      }
+    },
+    result: {
+      data: {
+        customDomainCheck: {
+          __typename: 'CustomDomainCheck',
+          configured: true,
+          verified: true,
+          verification: null,
+          verificationResponse: null
+        }
+      }
+    }
+  }
 
 const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
   request: {
@@ -30,7 +47,7 @@ const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
       teamId: 'teamId'
     }
   },
-  result: jest.fn(() => ({
+  result: {
     data: {
       customDomains: [
         {
@@ -38,16 +55,6 @@ const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
           name: 'mockdomain.com',
           apexName: 'mockdomain.com',
           id: 'customDomainId',
-          teamId: 'teamId',
-          verification: {
-            __typename: 'CustomDomainVerification',
-            verified: true,
-            verification: []
-          },
-          configuration: {
-            __typename: 'VercelDomainConfiguration',
-            misconfigured: false
-          },
           journeyCollection: {
             __typename: 'JourneyCollection',
             id: 'journeyCollectionId',
@@ -56,18 +63,16 @@ const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
         }
       ]
     }
-  }))
+  }
 }
 
 describe('CustomDomainDialog', () => {
-  const onClose = jest.fn()
-
   const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
     {
       request: {
         query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
       },
-      result: jest.fn(() => ({
+      result: {
         data: {
           teams: [
             {
@@ -85,25 +90,24 @@ describe('CustomDomainDialog', () => {
             lastActiveTeamId: 'teamId'
           }
         }
-      }))
+      }
     }
 
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
-
   it('creates should show dns config if there is a custom domain', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(checkCustomDomainMockConfiguredAndVerified.result)
     const { getByText, queryByText } = render(
       <MockedProvider
         mocks={[
           getLastActiveTeamIdAndTeamsMock,
           getCustomDomainMockARecord,
-          checkCustomDomainMockConfiguredAndVerified
+          { ...checkCustomDomainMockConfiguredAndVerified, result }
         ]}
       >
         <SnackbarProvider>
           <TeamProvider>
-            <CustomDomainDialog open onClose={onClose} />
+            <CustomDomainDialog open />
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -111,24 +115,13 @@ describe('CustomDomainDialog', () => {
 
     expect(queryByText('DNS Config')).not.toBeInTheDocument()
     expect(queryByText('Default Journey')).not.toBeInTheDocument()
-
-    await waitFor(() =>
-      expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
-    )
-    await waitFor(() =>
-      expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
-    )
-
-    await waitFor(() =>
-      expect(
-        checkCustomDomainMockConfiguredAndVerified.result
-      ).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByText('Default Journey')).toBeInTheDocument()
     expect(getByText('DNS Config')).toBeInTheDocument()
   })
 
   it('shohuld call on close', async () => {
+    const onClose = jest.fn()
     const { getByTestId } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
