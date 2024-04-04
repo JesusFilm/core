@@ -4,7 +4,7 @@ import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useCallback } from 'react'
 import TagManager from 'react-gtm-module'
-import { useSwipeable } from 'react-swipeable'
+import { SwipeEventData, useSwipeable } from 'react-swipeable'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
@@ -163,10 +163,20 @@ export function SwipeNavigation({
     ]
   )
 
+  function isSliderElement(eventData: SwipeEventData): boolean {
+    const element = eventData.event.target as HTMLElement
+
+    if (element.classList.contains('MuiSlider-root')) return true
+    if (element.classList.contains('MuiSlider-rail')) return true
+    if (element.classList.contains('MuiSlider-track')) return true
+    if (element.classList.contains('MuiSlider-thumb')) return true
+
+    return false
+  }
+
   const swipeHandlers = useSwipeable({
     onSwipedLeft: (eventData) => {
-      const targetElement = eventData.event.target as HTMLElement
-      if (targetElement.classList.contains('MuiSlider-thumb')) return
+      if (isSliderElement(eventData)) return
       if (rtl) {
         handleNavigation('previous')
       } else {
@@ -174,8 +184,7 @@ export function SwipeNavigation({
       }
     },
     onSwipedRight: (eventData) => {
-      const targetElement = eventData.event.target as HTMLElement
-      if (targetElement.classList.contains('MuiSlider-thumb')) return
+      if (isSliderElement(eventData)) return
       if (rtl) {
         handleNavigation('next')
       } else {
