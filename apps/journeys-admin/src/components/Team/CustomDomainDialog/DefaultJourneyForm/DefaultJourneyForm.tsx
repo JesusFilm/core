@@ -26,8 +26,8 @@ import { useTeam } from '../../TeamProvider'
 interface DefaultJourneyFormProps {
   customDomain: CustomDomain
 }
-export const JOURNEY_COLLECTION_DELETE = gql`
-  mutation JourneyCollectionDelete($id: ID!) {
+export const DELETE_JOURNEY_COLLECTION = gql`
+  mutation DeleteJourneyCollection($id: ID!) {
     journeyCollectionDelete(id: $id) {
       id
       customDomains {
@@ -54,8 +54,8 @@ export const UPDATE_JOURNEY_COLLECTION = gql`
   }
 `
 
-export const JOURNEY_COLLECTION_CREATE = gql`
-  mutation JourneyCollectionCreate(
+export const CREATE_JOURNEY_COLLECTION = gql`
+  mutation CreateJourneyCollection(
     $journeyCollectionInput: JourneyCollectionCreateInput!
     $customDomainId: ID!
     $customDomainUpdateInput: CustomDomainUpdateInput!
@@ -92,7 +92,7 @@ export function DefaultJourneyForm({
   })
 
   const [journeyCollectionDelete] = useMutation<JourneyCollectionDelete>(
-    JOURNEY_COLLECTION_DELETE
+    DELETE_JOURNEY_COLLECTION
   )
 
   const [updateJourneyCollection] = useMutation<UpdateJourneyCollection>(
@@ -100,12 +100,12 @@ export function DefaultJourneyForm({
   )
 
   const [journeyCollectionCreate] = useMutation<JourneyCollectionCreate>(
-    JOURNEY_COLLECTION_CREATE
+    CREATE_JOURNEY_COLLECTION
   )
 
   async function handleOnChange(journey: Journey | null): Promise<void> {
     // delete
-    if (journey == null && customDomain?.journeyCollection?.id != null)
+    if (journey == null && customDomain.journeyCollection?.id != null)
       await journeyCollectionDelete({
         variables: {
           id: customDomain.journeyCollection.id
@@ -129,14 +129,13 @@ export function DefaultJourneyForm({
       })
     // upsert
     if (
-      customDomain?.journeyCollection?.journeys?.length !== 0 &&
-      customDomain?.journeyCollection?.journeys != null &&
+      customDomain.journeyCollection?.journeys?.length !== 0 &&
+      customDomain.journeyCollection?.journeys != null &&
       journey != null
     ) {
-      console.log(customDomain?.journeyCollection.id)
       await updateJourneyCollection({
         variables: {
-          id: customDomain?.journeyCollection.id,
+          id: customDomain.journeyCollection.id,
           input: {
             journeyIds: [journey.id]
           }
@@ -183,18 +182,20 @@ export function DefaultJourneyForm({
           <Stack direction="row" justifyContent="space-between">
             <FormControl variant="filled" fullWidth hiddenLabel>
               <Autocomplete
-                data-testid="DefaultJourneySelect"
                 getOptionLabel={(options) => options.title}
                 id="defaultJourney"
-                defaultValue={customDomain?.journeyCollection?.journeys?.[0]}
+                defaultValue={customDomain.journeyCollection?.journeys?.[0]}
                 onChange={async (_e, option) => await handleOnChange(option)}
                 options={data?.journeys ?? []}
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => (
+                  <TextField {...params} variant="filled" hiddenLabel />
+                )}
                 blurOnSelect
               />
               <FormHelperText sx={{ wordBreak: 'break-all' }}>
                 {t(
-                  `The default Journey will be available at ${customDomain?.name}`
+                  'The default Journey will be available at {{customDomain}}',
+                  { customDomain: customDomain.name }
                 )}
               </FormHelperText>
             </FormControl>

@@ -1,8 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { DefaultJourneyForm } from './DefaultJourneyForm'
-import { journeysAdminConfig } from '../../../../libs/storybook'
-import { customDomain } from '../data'
+
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
+import { journeysAdminConfig } from '../../../../libs/storybook'
+
+import { DefaultJourneyForm } from '.'
 
 const DefaultJourneyFormStory: Meta<typeof DefaultJourneyForm> = {
   ...journeysAdminConfig,
@@ -11,8 +12,11 @@ const DefaultJourneyFormStory: Meta<typeof DefaultJourneyForm> = {
     'Journeys-Admin/Team/CustomDomain/CustomDomainDialog/DefaultJourneyForm'
 }
 
-const customDomainWithJourneyCollection: CustomDomain = {
-  ...customDomain,
+const customDomain: CustomDomain = {
+  __typename: 'CustomDomain',
+  name: 'example.com',
+  apexName: 'example.com',
+  id: 'customDomainId',
   journeyCollection: {
     __typename: 'JourneyCollection',
     id: 'journeyCollectionId',
@@ -38,7 +42,7 @@ const Template: StoryObj<typeof DefaultJourneyForm> = {
 export const Default = {
   ...Template,
   args: {
-    customDomainWithJourneyCollection
+    customDomain
   }
 }
 
