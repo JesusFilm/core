@@ -22,12 +22,9 @@ export function EditToolbar(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { state } = useEditor()
-  const { data: customDomains } = useCustomDomainsQuery({
+  const { hostname } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id as string }
   })
-
-  const hostname = new URL(`https://${customDomains?.customDomains[0].name}`)
-    .hostname
 
   return (
     <Stack
@@ -43,7 +40,9 @@ export function EditToolbar(): ReactElement {
             icon={<EyeOpenIcon />}
             label={t('Preview')}
             component="a"
-            href={`/api/preview?slug=${journey.slug}&hostname=${hostname}`}
+            href={`/api/preview?slug=${journey.slug}${
+              hostname != null ? `&hostname=${hostname}` : ''
+            }`}
             target="_blank"
             variant="outlined"
             clickable
@@ -56,7 +55,9 @@ export function EditToolbar(): ReactElement {
           />
           <IconButton
             aria-label="Preview"
-            href={`/api/preview?slug=${journey.slug}&hostname=${hostname}`}
+            href={`/api/preview?slug=${journey.slug}${
+              hostname != null ? `&hostname=${hostname}` : ''
+            }`}
             target="_blank"
             sx={{
               display: {

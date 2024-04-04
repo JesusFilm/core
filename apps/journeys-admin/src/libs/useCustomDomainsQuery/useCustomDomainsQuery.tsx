@@ -25,18 +25,12 @@ export const GET_CUSTOM_DOMAINS = gql`
 export function useCustomDomainsQuery(
   options?: QueryHookOptions<GetCustomDomains, GetCustomDomainsVariables>
 ): QueryResult<GetCustomDomains, GetCustomDomainsVariables> & {
-  hasCustomDomain: boolean
+  hostname?: string
 } {
   const query = useQuery<GetCustomDomains, GetCustomDomainsVariables>(
     GET_CUSTOM_DOMAINS,
-    { ...options }
+    options
   )
 
-  const hasCustomDomain =
-    query.data?.customDomains?.length !== 0 && query.data?.customDomains != null
-
-  return {
-    ...query,
-    hasCustomDomain
-  }
+  return { ...query, hostname: query.data?.customDomains[0].name }
 }

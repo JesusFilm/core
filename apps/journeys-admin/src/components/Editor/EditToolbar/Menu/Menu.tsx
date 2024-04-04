@@ -70,7 +70,7 @@ export function Menu(): ReactElement {
   } = useEditor()
   const router = useRouter()
   const { journey } = useJourney()
-  const { data: customDomains } = useCustomDomainsQuery({
+  const { hostname } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id as string }
   })
 
@@ -85,9 +85,6 @@ export function Menu(): ReactElement {
     boolean | undefined
   >()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-
-  const hostname = new URL(`https://${customDomains?.customDomains[0].name}`)
-    .hostname
 
   function setRoute(param: string): void {
     router.query.param = param
@@ -154,7 +151,9 @@ export function Menu(): ReactElement {
         }}
       >
         <NextLink
-          href={`/api/preview?slug=${journey?.slug ?? ''}&hostname=${hostname}`}
+          href={`/api/preview?slug=${journey?.slug ?? ''}${
+            hostname != null ? `&hostname=${hostname}` : ''
+          }`}
           passHref
           legacyBehavior
           prefetch={false}

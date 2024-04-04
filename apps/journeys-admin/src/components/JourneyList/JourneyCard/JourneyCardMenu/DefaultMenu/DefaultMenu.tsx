@@ -50,8 +50,7 @@ export function DefaultMenu({
     variables: { teamId: activeTeam?.id as string }
   })
 
-  const hostname = new URL(`https://${customDomainData?.customDomains[0].name}`)
-    .hostname
+  const hostname = customDomainData?.customDomains[0].name
 
   return (
     <>
@@ -78,7 +77,9 @@ export function DefaultMenu({
         />
       )}
       <NextLink
-        href={`/api/preview?slug=${slug}&hostname=${hostname}`}
+        href={`/api/preview?slug=${slug}${
+          hostname != null ? `&hostname=${hostname}` : ''
+        }`}
         passHref
         legacyBehavior
         prefetch={false}
