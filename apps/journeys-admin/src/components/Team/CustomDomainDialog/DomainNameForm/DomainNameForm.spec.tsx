@@ -5,22 +5,19 @@ import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 
-import {
-  CreateCustomDomain,
-  CreateCustomDomainVariables
-} from '../../../../../__generated__/CreateCustomDomain'
-import {
-  DeleteCustomDomain,
-  DeleteCustomDomainVariables
-} from '../../../../../__generated__/DeleteCustomDomain'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import {
+  createCustomDomainErrorMock,
+  createCustomDomainMock,
+  deleteCustomDomainMock
+} from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../TeamProvider'
 
-import { CREATE_CUSTOM_DOMAIN, DELETE_CUSTOM_DOMAIN, DomainNameForm } from '.'
+import { DomainNameForm } from '.'
 
 describe('DomainNameForm', () => {
   const customDomain: CustomDomain = {
@@ -29,67 +26,6 @@ describe('DomainNameForm', () => {
     name: 'example.com',
     apexName: 'example.com',
     journeyCollection: null
-  }
-
-  const createCustomDomainMock: MockedResponse<
-    CreateCustomDomain,
-    CreateCustomDomainVariables
-  > = {
-    request: {
-      query: CREATE_CUSTOM_DOMAIN,
-      variables: { input: { name: 'www.example.com', teamId: 'teamId' } }
-    },
-    result: jest.fn(() => ({
-      data: {
-        customDomainCreate: {
-          __typename: 'CustomDomain',
-          id: 'customDomainId',
-          apexName: 'www.example.com',
-          name: 'www.example.com',
-          verification: {
-            __typename: 'CustomDomainVerification',
-            verified: true,
-            verification: []
-          },
-          configuration: {
-            __typename: 'VercelDomainConfiguration',
-            misconfigured: false
-          },
-          journeyCollection: null
-        }
-      }
-    }))
-  }
-
-  const createCustomDomainErrorMock: MockedResponse<
-    CreateCustomDomain,
-    CreateCustomDomainVariables
-  > = {
-    request: {
-      query: CREATE_CUSTOM_DOMAIN,
-      variables: { input: { name: 'www.example.com', teamId: 'teamId' } }
-    },
-    result: {
-      errors: [new GraphQLError('Error!')]
-    }
-  }
-
-  const deleteCustomDomainMock: MockedResponse<
-    DeleteCustomDomain,
-    DeleteCustomDomainVariables
-  > = {
-    request: {
-      query: DELETE_CUSTOM_DOMAIN,
-      variables: { customDomainId: 'customDomainId' }
-    },
-    result: jest.fn(() => ({
-      data: {
-        customDomainDelete: {
-          __typename: 'CustomDomain',
-          id: 'customDomainId'
-        }
-      }
-    }))
   }
 
   const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
