@@ -71,6 +71,7 @@ export function OnboardingDrawer(): ReactElement {
             src={landingIllustration}
             alt="Landing Illustration"
             layout="responsive"
+            priority
           />
         </Box>
       )}
@@ -91,6 +92,7 @@ export function OnboardingDrawer(): ReactElement {
                 src={landingDescription}
                 alt="Landing Description"
                 layout="responsive"
+                priority
               />
             </Box>
           )}
@@ -99,6 +101,7 @@ export function OnboardingDrawer(): ReactElement {
               src={landingDescriptionMobile}
               alt="Landing Description Mobile"
               layout="responsive"
+              priority
             />
           </Box>
         </>
