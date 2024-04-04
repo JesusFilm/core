@@ -17,18 +17,16 @@ import {
   withUserTokenSSR
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement, useState } from 'react'
 import { number, object } from 'yup'
 
 import { CreateVerificationRequest } from '../../__generated__/CreateVerificationRequest'
 import { GetMe } from '../../__generated__/GetMe'
-import i18nConfig from '../../next-i18next.config'
 import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerification/EmailVerification'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { useTeam } from '../../src/components/Team/TeamProvider'
-import { createApolloClient } from '../../src/libs/apolloClient'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 
 interface ValidateEmailProps {
@@ -217,13 +215,10 @@ function ValidateEmail({
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ user, query, locale }) => {
-  const apolloToken = user?.id != null ? await user.getIdToken() : null
-  const apolloClient = createApolloClient(apolloToken ?? undefined)
-  const translations = await serverSideTranslations(
-    locale ?? 'en',
-    ['apps-journeys-admin', 'libs-journeys-ui'],
-    i18nConfig
-  )
+  const { translations, apolloClient } = await initAndAuthApp({
+    user,
+    locale
+  })
 
   // skip if already verified
   const apiUser = await apolloClient.query<GetMe>({
