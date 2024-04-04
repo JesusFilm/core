@@ -1,49 +1,42 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 
+import { GetCustomDomains_customDomains as CustomDomain } from '../../../__generated__/GetCustomDomains'
+
 import { GET_CUSTOM_DOMAINS } from './useCustomDomainsQuery'
 
 import { useCustomDomainsQuery } from '.'
 
-const customDomains = {
-  customDomains: [
-    {
-      __typename: 'CustomDomain' as const,
-      name: 'mockdomain.com',
-      apexName: 'mockdomain.com',
-      id: 'customDomainId',
-      teamId: 'teamId',
-      verification: {
-        __typename: 'CustomDomainVerification' as const,
-        verified: true,
-        verification: []
-      },
-      configuration: {
-        __typename: 'VercelDomainConfiguration' as const,
-        misconfigured: false
-      },
-      journeyCollection: {
-        __typename: 'JourneyCollection' as const,
-        id: 'journeyCollectionId',
-        journeys: []
-      }
+const customDomains: CustomDomain[] = [
+  {
+    __typename: 'CustomDomain',
+    name: 'example.com',
+    apexName: 'example.com',
+    id: 'customDomainId',
+    journeyCollection: {
+      __typename: 'JourneyCollection',
+      id: 'journeyCollectionId',
+      journeys: []
     }
-  ]
-}
+  }
+]
 
 describe('useCustomDomainsQuery', () => {
   it('should get custom domain for a team', async () => {
-    const result = jest.fn(() => ({
+    const mockResult = jest.fn(() => ({
       data: {
         customDomains
       }
     }))
 
-    renderHook(
-      () =>
-        useCustomDomainsQuery({
+    const { result } = renderHook(
+      () => {
+        const { hostname } = useCustomDomainsQuery({
           variables: { teamId: 'teamId' }
-        }),
+        })
+
+        return hostname
+      },
       {
         wrapper: ({ children }) => (
           <MockedProvider
@@ -55,7 +48,7 @@ describe('useCustomDomainsQuery', () => {
                     teamId: 'teamId'
                   }
                 },
-                result
+                result: mockResult
               }
             ]}
           >
@@ -66,7 +59,8 @@ describe('useCustomDomainsQuery', () => {
     )
 
     await act(
-      async () => await waitFor(() => expect(result).toHaveBeenCalled())
+      async () => await waitFor(() => expect(mockResult).toHaveBeenCalled())
     )
+    expect(result.current).toBe('example.com')
   })
 })

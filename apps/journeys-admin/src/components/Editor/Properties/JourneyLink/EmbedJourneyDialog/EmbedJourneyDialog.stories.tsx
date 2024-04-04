@@ -21,6 +21,7 @@ const EmbedJourneyDialogStory: Meta<typeof EmbedJourneyDialog> = {
 
 const EmbedJourneyDialogComponent = ({ ...args }): ReactElement => {
   const [open, setOpen] = useState(true)
+
   return (
     <MockedProvider>
       <JourneyProvider
@@ -30,7 +31,7 @@ const EmbedJourneyDialogComponent = ({ ...args }): ReactElement => {
         }}
       >
         <EmbedJourneyDialog
-          customDomainName={args.customDomainName}
+          {...args}
           open={open}
           onClose={() => setOpen(false)}
         />
@@ -47,14 +48,6 @@ export const Default = {
   ...Template,
   args: {
     journey: publishedJourney
-  }
-}
-
-export const WithCustomDomain = {
-  ...Template,
-  args: {
-    journey: publishedJourney,
-    customDomainName: 'www.example.com'
   }
 }
 

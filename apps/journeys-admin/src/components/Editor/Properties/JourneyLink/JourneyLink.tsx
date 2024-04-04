@@ -21,7 +21,7 @@ import { SlugDialog } from './SlugDialog'
 export function JourneyLink(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { data: customDomains } = useCustomDomainsQuery({
+  const { hostname } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id as string }
   })
 
@@ -38,9 +38,6 @@ export function JourneyLink(): ReactElement {
     })
   }
 
-  const customDomainVerified: boolean =
-    customDomains != null && customDomains.customDomains.length > 0
-
   return (
     <>
       {smUp && (
@@ -52,8 +49,8 @@ export function JourneyLink(): ReactElement {
         value={
           journey?.slug != null
             ? `${
-                customDomainVerified
-                  ? 'https://' + customDomains?.customDomains[0].name
+                hostname != null
+                  ? `https://${hostname}`
                   : process.env.NEXT_PUBLIC_JOURNEYS_URL ??
                     'https://your.nextstep.is'
               }/${journey.slug}`
@@ -97,12 +94,11 @@ export function JourneyLink(): ReactElement {
       <SlugDialog
         open={showSlugDialog}
         onClose={() => setShowSlugDialog(false)}
-        customDomainName={customDomains?.customDomains[0]?.name}
+        hostname={hostname}
       />
       <EmbedJourneyDialog
         open={showEmbedDialog}
         onClose={() => setShowEmbedDialog(false)}
-        customDomainName={customDomains?.customDomains[0]?.name}
       />
     </>
   )
