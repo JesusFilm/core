@@ -63,4 +63,46 @@ describe('useCustomDomainsQuery', () => {
     )
     expect(result.current).toBe('example.com')
   })
+
+  it('should handle empty custom domains array', async () => {
+    const mockResult = jest.fn(() => ({
+      data: {
+        customDomains: []
+      }
+    }))
+
+    const { result } = renderHook(
+      () => {
+        const { hostname } = useCustomDomainsQuery({
+          variables: { teamId: 'teamId' }
+        })
+
+        return hostname
+      },
+      {
+        wrapper: ({ children }) => (
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_CUSTOM_DOMAINS,
+                  variables: {
+                    teamId: 'teamId'
+                  }
+                },
+                result: mockResult
+              }
+            ]}
+          >
+            {children}
+          </MockedProvider>
+        )
+      }
+    )
+
+    await act(
+      async () => await waitFor(() => expect(mockResult).toHaveBeenCalled())
+    )
+    expect(result.current).toBeUndefined()
+  })
 })
