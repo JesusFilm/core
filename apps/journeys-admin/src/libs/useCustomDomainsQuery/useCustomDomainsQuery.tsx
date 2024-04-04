@@ -32,5 +32,5 @@ export function useCustomDomainsQuery(
     options
   )
 
-  return { ...query, hostname: query.data?.customDomains[0].name }
+  return { ...query, hostname: query.data?.customDomains[0]?.name }
 }
