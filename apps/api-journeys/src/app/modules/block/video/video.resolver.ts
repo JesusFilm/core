@@ -148,7 +148,7 @@ export class VideoBlockResolver {
         throw new GraphQLError(
           'Parent block already has an existing video block',
           {
-            extensions: { code: 'BAD_REQUEST' }
+            extensions: { code: 'USER_INPUT_ERROR' }
           }
         )
 
