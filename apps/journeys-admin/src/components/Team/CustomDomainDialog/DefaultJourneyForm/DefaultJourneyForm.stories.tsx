@@ -1,8 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { DefaultJourneyForm } from './DefaultJourneyForm'
+
+import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { customDomain } from '../data'
-import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
+
+import { DefaultJourneyForm } from './DefaultJourneyForm'
 
 const DefaultJourneyFormStory: Meta<typeof DefaultJourneyForm> = {
   ...journeysAdminConfig,

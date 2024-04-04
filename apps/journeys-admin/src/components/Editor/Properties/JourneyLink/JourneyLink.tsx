@@ -21,7 +21,7 @@ import { SlugDialog } from './SlugDialog'
 export function JourneyLink(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { data: customDomains, customDomainVerified } = useCustomDomainsQuery({
+  const { data: customDomains } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id as string }
   })
 
@@ -37,6 +37,9 @@ export function JourneyLink(): ReactElement {
       setBeaconPageViewed(param)
     })
   }
+
+  const customDomainVerified: boolean =
+    customDomains != null && customDomains.customDomains.length > 0
 
   return (
     <>

@@ -70,7 +70,7 @@ export function Menu(): ReactElement {
   } = useEditor()
   const router = useRouter()
   const { journey } = useJourney()
-  const { data: customDomains, customDomainVerified } = useCustomDomainsQuery({
+  const { data: customDomains } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id as string }
   })
 
@@ -86,9 +86,8 @@ export function Menu(): ReactElement {
   >()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
-  const hostname = customDomainVerified
-    ? new URL(`https://${customDomains?.customDomains[0].name}`).hostname
-    : undefined
+  const hostname = new URL(`https://${customDomains?.customDomains[0].name}`)
+    .hostname
 
   function setRoute(param: string): void {
     router.query.param = param
