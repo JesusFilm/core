@@ -137,6 +137,7 @@ describe('CustomDomainDialog', () => {
   })
 
   it('should have the proper link for instructions button', () => {
+    const onClose = jest.fn()
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
