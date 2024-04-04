@@ -172,8 +172,8 @@ export function DNSConfigSection({
                   <TableRow>
                     <StyledTableCell align="left">
                       {customDomain.apexName === customDomain.name
-                        ? t('A')
-                        : t('CNAME')}
+                        ? 'A'
+                        : 'CNAME'}
                     </StyledTableCell>
                     <StyledTableCell align="left" sx={{ maxWidth: 200 }}>
                       <Stack
@@ -230,8 +230,8 @@ export function DNSConfigSection({
                   <TableRow>
                     <StyledTableCell align="left">
                       {customDomain.apexName === customDomain.name
-                        ? t('A')
-                        : t('CNAME')}
+                        ? 'A'
+                        : 'CNAME'}
                     </StyledTableCell>
                   </TableRow>
                   <TableRow>
@@ -266,8 +266,8 @@ export function DNSConfigSection({
                         justifyContent="space-between"
                       >
                         {customDomain.apexName === customDomain.name
-                          ? t('76.76.21.21')
-                          : t('cname.vercel-dns.com')}
+                          ? '76.76.21.21'
+                          : 'cname.vercel-dns.com'}
                         <IconButton
                           onClick={async () =>
                             await handleCopyClick(
