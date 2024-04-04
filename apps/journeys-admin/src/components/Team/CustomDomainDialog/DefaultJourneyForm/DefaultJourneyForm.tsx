@@ -13,13 +13,22 @@ import { v4 as uuidv4 } from 'uuid'
 import Computer from '@core/shared/ui/icons/Computer'
 
 import {
+  CreateJourneyCollection,
+  CreateJourneyCollectionVariables
+} from '../../../../../__generated__/CreateJourneyCollection'
+import {
+  DeleteJourneyCollection,
+  DeleteJourneyCollectionVariables
+} from '../../../../../__generated__/DeleteJourneyCollection'
+import {
   GetCustomDomains_customDomains as CustomDomain,
   GetCustomDomains_customDomains_journeyCollection_journeys as Journey
 } from '../../../../../__generated__/GetCustomDomains'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { JourneyCollectionCreate } from '../../../../../__generated__/JourneyCollectionCreate'
-import { JourneyCollectionDelete } from '../../../../../__generated__/JourneyCollectionDelete'
-import { UpdateJourneyCollection } from '../../../../../__generated__/UpdateJourneyCollection'
+import {
+  UpdateJourneyCollection,
+  UpdateJourneyCollectionVariables
+} from '../../../../../__generated__/UpdateJourneyCollection'
 import { useAdminJourneysQuery } from '../../../../libs/useAdminJourneysQuery'
 import { useTeam } from '../../TeamProvider'
 
@@ -90,18 +99,20 @@ export function DefaultJourneyForm({
     status: [JourneyStatus.draft, JourneyStatus.published],
     useLastActiveTeamId: true
   })
+  const [journeyCollectionDelete] = useMutation<
+    DeleteJourneyCollection,
+    DeleteJourneyCollectionVariables
+  >(DELETE_JOURNEY_COLLECTION)
 
-  const [journeyCollectionDelete] = useMutation<JourneyCollectionDelete>(
-    DELETE_JOURNEY_COLLECTION
-  )
+  const [updateJourneyCollection] = useMutation<
+    UpdateJourneyCollection,
+    UpdateJourneyCollectionVariables
+  >(UPDATE_JOURNEY_COLLECTION)
 
-  const [updateJourneyCollection] = useMutation<UpdateJourneyCollection>(
-    UPDATE_JOURNEY_COLLECTION
-  )
-
-  const [journeyCollectionCreate] = useMutation<JourneyCollectionCreate>(
-    CREATE_JOURNEY_COLLECTION
-  )
+  const [journeyCollectionCreate] = useMutation<
+    CreateJourneyCollection,
+    CreateJourneyCollectionVariables
+  >(CREATE_JOURNEY_COLLECTION)
 
   async function handleOnChange(journey: Journey | null): Promise<void> {
     // delete
@@ -194,7 +205,7 @@ export function DefaultJourneyForm({
               />
               <FormHelperText sx={{ wordBreak: 'break-all' }}>
                 {t(
-                  'The default Journey will be available at {{customDomain}}',
+                  'The default Journey will be available at {{ customDomain }}',
                   { customDomain: customDomain.name }
                 )}
               </FormHelperText>

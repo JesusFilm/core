@@ -3,14 +3,24 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
-  GetAdminJourneys,
-  GetAdminJourneysVariables
-} from '../../../../../__generated__/GetAdminJourneys'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import {
   CreateJourneyCollection,
   CreateJourneyCollectionVariables
 } from '../../../../../__generated__/CreateJourneyCollection'
+import {
+  DeleteJourneyCollection,
+  DeleteJourneyCollectionVariables
+} from '../../../../../__generated__/DeleteJourneyCollection'
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../../../../../__generated__/GetAdminJourneys'
+import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
+import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import {
+  UpdateJourneyCollection,
+  UpdateJourneyCollectionVariables
+} from '../../../../../__generated__/UpdateJourneyCollection'
 import { GET_ADMIN_JOURNEYS } from '../../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import {
   defaultJourney,
@@ -20,22 +30,13 @@ import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../TeamProvider'
+
 import {
   CREATE_JOURNEY_COLLECTION,
   DELETE_JOURNEY_COLLECTION,
   DefaultJourneyForm,
   UPDATE_JOURNEY_COLLECTION
 } from '.'
-import {
-  UpdateJourneyCollection,
-  UpdateJourneyCollectionVariables
-} from '../../../../../__generated__/UpdateJourneyCollection'
-import {
-  DeleteJourneyCollection,
-  DeleteJourneyCollectionVariables
-} from '../../../../../__generated__/DeleteJourneyCollection'
-import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 
 jest.mock('uuid', () => ({
   __esModule: true,
