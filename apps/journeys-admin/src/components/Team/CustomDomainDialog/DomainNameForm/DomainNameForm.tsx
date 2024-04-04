@@ -158,9 +158,7 @@ export function DomainNameForm({
           )
         }
         if (e.message.includes("it's already in use by your account.")) {
-          errorMessage = t(
-            "Cannot add this domain since it's already in use by your accound"
-          )
+          errorMessage = t("Cannot add this domain since it's already in use")
         }
         enqueueSnackbar(errorMessage, {
           variant: 'error',

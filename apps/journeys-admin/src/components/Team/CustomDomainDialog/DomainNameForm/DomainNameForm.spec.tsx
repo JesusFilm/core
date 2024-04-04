@@ -20,6 +20,7 @@ import {
 } from '../../TeamProvider'
 
 import { CREATE_CUSTOM_DOMAIN, DELETE_CUSTOM_DOMAIN, DomainNameForm } from '.'
+import { GraphQLError } from 'graphql'
 
 describe('DomainNameForm', () => {
   const customDomain: CustomDomain = {
@@ -58,6 +59,19 @@ describe('DomainNameForm', () => {
         }
       }
     }))
+  }
+
+  const createCustomDomainErrorMock: MockedResponse<
+    CreateCustomDomain,
+    CreateCustomDomainVariables
+  > = {
+    request: {
+      query: CREATE_CUSTOM_DOMAIN,
+      variables: { input: { name: 'www.example.com', teamId: 'teamId' } }
+    },
+    result: {
+      errors: [new GraphQLError('Error!')]
+    }
   }
 
   const deleteCustomDomainMock: MockedResponse<
@@ -138,15 +152,14 @@ describe('DomainNameForm', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
+
     await waitFor(() =>
-      expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
+      expect(queryByTestId('DeleteCustomDomainIcon')).not.toBeInTheDocument()
     )
-    expect(queryByTestId('DeleteCustomDomainIcon')).not.toBeInTheDocument()
     fireEvent.change(getByRole('textbox'), {
       target: { value: 'www.example.com' }
     })
     fireEvent.click(getByRole('button', { name: 'Connect' }))
-
     await waitFor(() =>
       expect(createCustomDomainMock.result).toHaveBeenCalled()
     )
@@ -179,6 +192,98 @@ describe('DomainNameForm', () => {
     })
     await waitFor(() =>
       expect(getByText('Domain name is a required field')).toBeInTheDocument()
+    )
+  })
+
+  it('should show error message', async () => {
+    const { getByText, getByRole, queryByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getLastActiveTeamIdAndTeamsMock, createCustomDomainErrorMock]}
+        >
+          <TeamProvider>
+            <DomainNameForm />
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(queryByTestId('DeleteCustomDomainIcon')).not.toBeInTheDocument()
+    )
+    await userEvent.type(getByRole('textbox'), 'www.example.com')
+    getByRole('button', { name: 'Connect' }).click()
+    await waitFor(() =>
+      expect(
+        getByText('Something went wrong, please reload the page and try again')
+      ).toBeInTheDocument()
+    )
+  })
+
+  it('should show error message for a domain that is already in use ', async () => {
+    const createCustomDomainErrorUniqueConstraintMock = {
+      ...createCustomDomainErrorMock,
+      result: {
+        errors: [
+          new GraphQLError('Unique constraint failed on the fields: (`name`)')
+        ]
+      }
+    }
+    const { getByText, getByRole, queryByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            createCustomDomainErrorUniqueConstraintMock
+          ]}
+        >
+          <TeamProvider>
+            <DomainNameForm />
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(queryByTestId('DeleteCustomDomainIcon')).not.toBeInTheDocument()
+    )
+    await userEvent.type(getByRole('textbox'), 'www.example.com')
+    getByRole('button', { name: 'Connect' }).click()
+    await waitFor(() =>
+      expect(
+        getByText('This domain is already connected to another NextSteps Team')
+      ).toBeInTheDocument()
+    )
+  })
+
+  it('should show error message for a domain that is already in use by another team in account', async () => {
+    const createCustomDomainErrorAlreadyInUseMock = {
+      ...createCustomDomainErrorMock,
+      result: {
+        errors: [new GraphQLError("it's already in use by your account.")]
+      }
+    }
+    const { getByText, getByRole, queryByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            createCustomDomainErrorAlreadyInUseMock
+          ]}
+        >
+          <TeamProvider>
+            <DomainNameForm />
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(queryByTestId('DeleteCustomDomainIcon')).not.toBeInTheDocument()
+    )
+    await userEvent.type(getByRole('textbox'), 'www.example.com')
+    getByRole('button', { name: 'Connect' }).click()
+    await waitFor(() =>
+      expect(
+        getByText("Cannot add this domain since it's already in use")
+      ).toBeInTheDocument()
     )
   })
 })
