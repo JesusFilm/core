@@ -33,16 +33,23 @@ export default async function handler(
     return res.status(403).json({ error: 'Not authorized' })
   }
 
-  const slug = req.query.slug as string
-  const hostname = req?.query?.hostname?.toString() as string
+  const slug = req.query.slug?.toString()
+  const hostname = req?.query?.hostname?.toString()
+
+  if (slug == null) return res.status(400).json({ error: 'Missing Slug' })
+
+  const params: { accessToken: string; slug: string; hostname?: string } = {
+    accessToken: process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
+    slug
+  }
+
+  if (hostname != null) params.hostname = hostname
 
   try {
     const response = await fetch(
-      `${process.env.JOURNEYS_URL}/api/revalidate?${new URLSearchParams({
-        accessToken: process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
-        hostname,
-        slug
-      }).toString()}`
+      `${process.env.JOURNEYS_URL}/api/revalidate?${new URLSearchParams(
+        params
+      ).toString()}`
     )
     if (!response.ok)
       return res.status(response.status).json(await response.text())
