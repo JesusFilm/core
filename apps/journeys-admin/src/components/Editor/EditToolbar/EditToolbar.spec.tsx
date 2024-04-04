@@ -13,9 +13,9 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
+import { getCustomDomainMockARecord } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
 import { EditToolbar } from '.'
-import { getCustomDomainMockARecord } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
