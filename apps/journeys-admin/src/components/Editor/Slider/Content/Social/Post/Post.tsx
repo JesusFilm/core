@@ -87,7 +87,8 @@ export function Post(): ReactElement {
                 width: 208,
                 height: 158,
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                overflow: 'hidden'
               }}
             >
               {journey?.primaryImageBlock?.src == null ? (
@@ -98,6 +99,7 @@ export function Post(): ReactElement {
                   height={158}
                   bgcolor="rgba(0, 0, 0, 0.1)"
                   borderRadius="5px"
+                  overflow="hidden"
                 />
               ) : (
                 <Image
@@ -108,7 +110,8 @@ export function Post(): ReactElement {
                   style={{
                     borderRadius: '5px',
                     maxWidth: '100%',
-                    objectFit: 'cover'
+                    objectFit: 'cover',
+                    overflow: 'hidden'
                   }}
                 />
               )}

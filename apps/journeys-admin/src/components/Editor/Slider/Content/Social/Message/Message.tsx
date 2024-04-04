@@ -78,6 +78,7 @@ export function MessageBubble({
 export function Message(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <Box maxWidth={256} data-testid="SocialPreviewMessage">
       <Stack direction="column" justifyContent="start">
