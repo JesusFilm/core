@@ -217,7 +217,7 @@ export function DomainNameForm({
           <Button
             disabled={isSubmitting}
             onClick={() => handleSubmit()}
-            sx={{ width: 120 }}
+            sx={{ width: 120, height: 55 }}
           >
             {t('Connect')}
           </Button>
@@ -239,7 +239,7 @@ export function DomainNameForm({
       <Button
         disabled={loading}
         onClick={async () => await handleDisconnect()}
-        sx={{ width: 120 }}
+        sx={{ width: 120, height: 55 }}
       >
         {loading === true ? t('Connect') : t('Disconnect')}
       </Button>

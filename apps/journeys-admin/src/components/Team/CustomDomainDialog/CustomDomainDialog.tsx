@@ -57,7 +57,6 @@ export function CustomDomainDialog({
         closeButton: true
       }}
       fullscreen={!smUp}
-      sx={{ '& .MuiDialogContent-dividers': { px: 6, py: 9 } }}
     >
       <Stack spacing={6}>
         <Stack spacing={4} direction="row">
@@ -84,7 +83,9 @@ export function CustomDomainDialog({
           </Box>
         </Stack>
         <Stack spacing={4} direction="row">
-          <Globe2Icon sx={{ color: 'secondary.light' }} />
+          <Box>
+            <Globe2Icon sx={{ color: 'secondary.light', mt: 4 }} />
+          </Box>
           <DomainNameForm customDomain={customDomain} loading={loading} />
         </Stack>
         {customDomain != null && (

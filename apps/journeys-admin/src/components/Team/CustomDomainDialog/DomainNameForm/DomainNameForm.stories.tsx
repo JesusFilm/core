@@ -1,5 +1,6 @@
 // import { MockedProvider } from '@apollo/client/testing'
 import { MockedResponse } from '@apollo/client/testing'
+import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
@@ -55,7 +56,9 @@ const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeam
 const Template: StoryObj<typeof DomainNameForm> = {
   render: (args) => (
     <TeamProvider>
-      <DomainNameForm {...args} />
+      <Stack spacing={4} direction="row">
+        <DomainNameForm {...args} />
+      </Stack>
     </TeamProvider>
   )
 }
