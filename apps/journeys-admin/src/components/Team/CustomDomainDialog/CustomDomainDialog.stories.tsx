@@ -74,27 +74,10 @@ const getCustomDomainMockVerifiedFalse: MockedResponse<GetCustomDomains> = {
           name: 'mockdomain.com',
           apexName: 'mockdomain.com',
           id: 'customDomainId',
-          verification: {
-            __typename: 'CustomDomainVerification',
-            verified: false,
-            verification: [
-              {
-                __typename: 'VercelDomainVerification',
-                type: 'TXT',
-                domain: '_vercel.mockdomain.com',
-                value: 'vc-domain-verify=mockdomain.com,61eb769fc89e3d03578a',
-                reason: ''
-              }
-            ]
-          },
           journeyCollection: {
             __typename: 'JourneyCollection',
             id: 'journeyCollectionId',
             journeys: []
-          },
-          configuration: {
-            __typename: 'VercelDomainConfiguration',
-            misconfigured: false
           }
         }
       ]
@@ -117,19 +100,10 @@ const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
           name: 'mockdomain.com',
           apexName: 'mockdomain.com',
           id: 'customDomainId',
-          verification: {
-            __typename: 'CustomDomainVerification',
-            verified: true,
-            verification: []
-          },
           journeyCollection: {
             __typename: 'JourneyCollection',
             id: 'journeyCollectionId',
             journeys: []
-          },
-          configuration: {
-            __typename: 'VercelDomainConfiguration',
-            misconfigured: false
           }
         }
       ]
@@ -152,19 +126,10 @@ const getCustomDomainMockCName: MockedResponse<GetCustomDomains> = {
           name: 'tandem.mockdomain.com',
           apexName: 'mockdomain.com',
           id: 'customDomainId',
-          verification: {
-            __typename: 'CustomDomainVerification',
-            verified: true,
-            verification: []
-          },
           journeyCollection: {
             __typename: 'JourneyCollection',
             id: 'journeyCollectionId',
             journeys: []
-          },
-          configuration: {
-            __typename: 'VercelDomainConfiguration',
-            misconfigured: false
           }
         }
       ]
