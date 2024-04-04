@@ -79,7 +79,7 @@ export function DNSConfigSection({
       )
       return () => clearInterval(interval)
     }
-  }, [checkCustomDomain, customDomain])
+  }, [checkCustomDomain, customDomain?.id])
 
   async function handleCopyClick(value: string): Promise<void> {
     await navigator.clipboard.writeText(value)
