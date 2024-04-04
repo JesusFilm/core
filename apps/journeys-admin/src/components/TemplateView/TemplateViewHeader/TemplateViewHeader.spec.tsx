@@ -14,8 +14,6 @@ import { journey } from '../../Editor/ActionDetails/data'
 import { TemplateViewHeader } from './TemplateViewHeader'
 
 describe('TemplateViewHeader', () => {
-  const setOpenTeamDialogMock = jest.fn()
-
   it('should render the social image', () => {
     const primaryImageBlock: PrimaryImageBlock = {
       id: 'image1.id',
@@ -40,12 +38,7 @@ describe('TemplateViewHeader', () => {
               }
             }}
           >
-            <TemplateViewHeader
-              isPublisher
-              authUser={{} as unknown as User}
-              openTeamDialog={false}
-              setOpenTeamDialog={setOpenTeamDialogMock}
-            />
+            <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -82,12 +75,7 @@ describe('TemplateViewHeader', () => {
             variant: 'admin'
           }}
         >
-          <TemplateViewHeader
-            isPublisher
-            authUser={{} as unknown as User}
-            openTeamDialog={false}
-            setOpenTeamDialog={setOpenTeamDialogMock}
-          />
+          <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -131,12 +119,7 @@ describe('TemplateViewHeader', () => {
             variant: 'admin'
           }}
         >
-          <TemplateViewHeader
-            isPublisher
-            authUser={{} as unknown as User}
-            openTeamDialog={false}
-            setOpenTeamDialog={setOpenTeamDialogMock}
-          />
+          <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -159,12 +142,7 @@ describe('TemplateViewHeader', () => {
               journey
             }}
           >
-            <TemplateViewHeader
-              isPublisher
-              authUser={{} as unknown as User}
-              openTeamDialog={false}
-              setOpenTeamDialog={setOpenTeamDialogMock}
-            />
+            <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -186,8 +164,6 @@ describe('TemplateViewHeader', () => {
             <TemplateViewHeader
               isPublisher
               authUser={{ id: '123' } as unknown as User}
-              openTeamDialog={false}
-              setOpenTeamDialog={setOpenTeamDialogMock}
             />
           </JourneyProvider>
         </SnackbarProvider>
@@ -211,8 +187,6 @@ describe('TemplateViewHeader', () => {
             <TemplateViewHeader
               isPublisher
               authUser={{ id: '123' } as unknown as User}
-              openTeamDialog={false}
-              setOpenTeamDialog={setOpenTeamDialogMock}
             />
           </JourneyProvider>
         </SnackbarProvider>
@@ -234,8 +208,6 @@ describe('TemplateViewHeader', () => {
             <TemplateViewHeader
               isPublisher
               authUser={{ id: '123' } as unknown as User}
-              openTeamDialog={false}
-              setOpenTeamDialog={setOpenTeamDialogMock}
             />
           </JourneyProvider>
         </SnackbarProvider>
@@ -260,8 +232,6 @@ describe('TemplateViewHeader', () => {
             <TemplateViewHeader
               isPublisher={false}
               authUser={{ id: '123' } as unknown as User}
-              openTeamDialog={false}
-              setOpenTeamDialog={setOpenTeamDialogMock}
             />
           </JourneyProvider>
         </SnackbarProvider>
@@ -283,8 +253,6 @@ describe('TemplateViewHeader', () => {
             <TemplateViewHeader
               isPublisher={false}
               authUser={{ id: '123' } as unknown as User}
-              openTeamDialog={false}
-              setOpenTeamDialog={setOpenTeamDialogMock}
             />
           </JourneyProvider>
         </SnackbarProvider>
@@ -306,8 +274,6 @@ describe('TemplateViewHeader', () => {
           <TemplateViewHeader
             isPublisher={false}
             authUser={{} as unknown as User}
-            openTeamDialog={false}
-            setOpenTeamDialog={setOpenTeamDialogMock}
           />
         </JourneyProvider>
       </MockedProvider>
@@ -323,8 +289,6 @@ describe('TemplateViewHeader', () => {
           <TemplateViewHeader
             isPublisher={false}
             authUser={{} as unknown as User}
-            openTeamDialog={false}
-            setOpenTeamDialog={setOpenTeamDialogMock}
           />
         </JourneyProvider>
       </MockedProvider>
