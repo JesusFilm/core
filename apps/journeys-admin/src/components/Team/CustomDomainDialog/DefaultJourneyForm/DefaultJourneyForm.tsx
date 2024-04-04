@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Autocomplete from '@mui/material/Autocomplete'
+import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import Stack from '@mui/material/Stack'
@@ -9,8 +10,6 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-
-import Computer from '@core/shared/ui/icons/Computer'
 
 import {
   CreateJourneyCollection,
@@ -31,6 +30,7 @@ import {
 } from '../../../../../__generated__/UpdateJourneyCollection'
 import { useAdminJourneysQuery } from '../../../../libs/useAdminJourneysQuery'
 import { useTeam } from '../../TeamProvider'
+import { CustomDomainDialogTitle } from '../CustomDomainDialogTitle'
 
 interface DefaultJourneyFormProps {
   customDomain: CustomDomain
@@ -185,34 +185,28 @@ export function DefaultJourneyForm({
   }
 
   return (
-    <Stack spacing={4}>
-      <Stack direction="row" spacing={3}>
-        <Computer sx={{ color: 'secondary.light' }} />
-        <Stack spacing={4} width="100%">
-          <Typography variant="subtitle1">{t('Default Journey')}</Typography>
-          <Stack direction="row" justifyContent="space-between">
-            <FormControl variant="filled" fullWidth hiddenLabel>
-              <Autocomplete
-                getOptionLabel={(options) => options.title}
-                id="defaultJourney"
-                defaultValue={customDomain.journeyCollection?.journeys?.[0]}
-                onChange={async (_e, option) => await handleOnChange(option)}
-                options={data?.journeys ?? []}
-                renderInput={(params) => (
-                  <TextField {...params} variant="filled" hiddenLabel />
-                )}
-                blurOnSelect
-              />
-              <FormHelperText sx={{ wordBreak: 'break-all' }}>
-                {t(
-                  'The default Journey will be available at {{ customDomain }}',
-                  { customDomain: customDomain.name }
-                )}
-              </FormHelperText>
-            </FormControl>
-          </Stack>
-        </Stack>
+    <Box flexGrow={1}>
+      <CustomDomainDialogTitle title={t('Default Journey')} />
+      <Stack direction="row" justifyContent="space-between">
+        <FormControl variant="filled" fullWidth hiddenLabel>
+          <Autocomplete
+            getOptionLabel={(options) => options.title}
+            id="defaultJourney"
+            defaultValue={customDomain.journeyCollection?.journeys?.[0]}
+            onChange={async (_e, option) => await handleOnChange(option)}
+            options={data?.journeys ?? []}
+            renderInput={(params) => (
+              <TextField {...params} variant="filled" hiddenLabel />
+            )}
+            blurOnSelect
+          />
+          <FormHelperText sx={{ wordBreak: 'break-all' }}>
+            {t('The default Journey will be available at {{ customDomain }}', {
+              customDomain: customDomain.name
+            })}
+          </FormHelperText>
+        </FormControl>
       </Stack>
-    </Stack>
+    </Box>
   )
 }

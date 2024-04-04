@@ -142,4 +142,25 @@ describe('CustomDomainDialog', () => {
     fireEvent.click(getByTestId('dialog-close-button'))
     expect(onClose).toHaveBeenCalled()
   })
+
+  it('should have the proper link for instructions button', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <TeamProvider>
+            <CustomDomainDialog open onClose={onClose} />
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(getByRole('link', { name: 'Instructions' })).toHaveAttribute(
+      'href',
+      'https://support.nextstep.is/article/1365-custom-domains'
+    )
+    expect(getByRole('link', { name: 'Instructions' })).toHaveAttribute(
+      'target',
+      '_blank'
+    )
+  })
 })

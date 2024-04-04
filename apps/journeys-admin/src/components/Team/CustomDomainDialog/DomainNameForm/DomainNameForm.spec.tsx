@@ -181,25 +181,4 @@ describe('DomainNameForm', () => {
       expect(getByText('Domain name is a required field')).toBeInTheDocument()
     )
   })
-
-  it('should have the proper link for instructions button', () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <TeamProvider>
-            <DomainNameForm />
-          </TeamProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    expect(getByRole('link', { name: 'Instructions' })).toHaveAttribute(
-      'href',
-      'https://support.nextstep.is/article/1365-custom-domains'
-    )
-    expect(getByRole('link', { name: 'Instructions' })).toHaveAttribute(
-      'target',
-      '_blank'
-    )
-  })
 })
