@@ -79,6 +79,8 @@ export function DNSConfigSection({
       )
       return () => clearInterval(interval)
     }
+    // do not rerun useEffect when whole customDomain changes so disable lint rule
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkCustomDomain, customDomain?.id])
 
   async function handleCopyClick(value: string): Promise<void> {
