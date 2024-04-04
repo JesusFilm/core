@@ -183,7 +183,7 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Preview' })).not.toBeDisabled()
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'href',
-      '/api/preview?slug=journey-slug&hostname=mockdomain.com'
+      '/api/preview?slug=journey-slug&hostname=example.com'
     )
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'target',

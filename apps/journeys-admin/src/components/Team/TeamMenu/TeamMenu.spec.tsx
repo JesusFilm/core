@@ -241,8 +241,8 @@ describe('TeamMenu', () => {
               customDomains: [
                 {
                   __typename: 'CustomDomain',
-                  name: 'mockdomain.com',
-                  apexName: 'mockdomain.com',
+                  name: 'example.com',
+                  apexName: 'example.com',
                   id: 'customDomainId',
                   verification: {
                     __typename: 'CustomDomainVerific  ation',
@@ -282,6 +282,6 @@ describe('TeamMenu', () => {
     await waitFor(() =>
       expect(mockTeamWithCustomDomain.result).toHaveBeenCalled()
     )
-    expect(getByText('mockdomain.com')).toBeInTheDocument()
+    expect(getByText('example.com')).toBeInTheDocument()
   })
 })

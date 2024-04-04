@@ -25,8 +25,8 @@ describe('DomainNameForm', () => {
   const customDomain: CustomDomain = {
     id: 'customDomainId',
     __typename: 'CustomDomain',
-    name: 'mockdomain.com',
-    apexName: 'mockdomain.com',
+    name: 'example.com',
+    apexName: 'example.com',
     journeyCollection: null
   }
 

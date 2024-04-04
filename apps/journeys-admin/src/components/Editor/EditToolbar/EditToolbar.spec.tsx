@@ -89,7 +89,7 @@ describe('Edit Toolbar', () => {
     expect(button).toContainElement(getAllByTestId('EyeOpenIcon')[0])
     expect(button).toHaveAttribute(
       'href',
-      '/api/preview?slug=untitled-journey&hostname=mockdomain.com'
+      '/api/preview?slug=untitled-journey&hostname=example.com'
     )
     expect(button).toHaveAttribute('target', '_blank')
     expect(button).not.toBeDisabled()
