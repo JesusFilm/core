@@ -47,8 +47,8 @@ describe('DefaultJourneyForm', () => {
   const customDomain: CustomDomain = {
     id: 'customDomainId',
     __typename: 'CustomDomain' as const,
-    name: 'mockdomain.com',
-    apexName: 'mockdomain.com',
+    name: 'example.com',
+    apexName: 'example.com',
     journeyCollection: null
   }
 

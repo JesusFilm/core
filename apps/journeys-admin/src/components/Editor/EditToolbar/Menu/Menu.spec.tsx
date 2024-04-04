@@ -356,7 +356,7 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'href',
-      '/api/preview?slug=&hostname=mockdomain.com'
+      '/api/preview?slug=&hostname=example.com'
     )
   })
 
