@@ -22,8 +22,8 @@ export const getCustomDomainMockARecord: MockedResponse<
       customDomains: [
         {
           __typename: 'CustomDomain',
-          name: 'mockdomain.com',
-          apexName: 'mockdomain.com',
+          name: 'example.com',
+          apexName: 'example.com',
           id: 'customDomainId',
           journeyCollection: {
             __typename: 'JourneyCollection',

@@ -143,6 +143,6 @@ describe('JourneyLink', () => {
       </SnackbarProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(getByRole('textbox')).toHaveValue('https://mockdomain.com/default')
+    expect(getByRole('textbox')).toHaveValue('https://example.com/default')
   })
 })
