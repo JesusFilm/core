@@ -89,8 +89,6 @@ jobs:
           targets: prisma-generate
           projects: ${{ inputs.name }}
           parallel: 1
-        env:
-          DISABLE_ERD: true
       - name: Build ${{ inputs.name }}
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3

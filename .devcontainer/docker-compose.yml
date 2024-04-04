@@ -22,8 +22,6 @@ services:
       PGPASSWORD: postgres
       PGUSER: postgres
       PGDATABASE: postgres
-      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
-      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
     extra_hosts:
       - 'host.docker.internal:host-gateway'
   db:
