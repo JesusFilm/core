@@ -21,13 +21,11 @@ import { EmbedCardPreview } from './EmbedCardPreview'
 interface EmbedJourneyDialogProps {
   open: boolean
   onClose: () => void
-  customDomainName: string | undefined
 }
 
 export function EmbedJourneyDialog({
   open,
-  onClose,
-  customDomainName
+  onClose
 }: EmbedJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -35,12 +33,9 @@ export function EmbedJourneyDialog({
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  const hasCustomDomain = customDomainName != null
-
   // this should match apps/journeys/pages/api/oembed.ts
-  const providerUrl = hasCustomDomain
-    ? `https://${customDomainName}`
-    : process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
+  const providerUrl =
+    process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
   const embedUrl = `${providerUrl}/embed/${journey?.slug as string}`
 
   // Self-closing iframe tag breaks embed on WordPress
