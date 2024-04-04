@@ -141,10 +141,10 @@ export class VideoBlockResolver {
           )
       }
 
-      const existingVideosOnParent = await tx.block.count({
+      const existingVideoOnParent = await tx.block.findFirst({
         where: { parentBlockId: input.parentBlockId, typename: 'VideoBlock' }
       })
-      if (existingVideosOnParent > 0)
+      if (existingVideoOnParent != null)
         throw new GraphQLError(
           'Parent block already has an existing video block',
           {

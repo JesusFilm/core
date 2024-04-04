@@ -110,7 +110,7 @@ describe('VideoBlockResolver', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
-    prismaService.block.count.mockResolvedValue(0)
+    prismaService.block.findFirst.mockResolvedValue(null)
   })
 
   afterEach(() => {
@@ -418,7 +418,7 @@ describe('VideoBlockResolver', () => {
     })
 
     it('should only allow one video block per parent', async () => {
-      prismaService.block.count.mockResolvedValueOnce(1)
+      prismaService.block.findFirst.mockResolvedValueOnce(block)
 
       await expect(
         resolver.videoBlockCreate(ability, {
