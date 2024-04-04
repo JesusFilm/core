@@ -14,6 +14,7 @@ import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { GET_CUSTOM_DOMAINS } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
+import { getCustomDomainMockARecord } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { defaultJourney } from '../../JourneyList/journeyListData'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -57,32 +58,6 @@ const getCustomDomainMockEmpty: MockedResponse<GetCustomDomains> = {
   result: {
     data: {
       customDomains: []
-    }
-  }
-}
-
-const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
-  request: {
-    query: GET_CUSTOM_DOMAINS,
-    variables: {
-      teamId: 'teamId'
-    }
-  },
-  result: {
-    data: {
-      customDomains: [
-        {
-          __typename: 'CustomDomain',
-          name: 'mockdomain.com',
-          apexName: 'mockdomain.com',
-          id: 'customDomainId',
-          journeyCollection: {
-            __typename: 'JourneyCollection',
-            id: 'journeyCollectionId',
-            journeys: []
-          }
-        }
-      ]
     }
   }
 }

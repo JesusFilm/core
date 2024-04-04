@@ -150,15 +150,15 @@ export function DomainNameForm({
         let errorMessage = t(
           'Something went wrong, please reload the page and try again'
         )
-        if (
-          e.message.includes('Unique constraint failed on the fields: (`name`)')
-        ) {
+        if (e.message.includes('custom domain already exists')) {
           errorMessage = t(
             'This domain is already connected to another NextSteps Team'
           )
         }
         if (e.message.includes("it's already in use by your account.")) {
-          errorMessage = t("Cannot add this domain since it's already in use")
+          errorMessage = t(
+            'This domain is already connected to another NextSteps Team'
+          )
         }
         enqueueSnackbar(errorMessage, {
           variant: 'error',
@@ -231,7 +231,7 @@ export function DomainNameForm({
         value={customDomain?.name}
         placeholder="your.nextstep.is"
         variant="filled"
-        label={t('Domain Name')}
+        hiddenLabel
         InputProps={{ readOnly: true }}
       />
       <Button

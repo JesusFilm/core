@@ -13,9 +13,9 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
-import { getCustomDomainMockARecord } from '../../Team/CustomDomainDialog/data'
 
 import { EditToolbar } from '.'
+import { getCustomDomainMockARecord } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -61,9 +61,10 @@ describe('Edit Toolbar', () => {
   })
 
   it('should render Preview Button with custom domain link', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMockARecord.result)
     const { getAllByRole, getAllByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getCustomDomainMockARecord]}>
+        <MockedProvider mocks={[{ ...getCustomDomainMockARecord, result }]}>
           <JourneyProvider
             value={{
               journey: {
@@ -83,9 +84,7 @@ describe('Edit Toolbar', () => {
     )
 
     const button = getAllByRole('link', { name: 'Preview' })[0]
-    await waitFor(() =>
-      expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(button).toContainElement(getAllByTestId('EyeOpenIcon')[0])
     expect(button).toHaveAttribute(
       'href',
@@ -115,10 +114,7 @@ describe('Edit Toolbar', () => {
     )
     const button = getAllByRole('link', { name: 'Preview' })[0]
     expect(button).toContainElement(getAllByTestId('EyeOpenIcon')[0])
-    expect(button).toHaveAttribute(
-      'href',
-      '/api/preview?slug=untitled-journey&hostname=undefined'
-    )
+    expect(button).toHaveAttribute('href', '/api/preview?slug=untitled-journey')
     expect(button).toHaveAttribute('target', '_blank')
     expect(button).not.toBeDisabled()
   })

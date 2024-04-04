@@ -21,7 +21,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} customDomainName={undefined} />
+            <SlugDialog open onClose={onClose} hostname={undefined} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -70,7 +70,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} customDomainName={undefined} />
+            <SlugDialog open onClose={onClose} hostname={undefined} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -106,7 +106,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} customDomainName={undefined} />
+            <SlugDialog open onClose={onClose} hostname={undefined} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -156,7 +156,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} customDomainName={undefined} />
+            <SlugDialog open onClose={onClose} hostname={undefined} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -189,7 +189,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
             <SlugDialog
               open
               onClose={onClose}
-              customDomainName="www.customdomain.com"
+              hostname="www.customdomain.com"
             />
           </JourneyProvider>
         </SnackbarProvider>

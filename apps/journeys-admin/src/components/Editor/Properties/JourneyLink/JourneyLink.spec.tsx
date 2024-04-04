@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { getCustomDomainMockARecord } from '../../../Team/CustomDomainDialog/data'
+import { getCustomDomainMockARecord } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { defaultJourney } from '../../data'
 
 import { JourneyLink } from './JourneyLink'
@@ -119,6 +119,8 @@ describe('JourneyLink', () => {
   })
 
   it('should show custom domain if it exists', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMockARecord.result)
+
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -128,7 +130,7 @@ describe('JourneyLink', () => {
     } as unknown as NextRouter)
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getCustomDomainMockARecord]}>
+        <MockedProvider mocks={[{ ...getCustomDomainMockARecord, result }]}>
           <JourneyProvider
             value={{
               journey: journeyWithTeam as JourneyFields,
@@ -140,9 +142,7 @@ describe('JourneyLink', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    await waitFor(() =>
-      expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByRole('textbox')).toHaveValue('https://mockdomain.com/default')
   })
 })

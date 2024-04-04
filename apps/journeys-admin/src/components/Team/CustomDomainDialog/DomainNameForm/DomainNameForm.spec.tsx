@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -20,7 +21,6 @@ import {
 } from '../../TeamProvider'
 
 import { CREATE_CUSTOM_DOMAIN, DELETE_CUSTOM_DOMAIN, DomainNameForm } from '.'
-import { GraphQLError } from 'graphql'
 
 describe('DomainNameForm', () => {
   const customDomain: CustomDomain = {
@@ -219,13 +219,11 @@ describe('DomainNameForm', () => {
     )
   })
 
-  it('should show error message for a domain that is already in use ', async () => {
+  it('should show error message for a domain that is already in use', async () => {
     const createCustomDomainErrorUniqueConstraintMock = {
       ...createCustomDomainErrorMock,
       result: {
-        errors: [
-          new GraphQLError('Unique constraint failed on the fields: (`name`)')
-        ]
+        errors: [new GraphQLError('custom domain already exists')]
       }
     }
     const { getByText, getByRole, queryByTestId } = render(
@@ -282,7 +280,7 @@ describe('DomainNameForm', () => {
     getByRole('button', { name: 'Connect' }).click()
     await waitFor(() =>
       expect(
-        getByText("Cannot add this domain since it's already in use")
+        getByText('This domain is already connected to another NextSteps Team')
       ).toBeInTheDocument()
     )
   })

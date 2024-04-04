@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { getCustomDomainMockARecord } from '../../../../Team/CustomDomainDialog/data'
+import { getCustomDomainMockARecord } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -155,10 +155,13 @@ describe('DefaultMenu', () => {
   })
 
   it('should redirect to preview with custom Domain', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMockARecord.result)
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <MockedProvider mocks={[getCustomDomainMockARecord, getTeams]}>
+          <MockedProvider
+            mocks={[{ ...getCustomDomainMockARecord, result }, getTeams]}
+          >
             <TeamProvider>
               <DefaultMenu
                 id="journey-id"
@@ -176,9 +179,7 @@ describe('DefaultMenu', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(getTeams.result).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(getByRole('menuitem', { name: 'Preview' })).not.toBeDisabled()
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(

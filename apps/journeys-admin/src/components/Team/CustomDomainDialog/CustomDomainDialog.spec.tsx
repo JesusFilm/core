@@ -3,9 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
-import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { GET_CUSTOM_DOMAINS } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
+import { getCustomDomainMockARecord } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -39,32 +38,6 @@ const checkCustomDomainMockConfiguredAndVerified: MockedResponse<CheckCustomDoma
       }
     }
   }
-
-const getCustomDomainMockARecord: MockedResponse<GetCustomDomains> = {
-  request: {
-    query: GET_CUSTOM_DOMAINS,
-    variables: {
-      teamId: 'teamId'
-    }
-  },
-  result: {
-    data: {
-      customDomains: [
-        {
-          __typename: 'CustomDomain',
-          name: 'mockdomain.com',
-          apexName: 'mockdomain.com',
-          id: 'customDomainId',
-          journeyCollection: {
-            __typename: 'JourneyCollection',
-            id: 'journeyCollectionId',
-            journeys: []
-          }
-        }
-      ]
-    }
-  }
-}
 
 describe('CustomDomainDialog', () => {
   const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =

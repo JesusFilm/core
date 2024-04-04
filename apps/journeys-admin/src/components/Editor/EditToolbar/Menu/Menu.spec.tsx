@@ -15,7 +15,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
-import { getCustomDomainMockARecord } from '../../../Team/CustomDomainDialog/data'
+import { getCustomDomainMockARecord } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { BLOCK_DUPLICATE } from '../DuplicateBlock/DuplicateBlock'
 
 import { GET_ROLE } from './Menu'
@@ -317,6 +317,7 @@ describe('EditToolbar Menu', () => {
   })
 
   it('should provide customDomain hostname to preview button', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMockARecord.result)
     const selectedBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'stepId',
@@ -329,7 +330,7 @@ describe('EditToolbar Menu', () => {
 
     const { getByRole, getByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getCustomDomainMockARecord]}>
+        <MockedProvider mocks={[{ ...getCustomDomainMockARecord, result }]}>
           <JourneyProvider
             value={{
               journey: {
@@ -349,9 +350,7 @@ describe('EditToolbar Menu', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    await waitFor(() =>
-      expect(getCustomDomainMockARecord.result).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
     fireEvent.click(getByRole('button'))
     expect(getByRole('menu')).toBeInTheDocument()
