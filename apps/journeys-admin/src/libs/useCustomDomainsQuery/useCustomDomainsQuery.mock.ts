@@ -100,26 +100,17 @@ export const createCustomDomainMock: MockedResponse<
     query: CREATE_CUSTOM_DOMAIN,
     variables: { input: { name: 'www.example.com', teamId: 'teamId' } }
   },
-  result: jest.fn(() => ({
+  result: {
     data: {
       customDomainCreate: {
         __typename: 'CustomDomain',
         id: 'customDomainId',
         apexName: 'www.example.com',
         name: 'www.example.com',
-        verification: {
-          __typename: 'CustomDomainVerification',
-          verified: true,
-          verification: []
-        },
-        configuration: {
-          __typename: 'VercelDomainConfiguration',
-          misconfigured: false
-        },
         journeyCollection: null
       }
     }
-  }))
+  }
 }
 
 export const deleteCustomDomainMock: MockedResponse<
@@ -130,14 +121,14 @@ export const deleteCustomDomainMock: MockedResponse<
     query: DELETE_CUSTOM_DOMAIN,
     variables: { customDomainId: 'customDomainId' }
   },
-  result: jest.fn(() => ({
+  result: {
     data: {
       customDomainDelete: {
         __typename: 'CustomDomain',
         id: 'customDomainId'
       }
     }
-  }))
+  }
 }
 
 export const createCustomDomainErrorMock: MockedResponse<

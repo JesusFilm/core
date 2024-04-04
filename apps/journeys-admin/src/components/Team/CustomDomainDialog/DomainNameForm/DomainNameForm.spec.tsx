@@ -56,10 +56,13 @@ describe('DomainNameForm', () => {
 
   it('should delete a custom domain', async () => {
     const cache = new InMemoryCache()
-
+    const result = jest.fn().mockReturnValue(deleteCustomDomainMock.result)
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider cache={cache} mocks={[deleteCustomDomainMock]}>
+        <MockedProvider
+          cache={cache}
+          mocks={[{ ...deleteCustomDomainMock, result }]}
+        >
           <DomainNameForm customDomain={customDomain} />
         </MockedProvider>
       </SnackbarProvider>
@@ -67,20 +70,21 @@ describe('DomainNameForm', () => {
 
     fireEvent.click(getByRole('button', { name: 'Disconnect' }))
 
-    await waitFor(() =>
-      expect(deleteCustomDomainMock.result).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['CustomDomain:customDomainId']).toBeUndefined()
   })
 
   it('should create a custom domain', async () => {
     const cache = new InMemoryCache()
-
+    const result = jest.fn().mockReturnValue(createCustomDomainMock.result)
     const { queryByTestId, getByRole } = render(
       <SnackbarProvider>
         <MockedProvider
           cache={cache}
-          mocks={[getLastActiveTeamIdAndTeamsMock, createCustomDomainMock]}
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            { ...createCustomDomainMock, result }
+          ]}
         >
           <TeamProvider>
             <DomainNameForm />
@@ -96,9 +100,7 @@ describe('DomainNameForm', () => {
       target: { value: 'www.example.com' }
     })
     fireEvent.click(getByRole('button', { name: 'Connect' }))
-    await waitFor(() =>
-      expect(createCustomDomainMock.result).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['CustomDomain:customDomainId']).toEqual({
       __typename: 'CustomDomain',
       apexName: 'www.example.com',
