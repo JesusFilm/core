@@ -1,14 +1,11 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import {
-  CheckCustomDomain,
-  CheckCustomDomain_customDomainCheck as CustomDomainCheck
-} from '../../../../../__generated__/CheckCustomDomain'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
+import { checkCustomDomainMock } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
-import { CHECK_CUSTOM_DOMAIN, DNSConfigSection } from '.'
+import { DNSConfigSection } from '.'
 
 const writeText = jest.fn()
 
@@ -34,29 +31,6 @@ describe('DNSConfigSection', () => {
     id: 'customDomainId',
     journeyCollection: null
   }
-
-  const checkCustomDomainMock: (
-    customDomainCheck?: Partial<CustomDomainCheck>
-  ) => MockedResponse<CheckCustomDomain> = (customDomainCheck) => ({
-    request: {
-      query: CHECK_CUSTOM_DOMAIN,
-      variables: {
-        customDomainId: 'customDomainId'
-      }
-    },
-    result: {
-      data: {
-        customDomainCheck: {
-          __typename: 'CustomDomainCheck',
-          configured: true,
-          verified: true,
-          verification: null,
-          verificationResponse: null,
-          ...customDomainCheck
-        }
-      }
-    }
-  })
 
   afterEach(() => {
     jest.clearAllMocks()
