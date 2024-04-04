@@ -235,11 +235,13 @@ export function DomainNameForm({
         InputProps={{ readOnly: true }}
       />
       <Button
-        disabled={loading}
+        disabled={customDomain == null && loading === true}
         onClick={async () => await handleDisconnect()}
         sx={{ width: 120, height: 55 }}
       >
-        {loading === true ? t('Connect') : t('Disconnect')}
+        {customDomain == null && loading === true
+          ? t('Connect')
+          : t('Disconnect')}
       </Button>
     </>
   )
