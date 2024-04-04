@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
 import { User } from 'next-firebase-auth'
-import { Dispatch, ReactElement, SetStateAction } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
@@ -18,18 +18,15 @@ import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 interface TemplateViewHeaderProps {
   isPublisher: boolean | undefined
   authUser: User
-  openTeamDialog: boolean
-  setOpenTeamDialog: Dispatch<SetStateAction<boolean>>
 }
 
 export function TemplateViewHeader({
   isPublisher,
-  authUser,
-  openTeamDialog,
-  setOpenTeamDialog
+  authUser
 }: TemplateViewHeaderProps): ReactElement {
   const { journey } = useJourney()
   const hasCreatorDescription = journey?.creatorDescription != null
+  const [openTeamDialog, setOpenTeamDialog] = useState(false)
 
   return (
     <Stack data-testid="JourneysAdminTemplateViewHeader">

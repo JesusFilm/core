@@ -1,22 +1,19 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { CreateJourneyButton } from '../CreateJourneyButton'
 
 interface TemplateFooterProps {
   signedIn?: boolean
-  openTeamDialog: boolean
-  setOpenTeamDialog: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export function TemplateFooter({
-  signedIn,
-  openTeamDialog,
-  setOpenTeamDialog
+  signedIn
 }: TemplateFooterProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [openTeamDialog, setOpenTeamDialog] = useState(false)
 
   return (
     <Stack

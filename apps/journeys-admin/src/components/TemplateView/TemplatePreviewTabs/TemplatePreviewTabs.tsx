@@ -4,13 +4,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import {
-  Dispatch,
-  ReactElement,
-  SetStateAction,
-  useMemo,
-  useState
-} from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -28,17 +22,14 @@ import { TemplateVideoPreview } from './TemplateVideoPreview'
 
 interface TemplatePreviewTabsProps {
   authUser?: User
-  openTeamDialog: boolean
-  setOpenTeamDialog: Dispatch<SetStateAction<boolean>>
 }
 
 export function TemplatePreviewTabs({
-  authUser,
-  openTeamDialog,
-  setOpenTeamDialog
+  authUser
 }: TemplatePreviewTabsProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const { t } = useTranslation('apps-journeys-admin')
+  const [openTeamDialog, setOpenTeamDialog] = useState(false)
 
   const { journey } = useJourney()
 
