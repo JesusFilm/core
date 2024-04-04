@@ -46,11 +46,10 @@ export function DefaultMenu({
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  const { data: customDomainData } = useCustomDomainsQuery({
-    variables: { teamId: activeTeam?.id as string }
+  const { hostname } = useCustomDomainsQuery({
+    variables: { teamId: activeTeam?.id ?? '' },
+    skip: activeTeam?.id == null
   })
-
-  const hostname = customDomainData?.customDomains[0].name
 
   return (
     <>

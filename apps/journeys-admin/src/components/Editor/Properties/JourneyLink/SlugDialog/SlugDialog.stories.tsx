@@ -114,7 +114,7 @@ export const Error = {
             }
           },
           error: {
-            name: 'USER_INPUT_ERROR',
+            name: 'BAD_USER_INPUT',
             message: 'Field update failed. Reload the page or try again.'
           }
         }
