@@ -3,18 +3,25 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
+  CreateJourneyCollection,
+  CreateJourneyCollectionVariables
+} from '../../../../../__generated__/CreateJourneyCollection'
+import {
+  DeleteJourneyCollection,
+  DeleteJourneyCollectionVariables
+} from '../../../../../__generated__/DeleteJourneyCollection'
+import {
   GetAdminJourneys,
   GetAdminJourneysVariables
 } from '../../../../../__generated__/GetAdminJourneys'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { GET_ADMIN_JOURNEYS } from '../../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import {
-  createJourneyCollectionMock,
-  deleteJourneyCollectionMock,
-  updateJourneyCollectionMock
-} from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+  UpdateJourneyCollection,
+  UpdateJourneyCollectionVariables
+} from '../../../../../__generated__/UpdateJourneyCollection'
+import { GET_ADMIN_JOURNEYS } from '../../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import {
   defaultJourney,
   publishedJourney
@@ -24,12 +31,151 @@ import {
   TeamProvider
 } from '../../TeamProvider'
 
-import { DefaultJourneyForm } from '.'
+import {
+  CREATE_JOURNEY_COLLECTION,
+  DELETE_JOURNEY_COLLECTION,
+  DefaultJourneyForm,
+  UPDATE_JOURNEY_COLLECTION
+} from './DefaultJourneyForm'
 
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn(() => 'uuid')
 }))
+const createJourneyCollectionMock: MockedResponse<
+  CreateJourneyCollection,
+  CreateJourneyCollectionVariables
+> = {
+  request: {
+    query: CREATE_JOURNEY_COLLECTION,
+    variables: {
+      journeyCollectionInput: {
+        id: 'uuid',
+        teamId: 'teamId',
+        journeyIds: ['journey-id']
+      },
+      customDomainUpdateInput: {
+        journeyCollectionId: 'uuid'
+      },
+      customDomainId: 'customDomainId'
+    }
+  },
+  result: {
+    data: {
+      journeyCollectionCreate: {
+        __typename: 'JourneyCollection',
+        id: 'journeyCollectionId',
+        journeys: [
+          {
+            __typename: 'Journey',
+            id: 'journey-id',
+            title: 'Default Journey Heading'
+          }
+        ]
+      },
+      customDomainUpdate: {
+        __typename: 'CustomDomain',
+        id: 'customDomainUpdate',
+        journeyCollection: {
+          __typename: 'JourneyCollection',
+          id: 'journeyCollectionId',
+          journeys: [
+            {
+              __typename: 'Journey',
+              id: 'journey-id',
+              title: 'Default Journey Heading'
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+const updateJourneyCollectionMock: MockedResponse<
+  UpdateJourneyCollection,
+  UpdateJourneyCollectionVariables
+> = {
+  request: {
+    query: UPDATE_JOURNEY_COLLECTION,
+    variables: {
+      id: 'journeyCollectionId',
+      input: {
+        journeyIds: ['published-journey-id']
+      }
+    }
+  },
+  result: {
+    data: {
+      journeyCollectionUpdate: {
+        __typename: 'JourneyCollection',
+        id: 'journeyCollectionId',
+        journeys: [{ __typename: 'Journey', id: 'published-journey-id' }]
+      }
+    }
+  }
+}
+const deleteJourneyCollectionMock: MockedResponse<
+  DeleteJourneyCollection,
+  DeleteJourneyCollectionVariables
+> = {
+  request: {
+    query: DELETE_JOURNEY_COLLECTION,
+    variables: { id: 'journeyCollectionId' }
+  },
+  result: {
+    data: {
+      journeyCollectionDelete: {
+        id: 'journeyCollectionId',
+        customDomains: [],
+        __typename: 'JourneyCollection'
+      }
+    }
+  }
+}
+
+const getAdminJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.draft, JourneyStatus.published],
+      useLastActiveTeamId: true
+    }
+  },
+  result: {
+    data: {
+      journeys: [defaultJourney, publishedJourney]
+    }
+  }
+}
+
+const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
+  {
+    request: {
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+    },
+    result: {
+      data: {
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Title',
+            __typename: 'Team',
+            userTeams: [],
+            publicTitle: 'Team Title',
+            customDomains: []
+          }
+        ],
+        getJourneyProfile: {
+          id: 'someId',
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }
+  }
 
 describe('DefaultJourneyForm', () => {
   const customDomain: CustomDomain = {
@@ -39,50 +185,6 @@ describe('DefaultJourneyForm', () => {
     apexName: 'example.com',
     journeyCollection: null
   }
-
-  const getAdminJourneysMock: MockedResponse<
-    GetAdminJourneys,
-    GetAdminJourneysVariables
-  > = {
-    request: {
-      query: GET_ADMIN_JOURNEYS,
-      variables: {
-        status: [JourneyStatus.draft, JourneyStatus.published],
-        useLastActiveTeamId: true
-      }
-    },
-    result: {
-      data: {
-        journeys: [defaultJourney, publishedJourney]
-      }
-    }
-  }
-
-  const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
-    {
-      request: {
-        query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-      },
-      result: {
-        data: {
-          teams: [
-            {
-              id: 'teamId',
-              title: 'Team Title',
-              __typename: 'Team',
-              userTeams: [],
-              publicTitle: 'Team Title',
-              customDomains: []
-            }
-          ],
-          getJourneyProfile: {
-            id: 'someId',
-            __typename: 'JourneyProfile',
-            lastActiveTeamId: 'teamId'
-          }
-        }
-      }
-    }
 
   it('should set a default journey for custom domain', async () => {
     const result = jest.fn().mockReturnValue(createJourneyCollectionMock.result)

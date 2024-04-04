@@ -2,22 +2,42 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import {
-  checkCustomDomainMockConfiguredAndVerified,
-  getCustomDomainMockARecord
-} from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { getCustomDomainMockARecord } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../TeamProvider'
 
 import { CustomDomainDialog } from './CustomDomainDialog'
+import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+
+const checkCustomDomainMockConfiguredAndVerified: MockedResponse<CheckCustomDomain> =
+  {
+    request: {
+      query: CHECK_CUSTOM_DOMAIN,
+      variables: {
+        customDomainId: 'customDomainId'
+      }
+    },
+    result: {
+      data: {
+        customDomainCheck: {
+          __typename: 'CustomDomainCheck',
+          configured: true,
+          verified: true,
+          verification: null,
+          verificationResponse: null
+        }
+      }
+    }
+  }
 
 describe('CustomDomainDialog', () => {
   const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
