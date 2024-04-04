@@ -22,7 +22,8 @@ export function JourneyLink(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { hostname } = useCustomDomainsQuery({
-    variables: { teamId: journey?.team?.id as string }
+    variables: { teamId: journey?.team?.id ?? '' },
+    skip: journey?.team?.id == null
   })
 
   const [showSlugDialog, setShowSlugDialog] = useState(false)

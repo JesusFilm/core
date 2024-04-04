@@ -36,7 +36,8 @@ export function CustomDomainDialog({
   const { activeTeam } = useTeam()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { data, refetch, loading } = useCustomDomainsQuery({
-    variables: { teamId: activeTeam?.id as string },
+    variables: { teamId: activeTeam?.id ?? '' },
+    skip: activeTeam?.id == null,
     notifyOnNetworkStatusChange: true
   })
 

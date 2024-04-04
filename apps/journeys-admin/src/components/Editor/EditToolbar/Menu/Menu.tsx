@@ -71,7 +71,8 @@ export function Menu(): ReactElement {
   const router = useRouter()
   const { journey } = useJourney()
   const { hostname } = useCustomDomainsQuery({
-    variables: { teamId: journey?.team?.id as string }
+    variables: { teamId: journey?.team?.id ?? '' },
+    skip: journey?.team?.id == null
   })
 
   const { t } = useTranslation('apps-journeys-admin')

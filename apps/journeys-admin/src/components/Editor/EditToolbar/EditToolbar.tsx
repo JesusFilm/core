@@ -23,7 +23,8 @@ export function EditToolbar(): ReactElement {
   const { journey } = useJourney()
   const { state } = useEditor()
   const { hostname } = useCustomDomainsQuery({
-    variables: { teamId: journey?.team?.id as string }
+    variables: { teamId: journey?.team?.id ?? '' },
+    skip: journey?.team?.id == null
   })
 
   return (
