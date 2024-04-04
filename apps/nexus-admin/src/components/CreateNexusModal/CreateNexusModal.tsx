@@ -20,7 +20,7 @@ const nexusValidationSchema = object({
   description: string().required('Description is required')
 })
 
-const NEXUS_CREATE = gql`
+export const NEXUS_CREATE = gql`
   mutation NexusCreate($input: NexusCreateInput!) {
     nexusCreate(input: $input) {
       id

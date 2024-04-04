@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -11,10 +11,13 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { Nexuses, Nexuses_nexuses } from '../__generated__/Nexuses'
-import { CreateNexusModal } from '../src/components/CreateNexusModal'
+import {
+  CreateNexusModal,
+  NEXUS_CREATE
+} from '../src/components/CreateNexusModal'
 import { Loader } from '../src/components/Loader'
 
 export const GET_NEXUSES = gql`
@@ -34,21 +37,39 @@ function Index(): ReactElement {
   const router = useRouter()
 
   const { data, loading } = useQuery<Nexuses>(GET_NEXUSES)
+  const [nexusCreate] = useMutation(NEXUS_CREATE)
+
   const { t } = useTranslation()
+
+  const redirectToDashboard = useCallback(
+    (nexusId: string): void => {
+      localStorage.setItem('nexusId', nexusId)
+      void router.push('/channels')
+    },
+    [router]
+  )
 
   useEffect(() => {
     if (data !== undefined) {
       setNexusApps(data.nexuses)
+      if (data.nexuses.length > 0) {
+        redirectToDashboard(data.nexuses?.[0]?.id)
+      } else {
+        void nexusCreate({
+          variables: {
+            input: {
+              name: 'Nexus',
+              description: 'This is a nexus app'
+            }
+          },
+          refetchQueries: [GET_NEXUSES]
+        })
+      }
     }
-  }, [data])
+  }, [data, nexusCreate, redirectToDashboard])
 
   if (loading) {
     return <Loader />
-  }
-
-  const redirectToDashboard = (nexusId: string): void => {
-    localStorage.setItem('nexusId', nexusId)
-    void router.push('/channels')
   }
 
   return (
