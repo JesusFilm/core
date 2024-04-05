@@ -1,4 +1,5 @@
 {
+  "Connect Channel": "Connect Channel",
   "Thumbnail for Jesus Film": "Thumbnail for Jesus Film",
   "Video Details": "Video Details",
   "Additional description if required": "Additional description if required",
@@ -23,6 +24,7 @@
   "Edit": "Edit",
   "Delete": "Delete",
   "Channels": "Channels",
+  "Connect": "Connect",
   "Platform Type": "Platform Type",
   "Youtube": "Youtube",
   "Create": "Create",
@@ -35,7 +37,5 @@
   "Update": "Update",
   "Upload": "Upload",
   "By clicking Upload, you certify that the content you are uploading complies with the YouTube Terms of Service, Please be sure not to violate others copyright or privacy rights.": "By clicking Upload, you certify that the content you are uploading complies with the YouTube Terms of Service, Please be sure not to violate others copyright or privacy rights.",
-  "Reset": "Reset",
-  "Connect Channel": "Connect Channel",
-  "Connect": "Connect"
+  "Reset": "Reset"
 }
