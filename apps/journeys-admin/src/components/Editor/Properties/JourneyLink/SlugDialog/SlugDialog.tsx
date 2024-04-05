@@ -50,7 +50,7 @@ export function SlugDialog({
         variables: { id: journey.id, input: { slug: values.slug } }
       })
       await setValues({ slug: response?.data?.journeyUpdate.slug })
-      onClose()
+      onClose?.()
     } catch (error) {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
