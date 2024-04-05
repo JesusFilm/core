@@ -123,10 +123,18 @@ jobs:
           parallel: 1
         env:
           DISABLE_ERD: false
-      - name: upload erd artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          path: '**/ERD.svg'
+      - name: Check for modified files
+        id: git-check
+        run: echo ::set-output name=modified::$(if [ -n "$(git status --porcelain)" ]; then echo "true"; else echo "false"; fi)
+      - name: Update ERD changes in GitHub repository
+        if: steps.git-check.outputs.modified == 'true'
+        run: |
+          git config --global user.name github-actions 
+          git config --global user.email github-actions@github.com
+          git add -A
+          git commit -m 'ci: add prisma ERD updates'
+          git push
+
       - name: Install Doppler
         run: |
           sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
