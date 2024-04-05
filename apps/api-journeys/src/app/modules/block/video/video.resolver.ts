@@ -6,6 +6,7 @@ import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 import { object, string } from 'yup'
 
+import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
@@ -17,8 +18,6 @@ import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
-
-import { Block, VideoBlockSource } from './.prisma/api-journeys-client'
 
 const videoBlockYouTubeSchema = object().shape({
   videoId: string().matches(
