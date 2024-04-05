@@ -122,7 +122,7 @@ export const getStaticProps: GetStaticProps<HostJourneyEmbedPageProps> = async (
           ))
         },
         notFound: true,
-        revalidate: 0
+        revalidate: 1
       }
     }
     throw e
