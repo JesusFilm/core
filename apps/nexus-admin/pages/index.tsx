@@ -1,60 +1,37 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
-import AddIcon from '@mui/icons-material/Add'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Card from '@mui/material/Card'
-import CardActions from '@mui/material/CardActions'
-import CardContent from '@mui/material/CardContent'
-import Fab from '@mui/material/Fab'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
-import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
-
-import { Nexuses, Nexuses_nexuses } from '../__generated__/Nexuses'
-import {
-  CreateNexusModal,
-  NEXUS_CREATE
-} from '../src/components/CreateNexusModal'
+import { ReactElement, useEffect } from 'react'
+import { Nexuses } from '../__generated__/Nexuses'
+import { NEXUS_CREATE } from '../src/components/CreateNexusModal'
 import { Loader } from '../src/components/Loader'
 
 export const GET_NEXUSES = gql`
-  query Nexuses {
-    nexuses {
+  query Nexuses($where: NexusFilter) {
+    nexuses(where: $where) {
       id
       name
-      description
     }
   }
 `
 
 function Index(): ReactElement {
-  const [nexusApps, setNexusApps] = useState<Nexuses_nexuses[]>([])
-  const [openCreateNexusModal, setOpenCreateNexusModal] =
-    useState<boolean>(false)
   const router = useRouter()
-
-  const { data, loading } = useQuery<Nexuses>(GET_NEXUSES)
+  const { data } = useQuery<Nexuses>(GET_NEXUSES, {
+    variables: {
+      where: {}
+    }
+  })
   const [nexusCreate] = useMutation(NEXUS_CREATE)
 
-  const { t } = useTranslation()
-
-  const redirectToDashboard = useCallback(
-    (nexusId: string): void => {
-      localStorage.setItem('nexusId', nexusId)
-      void router.push('/channels')
-    },
-    [router]
-  )
+  const redirectToDashboard = (nexusId: string): void => {
+    localStorage.setItem('nexusId', nexusId)
+    void router.push('/channels')
+  }
 
   useEffect(() => {
     if (data !== undefined) {
-      setNexusApps(data.nexuses)
-      if (data.nexuses.length > 0) {
-        redirectToDashboard(data.nexuses?.[0]?.id)
-      } else {
+      if (data.nexuses.length === 0) {
         void nexusCreate({
           variables: {
             input: {
@@ -64,64 +41,13 @@ function Index(): ReactElement {
           },
           refetchQueries: [GET_NEXUSES]
         })
+      } else {
+        redirectToDashboard(data.nexuses?.[0]?.id)
       }
     }
-  }, [data, nexusCreate, redirectToDashboard])
+  }, [data])
 
-  if (loading) {
-    return <Loader />
-  }
-
-  return (
-    <Stack
-      alignItems="center"
-      justifyContent="center"
-      sx={{ minHeight: '100vh' }}
-      spacing={4}
-    >
-      {nexusApps.length > 0 ? (
-        <Box
-          display="grid"
-          gridTemplateColumns="repeat(4, 1fr)"
-          alignItems="center"
-          gap={4}
-        >
-          {nexusApps.map((nexusApp) => (
-            <Box gridColumn="span 1" key={nexusApp.id}>
-              <Card key={nexusApp.id} sx={{ maxWidth: 345, minWidth: 200 }}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {nexusApp.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {nexusApp.description}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button onClick={() => redirectToDashboard(nexusApp.id)}>
-                    {t('Select')}
-                  </Button>
-                </CardActions>
-              </Card>
-            </Box>
-          ))}
-        </Box>
-      ) : (
-        <Typography>
-          {t(
-            "You currently don't have nexus apps. Please start by creating one"
-          )}
-        </Typography>
-      )}
-      <Fab color="primary" onClick={() => setOpenCreateNexusModal(true)}>
-        <AddIcon />
-      </Fab>
-      <CreateNexusModal
-        open={openCreateNexusModal}
-        onClose={() => setOpenCreateNexusModal(false)}
-      />
-    </Stack>
-  )
+  return <Loader />
 }
 
 export const getServerSideProps = withUserTokenSSR({
