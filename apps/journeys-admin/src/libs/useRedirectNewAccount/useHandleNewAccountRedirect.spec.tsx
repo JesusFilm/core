@@ -36,7 +36,7 @@ describe('HandleNewAccountRedirect', () => {
     expect(push).toHaveBeenCalledWith({
       pathname: '/users/sign-in',
       query: {
-        redirect: 'http://localhost:4200/customparam'
+        redirect: 'http://localhost:4200/customparam?newAccount=true'
       }
     })
   })
@@ -75,25 +75,6 @@ describe('HandleNewAccountRedirect', () => {
       pathname: '/users/sign-in',
       query: {
         redirect: 'http://localhost:4200?createNew=true&newAccount=true'
-      }
-    })
-  })
-
-  it('should append newAccount at the end of redirect if createNew does not exist', () => {
-    mockUseRouter.mockReturnValue({
-      push,
-      pathname: '/users/sign-in',
-      query: {
-        redirect: 'http://localhost:4200'
-      },
-      asPath: '/users/sign-in'
-    } as unknown as NextRouter)
-    renderHook(() => useHandleNewAccountRedirect())
-
-    expect(push).toHaveBeenCalledWith({
-      pathname: '/users/sign-in',
-      query: {
-        redirect: 'http://localhost:4200?newAccount=true'
       }
     })
   })

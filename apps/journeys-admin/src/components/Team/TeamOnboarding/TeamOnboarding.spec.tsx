@@ -297,7 +297,8 @@ describe('TeamOnboarding', () => {
             title: 'Team Title',
             publicTitle: 'Public Title',
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           }
         }
       }
