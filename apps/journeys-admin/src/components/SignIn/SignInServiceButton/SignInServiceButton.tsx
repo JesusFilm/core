@@ -43,7 +43,7 @@ export function SignInServiceButton({
       onClick={handleSignIn}
       fullWidth
     >
-      {t('Sign in with {{service}}', {
+      {t('Continue with {{service}}', {
         service: service === 'google.com' ? t('Google') : t('Facebook')
       })}
     </Button>

@@ -6,7 +6,7 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -32,6 +32,7 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   const { journey } = useJourney()
   const { breakpoints } = useTheme()
   const { t } = useTranslation('apps-journeys-admin')
+  const [openTeamDialog, setOpenTeamDialog] = useState(false)
 
   const tagIds = journey?.tags.map((tag) => tag.id)
   const { data } = useJourneysQuery({
@@ -96,9 +97,18 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
         }}
       >
         <Stack sx={{ gap: { xs: 3, sm: 7 } }}>
-          <TemplateViewHeader isPublisher={isPublisher} authUser={authUser} />
+          <TemplateViewHeader
+            isPublisher={isPublisher}
+            authUser={authUser}
+            openTeamDialog={openTeamDialog}
+            setOpenTeamDialog={setOpenTeamDialog}
+          />
           <TemplateTags tags={journey?.tags} />
-          <TemplatePreviewTabs authUser={authUser} />
+          <TemplatePreviewTabs
+            authUser={authUser}
+            openTeamDialog={openTeamDialog}
+            setOpenTeamDialog={setOpenTeamDialog}
+          />
           <Typography
             variant="body2"
             sx={{ display: { xs: 'block', sm: 'none' } }}
@@ -143,7 +153,11 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
               }}
             />
           )}
-          <TemplateFooter signedIn={authUser?.id != null} />
+          <TemplateFooter
+            signedIn={authUser?.id != null}
+            openTeamDialog={openTeamDialog}
+            setOpenTeamDialog={setOpenTeamDialog}
+          />
         </Stack>
       </Container>
     </Paper>

@@ -31,7 +31,10 @@ describe('TemplatePreviewTabs', () => {
             variant: 'admin'
           }}
         >
-          <TemplatePreviewTabs />
+          <TemplatePreviewTabs
+            openTeamDialog={false}
+            setOpenTeamDialog={jest.fn()}
+          />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -52,7 +55,10 @@ describe('TemplatePreviewTabs', () => {
             variant: 'admin'
           }}
         >
-          <TemplatePreviewTabs />
+          <TemplatePreviewTabs
+            openTeamDialog={false}
+            setOpenTeamDialog={jest.fn()}
+          />
         </JourneyProvider>
       </MockedProvider>
     )
