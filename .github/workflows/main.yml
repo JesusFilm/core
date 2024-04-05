@@ -123,6 +123,9 @@ jobs:
           parallel: 1
         env:
           DISABLE_ERD: false
+      - uses: actions/upload-artifact@v4
+        with:
+          path: '**/ERD.svg'
       - name: Install Doppler
         run: |
           sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
