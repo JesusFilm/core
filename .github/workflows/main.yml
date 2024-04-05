@@ -28,19 +28,19 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
@@ -95,19 +95,19 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
@@ -168,19 +168,19 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
@@ -232,18 +232,18 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Check branch up to date with base
         run: ./tools/scripts/check-git-diff.sh
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
@@ -258,7 +258,7 @@ jobs:
         run: nx affected --target=build-storybook shared-storybook --webpack-stats-json
       - name: Check for frontend changes
         id: check_files
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow

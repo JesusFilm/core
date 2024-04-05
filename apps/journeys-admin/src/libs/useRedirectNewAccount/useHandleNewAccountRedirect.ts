@@ -15,10 +15,10 @@ export function useHandleNewAccountRedirect(): void {
     if (!containsNewAccount) {
       if (redirectUrl != null) {
         updatedRedirectUrl = `${redirectUrl ?? ''}${
-          containsCreateNew ? '&newAccount=true' : ''
+          containsCreateNew ? '&newAccount=true' : '?newAccount=true'
         }`
       } else {
-        updatedRedirectUrl = `${window.location.origin}?newAccount=true`
+        updatedRedirectUrl = `?newAccount=true`
       }
     }
 

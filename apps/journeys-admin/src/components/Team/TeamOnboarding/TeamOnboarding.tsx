@@ -29,11 +29,6 @@ export function TeamOnboarding(): ReactElement {
   )
 
   async function handleSubmit(data?: TeamCreate | null): Promise<void> {
-    const redirect =
-      router.query.redirect != null
-        ? `${router.query.redirect as string}`
-        : '/?onboarding=true'
-
     if (data?.teamCreate.id == null) return
     await Promise.all([
       journeyDuplicate({
@@ -49,7 +44,13 @@ export function TeamOnboarding(): ReactElement {
           }
         }
       }),
-      await router.push(redirect),
+      await router.push(
+        router.query.redirect != null
+          ? new URL(
+              `${window.location.origin}${router.query.redirect as string}`
+            )
+          : '/?onboarding=true'
+      ),
       query.refetch()
     ])
     setActiveTeam(data.teamCreate)

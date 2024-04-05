@@ -19,6 +19,7 @@ import SettingsIcon from '@core/shared/ui/icons/Settings'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { setBeaconPageViewed } from '../../../../libs/setBeaconPageViewed'
+import { useCustomDomainsQuery } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
 import { MenuItem } from '../../../MenuItem'
 import { Analytics } from '../Analytics'
 import { DeleteBlock } from '../DeleteBlock'
@@ -69,6 +70,11 @@ export function Menu(): ReactElement {
   } = useEditor()
   const router = useRouter()
   const { journey } = useJourney()
+  const { hostname } = useCustomDomainsQuery({
+    variables: { teamId: journey?.team?.id ?? '' },
+    skip: journey?.team?.id == null
+  })
+
   const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
@@ -146,7 +152,9 @@ export function Menu(): ReactElement {
         }}
       >
         <NextLink
-          href={`/api/preview?slug=${journey?.slug ?? ''}`}
+          href={`/api/preview?slug=${journey?.slug ?? ''}${
+            hostname != null ? `&hostname=${hostname}` : ''
+          }`}
           passHref
           legacyBehavior
           prefetch={false}

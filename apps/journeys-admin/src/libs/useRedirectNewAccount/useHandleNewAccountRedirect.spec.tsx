@@ -22,7 +22,7 @@ describe('HandleNewAccountRedirect', () => {
     jest.clearAllMocks()
   })
 
-  it('should return redirect if exists', () => {
+  it('should return redirect if it exists', () => {
     mockUseRouter.mockReturnValue({
       push,
       pathname: '/users/sign-in',
@@ -36,7 +36,7 @@ describe('HandleNewAccountRedirect', () => {
     expect(push).toHaveBeenCalledWith({
       pathname: '/users/sign-in',
       query: {
-        redirect: 'http://localhost:4200/customparam'
+        redirect: 'http://localhost:4200/customparam?newAccount=true'
       }
     })
   })
@@ -55,7 +55,7 @@ describe('HandleNewAccountRedirect', () => {
     expect(push).toHaveBeenCalledWith({
       pathname: '/users/sign-in',
       query: {
-        redirect: 'http://localhost:4200?newAccount=true'
+        redirect: '?newAccount=true'
       }
     })
   })
