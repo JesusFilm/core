@@ -123,7 +123,8 @@ jobs:
           parallel: 1
         env:
           DISABLE_ERD: false
-      - uses: actions/upload-artifact@v4
+      - name: upload erd artifacts
+        uses: actions/upload-artifact@v4
         with:
           path: '**/ERD.svg'
       - name: Install Doppler
