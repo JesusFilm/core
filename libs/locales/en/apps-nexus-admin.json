@@ -1,5 +1,4 @@
 {
-  "Create New Channel": "Create New Channel",
   "Thumbnail for Jesus Film": "Thumbnail for Jesus Film",
   "Video Details": "Video Details",
   "Additional description if required": "Additional description if required",
@@ -9,7 +8,6 @@
   "Pick Google Drive Directory For Videos": "Pick Google Drive Directory For Videos",
   "Choose Video Folder": "Choose Video Folder",
   "Cancel": "Cancel",
-  "Load from Google drive": "Load from Google drive",
   "Import from Youtube Template": "Import from Youtube Template",
   "Nexus": "Nexus",
   "Youtube Uploader": "Youtube Uploader",
@@ -25,9 +23,9 @@
   "Edit": "Edit",
   "Delete": "Delete",
   "Channels": "Channels",
-  "Create": "Create",
   "Platform Type": "Platform Type",
   "Youtube": "Youtube",
+  "Create": "Create",
   "Login": "Login",
   "Welcome to Nexus": "Welcome to Nexus",
   "Hi": "Hi",
@@ -36,6 +34,8 @@
   "Table View": "Table View",
   "Update": "Update",
   "Upload": "Upload",
+  "By clicking Upload, you certify that the content you are uploading complies with the YouTube Terms of Service, Please be sure not to violate others copyright or privacy rights.": "By clicking Upload, you certify that the content you are uploading complies with the YouTube Terms of Service, Please be sure not to violate others copyright or privacy rights.",
   "Reset": "Reset",
-  "By clicking Upload, you certify that the content you are uploading complies with the YouTube Terms of Service, Please be sure not to violate others copyright or privacy rights.": "By clicking Upload, you certify that the content you are uploading complies with the YouTube Terms of Service, Please be sure not to violate others copyright or privacy rights."
+  "Connect Channel": "Connect Channel",
+  "Connect": "Connect"
 }
