@@ -29,14 +29,16 @@ describe('TeamSelect', () => {
             title: 'Team Title',
             publicTitle: null,
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           },
           {
             id: 'teamId2',
             title: 'Team Title2',
             publicTitle: null,
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           }
         ],
         getJourneyProfile: {
