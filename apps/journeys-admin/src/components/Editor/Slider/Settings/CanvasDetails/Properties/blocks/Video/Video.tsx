@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
@@ -30,7 +31,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
   }, [id, videoId, dispatch, t])
 
   return (
-    <>
+    <Box data-testid="VideoProperties">
       <Accordion
         id={`${id}-video-action`}
         icon={<LinkIcon />}
@@ -47,6 +48,6 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
       >
         <VideoOptions />
       </Accordion>
-    </>
+    </Box>
   )
 }

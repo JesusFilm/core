@@ -1,8 +1,10 @@
+import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
-import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
@@ -27,8 +29,17 @@ export function TextResponse({
   ) as TreeBlock<IconFields>
   const { t } = useTranslation('apps-journeys-admin')
 
+  const { dispatch } = useEditor()
+
+  useEffect(() => {
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      selectedAttributeId: `${id}-text-field-options`
+    })
+  }, [dispatch, id])
+
   return (
-    <>
+    <Box data-testid="TextResponseProperties">
       <Accordion
         id={`${id}-text-field-options`}
         icon={<TextInput1Icon />}
@@ -60,6 +71,6 @@ export function TextResponse({
       >
         <Icon id={submitIcon?.id} />
       </Accordion>
-    </>
+    </Box>
   )
 }

@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
@@ -27,10 +28,10 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${id}-image-options`
     })
-  }, [dispatch, id, t])
+  }, [dispatch, id])
 
   return (
-    <>
+    <Box data-testid="ImageProperties">
       <Accordion
         id={`${id}-image-options`}
         icon={<Image3Icon />}
@@ -39,6 +40,6 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
       >
         <ImageOptions />
       </Accordion>
-    </>
+    </Box>
   )
 }

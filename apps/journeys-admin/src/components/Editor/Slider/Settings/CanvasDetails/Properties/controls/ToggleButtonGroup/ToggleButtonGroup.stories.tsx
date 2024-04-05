@@ -18,7 +18,8 @@ import { ToggleButtonGroup } from '.'
 const ToggleButtonGroupStory: Meta<typeof ToggleButtonGroup> = {
   ...simpleComponentConfig,
   component: ToggleButtonGroup,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/ToggleButtonGroup',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/ToggleButtonGroup',
   parameters: {
     layout: 'fullscreen'
   }

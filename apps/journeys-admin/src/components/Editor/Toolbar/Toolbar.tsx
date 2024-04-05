@@ -20,6 +20,7 @@ export function Toolbar(): ReactElement {
   const { journey } = useJourney()
   return (
     <Stack
+      data-testid="Toolbar"
       direction="row"
       alignItems="center"
       spacing={{ xs: 2, sm: 4 }}
@@ -41,7 +42,7 @@ export function Toolbar(): ReactElement {
         }}
       />
       <NextLink href="/" passHref legacyBehavior>
-        <IconButton>
+        <IconButton data-testid="ToolbarBackButton">
           <ChevronLeftIcon />
         </IconButton>
       </NextLink>
@@ -61,7 +62,7 @@ export function Toolbar(): ReactElement {
             ) : (
               <Image
                 src={journey.primaryImageBlock.src}
-                alt={journey.primaryImageBlock.src}
+                alt={journey.primaryImageBlock.alt}
                 width={50}
                 height={50}
                 style={{

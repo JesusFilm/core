@@ -9,6 +9,7 @@ import {
   ChatButton,
   Host,
   Journey,
+  JourneyCollection,
   JourneyProfile,
   Prisma,
   Team,
@@ -470,7 +471,9 @@ describe('JourneyResolver', () => {
         await resolver.adminJourney(ability, 'journey-slug', IdType.slug)
       ).toEqual(journeyWithUserTeam)
       expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
-        where: { slug: 'journey-slug' },
+        where: {
+          slug: 'journey-slug'
+        },
         include: {
           userJourneys: true,
           team: {
@@ -519,7 +522,9 @@ describe('JourneyResolver', () => {
       expect(await resolver.journeys()).toEqual([journey, journey])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
-          status: 'published'
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         }
       })
     })
@@ -533,7 +538,9 @@ describe('JourneyResolver', () => {
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           status: 'published',
-          featuredAt: { not: null }
+          featuredAt: { not: null },
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         }
       })
     })
@@ -547,7 +554,9 @@ describe('JourneyResolver', () => {
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           status: 'published',
-          featuredAt: null
+          featuredAt: null,
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         }
       })
     })
@@ -565,7 +574,9 @@ describe('JourneyResolver', () => {
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           status: 'published',
-          template: true
+          template: true,
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         }
       })
       expect(fetchedJourneys[0].template).toBe(true)
@@ -579,7 +590,9 @@ describe('JourneyResolver', () => {
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           status: 'published',
-          template: false
+          template: false,
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         }
       })
       expect(fetchedJourneys[0].template).toBe(false)
@@ -592,7 +605,12 @@ describe('JourneyResolver', () => {
         await resolver.journeys({ ids: [journey.id, journey.id] })
       ).toEqual([journey, journey])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
-        where: { id: { in: ['journeyId', 'journeyId'] }, status: 'published' }
+        where: {
+          id: { in: ['journeyId', 'journeyId'] },
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
+        }
       })
     })
 
@@ -606,7 +624,9 @@ describe('JourneyResolver', () => {
             { journeyTags: { some: { tagId: 'tagId1' } } },
             { journeyTags: { some: { tagId: 'tagId2' } } }
           ],
-          status: 'published'
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         },
         include: { journeyTags: true }
       })
@@ -619,7 +639,9 @@ describe('JourneyResolver', () => {
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           languageId: { in: ['529'] },
-          status: 'published'
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         }
       })
     })
@@ -629,7 +651,9 @@ describe('JourneyResolver', () => {
       expect(await resolver.journeys({ limit: 2 })).toEqual([journey, journey])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
-          status: 'published'
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         },
         take: 2
       })
@@ -643,9 +667,76 @@ describe('JourneyResolver', () => {
       ])
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
-          status: 'published'
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
         },
         orderBy: { publishedAt: 'desc' }
+      })
+    })
+
+    it('returns empty when embedded and hostname are provided', async () => {
+      expect(
+        await resolver.journeys(undefined, {
+          embedded: true,
+          hostname: 'example.com'
+        })
+      ).toEqual([])
+    })
+
+    it('handles hostname', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(
+        await resolver.journeys(undefined, { hostname: 'example.com' })
+      ).toEqual([journey, journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published',
+          OR: [
+            {
+              team: {
+                customDomains: {
+                  some: { name: 'example.com', routeAllTeamJourneys: true }
+                }
+              }
+            },
+            {
+              journeyCollectionJourneys: {
+                some: {
+                  journeyCollection: {
+                    customDomains: { some: { name: 'example.com' } }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      })
+    })
+
+    it('handles journeyCollection option', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
+      expect(
+        await resolver.journeys(undefined, {
+          hostname: 'example.com',
+          journeyCollection: true
+        })
+      ).toEqual([journey, journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          status: 'published',
+          OR: [
+            {
+              journeyCollectionJourneys: {
+                some: {
+                  journeyCollection: {
+                    customDomains: { some: { name: 'example.com' } }
+                  }
+                }
+              }
+            }
+          ]
+        }
       })
     })
   })
@@ -657,7 +748,11 @@ describe('JourneyResolver', () => {
         journey
       )
       expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
-        where: { slug: 'journey-slug' }
+        where: {
+          slug: 'journey-slug',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
+        }
       })
     })
 
@@ -667,7 +762,11 @@ describe('JourneyResolver', () => {
         journey
       )
       expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
-        where: { id: 'journeyId' }
+        where: {
+          id: 'journeyId',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
+        }
       })
     })
 
@@ -802,6 +901,45 @@ describe('JourneyResolver', () => {
           'teamId'
         )
       ).rejects.toThrow('user is not allowed to create journey')
+    })
+
+    it('returns null when embedded and hostname are provided', async () => {
+      expect(
+        await resolver.journey('id', IdType.databaseId, {
+          embedded: true,
+          hostname: 'example.com'
+        })
+      ).toBeNull()
+    })
+
+    it('handles hostname', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(
+        await resolver.journey('id', IdType.databaseId, {
+          hostname: 'example.com'
+        })
+      ).toEqual(journey)
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 'id',
+          team: {
+            OR: [
+              {
+                customDomains: {
+                  some: { name: 'example.com', routeAllTeamJourneys: true }
+                }
+              },
+              {
+                journeyCollections: {
+                  some: {
+                    customDomains: { some: { name: 'example.com' } }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      })
     })
   })
 
@@ -1963,6 +2101,27 @@ describe('JourneyResolver', () => {
       } as unknown as Prisma.Prisma__JourneyClient<Journey>)
 
       expect(await resolver.tags({ ...journey })).toEqual([])
+    })
+  })
+
+  describe('journeyCollections', () => {
+    it('returns journeyCollections', async () => {
+      const journeyCollection: JourneyCollection = {
+        id: 'journeyCollectionId',
+        teamId: 'teamId',
+        title: 'title'
+      }
+      prismaService.journeyCollection.findMany.mockResolvedValueOnce([
+        journeyCollection
+      ])
+      expect(await resolver.journeyCollections(journey)).toEqual([
+        journeyCollection
+      ])
+      expect(prismaService.journeyCollection.findMany).toHaveBeenCalledWith({
+        where: {
+          journeyCollectionJourneys: { some: { journeyId: 'journeyId' } }
+        }
+      })
     })
   })
 })

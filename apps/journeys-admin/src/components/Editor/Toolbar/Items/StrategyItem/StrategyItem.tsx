@@ -1,5 +1,6 @@
+import Box from '@mui/material/Box'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
@@ -32,11 +33,13 @@ export function StrategyItem({
   }
 
   return (
-    <Item
-      variant={variant}
-      label={t('Strategy')}
-      icon={<BulbIcon />}
-      onClick={handleGoalsClick}
-    />
+    <Box data-testid="StrategyItem">
+      <Item
+        variant={variant}
+        label={t('Strategy')}
+        icon={<BulbIcon />}
+        onClick={handleGoalsClick}
+      />
+    </Box>
   )
 }

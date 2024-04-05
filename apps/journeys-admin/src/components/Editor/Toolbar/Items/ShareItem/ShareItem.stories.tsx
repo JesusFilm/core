@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -10,10 +11,10 @@ import { publishedJourney } from '../../../data'
 
 import { ShareItem } from './ShareItem'
 
-const ShareItemStory: Meta<typeof ShareItem> = {
+const Demo: Meta<typeof ShareItem> = {
   ...simpleComponentConfig,
   component: ShareItem,
-  title: 'Journeys-Admin/JourneyView/ShareItem'
+  title: 'Journeys-Admin/Editor/Toolbar/Items/ShareItem'
 }
 
 const Template: StoryObj<typeof ShareItem> = {
@@ -44,4 +45,15 @@ export const Default = {
   }
 }
 
-export default ShareItemStory
+export const Open = {
+  ...Template,
+  args: {
+    variant: 'button'
+  },
+  play: async () => {
+    const button = screen.getByRole('button', { name: 'Share' })
+    await userEvent.click(button)
+  }
+}
+
+export default Demo

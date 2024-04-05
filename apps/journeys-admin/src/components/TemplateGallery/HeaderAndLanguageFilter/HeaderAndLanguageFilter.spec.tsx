@@ -2,11 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
-import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery/useLanguagesQuery'
+import { getLanguagesMock } from '../data'
 
 import { HeaderAndLanguageFilter } from '.'
-
-import '../../../../test/i18n'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -35,92 +33,17 @@ describe('HeaderAndLanguageFilter', () => {
     } as unknown as NextRouter)
 
     const { getByRole, getAllByRole, getAllByText, getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LANGUAGES,
-              variables: {
-                languageId: '529',
-                where: {
-                  ids: [
-                    '529',
-                    '4415',
-                    '1106',
-                    '4451',
-                    '496',
-                    '20526',
-                    '584',
-                    '21028',
-                    '20615',
-                    '3934',
-                    '22658',
-                    '7083',
-                    '16639',
-                    '3887'
-                  ]
-                }
-              }
-            },
-            result: {
-              data: {
-                languages: [
-                  {
-                    __typename: 'Language',
-                    id: '529',
-                    name: [
-                      {
-                        value: 'English',
-                        primary: true,
-                        __typename: 'Translation'
-                      }
-                    ]
-                  },
-                  {
-                    id: '496',
-                    __typename: 'Language',
-                    name: [
-                      {
-                        value: 'Français',
-                        primary: true,
-                        __typename: 'Translation'
-                      },
-                      {
-                        value: 'French',
-                        primary: false,
-                        __typename: 'Translation'
-                      }
-                    ]
-                  },
-                  {
-                    id: '1106',
-                    __typename: 'Language',
-                    name: [
-                      {
-                        value: 'Deutsch',
-                        primary: true,
-                        __typename: 'Translation'
-                      },
-                      {
-                        value: 'German, Standard',
-                        primary: false,
-                        __typename: 'Translation'
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider mocks={[getLanguagesMock]}>
         <HeaderAndLanguageFilter selectedLanguageIds={[]} onChange={onChange} />
       </MockedProvider>
     )
     await waitFor(() => {
       expect(getAllByText('Journey Templates')[0]).toBeInTheDocument()
-      fireEvent.click(getAllByRole('heading', { name: 'All Languages' })[0])
     })
+    // "All Languages" text is handled by the translation file /locale/en/journeys-admin.json
+    // Manually add the below line to the translation file if can't find the text
+    // "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
+    fireEvent.click(getAllByRole('heading', { name: 'All Languages' })[0])
     fireEvent.click(getByRole('button', { name: 'German, Standard Deutsch' }))
     await waitFor(() => expect(onChange).toHaveBeenCalledTimes(1))
     fireEvent.click(getByRole('button', { name: 'French Français' }))
