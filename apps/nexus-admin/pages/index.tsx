@@ -2,6 +2,7 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { ReactElement, useEffect } from 'react'
+
 import { Nexuses } from '../__generated__/Nexuses'
 import { NEXUS_CREATE } from '../src/components/CreateNexusModal'
 import { Loader } from '../src/components/Loader'
