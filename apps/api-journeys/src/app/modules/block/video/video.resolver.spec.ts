@@ -418,24 +418,8 @@ describe('VideoBlockResolver', () => {
     })
 
     it('should only allow one video block per parent', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       prismaService.block.findFirst.mockResolvedValueOnce(block)
-
-      await expect(
-        resolver.videoBlockCreate(ability, {
-          id: 'blockId',
-          journeyId: 'journeyId',
-          parentBlockId: 'parentBlockId',
-          videoId: 'videoId',
-          videoVariantLanguageId: 'videoVariantLanguageId',
-          source: VideoBlockSource.internal
-        })
-      ).rejects.toThrow('Parent block already has an existing video block')
-    })
-
-    it('should handle race condition', async () => {
-      prismaService.block.findFirst
-        .mockResolvedValueOnce(block)
-        .mockResolvedValueOnce(null)
 
       await expect(
         resolver.videoBlockCreate(ability, {
