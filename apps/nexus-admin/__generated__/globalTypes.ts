@@ -90,6 +90,15 @@ export interface NexusCreateInput {
   description?: string | null;
 }
 
+export interface NexusFilter {
+  ids?: string[] | null;
+  name?: string | null;
+  description?: string | null;
+  createdAt?: any | null;
+  limit?: number | null;
+  orderByRecent?: boolean | null;
+}
+
 export interface ResourceFilter {
   ids?: string[] | null;
   name?: string | null;
