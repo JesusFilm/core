@@ -6,15 +6,9 @@ import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
-import useDrivePicker from 'react-google-drive-picker'
-import {
-  PickerCallback,
-  PickerConfiguration
-} from 'react-google-drive-picker/dist/typeDefs'
 
 import { Resource, Resource_resource } from '../../__generated__/Resource'
 import { ResourceDelete } from '../../__generated__/ResourceDelete'
-import { ResourceFromGoogleDrive } from '../../__generated__/ResourceFromGoogleDrive'
 import { Resources, Resources_resources } from '../../__generated__/Resources'
 import { ResourceUpdate } from '../../__generated__/ResourceUpdate'
 import { DeleteModal } from '../../src/components/DeleteModal'
@@ -43,24 +37,6 @@ export const GET_RESOURCES = gql`
 export const GET_RESOURCE = gql`
   query Resource($resourceId: ID!) {
     resource(id: $resourceId) {
-      id
-      name
-      localizations {
-        id
-        keywords
-        language
-        resourceId
-        title
-        description
-      }
-      status
-    }
-  }
-`
-
-const RESOURCE_LOAD = gql`
-  mutation ResourceFromGoogleDrive($input: ResourceFromGoogleDriveInput!) {
-    resourceFromGoogleDrive(input: $input) {
       id
       name
       localizations {
@@ -109,8 +85,6 @@ const ResourcesPage: FC = () => {
   const [resource, setResource] = useState<Resource_resource | null>(null)
   const [openUpdateResourceModal, setOpenUpdateResourceModal] =
     useState<boolean>(false)
-
-  const [openPicker] = useDrivePicker()
   const isSSRMode = typeof window !== 'undefined'
   const nexusId = isSSRMode ? localStorage.getItem('nexusId') : ''
   const router = useRouter()
@@ -145,81 +119,8 @@ const ResourcesPage: FC = () => {
     }
   }, [resourceData])
 
-  const [resourceLoad] = useMutation<ResourceFromGoogleDrive>(RESOURCE_LOAD)
   const [resourceUpdate] = useMutation<ResourceUpdate>(RESOURCE_UPDATE)
   const [resourceDelete] = useMutation<ResourceDelete>(RESOURCE_DELETE)
-
-  const openGooglePicker = async (): Promise<void> => {
-    // eslint-disable-next-line import/dynamic-import-chunkname
-    const gapi = await import('gapi-script').then((module) => module.gapi)
-
-    gapi.load('client:auth2', () => {
-      gapi.client
-        .init({
-          apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY
-        })
-        .then(() => {
-          let tokenInfo = gapi.auth.getToken()
-
-          const pickerConfig: PickerConfiguration = {
-            clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
-            developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
-            viewId: 'DOCS_VIDEOS',
-            token: tokenInfo !== null ? tokenInfo.access_token : '',
-            showUploadView: true,
-            showUploadFolders: true,
-            supportDrives: true,
-            multiselect: true,
-            callbackFunction: (data: PickerCallback) => {
-              const elements = Array.from(
-                document.getElementsByClassName(
-                  'picker-dialog'
-                ) as HTMLCollectionOf<HTMLElement>
-              )
-
-              for (let i = 0; i < elements.length; i++) {
-                elements[i].style.zIndex = '2000'
-              }
-
-              if (data.action === 'picked') {
-                if (tokenInfo === null) {
-                  tokenInfo = gapi.auth.getToken()
-                }
-
-                const fileIds: string[] = []
-
-                data.docs.forEach((doc) => fileIds.push(doc.id))
-
-                loadResourceFromGoogleDrive(fileIds, tokenInfo.access_token)
-              }
-            }
-          }
-          openPicker(pickerConfig)
-        })
-    })
-  }
-
-  const loadResourceFromGoogleDrive = (
-    fileIds: string[],
-    accessToken: string
-  ): void => {
-    void resourceLoad({
-      variables: {
-        input: {
-          authCode: accessToken,
-          fileIds,
-          nexusId
-        }
-      },
-      onCompleted: () => {
-        enqueueSnackbar('Resource Loaded', {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      },
-      refetchQueries: [GET_RESOURCES]
-    })
-  }
 
   return (
     <MainLayout title="Resources">
@@ -232,12 +133,6 @@ const ResourcesPage: FC = () => {
             pt: 4
           }}
         >
-          <Button
-            variant="contained"
-            onClick={async () => await openGooglePicker()}
-          >
-            {t('Load from Google drive')}
-          </Button>
           <Button
             variant="contained"
             onClick={() => {
