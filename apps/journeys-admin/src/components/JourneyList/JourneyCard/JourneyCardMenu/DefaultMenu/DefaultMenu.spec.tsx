@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { getCustomDomainMockARecord } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -155,12 +155,12 @@ describe('DefaultMenu', () => {
   })
 
   it('should redirect to preview with custom Domain', async () => {
-    const result = jest.fn().mockReturnValue(getCustomDomainMockARecord.result)
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <MockedProvider
-            mocks={[{ ...getCustomDomainMockARecord, result }, getTeams]}
+            mocks={[{ ...getCustomDomainMock, result }, getTeams]}
           >
             <TeamProvider>
               <DefaultMenu

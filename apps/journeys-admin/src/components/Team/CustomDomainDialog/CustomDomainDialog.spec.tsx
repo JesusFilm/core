@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { getCustomDomainMockARecord } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { getCustomDomainMock } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -74,7 +74,7 @@ describe('CustomDomainDialog', () => {
       <MockedProvider
         mocks={[
           getLastActiveTeamIdAndTeamsMock,
-          getCustomDomainMockARecord,
+          getCustomDomainMock,
           { ...checkCustomDomainMockConfiguredAndVerified, result }
         ]}
       >

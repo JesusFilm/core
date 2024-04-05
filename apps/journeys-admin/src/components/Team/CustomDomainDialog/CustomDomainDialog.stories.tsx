@@ -14,7 +14,7 @@ import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { GET_CUSTOM_DOMAINS } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
-import { getCustomDomainMockARecord } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { getCustomDomainMock } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { defaultJourney } from '../../JourneyList/journeyListData'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -132,7 +132,7 @@ export const Filled = {
       mocks: [
         getAdminJourneysMock,
         getLastActiveTeamIdAndTeamsMock,
-        getCustomDomainMockARecord,
+        getCustomDomainMock,
         checkCustomDomainMock
       ]
     }

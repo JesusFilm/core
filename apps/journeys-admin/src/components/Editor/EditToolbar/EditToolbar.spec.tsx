@@ -13,7 +13,7 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
-import { getCustomDomainMockARecord } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { getCustomDomainMock } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
 import { EditToolbar } from '.'
 
@@ -61,10 +61,10 @@ describe('Edit Toolbar', () => {
   })
 
   it('should render Preview Button with custom domain link', async () => {
-    const result = jest.fn().mockReturnValue(getCustomDomainMockARecord.result)
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
     const { getAllByRole, getAllByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={[{ ...getCustomDomainMockARecord, result }]}>
+        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
           <JourneyProvider
             value={{
               journey: {

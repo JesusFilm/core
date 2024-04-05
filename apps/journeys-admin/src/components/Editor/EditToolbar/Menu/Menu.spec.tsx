@@ -15,7 +15,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
-import { getCustomDomainMockARecord } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { getCustomDomainMock } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { BLOCK_DUPLICATE } from '../DuplicateBlock/DuplicateBlock'
 
 import { GET_ROLE } from './Menu'
@@ -317,7 +317,7 @@ describe('EditToolbar Menu', () => {
   })
 
   it('should provide customDomain hostname to preview button', async () => {
-    const result = jest.fn().mockReturnValue(getCustomDomainMockARecord.result)
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
     const selectedBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'stepId',
@@ -330,7 +330,7 @@ describe('EditToolbar Menu', () => {
 
     const { getByRole, getByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={[{ ...getCustomDomainMockARecord, result }]}>
+        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
           <JourneyProvider
             value={{
               journey: {

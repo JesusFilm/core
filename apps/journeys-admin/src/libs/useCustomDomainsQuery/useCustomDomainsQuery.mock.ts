@@ -7,7 +7,7 @@ import {
 
 import { GET_CUSTOM_DOMAINS } from './useCustomDomainsQuery'
 
-export const getCustomDomainMockARecord: MockedResponse<
+export const getCustomDomainMock: MockedResponse<
   GetCustomDomains,
   GetCustomDomainsVariables
 > = {

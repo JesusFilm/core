@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { getCustomDomainMockARecord } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { getCustomDomainMock } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { defaultJourney } from '../../data'
 
 import { JourneyLink } from './JourneyLink'
@@ -119,7 +119,7 @@ describe('JourneyLink', () => {
   })
 
   it('should show custom domain if it exists', async () => {
-    const result = jest.fn().mockReturnValue(getCustomDomainMockARecord.result)
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
 
     mockedUseRouter.mockReturnValue({
       query: { param: null },
@@ -130,7 +130,7 @@ describe('JourneyLink', () => {
     } as unknown as NextRouter)
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={[{ ...getCustomDomainMockARecord, result }]}>
+        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
           <JourneyProvider
             value={{
               journey: journeyWithTeam as JourneyFields,
