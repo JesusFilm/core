@@ -107,12 +107,6 @@ export interface ResourceFilter {
   limit?: number | null;
 }
 
-export interface ResourceFromGoogleDriveInput {
-  fileIds: string[];
-  authCode: string;
-  nexusId: string;
-}
-
 export interface ResourceUpdateInput {
   name?: string | null;
 }

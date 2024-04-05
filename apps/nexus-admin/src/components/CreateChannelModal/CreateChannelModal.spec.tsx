@@ -18,6 +18,6 @@ describe('CreateChannelModal', () => {
       />
     )
 
-    expect(getByText(/create new channel/i)).toBeInTheDocument()
+    expect(getByText(/connect channel/i)).toBeInTheDocument()
   })
 })

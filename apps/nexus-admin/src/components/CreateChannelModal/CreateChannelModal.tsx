@@ -50,13 +50,13 @@ export const CreateChannelModal: FC<CreateChannelModalProps> = ({
 
   return (
     <Modal
-      title="Create New Channel"
+      title="Connect Channel"
       open={open}
       handleClose={closeModal}
       actions={
         <Stack direction="row" justifyContent="flex-end" spacing={2}>
           <Button onClick={closeModal}>{t('Cancel')}</Button>
-          <Button onClick={formik.submitForm}>{t('Create')}</Button>
+          <Button onClick={formik.submitForm}>{t('Connect')}</Button>
         </Stack>
       }
     >

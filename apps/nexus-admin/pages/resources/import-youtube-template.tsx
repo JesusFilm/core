@@ -11,39 +11,19 @@ import { useGoogleLogin } from '@react-oauth/google'
 import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
 import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
 
 import { MainLayout } from '../../src/components/MainLayout'
+import { UploadConfirmationModal } from '../../src/components/UploadConfirmationModal'
 import { getOrigin } from '../../utils/getOrigin'
-
-import { GET_RESOURCES } from '.'
 
 const GET_GOOGLE_ACCESS_TOKEN = gql`
   mutation getGoogleAccessToken($input: GoogleAuthInput!) {
     getGoogleAccessToken(input: $input) {
       id
       accessToken
-    }
-  }
-`
-
-const GET_RESOUCE_FROM_TEMPLATE = gql`
-  mutation ResourceFromTemplate(
-    $nexusId: String!
-    $tokenId: String!
-    $spreadsheetId: String!
-    $drivefolderId: String!
-  ) {
-    resourceFromTemplate(
-      nexusId: $nexusId
-      tokenId: $tokenId
-      spreadsheetId: $spreadsheetId
-      drivefolderId: $drivefolderId
-    ) {
-      id
     }
   }
 `
@@ -55,19 +35,14 @@ const ImportYouTubeTemplatePage: FC = () => {
     useState<CallbackDoc | null>(null)
   const [openPicker] = useDrivePicker()
   const [getGoogleAccessToken] = useMutation(GET_GOOGLE_ACCESS_TOKEN)
-  const [getResourceFromTemplate, { loading }] = useMutation(
-    GET_RESOUCE_FROM_TEMPLATE
-  )
   const [googleAccessToken, setGoogleAccessToken] = useState('')
   const [googleAccessTokenId, setGoogleAccessTokenId] = useState('')
   const [resourceType, setResourceType] = useState<'file' | 'directory' | ''>(
     ''
   )
-  const nexusId =
-    typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
-  const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation()
   const router = useRouter()
+  const [consentOpen, setConsentOpen] = useState(false)
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
@@ -141,25 +116,6 @@ const ImportYouTubeTemplatePage: FC = () => {
     }
   }, [googleAccessToken])
 
-  const uploadYoutubeTemplate = (): void => {
-    void getResourceFromTemplate({
-      variables: {
-        nexusId,
-        tokenId: googleAccessTokenId,
-        spreadsheetId: selectedTemplateFile?.id,
-        drivefolderId: selectedVideosDirectory?.id
-      },
-      onCompleted: () => {
-        enqueueSnackbar('Resource Uploaded', {
-          variant: 'success',
-          preventDuplicate: true
-        })
-        void router.push('/resources')
-      },
-      refetchQueries: [GET_RESOURCES]
-    })
-  }
-
   return (
     <MainLayout title="Import Youtube Template">
       <Paper elevation={0} sx={{ px: 4, py: 8, mt: 4 }}>
@@ -232,11 +188,7 @@ const ImportYouTubeTemplatePage: FC = () => {
             justifyContent="flex-end"
             spacing={4}
           >
-            <Button
-              sx={{ alignSelf: 'flex-end' }}
-              disabled={loading}
-              onClick={router.back}
-            >
+            <Button sx={{ alignSelf: 'flex-end' }} onClick={router.back}>
               {t('Cancel')}
             </Button>
             <Button
@@ -244,16 +196,22 @@ const ImportYouTubeTemplatePage: FC = () => {
               sx={{ alignSelf: 'flex-end' }}
               disabled={
                 selectedTemplateFile === null ||
-                selectedVideosDirectory === null ||
-                loading
+                selectedVideosDirectory === null
               }
-              onClick={uploadYoutubeTemplate}
+              onClick={() => setConsentOpen(true)}
             >
               {t('Upload Youtube Template')}
             </Button>
           </Stack>
         </Stack>
       </Paper>
+      <UploadConfirmationModal
+        open={consentOpen}
+        onClose={() => setConsentOpen(false)}
+        selectedTemplateFile={selectedTemplateFile}
+        selectedVideosDirectory={selectedVideosDirectory}
+        googleAccessTokenId={googleAccessTokenId}
+      />
     </MainLayout>
   )
 }

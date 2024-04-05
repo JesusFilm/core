@@ -135,7 +135,7 @@ const ChannelsPage: FC = () => {
             variant="contained"
             onClick={() => setOpenCreateChannelModal(true)}
           >
-            {t('Create New Channel')}
+            {t('Connect Channel')}
           </Button>
         </Stack>
         <ChannelsTable
