@@ -55,7 +55,7 @@ describe('HandleNewAccountRedirect', () => {
     expect(push).toHaveBeenCalledWith({
       pathname: '/users/sign-in',
       query: {
-        redirect: 'http://localhost:4200?newAccount=true'
+        redirect: '?newAccount=true'
       }
     })
   })
