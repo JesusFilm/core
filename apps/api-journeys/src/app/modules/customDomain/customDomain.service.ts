@@ -193,12 +193,19 @@ export class CustomDomainService {
         }
       )
 
-      if (verifyResponse.status !== 200)
+      verifyData = await verifyResponse.json()
+
+      if (
+        verifyResponse.status !== 200 &&
+        (verifyData == null ||
+          ('error' in verifyData &&
+            !['existing_project_domain', 'missing_txt_record'].includes(
+              verifyData?.error?.code
+            )))
+      )
         throw new GraphQLError('vercel verification response not handled', {
           extensions: { code: 'INTERNAL_SERVER_ERROR' }
         })
-
-      verifyData = await verifyResponse.json()
     }
 
     if (verifyData != null && 'verified' in verifyData && verifyData.verified)
