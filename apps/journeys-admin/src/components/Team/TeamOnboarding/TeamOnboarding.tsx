@@ -46,7 +46,9 @@ export function TeamOnboarding(): ReactElement {
       }),
       await router.push(
         router.query.redirect != null
-          ? `${router.query.redirect as string}`
+          ? new URL(
+              `${window.location.origin}${router.query.redirect as string}`
+            )
           : '/?onboarding=true'
       ),
       query.refetch()
