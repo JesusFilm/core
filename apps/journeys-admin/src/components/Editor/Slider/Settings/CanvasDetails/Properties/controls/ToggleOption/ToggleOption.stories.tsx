@@ -6,12 +6,12 @@ import { ComponentPropsWithoutRef } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
 
 import { ToggleOption } from '.'
 
 const ToggleOptionStory: Meta<typeof ToggleOption> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: ToggleOption,
   title:
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/ToggleOption'
