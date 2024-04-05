@@ -17,6 +17,7 @@ import {
   GetAdminJourney,
   GetAdminJourneyVariables
 } from '../../__generated__/GetAdminJourney'
+import { GetCustomDomains } from '../../__generated__/GetCustomDomains'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
@@ -24,6 +25,7 @@ import { ControlPanel } from '../../src/components/Editor/ControlPanel'
 import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { GET_CUSTOM_DOMAINS } from '../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
 
 export const GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -108,6 +110,16 @@ export const getServerSideProps = withUserTokenSSR({
         id: query?.journeyId
       }
     })
+
+    if (data.journey?.team?.id != null) {
+      // from: src/components/Editor/Properties/JourneyLink/JourneyLink.tsx
+      await apolloClient.query<GetCustomDomains>({
+        query: GET_CUSTOM_DOMAINS,
+        variables: {
+          teamId: data.journey.team.id
+        }
+      })
+    }
 
     if (data.journey?.template === true) {
       return {

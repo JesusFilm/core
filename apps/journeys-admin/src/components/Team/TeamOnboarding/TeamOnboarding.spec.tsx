@@ -54,7 +54,8 @@ describe('TeamOnboarding', () => {
           title: 'Team Title',
           publicTitle: null,
           __typename: 'Team',
-          userTeams: []
+          userTeams: [],
+          customDomains: []
         }
       }
     }
@@ -82,7 +83,8 @@ describe('TeamOnboarding', () => {
             title: 'Team Title',
             publicTitle: null,
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           }
         ],
         getJourneyProfile: {
@@ -136,7 +138,8 @@ describe('TeamOnboarding', () => {
             title: 'Team Title',
             publicTitle: 'Public Title',
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           }
         }
       }

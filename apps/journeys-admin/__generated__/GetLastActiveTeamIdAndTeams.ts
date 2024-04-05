@@ -27,12 +27,19 @@ export interface GetLastActiveTeamIdAndTeams_teams_userTeams {
   user: GetLastActiveTeamIdAndTeams_teams_userTeams_user;
 }
 
+export interface GetLastActiveTeamIdAndTeams_teams_customDomains {
+  __typename: "CustomDomain";
+  id: string;
+  name: string;
+}
+
 export interface GetLastActiveTeamIdAndTeams_teams {
   __typename: "Team";
   id: string;
   title: string;
   publicTitle: string | null;
   userTeams: GetLastActiveTeamIdAndTeams_teams_userTeams[];
+  customDomains: GetLastActiveTeamIdAndTeams_teams_customDomains[];
 }
 
 export interface GetLastActiveTeamIdAndTeams {
