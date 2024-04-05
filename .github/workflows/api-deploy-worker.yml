@@ -78,7 +78,7 @@ jobs:
 
       - name: Has Prisma
         id: has_prisma
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: 'apps/${{inputs.name}}/db/schema.prisma'
 
