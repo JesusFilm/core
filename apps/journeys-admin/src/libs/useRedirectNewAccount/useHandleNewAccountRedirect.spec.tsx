@@ -22,7 +22,7 @@ describe('HandleNewAccountRedirect', () => {
     jest.clearAllMocks()
   })
 
-  it('should return redirect if exists', () => {
+  it('should return redirect if it exists', () => {
     mockUseRouter.mockReturnValue({
       push,
       pathname: '/users/sign-in',
@@ -75,6 +75,25 @@ describe('HandleNewAccountRedirect', () => {
       pathname: '/users/sign-in',
       query: {
         redirect: 'http://localhost:4200?createNew=true&newAccount=true'
+      }
+    })
+  })
+
+  it('should append newAccount at the end of redirect if createNew does not exist', () => {
+    mockUseRouter.mockReturnValue({
+      push,
+      pathname: '/users/sign-in',
+      query: {
+        redirect: 'http://localhost:4200'
+      },
+      asPath: '/users/sign-in'
+    } as unknown as NextRouter)
+    renderHook(() => useHandleNewAccountRedirect())
+
+    expect(push).toHaveBeenCalledWith({
+      pathname: '/users/sign-in',
+      query: {
+        redirect: 'http://localhost:4200?newAccount=true'
       }
     })
   })
