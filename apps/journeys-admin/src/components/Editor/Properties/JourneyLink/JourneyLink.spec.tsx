@@ -4,7 +4,9 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { getCustomDomainMock } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { defaultJourney } from '../../data'
 
 import { JourneyLink } from './JourneyLink'
@@ -24,6 +26,12 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 describe('JourneyLink', () => {
   const push = jest.fn()
   const on = jest.fn()
+
+  const journeyWithTeam = { ...defaultJourney, team: { id: 'teamId' } }
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
 
   it('should handle edit journey slug', async () => {
     mockedUseRouter.mockReturnValue({
@@ -108,5 +116,33 @@ describe('JourneyLink', () => {
         { shallow: true }
       )
     })
+  })
+
+  it('should show custom domain if it exists', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
+
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
+          <JourneyProvider
+            value={{
+              journey: journeyWithTeam as JourneyFields,
+              variant: 'admin'
+            }}
+          >
+            <JourneyLink />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByRole('textbox')).toHaveValue('https://example.com/default')
   })
 })

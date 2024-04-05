@@ -4,6 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -42,14 +44,16 @@ describe('TeamMenu', () => {
             title: 'Team Title',
             publicTitle: null,
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           },
           {
             id: 'teamId2',
             title: 'Team Title2',
             publicTitle: null,
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           }
         ],
         getJourneyProfile: {
@@ -72,14 +76,16 @@ describe('TeamMenu', () => {
             title: 'Team Title',
             publicTitle: null,
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           },
           {
             id: 'teamId2',
             title: 'Team Title2',
             publicTitle: null,
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           }
         ],
         getJourneyProfile: {
@@ -103,11 +109,13 @@ describe('TeamMenu', () => {
     const { getByRole, getByText, queryByRole, getByTestId, queryByTestId } =
       render(
         <MockedProvider mocks={[getTeamsMock]}>
-          <SnackbarProvider>
-            <TeamProvider>
-              <TeamMenu />
-            </TeamProvider>
-          </SnackbarProvider>
+          <FlagsProvider flags={{ customDomain: true }}>
+            <SnackbarProvider>
+              <TeamProvider>
+                <TeamMenu />
+              </TeamProvider>
+            </SnackbarProvider>
+          </FlagsProvider>
         </MockedProvider>
       )
     fireEvent.click(getByRole('button'))
@@ -176,6 +184,12 @@ describe('TeamMenu', () => {
         { shallow: true }
       )
     })
+    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('menuitem', { name: 'Custom Domain' }))
+    await waitFor(() =>
+      expect(getByText('Domain Settings')).toBeInTheDocument()
+    )
+    fireEvent.click(getByTestId('dialog-close-button'))
   })
 
   it('disables rename team button', async () => {
@@ -210,5 +224,64 @@ describe('TeamMenu', () => {
       'aria-disabled',
       'true'
     )
+  })
+
+  it('shows customs domain name if set', async () => {
+    const mockTeamWithCustomDomain = {
+      ...getTeamsMock,
+      result: jest.fn(() => ({
+        data: {
+          teams: [
+            {
+              id: 'teamId2',
+              title: 'Team Title2',
+              publicTitle: null,
+              __typename: 'Team',
+              userTeams: [],
+              customDomains: [
+                {
+                  __typename: 'CustomDomain',
+                  name: 'example.com',
+                  apexName: 'example.com',
+                  id: 'customDomainId',
+                  verification: {
+                    __typename: 'CustomDomainVerific  ation',
+                    verified: true,
+                    verification: []
+                  },
+                  journeyCollection: {
+                    __typename: 'JourneyCollection',
+                    id: 'journeyCollectionId',
+                    journeys: []
+                  }
+                }
+              ]
+            }
+          ],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            id: 'journeyProfileId',
+            lastActiveTeamId: 'teamId2'
+          }
+        }
+      }))
+    }
+
+    const { getByText } = render(
+      <MockedProvider mocks={[mockTeamWithCustomDomain]}>
+        <FlagsProvider flags={{ customDomain: true }}>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TeamMenu />
+            </TeamProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(mockTeamWithCustomDomain.result).toHaveBeenCalled()
+    )
+    expect(getByText('example.com')).toBeInTheDocument()
   })
 })

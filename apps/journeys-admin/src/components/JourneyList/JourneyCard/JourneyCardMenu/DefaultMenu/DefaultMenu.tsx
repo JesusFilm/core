@@ -11,8 +11,10 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
+import { useTeam } from '../../../../Team/TeamProvider'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
@@ -43,6 +45,12 @@ export function DefaultMenu({
   refetch
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { activeTeam } = useTeam()
+  const { hostname } = useCustomDomainsQuery({
+    variables: { teamId: activeTeam?.id ?? '' },
+    skip: activeTeam?.id == null
+  })
+
   return (
     <>
       <NextLink
@@ -68,7 +76,9 @@ export function DefaultMenu({
         />
       )}
       <NextLink
-        href={`/api/preview?slug=${slug}`}
+        href={`/api/preview?slug=${slug}${
+          hostname != null ? `&hostname=${hostname}` : ''
+        }`}
         passHref
         legacyBehavior
         prefetch={false}
