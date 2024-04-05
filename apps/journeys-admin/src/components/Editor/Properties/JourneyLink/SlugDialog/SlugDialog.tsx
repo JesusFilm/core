@@ -73,7 +73,7 @@ export function SlugDialog({
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
     return () => {
-      onClose()
+      onClose?.()
       // wait for dialog animation to complete
       setTimeout(() => resetForm({ values: { slug: journey?.slug } }))
     }
