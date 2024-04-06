@@ -261,10 +261,7 @@ describe('customDomainService', () => {
       name: string,
       configData: VercelConfigDomainResponse,
       domainData: VercelCreateDomainResponse | VercelCreateDomainError,
-      verificationData:
-        | VercelVerifyDomainResponse
-        | VercelVerifyDomainError
-        | null
+      verifyData: VercelVerifyDomainResponse | VercelVerifyDomainError | null
     ) {
       return async (url: string) => {
         switch (url) {
@@ -283,8 +280,8 @@ describe('customDomainService', () => {
           case `https://api.vercel.com/v9/projects/journeysProjectId/domains/${name}/verify?teamId=teamId`:
             return await Promise.resolve({
               ok: true,
-              status: 200,
-              json: async () => await Promise.resolve(verificationData)
+              status: verifyData != null && 'error' in verifyData ? 400 : 200,
+              json: async () => await Promise.resolve(verifyData)
             } as unknown as Response)
           default:
             return await Promise.resolve({
@@ -345,7 +342,7 @@ describe('customDomainService', () => {
             }
           ]
         }
-        const verificationData: VercelVerifyDomainError = {
+        const verifyData: VercelVerifyDomainError = {
           error: {
             code: 'existing_project_domain',
             message:
@@ -359,7 +356,7 @@ describe('customDomainService', () => {
               domain,
               configData,
               domainData,
-              verificationData
+              verifyData
             )
           )
         })
@@ -432,7 +429,7 @@ describe('customDomainService', () => {
             }
           ]
         }
-        const verificationData: VercelVerifyDomainError = {
+        const verifyData: VercelVerifyDomainError = {
           error: {
             code: 'missing_txt_record',
             message:
@@ -446,7 +443,7 @@ describe('customDomainService', () => {
               domain,
               configData,
               domainData,
-              verificationData
+              verifyData
             )
           )
         })
@@ -523,7 +520,7 @@ describe('customDomainService', () => {
             }
           ]
         }
-        const verificationData: VercelVerifyDomainResponse = {
+        const verifyData: VercelVerifyDomainResponse = {
           name: 'www.example.com',
           apexName: 'example.com',
           projectId: 'journeysProjectId',
@@ -541,7 +538,7 @@ describe('customDomainService', () => {
               domain,
               configData,
               domainData,
-              verificationData
+              verifyData
             )
           )
         })
@@ -581,7 +578,7 @@ describe('customDomainService', () => {
           createdAt: 1711138797591,
           verified: true
         }
-        const verificationData = null
+        const verifyData = null
 
         beforeEach(() => {
           mockFetch.mockImplementation(
@@ -589,7 +586,7 @@ describe('customDomainService', () => {
               domain,
               configData,
               domainData,
-              verificationData
+              verifyData
             )
           )
         })
@@ -632,7 +629,7 @@ describe('customDomainService', () => {
           createdAt: 1711591718992,
           verified: true
         }
-        const verificationData = null
+        const verifyData = null
 
         beforeEach(() => {
           mockFetch.mockImplementation(
@@ -640,7 +637,7 @@ describe('customDomainService', () => {
               domain,
               configData,
               domainData,
-              verificationData
+              verifyData
             )
           )
         })

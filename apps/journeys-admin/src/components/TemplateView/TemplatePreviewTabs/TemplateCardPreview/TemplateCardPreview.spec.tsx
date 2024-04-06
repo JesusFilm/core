@@ -25,7 +25,11 @@ describe('TemplateCardPreview', () => {
 
     const { getAllByTestId } = render(
       <ThemeProvider theme={createTheme()}>
-        <TemplateCardPreview steps={steps} />
+        <TemplateCardPreview
+          steps={steps}
+          openTeamDialog={false}
+          setOpenTeamDialog={jest.fn()}
+        />
       </ThemeProvider>
     )
     await waitFor(() =>
@@ -50,7 +54,11 @@ describe('TemplateCardPreview', () => {
     const { getAllByTestId, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider theme={createTheme()}>
-          <TemplateCardPreview steps={steps} />
+          <TemplateCardPreview
+            steps={steps}
+            openTeamDialog={false}
+            setOpenTeamDialog={jest.fn()}
+          />
         </ThemeProvider>
       </MockedProvider>
     )
@@ -70,7 +78,11 @@ describe('TemplateCardPreview', () => {
 
     const { getAllByTestId } = render(
       <ThemeProvider theme={createTheme()}>
-        <TemplateCardPreview steps={steps} />
+        <TemplateCardPreview
+          steps={steps}
+          openTeamDialog={false}
+          setOpenTeamDialog={jest.fn()}
+        />
       </ThemeProvider>
     )
     await waitFor(() =>
@@ -83,7 +95,11 @@ describe('TemplateCardPreview', () => {
 
     const { getAllByTestId } = render(
       <ThemeProvider theme={createTheme()}>
-        <TemplateCardPreview steps={steps} />
+        <TemplateCardPreview
+          steps={steps}
+          openTeamDialog={false}
+          setOpenTeamDialog={jest.fn()}
+        />
       </ThemeProvider>
     )
     await waitFor(() =>
