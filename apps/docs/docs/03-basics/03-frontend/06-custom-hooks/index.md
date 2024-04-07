@@ -7,7 +7,7 @@ As a result you will be writing mock calls in multiple files.
 
 The problem with this is that if the GraphQL query changes. You will have to spend a lot of time going through each and every test file that consumes this hook and individually updating every test.
 
-Instead we can create a `[hook-name].mock.ts` file in the directory of the hook.
+To prevent this problem in our codebase, we add all our mocked queries to a `[hook-name].mock.ts` file that lives in the directory of the hook.
 
 For example if your custom hook has as GraphQL call that looks like this:
 
@@ -48,7 +48,7 @@ export const getSomeDataMock: MockedResponse<
 }
 ```
 
-Instead of putting the above in every test file that consumes the query, follow theese steps:
+Instead of putting the above in every test file, follow the below steps:
 
 - create a `[hook-name].mock.ts` file in the same directory as your hook.
   ![creating mock ts file in directory](mock-ts-directory-add.png)
@@ -82,6 +82,9 @@ Instead of putting the above in every test file that consumes the query, follow 
 - import the mock query into any necessary tests.
 
   ```
+  // your test file(s)
+
+
   import { getSomeDataMock } from '../../../libs/useSomeDataQuery/useSomeDataQuery.mock'
 
 
@@ -127,3 +130,7 @@ import { getSomeDataMock } from '../../../libs/useSomeDataQuery/useSomeDataQuery
     expect(getByText('someValue')).toBeInTheDocument()
   })
 ```
+
+Q: "Im only consuming the hook in one place, does that mean I don't have to create a mock.ts file and export my mocked query from there?"
+
+A: No. As time goes on, our project will grow, change, evolve. As a result, requirements change all the time. Who's to say we wont end up consuming your hook in other places? If we do, more tests requiring mocks of the GraphQL call in your hook will need to be written. So therefore, to be more future minded, you will need to create a mock.ts file and add your mocks to it.
