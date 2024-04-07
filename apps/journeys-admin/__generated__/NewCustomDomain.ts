@@ -4,14 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetJourneySlugs
+// GraphQL fragment: NewCustomDomain
 // ====================================================
 
-export interface GetJourneySlugs_journeys {
-  __typename: "Journey";
-  slug: string;
-}
-
-export interface GetJourneySlugs {
-  journeys: GetJourneySlugs_journeys[];
+export interface NewCustomDomain {
+  __typename: "CustomDomain";
+  id: string;
 }

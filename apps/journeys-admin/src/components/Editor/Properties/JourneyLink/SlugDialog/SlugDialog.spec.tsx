@@ -8,10 +8,9 @@ import { defaultJourney } from '../../../data'
 
 import { JOURNEY_SLUG_UPDATE, SlugDialog } from '.'
 
-const onClose = jest.fn()
-
 describe('JourneyView/Properties/SlugDialog', () => {
   it('should not set journey slug on close', async () => {
+    const onClose = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
@@ -70,7 +69,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} />
+            <SlugDialog open />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -106,7 +105,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} />
+            <SlugDialog open />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -156,7 +155,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
               variant: 'admin'
             }}
           >
-            <SlugDialog open onClose={onClose} />
+            <SlugDialog open />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -166,5 +165,34 @@ describe('JourneyView/Properties/SlugDialog', () => {
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
     await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
+
+  it('shows custom domain if configured', async () => {
+    const { getByText } = render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                ...defaultJourney,
+                team: {
+                  id: 'teamId',
+                  __typename: 'Team',
+                  title: 'Team',
+                  publicTitle: 'Team'
+                }
+              },
+              variant: 'admin'
+            }}
+          >
+            <SlugDialog open hostname="www.customdomain.com" />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      getByText('https://www.customdomain.com/').parentElement?.textContent
+    ).toBe('https://www.customdomain.com/default')
   })
 })

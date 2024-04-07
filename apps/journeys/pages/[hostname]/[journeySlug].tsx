@@ -131,7 +131,8 @@ export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
             i18nConfig
           ))
         },
-        notFound: true
+        notFound: true,
+        revalidate: 1
       }
     }
     throw e

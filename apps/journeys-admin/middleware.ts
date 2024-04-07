@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 const PUBLIC_FILE_REGEX = /\.(.*)$/
 
 // update the fingerprint when updating cookies logic
+// update LanguageSwitcher fingerprint as well
 export const COOKIE_FINGERPRINT = '00003'
 
 const DEFAULT_LOCALE = 'en'
