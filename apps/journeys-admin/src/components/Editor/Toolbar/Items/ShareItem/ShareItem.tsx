@@ -15,6 +15,7 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
 
 import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
+import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { Item } from '../Item/Item'
 
 const EmbedJourneyDialog = dynamic(
@@ -41,6 +42,10 @@ interface ShareItemProps {
 export function ShareItem({ variant }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const { hostname } = useCustomDomainsQuery({
+    variables: { teamId: journey?.team?.id ?? '' },
+    skip: journey?.team?.id == null
+  })
   const router = useRouter()
   const [showSlugDialog, setShowSlugDialog] = useState<boolean | undefined>()
   const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | undefined>()
@@ -80,8 +85,10 @@ export function ShareItem({ variant }: ShareItemProps): ReactElement {
             value={
               journey?.slug != null
                 ? `${
-                    process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                    'https://your.nextstep.is'
+                    hostname != null
+                      ? `https://${hostname}`
+                      : process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                        'https://your.nextstep.is'
                   }/${journey.slug}`
                 : undefined
             }
@@ -116,6 +123,7 @@ export function ShareItem({ variant }: ShareItemProps): ReactElement {
         <SlugDialog
           open={showSlugDialog}
           onClose={() => setShowSlugDialog(false)}
+          hostname={hostname}
         />
       )}
       {showEmbedDialog != null && (
