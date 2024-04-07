@@ -133,4 +133,4 @@ import { getSomeDataMock } from '../../../libs/useSomeDataQuery/useSomeDataQuery
 
 Q: "Im only consuming the hook in one place, does that mean I don't have to create a mock.ts file and export my mocked query from there?"
 
-A: No. As time goes on, our project will grow, change, evolve. As a result, requirements change all the time. Who's to say we wont end up consuming your hook in other places? If we do, more tests requiring mocks of the GraphQL call in your hook will need to be written. So therefore, to be more future minded, you will need to create a mock.ts file and add your mocks to it.
+A: No. As time goes on, our project will grow, change and evolve. As a result, requirements change all the time. Who's to say we wont end up consuming your hook in other places? If we do, more tests requiring mocks of the GraphQL call in your hook will need to be written. So therefore, to be more future minded, you will need to create a mock.ts file and add your mocks to it.
