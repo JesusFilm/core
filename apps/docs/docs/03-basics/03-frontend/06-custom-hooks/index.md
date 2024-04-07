@@ -54,7 +54,7 @@ Instead of putting the above in every test file that consumes the query, follow 
 - export the mock query from the file
 - import the mock query into any necessary tests.
 
-Now if anyone changes this query in the future, they will only need to update one test file.
+Now if anyone changes this query in the future, they will only need to update the mocked query in your mock.ts file and it will automatically reflect in your other test files.
 
 #### FAQ
 
