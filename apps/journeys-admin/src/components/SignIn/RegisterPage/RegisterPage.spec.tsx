@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword
 } from 'firebase/auth'
+import { NextRouter, useRouter } from 'next/router'
 
 import { RegisterPage } from './RegisterPage'
 
@@ -15,7 +16,25 @@ jest.mock('firebase/auth', () => ({
   updateProfile: jest.fn()
 }))
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('PasswordPage', () => {
+  const back = jest.fn()
+
+  beforeEach(() => {
+    mockUseRouter.mockReturnValue({
+      back,
+      push: jest.fn(),
+      query: {
+        redirect: null
+      }
+    } as unknown as NextRouter)
+  })
+
   it('should render register page', () => {
     const { getByText, getByRole } = render(
       <RegisterPage setActivePage={jest.fn()} userEmail="example@example.com" />
@@ -174,5 +193,12 @@ describe('PasswordPage', () => {
     await waitFor(() => {
       expect(mockSetActivePage).toHaveBeenCalledWith('home')
     })
+  })
+
+  it('should navigate back when clicking cancel button', () => {
+    const { getByRole } = render(<RegisterPage />)
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+
+    expect(back).toHaveBeenCalled()
   })
 })
