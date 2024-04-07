@@ -7,7 +7,7 @@ As a result you will be writing mock calls in multiple files.
 
 The problem with this is that if the GraphQL query changes. You will have to spend a lot of time going through each and every test file that consumes this hook and individually updating every test.
 
-instead we can create a `[hook-name].mock.ts` file in the directory of the hook.
+Instead we can create a `[hook-name].mock.ts` file in the directory of the hook.
 
 For example if your custom hook has as GraphQL call that looks like this:
 
@@ -51,8 +51,51 @@ export const getSomeDataMock: MockedResponse<
 Instead of putting the above in every test file that consumes the query, follow theese steps:
 
 - create a `[hook-name].mock.ts` file in the same directory as your hook.
+  ![creating mock ts file in directory](mock-ts-directory-add.png)
 - export the mock query from the file
+
+  ```
+  export const getSomeDataMock: MockedResponse<
+    GetSomeData,
+    GetSomeDataVariables
+  > = {
+    request: {
+      query: GET_SOME_DATA,
+      variables: {
+        id: 'mockId'
+      }
+    },
+    result: {
+      data: {
+        someData:     {
+            __typename: 'SomeData',
+            id: 'someDataId',
+            value: 'someValue'
+          }
+      }
+    }
+  }
+  ```
+
 - import the mock query into any necessary tests.
+
+  ```
+  import { getSomeDataMock } from '../../../libs/useSomeDataQuery/useSomeDataQuery.mock'
+
+
+    it('should return some data', async () => {
+      const { getByText } = render(
+          <MockedProvider
+            cache={cache}
+            mocks={[getSomeDataMock]}
+          >
+            <SomeComponent />
+          </MockedProvider>
+      )
+
+      // your test logic here
+    })
+  ```
 
 Now if anyone changes this query in the future, they will only need to update the mocked query in your mock.ts file and it will automatically reflect in your other test files.
 
