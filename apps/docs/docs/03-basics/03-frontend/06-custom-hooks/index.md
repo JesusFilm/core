@@ -55,6 +55,8 @@ Instead of putting the above in every test file that consumes the query, follow 
 - export the mock query from the file
 
   ```
+  // useSomeDataQuery.mock.ts
+
   export const getSomeDataMock: MockedResponse<
     GetSomeData,
     GetSomeDataVariables
