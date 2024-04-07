@@ -6,12 +6,9 @@ import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
-import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
-import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider,
@@ -41,36 +38,6 @@ jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('TeamOnboarding', () => {
-  const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
-    request: {
-      query: GET_USER_TEAMS_AND_INVITES,
-      variables: {
-        teamId: 'teamId',
-        where: { role: [UserTeamRole.manager, UserTeamRole.member] }
-      }
-    },
-    result: {
-      data: {
-        userTeams: [
-          {
-            id: 'userTeamId',
-            __typename: 'UserTeam',
-            role: UserTeamRole.manager,
-            user: {
-              __typename: 'User',
-              email: 'siyangguccigang@example.com',
-              firstName: 'Siyang',
-              id: 'userId',
-              imageUrl: 'imageURL',
-              lastName: 'Gang'
-            }
-          }
-        ],
-        userTeamInvites: []
-      }
-    }
-  }
-
   const teamCreateMock: MockedResponse<TeamCreate> = {
     request: {
       query: TEAM_CREATE,
@@ -136,6 +103,7 @@ describe('TeamOnboarding', () => {
   let push: jest.Mock
 
   beforeEach(() => {
+    jest.resetAllMocks()
     push = jest.fn()
 
     mockUseRouter.mockReturnValue({
@@ -204,6 +172,7 @@ describe('TeamOnboarding', () => {
       ])
     )
     expect(getByText('Team Title created.')).toBeInTheDocument()
+    expect(push).toHaveBeenCalledWith('/?onboarding=true')
   })
 
   it('should update last active team id', async () => {
@@ -265,22 +234,6 @@ describe('TeamOnboarding', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('shows team invites form once team has been created', async () => {
-    const { getByRole, getByText } = render(
-      <MockedProvider mocks={[getTeams, getUserTeamMock1]}>
-        <SnackbarProvider>
-          <TeamProvider>
-            <TeamOnboarding />
-            <TestComponent />
-          </TeamProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    await waitFor(() => expect(getByText('Team Title')).toBeInTheDocument())
-    await waitFor(() => expect(getByText('Siyang Gang')).toBeInTheDocument())
-    expect(getByRole('button', { name: 'Skip' })).toBeInTheDocument()
-  })
-
   it('validates form', async () => {
     const { getByText, getByRole, getAllByRole } = render(
       <MockedProvider mocks={[teamCreateErrorMock]}>
@@ -313,33 +266,46 @@ describe('TeamOnboarding', () => {
     expect(push).not.toHaveBeenCalled()
   })
 
-  it('should submit team invite form and redirect to homepage', async () => {
-    const { getByText, getByRole } = render(
-      <MockedProvider mocks={[getTeams, getUserTeamMock1]}>
-        <SnackbarProvider>
-          <TeamProvider>
-            <TeamOnboarding />
-            <TestComponent />
-          </TeamProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() => expect(getByText('Team Title')).toBeInTheDocument())
-    await waitFor(() => expect(getByText('Siyang Gang')).toBeInTheDocument())
-    expect(getByRole('button', { name: 'Skip' })).toBeInTheDocument()
-    await waitFor(() => fireEvent.click(getByRole('button', { name: 'Skip' })))
-    expect(push).toHaveBeenCalledWith('/?onboarding=true')
-  })
-
   it('should redirect to router query location', async () => {
     mockUseRouter.mockReturnValue({
       push,
       query: { redirect: '/custom-location' }
     } as unknown as NextRouter)
 
-    const { getByText, getByRole } = render(
-      <MockedProvider mocks={[getTeams, getUserTeamMock1]}>
+    const cache = new InMemoryCache()
+    cache.restore({
+      ROOT_QUERY: {
+        __typename: 'Query',
+        teams: [{ __ref: 'Team:teamId' }]
+      }
+    })
+
+    const teamMock: MockedResponse<TeamCreate> = {
+      request: {
+        query: TEAM_CREATE,
+        variables: {
+          input: {
+            title: 'Team Title',
+            publicTitle: 'Public Title'
+          }
+        }
+      },
+      result: {
+        data: {
+          teamCreate: {
+            id: 'teamId1',
+            title: 'Team Title',
+            publicTitle: 'Public Title',
+            __typename: 'Team',
+            userTeams: [],
+            customDomains: []
+          }
+        }
+      }
+    }
+
+    const { getByRole, getByTestId, getByText, getAllByRole } = render(
+      <MockedProvider mocks={[teamMock, getTeams]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
             <TeamOnboarding />
@@ -348,11 +314,23 @@ describe('TeamOnboarding', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-
-    await waitFor(() => expect(getByText('Team Title')).toBeInTheDocument())
-    await waitFor(() => expect(getByText('Siyang Gang')).toBeInTheDocument())
-    expect(getByRole('button', { name: 'Skip' })).toBeInTheDocument()
-    await waitFor(() => fireEvent.click(getByRole('button', { name: 'Skip' })))
+    fireEvent.change(getAllByRole('textbox')[0], {
+      target: { value: 'Team Title' }
+    })
+    fireEvent.change(getAllByRole('textbox')[1], {
+      target: { value: 'Public Title' }
+    })
+    fireEvent.click(getByRole('button', { name: 'Create' }))
+    await waitFor(() =>
+      expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
+    )
+    await waitFor(() =>
+      expect(cache.extract()?.ROOT_QUERY?.teams).toEqual([
+        { __ref: 'Team:teamId' },
+        { __ref: 'Team:teamId1' }
+      ])
+    )
+    expect(getByText('Team Title created.')).toBeInTheDocument()
     expect(push).toHaveBeenCalledWith(
       new URL('http://localhost/custom-location')
     )
