@@ -75,7 +75,7 @@ export async function fetchPlus(
     if (error.name === 'FetchError' && retries > 0) {
       return await fetchPlus(url, init, retries - 1)
     }
-    throw new Error(error)
+    throw error
   }
 }
 

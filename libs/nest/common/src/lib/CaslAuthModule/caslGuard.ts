@@ -37,8 +37,9 @@ export class CaslGuard implements CanActivate {
 
     if (req.userId == null) {
       req.userId = await contextToUserId(context)
-      if (req.userId == null) return false
     }
+
+    if (req.userId == null) return false
 
     if (req.roles == null) req.roles = await this.loadRoles(req.userId)
 

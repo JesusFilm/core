@@ -222,7 +222,7 @@ export class BlockService {
       include: { action: true },
       orderBy: { parentOrder: 'asc' }
     })
-    const childIds = new Map()
+    const childIds = new Map<string, string>()
     children.forEach((block) => {
       childIds.set(block.id, uuidv4())
     })

@@ -1,3 +1,4 @@
+import { PureAbility } from '@casl/ability'
 import { createAccessibleByFactory } from '@casl/prisma/runtime'
 import {
   ExecutionContext,
@@ -33,7 +34,10 @@ export const CaslAccessible = createParamDecorator(
         'CaslAccessible decorator requires a subject name for a parameter'
       )
 
-    const req = GqlExecutionContext.create(context).getContext().req
+    const req: {
+      ability?: PureAbility
+      accessibleWhereInputs: Record<string, unknown>
+    } = GqlExecutionContext.create(context).getContext().req
 
     if (req.ability == null)
       throw new UnauthorizedException('No ability found for request')
