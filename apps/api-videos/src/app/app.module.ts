@@ -5,6 +5,7 @@ import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
+import { BullModule } from '@nestjs/bullmq'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
@@ -63,6 +64,12 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
               }
             : undefined,
         level: process.env.NODE_ENV !== 'production' ? 'trace' : 'info'
+      }
+    }),
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_URL ?? 'redis',
+        port: 6379
       }
     }),
     DatadogTraceModule.forRoot()

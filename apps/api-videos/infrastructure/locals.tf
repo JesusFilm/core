@@ -6,7 +6,8 @@ locals {
     "ALGOLIA_APP_ID",
     "ALGOLIA_API_KEY",
     "CROWDIN_API_KEY",
-    "PG_DATABASE_URL_VIDEOS"
+    "PG_DATABASE_URL_VIDEOS",
+    "REDIS_URL"
   ]
   service_config = {
     name           = "api-videos"
