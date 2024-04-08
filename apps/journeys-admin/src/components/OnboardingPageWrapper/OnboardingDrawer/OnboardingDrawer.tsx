@@ -4,13 +4,10 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
-import landingDescriptionMobile from '../../../../public/landing-description-mobile.png'
-import landingDescription from '../../../../public/landing-description.png'
-import landingIllustration from '../../../../public/landing-illustration.png'
 import logo from '../../../../public/logo.svg'
 
-import { OnboardingStepper } from './OnboardingStepper'
-import { OnboardingTemplateCard } from './OnboardingTemplateCard'
+import { OnboardingDrawerOne } from './OnboardingDrawerOne'
+import { OnboardingDrawerTwo } from './OnboardingDrawerTwo'
 
 export function OnboardingDrawer(): ReactElement {
   const router = useRouter()
@@ -33,95 +30,49 @@ export function OnboardingDrawer(): ReactElement {
 
   const templateId = getTemplateId()
 
+  console.log('templateId', templateId)
+
   return (
     <Stack
       alignItems="center"
-      justifyContent={templateId != null ? 'flex-start' : 'space-between'}
-      gap={{ xs: templateId == null ? 2 : 4, md: templateId == null ? 10 : 0 }}
+      gap={{ xs: templateId == null ? 2 : 4, md: 14 }}
       sx={{
+        // border: '2px blue solid',
         mt: { xs: 5 },
         my: { md: 10 },
         mx: { md: 20 },
         width: { xs: '100%', md: '32%' },
-        mb: { xs: templateId == null ? 0 : 5 }
+        mb: { xs: templateId == null ? 0 : 5 },
+        overflow: 'scroll'
       }}
       data-testid="JourneysAdminOnboardingDrawer"
     >
       <Box
         sx={{
+          // border: '2px blue solid',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: 41,
-          width: { xs: 148, md: 195 }
+          alignItems: { xs: 'center', md: 'flex-start' },
+          height: { xs: 46, md: 48 },
+          width: { xs: 185, md: 291 },
+          px: { xs: 4, md: 6 },
+          pt: { xs: 2, md: 0 },
+          pb: { xs: 2, md: 3 }
         }}
       >
-        <Image src={logo} alt="Next Steps" layout="responsive" />
+        <Box
+          sx={{
+            width: { xs: 148, md: 195 },
+            height: { xs: 28, md: 36 }
+          }}
+        >
+          <Image src={logo} alt="Next Steps" layout="responsive" />
+        </Box>
       </Box>
-
-      {templateId == null && (
-        <Box
-          sx={{
-            overflow: 'hidden',
-            height: 444,
-            display: { xs: 'none', md: 'flex' }
-          }}
-        >
-          <Image
-            src={landingIllustration}
-            alt="Landing Illustration"
-            layout="responsive"
-            priority
-          />
-        </Box>
+      {templateId !== undefined ? (
+        <OnboardingDrawerOne />
+      ) : (
+        <OnboardingDrawerTwo />
       )}
-
-      {newAccountQuery === true && <OnboardingStepper variant="mobile" />}
-
-      {templateId == null && (
-        <>
-          {newAccountQuery !== true && (
-            <Box
-              sx={{
-                mb: 20,
-                width: 600,
-                display: { xs: 'none', md: 'block' }
-              }}
-            >
-              <Image
-                src={landingDescription}
-                alt="Landing Description"
-                layout="responsive"
-                priority
-              />
-            </Box>
-          )}
-          <Box sx={{ display: { xs: 'block', md: 'none' } }}>
-            <Image
-              src={landingDescriptionMobile}
-              alt="Landing Description Mobile"
-              layout="responsive"
-              priority
-            />
-          </Box>
-        </>
-      )}
-
-      {templateId != null && (
-        <Box
-          sx={{
-            display: 'flex',
-            px: { xs: 6, md: 0 },
-            width: { xs: '100%', md: 200 },
-            pt: { md: newAccountQuery === true ? 0 : 10 },
-            flexGrow: newAccountQuery === true ? 1 : 0
-          }}
-        >
-          <OnboardingTemplateCard templateId={templateId} />
-        </Box>
-      )}
-
-      {newAccountQuery === true && <OnboardingStepper variant="desktop" />}
     </Stack>
   )
 }

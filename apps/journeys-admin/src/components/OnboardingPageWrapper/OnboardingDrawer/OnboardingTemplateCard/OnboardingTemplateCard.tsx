@@ -23,9 +23,14 @@ export function OnboardingTemplateCard({
     <>
       {templateId != null && (
         <Stack
-          spacing={{ xs: 4, md: 0 }}
+          spacing={{ xs: 5, md: 0 }}
           justifyContent={{ xs: 'flex-start', sm: 'center' }}
           direction={{ xs: 'row', md: 'column' }}
+          sx={{
+            // border: '2px blue solid',
+            width: '100%',
+            height: { xs: 58, md: '100%' }
+          }}
         >
           <Stack
             sx={{
@@ -33,8 +38,8 @@ export function OnboardingTemplateCard({
               backgroundColor:
                 data?.journey != null ? 'background.default' : 'transparent',
               overflow: 'hidden',
-              height: { xs: 60, sm: 140, md: 200 },
-              width: { xs: 60, sm: 140, md: 200 },
+              height: { xs: 58, md: 244 },
+              width: { xs: 59, md: 244 },
               borderRadius: { xs: 2, md: 0 },
               borderTopLeftRadius: { md: 12 },
               borderTopRightRadius: { md: 12 }
@@ -84,19 +89,21 @@ function OnboardingTemplateCardDetails({
       data-testid="OnboardingTemplateCardDetails"
       direction="column"
       sx={{
-        px: { xs: 0, sm: 5 },
-        pb: { xs: 0, sm: 5 },
-        pt: { xs: 0, sm: 4 },
+        px: { xs: 0, md: 4 },
+        pb: { xs: 0, md: 4 },
+        pt: { xs: 0, md: 4 },
         borderWidth: { xs: 0, md: 1 },
         borderStyle: 'solid',
         borderColor: 'divider',
         borderTop: 'none',
         borderBottomLeftRadius: 12,
-        borderBottomRightRadius: 12
+        borderBottomRightRadius: 12,
+        width: 244,
+        height: { xs: 55, md: 'auto' }
       }}
     >
       <Typography
-        variant="overline2"
+        variant="overline"
         sx={{
           color: (theme) => theme.palette.grey[700]
         }}
@@ -107,7 +114,7 @@ function OnboardingTemplateCardDetails({
         variant="subtitle1"
         sx={{
           my: 1,
-          display: { xs: 'none', sm: 'block' }
+          display: { xs: 'none', md: 'block' }
         }}
       >
         {journey?.title != null ? (
@@ -128,7 +135,7 @@ function OnboardingTemplateCardDetails({
         variant="subtitle2"
         sx={{
           my: 1,
-          display: { xs: 'block', sm: 'none' }
+          display: { xs: 'block', md: 'none' }
         }}
       >
         {journey?.title != null ? (

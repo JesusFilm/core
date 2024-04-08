@@ -129,9 +129,14 @@ export function OnboardingStepper({
       {variant === 'desktop' && (
         <Stack
           gap={5}
-          sx={{ display: { xs: 'none', md: 'flex' }, flexGrow: 2 }}
+          sx={{
+            // border: '2px red solid',
+            display: { xs: 'none', md: 'flex' },
+            pl: 4,
+            width: 244
+          }}
         >
-          <Typography variant="h6">
+          <Typography variant="h4">
             {t(`Let's get you on the journey`)}
           </Typography>
           <Stepper
@@ -166,6 +171,7 @@ export function OnboardingStepper({
             display: { xs: 'flex', md: 'none' },
             width: '100%',
             p: 0,
+            pb: 4,
             '& .MuiLinearProgress-root': {
               width: '100%'
             }
