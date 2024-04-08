@@ -31,7 +31,7 @@ export function OnboardingDrawerOne(): ReactElement {
     <Stack
       sx={{
         // border: '2px green solid',
-        gap: { xs: 0, md: 18 },
+        gap: { xs: 0, md: 16 },
         width: { xs: '100%', md: 244 }
       }}
       data-testid="JourneysAdminOnboardingDrawerOne"

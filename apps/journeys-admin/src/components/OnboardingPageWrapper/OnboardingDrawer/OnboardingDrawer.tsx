@@ -35,7 +35,7 @@ export function OnboardingDrawer(): ReactElement {
   return (
     <Stack
       alignItems="center"
-      gap={{ xs: templateId == null ? 2 : 4, md: 14 }}
+      gap={{ xs: templateId == null ? 2 : 4, md: 15 }}
       sx={{
         // border: '2px blue solid',
         mt: { xs: 5 },
