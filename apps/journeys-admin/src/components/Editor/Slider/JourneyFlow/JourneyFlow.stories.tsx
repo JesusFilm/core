@@ -46,14 +46,14 @@ const Template: StoryObj<
   }
 }
 
-export const Default = {
-  ...Template,
-  args: { steps }
-}
-
 export const Loading = {
   ...Template,
   args: { steps: undefined }
+}
+
+export const WithJourney = {
+  ...Template,
+  args: { steps }
 }
 
 export default JourneyFlowStory
