@@ -10,15 +10,15 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
-import { Drawer } from '../../../../Drawer'
+import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
 
 import { Icon } from '.'
 
 const IconStory: Meta<typeof Icon> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: Icon,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Icon'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Icon'
 }
 
 export const Default: StoryObj<typeof Icon> = {
@@ -56,7 +56,7 @@ export const Default: StoryObj<typeof Icon> = {
             selectedBlock
           }}
         >
-          <Drawer />
+          <Icon id="id" />
         </EditorProvider>
       </MockedProvider>
     )
@@ -98,7 +98,7 @@ export const Filled: StoryObj<typeof Icon> = {
             selectedBlock
           }}
         >
-          <Drawer />
+          <Icon id="iconBlock.id" />
         </EditorProvider>
       </MockedProvider>
     )
