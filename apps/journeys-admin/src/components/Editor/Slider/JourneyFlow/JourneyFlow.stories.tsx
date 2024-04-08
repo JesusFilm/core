@@ -7,17 +7,17 @@ import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__ge
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../libs/storybook'
 import { blocks, defaultJourney } from '../../data'
 
 import { JourneyFlow } from './JourneyFlow'
 
 const JourneyFlowStory: Meta<typeof JourneyFlow> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: JourneyFlow,
   title: 'Journeys-Admin/Editor/Slider/JourneyFlow',
   parameters: {
-    ...journeysAdminConfig.parameters,
+    ...simpleComponentConfig.parameters,
     layout: 'fullscreen'
   }
 }
@@ -51,7 +51,7 @@ export const Loading = {
   args: { steps: undefined }
 }
 
-export const WithJourney = {
+export const Default = {
   ...Template,
   args: { steps }
 }
