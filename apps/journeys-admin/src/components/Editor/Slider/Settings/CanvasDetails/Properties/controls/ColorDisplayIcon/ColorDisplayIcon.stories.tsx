@@ -9,7 +9,7 @@ import { ColorDisplayIcon } from '.'
 const ColorDisplayIconStory: Meta<typeof ColorDisplayIcon> = {
   ...simpleComponentConfig,
   component: ColorDisplayIcon,
-  title: 'Journeys-Admin/Editor/ControlPanel/ColorDisplayIcon'
+  title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/ColorDisplayIcon'
 }
 
 export const Default: StoryObj<typeof ColorDisplayIcon> = {
