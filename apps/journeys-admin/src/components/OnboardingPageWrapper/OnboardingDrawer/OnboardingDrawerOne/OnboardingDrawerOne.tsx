@@ -30,8 +30,7 @@ export function OnboardingDrawerOne(): ReactElement {
   return (
     <Stack
       sx={{
-        // border: '2px green solid',
-        gap: { xs: 0, md: 16 },
+        gap: { xs: 2, md: 16 },
         width: { xs: '100%', md: 244 }
       }}
       data-testid="JourneysAdminOnboardingDrawerOne"
@@ -42,8 +41,11 @@ export function OnboardingDrawerOne(): ReactElement {
         <Box
           sx={{
             display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
             px: { xs: 6, md: 0 },
-            height: { xs: 58, md: '100%' },
+            py: { xs: 2, md: 0 },
+            height: { xs: 78, md: '100%' },
             width: { xs: '100%', md: 244 }
           }}
         >

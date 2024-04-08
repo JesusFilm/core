@@ -27,7 +27,6 @@ export function OnboardingTemplateCard({
           justifyContent={{ xs: 'flex-start', sm: 'center' }}
           direction={{ xs: 'row', md: 'column' }}
           sx={{
-            // border: '2px blue solid',
             width: '100%',
             height: { xs: 58, md: '100%' }
           }}

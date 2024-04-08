@@ -50,7 +50,6 @@ export function OnboardingPageWrapper({
           borderRadius: { xs: 2, sm: 4 },
           borderStyle: { xs: 'none', sm: 'solid' },
           backgroundColor: { xs: 'background.paper', md: 'background.default' }
-          // overflow: 'scroll'
         }}
         data-testid="JourneysAdminOnboardingPageWrapper"
       >

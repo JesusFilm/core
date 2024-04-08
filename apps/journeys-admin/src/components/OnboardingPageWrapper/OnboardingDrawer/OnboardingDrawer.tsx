@@ -37,19 +37,17 @@ export function OnboardingDrawer(): ReactElement {
       alignItems="center"
       gap={{ xs: templateId == null ? 2 : 4, md: 15 }}
       sx={{
-        // border: '2px blue solid',
-        mt: { xs: 5 },
+        mt: { xs: 4 },
         my: { md: 10 },
         mx: { md: 20 },
         width: { xs: '100%', md: '32%' },
-        mb: { xs: templateId == null ? 0 : 5 },
+        mb: { xs: templateId == null ? 0 : 3 },
         overflow: 'scroll'
       }}
       data-testid="JourneysAdminOnboardingDrawer"
     >
       <Box
         sx={{
-          // border: '2px blue solid',
           display: 'flex',
           alignItems: { xs: 'center', md: 'flex-start' },
           height: { xs: 46, md: 48 },

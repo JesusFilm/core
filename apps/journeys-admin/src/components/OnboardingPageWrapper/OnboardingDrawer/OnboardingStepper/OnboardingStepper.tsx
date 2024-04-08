@@ -171,7 +171,6 @@ export function OnboardingStepper({
             display: { xs: 'flex', md: 'none' },
             width: '100%',
             p: 0,
-            pb: 4,
             '& .MuiLinearProgress-root': {
               width: '100%'
             }
