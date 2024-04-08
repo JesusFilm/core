@@ -54,124 +54,124 @@ export class NexusJobListener implements OnModuleInit {
         console.log('Job: ', job);
 
         if (job.name === 'video_upload') {
-          const driveToken = await this.googleOAuthService.getNewAccessToken(
-            job.data.resource.refreshToken,
-          );
+          // const driveToken = await this.googleOAuthService.getNewAccessToken(
+          //   job.data.resource.refreshToken,
+          // );
 
-          const currentResource = await this.prismaService.resource.findFirst({
-            where: {
-              id: job.data.resource.id,
-            },
-            include: {
-              thumbnailGoogleDrive: true,
-              localizations: {
-                include: {
-                  localizedResourceFile: true,
-                },
-              },
-            },
-          });
+          // const currentResource = await this.prismaService.resource.findFirst({
+          //   where: {
+          //     id: job.data.resource.id,
+          //   },
+          //   include: {
+          //     thumbnailGoogleDrive: true,
+          //     localizations: {
+          //       include: {
+          //         localizedResourceFile: true,
+          //       },
+          //     },
+          //   },
+          // });
 
-          const thumbnailDriveId =
-            currentResource?.thumbnailGoogleDrive?.driveId;
-          const captionDriveId =
-            currentResource?.localizations?.[0]?.localizedResourceFile
-              ?.captionDriveId;
-          const captionLanguage = currentResource?.localizations?.[0]?.language;
+          // const thumbnailDriveId =
+          //   currentResource?.thumbnailGoogleDrive?.driveId;
+          // const captionDriveId =
+          //   currentResource?.localizations?.[0]?.localizedResourceFile
+          //     ?.captionDriveId;
+          // const captionLanguage = currentResource?.localizations?.[0]?.language;
 
           // Thumbnail
-          console.log('DOWNLOADING Thumbnail: ', thumbnailDriveId);
-          const thumbnailFilePath =
-            await this.googleDriveService.downloadDriveFile(
-              { fileId: thumbnailDriveId ?? '', accessToken: driveToken },
-              async (progress) => {
-                console.log(progress);
-              },
-            );
+          // console.log('DOWNLOADING Thumbnail: ', thumbnailDriveId);
+          // const thumbnailFilePath =
+          //   await this.googleDriveService.downloadDriveFile(
+          //     { fileId: thumbnailDriveId ?? '', accessToken: driveToken },
+          //     async (progress) => {
+          //       console.log(progress);
+          //     },
+          //   );
 
-          console.log('UPLOADING FILE: ', thumbnailFilePath);
-          const thumbnailBucketFile = await this.bucketService.uploadFile(
-            thumbnailFilePath,
-            process.env.BUCKET_NAME ?? 'bucket-name',
-            async (progress) => {
-              console.log(progress);
-            },
-          );
+          // console.log('UPLOADING FILE: ', thumbnailFilePath);
+          // const thumbnailBucketFile = await this.bucketService.uploadFile(
+          //   thumbnailFilePath,
+          //   process.env.BUCKET_NAME ?? 'bucket-name',
+          //   async (progress) => {
+          //     console.log(progress);
+          //   },
+          // );
 
           // Caption
-          console.log('DOWNLOADING Caption: ', captionDriveId);
-          const captionFilePath =
-            await this.googleDriveService.downloadDriveFile(
-              { fileId: captionDriveId ?? '', accessToken: driveToken },
-              async (progress) => {
-                console.log(progress);
-              },
-            );
+          // console.log('DOWNLOADING Caption: ', captionDriveId);
+          // const captionFilePath =
+          //   await this.googleDriveService.downloadDriveFile(
+          //     { fileId: captionDriveId ?? '', accessToken: driveToken },
+          //     async (progress) => {
+          //       console.log(progress);
+          //     },
+          //   );
 
-          console.log('UPLOADING FILE Caption: ', captionFilePath);
-          const captionBucketFile = await this.bucketService.uploadFile(
-            captionFilePath,
-            process.env.BUCKET_NAME ?? 'bucket-name',
-            async (progress) => {
-              console.log(progress);
-            },
-          );
+          // console.log('UPLOADING FILE Caption: ', captionFilePath);
+          // const captionBucketFile = await this.bucketService.uploadFile(
+          //   captionFilePath,
+          //   process.env.BUCKET_NAME ?? 'bucket-name',
+          //   async (progress) => {
+          //     console.log(progress);
+          //   },
+          // );
 
-          console.log('BUCKET FILE Thumbnail', thumbnailBucketFile);
-          console.log('BUCKET FILE Caption', captionBucketFile);
+          // console.log('BUCKET FILE Thumbnail', thumbnailBucketFile);
+          // console.log('BUCKET FILE Caption', captionBucketFile);
 
-          await this.prismaService.resource.update({
-            where: { id: currentResource?.id },
-            data: {
-              thumbnailGoogleDrive: {
-                update: { cloudFlareId: thumbnailBucketFile.Key },
-              },
-            },
-          });
+          // await this.prismaService.resource.update({
+          //   where: { id: currentResource?.id },
+          //   data: {
+          //     thumbnailGoogleDrive: {
+          //       update: { cloudFlareId: thumbnailBucketFile.Key },
+          //     },
+          //   },
+          // });
 
-          const localizedResource =
-            await this.prismaService.resourceLocalization.findFirst({
-              where: { resourceId: currentResource?.id },
-            });
+          // const localizedResource =
+          //   await this.prismaService.resourceLocalization.findFirst({
+          //     where: { resourceId: currentResource?.id },
+          //   });
 
-          const resourceFile =
-            await this.prismaService.localizedResourceFile.update({
-              where: { localizationId: localizedResource?.id },
-              data: { captionFileCloudFlareId: captionBucketFile.Key },
-            });
+          // const resourceFile =
+          //   await this.prismaService.localizedResourceFile.update({
+          //     where: { localizationId: localizedResource?.id },
+          //     data: { captionFileCloudFlareId: captionBucketFile.Key },
+          //   });
 
-          const youtubeToken = await this.googleOAuthService.getNewAccessToken(
-            job.data.channel.refreshToken,
-          );
+          // const youtubeToken = await this.googleOAuthService.getNewAccessToken(
+          //   job.data.channel.refreshToken,
+          // );
 
-          const youtubeThumnailResponse =
-            await this.youtubeService.updateVideoThumbnail({
-              token: youtubeToken,
-              videoId: job.returnvalue.youtubeId,
-              thumbnailPath: thumbnailFilePath,
-              mimeType:
-                currentResource?.thumbnailGoogleDrive?.mimeType ?? 'image/jpeg',
-            });
+          // const youtubeThumnailResponse =
+          //   await this.youtubeService.updateVideoThumbnail({
+          //     token: youtubeToken,
+          //     videoId: job.returnvalue.youtubeId,
+          //     thumbnailPath: thumbnailFilePath,
+          //     mimeType:
+          //       currentResource?.thumbnailGoogleDrive?.mimeType ?? 'image/jpeg',
+          //   });
 
-          const youtubeCaptionResponse =
-            await this.youtubeService.uploadCaption({
-              token: youtubeToken,
-              videoId: job.returnvalue.youtubeId,
-              language: captionLanguage ?? '',
-              name: '',
-              captionFile: captionFilePath,
-              isDraft: false,
-              mimeType: resourceFile.captionMimeType,
-            });
+          // const youtubeCaptionResponse =
+          //   await this.youtubeService.uploadCaption({
+          //     token: youtubeToken,
+          //     videoId: job.returnvalue.youtubeId,
+          //     language: captionLanguage ?? '',
+          //     name: '',
+          //     captionFile: captionFilePath,
+          //     isDraft: false,
+          //     mimeType: resourceFile.captionMimeType,
+          //   });
 
-          console.log(
-            'YOUTUBE RESPONSE UPDATE THUMBNAIL: ',
-            youtubeThumnailResponse,
-          );
-          console.log(
-            'YOUTUBE RESPONSE UPDATE CAPTION: ',
-            youtubeCaptionResponse,
-          );
+          // console.log(
+          //   'YOUTUBE RESPONSE UPDATE THUMBNAIL: ',
+          //   youtubeThumnailResponse,
+          // );
+          // console.log(
+          //   'YOUTUBE RESPONSE UPDATE CAPTION: ',
+          //   youtubeCaptionResponse,
+          // );
 
           void Promise.all([
             await this.prismaService.resource.update({
