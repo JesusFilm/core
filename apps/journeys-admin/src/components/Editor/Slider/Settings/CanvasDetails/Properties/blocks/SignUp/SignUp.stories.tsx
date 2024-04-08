@@ -1,7 +1,8 @@
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_SignUpBlock as SignUpBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -10,40 +11,44 @@ import {
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { SignUp } from '.'
 
-const SignUpStory: Meta<typeof SignUp> = {
+const Demo: Meta<typeof SignUp> = {
   ...simpleComponentConfig,
   component: SignUp,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/SignUp'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/SignUp'
 }
 
-export const Default: StoryObj<typeof SignUp> = {
-  render: () => {
-    const block: TreeBlock<SignUpBlock> = {
-      id: 'signup.id',
-      __typename: 'SignUpBlock',
-      parentBlockId: null,
-      parentOrder: 0,
-      submitLabel: null,
-      action: null,
-      submitIconId: null,
-      children: []
-    }
+const block: TreeBlock<SignUpBlock> = {
+  id: 'signup.id',
+  __typename: 'SignUpBlock',
+  parentBlockId: null,
+  parentOrder: 0,
+  submitLabel: null,
+  action: null,
+  submitIconId: null,
+  children: []
+}
+
+const Template: StoryObj<ComponentProps<typeof SignUp>> = {
+  render: (args) => {
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <SignUp {...block} />
-      </Stack>
+      <EditorProvider initialState={{ selectedBlock: { ...args } }}>
+        <Drawer title="Subscribe Properties">
+          <SignUp {...args} />
+        </Drawer>
+      </EditorProvider>
     )
+  }
+}
+
+export const Default = {
+  ...Template,
+  args: {
+    ...block
   }
 }
 
@@ -76,18 +81,12 @@ export const Filled: StoryObj<typeof SignUp> = {
       ]
     }
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <SignUp {...block} />
-      </Stack>
+      <EditorProvider initialState={{ selectedBlock: { ...block } }}>
+        <Drawer title="Subscribe Properties">
+          <SignUp {...block} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
-export default SignUpStory
+export default Demo

@@ -62,12 +62,39 @@
           "@mui/icons-material",
           "react-i18next"
         ],
-        "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*"]
+        "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*", "*.mock"]
       }
     ],
     "sort-imports": ["error", { "ignoreDeclarationSort": true }]
   },
   "overrides": [
+    {
+      "files": [
+        "*.spec.ts",
+        "*.spec.tsx",
+        "*.spec.js",
+        "*.spec.jsx",
+        "*.stories.ts",
+        "*.stories.tsx",
+        "*.stories.js",
+        "*.stories.jsx"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              "lodash",
+              "@mui/material",
+              "@mui/system",
+              "@mui/icons-material",
+              "react-i18next"
+            ],
+            "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*"]
+          }
+        ]
+      }
+    },
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {

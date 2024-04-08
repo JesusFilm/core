@@ -61,6 +61,7 @@ function WatchApp({
           description="Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages."
         />
         <Head>
+          <meta name="theme-color" content="#000" />
           <meta
             name="viewport"
             content="minimum-scale=1, initial-scale=1, width=device-width"

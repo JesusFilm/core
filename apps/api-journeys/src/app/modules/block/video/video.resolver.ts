@@ -140,6 +140,18 @@ export class VideoBlockResolver {
             tx
           )
       }
+
+      const existingVideoOnParent = await tx.block.findFirst({
+        where: { parentBlockId: input.parentBlockId, typename: 'VideoBlock' }
+      })
+      if (existingVideoOnParent != null)
+        throw new GraphQLError(
+          'Parent block already has an existing video block',
+          {
+            extensions: { code: 'BAD_USER_INPUT' }
+          }
+        )
+
       const block = await tx.block.create({
         data: {
           ...omit(

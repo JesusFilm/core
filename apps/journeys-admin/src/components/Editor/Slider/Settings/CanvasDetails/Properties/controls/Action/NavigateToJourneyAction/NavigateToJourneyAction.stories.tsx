@@ -24,7 +24,8 @@ import { NavigateToJourneyAction } from '.'
 const NavigateToJourneyActionStory: Meta<typeof NavigateToJourneyAction> = {
   ...simpleComponentConfig,
   component: NavigateToJourneyAction,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/ActionStates'
 }
 const journey: Journey = {
   __typename: 'Journey',

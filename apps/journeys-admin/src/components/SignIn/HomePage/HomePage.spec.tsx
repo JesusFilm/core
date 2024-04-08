@@ -10,34 +10,30 @@ jest.mock('firebase/auth', () => ({
 
 describe('Home', () => {
   it('should render home page', () => {
-    const { getByText } = render(<HomePage />)
-    expect(getByText('Log in or Sign up')).toBeInTheDocument()
-    expect(
-      getByText("No account? We'll create one for you automatically.")
-    ).toBeInTheDocument()
+    const { getByRole } = render(<HomePage />)
+    expect(getByRole('tab', { name: 'New account' })).toHaveTextContent(
+      'New account'
+    )
   })
 
   it('should render google and facebook login buttons', () => {
     const { getByRole } = render(<HomePage />)
     expect(
-      getByRole('button', { name: 'Sign in with Google' })
+      getByRole('button', { name: 'Continue with Google' })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Sign in with Facebook' })
+      getByRole('button', { name: 'Continue with Facebook' })
     ).toBeInTheDocument()
   })
 
   it('should require user to enter an email', async () => {
     const { getByRole, getByText } = render(<HomePage />)
 
-    fireEvent.click(getByRole('button', { name: 'Sign in with email' }))
+    fireEvent.click(getByRole('button', { name: 'Continue with email' }))
     await waitFor(() =>
       expect(getByText('Please enter your email address')).toBeInTheDocument()
     )
-    await waitFor(() =>
-      expect(getByText('Please enter your email address')).toBeInTheDocument()
-    )
-    expect(getByRole('button', { name: 'Sign in with email' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Continue with email' })).toBeDisabled()
   })
 
   it('should validate user email', async () => {
@@ -52,13 +48,13 @@ describe('Home', () => {
         getByText('Please enter a valid email address')
       ).toBeInTheDocument()
     )
-    expect(getByRole('button', { name: 'Sign in with email' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Continue with email' })).toBeDisabled()
   })
 
   it('should disable email sign in button on invalid click', async () => {
     const { getByRole } = render(<HomePage />)
 
-    const signInButton = getByRole('button', { name: 'Sign in with email' })
+    const signInButton = getByRole('button', { name: 'Continue with email' })
     expect(signInButton).not.toBeDisabled()
     fireEvent.click(signInButton)
 
@@ -76,7 +72,7 @@ describe('Home', () => {
     fireEvent.change(getByRole('textbox'), {
       target: { value: 'example@example.com' }
     })
-    fireEvent.click(getByRole('button', { name: 'Sign in with email' }))
+    fireEvent.click(getByRole('button', { name: 'Continue with email' }))
     await waitFor(() =>
       expect(mockFetchSignInMethodsForEmail).toHaveBeenCalled()
     )
