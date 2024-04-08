@@ -21,8 +21,6 @@ import {
   updateParentChild
 } from '../src/libs/postgresql/postgresql'
 
-import { syncVideosToAlgolia } from './syncVideosToAlgolia'
-
 const prisma = new PrismaClient()
 
 let mode = process.argv[2] ?? null
@@ -32,9 +30,7 @@ if (mode == null || mode === 'undefined' || mode === '') {
   console.log(
     'usage: nx prisma-seed api-videos --mode={mode} --target={target arclight id for replace/update/resume}'
   )
-  console.log(
-    'valid modes: missing, replace, update, complete, resume, algolia'
-  )
+  console.log('valid modes: missing, replace, update, complete, resume')
   mode = 'complete'
 }
 
@@ -147,8 +143,6 @@ export async function main(mode: string, target?: string): Promise<void> {
       [],
       target
     ))
-  } else if (mode === 'algolia') {
-    await syncVideosToAlgolia()
   }
   console.log('mediaComponents imported')
   for (const [key, value] of Object.entries(errors)) {
