@@ -24,7 +24,7 @@ const JourneyFlowStory: Meta<typeof JourneyFlow> = {
 
 const journey = { defaultJourney, blocks }
 
-const steps = transformer(journey?.blocks ?? []) as Array<TreeBlock<StepBlock>>
+const steps = transformer(journey?.blocks) as Array<TreeBlock<StepBlock>>
 
 const Template: StoryObj<
   ComponentProps<typeof JourneyFlow> & {
