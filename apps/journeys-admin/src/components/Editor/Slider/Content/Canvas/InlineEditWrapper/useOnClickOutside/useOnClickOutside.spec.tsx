@@ -22,10 +22,10 @@ describe('useClickOutside', () => {
   })
 
   // E2E test needed to properly catch browser differences in rendering the ref element. See react issue.
-  it('calls the callback when clicking on swiper container', () => {
+  it('calls the callback when clicking on the editor canvas', () => {
     const { getByRole } = render(
       <div>
-        <h1 className="swiper-container">Heading 1</h1>
+        <h1 data-testid="EditorCanvas">Heading 1</h1>
         <iframe>
           <Content />
         </iframe>
@@ -39,7 +39,7 @@ describe('useClickOutside', () => {
     expect(onClickOutside).toHaveBeenCalled()
   })
 
-  it('calls the callback when clicking on swiper-wrapper', () => {
+  it('calls the callback when not clicking on editor canvas', () => {
     const { getByRole } = render(
       <div>
         <h1 className="swiper-wrapper">Heading 1</h1>
@@ -53,6 +53,6 @@ describe('useClickOutside', () => {
     fireEvent.focus(content)
     expect(onClickOutside).not.toHaveBeenCalled()
     fireEvent.click(heading)
-    expect(onClickOutside).toHaveBeenCalled()
+    expect(onClickOutside).not.toHaveBeenCalled()
   })
 })
