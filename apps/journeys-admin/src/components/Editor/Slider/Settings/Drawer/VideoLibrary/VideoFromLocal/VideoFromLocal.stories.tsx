@@ -12,7 +12,8 @@ import { VideoFromLocal } from '.'
 const VideoFromLocalStory: Meta<typeof VideoFromLocal> = {
   ...journeysAdminConfig,
   component: VideoFromLocal,
-  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromLocal',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromLocal',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
