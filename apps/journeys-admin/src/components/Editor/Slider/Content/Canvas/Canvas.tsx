@@ -180,12 +180,7 @@ export function Canvas(): ReactElement {
                     : `2px solid ${theme.palette.background.default}`
               }}
             >
-              <FramePortal
-                width="100%"
-                height="100%"
-                dir={rtl ? 'rtl' : 'ltr'}
-                ref={frameRef}
-              >
+              <FramePortal width="100%" height="100%" dir={rtl ? 'rtl' : 'ltr'}>
                 <ThemeProvider {...theme} rtl={rtl} locale={locale}>
                   <TransitionGroup
                     component={Box}
