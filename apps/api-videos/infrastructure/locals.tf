@@ -6,6 +6,7 @@ locals {
     "ALGOLIA_APP_ID",
     "ALGOLIA_API_KEY",
     "CROWDIN_API_KEY",
+    "DEPLOYMENT_ENV",
     "PG_DATABASE_URL_VIDEOS",
     "REDIS_URL"
   ]
