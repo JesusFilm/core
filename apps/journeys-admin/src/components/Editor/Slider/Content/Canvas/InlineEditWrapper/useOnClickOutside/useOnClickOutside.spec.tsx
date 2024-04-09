@@ -25,7 +25,7 @@ describe('useClickOutside', () => {
   it('calls the callback when clicking on the editor canvas', () => {
     const { getByRole } = render(
       <div>
-        <h1 data-testid="EditorCanvas">Heading 1</h1>
+        <h1 className="EditorCanvas">Heading 1</h1>
         <iframe>
           <Content />
         </iframe>
