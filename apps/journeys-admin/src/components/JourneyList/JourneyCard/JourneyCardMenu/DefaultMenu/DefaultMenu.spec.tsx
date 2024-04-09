@@ -1,12 +1,42 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
+import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { TeamProvider } from '../../../../Team/TeamProvider'
+import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../../../Team/TeamProvider'
 
 import { DefaultMenu } from '.'
+
+const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  request: {
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  },
+  result: jest.fn(() => ({
+    data: {
+      teams: [
+        {
+          id: 'teamId',
+          title: 'Team Title',
+          publicTitle: null,
+          __typename: 'Team',
+          userTeams: [],
+          customDomains: []
+        }
+      ],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
+        lastActiveTeamId: 'teamId'
+      }
+    }
+  }))
+}
 
 describe('DefaultMenu', () => {
   it('should render menu for journey', () => {
@@ -90,29 +120,71 @@ describe('DefaultMenu', () => {
     expect(handleCloseMenu).toHaveBeenCalled()
   })
 
-  it('should redirect to preview', () => {
+  it('should redirect to preview', async () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <TeamProvider>
-            <DefaultMenu
-              id="journey-id"
-              slug="journey-slug"
-              status={JourneyStatus.published}
-              journeyId="journey-id"
-              published
-              setOpenAccessDialog={noop}
-              handleCloseMenu={noop}
-              setOpenTrashDialog={noop}
-            />
-          </TeamProvider>
+          <MockedProvider mocks={[getTeams]}>
+            <TeamProvider>
+              <DefaultMenu
+                id="journey-id"
+                slug="journey-slug"
+                status={JourneyStatus.published}
+                journeyId="journey-id"
+                published
+                setOpenAccessDialog={noop}
+                handleCloseMenu={noop}
+                setOpenTrashDialog={noop}
+              />
+            </TeamProvider>
+          </MockedProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
+    await waitFor(() => expect(getTeams.result).toHaveBeenCalled())
+
     expect(getByRole('menuitem', { name: 'Preview' })).not.toBeDisabled()
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'href',
       '/api/preview?slug=journey-slug'
+    )
+    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+      'target',
+      '_blank'
+    )
+  })
+
+  it('should redirect to preview with custom Domain', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[{ ...getCustomDomainMock, result }, getTeams]}
+          >
+            <TeamProvider>
+              <DefaultMenu
+                id="journey-id"
+                slug="journey-slug"
+                status={JourneyStatus.published}
+                journeyId="journey-id"
+                published
+                setOpenAccessDialog={noop}
+                handleCloseMenu={noop}
+                setOpenTrashDialog={noop}
+              />
+            </TeamProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(getTeams.result).toHaveBeenCalled())
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(getByRole('menuitem', { name: 'Preview' })).not.toBeDisabled()
+    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+      'href',
+      '/api/preview?slug=journey-slug&hostname=example.com'
     )
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'target',
