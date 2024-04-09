@@ -18,16 +18,16 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
@@ -79,16 +79,16 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: Preview - ${{ matrix.app }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
@@ -155,7 +155,7 @@ jobs:
       #     echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
       # - name: Cache Playwright Browsers for Playwright's Version
       #   id: cache-playwright-browsers
-      #   uses: actions/cache@v3
+      #   uses: actions/cache@v4
       #   with:
       #     path: ~/.cache/ms-playwright
       #     key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
@@ -226,16 +226,16 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: Production - ${{ matrix.app }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}

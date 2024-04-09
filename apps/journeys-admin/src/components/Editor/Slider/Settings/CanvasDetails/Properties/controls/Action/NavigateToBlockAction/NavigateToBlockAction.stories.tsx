@@ -20,7 +20,8 @@ import { NavigateToBlockAction } from '.'
 const NavigateToBlockActionStory: Meta<typeof NavigateToBlockAction> = {
   ...simpleComponentConfig,
   component: NavigateToBlockAction,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/ActionStates'
 }
 
 const journeyTheme = {

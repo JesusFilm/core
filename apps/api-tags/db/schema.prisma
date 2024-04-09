@@ -2,13 +2,15 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  output   = env("PRISMA_LOCATION_TAGS")
+  provider      = "prisma-client-js"
+  output        = env("PRISMA_LOCATION_TAGS")
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 generator erd {
   provider    = "prisma-erd-generator"
   ignoreEnums = true
+  disabled    = true
 }
 
 datasource db {

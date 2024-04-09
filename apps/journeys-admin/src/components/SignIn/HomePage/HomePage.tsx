@@ -4,7 +4,6 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { fetchSignInMethodsForEmail, getAuth } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
@@ -12,6 +11,7 @@ import { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
 import { SignInServiceButton } from '../SignInServiceButton'
+import { SignInTabs } from '../SignInTabs'
 import { PageProps } from '../types'
 
 export function HomePage({
@@ -55,16 +55,13 @@ export function HomePage({
   }
   return (
     <>
-      <Box>
-        <Typography variant="h6" textAlign="center" gutterBottom>
-          {t('Log in or Sign up')}
-        </Typography>
-        <Typography variant="body2" textAlign="center" sx={{ mb: 2 }}>
-          {t("No account? We'll create one for you automatically.")}
-        </Typography>
+      <Box sx={{ pb: 3, mt: -4 }}>
+        <SignInTabs />
       </Box>
-      <SignInServiceButton service="google.com" />
-      <SignInServiceButton service="facebook.com" />
+      <Stack spacing={3}>
+        <SignInServiceButton service="google.com" />
+        <SignInServiceButton service="facebook.com" />
+      </Stack>
       <Divider sx={{ my: 3 }}>{t('OR')}</Divider>
       <Formik
         initialValues={{ email: '' }}
@@ -128,7 +125,7 @@ export function HomePage({
                 type="submit"
                 disabled={!isValid || isSubmitting}
               >
-                {t('Sign in with email')}
+                {t('Continue with email')}
               </Button>
             </Stack>
           </Form>
