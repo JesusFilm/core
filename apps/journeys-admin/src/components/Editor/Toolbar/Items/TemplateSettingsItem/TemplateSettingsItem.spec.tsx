@@ -52,13 +52,13 @@ describe('TemplateSettingsItem', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-
     fireEvent.click(getByRole('menuitem'))
     await waitFor(() =>
       expect(
         getByRole('dialog', { name: 'Template Settings' })
       ).toBeInTheDocument()
     )
+    expect(queryByRole('menuitem')).not.toBeInTheDocument()
     fireEvent.click(getByText('Cancel'))
     await waitFor(() =>
       expect(
