@@ -60,6 +60,16 @@ fork/exec /usr/local/bin/docker-compose-v1: bad CPU type in executable
 ### Container is running slowly or crashing on Mac
 
 1. Open Docker Desktop
-1. Go to settings -> Resources -> Advanced
+1. Go to Settings -> Resources -> Advanced
 1. Set CPUs: 7, Memory: 12.00GB, Swap: 4GB
 1. Click 'Apply & Restart'
+
+### "Docker not found" or "Docker daemon not started" when starting VSCode after updating docker
+
+1. Open Docker Desktop
+2. Go to Settings -> Advanced and ensure the following settings are selected:
+
+- System (requires password)
+- Allow the default Docker socket to be used (requires password)
+- Allow privileged port mapping (requires password)
+- Automatically check configuration

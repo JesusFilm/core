@@ -47,15 +47,13 @@ export function TermsAndConditions(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      <Typography variant="h4">{t('Before You Start')}</Typography>
-      <Typography variant="body1" sx={{ mt: 3 }}>
-        {t('Please review these documents:')}
+      <Typography variant="subtitle1">
+        {t('Before you start, please review these documents:')}
       </Typography>
       <List
         sx={{
           bgcolor: 'background.paper',
           borderRadius: '6px',
-          mt: 6,
           overflow: 'hidden'
         }}
         disablePadding
@@ -104,7 +102,6 @@ export function TermsAndConditions(): ReactElement {
         disabled={!accepted}
         onClick={handleJourneyProfileCreate}
         sx={{
-          mt: 6,
           width: '100%',
           borderRadius: '12px',
           bgcolor: 'secondary.dark',
