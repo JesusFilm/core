@@ -132,7 +132,6 @@ export function OnboardingStepper({
           sx={{
             // border: '2px red solid',
             display: { xs: 'none', md: 'flex' },
-            pl: 4,
             width: 244
           }}
         >

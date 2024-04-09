@@ -31,18 +31,17 @@ export function OnboardingDrawerOne(): ReactElement {
     <Stack
       sx={{
         gap: { xs: 2, md: 16 },
-        width: { xs: '100%', md: 244 }
+        width: 'inherit'
       }}
       data-testid="JourneysAdminOnboardingDrawerOne"
     >
       {newAccountQuery === true && <OnboardingStepper variant="mobile" />}
 
       {templateId != null && (
-        <Box
+        <Stack
+          flexDirection="column"
+          justifyContent="center"
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
             px: { xs: 6, md: 0 },
             py: { xs: 2, md: 0 },
             height: { xs: 78, md: '100%' },
@@ -50,10 +49,11 @@ export function OnboardingDrawerOne(): ReactElement {
           }}
         >
           <OnboardingTemplateCard templateId={templateId} />
-        </Box>
+        </Stack>
       )}
-
-      {newAccountQuery === true && <OnboardingStepper variant="desktop" />}
+      <Box sx={{ pl: 4 }}>
+        {newAccountQuery === true && <OnboardingStepper variant="desktop" />}
+      </Box>
     </Stack>
   )
 }

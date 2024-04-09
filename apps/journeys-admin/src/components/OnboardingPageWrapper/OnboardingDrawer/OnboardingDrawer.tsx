@@ -35,8 +35,8 @@ export function OnboardingDrawer(): ReactElement {
   return (
     <Stack
       alignItems="center"
-      gap={{ xs: templateId == null ? 2 : 4, md: 15 }}
       sx={{
+        border: '2px blue solid',
         mt: { xs: 4 },
         my: { md: 10 },
         mx: { md: 20 },
@@ -46,10 +46,10 @@ export function OnboardingDrawer(): ReactElement {
       }}
       data-testid="JourneysAdminOnboardingDrawer"
     >
-      <Box
+      <Stack
         sx={{
-          display: 'flex',
-          alignItems: { xs: 'center', md: 'flex-start' },
+          // border: '2px blue solid',
+          // alignItems: { xs: 'center', md: 'flex-start' },
           height: { xs: 46, md: 48 },
           width: { xs: 185, md: 291 },
           px: { xs: 4, md: 6 },
@@ -59,17 +59,40 @@ export function OnboardingDrawer(): ReactElement {
       >
         <Box
           sx={{
+            border: '2px red solid',
             width: { xs: 148, md: 195 },
             height: { xs: 28, md: 36 }
           }}
         >
           <Image src={logo} alt="Next Steps" layout="responsive" />
         </Box>
-      </Box>
+      </Stack>
       {templateId !== undefined ? (
-        <OnboardingDrawerOne />
+        <Stack
+          justifyContent="center"
+          sx={{
+            border: '2px green solid',
+            pt: { xs: templateId == null ? 2 : 4, md: 15 },
+            width: { xs: '100%', md: 244 }
+          }}
+        >
+          <OnboardingDrawerOne />
+        </Stack>
       ) : (
-        <OnboardingDrawerTwo />
+        <Stack
+          flexDirection="row"
+          justifyContent="center"
+          sx={{
+            border: '2px green solid',
+            pt: {
+              xs: templateId == null ? 4 : 4,
+              md: newAccountQuery === true ? 10 : 26
+            },
+            width: { xs: '100%' }
+          }}
+        >
+          <OnboardingDrawerTwo />
+        </Stack>
       )}
     </Stack>
   )

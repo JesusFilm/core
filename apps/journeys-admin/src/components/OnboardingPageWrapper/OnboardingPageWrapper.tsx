@@ -41,7 +41,7 @@ export function OnboardingPageWrapper({
         alignItems="center"
         gap={10}
         sx={{
-          m: { xs: 0, sm: 5 },
+          m: { xs: 0, sm: 4 },
           ml: { xs: 0, md: 0 },
           flexGrow: 1,
           display: 'flex',
@@ -54,9 +54,12 @@ export function OnboardingPageWrapper({
         data-testid="JourneysAdminOnboardingPageWrapper"
       >
         <Typography
-          variant="h1"
+          variant="h2"
           textAlign="center"
-          sx={{ display: { xs: 'none', sm: 'flex' } }}
+          sx={{
+            display: { xs: 'none', sm: 'flex' },
+            overflowWrap: 'break-word'
+          }}
         >
           {title}
         </Typography>
