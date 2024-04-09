@@ -13,7 +13,7 @@ const VideoLanguageStory: Meta<
 > = {
   ...simpleComponentConfig,
   component: VideoLanguage,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoLanguage',
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoLanguage',
   argTypes: { onSelect: { action: 'onSelect' } }
 }
 

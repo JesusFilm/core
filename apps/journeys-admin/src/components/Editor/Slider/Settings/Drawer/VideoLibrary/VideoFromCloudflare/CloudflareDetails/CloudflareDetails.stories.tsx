@@ -8,7 +8,7 @@ const CloudflareDetailsStory: Meta<typeof CloudflareDetails> = {
   ...journeysAdminConfig,
   component: CloudflareDetails,
   title:
-    'Journeys-Admin/Editor/VideoLibrary/VideoFromCloudflare/CloudflareDetails',
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromCloudflare/CloudflareDetails',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
