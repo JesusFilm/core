@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import algoliasearch from 'algoliasearch'
 
-import { PrismaClient } from '.prisma/api-videos-client'
-
 import { Translation } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Injectable()
 export class AlgoliaService {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaService) {}
   async syncVideosToAlgolia(): Promise<void> {
     const client = algoliasearch(
       process.env.ALGOLIA_APP_ID ?? '',
