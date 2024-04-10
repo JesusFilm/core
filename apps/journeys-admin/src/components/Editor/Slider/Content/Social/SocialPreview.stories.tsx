@@ -1,8 +1,6 @@
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { Pagination } from 'swiper/modules'
-import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -11,8 +9,6 @@ import { GetJourney_journey as Journey } from '../../../../../../__generated__/G
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { journey } from '../../Settings/GoalDetails/data'
 
-import { Message } from './Message/Message'
-import { Post } from './Post/Post'
 import { SocialPreview } from './SocialPreview'
 
 const SocialPreviewStory: Meta<typeof SocialPreview> = {
