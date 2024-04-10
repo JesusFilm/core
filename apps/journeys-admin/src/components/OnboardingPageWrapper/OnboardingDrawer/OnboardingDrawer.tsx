@@ -35,7 +35,7 @@ export function OnboardingDrawer(): ReactElement {
     <Stack
       alignItems="center"
       sx={{
-        mt: { xs: 4 },
+        mt: { xs: 4, sm: 10, md: 4 },
         my: { md: 10 },
         mx: { md: 20 },
         width: { xs: '100%', md: '32%' },
