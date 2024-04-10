@@ -98,7 +98,6 @@ export function Post(): ReactElement {
                   height={158}
                   bgcolor="rgba(0, 0, 0, 0.1)"
                   borderRadius="5px"
-                  overflow="hidden"
                 />
               ) : (
                 <Image
