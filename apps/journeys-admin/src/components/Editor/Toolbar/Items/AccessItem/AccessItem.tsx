@@ -45,11 +45,11 @@ export function AccessItem({
   function handleClick(): void {
     setRoute('access')
     setAccessDialogOpen(true)
+    onClose?.()
   }
 
   function handleClose(): void {
     setAccessDialogOpen(false)
-    onClose?.()
   }
 
   return (

@@ -40,11 +40,11 @@ export function TitleItem({ variant, onClose }: TitleItemProps): ReactElement {
   function handleClick(): void {
     setRoute('title')
     setTitleDialogOpen(true)
+    onClose?.()
   }
 
   function handleClose(): void {
     setTitleDialogOpen(false)
-    onClose?.()
   }
 
   return (
