@@ -1,10 +1,10 @@
 locals {
   port = 4004
   environment_variables = [
-    "ARCLIGHT_API_KEY",
-    "ARCLIGHT_V3_URL",
     "ALGOLIA_APPLICATION_ID",
     "ALGOLIA_API_KEY",
+    "ARCLIGHT_API_KEY",
+    "ARCLIGHT_V3_URL",
     "CROWDIN_API_KEY",
     "PG_DATABASE_URL_VIDEOS",
     "REDIS_URL"

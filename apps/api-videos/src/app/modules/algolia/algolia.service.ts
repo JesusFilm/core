@@ -18,7 +18,6 @@ export class AlgoliaService {
     console.log('syncing videos to algolia...')
 
     let offset = 0
-    const totalRecords = await this.prisma.videoVariant.count()
 
     while (true) {
       const videoVariants = await this.prisma.videoVariant.findMany({
@@ -55,10 +54,6 @@ export class AlgoliaService {
           childrenCount: videoVariant.video?.childIds.length
         }
       })
-
-      const progress = Math.round(((offset + 1) / totalRecords) * 100)
-      console.log('syncVideosWithAlgolia page:', offset)
-      console.log(`algolia videos synced: ${progress}%`)
 
       const index = client.initIndex('video-variants')
       await index.saveObjects(transformedVideos).wait()

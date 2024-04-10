@@ -69,7 +69,6 @@ describe('AlgoliaService', () => {
     it('should sync videos to Algolia', async () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
-      prismaService.videoVariant.count.mockResolvedValue(1)
       prismaService.videoVariant.findMany
         .mockResolvedValue([])
         .mockResolvedValueOnce([
@@ -92,7 +91,6 @@ describe('AlgoliaService', () => {
         ])
 
       await service.syncVideosToAlgolia()
-      expect(prismaService.videoVariant.count).toHaveBeenCalled()
       expect(prismaService.videoVariant.findMany).toHaveBeenCalledWith({
         take: 1000,
         skip: 0,
