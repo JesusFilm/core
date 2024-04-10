@@ -69,9 +69,9 @@ function isMovedItem(item): boolean {
 
 async function handlePrismaVideo(
   video: PrismaVideoCreateInput,
-  existingVideo,
-  tx,
-  delta
+  existingVideo: PrismaVideoCreateInput,
+  tx: Prisma.TransactionClient,
+  delta: Record<string, unknown>
 ): Promise<void> {
   const videoFields = [
     'id',
@@ -112,7 +112,7 @@ async function handlePrismaVideoTitle(
     // ignore _t on index 0
     if (key === '_t') continue
 
-    const title = delta.title[key]
+    const title = delta.title[key] as Record<string, unknown>
 
     // ignore moved items
     if (isMovedItem(title)) continue
@@ -179,7 +179,7 @@ async function handlePrismaVideoVariants(
       // ignore _t on index 0
       if (key === '_t') continue
 
-      const variant = delta.variants[key]
+      const variant = delta.variants[key] as Record<string, unknown>
 
       // ignore moved items
       if (isMovedItem(variant)) continue
@@ -240,7 +240,7 @@ async function handlePrismaVideoVariants(
           for (const sKey in variant.subtitle) {
             if (sKey === '_t') continue
 
-            const subtitle = variant.subtitle[sKey]
+            const subtitle = variant.subtitle[sKey] as Record<string, unknown>
             // ignore moved items
             if (isMovedItem(subtitle)) continue
 
@@ -298,7 +298,7 @@ async function handlePrismaVideoVariants(
           for (const dKey in variant.downloads) {
             if (dKey === '_t') continue
 
-            const download = variant.downloads[dKey]
+            const download = variant.downloads[dKey] as Record<string, unknown>
 
             // ignore moved items
             if (isMovedItem(download)) continue
@@ -399,7 +399,9 @@ export async function handleVideo(
     downloads: sortBy(variant.downloads, ['url'])
   }))
 
-  const existingVideo = await getExistingVideo(video)
+  const existingVideo = (await getExistingVideo(
+    video
+  )) as PrismaVideoCreateInput
 
   const delta = jsondiffpatch.diff(existingVideo ?? {}, video) ?? {}
   if (Object.keys(delta).length > 0) {

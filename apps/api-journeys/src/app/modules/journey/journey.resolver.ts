@@ -6,7 +6,6 @@ import {
   Parent,
   Query,
   ResolveField,
-  ResolveReference,
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
@@ -441,7 +440,7 @@ export class JourneyResolver {
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })
-    const duplicateStepIds = new Map()
+    const duplicateStepIds = new Map<string, string>()
     originalBlocks.forEach((block) => {
       duplicateStepIds.set(block.id, uuidv4())
     })
