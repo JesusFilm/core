@@ -8,10 +8,13 @@ import { PrismaService } from '../../lib/prisma.service'
 export class AlgoliaService {
   constructor(private readonly prisma: PrismaService) {}
   async syncVideosToAlgolia(): Promise<void> {
-    const client = algoliasearch(
-      process.env.ALGOLIA_APP_ID ?? '',
-      process.env.ALGOLIA_API_KEY ?? ''
-    )
+    const apiKey = process.env.ALGOLIA_API_KEY ?? ''
+    const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
+
+    if (apiKey === '' || appId === '')
+      throw new Error('Algolia API key or app ID not set')
+
+    const client = algoliasearch(appId, apiKey)
     console.log('syncing videos to algolia...')
 
     let offset = 0
