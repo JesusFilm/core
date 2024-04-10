@@ -3,7 +3,7 @@ import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
-import { SxProps } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useState } from 'react'
@@ -26,6 +26,7 @@ export function OnboardingPageWrapper({
 }: OnboardingPageWrapperProps): ReactElement {
   const [open, setOpen] = useState(false)
   const viewportHeight = use100vh()
+  const theme = useTheme()
 
   return (
     <Stack
@@ -36,17 +37,19 @@ export function OnboardingPageWrapper({
       }}
     >
       <OnboardingDrawer />
+
       <Stack
-        justifyContent="center"
+        justifyContent="safe center"
         alignItems="center"
-        gap={10}
+        gap={12}
         sx={{
           m: { xs: 0, sm: 4 },
           ml: { xs: 0, md: 0 },
+          pt: 8,
+          overflowY: 'auto',
           flexGrow: 1,
-          display: 'flex',
           borderColor: 'divider',
-          flexDirection: 'column',
+          borderWidth: 'medium',
           borderRadius: { xs: 2, sm: 4 },
           borderStyle: { xs: 'none', sm: 'solid' },
           backgroundColor: { xs: 'background.paper', md: 'background.default' }
@@ -79,7 +82,10 @@ export function OnboardingPageWrapper({
               p: 4,
               borderBottomLeftRadius: { xs: 0, sm: 8 },
               borderBottomRightRadius: { xs: 0, sm: 8 },
-              width: { xs: '100vw', sm: 418 }
+              width: { xs: '100vw', sm: 418 },
+              [theme.breakpoints.down('md')]: {
+                boxShadow: 'none'
+              }
             }}
           >
             <CardContent

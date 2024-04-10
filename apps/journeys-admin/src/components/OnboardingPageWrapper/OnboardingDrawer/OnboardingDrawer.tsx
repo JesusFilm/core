@@ -6,8 +6,9 @@ import { ReactElement } from 'react'
 
 import logo from '../../../../public/logo.svg'
 
-import { OnboardingDrawerOne } from './OnboardingDrawerOne'
-import { OnboardingDrawerTwo } from './OnboardingDrawerTwo'
+import { OnboardingLandingDrawer } from './OnboardingLandingDrawer'
+import { OnboardingStepper } from './OnboardingStepper'
+import { OnboardingTemplateCard } from './OnboardingTemplateCard'
 
 export function OnboardingDrawer(): ReactElement {
   const router = useRouter()
@@ -30,26 +31,21 @@ export function OnboardingDrawer(): ReactElement {
 
   const templateId = getTemplateId()
 
-  console.log('templateId', templateId)
-
   return (
     <Stack
       alignItems="center"
       sx={{
-        border: '2px blue solid',
         mt: { xs: 4 },
         my: { md: 10 },
         mx: { md: 20 },
         width: { xs: '100%', md: '32%' },
         mb: { xs: templateId == null ? 0 : 3 },
-        overflow: 'scroll'
+        overflowY: 'scroll'
       }}
       data-testid="JourneysAdminOnboardingDrawer"
     >
       <Stack
         sx={{
-          // border: '2px blue solid',
-          // alignItems: { xs: 'center', md: 'flex-start' },
           height: { xs: 46, md: 48 },
           width: { xs: 185, md: 291 },
           px: { xs: 4, md: 6 },
@@ -59,7 +55,6 @@ export function OnboardingDrawer(): ReactElement {
       >
         <Box
           sx={{
-            border: '2px red solid',
             width: { xs: 148, md: 195 },
             height: { xs: 28, md: 36 }
           }}
@@ -71,28 +66,45 @@ export function OnboardingDrawer(): ReactElement {
         <Stack
           justifyContent="center"
           sx={{
-            border: '2px green solid',
             pt: { xs: templateId == null ? 2 : 4, md: 15 },
             width: { xs: '100%', md: 244 }
           }}
         >
-          <OnboardingDrawerOne />
+          <Stack
+            sx={{
+              gap: { xs: 2, md: 16 },
+              width: 'inherit'
+            }}
+            data-testid="JourneysAdminOnboardingDrawerOne"
+          >
+            {newAccountQuery === true && <OnboardingStepper variant="mobile" />}
+
+            {templateId != null && (
+              <Stack
+                flexDirection="column"
+                justifyContent="center"
+                sx={{
+                  px: { xs: 6, md: 0 },
+                  py: { xs: 2, md: 0 },
+                  height: { xs: 78, md: '100%' },
+                  width: { xs: '100%', md: 244 }
+                }}
+              >
+                <OnboardingTemplateCard templateId={templateId} />
+              </Stack>
+            )}
+            <Box sx={{ pl: 4 }}>
+              {newAccountQuery === true && (
+                <OnboardingStepper variant="desktop" />
+              )}
+            </Box>
+          </Stack>
         </Stack>
       ) : (
-        <Stack
-          flexDirection="row"
-          justifyContent="center"
-          sx={{
-            border: '2px green solid',
-            pt: {
-              xs: templateId == null ? 4 : 4,
-              md: newAccountQuery === true ? 10 : 26
-            },
-            width: { xs: '100%' }
-          }}
-        >
-          <OnboardingDrawerTwo />
-        </Stack>
+        <OnboardingLandingDrawer
+          templateId={templateId}
+          newAccountQuery={newAccountQuery}
+        />
       )}
     </Stack>
   )
