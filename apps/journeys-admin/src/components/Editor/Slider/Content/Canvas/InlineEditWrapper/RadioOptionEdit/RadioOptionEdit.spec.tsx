@@ -178,7 +178,7 @@ describe('RadioOptionEdit', () => {
           }}
         >
           <EditorProvider>
-            <h1 className="swiper-container" />
+            <h1 className="EditorCanvas" />
             <iframe>
               <RadioOptionEdit {...props} />
             </iframe>
