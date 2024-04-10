@@ -9,6 +9,7 @@ import { simpleComponentConfig } from '../../../../../../libs/storybook'
 
 import { StepBlockNode } from '.'
 
+import { userEvent, within } from '@storybook/testing-library'
 
 const StepBlockNodeStory: Meta<typeof StepBlockNode> = {
   ...simpleComponentConfig,
@@ -828,6 +829,20 @@ export const SignUp = {
     nodeTypes: {
       StepBlock: StepBlockNode
     }
+  }
+}
+
+export const Hover = {
+  ...Template,
+  args: {
+    ...defaultFlowProps,
+    nodes: [defaultNode],
+    nodeTypes: {
+      StepBlock: StepBlockNode
+    }
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.hover(within(canvasElement).getByTestId('BaseNode'))
   }
 }
 
