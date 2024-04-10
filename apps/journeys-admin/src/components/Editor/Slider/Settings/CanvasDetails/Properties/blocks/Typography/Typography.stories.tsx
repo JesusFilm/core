@@ -1,82 +1,78 @@
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
+import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
   TypographyAlign,
-  TypographyColor,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
-import { Typography } from '.'
+import { Typography } from './Typography'
+import { TypographyColor } from 'libs/journeys/ui/__generated__/globalTypes'
 
-const TypographyStory: Meta<typeof Typography> = {
-  ...simpleComponentConfig,
+const Demo: Meta<typeof Typography> = {
+  ...journeysAdminConfig,
   component: Typography,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Typography'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Typography',
+  // do not remove these parameters for this story, see: https://github.com/storybookjs/storybook/issues/17025
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
-export const Default: StoryObj<typeof Typography> = {
-  render: () => {
-    const block: TreeBlock<TypographyBlock> = {
-      id: 'typography1.id',
-      __typename: 'TypographyBlock',
-      parentBlockId: null,
-      parentOrder: 0,
-      align: null,
-      color: null,
-      content: 'Typography',
-      variant: null,
-      children: []
-    }
+const block: TreeBlock<TypographyBlock> = {
+  __typename: 'TypographyBlock',
+  id: 'typographyBlock.id',
+  parentBlockId: null,
+  parentOrder: null,
+  align: null,
+  color: null,
+  content: '',
+  variant: null,
+  children: []
+}
 
+const Template: StoryObj<ComponentProps<typeof Typography>> = {
+  render: ({ ...args }) => {
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <Typography {...block} />
-      </Stack>
+      <EditorProvider initialState={{ selectedBlock: { ...args } }}>
+        <Drawer title="Feedback Properties">
+          <Typography {...args} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
 
-export const Filled: StoryObj<typeof Typography> = {
-  render: () => {
-    const block: TreeBlock<TypographyBlock> = {
-      id: 'typography1.id',
-      __typename: 'TypographyBlock',
-      parentBlockId: null,
-      parentOrder: 0,
-      align: TypographyAlign.left,
-      color: TypographyColor.secondary,
-      content: 'Typography',
-      variant: TypographyVariant.h2,
-      children: []
-    }
-
-    return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <Typography {...block} />
-      </Stack>
-    )
+export const Default = {
+  ...Template,
+  args: {
+    ...block
   }
 }
 
-export default TypographyStory
+export const Filled = {
+  ...Template,
+  args: {
+    ...block,
+    __typename: 'TypographyBlock',
+    id: 'typographyBlock.id',
+    parentBlockId: null,
+    parentOrder: null,
+    align: TypographyAlign.right,
+    color: TypographyColor.error,
+    content: 'Text goes here',
+    variant: TypographyVariant.overline,
+    children: []
+  }
+}
+
+export default Demo
