@@ -167,7 +167,7 @@ export const Default: StoryObj<typeof VideoOptions> = {
             selectedBlock: video
           }}
         >
-          <Drawer title="Video">
+          <Drawer title="Video Properties">
             <Box sx={{ pt: 4 }}>
               <VideoOptions />
             </Box>
