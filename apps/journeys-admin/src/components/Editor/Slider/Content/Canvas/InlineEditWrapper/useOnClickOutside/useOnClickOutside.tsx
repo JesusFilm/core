@@ -9,15 +9,13 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
   useEffect(() => {
     const handleClick = (event: MouseEvent): void => {
       const elementClicked = event.target as HTMLElement
-      const swiperClicked =
-        (elementClicked.classList.contains('swiper-wrapper') ||
-          elementClicked.classList.contains('swiper-container')) ??
-        false
+      const canvasClicked =
+        elementClicked.classList.contains('EditorCanvas') ?? false
       // Prevent double callback triggering
       const inputSelected =
         elementRef.current?.classList.contains('Mui-focused') ?? false
 
-      if (elementRef.current != null && inputSelected && swiperClicked)
+      if (elementRef.current != null && inputSelected && canvasClicked)
         void callback()
     }
     // Need to set capture to true

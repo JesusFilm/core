@@ -41,7 +41,7 @@ describe('AccessItem', () => {
       id: 'journeyId',
       title: 'Some Title'
     } as unknown as JourneyFields
-    const { getByText, getByTestId, queryByTestId } = render(
+    const { getByText, getByTestId, queryByTestId, queryByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider value={{ journey: mockJourney }}>
@@ -53,6 +53,7 @@ describe('AccessItem', () => {
 
     fireEvent.click(getByText('Manage Access'))
     await waitFor(() => expect(getByTestId('AccessDialog')).toBeInTheDocument())
+    expect(queryByRole('menuitem')).not.toBeInTheDocument()
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByTestId('AccessDialog')).not.toBeInTheDocument()

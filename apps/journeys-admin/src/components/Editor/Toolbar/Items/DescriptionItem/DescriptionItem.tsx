@@ -45,11 +45,11 @@ export function DescriptionItem({
   function handleClick(): void {
     setRoute('description')
     setDescriptionDialogOpen(true)
+    onClose?.()
   }
 
   function handleClose(): void {
     setDescriptionDialogOpen(false)
-    onClose?.()
   }
 
   return (
