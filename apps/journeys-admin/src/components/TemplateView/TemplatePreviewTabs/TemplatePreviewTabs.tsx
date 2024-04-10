@@ -29,7 +29,7 @@ export function TemplatePreviewTabs({
 }: TemplatePreviewTabsProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const { t } = useTranslation('apps-journeys-admin')
-  const [openTeamDialog, setOpenTeamDialog] = useState(false)
+  const [openTeamDialog, setOpenTeamDialog] = useState<boolean | undefined>()
 
   const { journey } = useJourney()
 

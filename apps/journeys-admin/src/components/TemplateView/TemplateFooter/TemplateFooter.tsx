@@ -13,7 +13,7 @@ export function TemplateFooter({
   signedIn
 }: TemplateFooterProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [openTeamDialog, setOpenTeamDialog] = useState(false)
+  const [openTeamDialog, setOpenTeamDialog] = useState<boolean | undefined>()
 
   return (
     <Stack

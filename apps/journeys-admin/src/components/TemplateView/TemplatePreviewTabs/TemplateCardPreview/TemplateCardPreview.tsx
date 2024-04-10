@@ -30,7 +30,7 @@ import { CreateJourneyButton } from '../../CreateJourneyButton'
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
   authUser?: User
-  openTeamDialog: boolean
+  openTeamDialog: boolean | undefined
   setOpenTeamDialog: Dispatch<SetStateAction<boolean>>
 }
 

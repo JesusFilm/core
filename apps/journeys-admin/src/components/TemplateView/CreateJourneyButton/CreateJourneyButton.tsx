@@ -2,7 +2,14 @@ import Button from '@mui/material/Button'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState
+} from 'react'
 import TagManager from 'react-gtm-module'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -12,8 +19,8 @@ import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
-  openTeamDialog: boolean
-  setOpenTeamDialog: React.Dispatch<React.SetStateAction<boolean>>
+  openTeamDialog: boolean | undefined
+  setOpenTeamDialog: Dispatch<SetStateAction<boolean>>
 }
 
 const DynamicCopyToTeamDialog = dynamic(

@@ -26,7 +26,7 @@ export function TemplateViewHeader({
 }: TemplateViewHeaderProps): ReactElement {
   const { journey } = useJourney()
   const hasCreatorDescription = journey?.creatorDescription != null
-  const [openTeamDialog, setOpenTeamDialog] = useState(false)
+  const [openTeamDialog, setOpenTeamDialog] = useState<boolean | undefined>()
 
   return (
     <Stack data-testid="JourneysAdminTemplateViewHeader">
