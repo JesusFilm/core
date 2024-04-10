@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
-import { userEvent, within } from '@storybook/testing-library'
+import { userEvent, waitFor, within } from '@storybook/testing-library'
 import { ComponentPropsWithoutRef } from 'react'
 import { Background, ReactFlow } from 'reactflow'
 import 'reactflow/dist/style.css'
@@ -841,7 +841,11 @@ export const Hover = {
     }
   },
   play: async ({ canvasElement }) => {
-    await userEvent.hover(within(canvasElement).getByTestId('BaseNode'))
+    const canvas = within(canvasElement)
+
+    await waitFor(async () => {
+      await userEvent.hover(canvas.getByTestId('BaseNode'))
+    })
   }
 }
 
