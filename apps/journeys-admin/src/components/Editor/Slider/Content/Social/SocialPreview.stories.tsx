@@ -46,15 +46,6 @@ export const Default = {
   ...Template,
   args: {
     journey: {
-      ...journey
-    }
-  }
-}
-
-export const Filled = {
-  ...Template,
-  args: {
-    journey: {
       ...journey,
       title: 'Where did Jesus body go',
       primaryImageBlock: {
@@ -68,6 +59,15 @@ export const Filled = {
         height: 1080,
         blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
       }
+    }
+  }
+}
+
+export const Empty = {
+  ...Template,
+  args: {
+    journey: {
+      ...journey
     }
   }
 }
