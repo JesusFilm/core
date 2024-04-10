@@ -9,7 +9,7 @@ import { auth } from '@core/nest/common/firebaseClient'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-import { UserService } from './user.service'
+import { UserService, generateSixDigitNumber } from './user.service'
 
 const authUser = {
   displayName: 'fo sho',
@@ -243,6 +243,14 @@ describe('UserService', () => {
         'tho@no.co',
         undefined
       )
+    })
+  })
+
+  describe('generateSixDigitNumber', () => {
+    it('should return a string of length 6', () => {
+      const sixDigitNumber = generateSixDigitNumber()
+      console.log(sixDigitNumber)
+      expect(sixDigitNumber).toHaveLength(6)
     })
   })
 })
