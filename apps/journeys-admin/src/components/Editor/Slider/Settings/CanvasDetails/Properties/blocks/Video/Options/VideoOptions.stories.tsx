@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentPropsWithoutRef } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -18,15 +19,11 @@ import { GET_VIDEOS } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/Vi
 
 import { VideoOptions } from './VideoOptions'
 
-const VideoOptionsStory: Meta<typeof VideoOptions> = {
+const VideoOptionsDemo: Meta<typeof VideoOptions> = {
   ...journeysAdminConfig,
   component: VideoOptions,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video/VideoOptions',
-  parameters: {
-    ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
-  }
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video/VideoOptions'
 }
 
 const video: TreeBlock<VideoBlock> = {
@@ -88,8 +85,12 @@ const videoLanguages: GetVideoVariantLanguages_video = {
   ]
 }
 
-export const Default: StoryObj<typeof VideoOptions> = {
-  render: () => (
+const Template: StoryObj<
+  ComponentPropsWithoutRef<typeof VideoOptions> & {
+    selectedBlock: TreeBlock<VideoBlock>
+  }
+> = {
+  render: ({ selectedBlock }) => (
     <MockedProvider
       mocks={[
         {
@@ -164,7 +165,7 @@ export const Default: StoryObj<typeof VideoOptions> = {
       <ThemeProvider>
         <EditorProvider
           initialState={{
-            selectedBlock: video
+            selectedBlock
           }}
         >
           <Drawer title="Video Properties">
@@ -178,4 +179,11 @@ export const Default: StoryObj<typeof VideoOptions> = {
   )
 }
 
-export default VideoOptionsStory
+export const Default = {
+  ...Template,
+  args: {
+    selectedBlock: video
+  }
+}
+
+export default VideoOptionsDemo

@@ -6,13 +6,13 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 import { Drawer } from '../../../../Drawer'
 
 import { Video } from './Video'
 
 const VideoDemo: Meta<typeof Video> = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: Video,
   title:
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video'
