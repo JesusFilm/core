@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
@@ -37,7 +37,6 @@ interface VideoProps {
 
 export function VideosPage({ videos }: VideoProps): ReactElement {
   const router = useRouter()
-  const [isEnd, setIsEnd] = useState(false)
 
   const localVideos = videos.filter((video) => video !== null)
 
@@ -48,16 +47,10 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
 
   const filter = getQueryParameters()
 
-  const { algoliaVideos, currentPage, totalPages, loading, handleSearch } =
+  const { algoliaVideos, isEnd, loading, handleSearch, handleLoadMore } =
     useVideoSearch({ filter })
 
-  function isAtEnd(currentPage: number, totalPages: number): boolean {
-    if (currentPage + 1 === totalPages) return true
-    return false
-  }
-
   function handleFilterChange(filter: VideoPageFilter): void {
-    const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
     const params = new URLSearchParams()
 
     const setQueryParam = (paramName: string, value?: string | null): void => {
@@ -73,48 +66,23 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     void router.push(`/videos?${params.toString()}`, undefined, {
       shallow: true
     })
-    void handleSearch({
-      title,
-      availableVariantLanguageIds,
-      subtitleLanguageIds,
-      page: 0
-    })
-  }
-
-  function handleLoadMore(): void {
-    const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
-    if (isEnd) return
-    if (checkFilterApplied(filter)) {
-      void handleSearch({
-        title,
-        availableVariantLanguageIds,
-        subtitleLanguageIds,
-        page: currentPage + 1
-      })
-    }
+    void handleSearch(filter, 0)
   }
 
   useEffect(() => {
     const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
     if (checkFilterApplied(filter)) {
-      void handleSearch({
-        title,
-        availableVariantLanguageIds,
-        subtitleLanguageIds,
-        page: 0
-      })
+      void handleSearch(
+        {
+          title,
+          availableVariantLanguageIds,
+          subtitleLanguageIds
+        },
+        0
+      )
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  useEffect(() => {
-    if (currentPage === 0 && totalPages === 0) {
-      setIsEnd(true)
-    } else {
-      setIsEnd(isAtEnd(currentPage ?? 0, totalPages ?? 1))
-    }
-  }, [setIsEnd, currentPage, totalPages])
 
   return (
     <PageWrapper hero={<VideosHero />} testId="VideosPage">

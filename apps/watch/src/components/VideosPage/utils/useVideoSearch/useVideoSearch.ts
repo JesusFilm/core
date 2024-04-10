@@ -1,7 +1,7 @@
 import algoliasearch from 'algoliasearch'
 import { RankingInfo } from 'instantsearch.js'
 import isEqual from 'lodash/isEqual'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 import { checkFilterApplied } from '../checkFilterApplied'
@@ -26,10 +26,10 @@ interface Hits extends Array<Hit> {}
 
 interface UseVideoSearchResult {
   algoliaVideos: VideoChildFields[]
-  currentPage: number
-  totalPages: number | undefined
+  isEnd: boolean
   loading: boolean
-  handleSearch: (params: VideoPageFilter & { page: number }) => Promise<void>
+  handleSearch: (filter: VideoPageFilter, page: number) => Promise<void>
+  handleLoadMore: () => Promise<void>
 }
 
 interface useVideoSearchProps {
@@ -43,14 +43,21 @@ export function useVideoSearch({
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [isEnd, setIsEnd] = useState(false)
+
+  useEffect(() => {
+    if (currentPage === 0 && totalPages === 0) {
+      setIsEnd(true)
+    } else {
+      setIsEnd(currentPage + 1 === totalPages)
+    }
+  }, [currentPage, totalPages])
 
   const handleSearch = useCallback(
-    async ({
-      availableVariantLanguageIds,
-      subtitleLanguageIds,
-      title,
+    async (
+      { availableVariantLanguageIds, subtitleLanguageIds, title },
       page
-    }): Promise<void> => {
+    ): Promise<void> => {
       const previousFilter: VideoPageFilter = {
         availableVariantLanguageIds,
         subtitleLanguageIds,
@@ -97,11 +104,24 @@ export function useVideoSearch({
 
   const algoliaVideos = transformAlgoliaVideos(hits)
 
+  const handleLoadMore = useCallback(async (): Promise<void> => {
+    const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
+    if (isEnd || loading) return
+    await handleSearch(
+      {
+        title,
+        availableVariantLanguageIds,
+        subtitleLanguageIds
+      },
+      currentPage + 1
+    )
+  }, [isEnd, loading, currentPage, handleSearch, filter])
+
   return {
     algoliaVideos,
-    currentPage,
-    totalPages,
+    isEnd,
     loading,
-    handleSearch
+    handleSearch,
+    handleLoadMore
   }
 }
