@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
+import { userEvent, within } from '@storybook/testing-library'
 import { ComponentPropsWithoutRef } from 'react'
 import { Background, ReactFlow } from 'reactflow'
 import 'reactflow/dist/style.css'
@@ -8,8 +9,6 @@ import 'reactflow/dist/style.css'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 
 import { StepBlockNode } from '.'
-
-import { userEvent, within } from '@storybook/testing-library'
 
 const StepBlockNodeStory: Meta<typeof StepBlockNode> = {
   ...simpleComponentConfig,
