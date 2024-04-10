@@ -66,10 +66,10 @@ export const CustomUrl = {
   ...Template
 }
 CustomUrl.play = async () => {
-  await userEvent.click(screen.getByRole('tab', { name: 'Custom' }))
-  await userEvent.click(
-    screen.getByRole('button', { name: 'Add image by URL' })
-  )
+  const tab = screen.getByRole('tab', { name: 'Custom' })
+  await userEvent.click(tab)
+  const button = screen.getByRole('button', { name: 'Add image by URL' })
+  await userEvent.click(button)
 }
 
 export const AI = {
