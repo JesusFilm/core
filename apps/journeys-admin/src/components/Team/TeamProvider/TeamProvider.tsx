@@ -51,6 +51,10 @@ export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
           imageUrl
         }
       }
+      customDomains {
+        id
+        name
+      }
     }
   }
 `

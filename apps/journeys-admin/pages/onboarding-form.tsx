@@ -14,6 +14,7 @@ import { formiumClient } from '@core/shared/ui/formiumClient'
 import { OnboardingForm } from '../src/components/OnboardingForm'
 import { OnboardingPageWrapper } from '../src/components/OnboardingPageWrapper'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+import { useHandleNewAccountRedirect } from '../src/libs/useRedirectNewAccount'
 
 interface OnboardingFormPageProps {
   form: Form
@@ -23,10 +24,13 @@ function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
   const user = useUser()
   const { t } = useTranslation('apps-journeys-admin')
 
+  useHandleNewAccountRedirect()
+
   return (
     <>
       <NextSeo title={t('A Few Questions')} />
       <OnboardingPageWrapper
+        title={t('User Insights')}
         emailSubject={t('a question about onboarding form')}
       >
         <OnboardingForm form={form} user={user} />

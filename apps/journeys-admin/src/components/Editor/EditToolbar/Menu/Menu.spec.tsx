@@ -15,6 +15,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
+import { getCustomDomainMock } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { BLOCK_DUPLICATE } from '../DuplicateBlock/DuplicateBlock'
 
 import { GET_ROLE } from './Menu'
@@ -313,6 +314,50 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+  })
+
+  it('should provide customDomain hostname to preview button', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
+    const selectedBlock: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'stepId',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+
+    const { getByRole, getByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
+          <JourneyProvider
+            value={{
+              journey: {
+                status: JourneyStatus.draft,
+                tags: [],
+                team: {
+                  id: 'teamId'
+                }
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock }}>
+              <Menu />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByRole('button')).toContainElement(getByTestId('MoreIcon'))
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menu')).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+      'href',
+      '/api/preview?slug=&hostname=example.com'
+    )
   })
 
   it('should close the menu upon clicking duplicating from menu', async () => {

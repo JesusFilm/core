@@ -36,9 +36,20 @@ health_check:
 include_subgraph_errors:
   all: true
 telemetry:
-  tracing:
-    datadog:
-      endpoint: default
+  instrumentation:
+    spans:
+      mode: spec_compliant
+      router:
+        attributes:
+          dd.trace_id: true
+  exporters:
+    tracing:
+      otlp:
+        enabled: true
+    metrics:
+      otlp:
+        enabled: true
+        temporality: delta
 experimental_batching:
   enabled: true
   mode: batch_http_link
