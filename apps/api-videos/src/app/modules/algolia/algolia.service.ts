@@ -22,7 +22,7 @@ export class AlgoliaService {
 
     while (true) {
       const videoVariants = await this.prisma.videoVariant.findMany({
-        take: 15000,
+        take: 1000,
         skip: offset,
         include: {
           video: { include: { title: true } },
@@ -63,7 +63,7 @@ export class AlgoliaService {
       const index = client.initIndex('video-variants')
       await index.saveObjects(transformedVideos).wait()
 
-      offset += 15000
+      offset += 1000
     }
 
     console.log('synced videos to algolia')
