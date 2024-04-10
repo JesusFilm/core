@@ -249,7 +249,6 @@ describe('UserService', () => {
   describe('generateSixDigitNumber', () => {
     it('should return a string of length 6', () => {
       const sixDigitNumber = generateSixDigitNumber()
-      console.log(sixDigitNumber)
       expect(sixDigitNumber).toHaveLength(6)
     })
   })
