@@ -9,8 +9,8 @@ export class AlgoliaQueue implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
-    // only run in production
-    if (process.env.DEPLOYMENT_ENV !== 'prod') return
+    const apiKey = process.env.ALGOLIA_API_KEY ?? ''
+    if (apiKey === '') return
 
     const name = 'api-videos-aloglia'
     const repeatableJobs = await this.algoliaQueue.getRepeatableJobs()
