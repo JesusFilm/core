@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import MuiDrawer from '@mui/material/Drawer'
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -10,6 +10,7 @@ import { GetVideoVariantLanguages_video } from '../../../../../../../../../../__
 import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
+import { Drawer } from '../../../../../Drawer'
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 import { videos } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
@@ -20,7 +21,8 @@ import { VideoOptions } from './VideoOptions'
 const VideoOptionsStory: Meta<typeof VideoOptions> = {
   ...journeysAdminConfig,
   component: VideoOptions,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Video/VideoOptions',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video/VideoOptions',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -165,33 +167,11 @@ export const Default: StoryObj<typeof VideoOptions> = {
             selectedBlock: video
           }}
         >
-          <MuiDrawer
-            anchor="right"
-            variant="permanent"
-            sx={{
-              display: { xs: 'none', sm: 'block' },
-              '& .MuiDrawer-paper': {
-                boxSizing: 'border-box',
-                width: 328
-              }
-            }}
-            ModalProps={{
-              keepMounted: true
-            }}
-            open
-          >
-            <VideoOptions />
-          </MuiDrawer>
-          <MuiDrawer
-            anchor="bottom"
-            variant="temporary"
-            open
-            sx={{
-              display: { xs: 'block', sm: 'none' }
-            }}
-          >
-            <VideoOptions />
-          </MuiDrawer>
+          <Drawer title="Video">
+            <Box sx={{ pt: 4 }}>
+              <VideoOptions />
+            </Box>
+          </Drawer>
         </EditorProvider>
       </ThemeProvider>
     </MockedProvider>

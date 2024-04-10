@@ -12,7 +12,8 @@ import { Video } from './Video'
 const VideoStory: Meta<typeof Video> = {
   ...simpleComponentConfig,
   component: Video,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Video'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video'
 }
 
 export const Default: StoryObj<typeof Video> = {
