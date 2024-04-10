@@ -115,6 +115,32 @@ describe('UserService', () => {
         }
       )
     })
+
+    it('should use example token', async () => {
+      process.env.EXAMPLE_EMAIL_TOKEN = '123456'
+      const email = 'tav@example.com'
+      const userId = 'userId'
+      emailQueue.getJob.mockResolvedValue(null)
+      await userService.verifyUser(userId, email)
+      expect(removeJob).not.toHaveBeenCalled()
+      expect(emailQueue.add).toHaveBeenCalledWith(
+        'verifyUser',
+        {
+          email,
+          token: '123456',
+          userId: 'userId'
+        },
+        {
+          jobId: expect.any(String),
+          removeOnComplete: {
+            age: 24 * 3600 // keep up to 24 hours
+          },
+          removeOnFail: {
+            age: 24 * 3600
+          }
+        }
+      )
+    })
   })
 
   describe('validateEmail', () => {
