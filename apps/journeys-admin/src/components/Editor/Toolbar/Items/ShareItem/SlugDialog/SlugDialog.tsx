@@ -21,11 +21,16 @@ export const JOURNEY_SLUG_UPDATE = gql`
 `
 
 interface SlugDialogProps {
-  open: boolean
-  onClose: () => void
+  open?: boolean
+  onClose?: () => void
+  hostname?: string
 }
 
-export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
+export function SlugDialog({
+  open,
+  onClose,
+  hostname
+}: SlugDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneySlugUpdate>(JOURNEY_SLUG_UPDATE)
   const { journey } = useJourney()
@@ -45,7 +50,7 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
         variables: { id: journey.id, input: { slug: values.slug } }
       })
       await setValues({ slug: response?.data?.journeyUpdate.slug })
-      onClose()
+      onClose?.()
     } catch (error) {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
@@ -68,7 +73,7 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
     return () => {
-      onClose()
+      onClose?.()
       // wait for dialog animation to complete
       setTimeout(() => resetForm({ values: { slug: journey?.slug } }))
     }
@@ -106,8 +111,10 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
                   helperText={
                     values.slug !== '' ? (
                       <>
-                        {process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                          'https://your.nextstep.is'}
+                        {hostname != null
+                          ? `https://${hostname}`
+                          : process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                            'https://your.nextstep.is'}
                         /<strong>{values.slug}</strong>
                       </>
                     ) : (

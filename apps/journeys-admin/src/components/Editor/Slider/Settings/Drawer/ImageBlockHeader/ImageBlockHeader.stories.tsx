@@ -12,7 +12,7 @@ import { ImageBlockHeader } from './ImageBlockHeader'
 const ImageEditorStory: Meta<typeof ImageBlockHeader> = {
   ...simpleComponentConfig,
   component: ImageBlockHeader,
-  title: 'Journeys-Admin/Editor/ImageBlockHeader',
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/ImageBlockHeader',
   parameters: {
     ...simpleComponentConfig.parameters,
     layout: 'fullscreen'

@@ -120,6 +120,7 @@ export function Canvas(): ReactElement {
 
   return (
     <Stack
+      className="EditorCanvas"
       onClick={handleSelectCard}
       onMouseDown={() => {
         // click target was the card component and not it's children blocks

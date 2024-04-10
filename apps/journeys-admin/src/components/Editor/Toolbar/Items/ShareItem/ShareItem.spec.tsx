@@ -5,6 +5,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { defaultJourney } from '../../../data'
 
 import { ShareItem } from './ShareItem'
@@ -21,9 +22,17 @@ jest.mock('next/router', () => ({
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
+Object.assign(navigator, {
+  clipboard: {
+    writeText: jest.fn()
+  }
+})
+
 describe('ShareItem', () => {
   const push = jest.fn()
   const on = jest.fn()
+
+  beforeEach(() => jest.clearAllMocks())
 
   it('should handle edit journey slug', async () => {
     mockedUseRouter.mockReturnValue({
@@ -124,5 +133,73 @@ describe('ShareItem', () => {
       expect(getByRole('button', { name: 'Edit URL' })).toBeInTheDocument()
     })
     expect(getByRole('button', { name: 'Embed Journey' })).toBeInTheDocument()
+  })
+
+  it('should copy journey link', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
+            <ShareItem variant="button" />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Share' }))
+    fireEvent.click(getByRole('button', { name: 'Copy' }))
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      'https://your.nextstep.is/default'
+    )
+  })
+
+  it('should copy journey link with custom domain', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
+          <JourneyProvider
+            value={{
+              journey: {
+                ...defaultJourney,
+                team: {
+                  id: 'teamId',
+                  __typename: 'Team',
+                  title: 'Team Title',
+                  publicTitle: 'Team Title'
+                }
+              },
+              variant: 'admin'
+            }}
+          >
+            <ShareItem variant="button" />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Share' }))
+    fireEvent.click(getByRole('button', { name: 'Copy' }))
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      'https://example.com/default'
+    )
   })
 })

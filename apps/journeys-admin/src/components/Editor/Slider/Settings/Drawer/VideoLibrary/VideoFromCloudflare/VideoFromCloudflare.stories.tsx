@@ -9,7 +9,8 @@ import { VideoFromCloudflare } from '.'
 const VideoFromCloudflareStory: Meta<typeof VideoFromCloudflare> = {
   ...simpleComponentConfig,
   component: VideoFromCloudflare,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromCloudflare',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromCloudflare',
   argTypes: { onSelect: { action: 'clicked' } },
   parameters: {
     ...simpleComponentConfig.parameters,

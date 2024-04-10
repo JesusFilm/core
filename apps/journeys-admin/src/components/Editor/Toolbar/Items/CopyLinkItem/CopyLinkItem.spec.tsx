@@ -4,6 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { TeamProvider } from '../../../../Team/TeamProvider'
 import { defaultJourney } from '../../../data'
 
@@ -17,6 +18,10 @@ Object.assign(navigator, {
 
 describe('CopyLinkItem', () => {
   const originalEnv = process.env
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
 
   it('should copy url in development', async () => {
     const onClose = jest.fn()
@@ -53,7 +58,6 @@ describe('CopyLinkItem', () => {
       expect(getByText('Link Copied')).toBeInTheDocument()
     })
     expect(onClose).toHaveBeenCalled()
-    process.env = originalEnv
   })
 
   it('should copy url in production', async () => {
@@ -91,7 +95,51 @@ describe('CopyLinkItem', () => {
       expect(getByText('Link Copied')).toBeInTheDocument()
     })
     expect(onClose).toHaveBeenCalled()
+  })
 
-    process.env = originalEnv
+  it('should copy url in production with custom domain', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
+    const onClose = jest.fn()
+    jest.resetModules()
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_JOURNEYS_URL: undefined
+    }
+
+    jest.spyOn(navigator.clipboard, 'writeText')
+
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
+          <TeamProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...defaultJourney,
+                  team: {
+                    id: 'teamId',
+                    __typename: 'Team',
+                    title: 'Team Title',
+                    publicTitle: 'Team Title'
+                  }
+                },
+                variant: 'admin'
+              }}
+            >
+              <CopyLinkItem variant="menu-item" onClose={onClose} />
+            </JourneyProvider>
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('menuitem', { name: 'Copy Link' }))
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      `https://example.com/${defaultJourney.slug}`
+    )
+    await waitFor(() => {
+      expect(getByText('Link Copied')).toBeInTheDocument()
+    })
+    expect(onClose).toHaveBeenCalled()
   })
 })

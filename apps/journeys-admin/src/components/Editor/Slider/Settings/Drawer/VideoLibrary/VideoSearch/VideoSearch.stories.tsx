@@ -9,7 +9,7 @@ import { VideoSearch } from './VideoSearch'
 const VideoSearchStory: Meta<typeof VideoSearch> = {
   ...simpleComponentConfig,
   component: VideoSearch,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoSearch'
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoSearch'
 }
 
 const VideoSearchComponent = (args): ReactElement => {

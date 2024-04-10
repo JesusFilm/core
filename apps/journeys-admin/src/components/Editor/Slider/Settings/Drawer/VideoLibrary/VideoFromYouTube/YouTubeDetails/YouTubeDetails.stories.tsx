@@ -12,7 +12,8 @@ import { YouTubeDetails } from '.'
 const YouTubeDetailsStory: Meta<typeof YouTubeDetails> = {
   ...journeysAdminConfig,
   component: YouTubeDetails,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromYouTube/YouTubeDetails',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromYouTube/YouTubeDetails',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 

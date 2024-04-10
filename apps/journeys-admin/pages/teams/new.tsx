@@ -9,14 +9,18 @@ import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '../../src/components/Team/Tea
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../src/components/Team/TeamSelect/TeamSelect'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_CURRENT_USER } from '../../src/libs/useCurrentUserLazyQuery'
+import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 
 function TeamsNewPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+
+  useHandleNewAccountRedirect()
 
   return (
     <>
       <NextSeo title={t('New Team')} />
       <OnboardingPageWrapper
+        title={t('Create a Team')}
         emailSubject={t('A question about creating a team for the first time.')}
       >
         <TeamOnboarding />

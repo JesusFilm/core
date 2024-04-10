@@ -7,10 +7,14 @@ import { CreateJourneyButton } from '../CreateJourneyButton'
 
 interface TemplateFooterProps {
   signedIn?: boolean
+  openTeamDialog: boolean
+  setOpenTeamDialog: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export function TemplateFooter({
-  signedIn
+  signedIn,
+  openTeamDialog,
+  setOpenTeamDialog
 }: TemplateFooterProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -39,7 +43,11 @@ export function TemplateFooter({
       >
         {t('Use this template to make it your journey')}
       </Typography>
-      <CreateJourneyButton signedIn={signedIn} />
+      <CreateJourneyButton
+        signedIn={signedIn}
+        openTeamDialog={openTeamDialog}
+        setOpenTeamDialog={setOpenTeamDialog}
+      />
     </Stack>
   )
 }

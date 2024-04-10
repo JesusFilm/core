@@ -14,7 +14,8 @@ import { EmailAction } from '.'
 const EmailActionStory: Meta<typeof EmailAction> = {
   ...simpleComponentConfig,
   component: EmailAction,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/ActionStates'
 }
 
 export const Email: StoryObj<typeof EmailAction> = {

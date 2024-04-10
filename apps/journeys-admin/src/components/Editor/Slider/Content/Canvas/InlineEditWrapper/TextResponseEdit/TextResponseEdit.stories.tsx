@@ -18,7 +18,7 @@ import { Canvas } from '../../Canvas'
 const TextResponseEditStory: Meta<typeof Canvas> = {
   ...simpleComponentConfig,
   component: Canvas,
-  title: 'Journeys-Admin/Editor/Canvas/TextResponseEdit'
+  title: 'Journeys-Admin/Editor/Slider/Content/Canvas/TextResponseEdit'
 }
 
 const selectedBlock: TreeBlock<TextResponseFields> = {

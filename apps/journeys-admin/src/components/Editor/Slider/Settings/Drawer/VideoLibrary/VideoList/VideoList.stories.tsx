@@ -10,7 +10,7 @@ import { VideoList } from '.'
 const VideoListStory: Meta<typeof VideoList> = {
   ...journeysAdminConfig,
   component: VideoList,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoList',
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoList',
   argTypes: {
     fetchMore: { action: 'fetched' },
     onSelect: { action: 'selected' }

@@ -42,11 +42,11 @@ export function LanguageItem({
   const handleUpdateLanguage = (): void => {
     setRoute('languages')
     setShowLanguageDialog(true)
+    onClose?.()
   }
 
   const handleClose = (): void => {
     setShowLanguageDialog(false)
-    onClose?.()
   }
 
   return (

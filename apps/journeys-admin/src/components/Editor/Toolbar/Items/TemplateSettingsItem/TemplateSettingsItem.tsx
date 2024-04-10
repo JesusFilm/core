@@ -45,11 +45,11 @@ export function TemplateSettingsItem({
   function handleClick(): void {
     setRoute('templatesettings')
     setTemplateSettingsDialogOpen(true)
+    onClose?.()
   }
 
   function handleClose(): void {
     setTemplateSettingsDialogOpen(false)
-    onClose?.()
   }
 
   return (

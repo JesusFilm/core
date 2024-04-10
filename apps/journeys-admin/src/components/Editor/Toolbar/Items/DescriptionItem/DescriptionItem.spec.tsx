@@ -36,7 +36,7 @@ describe('DescriptionItem', () => {
       id: 'journeyId',
       title: 'Some Title'
     } as unknown as JourneyFields
-    const { getByText, getByTestId, queryByTestId } = render(
+    const { getByText, getByTestId, queryByTestId, queryByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider value={{ journey: mockJourney }}>
@@ -50,6 +50,7 @@ describe('DescriptionItem', () => {
     await waitFor(() =>
       expect(getByTestId('DescriptionDialog')).toBeInTheDocument()
     )
+    expect(queryByRole('menuitem')).not.toBeInTheDocument()
     fireEvent.click(getByText('Cancel'))
     await waitFor(() =>
       expect(queryByTestId('DescriptionDialog')).not.toBeInTheDocument()

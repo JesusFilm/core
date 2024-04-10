@@ -9,7 +9,8 @@ import { VideoListItem } from '.'
 const VideoListItemStory: Meta<typeof VideoListItem> = {
   ...journeysAdminConfig,
   component: VideoListItem,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoList/VideoListItem',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoList/VideoListItem',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 

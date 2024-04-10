@@ -5,6 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
+import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
 import { PreviewItem } from './PreviewItem'
 
@@ -12,7 +13,10 @@ describe('PreviewItem', () => {
   const mockJourney: JourneyFields = {
     id: 'journeyId',
     title: 'Some Title',
-    slug: 'journeySlug'
+    slug: 'journeySlug',
+    team: {
+      id: 'teamId'
+    }
   } as unknown as JourneyFields
 
   beforeEach(() => {
@@ -49,6 +53,24 @@ describe('PreviewItem', () => {
     expect(getByRole('link')).toHaveAttribute(
       'href',
       '/api/preview?slug=journeySlug'
+    )
+  })
+
+  it('should provide customDomain hostname to preview button', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
+    const { getByRole } = render(
+      <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: mockJourney }}>
+            <PreviewItem variant="icon-button" />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByRole('link')).toHaveAttribute(
+      'href',
+      '/api/preview?slug=journeySlug&hostname=example.com'
     )
   })
 })

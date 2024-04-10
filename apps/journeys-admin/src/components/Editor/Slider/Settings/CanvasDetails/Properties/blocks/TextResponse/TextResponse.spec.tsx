@@ -98,8 +98,8 @@ describe('TextResponse', () => {
     ).toBeInTheDocument()
   })
 
-  it('should open feedback edit', () => {
-    const { getByRole, getByText } = render(
+  it('should have feedback edit accordion open', () => {
+    const { getByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <EditorProvider>
@@ -109,8 +109,6 @@ describe('TextResponse', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-
-    fireEvent.click(getByRole('button', { name: 'Feedback complete label' }))
     expect(
       getByText('selectedAttributeId: textResponseBlock.id-text-field-options')
     ).toBeInTheDocument()

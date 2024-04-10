@@ -18,7 +18,7 @@ import { Canvas } from '../../Canvas'
 const SignUpEditStory: Meta<typeof Canvas> = {
   ...simpleComponentConfig,
   component: Canvas,
-  title: 'Journeys-Admin/Editor/Canvas/SignUpEdit'
+  title: 'Journeys-Admin/Editor/Slider/Content/Canvas/SignUpEdit'
 }
 
 const selectedBlock: TreeBlock<SignUpFields> = {

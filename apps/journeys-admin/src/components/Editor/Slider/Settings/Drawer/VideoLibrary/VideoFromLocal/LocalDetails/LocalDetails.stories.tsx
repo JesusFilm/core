@@ -12,7 +12,8 @@ import { LocalDetails } from '.'
 const LocalDetailsStory: Meta<typeof LocalDetails> = {
   ...journeysAdminConfig,
   component: LocalDetails,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromLocal/LocalDetails',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromLocal/LocalDetails',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
