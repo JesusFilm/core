@@ -10,7 +10,8 @@ import { UnsplashGallery } from './UnsplashGallery'
 const UnsplashGalleryStory: Meta<typeof UnsplashGallery> = {
   ...simpleComponentConfig,
   component: UnsplashGallery,
-  title: 'Journeys-Admin/Editor/ImageBlockEditor/UnsplashGallery'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/ImageBlockEditor/UnsplashGallery'
 }
 
 const Template: StoryObj<typeof UnsplashGallery> = {

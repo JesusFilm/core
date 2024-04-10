@@ -12,7 +12,7 @@ import { MoveBlock } from '.'
 const AttributeStory: Meta<typeof MoveBlock> = {
   ...simpleComponentConfig,
   component: MoveBlock,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/MoveBlock'
+  title: 'Journeys-Admin/Editor/Slider/Content/Canvas/QuickControls/MoveBlock'
 }
 
 const block: TreeBlock = {
