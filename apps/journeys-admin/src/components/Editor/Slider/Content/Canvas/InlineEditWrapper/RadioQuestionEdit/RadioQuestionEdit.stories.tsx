@@ -20,7 +20,7 @@ import { Canvas } from '../../Canvas'
 const RadioQuestionEditStory: Meta<typeof Canvas> = {
   ...simpleComponentConfig,
   component: Canvas,
-  title: 'Journeys-Admin/Editor/Canvas/RadioQuestionEdit'
+  title: 'Journeys-Admin/Editor/Slider/Content/Canvas/RadioQuestionEdit'
 }
 
 const heading: TreeBlock<TypographyFields> = {
