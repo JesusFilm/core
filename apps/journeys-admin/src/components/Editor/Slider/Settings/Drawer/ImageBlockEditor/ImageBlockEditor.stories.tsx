@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { Drawer } from '../Drawer'
@@ -68,6 +69,9 @@ export const CustomUrl = {
 CustomUrl.play = async () => {
   const tab = screen.getByRole('tab', { name: 'Custom' })
   await userEvent.click(tab)
+  await waitFor(
+    async () => await expect(screen.getByText('Add image by URL')).toBeVisible()
+  )
   const button = screen.getByRole('button', { name: 'Add image by URL' })
   await userEvent.click(button)
 }
