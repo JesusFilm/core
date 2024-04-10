@@ -1,4 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
@@ -198,10 +199,12 @@ const Template: StoryObj<typeof VideoBlockEditor> = {
   render: (args) => (
     <MockedProvider mocks={[mockGetVideos, mockGetVideoVariantLanguages]}>
       <Drawer title="Video Properties">
-        <VideoBlockEditor
-          selectedBlock={args.selectedBlock}
-          onChange={onChange}
-        />
+        <Box sx={{ pt: 4 }}>
+          <VideoBlockEditor
+            selectedBlock={args.selectedBlock}
+            onChange={onChange}
+          />
+        </Box>
       </Drawer>
     </MockedProvider>
   )
