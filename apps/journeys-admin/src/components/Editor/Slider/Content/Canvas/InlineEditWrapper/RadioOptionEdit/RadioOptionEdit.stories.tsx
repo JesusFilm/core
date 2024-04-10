@@ -20,7 +20,7 @@ import { Canvas } from '../../Canvas'
 const RadioOptionEditStory: Meta<typeof Canvas> = {
   ...simpleComponentConfig,
   component: Canvas,
-  title: 'Journeys-Admin/Editor/Canvas/RadioOptionEdit'
+  title: 'Journeys-Admin/Editor/Slider/Content/Canvas/RadioOptionEdit'
 }
 
 const option1: TreeBlock<RadioOptionFields> = {

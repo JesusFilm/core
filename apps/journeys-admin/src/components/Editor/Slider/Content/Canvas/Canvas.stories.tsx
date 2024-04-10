@@ -31,7 +31,7 @@ import { Canvas } from '.'
 const CanvasStory: Meta<typeof Canvas> = {
   ...journeysAdminConfig,
   component: Canvas,
-  title: 'Journeys-Admin/Editor/Canvas',
+  title: 'Journeys-Admin/Editor/Slider/Content/Canvas',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
