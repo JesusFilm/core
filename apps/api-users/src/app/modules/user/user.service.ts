@@ -93,7 +93,10 @@ export class UserService {
     email: string,
     redirect?: string
   ): Promise<void> {
-    const token = Math.floor(100000 + Math.random() * 900000).toString() // six digit, first is not 0
+    const isExample = email.endsWith('@example.com')
+    const token = isExample
+      ? process.env.EXAMPLE_EMAIL_TOKEN ?? ''
+      : Math.floor(100000 + Math.random() * 900000).toString() // six digit, first is not 0
     const job = await this.emailQueue.getJob(userId)
     if (job != null) {
       await job.remove()
