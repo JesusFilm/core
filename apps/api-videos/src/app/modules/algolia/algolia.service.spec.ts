@@ -92,8 +92,33 @@ describe('AlgoliaService', () => {
         ])
 
       await service.syncVideosToAlgolia()
+      expect(prismaService.videoVariant.count).toHaveBeenCalled()
+      expect(prismaService.videoVariant.findMany).toHaveBeenCalledWith({
+        take: 1000,
+        skip: 0,
+        include: {
+          video: { include: { title: true } },
+          subtitle: true
+        }
+      })
       expect(mockAlgoliaSearch).toHaveBeenCalledWith('id', 'key')
       expect(initIndexSpy).toHaveBeenCalledWith('video-variants')
+      expect(saveObjectsSpy).toHaveBeenCalledWith([
+        {
+          childrenCount: 1,
+          description: ['description'],
+          duration: 100,
+          image: 'image',
+          imageAlt: 'imageAlt',
+          label: 'label',
+          languageId: 'languageId',
+          objectID: 'id',
+          slug: 'slug',
+          subtitles: ['subtitle'],
+          titles: ['title'],
+          videoId: 'videoId'
+        }
+      ])
     })
   })
 })
