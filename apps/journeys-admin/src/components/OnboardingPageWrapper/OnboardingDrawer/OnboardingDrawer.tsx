@@ -19,7 +19,7 @@ export function OnboardingDrawer(): ReactElement {
       : router.query.redirect?.includes('newAccount')
 
   function getTemplateId(): string | undefined {
-    const url = router.query.redirect as string | undefined
+    const url = router.query.redirect as string
     if (url == null) return
 
     const redirect = decodeURIComponent(url)
@@ -62,11 +62,11 @@ export function OnboardingDrawer(): ReactElement {
           <Image src={logo} alt="Next Steps" layout="responsive" />
         </Box>
       </Stack>
-      {templateId !== undefined ? (
+      {templateId != null ? (
         <Stack
           justifyContent="center"
           sx={{
-            pt: { xs: templateId == null ? 2 : 4, md: 15 },
+            pt: { xs: 4, md: 15 },
             width: { xs: '100%', md: 244 }
           }}
         >
@@ -75,7 +75,6 @@ export function OnboardingDrawer(): ReactElement {
               gap: { xs: 2, md: 16 },
               width: 'inherit'
             }}
-            data-testid="JourneysAdminOnboardingDrawerOne"
           >
             {newAccountQuery === true && <OnboardingStepper variant="mobile" />}
 
@@ -93,11 +92,11 @@ export function OnboardingDrawer(): ReactElement {
                 <OnboardingTemplateCard templateId={templateId} />
               </Stack>
             )}
-            <Box sx={{ pl: 4 }}>
-              {newAccountQuery === true && (
+            {newAccountQuery === true && (
+              <Box sx={{ pl: 4 }}>
                 <OnboardingStepper variant="desktop" />
-              )}
-            </Box>
+              </Box>
+            )}
           </Stack>
         </Stack>
       ) : (

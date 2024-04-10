@@ -37,7 +37,6 @@ export function OnboardingPageWrapper({
       }}
     >
       <OnboardingDrawer />
-
       <Stack
         justifyContent="safe center"
         alignItems="center"
@@ -121,7 +120,8 @@ export function OnboardingPageWrapper({
           setOpen={setOpen}
           emailSubject={emailSubject}
           sx={{
-            display: { xs: 'none', sm: 'flex' }
+            display: { xs: 'none', sm: 'flex' },
+            pb: 10
           }}
         />
       </Stack>

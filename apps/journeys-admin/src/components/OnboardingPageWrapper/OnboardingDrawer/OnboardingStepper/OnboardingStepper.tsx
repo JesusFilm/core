@@ -130,7 +130,6 @@ export function OnboardingStepper({
         <Stack
           gap={5}
           sx={{
-            // border: '2px red solid',
             display: { xs: 'none', md: 'flex' },
             width: 244
           }}

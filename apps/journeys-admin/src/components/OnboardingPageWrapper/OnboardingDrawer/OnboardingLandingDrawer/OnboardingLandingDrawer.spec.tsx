@@ -1,26 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
 
 import { OnboardingLandingDrawer } from './OnboardingLandingDrawer'
 
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn()
-}))
-
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-
 describe('OnboardingLandingDrawer', () => {
-  const push = jest.fn()
-
-  beforeEach(() => {
-    mockUseRouter.mockReturnValue({
-      push,
-      query: { redirect: null, newAccount: null }
-    } as unknown as NextRouter)
-  })
-
   it('should render landing image with landing description', () => {
     const { getAllByRole } = render(
       <MockedProvider>
@@ -46,11 +29,6 @@ describe('OnboardingLandingDrawer', () => {
   })
 
   it('should render landing image with the stepper', async () => {
-    mockUseRouter.mockReturnValue({
-      push,
-      query: { newAccount: 'true' }
-    } as unknown as NextRouter)
-
     const { getByRole, getAllByRole } = render(
       <MockedProvider>
         <OnboardingLandingDrawer templateId="template" newAccountQuery />
