@@ -1,26 +1,18 @@
-import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { registerApolloClient } from '@apollo/experimental-nextjs-app-support/rsc'
 
-export const { getClient } = registerApolloClient(() => {
-  const authLink = setContext(async (_, { headers }) => {
-    // If this is SSR, DO NOT PASS THE REQUEST HEADERS.
-    // Just send along the authorization headers.
-    // The **correct** headers will be supplied by the `getServerSideProps` invocation of the query
-    return {
-      headers: {
-        ...(!isSsrMode ? headers : []),
-        Authorization: token ?? ''
-      }
-    }
+import { cache } from './cache'
+
+export const { getClient: getApolloClient } = registerApolloClient(() => {
+  const httpLink = createHttpLink({
+    uri: process.env.NEXT_PUBLIC_GATEWAY_URL
   })
+
   return new ApolloClient({
-    cache: new InMemoryCache(),
-    link: new HttpLink({
-      // this needs to be an absolute url, as relative urls cannot be used in SSR
-      uri: 'http://example.com/api/graphql'
-      // you can disable result caching here if you want to
-      // (this does not work if you are rendering your page with `export const dynamic = "force-static"`)
-      // fetchOptions: { cache: "no-store" },
-    })
+    link: httpLink,
+    cache: new InMemoryCache(cache),
+    name: 'watch',
+    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
+    connectToDevTools: true
   })
 })

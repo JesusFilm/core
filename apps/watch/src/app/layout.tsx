@@ -5,6 +5,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import './global.css'
+import { ApolloWrapper } from '../libs/apolloClient/apolloWrapper'
 
 export const metadata = {
   title: 'Welcome to watch-new',
@@ -45,14 +46,16 @@ export default function RootLayout({
         <link rel="manifest" href="/watch/site.webmanifest" />
       </head>
       <body>
-        <AppRouterCacheProvider>
-          <ThemeProvider
-            themeName={ThemeName.website}
-            themeMode={ThemeMode.light}
-          >
-            {children}
-          </ThemeProvider>
-        </AppRouterCacheProvider>
+        <ApolloWrapper>
+          <AppRouterCacheProvider>
+            <ThemeProvider
+              themeName={ThemeName.website}
+              themeMode={ThemeMode.light}
+            >
+              {children}
+            </ThemeProvider>
+          </AppRouterCacheProvider>
+        </ApolloWrapper>
       </body>
     </html>
   )

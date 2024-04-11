@@ -1,3 +1,5 @@
+'use client'
+
 import MenuIcon from '@mui/icons-material/Menu'
 import AppBar, { AppBarProps } from '@mui/material/AppBar'
 import Container from '@mui/material/Container'

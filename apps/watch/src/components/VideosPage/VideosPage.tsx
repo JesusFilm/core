@@ -1,9 +1,11 @@
+'use client'
+
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { GetLanguages } from '../../../__generated__/GetLanguages'
