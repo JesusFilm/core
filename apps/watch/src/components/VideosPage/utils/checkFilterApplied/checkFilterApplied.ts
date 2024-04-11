@@ -7,7 +7,5 @@ export function checkFilterApplied(filter: VideoPageFilter): boolean {
     filter.subtitleLanguageIds
   ]
 
-  return filterToCheck.some(
-    (value) => value !== undefined && value != null && value !== ''
-  )
+  return filterToCheck.some((value) => value !== undefined && value !== '')
 }

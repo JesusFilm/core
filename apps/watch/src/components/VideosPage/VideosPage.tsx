@@ -38,7 +38,7 @@ interface VideoProps {
 export function VideosPage({ videos }: VideoProps): ReactElement {
   const router = useRouter()
 
-  const localVideos = videos.filter((video) => video !== null)
+  const localVideos = videos.filter((video) => video != null)
 
   const { data: languagesData, loading: languagesLoading } =
     useQuery<GetLanguages>(GET_LANGUAGES, {

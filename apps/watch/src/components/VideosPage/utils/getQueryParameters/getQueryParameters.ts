@@ -10,11 +10,12 @@ export function getQueryParameters(): VideoPageFilter {
   const searchString =
     typeof window !== 'undefined' ? window.location.search : undefined
 
+  function getQueryParamArray(param: string | null): string[] | undefined {
+    return param !== null ? [param] : undefined
+  }
+
   function getFilter(): VideoPageFilter {
     const query = new URLSearchParams(searchString?.split('?')[1])
-
-    const getQueryParamArray = (param: string | null): string[] | undefined =>
-      param != null ? [param] : undefined
 
     return {
       availableVariantLanguageIds: getQueryParamArray(query.get('languages')),
