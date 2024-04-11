@@ -7,7 +7,6 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
-import { journey } from '../../Settings/GoalDetails/data'
 
 import { SocialPreview } from './SocialPreview'
 
@@ -45,9 +44,19 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
+    journey: {}
+  }
+}
+
+export const Filled = {
+  ...Template,
+  args: {
     journey: {
-      ...journey,
-      title: 'Where did Jesus body go',
+      seoTitle: 'Where did Jesus body go',
+      seoDescription: 'This is a descripion that fills up the area used.',
+      describe: 'This is a description',
+      seoLink: 'a',
+      slug: 'exampleLinkExtension',
       primaryImageBlock: {
         id: 'image1.id',
         __typename: 'ImageBlock',
@@ -59,15 +68,6 @@ export const Default = {
         height: 1080,
         blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
       }
-    }
-  }
-}
-
-export const Empty = {
-  ...Template,
-  args: {
-    journey: {
-      ...journey
     }
   }
 }
