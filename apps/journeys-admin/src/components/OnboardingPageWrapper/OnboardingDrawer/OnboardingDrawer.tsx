@@ -85,7 +85,7 @@ export function OnboardingDrawer(): ReactElement {
                 sx={{
                   px: { xs: 6, md: 0 },
                   py: { xs: 2, md: 0 },
-                  height: { xs: 78, md: '100%' },
+                  height: { xs: 78, md: 352 },
                   width: { xs: '100%', md: 244 }
                 }}
               >
