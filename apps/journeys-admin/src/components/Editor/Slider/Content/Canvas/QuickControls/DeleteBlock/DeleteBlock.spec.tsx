@@ -437,6 +437,7 @@ describe('DeleteBlock', () => {
     )
     await waitFor(() => expect(deleteCardResultMock).not.toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
-    expect(getByText(`selectedBlock:`)).toBeInTheDocument()
+
+    expect(getByText(`selectedBlock: ${selectedStep.id}`)).toBeInTheDocument()
   })
 })
