@@ -48,12 +48,17 @@ export function useVideoSearch({
   const [isEnd, setIsEnd] = useState(false)
 
   useEffect(() => {
+    if (!checkFilterApplied(filter)) {
+      setIsEnd(true)
+      return
+    }
+
     if (currentPage === 0 && totalPages === 0) {
       setIsEnd(true)
     } else {
       setIsEnd(currentPage + 1 === totalPages)
     }
-  }, [currentPage, totalPages])
+  }, [currentPage, totalPages, filter])
 
   const handleSearch = useCallback(
     async (
@@ -108,6 +113,7 @@ export function useVideoSearch({
 
   const handleLoadMore = useCallback(async (): Promise<void> => {
     const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
+    console.log('isEnd', isEnd)
     if (isEnd || loading) return
     await handleSearch(
       {
