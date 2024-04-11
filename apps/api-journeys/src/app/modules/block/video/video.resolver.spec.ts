@@ -418,6 +418,7 @@ describe('VideoBlockResolver', () => {
     })
 
     it('should only allow one video block per parent', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       prismaService.block.findFirst.mockResolvedValueOnce(block)
 
       await expect(
