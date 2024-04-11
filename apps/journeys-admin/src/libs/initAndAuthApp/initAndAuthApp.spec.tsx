@@ -1,3 +1,4 @@
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { LDClient } from 'launchdarkly-node-server-sdk'
 import { User } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
@@ -60,7 +61,9 @@ describe('initAndAuthApp', () => {
 
     // mock ApolloClient
     apolloClient = { mutate: jest.fn() }
-    createApolloClientMock.mockReturnValueOnce(apolloClient)
+    createApolloClientMock.mockReturnValueOnce(
+      apolloClient as ApolloClient<NormalizedCacheObject>
+    )
 
     // mock checkConditionalRedirect
     checkConditionalRedirectMock.mockResolvedValueOnce({

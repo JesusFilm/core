@@ -32,7 +32,7 @@ export function LanguageFilterDialog({
   const { t } = useTranslation('apps-journeys-admin')
 
   const handleSubmit = (values: FormikValues): void => {
-    const ids = values.languages.map((language) => language.id)
+    const ids: string[] = values.languages.map((language) => language.id)
     onChange(ids)
     onClose()
   }

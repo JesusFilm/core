@@ -81,7 +81,7 @@ export function ImageBlockEditor({
     newValue: number
   ): void => {
     setTabValue(newValue)
-    const route = TabParams[newValue]
+    const route: string = TabParams[newValue]
     if (route != null) setRoute(route)
   }
 

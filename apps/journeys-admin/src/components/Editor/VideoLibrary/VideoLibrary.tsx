@@ -96,7 +96,7 @@ export function VideoLibrary({
     newValue: number
   ): void => {
     setActiveTab(newValue)
-    const route = TabParams[newValue]
+    const route: string = TabParams[newValue]
     if (route != null) setRoute(route)
   }
 

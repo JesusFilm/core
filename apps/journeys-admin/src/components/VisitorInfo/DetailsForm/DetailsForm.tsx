@@ -66,7 +66,7 @@ export function DetailsForm({ id }: DetailsFormProps): ReactElement {
     variables: { id }
   })
 
-  async function handleSubmit(values): Promise<void> {
+  async function handleSubmit(values: Record<string, unknown>): Promise<void> {
     const formattedValues = Object.keys(values).reduce((acc, key) => {
       acc[key] = values[key] === '' ? null : values[key]
       return acc

@@ -124,7 +124,7 @@ export function TrashedTemplateList({
     data?.journeys != null
       ? sortJourneys(
           data.journeys.filter(
-            (journey) => new Date(journey.trashedAt) > daysAgo
+            (journey) => new Date(journey.trashedAt as string) > daysAgo
           ),
           sortOrder
         )

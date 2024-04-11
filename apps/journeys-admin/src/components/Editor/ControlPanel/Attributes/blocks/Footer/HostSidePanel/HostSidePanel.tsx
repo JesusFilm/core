@@ -13,7 +13,10 @@ import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import UserProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
-import { Hosts_hosts as Host } from '../../../../../../../../__generated__/Hosts'
+import {
+  Hosts_hosts as Host,
+  Hosts_hosts
+} from '../../../../../../../../__generated__/Hosts'
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
 import { ContainedIconButton } from '../../../../../../ContainedIconButton'
@@ -88,7 +91,9 @@ export function HostSidePanel(): ReactElement {
   }
 
   const handleSelectHost = async (hostId: string): Promise<void> => {
-    setSelectedHost(teamHosts.hosts.find((host) => host.id === hostId))
+    setSelectedHost(
+      teamHosts.hosts.find((host) => host.id === hostId) as Hosts_hosts
+    )
     setOpenSelect(false)
   }
 
