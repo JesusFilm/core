@@ -1,4 +1,5 @@
 scalar Upload
+scalar JSON
 
 type Resource @key(fields: "id") {
   id: ID!
@@ -124,4 +125,9 @@ extend type Mutation {
   getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
   resourceBatchJob(input: BatchJobInput!): String
+  getSheetData(
+    nexusId: String!
+    tokenId: String!
+    spreadsheetId: String!
+  ): JSON!
 }
