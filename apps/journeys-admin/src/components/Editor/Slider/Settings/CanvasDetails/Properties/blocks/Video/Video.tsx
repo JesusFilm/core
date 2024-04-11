@@ -28,7 +28,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${id}-video-options`
     })
-  }, [id, videoId, dispatch, t])
+  }, [id, videoId, dispatch])
 
   return (
     <Box data-testid="VideoProperties">

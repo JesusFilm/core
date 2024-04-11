@@ -12,7 +12,7 @@ import { ImageLibrary } from '.'
 const ImageLibraryStory: Meta<typeof ImageLibrary> = {
   ...simpleComponentConfig,
   component: ImageLibrary,
-  title: 'Journeys-Admin/Editor/ImageLibrary'
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/ImageLibrary'
 }
 
 const ImageLibraryComponent = (args): ReactElement => {
