@@ -113,7 +113,6 @@ export function useVideoSearch({
 
   const handleLoadMore = useCallback(async (): Promise<void> => {
     const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
-    console.log('isEnd', isEnd)
     if (isEnd || loading) return
     await handleSearch(
       {
