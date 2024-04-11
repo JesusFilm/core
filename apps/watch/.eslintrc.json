@@ -1,49 +1,31 @@
 {
   "extends": [
     "plugin:@nx/react-typescript",
-    "../../.eslintrc.json",
     "next",
-    "next/core-web-vitals"
+    "next/core-web-vitals",
+    "../../.eslintrc.json"
   ],
-  "ignorePatterns": ["!**/*"],
+  "ignorePatterns": ["!**/*", ".next/**/*"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
-        "@next/next/no-html-link-for-pages": ["error", "apps/watch/pages/"]
+        "@next/next/no-html-link-for-pages": ["error", "apps/watch-new/pages"]
       }
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "parserOptions": {
-        "project": ["apps/watch/tsconfig.*?.json"]
-      },
-      "rules": {
-        "no-void": [
-          "error",
-          {
-            "allowAsStatement": true
-          }
-        ],
-        "@typescript-eslint/no-misused-promises": "off"
-      }
+      "rules": {}
     },
     {
       "files": ["*.js", "*.jsx"],
       "rules": {}
     },
     {
-      "files": ["*.tsx", "*.jsx"],
-      "rules": {}
-    },
-    {
-      "files": ["next-env.d.ts"],
-      "rules": {
-        "@typescript-eslint/triple-slash-reference": "off"
+      "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
+      "env": {
+        "jest": true
       }
     }
-  ],
-  "env": {
-    "jest": true
-  }
+  ]
 }

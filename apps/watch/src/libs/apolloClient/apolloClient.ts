@@ -1,31 +1,7 @@
-import {
-  ApolloClient,
-  NormalizedCacheObject,
-  createHttpLink,
-  from
-} from '@apollo/client'
-import { setContext } from '@apollo/client/link/context'
-import { RetryLink } from '@apollo/client/link/retry'
-import fetch from 'cross-fetch'
-import { useMemo } from 'react'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
+import { registerApolloClient } from '@apollo/experimental-nextjs-app-support/rsc'
 
-import { cache } from './cache'
-
-interface CreateApolloClientParams {
-  token?: string
-  initialState?: NormalizedCacheObject
-}
-
-export function createApolloClient({
-  token,
-  initialState
-}: CreateApolloClientParams = {}): ApolloClient<NormalizedCacheObject> {
-  const isSsrMode = typeof window === 'undefined'
-  const httpLink = createHttpLink({
-    uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
-    fetch
-  })
-
+export const { getClient } = registerApolloClient(() => {
   const authLink = setContext(async (_, { headers }) => {
     // If this is SSR, DO NOT PASS THE REQUEST HEADERS.
     // Just send along the authorization headers.
@@ -37,34 +13,14 @@ export function createApolloClient({
       }
     }
   })
-
-  const retryLink = new RetryLink({
-    delay: {
-      initial: 500,
-      max: Infinity,
-      jitter: true
-    },
-    attempts: {
-      max: 5
-    }
-  })
-
   return new ApolloClient({
-    ssrMode: typeof window === 'undefined',
-    link: from([retryLink, authLink, httpLink]),
-    cache: cache().restore(initialState ?? {}),
-    name: 'watch',
-    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-    connectToDevTools: true
+    cache: new InMemoryCache(),
+    link: new HttpLink({
+      // this needs to be an absolute url, as relative urls cannot be used in SSR
+      uri: 'http://example.com/api/graphql'
+      // you can disable result caching here if you want to
+      // (this does not work if you are rendering your page with `export const dynamic = "force-static"`)
+      // fetchOptions: { cache: "no-store" },
+    })
   })
-}
-
-export function useApolloClient({
-  token,
-  initialState
-}: CreateApolloClientParams = {}): ApolloClient<NormalizedCacheObject> {
-  return useMemo(
-    () => createApolloClient({ token, initialState }),
-    [token, initialState]
-  )
-}
+})

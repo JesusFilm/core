@@ -1,0 +1,187 @@
+{
+  "name": "watch-old",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/watch-old",
+  "projectType": "application",
+  "implicitDependencies": ["locales"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "cp -r libs/locales apps/watch-old/public",
+          "nx _build watch"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "cp -r libs/locales apps/watch-old/public",
+            "CI=true nx _build watch --prod"
+          ]
+        }
+      }
+    },
+    "_build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/watch-old"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "npx vercel build",
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/watch-old/.vercel-url",
+          "npx @datadog/datadog-ci sourcemaps upload dist/apps/watch-old/.next/static --service=watch --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/watch-old/.vercel-url)/_next/static/"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "npx vercel build --prod",
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/watch-old/.vercel-url",
+            "npx @datadog/datadog-ci sourcemaps upload dist/apps/watch-old/.next/static --service=watch --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://www.jesusfilm.org/watch/_next/static/"
+          ]
+        }
+      }
+    },
+    "vercel-alias": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx vercel alias set $(cat apps/watch-old/.vercel-url) watch-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "echo \"https://watch-$PR_NUMBER-jesusfilm.vercel.app\" > apps/watch-old/.vercel-url"
+        ],
+        "parallel": false
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "watch-old:_build",
+        "dev": true,
+        "hostname": "0.0.0.0",
+        "port": 4300
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "watch-old:_build:production",
+          "dev": false
+        },
+        "development": {
+          "buildTarget": "watch-old:_build:development",
+          "dev": true
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "serve-all": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "nf start"
+          },
+          {
+            "command": "nx serve watch"
+          }
+        ],
+        "parallel": true
+      }
+    },
+    "generate-test-data": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NEXT_PUBLIC_GATEWAY_URL=http://127.0.0.1:4000 npx ts-node apps/watch-old/src/components/Videos/testData.generator.ts"
+      }
+    },
+    "export": {
+      "executor": "@nx/next:export",
+      "options": {
+        "buildTarget": "watch-old:build:production"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/watch-old"],
+      "options": {
+        "jestConfig": "apps/watch-old/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/watch-old/tsconfig.json"
+      }
+    },
+    "demo": {
+      "executor": "@nx/storybook:storybook",
+      "options": {
+        "port": 4400,
+        "configDir": ".storybook"
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+          },
+          {
+            "command": "rm -rf apps/watch-old/__generated__"
+          },
+          {
+            "command": "npx apollo client:codegen --config apps/watch-old/apollo.config.js --target typescript --outputFlat apps/watch-old/__generated__"
+          }
+        ]
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_WATCH_TOKEN doppler secrets download --no-file --format=env-no-quotes --project watch > apps/watch-old/.env"
+          }
+        ]
+      }
+    },
+    "extract-translations": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx i18next --config apps/watch-old/i18next-parser.config.js"
+          }
+        ]
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/watch-old/cobertura-coverage.xml -F apps.watch"
+      }
+    }
+  },
+  "tags": []
+}
