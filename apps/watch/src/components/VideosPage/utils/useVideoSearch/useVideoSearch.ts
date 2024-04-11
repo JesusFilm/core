@@ -12,7 +12,9 @@ const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_KEY ?? '',
   process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
 )
-const index = searchClient.initIndex('video-variants')
+const index = searchClient.initIndex(
+  process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+)
 
 interface Hit {
   readonly objectID: string
