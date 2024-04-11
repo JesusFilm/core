@@ -331,9 +331,21 @@ export function JourneyFlow(): ReactElement {
   }
 
   const onConnectEnd: OnConnectEnd = (event) => {
+    let eventTarget = event.target
+
+    // Using MouseEvent since TouchEvent throws an error
+    if (!(event instanceof MouseEvent)) {
+      const touchEvent = event.changedTouches[0]
+
+      eventTarget = document.elementFromPoint(
+        touchEvent.clientX,
+        touchEvent.clientY
+      )
+    }
+
     if (
-      (event.target as HTMLElement | undefined)?.className ===
-        'react-flow__pane' &&
+      eventTarget instanceof HTMLElement &&
+      eventTarget?.classList.contains('react-flow__pane') &&
       previousNodeId != null
     ) {
       const nodeData = nodes.find((node) => node.id === previousNodeId)?.data
