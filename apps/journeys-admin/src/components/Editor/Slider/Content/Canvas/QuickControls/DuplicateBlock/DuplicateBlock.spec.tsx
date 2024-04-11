@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -19,6 +19,7 @@ import {
 } from '../../../../../../../../__generated__/globalTypes'
 
 import { BLOCK_DUPLICATE, DuplicateBlock } from './DuplicateBlock'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -129,7 +130,7 @@ describe('DuplicateBlock', () => {
     )
     const button = getByRole('button')
     expect(button).toContainElement(getByTestId('CopyLeftIcon'))
-    fireEvent.click(button)
+    userEvent.click(button)
     await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
   })
 
@@ -155,7 +156,7 @@ describe('DuplicateBlock', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('menuitem', { name: 'Duplicate Block' }))
+    userEvent.click(getByRole('menuitem', { name: 'Duplicate Block' }))
     await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
   })
 
@@ -183,7 +184,7 @@ describe('DuplicateBlock', () => {
     )
     const button = getByRole('button')
     expect(button).toContainElement(getByTestId('CopyLeftIcon'))
-    fireEvent.click(button)
+    userEvent.click(button)
     await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
   })
 
@@ -209,7 +210,7 @@ describe('DuplicateBlock', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
+    userEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
     await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
   })
 
@@ -239,7 +240,7 @@ describe('DuplicateBlock', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
+    userEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
     await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
     await waitFor(() => expect(handleClickMock).toHaveBeenCalled())
   })
@@ -342,7 +343,7 @@ describe('DuplicateBlock', () => {
     )
     const button = getByRole('button')
     expect(button).toContainElement(getByTestId('CopyLeftIcon'))
-    fireEvent.click(button)
+    userEvent.click(button)
     await waitFor(() =>
       expect(passedInStepDuplicateMock.result).toHaveBeenCalled()
     )

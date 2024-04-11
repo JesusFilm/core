@@ -67,6 +67,7 @@ export function SelectableWrapper({
         selectBlock(block)
       }
     } else {
+      e.stopPropagation()
       if (selectedBlock?.id === block.id && isInlineEditable) {
         editBlock()
       } else {

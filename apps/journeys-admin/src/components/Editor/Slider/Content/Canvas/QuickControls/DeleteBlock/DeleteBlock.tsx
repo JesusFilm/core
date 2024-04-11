@@ -133,7 +133,9 @@ export function DeleteBlock({
           aria-haspopup="true"
           aria-expanded="true"
           disabled={disableAction}
-          onClick={blockType === 'Card' ? handleOpenDialog : handleDeleteBlock}
+          onMouseUp={
+            blockType === 'Card' ? handleOpenDialog : handleDeleteBlock
+          }
         >
           <Trash2Icon />
         </IconButton>
@@ -144,7 +146,9 @@ export function DeleteBlock({
           })}
           icon={<Trash2Icon />}
           disabled={disableAction}
-          onClick={blockType === 'Card' ? handleOpenDialog : handleDeleteBlock}
+          onMouseUp={
+            blockType === 'Card' ? handleOpenDialog : handleDeleteBlock
+          }
         />
       )}
     </>

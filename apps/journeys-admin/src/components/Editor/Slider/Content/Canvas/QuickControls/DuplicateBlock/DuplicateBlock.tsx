@@ -139,7 +139,7 @@ export function DuplicateBlock({
           id={`duplicate-${blockType}-actions`}
           aria-label={`Duplicate ${blockType} Actions`}
           disabled={disableAction}
-          onClick={handleDuplicateBlock}
+          onMouseUp={handleDuplicateBlock}
           data-testid={`Duplicate-${blockType}`}
         >
           <CopyLeftIcon />
@@ -151,7 +151,7 @@ export function DuplicateBlock({
           })}
           icon={<CopyLeftIcon color="inherit" />}
           disabled={disableAction}
-          onClick={handleDuplicateBlock}
+          onMouseUp={handleDuplicateBlock}
           testId={`Duplicate-${blockType}`}
         />
       )}

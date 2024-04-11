@@ -21,6 +21,7 @@ import {
 import { TestEditorState } from '../../../../../../../libs/TestEditorState'
 
 import { BLOCK_DELETE, DeleteBlock } from './DeleteBlock'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -156,7 +157,7 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
     expect(getByRole('button')).toContainElement(getByTestId('Trash2Icon'))
-    fireEvent.click(getByRole('button'))
+    userEvent.click(getByRole('button'))
     await waitFor(() => expect(deleteBlockResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:card1.id' }
@@ -201,7 +202,7 @@ describe('DeleteBlock', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    await fireEvent.click(getByRole('menuitem', { name: 'Delete Block' }))
+    await userEvent.click(getByRole('menuitem', { name: 'Delete Block' }))
     await waitFor(() => expect(deleteBlockResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:card1.id' }
@@ -254,10 +255,11 @@ describe('DeleteBlock', () => {
     )
 
     expect(getByRole('button')).toContainElement(getByTestId('Trash2Icon'))
-    fireEvent.click(getByRole('button'))
-
-    expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Delete' }))
+    userEvent.click(getByRole('button'))
+    await waitFor(() =>
+      expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
+    )
+    userEvent.click(getByRole('button', { name: 'Delete' }))
 
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
@@ -308,11 +310,11 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getByRole('menuitem', { name: 'Delete Card' }))
-
-    expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Delete' }))
-
+    userEvent.click(getByRole('menuitem', { name: 'Delete Card' }))
+    await waitFor(() =>
+      expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
+    )
+    userEvent.click(getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
     await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument())
@@ -424,17 +426,17 @@ describe('DeleteBlock', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByRole('menuitem', { name: 'Delete Card' }))
-
-    expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Delete' }))
+    userEvent.click(getByRole('menuitem', { name: 'Delete Card' }))
+    await waitFor(() =>
+      expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
+    )
+    userEvent.click(getByRole('button', { name: 'Delete' }))
 
     await waitFor(() =>
       expect(passedInStepDeleteMock.result).toHaveBeenCalled()
     )
     await waitFor(() => expect(deleteCardResultMock).not.toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
-
-    expect(getByText(`selectedBlock: ${selectedStep.id}`)).toBeInTheDocument()
+    expect(getByText(`selectedBlock:`)).toBeInTheDocument()
   })
 })

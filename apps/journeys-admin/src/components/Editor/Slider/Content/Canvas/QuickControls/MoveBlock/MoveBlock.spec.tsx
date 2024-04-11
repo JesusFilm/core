@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -8,6 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 
 import { BLOCK_ORDER_UPDATE, MoveBlock } from '.'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -110,7 +111,7 @@ describe('MoveBlockButton', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'move-block-up' }))
+    userEvent.click(getByRole('button', { name: 'move-block-up' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -146,7 +147,7 @@ describe('MoveBlockButton', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'move-block-down' }))
+    userEvent.click(getByRole('button', { name: 'move-block-down' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
