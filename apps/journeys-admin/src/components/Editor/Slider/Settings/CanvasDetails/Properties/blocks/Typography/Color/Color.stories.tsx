@@ -8,7 +8,8 @@ import { Color } from '.'
 const ColorStory: Meta<typeof Color> = {
   ...simpleComponentConfig,
   component: Color,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Typography/Color'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Typography/Color'
 }
 
 export const Default: StoryObj<typeof Color> = {
