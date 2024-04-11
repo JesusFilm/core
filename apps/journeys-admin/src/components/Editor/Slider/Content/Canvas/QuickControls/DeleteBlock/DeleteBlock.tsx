@@ -88,8 +88,11 @@ export function DeleteBlock({
           })
           selected != null && dispatch(selected)
         }
-
         blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journey.id)
+        dispatch({
+          type: 'SetSelectedBlockByIdAction',
+          selectedBlockId: selectedBlock?.parentBlockId ?? undefined
+        })
       }
     })
 
