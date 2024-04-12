@@ -10,9 +10,10 @@ export class AlgoliaService {
   async syncVideosToAlgolia(): Promise<void> {
     const apiKey = process.env.ALGOLIA_API_KEY ?? ''
     const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
+    const appIndex = process.env.ALGOLIA_INDEX ?? ''
 
-    if (apiKey === '' || appId === '')
-      throw new Error('Algolia API key or app ID not set')
+    if (apiKey === '' || appId === '' || appIndex === '')
+      throw new Error('Algolia API key, app ID, or index not set')
 
     const client = algoliasearch(appId, apiKey)
     console.log('syncing videos to algolia...')
@@ -55,7 +56,7 @@ export class AlgoliaService {
         }
       })
 
-      const index = client.initIndex('video-variants')
+      const index = client.initIndex(appIndex)
       await index.saveObjects(transformedVideos).wait()
 
       offset += 1000

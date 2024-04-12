@@ -3,6 +3,7 @@ locals {
   environment_variables = [
     "ALGOLIA_APPLICATION_ID",
     "ALGOLIA_API_KEY",
+    "ALGOLIA_INDEX",
     "ARCLIGHT_API_KEY",
     "ARCLIGHT_V3_URL",
     "CROWDIN_API_KEY",
