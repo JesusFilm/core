@@ -5,7 +5,7 @@ import { Queue } from 'bullmq'
 @Injectable()
 export class AlgoliaQueue implements OnModuleInit {
   constructor(
-    @InjectQueue('api-videos-aloglia') private readonly algoliaQueue: Queue
+    @InjectQueue('api-videos-algolia') private readonly algoliaQueue: Queue
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -21,7 +21,7 @@ export class AlgoliaQueue implements OnModuleInit {
     )
       return
 
-    const name = 'api-videos-aloglia'
+    const name = 'api-videos-algolia'
     const repeatableJobs = await this.algoliaQueue.getRepeatableJobs()
 
     for (const job of repeatableJobs) {
