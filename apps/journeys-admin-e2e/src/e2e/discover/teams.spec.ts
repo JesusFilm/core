@@ -12,7 +12,7 @@ test.describe('Teams', () => {
     await loginPage.login()
   })
 
-/*
+  /*
 1. Create a new team
 2. Create a journey (just one card) for newly created team
 3. Rename the team
