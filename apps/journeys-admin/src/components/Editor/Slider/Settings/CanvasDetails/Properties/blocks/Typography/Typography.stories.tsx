@@ -7,13 +7,13 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
   TypographyAlign,
+  TypographyColor,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 import { Drawer } from '../../../../Drawer'
 
 import { Typography } from './Typography'
-import { TypographyColor } from 'libs/journeys/ui/__generated__/globalTypes'
 
 const Demo: Meta<typeof Typography> = {
   ...journeysAdminConfig,
