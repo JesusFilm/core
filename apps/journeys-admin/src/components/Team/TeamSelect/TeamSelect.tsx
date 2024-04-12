@@ -62,7 +62,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         direction="row"
         spacing={2}
         alignItems="center"
-        sx={{ overflow: 'hidden', flexGrow: 1 }}
+        sx={{ overflow: 'hidden', flexGrow: 0 }}
         ref={anchorRef}
         data-testid="TeamSelect"
       >
