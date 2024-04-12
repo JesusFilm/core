@@ -84,6 +84,7 @@ const Template: StoryObj<typeof OnboardingPageWrapper> = {
 export const Default = {
   ...Template,
   args: {
+    title: 'Title',
     emailSubject: 'a question about onboarding',
     children: (
       <Box
@@ -102,9 +103,10 @@ export const Default = {
   }
 }
 
-export const Completed = {
+export const WithTemplate = {
   ...Template,
   args: {
+    title: 'Title',
     emailSubject: 'a question about onboarding',
     children: (
       <Box
@@ -128,7 +130,7 @@ export const Completed = {
     nextjs: {
       router: {
         query: {
-          redirect: '/templates/template-id/?newAccount=true'
+          redirect: '/templates/template-id'
         }
       }
     }
