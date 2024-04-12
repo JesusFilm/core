@@ -6,12 +6,12 @@ import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import { useTranslation } from '../../../libs/il8n/client'
 import { useVideo } from '../../../libs/videoContext'
 
 const DynamicAudioLanguageDialog = dynamic<{
@@ -27,12 +27,14 @@ const DynamicAudioLanguageDialog = dynamic<{
 
 interface AudioLanguageButtonProps {
   componentVariant: 'button' | 'icon'
+  languageId: string
 }
 
 export function AudioLanguageButton({
-  componentVariant
+  componentVariant,
+  languageId
 }: AudioLanguageButtonProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
+  const { t } = useTranslation(languageId, 'apps-watch')
   const { variant, variantLanguagesCount } = useVideo()
   const [openAudioLanguageDialog, setOpenAudioLanguageDialog] = useState(false)
   const [loadAudioLanguageDialog, setLoadAudioLanguageDialog] = useState(false)

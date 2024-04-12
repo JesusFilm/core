@@ -8,13 +8,13 @@ import { SxProps, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { useTranslation } from '../../libs/il8n/client'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 
 interface VideoCardProps {
@@ -24,6 +24,7 @@ interface VideoCardProps {
   index?: number
   active?: boolean
   imageSx?: SxProps
+  languageId: string
 }
 
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
@@ -65,7 +66,8 @@ export function VideoCard({
   variant = 'expanded',
   index,
   active,
-  imageSx
+  imageSx,
+  languageId
 }: VideoCardProps): ReactElement {
   const { label, color, childCountLabel } = getLabelDetails(
     video?.label,
@@ -73,7 +75,7 @@ export function VideoCard({
   )
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
-  const { t } = useTranslation('apps-watch')
+  const { t } = useTranslation(languageId, 'apps-watch')
   return (
     <NextLink href={href} passHref legacyBehavior>
       <Link

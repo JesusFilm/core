@@ -2,16 +2,20 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+
+import { useTranslation } from '../../libs/il8n/client'
 
 import { FooterLink } from './FooterLink'
 import { FooterLinks } from './FooterLinks'
 import { FooterLogos } from './FooterLogos'
 import { FooterSocials } from './FooterSocials'
 
-export function Footer(): ReactElement {
-  const { t } = useTranslation('apps-watch')
+interface FooterProps {
+  languageId: string
+}
+export function Footer({ languageId }: FooterProps): ReactElement {
+  const { t } = useTranslation(languageId, 'apps-watch')
   return (
     <>
       <Divider sx={{ height: 2 }} />
@@ -24,7 +28,7 @@ export function Footer(): ReactElement {
         {/* desktop view */}
         <Stack spacing={21} sx={{ display: { xs: 'none', sm: 'block' } }}>
           <Stack direction="row" justifyContent="space-between">
-            <FooterLinks />
+            <FooterLinks languageId={languageId} />
             <Stack width="220px" spacing={2}>
               <FooterLogos />
               <FooterSocials />

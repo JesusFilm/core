@@ -7,11 +7,11 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
 
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+import { useTranslation } from '../../../libs/il8n/client'
 import { useVideo } from '../../../libs/videoContext'
 import { ShareButton } from '../../ShareButton'
 import { DownloadButton } from '../DownloadButton'
@@ -22,6 +22,7 @@ interface VideoHeadingProps {
   onShareClick: () => void
   onDownloadClick: () => void
   videos?: VideoChildFields[]
+  languageId: string
 }
 
 export function VideoHeading({
@@ -29,10 +30,11 @@ export function VideoHeading({
   loading,
   onShareClick,
   onDownloadClick,
-  videos = []
+  videos = [],
+  languageId
 }: VideoHeadingProps): ReactElement {
   const { title, id, container } = useVideo()
-  const { t } = useTranslation('apps-watch')
+  const { t } = useTranslation(languageId, 'apps-watch')
   const activeVideoIndex = useMemo(() => {
     return container != null
       ? videos.findIndex((child) => child.id === id) + 1
@@ -57,8 +59,16 @@ export function VideoHeading({
                 sx={{ display: { md: 'none' } }}
                 spacing={2}
               >
-                <ShareButton variant="icon" onClick={onShareClick} />
-                <DownloadButton variant="icon" onClick={onDownloadClick} />
+                <ShareButton
+                  variant="icon"
+                  languageId={languageId}
+                  onClick={onShareClick}
+                />
+                <DownloadButton
+                  variant="icon"
+                  languageId={languageId}
+                  onClick={onDownloadClick}
+                />
               </Stack>
             </Stack>
           </Container>

@@ -10,7 +10,6 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ComponentProps, ReactElement, SyntheticEvent, useState } from 'react'
 
@@ -19,10 +18,13 @@ import FacebookLogo from '@core/shared/ui/icons/FacebookLogo'
 import TwitterLogo from '@core/shared/ui/icons/TwitterLogo'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
+import { useTranslation } from '../../libs/il8n/client'
 import { useVideo } from '../../libs/videoContext'
 
 interface ShareDialogProps
-  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
+  languageId: string
+}
 
 export function ShareDialog({
   ...dialogProps
@@ -32,7 +34,7 @@ export function ShareDialog({
   const [value, setValue] = useState(0)
   const theme = useTheme()
 
-  const { t } = useTranslation('apps-watch')
+  const { t } = useTranslation(dialogProps.languageId, 'apps-watch')
 
   const handleChange = (e: SyntheticEvent, newValue: number): void => {
     setValue(newValue)
@@ -91,7 +93,7 @@ export function ShareDialog({
         variant="contained"
         size="small"
         startIcon={<ContentCopyIcon />}
-        onClick={() => void handleShareLinkClick()}
+        onClick={handleShareLinkClick}
         sx={{ alignSelf: 'flex-end' }}
       >
         {t('Copy Link')}

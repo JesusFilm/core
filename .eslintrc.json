@@ -59,8 +59,7 @@
           "lodash",
           "@mui/material",
           "@mui/system",
-          "@mui/icons-material",
-          "react-i18next"
+          "@mui/icons-material"
         ],
         "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*", "*.mock"]
       }

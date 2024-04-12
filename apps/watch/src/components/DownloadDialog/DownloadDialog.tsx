@@ -15,19 +15,21 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useEffect, useState } from 'react'
 import useDownloader from 'react-use-downloader'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { useTranslation } from '../../libs/il8n/client'
 import { useVideo } from '../../libs/videoContext'
 
 import { TermsOfUseDialog } from './TermsOfUseDialog'
 
 interface DownloadDialogProps
-  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
+  languageId: string
+}
 
 function formatBytes(bytes: number, decimals = 2): string {
   if ((bytes ?? 0) <= 0) return '0 Bytes'
@@ -43,13 +45,14 @@ function formatBytes(bytes: number, decimals = 2): string {
 
 export function DownloadDialog({
   open,
-  onClose
+  onClose,
+  languageId
 }: DownloadDialogProps): ReactElement {
   const theme = useTheme()
   const { title, image, imageAlt, variant } = useVideo()
   const { percentage, download, cancel, isInProgress } = useDownloader()
   const [openTerms, setOpenTerms] = useState<boolean>(false)
-  const { t } = useTranslation('apps-watch')
+  const { t } = useTranslation(languageId, 'apps-watch')
   const downloads = variant?.downloads ?? []
   const language = variant?.language ?? {
     __typename: 'Language',

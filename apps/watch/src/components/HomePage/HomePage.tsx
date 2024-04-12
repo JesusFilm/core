@@ -4,13 +4,13 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { useTranslation } from '../../libs/il8n/client'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 
@@ -19,10 +19,11 @@ import { SeeAllVideos } from './SeeAllVideos'
 
 interface HomePageProps {
   videos: VideoChildFields[]
+  languageId: string
 }
 
-export function HomePage({ videos }: HomePageProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
+export function HomePage({ videos, languageId }: HomePageProps): ReactElement {
+  const { t } = useTranslation(languageId, 'apps-watch')
 
   return (
     <PageWrapper hero={<HomeHero />}>

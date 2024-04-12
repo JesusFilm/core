@@ -1,12 +1,15 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useTranslation } from '../../../libs/il8n/client'
 import { FooterLink } from '../FooterLink'
 
-export function FooterLinks(): ReactElement {
-  const { t } = useTranslation('apps-watch')
+interface FooterLinksProps {
+  languageId: string
+}
+export function FooterLinks({ languageId }: FooterLinksProps): ReactElement {
+  const { t } = useTranslation(languageId, 'apps-watch')
   return (
     <Stack direction="row" width="100%" spacing={20} data-testid="FooterLinks">
       <Stack direction="column" spacing={4}>
