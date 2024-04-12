@@ -3,7 +3,7 @@ import { Job } from 'bullmq'
 
 import { AlgoliaService } from './algolia.service'
 
-@Processor('api-videos-aloglia')
+@Processor('api-videos-algolia')
 export class AlgoliaConsumer extends WorkerHost {
   constructor(private readonly algoliaService: AlgoliaService) {
     super()

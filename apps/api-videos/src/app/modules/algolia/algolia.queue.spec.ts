@@ -21,12 +21,12 @@ describe('AlgoliaQueue', () => {
       providers: [
         AlgoliaQueue,
         {
-          provide: getQueueToken('api-videos-aloglia'),
+          provide: getQueueToken('api-videos-algolia'),
           useValue: providerQueue
         }
       ]
     })
-      .overrideProvider(getQueueToken('api-videos-aloglia'))
+      .overrideProvider(getQueueToken('api-videos-algolia'))
       .useValue(providerQueue)
       .compile()
 
@@ -48,7 +48,7 @@ describe('AlgoliaQueue', () => {
       process.env.NODE_ENV = 'production'
       providerQueue.getRepeatableJobs = jest
         .fn()
-        .mockResolvedValueOnce([{ name: 'api-videos-aloglia', key: 'key' }])
+        .mockResolvedValueOnce([{ name: 'api-videos-algolia', key: 'key' }])
       await queue.onModuleInit()
 
       expect(providerQueue.removeRepeatableByKey).toHaveBeenCalledWith('key')
@@ -64,7 +64,7 @@ describe('AlgoliaQueue', () => {
       await queue.onModuleInit()
 
       expect(providerQueue.add).toHaveBeenCalledWith(
-        'api-videos-aloglia',
+        'api-videos-algolia',
         {},
         {
           repeat: {

@@ -8,7 +8,7 @@ import { AlgoliaQueue } from './algolia.queue'
 import { AlgoliaService } from './algolia.service'
 
 @Module({
-  imports: [BullModule.registerQueue({ name: 'api-videos-aloglia' })],
+  imports: [BullModule.registerQueue({ name: 'api-videos-algolia' })],
   providers: [AlgoliaConsumer, AlgoliaQueue, AlgoliaService, PrismaService]
 })
 export class AlgoliaModule {}
