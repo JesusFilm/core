@@ -19,7 +19,7 @@ import { MainLayout } from '../../src/components/MainLayout'
 import { UploadConfirmationModal } from '../../src/components/UploadConfirmationModal'
 import { getOrigin } from '../../utils/getOrigin'
 
-const GET_GOOGLE_ACCESS_TOKEN = gql`
+export const GET_GOOGLE_ACCESS_TOKEN = gql`
   mutation getGoogleAccessToken($input: GoogleAuthInput!) {
     getGoogleAccessToken(input: $input) {
       id

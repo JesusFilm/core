@@ -1,12 +1,16 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import { useRouter } from 'next/router'
+import { useGoogleLogin } from '@react-oauth/google'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
+import useDrivePicker from 'react-google-drive-picker'
+import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
 
+import { getGoogleAccessToken } from '../../__generated__/getGoogleAccessToken'
 import { Resource, Resource_resource } from '../../__generated__/Resource'
 import { ResourceDelete } from '../../__generated__/ResourceDelete'
 import { Resources, Resources_resources } from '../../__generated__/Resources'
@@ -15,6 +19,9 @@ import { DeleteModal } from '../../src/components/DeleteModal'
 import { MainLayout } from '../../src/components/MainLayout'
 import { ResourcesTable } from '../../src/components/ResourcesTable'
 import { UpdateResourceModal } from '../../src/components/UpdateResourceModal'
+import { getOrigin } from '../../utils/getOrigin'
+
+import { GET_GOOGLE_ACCESS_TOKEN } from './import-youtube-template'
 
 export const GET_RESOURCES = gql`
   query Resources($where: ResourceFilter) {
@@ -90,6 +97,11 @@ const ResourcesPage: FC = () => {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation()
+  const [openPicker] = useDrivePicker()
+  const [googleAccessToken, setGoogleAccessToken] = useState('')
+  const [googleAccessTokenId, setGoogleAccessTokenId] = useState('')
+  const [selectedDirectory, setSelectedDirectory] =
+    useState<CallbackDoc | null>(null)
 
   const { data, loading } = useQuery<Resources>(GET_RESOURCES, {
     variables: {
@@ -121,6 +133,46 @@ const ResourcesPage: FC = () => {
 
   const [resourceUpdate] = useMutation<ResourceUpdate>(RESOURCE_UPDATE)
   const [resourceDelete] = useMutation<ResourceDelete>(RESOURCE_DELETE)
+  const [getGoogleAccessToken] = useMutation<getGoogleAccessToken>(
+    GET_GOOGLE_ACCESS_TOKEN
+  )
+
+  const googleLogin = useGoogleLogin({
+    flow: 'auth-code',
+    scope:
+      'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/spreadsheets.readonly',
+    onSuccess: async ({ code }) => {
+      void getGoogleAccessToken({
+        variables: {
+          input: {
+            url: getOrigin(),
+            authCode: code
+          }
+        },
+        onCompleted: (data) => {
+          setGoogleAccessTokenId(data.getGoogleAccessToken.id)
+          setGoogleAccessToken(data.getGoogleAccessToken.accessToken)
+        }
+      })
+    }
+  })
+
+  const directoryPicker = function (): void {
+    openPicker({
+      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
+      developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
+      token: googleAccessToken ?? '',
+      viewId: 'FOLDERS',
+      setSelectFolderEnabled: true,
+      callbackFunction: (data) => {
+        if (data.action === 'picked') {
+          setSelectedDirectory(data.docs[0])
+
+          // TODO: send to backend the access token id and the selected directory id
+        }
+      }
+    })
+  }
 
   return (
     <MainLayout title="Resources">
@@ -140,6 +192,18 @@ const ResourcesPage: FC = () => {
             }}
           >
             {t('Import from Youtube Template')}
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              if (googleAccessToken === '') {
+                googleLogin()
+              } else {
+                directoryPicker()
+              }
+            }}
+          >
+            Generate Template
           </Button>
         </Stack>
         <ResourcesTable

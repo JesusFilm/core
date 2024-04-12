@@ -22,7 +22,13 @@ export const Modal: FC<ModalProps> = ({
   actions
 }) => {
   return (
-    <MuiModal open={open} onClose={handleClose}>
+    <MuiModal
+      open={open}
+      onClose={handleClose}
+      sx={{
+        zIndex: 1000
+      }}
+    >
       <Stack
         sx={{
           width: '600px',
