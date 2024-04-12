@@ -44,6 +44,8 @@ describe('AlgoliaQueue', () => {
     it('should remove existing repeatable job', async () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
+      process.env.ALGOLIA_INDEX = 'index'
+      process.env.NODE_ENV = 'production'
       providerQueue.getRepeatableJobs = jest
         .fn()
         .mockResolvedValueOnce([{ name: 'api-videos-aloglia', key: 'key' }])
@@ -55,6 +57,8 @@ describe('AlgoliaQueue', () => {
     it('should schedule a new job', async () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
+      process.env.ALGOLIA_INDEX = 'index'
+      process.env.NODE_ENV = 'production'
       providerQueue.getRepeatableJobs = jest.fn().mockResolvedValueOnce([])
       providerQueue.add = jest.fn()
       await queue.onModuleInit()

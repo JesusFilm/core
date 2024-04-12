@@ -69,6 +69,7 @@ describe('AlgoliaService', () => {
     it('should sync videos to Algolia', async () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
+      process.env.ALGOLIA_INDEX = 'video-variants'
       prismaService.videoVariant.findMany
         .mockResolvedValue([])
         .mockResolvedValueOnce([
