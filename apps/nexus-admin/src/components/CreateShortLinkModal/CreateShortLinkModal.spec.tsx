@@ -1,23 +1,21 @@
 import { render } from '@testing-library/react'
 
-import { CreateChannelModal } from './CreateShortLinkModal'
+import { CreateShortLinkModal } from './CreateShortLinkModal'
 
-describe('CreateChannelModal', () => {
+describe('CreateShortLinkModal', () => {
   it('renders correctly', async () => {
     let isOpen = true
 
     const { getByText } = render(
-      <CreateChannelModal
+      <CreateShortLinkModal
         open={isOpen}
         onClose={() => {
           isOpen = false
         }}
-        onCreate={(data) => {
-          console.log(data)
-        }}
+        refetch={() => console.log('Refetching...')}
       />
     )
 
-    expect(getByText(/connect channel/i)).toBeInTheDocument()
+    expect(getByText(/create short link/i)).toBeInTheDocument()
   })
 })
