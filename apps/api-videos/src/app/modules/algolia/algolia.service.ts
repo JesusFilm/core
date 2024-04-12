@@ -13,7 +13,7 @@ export class AlgoliaService {
     const appIndex = process.env.ALGOLIA_INDEX ?? ''
 
     if (apiKey === '' || appId === '' || appIndex === '')
-      throw new Error('Algolia API key, app ID, or index not set')
+      throw new Error('algolia environment variables not set')
 
     const client = algoliasearch(appId, apiKey)
     console.log('syncing videos to algolia...')
