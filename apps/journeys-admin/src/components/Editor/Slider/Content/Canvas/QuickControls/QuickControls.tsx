@@ -4,6 +4,8 @@ import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { DeleteBlock } from './DeleteBlock'
@@ -11,6 +13,11 @@ import { DuplicateBlock } from './DuplicateBlock'
 import { MoveBlock } from './MoveBlock'
 
 export function QuickControls({ open, anchorEl }): ReactElement {
+  const {
+    state: { selectedBlock }
+  } = useEditor()
+  const isVideoBlock = selectedBlock?.__typename === 'VideoBlock'
+
   return (
     <ThemeProvider nested>
       <Popper
@@ -21,6 +28,15 @@ export function QuickControls({ open, anchorEl }): ReactElement {
           zIndex: (theme) => theme.zIndex.modal + 1
         }}
         transition
+        data-testid="QuickControls"
+        modifiers={[
+          {
+            name: 'offset',
+            options: {
+              offset: () => [0, isVideoBlock ? -70 : 0]
+            }
+          }
+        ]}
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>
