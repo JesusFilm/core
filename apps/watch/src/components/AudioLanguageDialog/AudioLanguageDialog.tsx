@@ -62,12 +62,12 @@ export function AudioLanguageDialog({
       )
     }
 
-    onClose?.()
+    void onClose?.()
   }
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
     return () => {
-      onClose?.()
+      void onClose?.()
       // wait for dialog animation to complete
       setTimeout(
         () =>

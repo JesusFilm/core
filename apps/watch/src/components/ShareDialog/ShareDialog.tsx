@@ -9,7 +9,7 @@ import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
+import { usePathname } from 'next/navigation'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ComponentProps, ReactElement, SyntheticEvent, useState } from 'react'
@@ -31,7 +31,6 @@ export function ShareDialog({
   const { description, snippet, image, title, variant } = useVideo()
   const [value, setValue] = useState(0)
   const theme = useTheme()
-  const router = useRouter()
 
   const { t } = useTranslation('apps-watch')
 
@@ -46,12 +45,13 @@ export function ShareDialog({
       ? snippet[0].value
       : ''
 
+  const path = usePathname()
   const shareLink =
-    router?.query != null
+    path != null
       ? `${
           process.env.NEXT_PUBLIC_WATCH_URL ??
           'https://watch-jesusfilm.vercel.app'
-        }/${Object.values(router?.query).join('/')}`.trim()
+        }/${path}`.trim()
       : ''
 
   const handleShareLinkClick = async (): Promise<void> => {
@@ -91,7 +91,7 @@ export function ShareDialog({
         variant="contained"
         size="small"
         startIcon={<ContentCopyIcon />}
-        onClick={handleShareLinkClick}
+        onClick={() => void handleShareLinkClick()}
         sx={{ alignSelf: 'flex-end' }}
       >
         {t('Copy Link')}
@@ -195,7 +195,7 @@ export function ShareDialog({
                     variant="contained"
                     size="small"
                     startIcon={<ContentCopyIcon />}
-                    onClick={handleEmbedCodeClick}
+                    onClick={() => void handleEmbedCodeClick()}
                     sx={{ alignSelf: 'flex-end' }}
                   >
                     {t('Copy Code')}

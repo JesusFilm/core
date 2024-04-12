@@ -6,7 +6,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 
 interface TermsOfUseDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
-  onSubmit: () => void
+  onSubmit: () => Promise<void> | void
 }
 
 export function TermsOfUseDialog({

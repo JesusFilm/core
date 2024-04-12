@@ -4,10 +4,10 @@ import { ReactElement } from 'react'
 import {
   GetHomeVideos,
   GetHomeVideos_videos as Video
-} from '../../__generated__/GetHomeVideos'
-import { HomePage } from '../components/HomePage'
-import { getApolloClient } from '../libs/apolloClient/apolloClient'
-import { VIDEO_CHILD_FIELDS } from '../libs/videoChildFields'
+} from '../../../__generated__/GetHomeVideos'
+import { HomePage } from '../../components/HomePage'
+import { getApolloClient } from '../../libs/apolloClient/apolloClient'
+import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
 
 export const GET_HOME_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}

@@ -29,7 +29,7 @@ import { TermsOfUseDialog } from './TermsOfUseDialog'
 interface DownloadDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
 
-function formatBytes(bytes, decimals = 2): string {
+function formatBytes(bytes: number, decimals = 2): string {
   if ((bytes ?? 0) <= 0) return '0 Bytes'
 
   const k = 1024
@@ -60,7 +60,7 @@ export function DownloadDialog({
 
   useEffect(() => {
     if (percentage === 100) {
-      onClose?.()
+      void onClose?.()
     }
   }, [percentage, onClose])
 
@@ -74,7 +74,7 @@ export function DownloadDialog({
       open={open}
       onClose={() => {
         cancel()
-        onClose?.()
+        void onClose?.()
       }}
       dialogTitle={{
         title: 'Download Video',

@@ -11,7 +11,7 @@ import { ReactElement, ReactNode } from 'react'
 
 interface DialogProps {
   open?: boolean
-  onClose?: () => void
+  onClose?: () => void | Promise<void>
   dialogTitle?: DialogTitle
   dialogAction?: DialogAction
   /** Prefer `dialogAction` when child elements are buttons */
@@ -26,7 +26,7 @@ interface DialogProps {
 }
 
 interface DialogAction {
-  onSubmit: () => void
+  onSubmit: () => void | Promise<void>
   submitLabel?: string
   closeLabel?: string
 }

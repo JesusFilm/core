@@ -3,9 +3,9 @@ import { ReactElement } from 'react'
 import {
   GetHomeVideos,
   GetHomeVideos_videos as Video
-} from '../../../__generated__/GetHomeVideos'
-import { Videos } from '../../components/VideosPage'
-import { getApolloClient } from '../../libs/apolloClient/apolloClient'
+} from '../../../../__generated__/GetHomeVideos'
+import { Videos } from '../../../components/VideosPage'
+import { getApolloClient } from '../../../libs/apolloClient/apolloClient'
 import { GET_HOME_VIDEOS } from '../page'
 
 const videoIds = [
