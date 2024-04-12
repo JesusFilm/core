@@ -12,7 +12,9 @@ acceptLanguage.languages(languages)
 
 export const config = {
   // matcher: '/:lng*'
-  matcher: ['/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)']
+  matcher: [
+    '/watch/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)'
+  ]
 }
 
 export function middleware(req: NextRequest): NextResponse {
@@ -28,17 +30,17 @@ export function middleware(req: NextRequest): NextResponse {
   // Redirect if lng in path is not supported
   if (
     !languages.some((loc) => req.nextUrl.pathname.startsWith(`/${loc}`)) &&
-    !req.nextUrl.pathname.startsWith('/_next')
+    !req.nextUrl.pathname.startsWith('/watch/_next')
   ) {
     return NextResponse.redirect(
-      new URL(`/${languageId}${req.nextUrl.pathname}`, req.url)
+      new URL(`/watch/${languageId}${req.nextUrl.pathname}`, req.url)
     )
   }
 
   if (req.headers.has('referer')) {
     const refererUrl = new URL(req.headers.get('referer') as string)
     const lngInReferer = languages.find((l) =>
-      refererUrl.pathname.startsWith(`/${l}`)
+      refererUrl.pathname.startsWith(`/watch/${l}`)
     )
     const response = NextResponse.next()
     if (lngInReferer != null) response.cookies.set(cookieName, lngInReferer)
