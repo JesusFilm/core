@@ -1,5 +1,5 @@
-import { MockedProvider } from '@apollo/client/testing'
-import MuiDrawer from '@mui/material/Drawer'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
@@ -10,13 +10,17 @@ import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/BlockFields'
-import { GetVideoVariantLanguages_video } from '../../../../../../../__generated__/GetVideoVariantLanguages'
+import { GetVideos } from '../../../../../../../__generated__/GetVideos'
+import {
+  GetVideoVariantLanguages,
+  GetVideoVariantLanguages_video
+} from '../../../../../../../__generated__/GetVideoVariantLanguages'
 import {
   ThemeMode,
   VideoBlockSource
 } from '../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
-import { ThemeProvider } from '../../../../../ThemeProvider'
+import { Drawer } from '../Drawer'
 import { videos } from '../VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEOS } from '../VideoLibrary/VideoFromLocal/VideoFromLocal'
 
@@ -26,7 +30,7 @@ import { VideoBlockEditor } from './VideoBlockEditor'
 const BackgroundMediaStory: Meta<typeof VideoBlockEditor> = {
   ...journeysAdminConfig,
   component: VideoBlockEditor,
-  title: 'Journeys-Admin/Editor/VideoBlockEditor',
+  title: 'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoBlockEditor',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -158,78 +162,50 @@ const videoLanguages: GetVideoVariantLanguages_video = {
   ]
 }
 
+const mockGetVideos: MockedResponse<GetVideos> = {
+  request: {
+    query: GET_VIDEOS,
+    variables: {
+      offset: 0,
+      limit: 5,
+      where: {
+        availableVariantLanguageIds: ['529'],
+        title: null
+      }
+    }
+  },
+  result: {
+    data: {
+      videos
+    }
+  }
+}
+
+const mockGetVideoVariantLanguages: MockedResponse<GetVideoVariantLanguages> = {
+  request: {
+    query: GET_VIDEO_VARIANT_LANGUAGES,
+    variables: {
+      id: videoLanguages.id
+    }
+  },
+  result: {
+    data: {
+      video: videoLanguages
+    }
+  }
+}
+
 const Template: StoryObj<typeof VideoBlockEditor> = {
-  render: ({ ...args }) => (
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: GET_VIDEOS,
-            variables: {
-              offset: 0,
-              limit: 5,
-              where: {
-                availableVariantLanguageIds: ['529'],
-                title: null
-              }
-            }
-          },
-          result: {
-            data: {
-              videos
-            }
-          }
-        },
-        {
-          request: {
-            query: GET_VIDEO_VARIANT_LANGUAGES,
-            variables: {
-              id: videoLanguages.id
-            }
-          },
-          result: {
-            data: {
-              video: videoLanguages
-            }
-          }
-        }
-      ]}
-    >
-      <ThemeProvider>
-        <MuiDrawer
-          anchor="right"
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: 328
-            }
-          }}
-          ModalProps={{
-            keepMounted: true
-          }}
-          open
-        >
+  render: (args) => (
+    <MockedProvider mocks={[mockGetVideos, mockGetVideoVariantLanguages]}>
+      <Drawer title="Video Properties">
+        <Box sx={{ pt: 4 }}>
           <VideoBlockEditor
             selectedBlock={args.selectedBlock}
             onChange={onChange}
           />
-        </MuiDrawer>
-        <MuiDrawer
-          anchor="bottom"
-          variant="temporary"
-          open
-          sx={{
-            display: { xs: 'block', sm: 'none' }
-          }}
-        >
-          <VideoBlockEditor
-            selectedBlock={args.selectedBlock}
-            onChange={onChange}
-          />
-        </MuiDrawer>
-      </ThemeProvider>
+        </Box>
+      </Drawer>
     </MockedProvider>
   )
 }
@@ -259,7 +235,6 @@ export const YouTube = {
       children: [posterYouTube]
     }
   },
-
   name: 'YouTube'
 }
 

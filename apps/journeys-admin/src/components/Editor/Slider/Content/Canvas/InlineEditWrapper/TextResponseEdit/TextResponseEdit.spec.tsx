@@ -189,7 +189,7 @@ describe('TextResponseEdit', () => {
             }}
           >
             <EditorProvider>
-              <h1 className="swiper-container">Other Content</h1>
+              <h1 className="EditorCanvas">Other Content</h1>
               <iframe>
                 <TextResponseEdit {...props} />
               </iframe>

@@ -1,7 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { Form } from '@formium/client'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -48,11 +47,7 @@ export function OnboardingForm({
   }
 
   return (
-    <Stack justifyContent="center" alignItems="center" spacing={7}>
-      <Stack alignItems="center">
-        <Typography variant="h4">{t('A Few Questions')}</Typography>
-        <Typography variant="body1">{t('Help us serve you better')}</Typography>
-      </Stack>
+    <Stack justifyContent="center" spacing={7}>
       <ThemeProvider
         themeName={ThemeName.base}
         themeMode={ThemeMode.light}

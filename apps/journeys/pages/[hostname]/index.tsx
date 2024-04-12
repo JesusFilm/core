@@ -132,7 +132,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
         ))
       },
       notFound: true,
-      revalidate: 0
+      revalidate: 1
     }
   } else if (data.journeys.length === 1) {
     return {

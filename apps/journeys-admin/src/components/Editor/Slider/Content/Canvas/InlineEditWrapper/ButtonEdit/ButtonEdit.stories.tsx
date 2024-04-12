@@ -21,7 +21,7 @@ import { Canvas } from '../../Canvas'
 const ButtonEditStory: Meta<typeof Canvas> = {
   ...simpleComponentConfig,
   component: Canvas,
-  title: 'Journeys-Admin/Editor/Canvas/ButtonEdit'
+  title: 'Journeys-Admin/Editor/Slider/Content/Canvas/ButtonEdit'
 }
 
 const filled: TreeBlock<ButtonFields> = {

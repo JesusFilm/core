@@ -14,7 +14,8 @@ import { LinkAction } from '.'
 const LinkActionStory: Meta<typeof LinkAction> = {
   ...simpleComponentConfig,
   component: LinkAction,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/ActionStates'
 }
 
 export const Link: StoryObj<typeof LinkAction> = {

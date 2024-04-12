@@ -13,7 +13,6 @@ import {
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
-import { Drawer } from '../../../../Drawer'
 
 import { Action, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
@@ -22,7 +21,8 @@ import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction/NavigateToJourneyAc
 const ActionStory: Meta<typeof Action> = {
   ...journeysAdminConfig,
   component: Action,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action'
 }
 
 const journey: Journey = {
@@ -106,7 +106,7 @@ const Template: StoryObj<typeof Action> = {
               ...args
             }}
           >
-            <Drawer />
+            <Action />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

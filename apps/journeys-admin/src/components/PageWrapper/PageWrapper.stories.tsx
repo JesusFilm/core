@@ -216,6 +216,23 @@ export const CustomSidePanel = {
   }
 }
 
+export const NoNavBar = {
+  ...Template,
+  args: {
+    ...Default.args,
+    showNavBar: false
+  }
+}
+
+export const NoHeader = {
+  ...Template,
+  args: {
+    ...Default.args,
+    showMainHeader: false,
+    showAppHeader: false
+  }
+}
+
 export const Complete = {
   ...Template,
   args: {

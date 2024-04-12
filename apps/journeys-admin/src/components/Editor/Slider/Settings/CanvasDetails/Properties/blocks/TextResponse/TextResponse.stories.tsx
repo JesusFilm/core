@@ -1,8 +1,8 @@
-import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -11,13 +11,15 @@ import {
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { TextResponse } from './TextResponse'
 
-const TextResponseStory: Meta<typeof TextResponse> = {
+const Demo: Meta<typeof TextResponse> = {
   ...journeysAdminConfig,
   component: TextResponse,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/TextResponse',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/TextResponse',
   // do not remove these parameters for this story, see: https://github.com/storybookjs/storybook/issues/17025
   parameters: {
     docs: {
@@ -26,24 +28,28 @@ const TextResponseStory: Meta<typeof TextResponse> = {
   }
 }
 
-type Story = StoryObj<
-  ComponentProps<typeof TextResponse> & { block: TreeBlock<TextResponseBlock> }
->
+const block: TreeBlock<TextResponseBlock> = {
+  __typename: 'TextResponseBlock',
+  id: 'textResponseBlock.id',
+  parentBlockId: null,
+  parentOrder: null,
+  label: '',
+  hint: null,
+  minRows: null,
+  submitLabel: null,
+  submitIconId: null,
+  action: null,
+  children: []
+}
 
-const Template: Story = {
+const Template: StoryObj<ComponentProps<typeof TextResponse>> = {
   render: ({ ...args }) => {
     return (
-      <Stack
-        direction="row"
-        spacing={4}
-        sx={{
-          overflowX: 'auto',
-          py: 5,
-          px: 6
-        }}
-      >
-        <TextResponse {...args.block} />
-      </Stack>
+      <EditorProvider initialState={{ selectedBlock: { ...args } }}>
+        <Drawer title="Feedback Properties">
+          <TextResponse {...args} />
+        </Drawer>
+      </EditorProvider>
     )
   }
 }
@@ -51,51 +57,41 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
-    block: {
-      __typename: 'TextResponseBlock',
-      id: 'textResponseBlock.id',
-      parentBlockId: null,
-      parentOrder: null,
-      action: null,
-      submitIconId: null,
-      label: 'label',
-      children: []
-    }
+    ...block
   }
 }
 
 export const Complete = {
   ...Template,
   args: {
-    block: {
-      __typename: 'TextResponseBlock',
-      id: 'textResponseBlock.id',
-      parentBlockId: null,
-      parentOrder: null,
-      action: {
-        __typename: 'LinkAction',
-        parentBlockId: 'responseAction.id',
-        gtmEventName: 'responseAction',
-        url: 'https://www.google.com'
-      },
-      submitIconId: 'icon.id',
-      label: 'label',
-      hint: 'hint text',
-      minRows: 2,
-      children: [
-        {
-          id: 'icon.id',
-          __typename: 'IconBlock',
-          parentBlockId: 'button',
-          parentOrder: 0,
-          iconName: IconName.ArrowForwardRounded,
-          iconColor: IconColor.action,
-          iconSize: IconSize.lg,
-          children: []
-        }
-      ]
-    }
+    ...block,
+    __typename: 'TextResponseBlock',
+    id: 'textResponseBlock.id',
+    parentBlockId: null,
+    parentOrder: null,
+    label: 'complete label',
+    hint: 'hint text',
+    minRows: 2,
+    submitIconId: 'icon.id',
+    action: {
+      __typename: 'LinkAction',
+      parentBlockId: 'responseAction.id',
+      gtmEventName: 'responseAction',
+      url: 'https://www.google.com'
+    },
+    children: [
+      {
+        id: 'icon.id',
+        __typename: 'IconBlock',
+        parentBlockId: 'button',
+        parentOrder: 0,
+        iconName: IconName.ArrowForwardRounded,
+        iconColor: IconColor.action,
+        iconSize: IconSize.lg,
+        children: []
+      }
+    ]
   }
 }
 
-export default TextResponseStory
+export default Demo

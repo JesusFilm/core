@@ -13,7 +13,8 @@ import { VideoFromYouTube } from '.'
 const VideoFromYouTubeStory: Meta<typeof VideoFromYouTube> = {
   ...journeysAdminConfig,
   component: VideoFromYouTube,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromYouTube',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromYouTube',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 

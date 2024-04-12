@@ -4,19 +4,23 @@ import { screen, userEvent } from '@storybook/testing-library'
 
 import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { Drawer } from '../../../../Drawer'
 
 import { ChatOption } from '.'
 
 const ChatOptionStory: Meta<typeof ChatOption> = {
   ...simpleComponentConfig,
   component: ChatOption,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Footer/Chat/ChatOption'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/Chat/ChatOption'
 }
 
 const Template: StoryObj<typeof ChatOption> = {
   render: (props) => (
     <MockedProvider>
-      <ChatOption {...props} />
+      <Drawer title="Chat Option">
+        <ChatOption {...props} />
+      </Drawer>
     </MockedProvider>
   )
 }

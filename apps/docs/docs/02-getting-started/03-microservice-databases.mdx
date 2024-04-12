@@ -41,3 +41,30 @@ nx run-many --all --target=prisma-migrate
 ```shell
 nx run-many --all --target=prisma-seed
 ```
+
+## Common Issues
+
+### prisma-generate failing
+
+If prisma-generate is failing, try running:
+
+```shell
+nx run-many -t prisma-reset --all
+```
+
+#### command failed because of mmdc
+
+If prisma generate fails with a error message similar to the one below:
+
+```shell
+Command failed: "/workspaces/core/node_modules/-bin/mmdc" -i "/tmp/prisma-erd-q0 cpUx/prisma.mmd" -0 "/workspaces/core/apps/api-journeys/db/ERD.svg" -c"/tmp/pri
+sma-erd-qOcpUx/config-json" -p"/tmp/prisma-erd-qOcpUx/puppeteerConfig-json"
+```
+
+It is related to [prisma-erd-generator](https://www.npmjs.com/package/prisma-erd-generator) attempting to run. Under the hood, it uses puppeteer and chromium to execute. The error this command is experiencing could be related to chromium not being installed, installed incorrectly, or not having the proper permissions to execute.
+
+Here are some steps you can follow to resolve the issue:
+
+- run `sudo apt-get -y install chromium`
+- On Mac update Docker Desktop to at least 4.28.0
+- rebuild your container using latest main
