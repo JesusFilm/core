@@ -3,7 +3,7 @@ import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
-import { SxProps } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useState } from 'react'
@@ -26,28 +26,29 @@ export function OnboardingPageWrapper({
 }: OnboardingPageWrapperProps): ReactElement {
   const [open, setOpen] = useState(false)
   const viewportHeight = use100vh()
+  const theme = useTheme()
 
   return (
     <Stack
       direction={{ xs: 'column', md: 'row' }}
       sx={{
-        overflow: 'hidden',
         height: viewportHeight ?? '100vh',
         backgroundColor: { xs: 'background.default', md: 'background.paper' }
       }}
     >
       <OnboardingDrawer />
       <Stack
-        justifyContent="center"
+        justifyContent="safe center"
         alignItems="center"
-        gap={10}
+        gap={12}
         sx={{
-          m: { xs: 0, sm: 5 },
+          m: { xs: 0, sm: 4 },
           ml: { xs: 0, md: 0 },
+          pt: 8,
+          overflowY: 'auto',
           flexGrow: 1,
-          display: 'flex',
           borderColor: 'divider',
-          flexDirection: 'column',
+          borderWidth: 'medium',
           borderRadius: { xs: 2, sm: 4 },
           borderStyle: { xs: 'none', sm: 'solid' },
           backgroundColor: { xs: 'background.paper', md: 'background.default' }
@@ -55,9 +56,12 @@ export function OnboardingPageWrapper({
         data-testid="JourneysAdminOnboardingPageWrapper"
       >
         <Typography
-          variant="h1"
+          variant="h2"
           textAlign="center"
-          sx={{ display: { xs: 'none', sm: 'flex' } }}
+          sx={{
+            display: { xs: 'none', sm: 'flex' },
+            overflowWrap: 'break-word'
+          }}
         >
           {title}
         </Typography>
@@ -77,7 +81,10 @@ export function OnboardingPageWrapper({
               p: 4,
               borderBottomLeftRadius: { xs: 0, sm: 8 },
               borderBottomRightRadius: { xs: 0, sm: 8 },
-              width: { xs: '100vw', sm: 418 }
+              width: { xs: '100vw', sm: 418 },
+              [theme.breakpoints.down('md')]: {
+                boxShadow: 'none'
+              }
             }}
           >
             <CardContent
@@ -113,7 +120,8 @@ export function OnboardingPageWrapper({
           setOpen={setOpen}
           emailSubject={emailSubject}
           sx={{
-            display: { xs: 'none', sm: 'flex' }
+            display: { xs: 'none', sm: 'flex' },
+            pb: 10
           }}
         />
       </Stack>
