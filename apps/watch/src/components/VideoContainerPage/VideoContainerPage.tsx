@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { ReactElement, useState } from 'react'
 
 import { useVideoChildren } from '../../libs/useVideoChildren'
@@ -13,8 +13,14 @@ import { VideoGrid } from '../VideoGrid/VideoGrid'
 import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'
 
+interface VideoContainerPageProps {
+  languageId: string
+}
+
 // Usually Series or Collection Videos
-export function VideoContainerPage(): ReactElement {
+export function VideoContainerPage({
+  languageId
+}: VideoContainerPageProps): ReactElement {
   const { snippet, slug, variant } = useVideo()
   const { loading, children } = useVideoChildren(variant?.slug)
   const router = useRouter()
@@ -38,7 +44,10 @@ export function VideoContainerPage(): ReactElement {
   }
 
   return (
-    <PageWrapper hero={<ContainerHero openDialog={handleOpenDialog} />}>
+    <PageWrapper
+      languageId={languageId}
+      hero={<ContainerHero openDialog={handleOpenDialog} />}
+    >
       <Container maxWidth="xxl" data-testid="VideoContainerPage">
         <Stack
           spacing={{ xs: 4, md: 11 }}
@@ -48,8 +57,13 @@ export function VideoContainerPage(): ReactElement {
           <ContainerDescription
             value={snippet[0].value}
             openDialog={handleOpenDialog}
+            languageId={languageId}
           />
-          <ShareDialog open={shareDialog} onClose={handleCloseDialog} />
+          <ShareDialog
+            languageId={languageId}
+            open={shareDialog}
+            onClose={handleCloseDialog}
+          />
           <Box>
             {loading ? (
               <VideoGrid loading variant="expanded" />

@@ -14,7 +14,7 @@ const SeeAllVideosStory: Meta<typeof SeeAllVideos> = {
 }
 
 const Template: StoryObj<typeof SeeAllVideos> = {
-  render: () => <SeeAllVideos />
+  render: () => <SeeAllVideos languageId="en" />
 }
 
 export const Default = { ...Template }

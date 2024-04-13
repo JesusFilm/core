@@ -14,6 +14,7 @@ interface VideoGridProps {
   onLoadMore?: () => Promise<void>
   containerSlug?: string
   variant?: ComponentProps<typeof VideoCard>['variant']
+  languageId: string
 }
 
 export function VideoGrid({
@@ -22,7 +23,8 @@ export function VideoGrid({
   onLoadMore,
   videos,
   containerSlug,
-  variant = 'expanded'
+  variant = 'expanded',
+  languageId
 }: VideoGridProps): ReactElement {
   return (
     <Grid
@@ -38,16 +40,17 @@ export function VideoGrid({
               video={video}
               containerSlug={containerSlug}
               variant={variant}
+              languageId={languageId}
             />
           </Grid>
         ))}
       {loading === true && (
         <>
           <Grid item xs={12} md={4} xl={3}>
-            <VideoCard variant={variant} />
+            <VideoCard languageId={languageId} variant={variant} />
           </Grid>
           <Grid item xs={12} md={4} xl={3}>
-            <VideoCard variant={variant} />
+            <VideoCard languageId={languageId} variant={variant} />
           </Grid>
           <Grid
             item
@@ -56,7 +59,7 @@ export function VideoGrid({
             xl={3}
             sx={{ display: { xs: 'none', md: 'block' } }}
           >
-            <VideoCard variant={variant} />
+            <VideoCard languageId={languageId} variant={variant} />
           </Grid>
           <Grid
             item
@@ -65,7 +68,7 @@ export function VideoGrid({
             xl={3}
             sx={{ display: { xs: 'none', xl: 'block' } }}
           >
-            <VideoCard variant={variant} />
+            <VideoCard languageId={languageId} variant={variant} />
           </Grid>
         </>
       )}
@@ -74,7 +77,7 @@ export function VideoGrid({
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <LoadingButton
               variant="outlined"
-              onClick={onLoadMore}
+              onClick={onLoadMore as () => void}
               loading={loading}
               startIcon={<AddRounded />}
               disabled={hasNextPage !== true}

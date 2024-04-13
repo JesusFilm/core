@@ -16,7 +16,7 @@ describe('Header', () => {
   })
 
   it('should open navigation panel on menu icon click', async () => {
-    const { getByText, getByRole } = render(<Header />)
+    const { getByText, getByRole } = render(<Header languageId="en" />)
     fireEvent.click(getByRole('button', { name: 'open header menu' }))
     const button = getByText('About')
     expect(button.getAttribute('href')).toBe('https://www.jesusfilm.org/about/')
@@ -24,7 +24,7 @@ describe('Header', () => {
 
   it('should show fixed app bar', async () => {
     useScrollTriggerMock.mockReturnValue(true)
-    const { getAllByRole, getByText } = render(<Header />)
+    const { getAllByRole, getByText } = render(<Header languageId="en" />)
 
     expect(getAllByRole('button', { name: 'open header menu' })).toHaveLength(2)
 
@@ -34,7 +34,9 @@ describe('Header', () => {
   })
 
   it('should hide absolute app bar', () => {
-    const { queryByRole } = render(<Header hideAbsoluteAppBar />)
+    const { queryByRole } = render(
+      <Header languageId="en" hideAbsoluteAppBar />
+    )
 
     expect(
       queryByRole('button', { name: 'open header menu' })

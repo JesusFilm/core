@@ -39,7 +39,7 @@ const Template: StoryObj<
           }
         ]}
       >
-        <VideosPage videos={videos} />
+        <VideosPage languageId="en" videos={videos} />
       </MockedProvider>
     )
   }

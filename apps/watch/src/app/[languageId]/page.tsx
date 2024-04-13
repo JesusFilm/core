@@ -43,7 +43,14 @@ const videoIds = [
   '1_jf6101-0-0'
 ]
 
-export default async function Index(): Promise<ReactElement> {
+interface HomePageProps {
+  params: {
+    languageId: string
+  }
+}
+export default async function Index({
+  params
+}: HomePageProps): Promise<ReactElement> {
   const { data } = await getApolloClient().query<GetHomeVideos>({
     query: GET_HOME_VIDEOS,
     variables: {
@@ -55,5 +62,5 @@ export default async function Index(): Promise<ReactElement> {
   data.videos.forEach((video) => {
     videos[videoIds.indexOf(video.id)] = video
   })
-  return <HomePage videos={videos} />
+  return <HomePage languageId={params.languageId} videos={videos} />
 }

@@ -22,7 +22,7 @@ const Template: StoryObj<typeof Header> = {
         backgroundColor: '#26262E'
       }}
     >
-      <Header />
+      <Header languageId="en" />
     </Box>
   )
 }

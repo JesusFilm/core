@@ -26,6 +26,7 @@ export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
 
 interface Page3PageProps {
   params: {
+    languageId: string
     part1: string
     part2: string
     part3: string
@@ -59,5 +60,11 @@ export default async function Page3Page({
     return notFound()
   }
 
-  return <Page3PageClient content={data.content} container={data.container} />
+  return (
+    <Page3PageClient
+      languageId={languageId}
+      content={data.content}
+      container={data.container}
+    />
+  )
 }

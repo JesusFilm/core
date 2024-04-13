@@ -55,6 +55,7 @@ function isAtEnd(count: number, limit: number, previousCount: number): boolean {
 
 interface VideosProps {
   videos: VideoChildFields[]
+  languageId: string
 }
 
 export interface VideoPageFilter {
@@ -63,7 +64,7 @@ export interface VideoPageFilter {
   title?: string
 }
 
-export function VideosPage({ videos }: VideosProps): ReactElement {
+export function VideosPage({ videos, languageId }: VideosProps): ReactElement {
   const router = useRouter()
   const languageContext = useLanguage()
   const [isEnd, setIsEnd] = useState(false)
@@ -124,9 +125,7 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
     if (filter.subtitleLanguageIds != null)
       params.set('subtitle', filter.subtitleLanguageIds[0])
     if (filter.title != null) params.set('title', filter.title)
-    void router.push(`/videos?${params.toString()}`, undefined, {
-      shallow: true
-    })
+    void router.push(`/videos?${params.toString()}`)
   }
 
   const { data: languagesData, loading: languagesLoading } =
@@ -150,9 +149,13 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
   }
 
   return (
-    <PageWrapper hero={<VideosHero />} testId="VideosPage">
+    <PageWrapper
+      hero={<VideosHero languageId={languageId} />}
+      languageId={languageId}
+      testId="VideosPage"
+    >
       <Container maxWidth="xxl">
-        <VideosSubHero />
+        <VideosSubHero languageId={languageId} />
       </Container>
       <Divider sx={{ height: 2, background: 'rgba(33, 33, 33, 0.08)' }} />
       <Container maxWidth="xxl" sx={{ py: 12 }}>
@@ -177,6 +180,7 @@ export function VideosPage({ videos }: VideosProps): ReactElement {
               loading={loading}
               hasNextPage={!isEnd}
               variant="expanded"
+              languageId={languageId}
             />
           </Box>
         </Stack>

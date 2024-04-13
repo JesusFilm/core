@@ -26,7 +26,10 @@ export function HomePage({ videos, languageId }: HomePageProps): ReactElement {
   const { t } = useTranslation(languageId, 'apps-watch')
 
   return (
-    <PageWrapper hero={<HomeHero />}>
+    <PageWrapper
+      languageId={languageId}
+      hero={<HomeHero languageId={languageId} />}
+    >
       <ThemeProvider
         themeName={ThemeName.website}
         themeMode={ThemeMode.dark}
@@ -37,8 +40,12 @@ export function HomePage({ videos, languageId }: HomePageProps): ReactElement {
           data-testid="HomePage"
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
-            <VideoGrid videos={videos} variant="contained" />
-            <SeeAllVideos />
+            <VideoGrid
+              languageId={languageId}
+              videos={videos}
+              variant="contained"
+            />
+            <SeeAllVideos languageId={languageId} />
             <Box
               sx={{
                 display: 'flex',

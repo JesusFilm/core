@@ -16,13 +16,15 @@ interface PageWrapperProps {
   children?: ReactNode
   hideHeader?: boolean
   testId?: string
+  languageId: string
 }
 
 export function PageWrapper({
   hero,
   children,
   hideHeader,
-  testId
+  testId,
+  languageId
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
@@ -31,7 +33,7 @@ export function PageWrapper({
         sx={{ width: '100%', height: '100%' }}
         data-testid={testId}
       >
-        {hideHeader !== true && <Header />}
+        {hideHeader !== true && <Header languageId={languageId} />}
         <Container maxWidth={false} disableGutters>
           <ThemeProvider
             nested
@@ -42,7 +44,7 @@ export function PageWrapper({
           </ThemeProvider>
         </Container>
         <Box sx={{ flexGrow: 1 }}>{children}</Box>
-        <Footer />
+        <Footer languageId={languageId} />
       </Stack>
     </Div100vh>
   )

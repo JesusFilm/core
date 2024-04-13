@@ -41,7 +41,8 @@ export const Default = {
     open: true,
     onClose: noop,
     video: videos[0],
-    routes
+    routes,
+    languageId: 'en'
   }
 }
 

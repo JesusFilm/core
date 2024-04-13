@@ -26,19 +26,21 @@ const DynamicVideoContainerPage = dynamic(
 
 interface Page2PageClientProps {
   content: GetVideoContent_content
+  languageId: string
 }
 
 export default function page2PageClient({
-  content
+  content,
+  languageId
 }: Page2PageClientProps): ReactElement {
   return (
     <SnackbarProvider>
       <LanguageProvider>
         <VideoProvider value={{ content }}>
           {content.variant?.hls != null ? (
-            <DynamicVideoContentPage />
+            <DynamicVideoContentPage languageId={languageId} />
           ) : (
-            <DynamicVideoContainerPage />
+            <DynamicVideoContainerPage languageId={languageId} />
           )}
         </VideoProvider>
       </LanguageProvider>

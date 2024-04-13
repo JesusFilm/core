@@ -14,10 +14,10 @@ if (isBrowser) {
   localePath = './public/locales'
 } else if (process.env.VERCEL == null || process.env.CI != null) {
   // not vercel or vercel build time
-  localePath = path.resolve('../../libs/locales')
+  localePath = '../../libs/locales'
 } else {
   // vercel run time
-  localePath = path.resolve('./public/locales')
+  localePath = './public/locales'
 }
 
 export const localePathPublic = localePath

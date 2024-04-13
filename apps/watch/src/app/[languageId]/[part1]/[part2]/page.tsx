@@ -19,6 +19,7 @@ export const GET_VIDEO_CONTENT = gql`
 
 interface Page2PageProps {
   params: {
+    languageId: string
     part1: string
     part2: string
   }
@@ -43,5 +44,7 @@ export default async function Page2Page({
   if (data.content == null) {
     return notFound()
   }
-  return <Page2PageClient content={data.content} />
+  return (
+    <Page2PageClient languageId={params.languageId} content={data.content} />
+  )
 }

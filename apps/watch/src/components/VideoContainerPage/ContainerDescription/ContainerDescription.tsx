@@ -8,11 +8,13 @@ import { ShareButton } from '../../ShareButton'
 export interface ContainerDescriptionProps {
   value: string
   openDialog: () => void
+  languageId: string
 }
 
 export function ContainerDescription({
   value,
-  openDialog
+  openDialog,
+  languageId
 }: ContainerDescriptionProps): ReactElement {
   return (
     <Stack
@@ -31,7 +33,11 @@ export function ContainerDescription({
         {value}
       </Typography>
       <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-        <ShareButton onClick={openDialog} variant="button" />
+        <ShareButton
+          languageId={languageId}
+          onClick={openDialog}
+          variant="button"
+        />
       </Box>
     </Stack>
   )

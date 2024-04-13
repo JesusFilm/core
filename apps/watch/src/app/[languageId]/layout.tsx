@@ -4,7 +4,6 @@ import { ReactNode } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import './global.css'
 import { ApolloWrapper } from '../../libs/apolloClient/apolloWrapper'
 import { languages } from '../../libs/il8n/settings'
 

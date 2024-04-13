@@ -32,7 +32,15 @@ const videoIds = [
   'LUMOCollection'
 ]
 
-export default async function VideosPage(): Promise<ReactElement> {
+interface VideosPageProps {
+  params: {
+    languageId: string
+  }
+}
+
+export default async function VideosPage({
+  params
+}: VideosPageProps): Promise<ReactElement> {
   const { data } = await getApolloClient().query<GetHomeVideos>({
     query: GET_HOME_VIDEOS,
     variables: {
@@ -46,5 +54,5 @@ export default async function VideosPage(): Promise<ReactElement> {
     videos[videoIds.indexOf(video.id)] = video
   })
 
-  return <Videos videos={videos} />
+  return <Videos languageId={params.languageId} videos={videos} />
 }

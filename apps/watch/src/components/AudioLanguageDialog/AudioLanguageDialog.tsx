@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import compact from 'lodash/compact'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { ComponentProps, ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'

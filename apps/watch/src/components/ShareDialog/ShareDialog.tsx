@@ -93,7 +93,7 @@ export function ShareDialog({
         variant="contained"
         size="small"
         startIcon={<ContentCopyIcon />}
-        onClick={handleShareLinkClick}
+        onClick={handleShareLinkClick as () => void}
         sx={{ alignSelf: 'flex-end' }}
       >
         {t('Copy Link')}
@@ -197,7 +197,7 @@ export function ShareDialog({
                     variant="contained"
                     size="small"
                     startIcon={<ContentCopyIcon />}
-                    onClick={() => void handleEmbedCodeClick()}
+                    onClick={handleEmbedCodeClick as () => void} // Add type annotation
                     sx={{ alignSelf: 'flex-end' }}
                   >
                     {t('Copy Code')}

@@ -71,9 +71,13 @@ LocalAppBar.displayName = 'LocalAppBar'
 
 interface HeaderProps {
   hideAbsoluteAppBar?: boolean
+  languageId: string
 }
 
-export function Header({ hideAbsoluteAppBar }: HeaderProps): ReactElement {
+export function Header({
+  hideAbsoluteAppBar,
+  languageId
+}: HeaderProps): ReactElement {
   const trigger = useScrollTrigger()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -120,7 +124,10 @@ export function Header({ hideAbsoluteAppBar }: HeaderProps): ReactElement {
           onClose={() => setDrawerOpen(false)}
           onOpen={() => setDrawerOpen(true)}
         >
-          <HeaderMenuPanel onClose={() => setDrawerOpen(false)} />
+          <HeaderMenuPanel
+            languageId={languageId}
+            onClose={() => setDrawerOpen(false)}
+          />
         </SwipeableDrawer>
       </ThemeProvider>
     </>

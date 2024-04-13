@@ -14,16 +14,18 @@ import { VideoProvider } from '../../../../../libs/videoContext'
 interface Page3PageClientProps {
   content: GetVideoContainerAndVideoContent_content
   container: GetVideoContainerAndVideoContent_container
+  languageId: string
 }
 export default function Page3PageClient({
   content,
-  container
+  container,
+  languageId
 }: Page3PageClientProps): ReactElement {
   return (
     <SnackbarProvider>
       <LanguageProvider>
         <VideoProvider value={{ content, container }}>
-          <VideoContentPage />
+          <VideoContentPage languageId={languageId} />
         </VideoProvider>
       </LanguageProvider>
     </SnackbarProvider>

@@ -2,13 +2,14 @@
 
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { useRouter } from 'next/navigation'
 
 import { videos } from '../Videos/__generated__/testData'
 
 import { GET_LANGUAGES, GET_VIDEOS, VideosPage, limit } from './VideosPage'
 
-jest.mock('next/router', () => ({
+jest.mock('next/navigation', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({
     push: jest.fn()
@@ -22,7 +23,7 @@ describe('VideosPage', () => {
     it('should render a grid', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <VideosPage videos={videos} />
+          <VideosPage languageId="en" videos={videos} />
         </MockedProvider>
       )
       expect(getByTestId('VideoGrid')).toBeInTheDocument()
@@ -50,7 +51,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage videos={videos} />
+          <VideosPage languageId="en" videos={videos} />
         </MockedProvider>
       )
       await waitFor(() => {
@@ -65,7 +66,7 @@ describe('VideosPage', () => {
 
     beforeEach(() => {
       push = jest.fn()
-      mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+      mockUseRouter.mockReturnValue({ push } as unknown as AppRouterInstance)
     })
 
     // this test is flakey when run on github actions
@@ -134,7 +135,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage videos={[]} />
+          <VideosPage languageId="en" videos={[]} />
         </MockedProvider>
       )
       const comboboxEl = getByRole('combobox', {
@@ -218,7 +219,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage videos={[]} />
+          <VideosPage languageId="en" videos={[]} />
         </MockedProvider>
       )
       fireEvent.click(getByTestId('filter-item-subtitles'))
@@ -299,7 +300,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage videos={[]} />
+          <VideosPage languageId="en" videos={[]} />
         </MockedProvider>
       )
 
