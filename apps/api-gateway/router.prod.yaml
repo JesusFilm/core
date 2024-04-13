@@ -15,7 +15,7 @@ cors:
     - https://your-stage.nextstep.is
   match_origins:
     # any localhost (can now run dev apps against the stg and prd api)
-    - '^http://localhost:\d+$'
+    - '^http://localhost:\d+/'
     # any project deployed on the jesusfilm vercel account
     - '^https://([a-z0-9-]+)-jesusfilm[.]vercel[.]app$'
     # any project deployed on the jesusfilm.org domain (used primarily for watch)
