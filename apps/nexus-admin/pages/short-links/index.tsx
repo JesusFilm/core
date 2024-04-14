@@ -12,8 +12,8 @@ import { ShortLinksTable } from '../../src/components/ShortLinksTable'
 
 export const GET_LINKS = gql`
   query getLinksWithFilters(
-    $limit: Int!
-    $offset: Int!
+    $limit: Int
+    $offset: Int
     $orderBy: [links_order_by!]
     $where: links_bool_exp!
   ) {
@@ -40,8 +40,6 @@ const ShortLinksPage: FC = () => {
       clientName: 'switchy'
     },
     variables: {
-      limit: 100,
-      offset: 0,
       orderBy: { createdDate: 'desc' },
       where: {
         folderId: {
