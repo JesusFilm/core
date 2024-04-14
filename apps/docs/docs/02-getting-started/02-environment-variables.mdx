@@ -64,7 +64,7 @@ Welcome, Brian
 DOPPLER_CONFIG=dev nx run-many --all --target=fetch-secrets
 ```
 
-### Getting Started without a Backend
+## Getting Started without a Backend
 
 If you just want to dig right in without setting up a local backend then you run the following command:
 
@@ -76,7 +76,7 @@ This will point your local frontend projects to our stage api-gateway so you can
 For example you can start the journeys application using the following command:
 
 ```shell
-nx run journeys:serve
+nx run journeys-admin:serve
 ```
 
 The key difference is the environment variable `DOPPLER_CONFIG=stg_dev` tells doppler to get enviroment variables
@@ -85,3 +85,23 @@ this guide again.
 
 You can skip ahead to step 2 in [4. Starting Projects](/docs/getting-started/running-projects) guide
 if getting started without a backend.
+
+### Common Issues
+
+#### COOKIE_SECRET_CURRENT mismatch
+
+If you are signed in your web browser to localhost before performing DOPPLER_CONFIG change then you will need to
+clear the cookies from your localhost as they will not match the stage cookie values and firebase credentials.
+
+You'll see the error below this issue is relevant to you:
+
+```
+TypeError [ERR_INVALID_ARG_TYPE]: The "key" argument must be of type string or an instance of ArrayBuffer, Buffer, TypedArray, DataView, KeyObject, or CryptoKey. Received undefined
+    at new NodeError (node:internal/errors:405:5)
+    at prepareSecretKey (node:internal/crypto/keys:596:11)
+    at new Hmac (node:internal/crypto/hash:134:9)
+    at Object.createHmac (node:crypto:165:10)
+    at sign (/workspaces/core/node_modules/keygrip/index.js:23:8)
+    at Keygrip.index (/workspaces/core/node_modules/keygrip/index.js:38:27)
+    at c.get (/workspaces/core/node_modules/next-firebase-auth/build/index.node.js:2:1640)
+```
