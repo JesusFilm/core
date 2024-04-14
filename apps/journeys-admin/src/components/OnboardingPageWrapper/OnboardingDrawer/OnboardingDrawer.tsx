@@ -40,7 +40,7 @@ export function OnboardingDrawer(): ReactElement {
         mx: { md: 20 },
         width: { xs: '100%', md: '32%' },
         mb: { xs: templateId == null ? 0 : 3 },
-        overflowY: { xs: 'none', md: 'scroll' }
+        overflowY: { xs: 'none', md: 'auto' }
       }}
       data-testid="JourneysAdminOnboardingDrawer"
     >
