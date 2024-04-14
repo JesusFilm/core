@@ -369,34 +369,62 @@ type CustomDomain
   name: String!
   apexName: String!
   journeyCollection: JourneyCollection
-  verification: CustomDomainVerification
-  configuration: VercelDomainConfiguration
   routeAllTeamJourneys: Boolean!
+}
+
+type CustomDomainCheck
+  @join__type(graph: JOURNEYS)
+{
+  """
+  Is the domain correctly configured in the DNS?
+  If false, A Record and CNAME Record should be added by the user.
+  """
+  configured: Boolean!
+
+  """
+  Does the domain belong to the team?
+  If false, verification and verificationResponse will be populated.
+  """
+  verified: Boolean!
+
+  """Verification records to be added to the DNS to confirm ownership."""
+  verification: [CustomDomainVerification!]
+
+  """Reasoning as to why verification is required."""
+  verificationResponse: CustomDomainVerificationResponse
 }
 
 input CustomDomainCreateInput
   @join__type(graph: JOURNEYS)
 {
+  id: ID
   teamId: String!
   name: String!
-  journeyCollectionId: String
+  journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
 }
 
 input CustomDomainUpdateInput
   @join__type(graph: JOURNEYS)
 {
-  id: ID!
-  name: String
-  journeyCollectionId: String
+  journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
 }
 
 type CustomDomainVerification
   @join__type(graph: JOURNEYS)
 {
-  verified: Boolean!
-  verification: [VercelDomainVerification]
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse
+  @join__type(graph: JOURNEYS)
+{
+  code: String!
+  message: String!
 }
 
 scalar DateTime
@@ -795,13 +823,11 @@ input JourneyCollectionCreateInput
   teamId: String!
   title: String
   journeyIds: [String!]
-  customDomain: CustomDomainCreateInput
 }
 
 input JourneyCollectionUpdateInput
   @join__type(graph: JOURNEYS)
 {
-  id: ID!
   title: String
   journeyIds: [String!]
 }
@@ -1327,8 +1353,9 @@ type Mutation
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
   customDomainCreate(input: CustomDomainCreateInput!): CustomDomain! @join__field(graph: JOURNEYS)
-  customDomainUpdate(input: CustomDomainUpdateInput!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain! @join__field(graph: JOURNEYS)
   customDomainDelete(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainCheck(id: ID!): CustomDomainCheck! @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
@@ -1373,7 +1400,7 @@ type Mutation
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
-  journeyCollectionUpdate(input: JourneyCollectionUpdateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyCollectionDelete(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
@@ -2426,23 +2453,6 @@ input UserTeamUpdateInput
   @join__type(graph: JOURNEYS)
 {
   role: UserTeamRole!
-}
-
-type VercelDomainConfiguration
-  @join__type(graph: JOURNEYS)
-{
-  acceptedChallenges: [String]
-  configuredBy: String
-  misconfigured: Boolean
-}
-
-type VercelDomainVerification
-  @join__type(graph: JOURNEYS)
-{
-  type: String
-  domain: String
-  value: String
-  reason: String
 }
 
 type Video

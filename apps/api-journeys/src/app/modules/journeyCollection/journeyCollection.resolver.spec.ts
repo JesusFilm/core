@@ -1,22 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { CustomDomain } from '.prisma/api-journeys-client'
+import {
+  CustomDomain,
+  Journey,
+  JourneyCollection,
+  Prisma,
+  UserTeamRole
+} from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
+import {
+  JourneyCollectionCreateInput,
+  JourneyCollectionUpdateInput
+} from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
-import { CustomDomainService } from '../customDomain/customDomain.service'
 
 import { JourneyCollectionResolver } from './journeyCollection.resolver'
 
 describe('JourneyCollectionResolver', () => {
   let resolver: JourneyCollectionResolver,
-    prismaService: DeepMockProxy<PrismaService>
-
-  const ability = {
-    can: jest.fn().mockResolvedValue(true)
-  } as unknown as AppAbility
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,19 +32,6 @@ describe('JourneyCollectionResolver', () => {
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
-        },
-        {
-          provide: CustomDomainService,
-          useValue: {
-            customDomainCreate: jest.fn().mockResolvedValue({
-              id: 'cd',
-              teamId: 'teamId',
-              name: 'example.name.com',
-              apexName: 'name.com',
-              journeyCollectionId: 'id',
-              routeAllTeamJourneys: true
-            })
-          }
         }
       ]
     }).compile()
@@ -47,7 +40,18 @@ describe('JourneyCollectionResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
+
+  const journeyCollection: JourneyCollection = {
+    id: 'journeyCollectionId',
+    teamId: 'teamId',
+    title: null
+  }
+  const journeyCollectionWithUserTeam = {
+    ...journeyCollection,
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  }
 
   it('should be defined', () => {
     expect(resolver).toBeDefined()
@@ -55,35 +59,52 @@ describe('JourneyCollectionResolver', () => {
 
   describe('journeyCollection', () => {
     it('should return a journey collection', async () => {
-      const id = 'id'
-      const journeyCollection = { id, teamId: 'teamId', title: '' }
-      const findUniqueSpy = jest.spyOn(
-        prismaService.journeyCollection,
-        'findUnique'
+      prismaService.journeyCollection.findUnique.mockResolvedValueOnce(
+        journeyCollectionWithUserTeam
       )
-      findUniqueSpy.mockResolvedValue(journeyCollection)
+      expect(
+        await resolver.journeyCollection('journeyCollectionId', ability)
+      ).toEqual(journeyCollectionWithUserTeam)
+      expect(prismaService.journeyCollection.findUnique).toHaveBeenCalledWith({
+        where: { id: 'journeyCollectionId' },
+        include: { team: { include: { userTeams: true } } }
+      })
+    })
 
-      const result = await resolver.journeyCollection(id)
+    it('should handle not found', async () => {
+      prismaService.journeyCollection.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journeyCollection('journeyCollectionId', ability)
+      ).rejects.toThrow('journey collection not found')
+    })
 
-      expect(result).toEqual(journeyCollection)
-      expect(findUniqueSpy).toHaveBeenCalledWith({ where: { id } })
+    it('should handle not allowed', async () => {
+      prismaService.journeyCollection.findUnique.mockResolvedValueOnce(
+        journeyCollection
+      )
+      await expect(
+        resolver.journeyCollection('journeyCollectionId', ability)
+      ).rejects.toThrow('user is not allowed to read journey collection')
     })
   })
 
   describe('journeyCollections', () => {
     it('should return journey collections', async () => {
-      const teamId = 'teamId'
-      const journeyCollections = [{ id: 'id', teamId, title: '' }]
-      const findManySpy = jest.spyOn(
-        prismaService.journeyCollection,
-        'findMany'
-      )
-      findManySpy.mockResolvedValue(journeyCollections)
-
-      const result = await resolver.journeyCollections(teamId)
-
-      expect(result).toEqual(journeyCollections)
-      expect(findManySpy).toHaveBeenCalledWith({ where: { teamId } })
+      const accessibleJourneyCollections: Prisma.JourneyCollectionWhereInput = {
+        OR: [{}]
+      }
+      prismaService.journeyCollection.findMany.mockResolvedValue([
+        journeyCollection
+      ])
+      expect(
+        await resolver.journeyCollections(
+          'teamId',
+          accessibleJourneyCollections
+        )
+      ).toEqual([journeyCollection])
+      expect(prismaService.journeyCollection.findMany).toHaveBeenCalledWith({
+        where: { AND: [{ OR: [{}] }, { teamId: 'teamId' }] }
+      })
     })
   })
 
@@ -95,35 +116,55 @@ describe('JourneyCollectionResolver', () => {
     })
 
     it('should create a journey collection', async () => {
-      const input = {
-        id: 'id',
+      const input: JourneyCollectionCreateInput = {
+        id: 'journeyCollectionId',
+        teamId: 'teamId',
+        title: 'title'
+      }
+      prismaService.journeyCollection.create.mockResolvedValue(
+        journeyCollectionWithUserTeam
+      )
+      expect(await resolver.journeyCollectionCreate(input, ability)).toEqual(
+        journeyCollectionWithUserTeam
+      )
+      expect(prismaService.journeyCollection.create).toHaveBeenCalledWith({
+        data: {
+          id: 'journeyCollectionId',
+          team: { connect: { id: 'teamId' } },
+          title: 'title'
+        },
+        include: { team: { include: { userTeams: true } } }
+      })
+    })
+
+    it('should create a journey collection with advanced input', async () => {
+      const input: JourneyCollectionCreateInput = {
+        id: 'journeyCollectionId',
         teamId: 'teamId',
         title: 'title',
-        customDomain: {
-          teamId: 'teamId',
-          name: 'name.com'
-        },
-        journeyIds: ['journeyId']
+        journeyIds: ['journeyId1', 'journeyOutsideTeamId', 'journeyId2']
       }
-      const collection = { id: 'id', teamId: 'teamId', title: 'title' }
-
-      const createSpy = jest.spyOn(prismaService.journeyCollection, 'create')
-      createSpy.mockResolvedValue(collection)
-
-      const updateSpy = jest.spyOn(prismaService.journeyCollection, 'update')
-      updateSpy.mockResolvedValue(collection)
-
-      const result = await resolver.journeyCollectionCreate(input, ability)
-
-      expect(result).toEqual(collection)
-      expect(createSpy).toHaveBeenCalledWith({
+      prismaService.journeyCollection.create.mockResolvedValue(
+        journeyCollectionWithUserTeam
+      )
+      prismaService.journey.findMany.mockResolvedValue([
+        { id: 'journeyId2' } as unknown as Journey,
+        { id: 'journeyId1' } as unknown as Journey
+      ])
+      expect(await resolver.journeyCollectionCreate(input, ability)).toEqual(
+        journeyCollectionWithUserTeam
+      )
+      expect(prismaService.journeyCollection.create).toHaveBeenCalledWith({
         data: {
-          id: input.id,
-          team: { connect: { id: input.teamId } },
-          title: input.title,
+          id: 'journeyCollectionId',
+          team: { connect: { id: 'teamId' } },
+          title: 'title',
           journeyCollectionJourneys: {
             createMany: {
-              data: [{ order: 0, journeyId: input.journeyIds[0] }]
+              data: [
+                { order: 0, journeyId: 'journeyId1' },
+                { order: 1, journeyId: 'journeyId2' }
+              ]
             }
           }
         },
@@ -131,278 +172,194 @@ describe('JourneyCollectionResolver', () => {
       })
     })
 
-    it('should create a simplified journey collection', async () => {
-      const input = {
-        id: 'id',
+    it('should handle not allowed', async () => {
+      const input: JourneyCollectionCreateInput = {
+        id: 'journeyCollectionId',
         teamId: 'teamId',
         title: 'title'
       }
-      const collection = { id: 'id', teamId: 'teamId', title: 'title' }
-
-      const createSpy = jest.spyOn(prismaService.journeyCollection, 'create')
-      createSpy.mockResolvedValue(collection)
-
-      const result = await resolver.journeyCollectionCreate(input, ability)
-
-      expect(result).toEqual(collection)
-      expect(createSpy).toHaveBeenCalledWith({
-        data: {
-          id: input.id,
-          team: { connect: { id: input.teamId } },
-          title: input.title
-        },
-        include: { team: { include: { userTeams: true } } }
-      })
-    })
-
-    it('should handle not can', () => {
-      const input = {
-        id: 'id',
-        teamId: 'teamId',
-        title: 'title',
-        customDomain: {
-          teamId: 'teamId',
-          name: 'name.com'
-        },
-        journeyIds: ['journeyId']
-      }
-      const abilitySpy = jest.spyOn(ability, 'can')
-      abilitySpy.mockImplementationOnce(() => false)
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
-      expect(resolver.journeyCollectionCreate(input, ability)).rejects.toThrow(
-        'user is not allowed to create journey collection'
+      prismaService.journeyCollection.create.mockResolvedValue(
+        journeyCollection
       )
+      await expect(
+        resolver.journeyCollectionCreate(input, ability)
+      ).rejects.toThrow('user is not allowed to create journey collection')
     })
   })
 
   describe('journeyCollectionUpdate', () => {
-    it('should update a journey collection', async () => {
-      const input = { id: 'id', title: 'title' }
-      const collection = { id: 'id', teamId: 'teamId', title: 'title' }
-      const findUniqueSpy = jest.spyOn(
-        prismaService.journeyCollection,
-        'findUnique'
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
       )
-      findUniqueSpy.mockResolvedValue(collection)
-      const updateSpy = jest.spyOn(prismaService.journeyCollection, 'update')
-      updateSpy.mockResolvedValue(collection)
+    })
 
-      const result = await resolver.journeyCollectionUpdate(input, ability)
+    it('should update a journey collection', async () => {
+      const input: JourneyCollectionUpdateInput = {
+        title: 'title'
+      }
+      prismaService.journeyCollection.findUnique.mockResolvedValueOnce(
+        journeyCollectionWithUserTeam
+      )
+      prismaService.journeyCollection.update.mockResolvedValueOnce(
+        journeyCollection
+      )
 
-      expect(result).toEqual(collection)
-      expect(findUniqueSpy).toHaveBeenCalledWith({
-        where: { id: input.id },
-        include: { team: { include: { userTeams: true } } }
-      })
-      expect(updateSpy).toHaveBeenCalledWith({
-        where: { id: input.id },
-        data: { title: input.title }
+      expect(
+        await resolver.journeyCollectionUpdate(
+          'journeyCollectionId',
+          input,
+          ability
+        )
+      ).toEqual(journeyCollection)
+      expect(prismaService.journeyCollection.update).toHaveBeenCalledWith({
+        where: { id: 'journeyCollectionId' },
+        data: { title: 'title' }
       })
     })
 
-    it('should handle journeys changes', async () => {
-      const input = {
-        id: 'id',
+    it('should update a journey collection with advanced input', async () => {
+      const input: JourneyCollectionUpdateInput = {
         title: 'title',
-        journeyIds: ['journeyId']
+        journeyIds: ['journeyId1', 'journeyOutsideTeamId', 'journeyId2']
       }
-      const collection = { id: 'id', teamId: 'teamId', title: 'title' }
-
-      const findUniqueSpy = jest.spyOn(
-        prismaService.journeyCollection,
-        'findUnique'
+      prismaService.journeyCollection.findUnique.mockResolvedValueOnce(
+        journeyCollectionWithUserTeam
       )
-      findUniqueSpy.mockResolvedValue(collection)
-
-      const updateSpy = jest.spyOn(prismaService.journeyCollection, 'update')
-      updateSpy.mockResolvedValue(collection)
-
-      const deleteSpy = jest.spyOn(
-        prismaService.journeyCollectionJourneys,
-        'deleteMany'
+      prismaService.journeyCollection.update.mockResolvedValueOnce(
+        journeyCollection
       )
-      deleteSpy.mockResolvedValue({ count: 0 })
+      prismaService.journey.findMany.mockResolvedValue([
+        { id: 'journeyId2' } as unknown as Journey,
+        { id: 'journeyId1' } as unknown as Journey
+      ])
 
-      const createSpy = jest.spyOn(
-        prismaService.journeyCollectionJourneys,
-        'createMany'
-      )
-      createSpy.mockResolvedValue({ count: 1 })
-
-      const result = await resolver.journeyCollectionUpdate(input, ability)
-
-      expect(result).toEqual(collection)
-      expect(findUniqueSpy).toHaveBeenCalledWith({
-        where: { id: input.id },
-        include: { team: { include: { userTeams: true } } }
-      })
-      expect(updateSpy).toHaveBeenCalledWith({
-        where: { id: input.id },
-        data: {
-          title: input.title
-        }
-      })
-      expect(deleteSpy).toHaveBeenCalledWith({
-        where: { journeyCollectionId: input.id }
-      })
-      expect(createSpy).toHaveBeenCalledWith({
+      expect(
+        await resolver.journeyCollectionUpdate(
+          'journeyCollectionId',
+          input,
+          ability
+        )
+      ).toEqual(journeyCollection)
+      expect(
+        prismaService.journeyCollectionJourneys.createMany
+      ).toHaveBeenCalledWith({
         data: [
           {
-            order: 0,
-            journeyId: input.journeyIds[0],
-            journeyCollectionId: input.id
+            journeyCollectionId: 'journeyCollectionId',
+            journeyId: 'journeyId1',
+            order: 0
+          },
+          {
+            journeyCollectionId: 'journeyCollectionId',
+            journeyId: 'journeyId2',
+            order: 1
           }
         ]
       })
+      expect(prismaService.journeyCollection.update).toHaveBeenCalledWith({
+        where: { id: 'journeyCollectionId' },
+        data: { title: 'title' }
+      })
     })
 
-    it('should handle null', () => {
-      const input = { id: 'id', title: 'title' }
-      const findUniqueSpy = jest.spyOn(
-        prismaService.journeyCollection,
-        'findUnique'
-      )
-      findUniqueSpy.mockResolvedValue(null)
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
-      expect(resolver.journeyCollectionUpdate(input, ability)).rejects.toThrow(
-        'journey collection not found'
-      )
-    })
-
-    it('should handle not can', () => {
-      const input = { id: 'id', title: 'title' }
-
-      const journeyCollectionSpy = jest.spyOn(
-        prismaService.journeyCollection,
-        'findUnique'
-      )
-      journeyCollectionSpy.mockResolvedValue({
-        id: 'id',
-        teamId: 'teamId',
+    it('should handle not found', async () => {
+      const input: JourneyCollectionUpdateInput = {
         title: 'title'
-      })
-
-      const abilitySpy = jest.spyOn(ability, 'can')
-      abilitySpy.mockImplementationOnce(() => false)
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
-      expect(resolver.journeyCollectionUpdate(input, ability)).rejects.toThrow(
-        'user is not allowed to update journey collection'
-      )
+      }
+      prismaService.journeyCollection.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journeyCollectionUpdate(
+          'journeyCollectionDomainId',
+          input,
+          ability
+        )
+      ).rejects.toThrow('journey collection not found')
     })
-  })
 
-  describe('customDomains', () => {
-    it('should return custom domains', async () => {
-      const teamId = 'teamId'
-      const customDomains = [{ id: 'cd', teamId } as unknown as CustomDomain]
-      const collection = { id: 'id', teamId: 'teamId', title: 'title' }
-
-      const findManySpy = jest.spyOn(prismaService.customDomain, 'findMany')
-      findManySpy.mockResolvedValue(customDomains)
-
-      const result = await resolver.customDomains(collection)
-
-      expect(result).toEqual(customDomains)
-      expect(findManySpy).toHaveBeenCalledWith({
-        where: { journeyCollectionId: 'id' }
-      })
+    it('should handle not allowed', async () => {
+      const input: JourneyCollectionUpdateInput = {
+        title: 'title'
+      }
+      prismaService.journeyCollection.findUnique.mockResolvedValueOnce(
+        journeyCollection
+      )
+      await expect(
+        resolver.journeyCollectionUpdate('journeyCollectionId', input, ability)
+      ).rejects.toThrow('user is not allowed to update journey collection')
     })
   })
 
   describe('journeyCollectionDelete', () => {
     it('should delete a journey collection', async () => {
-      const id = 'id'
-      const collection = { id: 'id', teamId: 'teamId', title: 'title' }
-      const findUniqueSpy = jest.spyOn(
-        prismaService.journeyCollection,
-        'findUnique'
+      prismaService.journeyCollection.findUnique.mockResolvedValueOnce(
+        journeyCollectionWithUserTeam
       )
-      findUniqueSpy.mockResolvedValue(collection)
-      const deleteSpy = jest.spyOn(prismaService.journeyCollection, 'delete')
-      deleteSpy.mockResolvedValue(collection)
-
-      const result = await resolver.journeyCollectionDelete(id, ability)
-
-      expect(result).toEqual(collection)
-      expect(findUniqueSpy).toHaveBeenCalledWith({
-        where: { id },
-        include: { team: { include: { userTeams: true } } }
+      prismaService.journeyCollection.delete.mockResolvedValueOnce(
+        journeyCollection
+      )
+      expect(
+        await resolver.journeyCollectionDelete('journeyCollectionId', ability)
+      ).toEqual(journeyCollection)
+      expect(prismaService.journeyCollection.delete).toHaveBeenCalledWith({
+        where: { id: 'journeyCollectionId' }
       })
-      expect(deleteSpy).toHaveBeenCalledWith({ where: { id } })
     })
 
-    it('should handle null', () => {
-      const id = 'id'
-      const findUniqueSpy = jest.spyOn(
-        prismaService.journeyCollection,
-        'findUnique'
-      )
-      findUniqueSpy.mockResolvedValue(null)
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
-      expect(resolver.journeyCollectionDelete(id, ability)).rejects.toThrow(
-        'journey collection not found'
-      )
+    it('should handle not found', async () => {
+      prismaService.journeyCollection.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journeyCollectionDelete('journeyCollectionId', ability)
+      ).rejects.toThrow('journey collection not found')
     })
 
-    it('should handle not can', () => {
-      const id = 'id'
-      const journeyCollectionSpy = jest.spyOn(
-        prismaService.journeyCollection,
-        'findUnique'
+    it('should handle not allowed', async () => {
+      prismaService.journeyCollection.findUnique.mockResolvedValueOnce(
+        journeyCollection
       )
-      journeyCollectionSpy.mockResolvedValue({
-        id: 'id',
+      await expect(
+        resolver.journeyCollectionDelete('customDomainId', ability)
+      ).rejects.toThrow('user is not allowed to delete journey collection')
+    })
+  })
+
+  describe('customDomains', () => {
+    it('should return custom domains', async () => {
+      const customDomain = { id: 'customDomainId' } as unknown as CustomDomain
+      const journeyCollection: JourneyCollection = {
+        id: 'journeyCollectionId',
         teamId: 'teamId',
         title: 'title'
+      }
+      prismaService.customDomain.findMany.mockResolvedValue([customDomain])
+
+      expect(await resolver.customDomains(journeyCollection)).toEqual([
+        customDomain
+      ])
+      expect(prismaService.customDomain.findMany).toHaveBeenCalledWith({
+        where: { journeyCollectionId: 'journeyCollectionId' }
       })
-
-      const abilitySpy = jest.spyOn(ability, 'can')
-      abilitySpy.mockImplementationOnce(() => false)
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
-      expect(resolver.journeyCollectionDelete(id, ability)).rejects.toThrow(
-        'user is not allowed to delete journey collection'
-      )
     })
   })
 
   describe('journeys', () => {
     it('should return journeys', async () => {
-      const collection = { id: 'id', teamId: 'teamId', title: 'title' }
-      const findManySpy = jest.spyOn(
-        prismaService.journeyCollectionJourneys,
-        'findMany'
-      )
-      findManySpy.mockResolvedValue([])
+      const journey = { id: 'journey' } as unknown as Journey
+      const journeyCollection: JourneyCollection = {
+        id: 'journeyCollectionId',
+        teamId: 'teamId',
+        title: 'title'
+      }
+      prismaService.journey.findMany.mockResolvedValue([journey])
 
-      const result = await resolver.journeys(collection)
-
-      expect(result).toEqual([])
-      expect(findManySpy).toHaveBeenCalledWith({
-        where: { journeyCollectionId: 'id' },
-        include: { journey: true }
+      expect(await resolver.journeys(journeyCollection)).toEqual([journey])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          journeyCollectionJourneys: {
+            some: { journeyCollectionId: 'journeyCollectionId' }
+          }
+        }
       })
-    })
-  })
-
-  it('should return empty array', async () => {
-    const collection = { id: 'id', teamId: 'teamId', title: 'title' }
-    const findManySpy = jest.spyOn(
-      prismaService.journeyCollectionJourneys,
-      'findMany'
-    )
-    findManySpy.mockResolvedValue([])
-
-    const result = await resolver.journeys(collection)
-
-    expect(result).toEqual([])
-    expect(findManySpy).toHaveBeenCalledWith({
-      where: { journeyCollectionId: 'id' },
-      include: { journey: true }
     })
   })
 })

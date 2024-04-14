@@ -19,7 +19,8 @@ import { VideoDetails } from '.'
 const VideoDetailsStory: Meta<typeof VideoDetails> = {
   ...journeysAdminConfig,
   component: VideoDetails,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoDetails',
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoDetails',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 

@@ -30,7 +30,7 @@ describe('LanguageItem', () => {
     } as unknown as NextRouter)
 
     const onClose = jest.fn()
-    const { getByRole } = render(
+    const { getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <TeamProvider>
@@ -49,6 +49,7 @@ describe('LanguageItem', () => {
 
     fireEvent.click(getByRole('menuitem', { name: 'Language' }))
     await waitFor(() => expect(getByRole('dialog')).toBeInTheDocument())
+    expect(queryByRole('menuitem')).not.toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() => expect(onClose).toHaveBeenCalled())
 

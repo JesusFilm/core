@@ -69,6 +69,7 @@ export function Menu(): ReactElement {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
+        keepMounted
         MenuListProps={{
           'aria-labelledby': 'edit-journey-actions'
         }}

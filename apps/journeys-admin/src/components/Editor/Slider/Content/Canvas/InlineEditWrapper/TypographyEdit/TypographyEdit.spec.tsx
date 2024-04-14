@@ -81,7 +81,7 @@ describe('TypographyEdit', () => {
           }}
         >
           <EditorProvider>
-            <h1 className="swiper-container">Other content</h1>
+            <h1 className="EditorCanvas">Other content</h1>
             <iframe>
               <TypographyEdit {...props} />
             </iframe>
@@ -210,7 +210,7 @@ describe('TypographyEdit', () => {
             variant: 'admin'
           }}
         >
-          <h1 className="swiper-container">Other content</h1>
+          <h1 className="EditorCanvas">Other content</h1>
           <TypographyEdit {...props} />
         </JourneyProvider>
       </MockedProvider>

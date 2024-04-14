@@ -21,7 +21,7 @@ import { Canvas } from '../../Canvas'
 const TypographyEditStory: Meta<typeof Canvas> = {
   ...simpleComponentConfig,
   component: Canvas,
-  title: 'Journeys-Admin/Editor/Canvas/TypographyEdit'
+  title: 'Journeys-Admin/Editor/Slider/Content/Canvas/TypographyEdit'
 }
 
 const heading: TreeBlock<TypographyFields> = {
