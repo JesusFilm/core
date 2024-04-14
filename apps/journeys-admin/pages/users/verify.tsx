@@ -4,7 +4,6 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Button from '@mui/material/Button'
-import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -18,18 +17,17 @@ import {
   withUserTokenSSR
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement, useState } from 'react'
 import { number, object } from 'yup'
 
 import { CreateVerificationRequest } from '../../__generated__/CreateVerificationRequest'
 import { GetMe } from '../../__generated__/GetMe'
-import i18nConfig from '../../next-i18next.config'
 import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerification/EmailVerification'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { useTeam } from '../../src/components/Team/TeamProvider'
-import { createApolloClient } from '../../src/libs/apolloClient'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 
 interface ValidateEmailProps {
   email?: string
@@ -75,6 +73,8 @@ function ValidateEmail({
     }
   )
 
+  useHandleNewAccountRedirect()
+
   const validationSchema = object().shape({
     token: number().min(100000).max(999999).required(t('Required'))
   })
@@ -111,7 +111,10 @@ function ValidateEmail({
   }
 
   return (
-    <OnboardingPageWrapper emailSubject={t('Validate NextStep Email')}>
+    <OnboardingPageWrapper
+      title={t('Verify Your Email')}
+      emailSubject={t('Validate NextStep Email')}
+    >
       <Formik
         initialValues={{ token }}
         onSubmit={handleReValidateEmail}
@@ -120,29 +123,23 @@ function ValidateEmail({
         {({ values, handleChange, handleBlur, errors, touched }) => (
           <Form noValidate autoComplete="off" data-testid="EmailInviteForm">
             <Stack textAlign="center">
-              <Typography variant="h4">{t('Verify Your Email')}</Typography>
-              <Typography variant="body1">
-                {t('To start making NextSteps journeys')}
-              </Typography>
-              <Paper sx={{ padding: '30px', mt: 7, borderRadius: '8px' }}>
-                <Stack textAlign="left" spacing={4}>
-                  <Typography variant="subtitle2">{email}</Typography>
-                  <Typography variant="body1">
-                    {t(
-                      'Email has been sent to this address with a link to verify your account. If you have not received the email after a few minutes, please check your spam folder.'
-                    )}
-                  </Typography>
-                  <Button
-                    onClick={handleResendValidationEmail}
-                    variant="contained"
-                    disabled={disableResendButton}
-                    color="secondary"
-                    fullWidth
-                  >
-                    {t('Resend Validation Email')}
-                  </Button>
-                </Stack>
-              </Paper>
+              <Stack textAlign="left" spacing={4}>
+                <Typography variant="subtitle2">{email}</Typography>
+                <Typography variant="body1">
+                  {t(
+                    'Email has been sent to this address with a link to verify your account. If you have not received the email after a few minutes, please check your spam folder.'
+                  )}
+                </Typography>
+                <Button
+                  onClick={handleResendValidationEmail}
+                  variant="contained"
+                  disabled={disableResendButton}
+                  color="secondary"
+                  fullWidth
+                >
+                  {t('Resend Validation Email')}
+                </Button>
+              </Stack>
               <Accordion
                 sx={{
                   mt: 7,
@@ -218,18 +215,15 @@ function ValidateEmail({
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ user, query, locale }) => {
-  const apolloToken = user?.id != null ? await user.getIdToken() : null
-  const apolloClient = createApolloClient(apolloToken ?? undefined)
-  const translations = await serverSideTranslations(
-    locale ?? 'en',
-    ['apps-journeys-admin', 'libs-journeys-ui'],
-    i18nConfig
-  )
+  const { translations, apolloClient } = await initAndAuthApp({
+    user,
+    locale
+  })
 
   // skip if already verified
   const apiUser = await apolloClient.query<GetMe>({
     query: GET_ME,
-    variables: { input: { redirect: undefined } }
+    variables: { input: { redirect: query.redirect ?? undefined } }
   })
   if (apiUser.data?.me?.emailVerified ?? false) {
     return {

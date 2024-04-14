@@ -140,6 +140,7 @@ export class VideoBlockResolver {
             tx
           )
       }
+
       const block = await tx.block.create({
         data: {
           ...omit(
@@ -190,6 +191,21 @@ export class VideoBlockResolver {
         throw new GraphQLError('user is not allowed to create block', {
           extensions: { code: 'FORBIDDEN' }
         })
+      // dupilicate and race condition check
+      const existingVideoOnParent = await tx.block.findFirst({
+        where: {
+          parentBlockId: input.parentBlockId,
+          typename: 'VideoBlock',
+          id: { not: block.id }
+        }
+      })
+      if (existingVideoOnParent != null)
+        throw new GraphQLError(
+          'Parent block already has an existing video block',
+          {
+            extensions: { code: 'BAD_USER_INPUT' }
+          }
+        )
       return block
     })
   }

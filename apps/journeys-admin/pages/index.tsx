@@ -41,12 +41,14 @@ function IndexPage(): ReactElement {
         mainHeaderChildren={
           <Stack
             direction="row"
-            flexGrow={1}
             justifyContent="space-between"
             alignItems="center"
+            width="100%"
           >
             <TeamSelect onboarding={router.query.onboarding === 'true'} />
-            <TeamMenu />
+            <Stack direction="row" alignItems="center">
+              <TeamMenu />
+            </Stack>
           </Stack>
         }
         sidePanelChildren={<OnboardingPanel />}
@@ -64,7 +66,7 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, redirect, translations } = await initAndAuthApp({
+  const { apolloClient, redirect, translations, flags } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -118,7 +120,8 @@ export const getServerSideProps = withUserTokenSSR({
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
-      ...translations
+      ...translations,
+      flags
     }
   }
 })

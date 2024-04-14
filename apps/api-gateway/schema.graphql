@@ -1,14 +1,16 @@
 schema
   @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
+  @link(url: "https://specs.apollo.dev/join/v0.4", for: EXECUTION)
 {
   query: Query
   mutation: Mutation
 }
 
+directive @join__directive(graphs: [join__Graph!], name: String!, args: join__DirectiveArguments) repeatable on SCHEMA | OBJECT | INTERFACE | FIELD_DEFINITION
+
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
 
-directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean, overrideLabel: String) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
@@ -505,6 +507,72 @@ input CreateVerificationRequestInput
   redirect: String
 }
 
+type CustomDomain
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  team: Team!
+  name: String!
+  apexName: String!
+  journeyCollection: JourneyCollection
+  routeAllTeamJourneys: Boolean!
+}
+
+type CustomDomainCheck
+  @join__type(graph: JOURNEYS)
+{
+  """
+  Is the domain correctly configured in the DNS?
+  If false, A Record and CNAME Record should be added by the user.
+  """
+  configured: Boolean!
+
+  """
+  Does the domain belong to the team?
+  If false, verification and verificationResponse will be populated.
+  """
+  verified: Boolean!
+
+  """Verification records to be added to the DNS to confirm ownership."""
+  verification: [CustomDomainVerification!]
+
+  """Reasoning as to why verification is required."""
+  verificationResponse: CustomDomainVerificationResponse
+}
+
+input CustomDomainCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID
+  teamId: String!
+  name: String!
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
+input CustomDomainUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
+type CustomDomainVerification
+  @join__type(graph: JOURNEYS)
+{
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse
+  @join__type(graph: JOURNEYS)
+{
+  code: String!
+  message: String!
+}
+
 scalar DateTime
   @join__type(graph: JOURNEYS)
   @join__type(graph: NEXUS)
@@ -853,6 +921,8 @@ input ImageBlockUpdateInput
   height: Int
 }
 
+scalar join__DirectiveArguments
+
 scalar join__FieldSet
 
 enum join__Graph {
@@ -894,7 +964,34 @@ type Journey
   team: Team
   strategySlug: String
   tags: [Tag!]!
+  journeyCollections: [JourneyCollection!]!
   userJourneys: [UserJourney!]
+}
+
+type JourneyCollection
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  team: Team!
+  title: String
+  customDomains: [CustomDomain!]
+  journeys: [Journey!]
+}
+
+input JourneyCollectionCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID
+  teamId: String!
+  title: String
+  journeyIds: [String!]
+}
+
+input JourneyCollectionUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  title: String
+  journeyIds: [String!]
 }
 
 input JourneyCreateInput
@@ -963,6 +1060,24 @@ input JourneysFilter
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
+}
+
+input JourneysQueryOptions
+  @join__type(graph: JOURNEYS)
+{
+  """
+  hostname filters journeys to those that belong to a team with a custom domain
+  matching the hostname.
+  """
+  hostname: String
+
+  """is this being requested from an embed url"""
+  embedded: Boolean
+
+  """
+  limit results to journeys in a journey collection (currently only available when using hostname option)
+  """
+  journeyCollection: Boolean
 }
 
 enum JourneysReportType
@@ -1400,6 +1515,10 @@ type Mutation
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainDelete(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainCheck(id: ID!): CustomDomainCheck! @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
@@ -1443,6 +1562,9 @@ type Mutation
 
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
+  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyCollectionDelete(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
@@ -1660,6 +1782,8 @@ type Query
 {
   blocks(where: BlocksFilter): [Block!]! @join__field(graph: JOURNEYS)
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
+  customDomain(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomains(teamId: ID!): [CustomDomain!]! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
   """
@@ -1678,8 +1802,10 @@ type Query
   ): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   adminJourney(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
-  journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
-  journey(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]! @join__field(graph: JOURNEYS)
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey! @join__field(graph: JOURNEYS)
+  journeyCollection(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyCollections(teamId: ID!): [JourneyCollection]! @join__field(graph: JOURNEYS)
   getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
 
   """Get a list of Visitor Information by Journey"""
@@ -2226,6 +2352,7 @@ type Team
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
+  customDomains: [CustomDomain!]!
 }
 
 input TeamCreateInput

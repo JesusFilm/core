@@ -9,7 +9,7 @@ import { auth } from '@core/nest/common/firebaseClient'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-import { UserService } from './user.service'
+import { UserService, generateSixDigitNumber } from './user.service'
 
 const authUser = {
   displayName: 'fo sho',
@@ -102,6 +102,32 @@ describe('UserService', () => {
         {
           email,
           token: expect.any(String),
+          userId: 'userId'
+        },
+        {
+          jobId: expect.any(String),
+          removeOnComplete: {
+            age: 24 * 3600 // keep up to 24 hours
+          },
+          removeOnFail: {
+            age: 24 * 3600
+          }
+        }
+      )
+    })
+
+    it('should use example token', async () => {
+      process.env.EXAMPLE_EMAIL_TOKEN = '123456'
+      const email = 'tav@example.com'
+      const userId = 'userId'
+      emailQueue.getJob.mockResolvedValue(null)
+      await userService.verifyUser(userId, email)
+      expect(removeJob).not.toHaveBeenCalled()
+      expect(emailQueue.add).toHaveBeenCalledWith(
+        'verifyUser',
+        {
+          email,
+          token: '123456',
           userId: 'userId'
         },
         {
@@ -217,6 +243,13 @@ describe('UserService', () => {
         'tho@no.co',
         undefined
       )
+    })
+  })
+
+  describe('generateSixDigitNumber', () => {
+    it('should return a string of length 6', () => {
+      const sixDigitNumber = generateSixDigitNumber()
+      expect(sixDigitNumber).toHaveLength(6)
     })
   })
 })

@@ -1,10 +1,9 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { cache } from '../../../../../libs/apolloClient/cache'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { defaultJourney } from '../../../data'
 
@@ -20,75 +19,107 @@ const SlugDialogStory: Meta<typeof SlugDialog> = {
   }
 }
 
-const SlugDialogComponent = (args): ReactElement => {
-  const [open, setOpen] = useState(true)
-
-  return (
-    <MockedProvider mocks={args.mocks}>
+const Template: StoryObj<typeof SlugDialog> = {
+  render: (args) => {
+    return (
       <JourneyProvider
         value={{
           journey: defaultJourney,
           variant: 'admin'
         }}
       >
-        <SlugDialog open={open} onClose={() => setOpen(false)} />
+        <SlugDialog {...args} open />
       </JourneyProvider>
-    </MockedProvider>
-  )
-}
-
-const Template: StoryObj<typeof SlugDialog> = {
-  render: (args) => <SlugDialogComponent args={args} />
+    )
+  }
 }
 
 export const Default = {
   ...Template,
-  args: {
-    mocks: [
-      {
-        request: {
-          query: JOURNEY_SLUG_UPDATE,
-          variables: {
-            id: defaultJourney.id,
-            input: {
-              slug: 'default'
-            }
-          }
-        },
-        result: {
-          data: {
-            journeyUpdate: {
+  parameters: {
+    apolloClient: {
+      cache: cache(),
+      mocks: [
+        {
+          request: {
+            query: JOURNEY_SLUG_UPDATE,
+            variables: {
               id: defaultJourney.id,
-              __typename: 'Journey',
-              slug: 'default'
+              input: {
+                slug: 'default'
+              }
+            }
+          },
+          result: {
+            data: {
+              journeyUpdate: {
+                id: defaultJourney.id,
+                __typename: 'Journey',
+                slug: 'default'
+              }
             }
           }
         }
-      }
-    ]
+      ]
+    }
+  }
+}
+
+export const WithCustomDomain = {
+  ...Template,
+  args: {
+    hostname: 'www.example.com'
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [
+        {
+          request: {
+            query: JOURNEY_SLUG_UPDATE,
+            variables: {
+              id: defaultJourney.id,
+              input: {
+                slug: 'default'
+              }
+            }
+          },
+          result: {
+            data: {
+              journeyUpdate: {
+                id: defaultJourney.id,
+                __typename: 'Journey',
+                slug: 'default'
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }
 
 export const Error = {
   ...Template,
-  args: {
-    mocks: [
-      {
-        request: {
-          query: JOURNEY_SLUG_UPDATE,
-          variables: {
-            id: defaultJourney.id,
-            input: {
-              slug: 'default error'
+  parameters: {
+    apolloClient: {
+      mocks: [
+        {
+          request: {
+            query: JOURNEY_SLUG_UPDATE,
+            variables: {
+              id: defaultJourney.id,
+              input: {
+                slug: 'default error'
+              }
             }
+          },
+          error: {
+            name: 'BAD_USER_INPUT',
+            message: 'Field update failed. Reload the page or try again.'
           }
-        },
-        error: {
-          name: 'USER_INPUT_ERROR',
-          message: 'Field update failed. Reload the page or try again.'
         }
-      }
-    ]
+      ]
+    }
   },
   play: async () => {
     await userEvent.type(screen.getByRole('textbox'), ' error')
