@@ -2,7 +2,7 @@ import Fade from '@mui/material/Fade'
 import Paper from '@mui/material/Paper'
 import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
-import { ReactElement } from 'react'
+import { MouseEvent, ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
@@ -18,11 +18,16 @@ export function QuickControls({ open, anchorEl }): ReactElement {
   } = useEditor()
   const isVideoBlock = selectedBlock?.__typename === 'VideoBlock'
 
+  function handleClick(e: MouseEvent<HTMLDivElement>): void {
+    e.stopPropagation()
+  }
+
   return (
     <ThemeProvider nested>
       <Popper
         open={open}
         anchorEl={anchorEl}
+        onClick={handleClick}
         placement="top"
         sx={{
           zIndex: (theme) => theme.zIndex.modal + 1
