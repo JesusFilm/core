@@ -8,8 +8,8 @@ import {
   ParserPreset
 } from '@commitlint/types'
 import config from './commitlint.config'
-import fs from 'node:fs/promises'
-import path from 'node:path'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 
 export default async () => {
   // merge queues not supported by danger-js
@@ -50,11 +50,8 @@ export default async () => {
     markdown(`> (pr title - ${danger.github.pr.title}): \n${errors}`)
   }
 
-  const pullRequestTemplate = await fs.readFile(
-    path.join(
-      __dirname,
-      '/.github/PULL_REQUEST_TEMPLATE/pull_request_template.md'
-    ),
+  const pullRequestTemplate = await readFile(
+    join(__dirname, '/.github/PULL_REQUEST_TEMPLATE/pull_request_template.md'),
     'utf8'
   )
   // check PR has description
