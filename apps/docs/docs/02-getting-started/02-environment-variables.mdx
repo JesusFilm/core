@@ -88,6 +88,15 @@ if getting started without a backend.
 
 ### Common Issues
 
+#### I changed to stg_dev environment variables but now I want to go back
+
+You might already be working with your local backend but want to try some changes against stage.
+Just run the following command (given above):
+
+```shell
+DOPPLER_CONFIG=dev nx run-many --all --target=fetch-secrets
+```
+
 #### COOKIE_SECRET_CURRENT mismatch
 
 If you are signed in your web browser to localhost before performing DOPPLER_CONFIG change then you will need to
