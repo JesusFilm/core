@@ -43,7 +43,7 @@ export function QuickControls({ open, anchorEl }): ReactElement {
             <Paper sx={{ mb: 2, p: 1 }}>
               <Stack spacing={2} direction="row">
                 <MoveBlock />
-                <DuplicateBlock variant="button" />
+                <DuplicateBlock variant="button" disabled={isVideoBlock} />
                 <DeleteBlock variant="button" />
               </Stack>
             </Paper>

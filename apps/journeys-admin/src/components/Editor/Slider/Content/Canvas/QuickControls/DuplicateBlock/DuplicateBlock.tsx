@@ -131,7 +131,7 @@ export function DuplicateBlock({
       }
     )
   }
-
+  
   return (
     <>
       {variant === 'button' ? (
@@ -140,7 +140,7 @@ export function DuplicateBlock({
           aria-label={`Duplicate ${blockType} Actions`}
           disabled={disableAction}
           onClick={handleDuplicateBlock}
-          data-testid={`Duplicate-${blockType}`}
+          data-testid={`duplicate-${blockType}`}
         >
           <CopyLeftIcon />
         </IconButton>
