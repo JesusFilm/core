@@ -53,7 +53,7 @@ export default async () => {
   // check PR has description and is different from template
 
   const pullRequestTemplate = await readFile(
-    join(__dirname, '/.github/PULL_REQUEST_TEMPLATE/pull_request_template.md'),
+    join(__dirname, '/.github/pull_request_template.md'),
     'utf8'
   )
   if (
