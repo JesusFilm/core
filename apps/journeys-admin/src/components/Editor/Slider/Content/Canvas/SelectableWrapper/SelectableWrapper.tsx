@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { MouseEvent, ReactElement, useRef } from 'react'
+import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
@@ -11,6 +11,7 @@ export function SelectableWrapper({
   block,
   children
 }: WrapperProps): ReactElement {
+  const [open, setOpen] = useState(false)
   const selectableRef = useRef<HTMLDivElement>(null)
   const {
     state: { selectedBlock },
@@ -97,6 +98,11 @@ export function SelectableWrapper({
           }
         }
       : {}
+
+  useEffect(() => {
+    setOpen(selectedBlock?.id === block.id)
+  }, [selectedBlock, block])
+
   return isSelectable ? (
     <Box
       ref={selectableRef}
@@ -125,7 +131,8 @@ export function SelectableWrapper({
     >
       {children}
       <QuickControls
-        open={selectedBlock?.id === block.id}
+        open={open}
+        block={selectedBlock}
         anchorEl={selectableRef.current}
       />
     </Box>
