@@ -177,5 +177,5 @@
       }
     }
   },
-  "tags": []
+  "tags": ["doppler_config:stg_dev"]
 }
