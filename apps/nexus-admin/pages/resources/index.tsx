@@ -8,7 +8,6 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
-import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
 
 import { getGoogleAccessToken } from '../../__generated__/getGoogleAccessToken'
 import { Resource, Resource_resource } from '../../__generated__/Resource'
@@ -100,8 +99,6 @@ const ResourcesPage: FC = () => {
   const [openPicker] = useDrivePicker()
   const [googleAccessToken, setGoogleAccessToken] = useState('')
   const [googleAccessTokenId, setGoogleAccessTokenId] = useState('')
-  const [selectedDirectory, setSelectedDirectory] =
-    useState<CallbackDoc | null>(null)
 
   const { data, loading } = useQuery<Resources>(GET_RESOURCES, {
     variables: {
@@ -166,9 +163,12 @@ const ResourcesPage: FC = () => {
       setSelectFolderEnabled: true,
       callbackFunction: (data) => {
         if (data.action === 'picked') {
-          setSelectedDirectory(data.docs[0])
-
           // TODO: send to backend the access token id and the selected directory id
+          const folderId = data.docs[0]?.id
+          console.log({
+            googleAccessTokenId,
+            folderId
+          })
         }
       }
     })
