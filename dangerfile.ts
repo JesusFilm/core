@@ -59,6 +59,8 @@ export default async () => {
     'pr matches template',
     danger.github.pr.body === pullRequestTemplate
   )
+  console.log('danger.github.pr.body', '///', danger.github.pr.body, '///')
+  console.log('pullRequestTemplate', '///', pullRequestTemplate, '///')
   if (
     danger.github.pr.body.length < 10 ||
     danger.github.pr.body === pullRequestTemplate
