@@ -13,7 +13,7 @@ export const ShortLinksTableHeader: FC = () => {
       }}
       spacing={2}
     >
-      <Typography variant="h5">Short Links</Typography>
+      <Typography variant="h5">{t('Short Links')}</Typography>
       <Typography variant="subtitle3">
         {t('Additional description if required')}
       </Typography>
