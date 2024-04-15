@@ -1,4 +1,4 @@
-import { danger, warn, markdown } from 'danger'
+import { danger, warn, markdown, fail } from 'danger'
 import lint from '@commitlint/lint'
 import load from '@commitlint/load'
 import {
@@ -49,15 +49,19 @@ export default async () => {
     })
     markdown(`> (pr title - ${danger.github.pr.title}): \n${errors}`)
   }
+  // check PR has description and is different from template
 
   const pullRequestTemplate = await readFile(
     join(__dirname, '/.github/PULL_REQUEST_TEMPLATE/pull_request_template.md'),
     'utf8'
   )
-  // check PR has description
+  console.log(
+    'pr matches template',
+    danger.github.pr.body === pullRequestTemplate
+  )
   if (
     danger.github.pr.body.length < 10 ||
-    danger.github.pr.body.trim() === pullRequestTemplate.trim()
+    danger.github.pr.body === pullRequestTemplate
   ) {
     fail(
       'This pull request needs a description (that differs from the template).'
