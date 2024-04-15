@@ -131,7 +131,7 @@ export function DuplicateBlock({
       }
     )
   }
-  
+
   return (
     <>
       {variant === 'button' ? (
