@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { styled, useTheme } from '@mui/material/styles'
+import Zoom from '@mui/material/Zoom'
 import { ReactElement, useEffect, useRef } from 'react'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
@@ -188,22 +189,21 @@ export function Slider(): ReactElement {
               xs: 'flex',
               sm: 'none'
             },
-            alignItems: 'flex-end',
+            alignItems: 'center',
             justifyContent: 'center',
-            height: activeSlide === ActiveSlide.JourneyFlow ? 16 : 0,
-            flexShrink: 0,
-            transition: (theme) => theme.transitions.create('height'),
-            overflow: 'hidden'
+            height: '32px'
           }}
         >
-          <Box
-            sx={{
-              width: 56,
-              height: 6,
-              bgcolor: '#AAACBB',
-              borderRadius: '3px'
-            }}
-          />
+          <Zoom in={activeSlide === ActiveSlide.JourneyFlow}>
+            <Box
+              sx={{
+                width: 56,
+                height: 6,
+                bgcolor: '#AAACBB',
+                borderRadius: '3px'
+              }}
+            />
+          </Zoom>
         </Box>
         <Content />
       </StyledSwiperSlide>
