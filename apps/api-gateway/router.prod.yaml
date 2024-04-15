@@ -8,20 +8,15 @@ cors:
     # journeys-admin
     - https://admin.nextstep.is
     - https://admin-stage.nextstep.is
-    - https://journeys-admin.central.jesusfilm.org
-    - https://journeys-admin.stage.central.jesusfilm.org
-    - http://localhost:4200
     # journeys
     - https://your.nextstep.is
     - https://your-stage.nextstep.is
-    - http://localhost:4100
-    # watch
-    - https://localhost:4300
     # nexus-admin
     - https://nexus.jesusfilm.org
     - https://nexus-stage.jesusfilm.org
-    - https://localhost:4500
   match_origins:
+    # any localhost
+    - '^http://localhost:\d+$'
     # any project deployed on the jesusfilm vercel account
     - '^https://([a-z0-9-]+)-jesusfilm[.]vercel[.]app$'
     # any project deployed on the jesusfilm.org domain (used primarily for watch)
