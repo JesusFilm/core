@@ -3,6 +3,7 @@ FROM node:18-alpine
 EXPOSE 4004
 
 ENV PRISMA_LOCATION_VIDEOS=/app/node_modules/.prisma/api-videos-client
+ENV NODE_ENV=production
 
 RUN apk upgrade --update-cache --available && \
     rm -rf /var/cache/apk/*
