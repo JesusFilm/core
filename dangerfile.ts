@@ -54,12 +54,10 @@ export default async () => {
     join(__dirname, '/.github/PULL_REQUEST_TEMPLATE/pull_request_template.md'),
     'utf8'
   )
-  console.log('pullRequestTemplate', pullRequestTemplate)
-  console.log('danger.github.pr.body', danger.github.pr.body)
   // check PR has description
   if (
     danger.github.pr.body.length < 10 ||
-    danger.github.pr.body === pullRequestTemplate
+    danger.github.pr.body.trim() === pullRequestTemplate.trim()
   ) {
     fail(
       'This pull request needs a description (that differs from the template).'
