@@ -184,7 +184,7 @@ export function Canvas(): ReactElement {
                 width="100%"
                 height="100%"
                 dir={rtl ? 'rtl' : 'ltr'}
-                // ref added to assist typography block drag selection logic
+                // frameRef assists to see if user is copying text from typog blocks
                 ref={frameRef}
               >
                 <ThemeProvider {...theme} rtl={rtl} locale={locale}>
