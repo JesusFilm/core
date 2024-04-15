@@ -9,6 +9,7 @@ import {
 } from '@commitlint/types'
 import config from './commitlint.config'
 import fs from 'node:fs/promises'
+import path from 'node:path'
 
 export default async () => {
   // merge queues not supported by danger-js
@@ -50,7 +51,10 @@ export default async () => {
   }
 
   const pullRequestTemplate = await fs.readFile(
-    'PULL_REQUEST_TEMPLATE.md',
+    path.join(
+      __dirname,
+      '/.github/PULL_REQUEST_TEMPLATE/pull_request_template.md'
+    ),
     'utf8'
   )
   // check PR has description
