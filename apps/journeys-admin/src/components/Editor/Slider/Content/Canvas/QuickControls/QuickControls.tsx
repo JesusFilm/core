@@ -16,6 +16,7 @@ export function QuickControls({ open, anchorEl, block }): ReactElement {
       <Popper
         open={open}
         anchorEl={anchorEl}
+        placement="top"
         sx={{
           zIndex: (theme) => theme.zIndex.modal + 1
         }}
@@ -23,7 +24,7 @@ export function QuickControls({ open, anchorEl, block }): ReactElement {
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>
-            <Paper sx={{ mt: 2, p: 1 }}>
+            <Paper sx={{ mb: 2, p: 1 }}>
               <Stack spacing={2} direction="row">
                 <MoveBlock />
                 <DuplicateBlock variant="button" />
