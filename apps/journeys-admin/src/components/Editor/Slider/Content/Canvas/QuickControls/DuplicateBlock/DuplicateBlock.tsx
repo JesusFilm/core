@@ -56,6 +56,8 @@ export function DuplicateBlock({
       const { id, parentOrder } = selectedBlock
       if (parentOrder == null) return
 
+      console.log('I got called')
+
       const { data } = await blockDuplicate({
         variables: {
           id,
