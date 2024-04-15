@@ -8,6 +8,7 @@ import {
   ParserPreset
 } from '@commitlint/types'
 import config from './commitlint.config'
+import fs from 'node:fs/promises'
 
 export default async () => {
   // merge queues not supported by danger-js
@@ -48,9 +49,18 @@ export default async () => {
     markdown(`> (pr title - ${danger.github.pr.title}): \n${errors}`)
   }
 
+  const pullRequestTemplate = await fs.readFile(
+    'PULL_REQUEST_TEMPLATE.md',
+    'utf8'
+  )
   // check PR has description
-  if (danger.github.pr.body.length < 10) {
-    fail('This pull request needs a description.')
+  if (
+    danger.github.pr.body.length < 10 ||
+    danger.github.pr.body === pullRequestTemplate
+  ) {
+    fail(
+      'This pull request needs a description (that differs from the template).'
+    )
   }
 
   // check PR has basecamp link
