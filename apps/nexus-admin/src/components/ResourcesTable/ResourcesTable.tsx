@@ -2,9 +2,10 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { IconButton, Popover, Stack, Typography } from '@mui/material'
-import { GridCellParams } from '@mui/x-data-grid'
-import { FC, useState } from 'react'
-import { Resources_resources } from '../../../__generated__/Resources'
+import { type GridCellParams } from '@mui/x-data-grid'
+import { type FC, useState } from 'react'
+
+import { type Resources_resources } from '../../../__generated__/Resources'
 import { Table } from '../Table'
 
 interface ResourcesTableProps {
@@ -63,7 +64,7 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
       <Popover
         open={Boolean(morePopup)}
         anchorEl={morePopup}
-        onClose={() => setMorePopup(null)}
+        onClose={() => { setMorePopup(null); }}
       >
         <Stack sx={{ p: 4 }} spacing={4}>
           <Stack

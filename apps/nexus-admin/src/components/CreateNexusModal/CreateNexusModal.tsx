@@ -1,8 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
 import { Button, Stack, TextField } from '@mui/material'
 import { useFormik } from 'formik'
-import { FC } from 'react'
-import * as yup from 'yup'
+import { type FC } from 'react'
+import { object, string } from 'yup'
+
 import { GET_NEXUSES } from '../../../pages'
 import { Modal } from '../Modal'
 
@@ -11,9 +12,9 @@ interface CreateNexusModalProps {
   onClose: () => void
 }
 
-const nexusValidationSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  description: yup.string().required('Description is required')
+const nexusValidationSchema = object({
+  name: string().required('Name is required'),
+  description: string().required('Description is required')
 })
 
 const NEXUS_CREATE = gql`

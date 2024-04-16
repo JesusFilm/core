@@ -1,5 +1,6 @@
 import { Button, Stack, Typography } from '@mui/material'
-import { FC } from 'react'
+import { type FC } from 'react'
+
 import { Modal } from '../Modal'
 
 interface DeleteModalProps {

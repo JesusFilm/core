@@ -9,9 +9,10 @@ import {
   TextField
 } from '@mui/material'
 import { useFormik } from 'formik'
-import { FC } from 'react'
-import * as yup from 'yup'
-import { Channel_channel } from '../../../__generated__/Channel'
+import { type FC } from 'react'
+import { object, string } from 'yup'
+
+import { type Channel_channel } from '../../../__generated__/Channel'
 import { Modal } from '../Modal'
 
 interface CreateChannelModalProps {
@@ -20,9 +21,9 @@ interface CreateChannelModalProps {
   onCreate: (channelData: Partial<Channel_channel>) => void
 }
 
-const channelValidationSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  platform: yup.string().required('Platform is required')
+const channelValidationSchema = object({
+  name: string().required('Name is required'),
+  platform: string().required('Platform is required')
 })
 
 export const CreateChannelModal: FC<CreateChannelModalProps> = ({
@@ -81,7 +82,7 @@ export const CreateChannelModal: FC<CreateChannelModalProps> = ({
             onBlur={formik.handleBlur}
             error={formik.touched.platform && Boolean(formik.errors.platform)}
           >
-            <MenuItem value={'youtube'}>Youtube</MenuItem>
+            <MenuItem value="youtube">Youtube</MenuItem>
           </Select>
         </FormControl>
         {formik.touched.platform && Boolean(formik.errors.platform) && (

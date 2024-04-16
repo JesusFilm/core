@@ -1,6 +1,6 @@
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
-import { ReactElement, ReactNode } from 'react'
+import { type ReactElement, type ReactNode } from 'react'
 
 import { adminLight } from './admin/theme'
 

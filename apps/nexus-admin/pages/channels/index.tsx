@@ -2,11 +2,15 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Stack } from '@mui/material'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
-import { Channel, Channel_channel } from '../../__generated__/Channel'
-import { ChannelCreate } from '../../__generated__/ChannelCreate'
-import { ChannelDelete } from '../../__generated__/ChannelDelete'
-import { ChannelUpdate } from '../../__generated__/ChannelUpdate'
-import { Channels, Channels_channels } from '../../__generated__/Channels'
+
+import { type Channel, type Channel_channel } from '../../__generated__/Channel'
+import { type ChannelCreate } from '../../__generated__/ChannelCreate'
+import { type ChannelDelete } from '../../__generated__/ChannelDelete'
+import {
+  type Channels,
+  type Channels_channels
+} from '../../__generated__/Channels'
+import { type ChannelUpdate } from '../../__generated__/ChannelUpdate'
 import { ChannelsTable } from '../../src/components/ChannelsTable'
 import { CreateChannelModal } from '../../src/components/CreateChannelModal'
 import { DeleteModal } from '../../src/components/DeleteModal'
@@ -127,7 +131,9 @@ const ChannelsPage = () => {
         >
           <Button
             variant="contained"
-            onClick={() => setOpenCreateChannelModal(true)}
+            onClick={() => {
+              setOpenCreateChannelModal(true)
+            }}
           >
             Create New Channel
           </Button>
@@ -147,7 +153,9 @@ const ChannelsPage = () => {
       </Stack>
       <CreateChannelModal
         open={openCreateChannelModal}
-        onClose={() => setOpenCreateChannelModal(false)}
+        onClose={() => {
+          setOpenCreateChannelModal(false)
+        }}
         onCreate={(channelData) => {
           channelCreate({
             variables: {
@@ -162,7 +170,9 @@ const ChannelsPage = () => {
       />
       <UpdateChannelModal
         open={openUpdateChannelModal}
-        onClose={() => setOpenUpdateChannelModal(false)}
+        onClose={() => {
+          setOpenUpdateChannelModal(false)
+        }}
         data={channel}
         onUpdate={(channelData) => {
           channelUpdate({
@@ -179,7 +189,9 @@ const ChannelsPage = () => {
       />
       <DeleteModal
         open={deleteChannelModal}
-        onClose={() => setDeleteChannelModal(false)}
+        onClose={() => {
+          setDeleteChannelModal(false)
+        }}
         content="Are you sure you would like to delete this channel?"
         onDelete={() => {
           channelDelete({

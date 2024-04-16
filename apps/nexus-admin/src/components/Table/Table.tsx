@@ -1,6 +1,7 @@
 import { Paper } from '@mui/material'
-import { DataGrid, GridColDef } from '@mui/x-data-grid'
-import { FC } from 'react'
+import { DataGrid, type GridColDef } from '@mui/x-data-grid'
+import { type FC } from 'react'
+
 import { TableHeader } from './TableHeader'
 
 interface TableProps {
@@ -38,8 +39,8 @@ export const Table: FC<TableProps> = ({
         }}
         slotProps={{
           toolbar: {
-            title: title,
-            subtitle: subtitle
+            title,
+            subtitle
           }
         }}
         sx={{

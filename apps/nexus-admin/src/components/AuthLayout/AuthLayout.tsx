@@ -1,5 +1,6 @@
 import { Stack } from '@mui/material'
-import { FC, ReactNode } from 'react'
+import { type FC, type ReactNode } from 'react'
+
 import { AuthNavBar } from './AuthNavBar'
 
 interface AuthLayoutProps {

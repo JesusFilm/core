@@ -1,9 +1,12 @@
-import { Button, Stack, TextField } from '@mui/material'
 import { useFormik } from 'formik'
-import { FC, useEffect } from 'react'
-import * as yup from 'yup'
-import { Resource_resource } from '../../../__generated__/Resource'
+import { type FC, useEffect } from 'react'
+import { object, string } from 'yup'
+
+import { type Resource_resource } from '../../../__generated__/Resource'
 import { Modal } from '../Modal'
+import Stack from '@mui/material/Stack'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
 
 interface UpdateResourceModalProps {
   open: boolean
@@ -12,8 +15,8 @@ interface UpdateResourceModalProps {
   onUpdate: (resourceData: Partial<Resource_resource>) => void
 }
 
-const resourceValidationSchema = yup.object({
-  name: yup.string().required('Name is required')
+const resourceValidationSchema = object({
+  name: string().required('Name is required')
 })
 
 export const UpdateResourceModal: FC<UpdateResourceModalProps> = ({

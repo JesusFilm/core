@@ -1,9 +1,10 @@
-import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import type { EmotionCache } from '@emotion/cache'
 import createEmotionServer from '@emotion/server/create-instance'
 import type { AppType, Enhancer } from 'next/dist/shared/lib/utils'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
-import { FunctionComponent, ReactElement } from 'react'
+import { type FunctionComponent, type ReactElement } from 'react'
+
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
@@ -81,7 +82,7 @@ MyDocument.getInitialProps = async (ctx) => {
   ctx.renderPage = async () =>
     await originalRenderPage({
       enhanceApp: ((App: FunctionComponent<{ emotionCache: EmotionCache }>) => {
-        return function EnhanceApp(props: any) {
+        return function EnhanceApp(props) {
           return <App emotionCache={cache} {...props} />
         }
       }) as unknown as Enhancer<AppType>

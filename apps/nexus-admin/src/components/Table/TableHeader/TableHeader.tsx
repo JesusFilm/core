@@ -1,5 +1,5 @@
 import { Stack, Typography } from '@mui/material'
-import { FC } from 'react'
+import { type FC } from 'react'
 
 interface TableHeaderProps {
   title: string

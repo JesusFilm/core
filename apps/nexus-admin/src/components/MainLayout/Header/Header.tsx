@@ -11,7 +11,7 @@ import {
   Typography
 } from '@mui/material'
 import { useUser } from 'next-firebase-auth'
-import { FC, MouseEvent, useState } from 'react'
+import { type FC, type MouseEvent, useState } from 'react'
 
 interface HeaderProps {
   title?: string

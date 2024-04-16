@@ -2,19 +2,18 @@ import { gql, useMutation } from '@apollo/client'
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import {
-  Avatar,
-  Chip,
-  IconButton,
-  Popover,
-  Stack,
-  Typography
-} from '@mui/material'
-import { GridCellParams } from '@mui/x-data-grid'
+import Avatar from '@mui/material/Avatar'
+import Chip from '@mui/material/Chip'
+import IconButton from '@mui/material/IconButton'
+import Popover from '@mui/material/Popover'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { type GridCellParams } from '@mui/x-data-grid'
 import { useGoogleLogin } from '@react-oauth/google'
-import { FC, useState } from 'react'
-import { Channels_channels } from '../../../__generated__/Channels'
-import { ConnectChannel } from '../../../__generated__/ConnectChannel'
+import { type FC, useState } from 'react'
+
+import { type Channels_channels } from '../../../__generated__/Channels'
+import { type ConnectChannel } from '../../../__generated__/ConnectChannel'
 import { GET_CHANNELS } from '../../../pages/channels'
 import { Table } from '../Table'
 
@@ -106,8 +105,8 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
         return (
           <Chip
             clickable={!row.connected}
-            label={!!row.connected ? 'Connected' : 'Connect now'}
-            color={!!row.connected ? 'success' : 'default'}
+            label={row.connected ? 'Connected' : 'Connect now'}
+            color={row.connected ? 'success' : 'default'}
             onClick={() => {
               setChannelId(row.id)
               googleLogin()
@@ -146,7 +145,9 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
       <Popover
         open={Boolean(morePopup)}
         anchorEl={morePopup}
-        onClose={() => setMorePopup(null)}
+        onClose={() => {
+          setMorePopup(null)
+        }}
       >
         <Stack sx={{ p: 4 }} spacing={4}>
           <Stack

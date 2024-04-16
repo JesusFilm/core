@@ -1,4 +1,5 @@
 import { AuthAction, withUser } from 'next-firebase-auth'
+
 import { AuthLayout } from '../src/components/AuthLayout'
 import { Loader } from '../src/components/Loader'
 import { Login } from '../src/components/Login/Login'

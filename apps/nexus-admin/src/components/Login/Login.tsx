@@ -1,8 +1,9 @@
-import { StyledFirebaseAuth } from '@core/shared/ui/StyledFirebaseAuth'
 import { Box, Stack, Typography } from '@mui/material'
 import { getApp } from 'firebase/app'
 import { GoogleAuthProvider, getAuth } from 'firebase/auth'
-import { FC, useEffect, useState } from 'react'
+import { type FC, useEffect, useState } from 'react'
+
+import { StyledFirebaseAuth } from '@core/shared/ui/StyledFirebaseAuth'
 
 export const Login: FC = () => {
   // Do not SSR FirebaseUI, because it is not supported.

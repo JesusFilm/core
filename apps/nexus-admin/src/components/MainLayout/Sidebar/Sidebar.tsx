@@ -17,7 +17,7 @@ import {
 } from '@mui/material'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { FC, ReactElement, useState } from 'react'
+import { type FC, type ReactElement, useState } from 'react'
 
 interface SidebarLink {
   id: number
@@ -74,7 +74,7 @@ export const Sidebar: FC = () => {
   return (
     <Drawer
       variant="permanent"
-      open={true}
+      open
       sx={{
         width: miniVariant ? miniDrawerWidth : drawerWidth,
         whiteSpace: 'nowrap'
@@ -92,7 +92,7 @@ export const Sidebar: FC = () => {
       }}
     >
       <Stack alignItems={miniVariant ? 'center' : 'flex-start'}>
-        <IconButton onClick={() => setMiniVariant(!miniVariant)}>
+        <IconButton onClick={() => { setMiniVariant(!miniVariant); }}>
           {miniVariant ? (
             <ArrowCircleRightIcon
               sx={{

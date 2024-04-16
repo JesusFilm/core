@@ -1,5 +1,5 @@
 import { Modal as MuiModal, Stack, Typography } from '@mui/material'
-import { FC, ReactNode } from 'react'
+import { type FC, type ReactNode } from 'react'
 
 interface ModalProps {
   title: string

@@ -1,4 +1,4 @@
-import { ApolloClient, HttpLink, NormalizedCacheObject } from '@apollo/client'
+import { ApolloClient, HttpLink, type NormalizedCacheObject } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'

@@ -10,10 +10,11 @@ import {
   Stack,
   Typography
 } from '@mui/material'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useRouter } from 'next/navigation'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
-import { Nexuses, Nexuses_nexuses } from '../__generated__/Nexuses'
+
+import { type Nexuses, type Nexuses_nexuses } from '../__generated__/Nexuses'
 import { CreateNexusModal } from '../src/components/CreateNexusModal'
 import { Loader } from '../src/components/Loader'
 
@@ -76,7 +77,7 @@ export function Index() {
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <Button onClick={() => redirectToDashboard(nexusApp.id)}>
+                  <Button onClick={() => { redirectToDashboard(nexusApp.id); }}>
                     Select
                   </Button>
                 </CardActions>
@@ -89,12 +90,12 @@ export function Index() {
           You currently don't have nexus apps. Please start by creating one.
         </Typography>
       )}
-      <Fab color="primary" onClick={() => setOpenCreateNexusModal(true)}>
+      <Fab color="primary" onClick={() => { setOpenCreateNexusModal(true); }}>
         <AddIcon />
       </Fab>
       <CreateNexusModal
         open={openCreateNexusModal}
-        onClose={() => setOpenCreateNexusModal(false)}
+        onClose={() => { setOpenCreateNexusModal(false); }}
       />
     </Stack>
   )
