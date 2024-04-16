@@ -62,7 +62,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
         direction="row"
         spacing={2}
         alignItems="center"
-        sx={{ overflow: 'hidden', flexGrow: 1 }}
+        sx={{ overflow: 'hidden', flexGrow: 0 }}
         ref={anchorRef}
         data-testid="TeamSelect"
       >
@@ -146,23 +146,25 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
           vertical: 35,
           horizontal: 'left'
         }}
-        PaperProps={{
-          sx: {
-            maxWidth: { xs: 'calc(100% - 30px)', sm: 300 },
-            mt: 4,
-            position: 'relative',
-            overflow: 'visible',
-            '&::before': {
-              backgroundColor: 'white',
-              content: '""',
-              display: 'block',
-              position: 'absolute',
-              width: 12,
-              height: 12,
-              top: -6,
-              transform: 'rotate(45deg)',
-              left: { xs: 20, sm: 10 },
-              zIndex: 1
+        slotProps={{
+          paper: {
+            sx: {
+              maxWidth: { xs: 'calc(100% - 30px)', sm: 300 },
+              mt: 4,
+              position: 'relative',
+              overflow: 'visible',
+              '&::before': {
+                backgroundColor: 'white',
+                content: '""',
+                display: 'block',
+                position: 'absolute',
+                width: 12,
+                height: 12,
+                top: -6,
+                transform: 'rotate(45deg)',
+                left: { xs: 20, sm: 10 },
+                zIndex: 1
+              }
             }
           }
         }}

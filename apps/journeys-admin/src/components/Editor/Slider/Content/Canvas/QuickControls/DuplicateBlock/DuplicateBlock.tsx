@@ -42,18 +42,18 @@ export function DuplicateBlock({
   const { t } = useTranslation('apps-journeys-admin')
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
   const {
-    state: { selectedBlock: stateSelectedBlock },
+    state: { selectedBlock },
     dispatch
   } = useEditor()
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
-  const selectedBlock = block ?? stateSelectedBlock
-  const blockType = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
-  const disableAction = selectedBlock == null || disabled
+  const currentBlock = block ?? selectedBlock
+  const blockType = currentBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
+  const disableAction = currentBlock == null || disabled
 
   const handleDuplicateBlock = async (): Promise<void> => {
-    if (selectedBlock != null && journey != null) {
-      const { id, parentOrder } = selectedBlock
+    if (currentBlock != null && journey != null) {
+      const { id, parentOrder } = currentBlock
       if (parentOrder == null) return
 
       const { data } = await blockDuplicate({
@@ -61,7 +61,7 @@ export function DuplicateBlock({
           id,
           journeyId: journey.id,
           parentOrder:
-            selectedBlock.__typename === 'StepBlock' ? null : parentOrder + 1
+            currentBlock.__typename === 'StepBlock' ? null : parentOrder + 1
         },
         update(cache, { data }) {
           if (data?.blockDuplicate != null) {
@@ -78,7 +78,7 @@ export function DuplicateBlock({
                   )
                   const duplicatedBlockRef = cache.writeFragment({
                     data:
-                      selectedBlock.__typename === 'StepBlock'
+                      currentBlock.__typename === 'StepBlock'
                         ? lastStep
                         : nextBlock,
                     fragment: gql`
@@ -95,7 +95,7 @@ export function DuplicateBlock({
         }
       })
       if (data?.blockDuplicate != null) {
-        if (selectedBlock.__typename === 'StepBlock') {
+        if (currentBlock.__typename === 'StepBlock') {
           const stepBlocks = transformer(
             data?.blockDuplicate as BlockFields[]
           ) as Array<TreeBlock<StepBlock>>
@@ -139,7 +139,7 @@ export function DuplicateBlock({
           id={`duplicate-${blockType}-actions`}
           aria-label={`Duplicate ${blockType} Actions`}
           disabled={disableAction}
-          onClick={handleDuplicateBlock}
+          onMouseUp={handleDuplicateBlock}
           data-testid={`duplicate-${blockType}`}
         >
           <CopyLeftIcon />
@@ -151,7 +151,7 @@ export function DuplicateBlock({
           })}
           icon={<CopyLeftIcon color="inherit" />}
           disabled={disableAction}
-          onClick={handleDuplicateBlock}
+          onMouseUp={handleDuplicateBlock}
           testId={`Duplicate-${blockType}`}
         />
       )}
