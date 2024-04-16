@@ -1,5 +1,6 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import { Drawer } from './Drawer'
 
@@ -27,6 +28,18 @@ describe('Drawer', () => {
     expect(screen.getByText('title')).toBeInTheDocument()
     expect(screen.getByText('children')).toBeInTheDocument()
     fireEvent.click(screen.getByLabelText('close-image-library'))
+    expect(mockHandleClose).toHaveBeenCalled()
+  })
+
+  it('should handle click away from the drawer', async () => {
+    const mockHandleClose = jest.fn()
+    render(
+      <Drawer title="title" open onClose={mockHandleClose}>
+        children
+      </Drawer>
+    )
+    expect(screen.getByText('title')).toBeInTheDocument()
+    await userEvent.click(document.body)
     expect(mockHandleClose).toHaveBeenCalled()
   })
 
