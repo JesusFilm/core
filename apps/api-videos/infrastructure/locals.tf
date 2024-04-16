@@ -1,10 +1,14 @@
 locals {
   port = 4004
   environment_variables = [
-    "PG_DATABASE_URL_VIDEOS",
+    "ALGOLIA_APPLICATION_ID",
+    "ALGOLIA_API_KEY",
+    "ALGOLIA_INDEX",
     "ARCLIGHT_API_KEY",
     "ARCLIGHT_V3_URL",
-    "CROWDIN_API_KEY"
+    "CROWDIN_API_KEY",
+    "PG_DATABASE_URL_VIDEOS",
+    "REDIS_URL"
   ]
   service_config = {
     name           = "api-videos"

@@ -1,4 +1,4 @@
-import { danger, warn, markdown } from 'danger'
+import { danger, warn, markdown, fail } from 'danger'
 import lint from '@commitlint/lint'
 import load from '@commitlint/load'
 import {
@@ -8,6 +8,9 @@ import {
   ParserPreset
 } from '@commitlint/types'
 import config from './commitlint.config'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { diffLines } from 'diff'
 
 export default async () => {
   // merge queues not supported by danger-js
@@ -47,19 +50,30 @@ export default async () => {
     })
     markdown(`> (pr title - ${danger.github.pr.title}): \n${errors}`)
   }
+  // check PR has description and is different from template
 
-  // check PR has description
-  if (danger.github.pr.body.length < 10) {
-    fail('This pull request needs a description.')
+  const pullRequestTemplate = await readFile(
+    join(__dirname, '/.github/pull_request_template.md'),
+    'utf8'
+  )
+  if (
+    danger.github.pr.body.length < 10 ||
+    danger.github.pr.body.replace(/\r\n/g, '\n') === pullRequestTemplate
+  ) {
+    fail(
+      'This pull request needs a description (that differs from the template).'
+    )
   }
 
   // check PR has basecamp link
   if (
-    !danger.github.pr.body.includes('https://3.basecamp.com/') &&
+    danger.github.pr.body.match(
+      /\(https\:\/\/3.basecamp.com\/3105655\/buckets\/\d+\/todos\/\d+\)/
+    ) == null &&
     !isDependabot
   ) {
     warn(
-      'Is this PR related to a Basecamp issue? If so link it via the PR description.'
+      'Is this PR related to a Basecamp issue? If so link it via the PR description - https://3.basecamp.com/3105655/buckets/:projectId/todos/:todoId'
     )
   }
 
