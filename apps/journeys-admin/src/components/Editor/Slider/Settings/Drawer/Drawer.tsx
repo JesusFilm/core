@@ -1,5 +1,6 @@
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
 import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import { Theme } from '@mui/material/styles'
@@ -81,53 +82,60 @@ export function Drawer({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
-    <MuiDrawer
-      data-testid="SettingsDrawer"
-      anchor={smUp ? 'right' : 'bottom'}
-      variant={open != null ? 'temporary' : 'permanent'}
-      SlideProps={{ appear: true }}
-      open={open}
-      elevation={0}
-      hideBackdrop
-      sx={{
-        '& .MuiDrawer-paper':
-          open != null
-            ? {
-                // temporary drawer
-                borderRadius: 4,
-                borderBottomLeftRadius: { xs: 0, sm: 16 },
-                borderBottomRightRadius: { xs: 0, sm: 16 },
-                width: smUp ? DRAWER_WIDTH : 'auto',
-                top: EDIT_TOOLBAR_HEIGHT + 20,
-                left: { xs: 0, sm: 'auto' },
-                right: { xs: 0, sm: 20 },
-                bottom: { xs: 0, sm: 20 },
-                height: 'auto'
-              }
-            : {
-                // permanent drawer
-                borderRadius: 4,
-                borderBottomLeftRadius: { xs: 0, sm: 16 },
-                borderBottomRightRadius: { xs: 0, sm: 16 },
-                width: smUp ? DRAWER_WIDTH : 'auto',
-                left: { xs: 0, sm: 'auto' },
-                top: { xs: 0, sm: 20 },
-                right: { xs: 0, sm: 20 },
-                bottom: { xs: 0, sm: 'unset' },
-                height: 'auto',
-                minHeight: 'calc(100% - 40px)',
-                maxHeight: 'calc(100% - 4px)'
-              }
+    <ClickAwayListener
+      onClickAway={() => {
+        if (open != null) onClose?.()
       }}
     >
-      <DrawerTitle title={title} onClose={onClose} />
-      <Box
-        data-testid="SettingsDrawerContent"
-        className="swiper-no-swiping"
-        sx={{ flexGrow: 1, overflow: 'auto', mb: { sm: 4 } }}
+      <MuiDrawer
+        data-testid="SettingsDrawer"
+        anchor={smUp ? 'right' : 'bottom'}
+        variant={open != null ? 'temporary' : 'permanent'}
+        SlideProps={{ appear: true }}
+        open={open}
+        elevation={0}
+        hideBackdrop
+        sx={{
+          position: open != null ? 'static' : 'fixed',
+          '& .MuiDrawer-paper':
+            open != null
+              ? {
+                  // temporary drawer
+                  borderRadius: 4,
+                  borderBottomLeftRadius: { xs: 0, sm: 16 },
+                  borderBottomRightRadius: { xs: 0, sm: 16 },
+                  width: smUp ? DRAWER_WIDTH : 'auto',
+                  top: EDIT_TOOLBAR_HEIGHT + 20,
+                  left: { xs: 0, sm: 'auto' },
+                  right: { xs: 0, sm: 20 },
+                  bottom: { xs: 0, sm: 20 },
+                  height: 'auto'
+                }
+              : {
+                  // permanent drawer
+                  borderRadius: 4,
+                  borderBottomLeftRadius: { xs: 0, sm: 16 },
+                  borderBottomRightRadius: { xs: 0, sm: 16 },
+                  width: smUp ? DRAWER_WIDTH : 'auto',
+                  left: { xs: 0, sm: 'auto' },
+                  top: { xs: 0, sm: 20 },
+                  right: { xs: 0, sm: 20 },
+                  bottom: { xs: 0, sm: 'unset' },
+                  height: 'auto',
+                  minHeight: 'calc(100% - 40px)',
+                  maxHeight: 'calc(100% - 4px)'
+                }
+        }}
       >
-        {children}
-      </Box>
-    </MuiDrawer>
+        <DrawerTitle title={title} onClose={onClose} />
+        <Box
+          data-testid="SettingsDrawerContent"
+          className="swiper-no-swiping"
+          sx={{ flexGrow: 1, overflow: 'auto', mb: { sm: 4 } }}
+        >
+          {children}
+        </Box>
+      </MuiDrawer>
+    </ClickAwayListener>
   )
 }
