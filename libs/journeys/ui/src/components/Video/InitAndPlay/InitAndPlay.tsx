@@ -199,7 +199,9 @@ export function InitAndPlay({
     if (player == null || autoplay !== true) return
 
     if (activeStep) {
-      const onFirstStep = activeBlock?.parentOrder === 0
+      const block = activeBlock.children[0]?.children[0] ?? undefined
+      const onFirstStep =
+        block?.__typename === 'VideoBlock' && activeBlock?.parentOrder === 0
       if (onFirstStep) {
         player.muted(true)
       }

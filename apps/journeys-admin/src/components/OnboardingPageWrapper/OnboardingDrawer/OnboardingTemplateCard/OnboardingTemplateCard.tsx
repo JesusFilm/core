@@ -23,9 +23,13 @@ export function OnboardingTemplateCard({
     <>
       {templateId != null && (
         <Stack
-          spacing={{ xs: 4, md: 0 }}
+          spacing={{ xs: 5, md: 0 }}
           justifyContent={{ xs: 'flex-start', sm: 'center' }}
           direction={{ xs: 'row', md: 'column' }}
+          sx={{
+            width: '100%',
+            height: 'inherit'
+          }}
         >
           <Stack
             sx={{
@@ -33,8 +37,8 @@ export function OnboardingTemplateCard({
               backgroundColor:
                 data?.journey != null ? 'background.default' : 'transparent',
               overflow: 'hidden',
-              height: { xs: 60, sm: 140, md: 200 },
-              width: { xs: 60, sm: 140, md: 200 },
+              height: { xs: 58, md: 244 },
+              width: { xs: 59, md: 'inherit' },
               borderRadius: { xs: 2, md: 0 },
               borderTopLeftRadius: { md: 12 },
               borderTopRightRadius: { md: 12 }
@@ -84,20 +88,23 @@ function OnboardingTemplateCardDetails({
       data-testid="OnboardingTemplateCardDetails"
       direction="column"
       sx={{
-        px: { xs: 0, sm: 5 },
-        pb: { xs: 0, sm: 5 },
-        pt: { xs: 0, sm: 4 },
+        px: { xs: 0, md: 4 },
+        pb: { xs: 0, md: 4 },
+        pt: { xs: 0, md: 4 },
         borderWidth: { xs: 0, md: 1 },
         borderStyle: 'solid',
         borderColor: 'divider',
         borderTop: 'none',
         borderBottomLeftRadius: 12,
-        borderBottomRightRadius: 12
+        borderBottomRightRadius: 12,
+        width: 244,
+        height: { xs: 55, md: 100 }
       }}
     >
       <Typography
-        variant="overline2"
+        variant="overline"
         sx={{
+          display: { xs: 'none', sm: 'block' },
           color: (theme) => theme.palette.grey[700]
         }}
       >
@@ -106,33 +113,49 @@ function OnboardingTemplateCardDetails({
       <Typography
         variant="subtitle1"
         sx={{
-          my: 1,
-          display: { xs: 'none', sm: 'block' }
+          mt: 1,
+          display: { xs: 'none', md: '-webkit-box' },
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          WebkitBoxOrient: 'vertical',
+          WebkitLineClamp: 2
         }}
       >
         {journey?.title != null ? (
-          journey?.title
+          journey.title
         ) : (
           <Skeleton
             data-testid="OnboardingTemplateCardDetails"
             sx={{
               transform: 'scale(1, 0.8)',
               width: '100%',
-              height: 46,
+              height: 55,
               maxWidth: 200
             }}
           />
         )}
       </Typography>
       <Typography
+        variant="overline2"
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+          color: (theme) => theme.palette.grey[700]
+        }}
+      >
+        {t('Journey Template')}
+      </Typography>
+      <Typography
         variant="subtitle2"
         sx={{
-          my: 1,
-          display: { xs: 'block', sm: 'none' }
+          display: { xs: '-webkit-box', md: 'none' },
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          WebkitBoxOrient: 'vertical',
+          WebkitLineClamp: 2
         }}
       >
         {journey?.title != null ? (
-          journey?.title
+          journey.title
         ) : (
           <Skeleton
             data-testid="OnboardingTemplateCardDetails"

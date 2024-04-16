@@ -8,12 +8,15 @@ cors:
     # journeys-admin
     - https://admin.nextstep.is
     - https://admin-stage.nextstep.is
-    - https://journeys-admin.central.jesusfilm.org
-    - https://journeys-admin.stage.central.jesusfilm.org
     # journeys
     - https://your.nextstep.is
     - https://your-stage.nextstep.is
+    # nexus-admin
+    - https://nexus.jesusfilm.org
+    - https://nexus-stage.jesusfilm.org
   match_origins:
+    # any localhost
+    - '^http://localhost:\d+$'
     # any project deployed on the jesusfilm vercel account
     - '^https://([a-z0-9-]+)-jesusfilm[.]vercel[.]app$'
     # any project deployed on the jesusfilm.org domain (used primarily for watch)
@@ -39,9 +42,6 @@ telemetry:
   instrumentation:
     spans:
       mode: spec_compliant
-      router:
-        attributes:
-          dd.trace_id: true
   exporters:
     tracing:
       otlp:
