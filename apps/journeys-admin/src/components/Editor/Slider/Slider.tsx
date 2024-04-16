@@ -191,7 +191,7 @@ export function Slider(): ReactElement {
             },
             alignItems: 'center',
             justifyContent: 'center',
-            height: '32px'
+            height: '40px'
           }}
         >
           <Zoom in={activeSlide === ActiveSlide.JourneyFlow}>
