@@ -35,6 +35,8 @@ on:
         required: true
       DOPPLER_API_NEXUS_TOKEN:
         required: true
+      DOPPLER_DOCS_TOKEN:
+        required: true
       DOPPLER_JOURNEYS_TOKEN:
         required: true
       DOPPLER_JOURNEYS_ADMIN_TOKEN:
