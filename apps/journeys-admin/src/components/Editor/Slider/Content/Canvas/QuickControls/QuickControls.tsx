@@ -10,7 +10,7 @@ import { DeleteBlock } from './DeleteBlock'
 import { DuplicateBlock } from './DuplicateBlock'
 import { MoveBlock } from './MoveBlock'
 
-export function QuickControls({ open, anchorEl, block }): ReactElement {
+export function QuickControls({ open, anchorEl }): ReactElement {
   return (
     <ThemeProvider nested>
       <Popper
@@ -28,7 +28,7 @@ export function QuickControls({ open, anchorEl, block }): ReactElement {
               <Stack spacing={2} direction="row">
                 <MoveBlock />
                 <DuplicateBlock variant="button" />
-                <DeleteBlock variant="button" block={block} />
+                <DeleteBlock variant="button" />
               </Stack>
             </Paper>
           </Fade>

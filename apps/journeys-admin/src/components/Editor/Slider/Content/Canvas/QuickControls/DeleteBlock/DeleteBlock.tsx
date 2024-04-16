@@ -77,7 +77,7 @@ export function DeleteBlock({
         if (
           data?.blockDelete != null &&
           deletedBlockParentOrder != null &&
-          block?.id === stateSelectedBlock?.id
+          (block == null || block?.id === stateSelectedBlock?.id)
         ) {
           const selected = getSelected({
             parentOrder: deletedBlockParentOrder,
