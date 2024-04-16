@@ -60,7 +60,7 @@ export function ShareItem({
   }
   function handleCloseMenu(): void {
     setAnchorEl(null)
-    closeMenu?.()
+    closeMenu?.() // test e2e
   }
   function setRoute(param: string): void {
     router.query.param = param
