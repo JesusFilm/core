@@ -44,12 +44,12 @@ export function DeleteBlock({
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
   const {
-    state: { selectedBlock: stateSelectedBlock, selectedStep, steps },
+    state: { selectedBlock, selectedStep, steps },
     dispatch
   } = useEditor()
-  const selectedBlock = block ?? stateSelectedBlock
+  const currentBlock = block ?? selectedBlock
 
-  const blockType = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
+  const blockType = currentBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const [openDialog, setOpenDialog] = useState(false)
   const handleOpenDialog = (): void => setOpenDialog(true)
   const handleCloseDialog = (): void => {
@@ -57,27 +57,27 @@ export function DeleteBlock({
     closeMenu?.()
   }
 
-  const disableAction = selectedBlock == null || disabled
+  const disableAction = currentBlock == null || disabled
 
   const handleDeleteBlock = async (): Promise<void> => {
-    if (selectedBlock == null || journey == null || steps == null) return
+    if (currentBlock == null || journey == null || steps == null) return
 
-    const deletedBlockParentOrder = selectedBlock.parentOrder
-    const deletedBlockType = selectedBlock.__typename
+    const deletedBlockParentOrder = currentBlock.parentOrder
+    const deletedBlockType = currentBlock.__typename
     const stepsBeforeDelete = steps
     const stepBeforeDelete = selectedStep
 
     await blockDelete({
       variables: {
-        id: selectedBlock.id,
+        id: currentBlock.id,
         journeyId: journey.id,
-        parentBlockId: selectedBlock.parentBlockId
+        parentBlockId: currentBlock.parentBlockId
       },
       update(cache, { data }) {
         if (
           data?.blockDelete != null &&
           deletedBlockParentOrder != null &&
-          (block == null || block?.id === stateSelectedBlock?.id)
+          (block == null || block?.id === selectedBlock?.id)
         ) {
           const selected = getSelected({
             parentOrder: deletedBlockParentOrder,
@@ -88,7 +88,7 @@ export function DeleteBlock({
           })
           selected != null && dispatch(selected)
         }
-        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journey.id)
+        blockDeleteUpdate(currentBlock, data?.blockDelete, cache, journey.id)
       }
     })
 

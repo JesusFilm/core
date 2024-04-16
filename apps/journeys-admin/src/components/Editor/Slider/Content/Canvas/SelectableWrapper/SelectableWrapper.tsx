@@ -130,11 +130,7 @@ export function SelectableWrapper({
       onMouseDown={blockNonSelectionEvents}
     >
       {children}
-      <QuickControls
-        open={open}
-        block={selectedBlock}
-        anchorEl={selectableRef.current}
-      />
+      <QuickControls open={open} anchorEl={selectableRef.current} />
     </Box>
   ) : (
     children

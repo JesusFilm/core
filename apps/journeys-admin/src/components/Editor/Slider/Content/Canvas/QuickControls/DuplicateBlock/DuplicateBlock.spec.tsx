@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
@@ -110,7 +110,7 @@ describe('DuplicateBlock', () => {
     const duplicateBlockResultMock = jest.fn(() => ({
       ...duplicateBlockMock.result
     }))
-    const { getByRole, getByTestId } = render(
+    render(
       <MockedProvider
         mocks={[{ ...duplicateBlockMock, result: duplicateBlockResultMock }]}
       >
@@ -128,9 +128,9 @@ describe('DuplicateBlock', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    const button = getByRole('button')
-    expect(button).toContainElement(getByTestId('CopyLeftIcon'))
-    userEvent.click(button)
+    const button = screen.getByRole('button')
+    expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
+    await userEvent.click(button)
     await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
   })
 
@@ -156,7 +156,7 @@ describe('DuplicateBlock', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    userEvent.click(getByRole('menuitem', { name: 'Duplicate Block' }))
+    await userEvent.click(getByRole('menuitem', { name: 'Duplicate Block' }))
     await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
   })
 
@@ -164,7 +164,7 @@ describe('DuplicateBlock', () => {
     const duplicateCardResultMock = jest.fn(() => ({
       ...duplicateCardMock.result
     }))
-    const { getByRole, getByTestId } = render(
+    render(
       <MockedProvider
         mocks={[{ ...duplicateCardMock, result: duplicateCardResultMock }]}
       >
@@ -182,9 +182,9 @@ describe('DuplicateBlock', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    const button = getByRole('button')
-    expect(button).toContainElement(getByTestId('CopyLeftIcon'))
-    userEvent.click(button)
+    const button = screen.getByRole('button')
+    expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
+    await userEvent.click(button)
     await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
   })
 
@@ -192,7 +192,7 @@ describe('DuplicateBlock', () => {
     const duplicateCardResultMock = jest.fn(() => ({
       ...duplicateCardMock.result
     }))
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[{ ...duplicateCardMock, result: duplicateCardResultMock }]}
       >
@@ -210,7 +210,9 @@ describe('DuplicateBlock', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    userEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
+    await userEvent.click(
+      screen.getByRole('menuitem', { name: 'Duplicate Card' })
+    )
     await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
   })
 
@@ -219,7 +221,7 @@ describe('DuplicateBlock', () => {
     const duplicateCardResultMock = jest.fn(() => ({
       ...duplicateCardMock.result
     }))
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[{ ...duplicateCardMock, result: duplicateCardResultMock }]}
       >
@@ -240,31 +242,33 @@ describe('DuplicateBlock', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    userEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
+    await userEvent.click(
+      screen.getByRole('menuitem', { name: 'Duplicate Card' })
+    )
     await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
     await waitFor(() => expect(handleClickMock).toHaveBeenCalled())
   })
 
   it('should be disabled if nothing is selected', () => {
-    const { getByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider>
           <DuplicateBlock variant="button" />
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toBeDisabled()
+    expect(screen.getByRole('button')).toBeDisabled()
   })
 
   it('should be disabled if manually disabling button', () => {
-    const { getByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider>
           <DuplicateBlock variant="button" disabled />
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toBeDisabled()
+    expect(screen.getByRole('button')).toBeDisabled()
   })
 
   it('should duplicate the card that is passed in', async () => {
@@ -317,7 +321,7 @@ describe('DuplicateBlock', () => {
       ...selectedStepDuplicateMock.result
     }))
 
-    const { getByRole, getByTestId } = render(
+    render(
       <MockedProvider
         mocks={[
           passedInStepDuplicateMock,
@@ -341,9 +345,9 @@ describe('DuplicateBlock', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    const button = getByRole('button')
-    expect(button).toContainElement(getByTestId('CopyLeftIcon'))
-    userEvent.click(button)
+    const button = screen.getByRole('button')
+    expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
+    await userEvent.click(button)
     await waitFor(() =>
       expect(passedInStepDuplicateMock.result).toHaveBeenCalled()
     )
