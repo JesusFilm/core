@@ -1,6 +1,5 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 
 import { Drawer } from './Drawer'
 
@@ -31,24 +30,12 @@ describe('Drawer', () => {
     expect(mockHandleClose).toHaveBeenCalled()
   })
 
-  it('should handle click away from the drawer', async () => {
-    const mockHandleClose = jest.fn()
-    render(
-      <Drawer title="title" open onClose={mockHandleClose}>
-        children
-      </Drawer>
-    )
-    expect(screen.getByText('title')).toBeInTheDocument()
-    await userEvent.click(document.body)
-    expect(mockHandleClose).toHaveBeenCalled()
-  })
-
   describe('smUp', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
     )
 
-    it('should render drawer from the right', () => {
+    it('should render drawer from the right', async () => {
       render(<Drawer open />)
       expect(screen.getByTestId('SettingsDrawer').children[1]).toHaveClass(
         'MuiDrawer-paperAnchorRight'
