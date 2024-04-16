@@ -1,14 +1,14 @@
-variable "task_name" {
+variable "name" {
   type        = string
   description = "Name of the task for resource naming"
 }
 
-variable "task_cpu" {
+variable "cpu" {
   default     = 512
   description = "CPU units to allocate to your job (vCPUs * 1024)"
 }
 
-variable "task_memory" {
+variable "memory" {
   default     = 1024
   description = "In MiB"
 }

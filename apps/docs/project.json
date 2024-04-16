@@ -52,6 +52,16 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
     },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_DOCS_TOKEN doppler secrets download --no-file --format=env --project docs > apps/docs/.env"
+          }
+        ]
+      }
+    },
     "extract-translations": {
       "executor": "nx:run-commands",
       "options": {

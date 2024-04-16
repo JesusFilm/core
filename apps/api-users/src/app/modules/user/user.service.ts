@@ -1,3 +1,5 @@
+import crypto from 'crypto'
+
 import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
@@ -8,6 +10,10 @@ import { auth, firebaseClient } from '@core/nest/common/firebaseClient'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { VerifyUserJob } from '../email/email.consumer'
+
+export function generateSixDigitNumber(): string {
+  return crypto.randomInt(100000, 999999).toString()
+}
 
 @Injectable()
 export class UserService {
@@ -93,7 +99,11 @@ export class UserService {
     email: string,
     redirect?: string
   ): Promise<void> {
-    const token = Math.floor(100000 + Math.random() * 900000).toString() // six digit, first is not 0
+    const isExample = email.endsWith('@example.com')
+    const token = isExample
+      ? process.env.EXAMPLE_EMAIL_TOKEN ?? ''
+      : generateSixDigitNumber()
+
     const job = await this.emailQueue.getJob(userId)
     if (job != null) {
       await job.remove()

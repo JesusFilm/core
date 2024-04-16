@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { MouseEvent, ReactElement, useRef } from 'react'
+import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
@@ -11,6 +11,7 @@ export function SelectableWrapper({
   block,
   children
 }: WrapperProps): ReactElement {
+  const [open, setOpen] = useState(false)
   const selectableRef = useRef<HTMLDivElement>(null)
   const {
     state: { selectedBlock },
@@ -55,7 +56,6 @@ export function SelectableWrapper({
       updateEditor(block)
       editBlock()
     } else if (block.__typename === 'RadioOptionBlock') {
-      e.stopPropagation()
       const parentSelected = selectedBlock?.id === block.parentBlockId
       const siblingSelected =
         selectedBlock?.parentBlockId === block.parentBlockId
@@ -99,41 +99,39 @@ export function SelectableWrapper({
         }
       : {}
 
+  useEffect(() => {
+    setOpen(selectedBlock?.id === block.id)
+  }, [selectedBlock, block])
+
   return isSelectable ? (
-    <>
-      <Box
-        ref={selectableRef}
-        data-testid={`SelectableWrapper-${block.id}`}
-        className={
-          block.__typename === 'RadioOptionBlock'
-            ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
-            : ''
-        }
-        sx={{
-          '&:first-child': {
-            '& > *': { mt: '0px' }
-          },
-          '&:last-child': {
-            '& > *': { mb: '0px' }
-          },
-          borderRadius: block.__typename === 'RadioOptionBlock' ? '8px' : '4px',
-          outline:
-            selectedBlock?.id === block.id ? '2px solid #C52D3A' : 'none',
-          outlineOffset: '5px',
-          zIndex: selectedBlock?.id === block.id ? 1 : 0,
-          ...videoOutlineStyles
-        }}
-        onClickCapture={handleSelectBlock}
-        onClick={blockNonSelectionEvents}
-        onMouseDown={blockNonSelectionEvents}
-      >
-        {children}
-      </Box>
-      <QuickControls
-        open={selectedBlock?.id === block.id}
-        anchorEl={selectableRef.current}
-      />
-    </>
+    <Box
+      ref={selectableRef}
+      data-testid={`SelectableWrapper-${block.id}`}
+      className={
+        block.__typename === 'RadioOptionBlock'
+          ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
+          : ''
+      }
+      sx={{
+        '&:first-child': {
+          '& > *': { mt: '0px' }
+        },
+        '&:last-child': {
+          '& > *': { mb: '0px' }
+        },
+        borderRadius: block.__typename === 'RadioOptionBlock' ? '8px' : '4px',
+        outline: selectedBlock?.id === block.id ? '2px solid #C52D3A' : 'none',
+        outlineOffset: '5px',
+        zIndex: selectedBlock?.id === block.id ? 1 : 0,
+        ...videoOutlineStyles
+      }}
+      onClickCapture={handleSelectBlock}
+      onClick={blockNonSelectionEvents}
+      onMouseDown={blockNonSelectionEvents}
+    >
+      {children}
+      <QuickControls open={open} anchorEl={selectableRef.current} />
+    </Box>
   ) : (
     children
   )

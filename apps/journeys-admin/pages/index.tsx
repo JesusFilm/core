@@ -41,12 +41,14 @@ function IndexPage(): ReactElement {
         mainHeaderChildren={
           <Stack
             direction="row"
-            flexGrow={1}
             justifyContent="space-between"
             alignItems="center"
+            width="100%"
           >
             <TeamSelect onboarding={router.query.onboarding === 'true'} />
-            <TeamMenu />
+            <Stack direction="row" alignItems="center">
+              <TeamMenu />
+            </Stack>
           </Stack>
         }
         sidePanelChildren={<OnboardingPanel />}
