@@ -99,45 +99,45 @@ export function FeltNeedsButton({
   const image = tagImageData?.tagImg
 
   return tag != null ? (
-    image != null ? (
-      <ButtonBase
-        key={`${tagLabel ?? 'felt-needs'}-button}`}
-        sx={{
-          backgroundColor: 'grey',
-          padding: '32px 28px',
-          color: 'white',
-          borderRadius: '8px',
-          width: { xs: '150px', md: '222px' },
-          height: { xs: '56px', md: '110px' },
-          overflow: 'hidden',
-          '&:focus': {
-            outline: '2px solid',
-            outlineColor: theme.palette.primary.main,
-            outlineOffset: '2px'
-          },
-          '&:hover': {
-            '& .hoverStyles': {
-              transform: 'scale(1.05)'
-            }
-          },
+    <ButtonBase
+      key={`${tagLabel ?? 'felt-needs'}-button}`}
+      sx={{
+        backgroundColor: 'grey',
+        padding: '32px 28px',
+        color: 'white',
+        borderRadius: '8px',
+        width: { xs: '150px', md: '222px' },
+        height: { xs: '56px', md: '110px' },
+        overflow: 'hidden',
+        '&:focus': {
+          outline: '2px solid',
+          outlineColor: theme.palette.primary.main,
+          outlineOffset: '2px'
+        },
+        '&:hover': {
           '& .hoverStyles': {
-            transition: theme.transitions.create('transform')
+            transform: 'scale(1.05)'
           }
+        },
+        '& .hoverStyles': {
+          transition: theme.transitions.create('transform')
+        }
+      }}
+      onClick={() => tag?.id != null && onClick(tag.id)}
+    >
+      <Box
+        data-testid="gradientLayer"
+        sx={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 2,
+          background: tagImageData?.backgroundStyle
         }}
-        onClick={() => tag?.id != null && onClick(tag.id)}
-      >
-        <Box
-          data-testid="gradientLayer"
-          sx={{
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 2,
-            background: tagImageData?.backgroundStyle
-          }}
-        />
+      />
+      {image != null && (
         <NextImage
           priority
           className="hoverStyles"
@@ -148,41 +148,38 @@ export function FeltNeedsButton({
           }px) 150px, 222px`}
           fill
         />
-        <Typography
-          className="hoverStyles"
-          variant="h3"
-          sx={{
-            zIndex: 3,
-            display: { xs: 'none', md: 'flex' },
-            position: 'absolute',
-            opacity: '70%',
-            left: 12,
-            bottom: 8,
-            mixBlendMode: 'plus-lighter'
-          }}
-        >
-          {tagLabel ?? <Skeleton width={80} />}
-        </Typography>
-        <Typography
-          className="hoverStyles"
-          variant="subtitle2"
-          sx={{
-            zIndex: 1,
-            display: { md: 'none' },
-            position: 'absolute',
-            opacity: '70%',
-            left: 8,
-            bottom: 4,
-            mixBlendMode: 'plus-lighter'
-          }}
-        >
-          {tagLabel ?? <Skeleton width={80} />}
-        </Typography>
-      </ButtonBase>
-    ) : (
-      // Hack to return something since must return element with renderProps
-      <></>
-    )
+      )}
+      <Typography
+        className="hoverStyles"
+        variant="h3"
+        sx={{
+          zIndex: 3,
+          display: { xs: 'none', md: 'flex' },
+          position: 'absolute',
+          opacity: '70%',
+          left: 12,
+          bottom: 8,
+          mixBlendMode: 'plus-lighter'
+        }}
+      >
+        {tagLabel ?? <Skeleton width={80} />}
+      </Typography>
+      <Typography
+        className="hoverStyles"
+        variant="subtitle2"
+        sx={{
+          zIndex: 1,
+          display: { md: 'none' },
+          position: 'absolute',
+          opacity: '70%',
+          left: 8,
+          bottom: 4,
+          mixBlendMode: 'plus-lighter'
+        }}
+      >
+        {tagLabel ?? <Skeleton width={80} />}
+      </Typography>
+    </ButtonBase>
   ) : (
     <Skeleton
       data-testid="felt-needs-button-loading"

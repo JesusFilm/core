@@ -196,6 +196,7 @@ export function DomainNameForm({
             id="name"
             name="name"
             autoFocus
+            autoComplete="off"
             fullWidth
             value={values.name}
             placeholder="your.nextstep.is"

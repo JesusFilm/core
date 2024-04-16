@@ -33,6 +33,8 @@ on:
         required: true
       DOPPLER_API_MEDIA_TOKEN:
         required: true
+      DOPPLER_DOCS_TOKEN:
+        required: true
       DOPPLER_JOURNEYS_TOKEN:
         required: true
       DOPPLER_JOURNEYS_ADMIN_TOKEN:
