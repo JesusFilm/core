@@ -23,9 +23,9 @@ export function VideoContainerPage({
 }: VideoContainerPageProps): ReactElement {
   const { snippet, slug, variant } = useVideo()
   const { loading, children } = useVideoChildren(variant?.slug)
-  const router = useRouter()
+  // const router = useRouter()
   const [shareDialog, setShareDialog] = useState<boolean>(false)
-  const routeArray: string[] = []
+  // const routeArray: string[] = []
   const realChildren = children.filter((video) => video.variant !== null)
   function handleOpenDialog(): void {
     setShareDialog(true)
@@ -35,13 +35,13 @@ export function VideoContainerPage({
     setShareDialog(false)
   }
 
-  if (router != null) {
-    Object.values(router?.query).forEach((value) => {
-      if (typeof value === 'string') {
-        routeArray.push(value)
-      }
-    })
-  }
+  // if (router != null) {
+  //   Object.values(router?.query).forEach((value) => {
+  //     if (typeof value === 'string') {
+  //       routeArray.push(value)
+  //     }
+  //   })
+  // }
 
   return (
     <PageWrapper
@@ -66,9 +66,10 @@ export function VideoContainerPage({
           />
           <Box>
             {loading ? (
-              <VideoGrid loading variant="expanded" />
+              <VideoGrid loading languageId={languageId} variant="expanded" />
             ) : (
               <VideoGrid
+                languageId={languageId}
                 containerSlug={slug}
                 videos={realChildren}
                 variant="expanded"
