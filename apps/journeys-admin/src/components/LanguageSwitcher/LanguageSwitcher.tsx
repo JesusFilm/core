@@ -130,7 +130,7 @@ export function LanguageSwitcher({
                 </Button>
               }
             >
-              {t('Are you sure you want to change language?', {
+              {t('WWould you like to revert to previous language?', {
                 lng: previousLanguageCode
               })}
             </Alert>
