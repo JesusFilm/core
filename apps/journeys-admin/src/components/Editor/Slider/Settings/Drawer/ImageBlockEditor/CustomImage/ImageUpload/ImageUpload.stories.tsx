@@ -11,7 +11,8 @@ import { ImageUpload } from '.'
 const ImageUploadStory: Meta<typeof ImageUpload> = {
   ...simpleComponentConfig,
   component: ImageUpload,
-  title: 'Journeys-Admin/Editor/ImageBlockEditor/CustomImage/ImageUpload'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/ImageBlockEditor/CustomImage/ImageUpload'
 }
 
 type Story = StoryObj<ComponentProps<typeof ImageUpload>>
