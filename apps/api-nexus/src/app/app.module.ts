@@ -1,18 +1,18 @@
-import { join } from 'path';
+import { join } from 'path'
 
 import {
   ApolloFederationDriver,
-  ApolloFederationDriverConfig,
-} from '@nestjs/apollo';
-import { Module } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { LoggerModule } from 'nestjs-pino';
+  ApolloFederationDriverConfig
+} from '@nestjs/apollo'
+import { Module } from '@nestjs/common'
+import { GraphQLModule } from '@nestjs/graphql'
+import { LoggerModule } from 'nestjs-pino'
 
-import { BatchModule } from './modules/batch/batch.module';
-import { BullMQModule } from './modules/bullMQ/bullMQ.module';
-import { ChannelsModule } from './modules/channel/channel.module';
-import { NexusModule } from './modules/nexus/nexus.module';
-import { ResourceModule } from './modules/resource/resource.module';
+import { BatchModule } from './modules/batch/batch.module'
+import { BullMQModule } from './modules/bullMQ/bullMQ.module'
+import { ChannelsModule } from './modules/channel/channel.module'
+import { NexusModule } from './modules/nexus/nexus.module'
+import { ResourceModule } from './modules/resource/resource.module'
 
 @Module({
   imports: [
@@ -27,16 +27,16 @@ import { ResourceModule } from './modules/resource/resource.module';
           ? [join(process.cwd(), 'apps/api-nexus/src/app/**/*.graphql')]
           : [join(process.cwd(), 'assets/**/*.graphql')],
       context: ({ req }) => ({ headers: req.headers }),
-      cache: 'bounded',
+      cache: 'bounded'
     }),
     LoggerModule.forRoot({
       pinoHttp: {
         formatters: {
-          level: (label, _number) => ({ level: label }),
+          level: (label, _number) => ({ level: label })
         },
         redact: ['req.headers.authorization'],
         autoLogging: {
-          ignore: (req) => req.url === '/.well-known/apollo/server-health',
+          ignore: (req) => req.url === '/.well-known/apollo/server-health'
         },
         transport:
           process.env.NODE_ENV !== 'production'
@@ -45,15 +45,15 @@ import { ResourceModule } from './modules/resource/resource.module';
                 options: {
                   singleLine: true,
                   colorize: true,
-                  timestampKey: '',
-                },
+                  timestampKey: ''
+                }
               }
             : undefined,
-        level: process.env.NODE_ENV !== 'production' ? 'trace' : 'info',
-      },
+        level: process.env.NODE_ENV !== 'production' ? 'trace' : 'info'
+      }
     }),
-    BullMQModule,
+    BullMQModule
   ],
-  providers: [],
+  providers: []
 })
 export class AppModule {}

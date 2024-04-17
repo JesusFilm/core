@@ -1,17 +1,17 @@
-import { Module } from '@nestjs/common';
+import { Module } from '@nestjs/common'
 
-import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
-import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
-import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
-import { PrismaService } from '../../lib/prisma.service';
-import { YoutubeService } from '../../lib/youtube/youtubeService';
-import { BatchModule } from '../batch/batch.module';
-import { BatchService } from '../batch/batchService';
-import { BullMQModule } from '../bullMQ/bullMQ.module';
-import { GoogleDriveModule } from '../google-drive/googleDrive.module';
-import { GoogleDriveService } from '../google-drive/googleDriveService';
+import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
+import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService'
+import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth'
+import { PrismaService } from '../../lib/prisma.service'
+import { YoutubeService } from '../../lib/youtube/youtubeService'
+import { BatchModule } from '../batch/batch.module'
+import { BatchService } from '../batch/batchService'
+import { BullMQModule } from '../bullMQ/bullMQ.module'
+import { GoogleDriveModule } from '../google-drive/googleDrive.module'
+import { GoogleDriveService } from '../google-drive/googleDriveService'
 
-import { ResourceResolver } from './resource.resolver';
+import { ResourceResolver } from './resource.resolver'
 
 @Module({
   imports: [GoogleDriveModule, BatchModule],
@@ -24,7 +24,7 @@ import { ResourceResolver } from './resource.resolver';
     CloudFlareService,
     YoutubeService,
     BullMQModule,
-    BatchService,
-  ],
+    BatchService
+  ]
 })
 export class ResourceModule {}

@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module } from '@nestjs/common'
 
-import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
-import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
-import { PrismaService } from '../../lib/prisma.service';
-import { YoutubeService } from '../../lib/youtube/youtubeService';
+import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService'
+import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth'
+import { PrismaService } from '../../lib/prisma.service'
+import { YoutubeService } from '../../lib/youtube/youtubeService'
 
-import { GoogleDriveService } from './googleDriveService';
+import { GoogleDriveService } from './googleDriveService'
 
 @Module({
   imports: [],
@@ -14,7 +14,7 @@ import { GoogleDriveService } from './googleDriveService';
     GoogleOAuthService,
     GoogleDriveService,
     YoutubeService,
-    GoogleSheetsService,
-  ],
+    GoogleSheetsService
+  ]
 })
 export class GoogleDriveModule {}
