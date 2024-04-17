@@ -289,7 +289,7 @@ describe('Toolbar Menu', () => {
       (useMediaQuery as jest.Mock).mockImplementation(() => false)
     )
 
-    it('should render preview, analytics, strategy and share buttons on mobile', () => {
+    it('should render mobile menu items', () => {
       const selectedBlock: TreeBlock<StepBlock> = {
         __typename: 'StepBlock',
         id: 'stepId',
