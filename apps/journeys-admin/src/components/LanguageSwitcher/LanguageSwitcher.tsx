@@ -118,6 +118,7 @@ export function LanguageSwitcher({
             ))}
           </Select>
         </FormControl>
+
         <Stack gap={2} sx={{ pt: 2 }}>
           {previousLanguageCode != null && (
             <Alert
