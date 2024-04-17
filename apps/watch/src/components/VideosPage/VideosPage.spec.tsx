@@ -1,5 +1,3 @@
-// Note: some Carousel tests are missing currently due to an inability to mock the Carousel component.
-
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
@@ -7,7 +5,33 @@ import { useRouter } from 'next/navigation'
 
 import { videos } from '../Videos/__generated__/testData'
 
-import { GET_LANGUAGES, GET_VIDEOS, VideosPage, limit } from './VideosPage'
+import { GET_LANGUAGES, VideosPage } from './VideosPage'
+
+jest.mock('algoliasearch', () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    initIndex: jest.fn().mockReturnValue({
+      search: jest.fn().mockResolvedValue({
+        hits: [
+          {
+            languageId: '496',
+            subtitles: ['22658', '529', '496'],
+            slug: 'the-savior/french',
+            titles: ['The Savior'],
+            label: 'shortFilm',
+            image:
+              'https://d1wl257kev7hsz.cloudfront.net/cinematics/9_0-The_Savior.mobileCinematicHigh.jpg',
+            imageAlt: 'The Savior',
+            childrenCount: 0,
+            objectID: '9_496-0-TheSavior'
+          }
+        ],
+        page: 0,
+        nbPages: 1
+      })
+    })
+  }))
+}))
 
 jest.mock('next/navigation', () => ({
   __esModule: true,
@@ -31,26 +55,7 @@ describe('VideosPage', () => {
 
     it('should display videos', async () => {
       const { getByText } = render(
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_VIDEOS,
-                variables: {
-                  where: {},
-                  offset: 0,
-                  limit,
-                  languageId: '529'
-                }
-              },
-              result: {
-                data: {
-                  videos
-                }
-              }
-            }
-          ]}
-        >
+        <MockedProvider>
           <VideosPage languageId="en" videos={videos} />
         </MockedProvider>
       )
@@ -67,29 +72,13 @@ describe('VideosPage', () => {
     beforeEach(() => {
       push = jest.fn()
       mockUseRouter.mockReturnValue({ push } as unknown as AppRouterInstance)
+      jest.clearAllMocks()
     })
 
-    // this test is flakey when run on github actions
-    it.skip('should handle audio language filter', async () => {
-      const { getByText, getByRole } = render(
+    it('should handle audio language filter', async () => {
+      const { getByRole, getAllByRole } = render(
         <MockedProvider
           mocks={[
-            {
-              request: {
-                query: GET_VIDEOS,
-                variables: {
-                  where: {},
-                  offset: 0,
-                  limit,
-                  languageId: '529'
-                }
-              },
-              result: {
-                data: {
-                  videos: [videos[0]]
-                }
-              }
-            },
             {
               request: {
                 query: GET_LANGUAGES,
@@ -112,68 +101,32 @@ describe('VideosPage', () => {
                   ]
                 }
               }
-            },
-            {
-              request: {
-                query: GET_VIDEOS,
-                variables: {
-                  where: {
-                    availableVariantLanguageIds: ['496'],
-                    subtitleLanguageIds: undefined,
-                    title: undefined
-                  },
-                  offset: 0,
-                  limit,
-                  languageId: '496'
-                }
-              },
-              result: {
-                data: {
-                  videos: [videos[1]]
-                }
-              }
             }
           ]}
         >
           <VideosPage languageId="en" videos={[]} />
         </MockedProvider>
       )
-      const comboboxEl = getByRole('combobox', {
+      const comboboxEl = getAllByRole('combobox', {
         name: 'Search Languages'
-      })
+      })[0]
       fireEvent.focus(comboboxEl)
       fireEvent.keyDown(comboboxEl, { key: 'ArrowDown' })
       await waitFor(() => getByRole('option', { name: 'French' }))
       fireEvent.click(getByRole('option', { name: 'French' }))
       expect(comboboxEl).toHaveValue('French')
       await waitFor(() =>
-        expect(getByText(videos[1].title[0].value)).toBeInTheDocument()
+        expect(push).toHaveBeenCalledWith('/videos?languages=496', undefined, {
+          shallow: true
+        })
       )
-      expect(push).toHaveBeenCalledWith('/videos?language=496', undefined, {
-        shallow: true
-      })
+      expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
     })
 
-    it.skip('should handle subtitle language filter', async () => {
-      const { getByText, getByTestId, getByRole, getAllByRole } = render(
+    it('should handle subtitle language filter', async () => {
+      const { getByRole, getAllByRole } = render(
         <MockedProvider
           mocks={[
-            {
-              request: {
-                query: GET_VIDEOS,
-                variables: {
-                  where: {},
-                  offset: 0,
-                  limit,
-                  languageId: '529'
-                }
-              },
-              result: {
-                data: {
-                  videos: [videos[0]]
-                }
-              }
-            },
             {
               request: {
                 query: GET_LANGUAGES,
@@ -196,33 +149,12 @@ describe('VideosPage', () => {
                   ]
                 }
               }
-            },
-            {
-              request: {
-                query: GET_VIDEOS,
-                variables: {
-                  where: {
-                    availableVariantLanguageIds: undefined,
-                    subtitleLanguageIds: ['496'],
-                    title: undefined
-                  },
-                  offset: 0,
-                  limit,
-                  languageId: '529'
-                }
-              },
-              result: {
-                data: {
-                  videos: [videos[1]]
-                }
-              }
             }
           ]}
         >
           <VideosPage languageId="en" videos={[]} />
         </MockedProvider>
       )
-      fireEvent.click(getByTestId('filter-item-subtitles'))
       const comboboxEl = getAllByRole('combobox', {
         name: 'Search Languages'
       })[1]
@@ -232,88 +164,68 @@ describe('VideosPage', () => {
       fireEvent.click(getByRole('option', { name: 'French' }))
       expect(comboboxEl).toHaveValue('French')
       await waitFor(() =>
-        expect(getByText(videos[1].title[0].value)).toBeInTheDocument()
+        expect(push).toHaveBeenCalledWith('/videos?subtitles=496', undefined, {
+          shallow: true
+        })
       )
-      expect(push).toHaveBeenCalledWith('/videos?subtitle=496', undefined, {
-        shallow: true
+      expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
+    })
+
+    it('should handle title filter', async () => {
+      const { getByRole } = render(
+        <MockedProvider>
+          <VideosPage languageId="en" videos={[]} />
+        </MockedProvider>
+      )
+      fireEvent.change(getByRole('textbox', { name: 'Search Titles' }), {
+        target: { value: 'The Savior' }
+      })
+      await waitFor(() =>
+        expect(push).toHaveBeenCalledWith(
+          '/videos?title=The+Savior',
+          undefined,
+          {
+            shallow: true
+          }
+        )
+      )
+      expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
+    })
+
+    it('should disable load more button if there are no more local videos', async () => {
+      const { getByRole } = render(
+        <MockedProvider>
+          <VideosPage languageId="en" videos={videos} />
+        </MockedProvider>
+      )
+      await waitFor(() => {
+        expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
       })
     })
 
-    it.skip('should handle title filter', async () => {
-      const { getByRole, getByText, getByTestId } = render(
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_VIDEOS,
-                variables: {
-                  where: {},
-                  offset: 0,
-                  limit,
-                  languageId: '529'
-                }
-              },
-              result: {
-                data: {
-                  videos: [videos[0]]
-                }
-              }
-            },
-            {
-              request: {
-                query: GET_LANGUAGES,
-                variables: {
-                  languageId: '529'
-                }
-              },
-              result: {
-                data: {
-                  languages: [
-                    {
-                      id: '496',
-                      name: [
-                        {
-                          value: 'French',
-                          primary: true
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              request: {
-                query: GET_VIDEOS,
-                variables: {
-                  where: { title: 'JESUS' },
-                  offset: 0,
-                  limit,
-                  languageId: '529'
-                }
-              },
-              result: {
-                data: {
-                  videos: [videos[1]]
-                }
-              }
-            }
-          ]}
-        >
+    it('should disable load more button if there are no more algolia videos', async () => {
+      const { getByRole } = render(
+        <MockedProvider>
           <VideosPage languageId="en" videos={[]} />
         </MockedProvider>
       )
 
-      fireEvent.click(getByTestId('filter-item-title'))
       fireEvent.change(getByRole('textbox', { name: 'Search Titles' }), {
-        target: { value: 'JESUS' }
+        target: { value: 'The Savior' }
       })
       await waitFor(() =>
-        expect(getByText(videos[1].title[0].value)).toBeInTheDocument()
+        expect(push).toHaveBeenCalledWith(
+          '/videos?title=The+Savior',
+          undefined,
+          {
+            shallow: true
+          }
+        )
       )
-      expect(push).toHaveBeenCalledWith('/videos?title=JESUS', undefined, {
-        shallow: true
-      })
+      expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
+      expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
     })
   })
+
+  // TODO: add test for load more button
 })
