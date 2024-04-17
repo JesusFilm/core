@@ -95,6 +95,7 @@ interface UnsplashGalleryProps {
 export function UnsplashGallery({
   onChange
 }: UnsplashGalleryProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [query, setQuery] = useState<string>()
   const [page, setPage] = useState(1)
   const [collectionId, setCollectionId] = useState('4924556')
@@ -102,6 +103,10 @@ export function UnsplashGallery({
   useEffect(() => {
     setPage(1)
   }, [collectionId])
+
+  const [triggerUnsplashDownload] = useMutation<TriggerUnsplashDownload>(
+    TRIGGER_UNSPLASH_DOWNLOAD
+  )
 
   const {
     data: listData,
@@ -111,9 +116,7 @@ export function UnsplashGallery({
     variables: { collectionId, page, perPage: 20 },
     skip: query != null
   })
-  const [triggerUnsplashDownload] = useMutation<TriggerUnsplashDownload>(
-    TRIGGER_UNSPLASH_DOWNLOAD
-  )
+
   const {
     data: searchData,
     refetch: refetchSearch,
@@ -122,19 +125,20 @@ export function UnsplashGallery({
     variables: { query, page, perPage: 20 },
     skip: query == null
   })
-  const handleChange = (
+
+  function handleChange(
     src: string,
     unsplashAuthor: UnsplashAuthor,
     downloadLocation: string,
     blurhash?: string,
     width?: number,
     height?: number
-  ): void => {
+  ): void {
     onChange(src, unsplashAuthor, blurhash, width, height)
     void triggerUnsplashDownload({ variables: { url: downloadLocation } })
   }
 
-  const handleSubmit = (value: string): void => {
+  function handleSubmit(value: string): void {
     if (value == null) {
       void refetchList({ collectionId, page: 1, perPage: 20 })
     } else {
@@ -144,7 +148,7 @@ export function UnsplashGallery({
     setPage(1)
   }
 
-  const nextPage = (): void => {
+  function handleFetchMore(): void {
     if (query == null) {
       void fetchMoreList({
         variables: { collectionId, page: page + 1, perPage: 20 }
@@ -157,12 +161,10 @@ export function UnsplashGallery({
     setPage(page + 1)
   }
 
-  const handleCollectionChange = (id, query): void => {
+  function handleCollectionChange(id, query): void {
     setCollectionId(id)
     setQuery(query)
   }
-
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Stack sx={{ p: 6 }} data-testid="UnsplashGallery">
@@ -186,7 +188,7 @@ export function UnsplashGallery({
           onChange={handleChange}
         />
       )}
-      <LoadingButton variant="outlined" onClick={nextPage} size="medium">
+      <LoadingButton variant="outlined" onClick={handleFetchMore} size="medium">
         {t('Load More')}
       </LoadingButton>
     </Stack>
