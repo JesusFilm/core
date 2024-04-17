@@ -35,7 +35,7 @@ describe('Drawer', () => {
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
     )
 
-    it('should render drawer from the right', async () => {
+    it('should render drawer from the right', () => {
       render(<Drawer open />)
       expect(screen.getByTestId('SettingsDrawer').children[0]).toHaveClass(
         'MuiDrawer-paperAnchorRight'
