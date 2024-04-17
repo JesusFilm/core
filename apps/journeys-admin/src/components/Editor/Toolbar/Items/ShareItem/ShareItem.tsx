@@ -107,6 +107,10 @@ export function ShareItem({
               size="small"
               startIcon={<Edit2Icon />}
               disabled={journey == null}
+              style={{
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
+              }}
             >
               {t('Edit URL')}
             </Button>
@@ -118,6 +122,10 @@ export function ShareItem({
               size="small"
               startIcon={<Code1Icon />}
               disabled={journey == null}
+              style={{
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
+              }}
             >
               {t('Embed Journey')}
             </Button>
