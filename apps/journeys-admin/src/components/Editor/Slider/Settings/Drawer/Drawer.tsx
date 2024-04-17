@@ -93,7 +93,7 @@ export function Drawer({
         '& .MuiDrawer-paper':
           open != null
             ? {
-                // temporary drawer
+                // persistent drawer
                 borderRadius: 4,
                 borderBottomLeftRadius: { xs: 0, sm: 16 },
                 borderBottomRightRadius: { xs: 0, sm: 16 },
