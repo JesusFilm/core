@@ -76,7 +76,7 @@ describe('LanguageSwitcher', () => {
     )
     expect(push).toHaveBeenCalledWith('/', '/', { locale: 'zh-hans-CN' })
     expect(
-      getByText('Are you sure you want to change language?')
+      getByText('Would you like to revert to previous language?')
     ).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Revert' }))
     expect(push).toHaveBeenCalledWith('/', '/', { locale: 'en' })
