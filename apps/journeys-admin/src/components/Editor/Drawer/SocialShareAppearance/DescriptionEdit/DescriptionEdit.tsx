@@ -1,14 +1,14 @@
 import { gql, useMutation } from '@apollo/client'
-import TextField, { TextFieldProps } from '@mui/material/TextField'
+import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
-import { ReactElement, useEffect, useRef } from 'react'
+import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneySeoDescriptionUpdate } from '../../../../../../__generated__/JourneySeoDescriptionUpdate'
-import { useSocialPreview } from '../../../SocialProvider'
 
 export const JOURNEY_SEO_DESCRIPTION_UPDATE = gql`
   mutation JourneySeoDescriptionUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -20,25 +20,12 @@ export const JOURNEY_SEO_DESCRIPTION_UPDATE = gql`
 `
 
 export function DescriptionEdit(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneySeoDescriptionUpdate>(
     JOURNEY_SEO_DESCRIPTION_UPDATE
   )
 
   const { journey } = useJourney()
-
-  const ref = useRef<TextFieldProps | null>()
-  const { setSeoDescription } = useSocialPreview()
-  const once = useRef(false)
-  useEffect(() => {
-    if (!once.current && journey != null) {
-      setSeoDescription(journey?.seoDescription)
-      once.current = true
-    }
-  }, [journey, setSeoDescription])
-
-  function handleKeyUp(): void {
-    setSeoDescription(ref.current?.value as string)
-  }
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     if (journey == null) return
@@ -68,7 +55,7 @@ export function DescriptionEdit(): ReactElement {
       : null
 
   const seoDescriptionSchema = object().shape({
-    seoDescription: string().max(180, 'Character limit reached') // 180 characters just a few more words than 18 on average
+    seoDescription: string().max(180, t('Character limit reached')) // 180 characters just a few more words than 18 on average
   })
 
   return (
@@ -82,11 +69,10 @@ export function DescriptionEdit(): ReactElement {
           {({ values, touched, errors, handleChange, handleBlur }) => (
             <Form>
               <TextField
-                inputRef={ref}
                 id="seoDescription"
                 name="seoDescription"
                 variant="filled"
-                label="Description"
+                label={t('Description')}
                 fullWidth
                 multiline
                 maxRows={5}
@@ -98,10 +84,9 @@ export function DescriptionEdit(): ReactElement {
                 helperText={
                   errors.seoDescription != null
                     ? (errors.seoDescription as string)
-                    : 'Recommended length: up to 18 words'
+                    : t('Recommended length: up to 18 words')
                 }
                 onChange={handleChange}
-                onKeyUp={handleKeyUp}
                 onBlur={(e) => {
                   handleBlur(e)
                   if (errors.seoDescription == null) void handleSubmit(e)
@@ -117,10 +102,10 @@ export function DescriptionEdit(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label="Description"
+          label={t('Description')}
           fullWidth
           disabled
-          helperText="Recommended length: up to 18 words"
+          helperText={t('Recommended length: up to 18 words')}
           sx={{
             pb: 6
           }}

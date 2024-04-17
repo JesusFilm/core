@@ -7,11 +7,6 @@ import { journey } from '../../Editor/ActionDetails/data'
 
 import { TemplateFooter } from './TemplateFooter'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => ({ t: (str: string) => str })
-}))
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
@@ -19,17 +14,17 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TemplateFooter', () => {
   it('should render', () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider value={{ journey }}>
-          <TemplateFooter />
+          <TemplateFooter
+            openTeamDialog={false}
+            setOpenTeamDialog={jest.fn()}
+          />
         </JourneyProvider>
       </MockedProvider>
     )
 
-    expect(
-      getByText('Use this template to make it your journey')
-    ).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Use This Template' })
     ).toBeInTheDocument()
@@ -42,7 +37,10 @@ describe('TemplateFooter', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider value={{}}>
-          <TemplateFooter />
+          <TemplateFooter
+            openTeamDialog={false}
+            setOpenTeamDialog={jest.fn()}
+          />
         </JourneyProvider>
       </MockedProvider>
     )

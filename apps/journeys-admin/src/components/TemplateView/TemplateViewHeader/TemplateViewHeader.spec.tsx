@@ -13,21 +13,9 @@ import { journey } from '../../Editor/ActionDetails/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('TemplateViewHeader', () => {
+  const setOpenTeamDialogMock = jest.fn()
+
   it('should render the social image', () => {
     const primaryImageBlock: PrimaryImageBlock = {
       id: 'image1.id',
@@ -52,7 +40,12 @@ describe('TemplateViewHeader', () => {
               }
             }}
           >
-            <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
+            <TemplateViewHeader
+              isPublisher
+              authUser={{} as unknown as User}
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
+            />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -89,7 +82,12 @@ describe('TemplateViewHeader', () => {
             variant: 'admin'
           }}
         >
-          <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
+          <TemplateViewHeader
+            isPublisher
+            authUser={{} as unknown as User}
+            openTeamDialog={false}
+            setOpenTeamDialog={setOpenTeamDialogMock}
+          />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -133,7 +131,12 @@ describe('TemplateViewHeader', () => {
             variant: 'admin'
           }}
         >
-          <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
+          <TemplateViewHeader
+            isPublisher
+            authUser={{} as unknown as User}
+            openTeamDialog={false}
+            setOpenTeamDialog={setOpenTeamDialogMock}
+          />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -148,7 +151,7 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should display the title and description', () => {
-    const { getByText } = render(
+    const { getAllByText, getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
@@ -156,13 +159,18 @@ describe('TemplateViewHeader', () => {
               journey
             }}
           >
-            <TemplateViewHeader isPublisher authUser={{} as unknown as User} />
+            <TemplateViewHeader
+              isPublisher
+              authUser={{} as unknown as User}
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
+            />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
-    expect(getByText('my journey')).toBeInTheDocument()
+    expect(getAllByText('my journey')[0]).toBeInTheDocument()
     expect(getByText('my cool journey')).toBeInTheDocument()
   })
 
@@ -178,6 +186,8 @@ describe('TemplateViewHeader', () => {
             <TemplateViewHeader
               isPublisher
               authUser={{ id: '123' } as unknown as User}
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
             />
           </JourneyProvider>
         </SnackbarProvider>
@@ -201,6 +211,8 @@ describe('TemplateViewHeader', () => {
             <TemplateViewHeader
               isPublisher
               authUser={{ id: '123' } as unknown as User}
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
             />
           </JourneyProvider>
         </SnackbarProvider>
@@ -222,6 +234,8 @@ describe('TemplateViewHeader', () => {
             <TemplateViewHeader
               isPublisher
               authUser={{ id: '123' } as unknown as User}
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
             />
           </JourneyProvider>
         </SnackbarProvider>
@@ -246,6 +260,8 @@ describe('TemplateViewHeader', () => {
             <TemplateViewHeader
               isPublisher={false}
               authUser={{ id: '123' } as unknown as User}
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
             />
           </JourneyProvider>
         </SnackbarProvider>
@@ -267,6 +283,8 @@ describe('TemplateViewHeader', () => {
             <TemplateViewHeader
               isPublisher={false}
               authUser={{ id: '123' } as unknown as User}
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
             />
           </JourneyProvider>
         </SnackbarProvider>
@@ -288,6 +306,8 @@ describe('TemplateViewHeader', () => {
           <TemplateViewHeader
             isPublisher={false}
             authUser={{} as unknown as User}
+            openTeamDialog={false}
+            setOpenTeamDialog={setOpenTeamDialogMock}
           />
         </JourneyProvider>
       </MockedProvider>
@@ -297,19 +317,21 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should show skeletons while loading', async () => {
-    const { getByTestId } = render(
+    const { getAllByTestId } = render(
       <MockedProvider>
         <JourneyProvider value={{}}>
           <TemplateViewHeader
             isPublisher={false}
             authUser={{} as unknown as User}
+            openTeamDialog={false}
+            setOpenTeamDialog={setOpenTeamDialogMock}
           />
         </JourneyProvider>
       </MockedProvider>
     )
 
     await waitFor(() =>
-      expect(getByTestId('TemplateViewTitleSkeleton')).toBeInTheDocument()
+      expect(getAllByTestId('TemplateViewTitleSkeleton')[0]).toBeInTheDocument()
     )
   })
 })

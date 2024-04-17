@@ -225,7 +225,9 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
         </MockedProvider>
       )
       fireEvent.click(getByRole('tab', { name: 'Custom' }))
-      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+      await waitFor(() =>
+        fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+      )
       const textBox = getByRole('textbox')
       fireEvent.change(textBox, {
         target: {

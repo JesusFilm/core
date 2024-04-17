@@ -16,15 +16,6 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from './TeamSelect'
 
 import { TeamSelect } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('TeamSelect', () => {
   const getMultipleTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
@@ -38,18 +29,21 @@ describe('TeamSelect', () => {
             title: 'Team Title',
             publicTitle: null,
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           },
           {
             id: 'teamId2',
             title: 'Team Title2',
             publicTitle: null,
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           }
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: 'teamId1'
         }
       }

@@ -1,0 +1,1 @@
+export { TrashedTemplateList } from './TrashedTemplateList'

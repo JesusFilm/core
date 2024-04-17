@@ -1,6 +1,7 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -33,6 +34,7 @@ interface SourceFromLocalProps {
 export function SourceFromLocal({
   selectedBlock
 }: SourceFromLocalProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetVideoVariantLanguages>(
     GET_VIDEO_VARIANT_LANGUAGES,
     {
@@ -57,9 +59,12 @@ export function SourceFromLocal({
       nativeLanguage != null &&
       nativeLanguage !== language
     )
-      language = `${language} (${nativeLanguage})`
+      language = t('{{ language }} ({{ nativeLanguage }})', {
+        language,
+        nativeLanguage
+      })
     setLanguage(language)
-  }, [data?.video?.variantLanguages, selectedBlock?.videoVariantLanguageId])
+  }, [data?.video?.variantLanguages, selectedBlock?.videoVariantLanguageId, t])
 
   return (
     <>

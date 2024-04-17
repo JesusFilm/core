@@ -16,7 +16,7 @@ npm install -g nx
 npm install -g @nestjs/cli@^8.1.5
 
 # install Rover CLI tool
-npm install -g @apollo/rover@0.16.2
+npm install -g @apollo/rover@0.23.0
 
 # install Foreman CLI tool
 npm install -g foreman
@@ -37,7 +37,7 @@ rm -rf bin
 # - update .devcontainer/post-create-command.sh apollo router version (...nix/vX.X.X)
 # - update app/api-gateway/Dockerfile image version (...router/vX.X.X)
 # - inform all developers to rebuild their containers
-curl -sSL https://router.apollo.dev/download/nix/v1.34.1 | sh
+curl -sSL https://router.apollo.dev/download/nix/v1.43.1 | sh
 mv router apps/api-gateway/
 
 # install doppler

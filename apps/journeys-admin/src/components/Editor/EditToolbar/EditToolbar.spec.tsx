@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -13,6 +13,7 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
+import { getCustomDomainMock } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
 import { EditToolbar } from '.'
 
@@ -38,10 +39,65 @@ describe('Edit Toolbar', () => {
     ).toContainElement(getByTestId('MoreIcon'))
   })
 
+  it('should render analytics button', () => {
+    const { getByLabelText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                slug: 'untitled-journey',
+                tags: []
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditToolbar />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByLabelText('Analytics')).toBeInTheDocument()
+  })
+
+  it('should render Preview Button with custom domain link', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
+    const { getAllByRole, getAllByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
+          <JourneyProvider
+            value={{
+              journey: {
+                slug: 'untitled-journey',
+                tags: [],
+                team: {
+                  id: 'teamId'
+                }
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditToolbar />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const button = getAllByRole('link', { name: 'Preview' })[0]
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(button).toContainElement(getAllByTestId('EyeOpenIcon')[0])
+    expect(button).toHaveAttribute(
+      'href',
+      '/api/preview?slug=untitled-journey&hostname=example.com'
+    )
+    expect(button).toHaveAttribute('target', '_blank')
+    expect(button).not.toBeDisabled()
+  })
+
   it('should render Preview Button', () => {
     const { getAllByRole, getAllByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider>
+        <MockedProvider mocks={[]}>
           <JourneyProvider
             value={{
               journey: {

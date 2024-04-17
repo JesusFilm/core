@@ -79,23 +79,8 @@ describe('ActiveJourneyList', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveJourneyList />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')).toHaveLength(3)
-    )
-  })
-
   describe('Archive All', () => {
-    it('should display the archive all dialog', () => {
+    it('should display the archive all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[activeJourneysMock]}>
           <ThemeProvider>
@@ -106,7 +91,9 @@ describe('ActiveJourneyList', () => {
         </MockedProvider>
       )
 
-      expect(getByText('Archive Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Archive Journeys')).toBeInTheDocument()
+      )
     })
 
     const result = jest.fn(() => ({
@@ -184,7 +171,7 @@ describe('ActiveJourneyList', () => {
       result
     }
 
-    it('should display the trash all dialog', () => {
+    it('should display the trash all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[activeJourneysMock]}>
           <ThemeProvider>
@@ -197,8 +184,9 @@ describe('ActiveJourneyList', () => {
           </ThemeProvider>
         </MockedProvider>
       )
-
-      expect(getByText('Trash Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Trash Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should trash all journeys', async () => {

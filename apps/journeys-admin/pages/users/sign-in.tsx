@@ -1,10 +1,11 @@
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import i18nConfig from '../../next-i18next.config'
+import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { SignIn } from '../../src/components/SignIn'
 
 function SignInPage(): ReactElement {
@@ -12,7 +13,12 @@ function SignInPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Sign In')} />
-      <SignIn />
+      <OnboardingPageWrapper
+        title={t('Create New Account or Log in')}
+        emailSubject={t('A question about sign in')}
+      >
+        <SignIn />
+      </OnboardingPageWrapper>
     </>
   )
 }

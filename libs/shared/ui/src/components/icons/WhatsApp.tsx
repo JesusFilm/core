@@ -8,9 +8,9 @@ export default createSvgIcon(
     />
     <path
       stroke="currentColor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
       d="M 8.222 20.784 a 9.567 9.567 0 0 0 3.878 0.816 a 9.6 9.6 0 1 0 -8.373 -4.901 L 2.5 21.602 l 5.721 -0.818 Z"
       fill="none"
     />

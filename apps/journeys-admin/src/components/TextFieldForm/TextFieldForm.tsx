@@ -12,6 +12,8 @@ type FieldProps = Pick<
   | 'hiddenLabel'
   | 'inputProps'
   | 'sx'
+  | 'type'
+  | 'onFocus'
 >
 
 interface TextFieldFormProps extends FieldProps {

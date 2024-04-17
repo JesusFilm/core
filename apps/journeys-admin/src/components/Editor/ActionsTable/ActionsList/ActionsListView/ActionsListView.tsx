@@ -9,6 +9,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow, { TableRowProps } from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import BibleIcon from '@core/shared/ui/icons/Bible'
@@ -33,6 +34,7 @@ export function ActionsListView({
   handleClick
 }: ActionsListViewProps): ReactElement {
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  const { t } = useTranslation('apps-journeys-admin')
 
   const GoalIcon = ({ url }: { url: string }): ReactElement => {
     const color = selectedAction === url ? 'primary.main' : 'secondary.light'
@@ -66,11 +68,13 @@ export function ActionsListView({
             <TableRow sx={{ backgroundColor: 'background.paper' }}>
               <TableCell width={60} />
               <TableCell>
-                <Typography variant="subtitle2">Target and Action</Typography>
+                <Typography variant="subtitle2">
+                  {t('Target and Action')}
+                </Typography>
               </TableCell>
               <TableCell>
                 <Typography variant="subtitle2" align="center" width={100}>
-                  Appears on{' '}
+                  {t('Appears on')}
                 </Typography>
               </TableCell>
               <TableCell width={50} />
@@ -114,7 +118,7 @@ export function ActionsListView({
                 <TableCell align="center" width={100}>
                   <Typography variant="subtitle2">{count}</Typography>
                   <Typography variant="body2">
-                    {count > 1 ? 'cards' : 'card'}
+                    {count > 1 ? t('cards') : t('card')}
                   </Typography>
                 </TableCell>
                 <TableCell width={40} sx={{ pl: 0, pr: 5 }}>
@@ -148,7 +152,9 @@ export function ActionsListView({
           <TableHead sx={{ borderBottom: '1.5px solid #DEDFE0' }}>
             <TableRow>
               <TableCell>
-                <Typography variant="subtitle2">Target and Action</Typography>
+                <Typography variant="subtitle2">
+                  {t('Target and Action')}
+                </Typography>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -184,11 +190,15 @@ export function ActionsListView({
                         {goalLabel(url)}
                       </Typography>
                     </Stack>
-                    <Typography variant="body2" color="secondary.light">
-                      Appears on{' '}
-                      <span style={{ fontWeight: 'bold' }}>{count}</span>{' '}
-                      {count > 1 ? 'cards' : 'card'}
-                    </Typography>
+                    <Trans t={t} count={count}>
+                      <Typography variant="body2" color="secondary.light">
+                        Appears on{' '}
+                        <span style={{ fontWeight: 'bold' }}>
+                          {'{{ count }}'}
+                        </span>{' '}
+                        card
+                      </Typography>
+                    </Trans>
                   </Stack>
                 </TableCell>
               </StyledTableRow>

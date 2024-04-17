@@ -4,8 +4,8 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, Suspense } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
@@ -32,7 +32,7 @@ export function OnboardingPanel(): ReactElement {
       <SidePanelContainer border={false}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="subtitle1">{t('Use Template')}</Typography>
-          <NextLink href="/templates" passHref legacyBehavior prefetch={false}>
+          <NextLink href="/templates" passHref legacyBehavior>
             <Link
               underline="none"
               variant="subtitle2"
@@ -48,7 +48,7 @@ export function OnboardingPanel(): ReactElement {
         <DynamicOnboardingList />
       </Suspense>
       <SidePanelContainer border={false}>
-        <NextLink href="/templates" passHref legacyBehavior prefetch={false}>
+        <NextLink href="/templates" passHref legacyBehavior>
           <Button
             variant="outlined"
             startIcon={<Grid1Icon />}

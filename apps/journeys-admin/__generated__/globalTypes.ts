@@ -293,9 +293,38 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface CreateVerificationRequestInput {
+  redirect?: string | null;
+}
+
+export interface CustomDomainCreateInput {
+  id?: string | null;
+  teamId: string;
+  name: string;
+  journeyCollectionId?: string | null;
+  routeAllTeamJourneys?: boolean | null;
+}
+
+export interface CustomDomainUpdateInput {
+  journeyCollectionId?: string | null;
+  routeAllTeamJourneys?: boolean | null;
+}
+
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
+}
+
+export interface FormBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+}
+
+export interface FormBlockUpdateInput {
+  projectId?: string | null;
+  apiToken?: string | null;
+  formSlug?: string | null;
 }
 
 export interface HostCreateInput {
@@ -348,6 +377,18 @@ export interface ImageBlockUpdateInput {
   height?: number | null;
 }
 
+export interface JourneyCollectionCreateInput {
+  id?: string | null;
+  teamId: string;
+  title?: string | null;
+  journeyIds?: string[] | null;
+}
+
+export interface JourneyCollectionUpdateInput {
+  title?: string | null;
+  journeyIds?: string[] | null;
+}
+
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
 }
@@ -383,6 +424,12 @@ export interface JourneyVisitorFilter {
   countryCode?: string | null;
 }
 
+export interface JourneysEmailPreferenceUpdateInput {
+  email: string;
+  preference: string;
+  value: boolean;
+}
+
 export interface JourneysFilter {
   featured?: boolean | null;
   template?: boolean | null;
@@ -401,6 +448,10 @@ export interface LinkActionInput {
   gtmEventName?: string | null;
   url: string;
   target?: string | null;
+}
+
+export interface MeInput {
+  redirect?: string | null;
 }
 
 export interface NavigateActionInput {
@@ -470,11 +521,15 @@ export interface StepBlockCreateInput {
   journeyId: string;
   nextBlockId?: string | null;
   locked?: boolean | null;
+  x?: number | null;
+  y?: number | null;
 }
 
 export interface StepBlockUpdateInput {
   nextBlockId?: string | null;
   locked?: boolean | null;
+  x?: number | null;
+  y?: number | null;
 }
 
 export interface StepNextEventCreateInput {

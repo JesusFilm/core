@@ -20,7 +20,7 @@ describe('JourneyCard', () => {
     )
 
     expect(
-      getByRole('link', { name: 'Default Journey Heading January 1' })
+      getByRole('link', { name: 'Default Journey Heading January 1, 2021' })
     ).toHaveAttribute('href', '/journeys/journey-id')
   })
 })

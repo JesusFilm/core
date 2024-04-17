@@ -1,5 +1,6 @@
 import { Decorator, StoryContext } from '@storybook/react'
 
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { parameters as rootParameters } from '../../../../../../.storybook/preview'
 import { ThemeDecorator } from '../../components/ThemeDecorator'
 

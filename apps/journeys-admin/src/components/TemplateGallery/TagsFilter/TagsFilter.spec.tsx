@@ -410,4 +410,19 @@ describe('TagsFilter', () => {
     expect(getByTestId('Calendar4Icon')).toBeInTheDocument()
     expect(getByTestId('Grid1Icon')).toBeInTheDocument()
   })
+
+  it('should show proper icons', async () => {
+    const handleChange = jest.fn()
+    const { getByTestId } = render(
+      <MockedProvider mocks={[allParentTagsMock]}>
+        <TagsFilter
+          label="Topics, felt needs, holidays, collections"
+          tagNames={['Topics', 'Felt Needs', 'Holidays', 'Collections']}
+          onChange={handleChange}
+          selectedTagIds={[]}
+        />
+      </MockedProvider>
+    )
+    expect(getByTestId('ChevronDownIcon')).toBeInTheDocument()
+  })
 })

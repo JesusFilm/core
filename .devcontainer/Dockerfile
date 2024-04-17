@@ -1,11 +1,15 @@
 # Update the VARIANT arg in docker-compose.yml to pick a Node version
 ARG VARIANT=18
-FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:0-${VARIANT}-bullseye
+FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:${VARIANT}-bullseye
 
 # Update args in docker-compose.yaml to set the UID/GID of the "node" user.
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 RUN if [ "$USER_GID" != "1000" ] || [ "$USER_UID" != "1000" ]; then groupmod --gid $USER_GID node && usermod --uid $USER_UID --gid $USER_GID node; fi
+
+# solves "failed to fetch URL Hash Sum mismatch error"
+# see: https://github.com/docker/for-mac/issues/7025
+RUN echo 'Acquire::http::Pipeline-Depth 0;\nAcquire::http::No-Cache true;\nAcquire::BrokenProxy true;\n' > /etc/apt/apt.conf.d/99fixbadproxy
 
 # https://www.postgresql.org/download/linux/debian/
 # required to install postgresql-client-13
@@ -14,14 +18,14 @@ RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg -
 
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends gnupg2 libpixman-1-dev libcairo2-dev libpango1.0-dev postgresql-client-13
+    && apt-get -y install --no-install-recommends gnupg2 libpixman-1-dev libcairo2-dev libpango1.0-dev postgresql-client-13 chromium
 
 # [Optional] Uncomment if you want to install an additional version of node using nvm
-# ARG EXTRA_NODE_VERSION=10
-# RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
+ARG EXTRA_NODE_VERSION=18
+RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
 
 # [Optional] Uncomment if you want to install more global node modules
-RUN su node -c "npm install -g npm@^9.7.2"
+RUN su node -c "npm install -g npm@latest"
 
 RUN mkdir /home/node/.doppler \
     && chown -R node /home/node/.doppler

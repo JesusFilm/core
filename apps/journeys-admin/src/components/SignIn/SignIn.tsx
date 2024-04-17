@@ -1,93 +1,53 @@
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import { getApp } from 'firebase/app'
-import {
-  EmailAuthProvider,
-  FacebookAuthProvider,
-  GoogleAuthProvider,
-  getAuth
-} from 'firebase/auth'
-import Image from 'next/image'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
-import { StyledFirebaseAuth } from '@core/shared/ui/StyledFirebaseAuth'
-
-import logo from '../../../public/logo.svg'
+import { EmailUsedPage } from './EmailUsedPage'
+import { HomePage } from './HomePage'
+import { PasswordPage } from './PasswordPage'
+import { PasswordResetPage } from './PasswordResetPage'
+import { RegisterPage } from './RegisterPage'
+import { ResetPasswordSentPage } from './ResetPasswordSentPage'
+import { ActivePage, PageProps } from './types'
 
 export function SignIn(): ReactElement {
-  // Do not SSR FirebaseUI, because it is not supported.
-  // https://github.com/firebase/firebaseui-web/issues/213
-  const [renderAuth, setRenderAuth] = useState(false)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setRenderAuth(true)
-    }
-  }, [])
+  const [activePage, setActivePage] = useState<ActivePage>('home')
+  const [userEmail, setUserEmail] = useState<string>('')
+  const [userPassword, setUserPassword] = useState<string>('')
 
-  const firebaseAuthConfig = {
-    signInFlow: 'popup',
-    signInOptions: [
-      {
-        provider: EmailAuthProvider.PROVIDER_ID
-      },
-      {
-        provider: GoogleAuthProvider.PROVIDER_ID,
-        customParameters: {
-          prompt: 'select_account'
-        }
-      },
-      {
-        provider: FacebookAuthProvider.PROVIDER_ID
-      }
-    ],
-    callbacks: {
-      signInSuccessWithAuthResult: () =>
-        // Don't automatically redirect. We handle redirects using
-        // `next-firebase-auth`.
-        false
-    }
+  let page: ReactElement<PageProps>
+  const props: PageProps = {
+    activePage,
+    setActivePage,
+    userEmail,
+    setUserEmail,
+    userPassword,
+    setUserPassword
   }
 
-  return (
-    <div>
-      {renderAuth ? (
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            pt: 30
-          }}
-          data-testid="JourneysAdminSignIn"
-        >
-          <Image
-            src={logo}
-            alt="Next Steps"
-            height={68}
-            width={152}
-            style={{
-              maxWidth: '100%',
-              height: 'auto'
-            }}
-          />
-          <Typography variant="h5" sx={{ mt: 20, mb: 3 }}>
-            Sign In
-          </Typography>
-          <StyledFirebaseAuth
-            uiConfig={firebaseAuthConfig}
-            firebaseAuth={getAuth(getApp())}
-          />
-          <Typography
-            variant="body2"
-            sx={{ mt: 20, color: 'primary.main', cursor: 'pointer' }}
-            component="a"
-            href="mailto:support@nextstep.is?Subject=Support%2FFeedback%20Request"
-          >
-            Feedback & Support
-          </Typography>
-        </Box>
-      ) : null}
-    </div>
-  )
+  switch (activePage) {
+    case 'home':
+      page = <HomePage {...props} />
+      break
+    case 'password':
+      page = <PasswordPage {...props} />
+      break
+    case 'register':
+      page = <RegisterPage {...props} />
+      break
+    case 'google.com':
+      page = <EmailUsedPage {...props} activePage="google.com" />
+      break
+    case 'facebook.com':
+      page = <EmailUsedPage {...props} activePage="facebook.com" />
+      break
+    case 'help':
+      page = <PasswordResetPage {...props} />
+      break
+    case 'reset':
+      page = <ResetPasswordSentPage {...props} />
+      break
+    default:
+      page = <></>
+      break
+  }
+  return <>{page}</>
 }

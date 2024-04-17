@@ -19,6 +19,7 @@ export const cache = (): InMemoryCache =>
       Block: [
         'ButtonBlock',
         'CardBlock',
+        'FormBlock',
         'GridContainerBlock',
         'GridItemBlock',
         'IconBlock',

@@ -10,7 +10,7 @@ import {
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney, oldJourney } from '../journeyListData'
+import { defaultJourney, fakeDate, oldJourney } from '../journeyListData'
 import { SortOrder } from '../JourneySort'
 
 import {
@@ -75,7 +75,7 @@ const noJourneysMock: MockedResponse<
 describe('TrashedJourneyList', () => {
   beforeAll(() => {
     jest.useFakeTimers()
-    jest.setSystemTime(new Date('2021-12-11'))
+    jest.setSystemTime(new Date(fakeDate))
   })
 
   it('should render journeys in descending createdAt date by default', async () => {
@@ -138,7 +138,7 @@ describe('TrashedJourneyList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1, 2023English'
+        `a lower case titleJanuary 1English`
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
@@ -185,21 +185,6 @@ describe('TrashedJourneyList', () => {
     expect(getAllByLabelText('journey-card')[1]).toBeUndefined()
   })
 
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <TrashedJourneyList />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')).toHaveLength(3)
-    )
-  })
-
   describe('Restore All', () => {
     const result = jest.fn(() => ({
       data: [{ id: defaultJourney.id, status: 'published' }]
@@ -214,7 +199,7 @@ describe('TrashedJourneyList', () => {
       result
     }
 
-    it('should display the restore all dialog', () => {
+    it('should display the restore all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
@@ -225,7 +210,9 @@ describe('TrashedJourneyList', () => {
         </MockedProvider>
       )
 
-      expect(getByText('Restore Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Restore Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should restore all journeys', async () => {
@@ -292,7 +279,7 @@ describe('TrashedJourneyList', () => {
       result
     }
 
-    it('should display the delete all dialog', () => {
+    it('should display the delete all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
@@ -302,7 +289,9 @@ describe('TrashedJourneyList', () => {
           </ThemeProvider>
         </MockedProvider>
       )
-      expect(getByText('Delete Journeys Forever')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Delete Journeys Forever')).toBeInTheDocument()
+      )
     })
 
     it('should trash all journeys', async () => {

@@ -1,4 +1,5 @@
 {
+  "Form": "Form",
   "Name must be 2 characters or more": "Name must be 2 characters or more",
   "Name must be 50 characters or less": "Name must be 50 characters or less",
   "Required": "Required",

@@ -35,7 +35,8 @@ describe('TeamCreateForm', () => {
           title: 'Team Title',
           publicTitle: null,
           __typename: 'Team',
-          userTeams: []
+          userTeams: [],
+          customDomains: []
         }
       }
     }
@@ -61,11 +62,13 @@ describe('TeamCreateForm', () => {
             title: 'Team 1 Title',
             publicTitle: null,
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           }
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: null
         }
       }
@@ -125,7 +128,8 @@ describe('TeamCreateForm', () => {
             id: 'teamId',
             title: 'Team Title',
             publicTitle: null,
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           }
         }
       )

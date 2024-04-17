@@ -4,6 +4,7 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -67,6 +68,9 @@ export function CardLayout(): ReactElement {
       })
     }
   }
+
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Box sx={{ px: 6, py: 4 }}>
@@ -85,9 +89,9 @@ export function CardLayout(): ReactElement {
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">
-              {cardBlock?.fullscreen ?? false ? 'Expanded' : 'Contained'}
+              {cardBlock?.fullscreen ?? false ? t('Expanded') : t('Contained')}
             </Typography>
-            <Typography variant="caption">Card Layout</Typography>
+            <Typography variant="caption">{t('Card Layout')}</Typography>
           </Stack>
         </Stack>
       </Box>

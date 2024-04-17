@@ -1,18 +1,24 @@
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { TermsAndConditions } from '../../src/components/TermsAndConditions'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 
 function TermsAndConditionsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const title = t('Terms and Conditions')
+
+  useHandleNewAccountRedirect()
+
   return (
     <>
-      <NextSeo title={t('Terms and Conditions')} />
+      <NextSeo title={title} />
       <OnboardingPageWrapper
+        title={title}
         emailSubject={t('A question about the terms and conditions form')}
       >
         <TermsAndConditions />
@@ -27,7 +33,7 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { redirect, translations } = await initAndAuthApp({
+  const { redirect, translations, apolloClient } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -37,6 +43,7 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
+      initialApolloState: apolloClient.cache.extract(),
       ...translations
     }
   }

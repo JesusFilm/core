@@ -5,12 +5,11 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
-import { SSRConfig, appWithTranslation } from 'next-i18next'
+import { SSRConfig, appWithTranslation, useTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
-import { useTranslation } from 'react-i18next'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
@@ -19,6 +18,9 @@ import { GetJourney_journey as Journey } from '../__generated__/GetJourney'
 import i18nConfig from '../next-i18next.config'
 import { useApollo } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
+
+import 'swiper/css'
+import 'swiper/css/pagination'
 
 type JourneysAppProps = NextJsAppProps<{ journey?: Journey }> & {
   pageProps: SSRConfig

@@ -2,10 +2,10 @@ FROM node:18-alpine
 
 EXPOSE 4004
 
-ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-videos-client
+ENV PRISMA_LOCATION_VIDEOS=/app/node_modules/.prisma/api-videos-client
+ENV NODE_ENV=production
 
 RUN apk upgrade --update-cache --available && \
-    apk add openssl1.1-compat && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
@@ -16,7 +16,7 @@ RUN npm install --production --silent --force
 
 WORKDIR /prisma
 COPY ./apps/api-videos/db .
-RUN npx prisma@^5.2.0 generate
+RUN npx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
 

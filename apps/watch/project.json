@@ -112,15 +112,11 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/watch"],
       "options": {
-        "jestConfig": "apps/watch/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/watch/jest.config.ts"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["apps/watch/**/*.{ts,tsx,js,jsx}"]
-      },
       "outputs": ["{options.outputFile}"]
     },
     "type-check": {
@@ -167,6 +163,16 @@
         ]
       }
     },
+    "extract-translations": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx i18next --config apps/watch/i18next-parser.config.js"
+          }
+        ]
+      }
+    },
     "codecov": {
       "executor": "nx:run-commands",
       "options": {
@@ -174,5 +180,5 @@
       }
     }
   },
-  "tags": []
+  "tags": ["doppler_config:stg_dev"]
 }

@@ -1,5 +1,8 @@
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -17,12 +20,40 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
+import { setBeaconPageViewed } from '../../../../../../libs/setBeaconPageViewed'
 import { Attribute } from '../../Attribute'
 
-import { BackgroundColor } from './BackgroundColor'
-import { BackgroundMedia } from './BackgroundMedia'
-import { CardLayout } from './CardLayout'
-import { CardStyling } from './CardStyling'
+const BackgroundColor = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundColor/BackgroundColor" */ './BackgroundColor'
+    ).then((mod) => mod.BackgroundColor),
+  { ssr: false }
+)
+
+const BackgroundMedia = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/BackgroundMedia/BackgroundMedia" */ './BackgroundMedia'
+    ).then((mod) => mod.BackgroundMedia),
+  { ssr: false }
+)
+
+const CardLayout = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/CardLayout/CardLayout" */ './CardLayout'
+    ).then((mod) => mod.CardLayout),
+  { ssr: false }
+)
+
+const CardStyling = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/CardStyling/CardStyling" */ './CardStyling'
+    ).then((mod) => mod.CardStyling),
+  { ssr: false }
+)
 
 export function Card({
   id,
@@ -33,6 +64,8 @@ export function Card({
   coverBlockId,
   children
 }: TreeBlock<CardBlock>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
   const { dispatch } = useEditor()
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
@@ -50,12 +83,18 @@ export function Card({
   const selectedCardColor =
     backgroundColor ?? cardTheme.palette.background.paper
 
-  const handleBackgroundMediaClick = (): void => {
+  const handleBackgroundMediaClick = (param: string): void => {
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Background Media Properties',
+      title: t('Background Media'),
       mobileOpen: true,
       children: <BackgroundMedia />
+    })
+
+    router.query.param = param
+    void router.push(router)
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed(param)
     })
   }
 
@@ -77,13 +116,13 @@ export function Card({
             />
           </Paper>
         }
-        name="Color"
+        name={t('Color')}
         value={selectedCardColor.toUpperCase()}
-        description="Background Color"
+        description={t('Background Color')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Background Color Properties',
+            title: t('Background Color Properties'),
             mobileOpen: true,
             children: <BackgroundColor />
           })
@@ -93,51 +132,51 @@ export function Card({
         <Attribute
           id={`${id}-cover-block`}
           icon={<Image3Icon />}
-          name="Background"
+          name={t('Background')}
           value={coverBlock.src.substring(
             coverBlock.src.lastIndexOf('/') + 1,
             coverBlock.src.length
           )}
-          description="Background Image"
-          onClick={handleBackgroundMediaClick}
+          description={t('Background Image')}
+          onClick={() => handleBackgroundMediaClick('background-image')}
         />
       )}
       {coverBlock?.__typename === 'VideoBlock' && (
         <Attribute
           id={`${id}-cover-block`}
           icon={<VideoOnIcon />}
-          name="Background"
+          name={t('Background')}
           value={coverBlock.video?.title?.[0]?.value ?? coverBlock.title ?? ''}
-          description="Background Video"
-          onClick={handleBackgroundMediaClick}
+          description={t('Background Video')}
+          onClick={() => handleBackgroundMediaClick('background-video')}
         />
       )}
       {coverBlock == null && (
         <Attribute
           id={`${id}-cover-block`}
           icon={<Image3Icon />}
-          name="Background"
-          value="None"
-          description="Background Media"
-          onClick={handleBackgroundMediaClick}
+          name={t('Background')}
+          value={t('None')}
+          description={t('Background Media')}
+          onClick={() => handleBackgroundMediaClick('background-video')}
         />
       )}
       <Attribute
         icon={<PaletteIcon />}
         id={`${id}-theme-mode`}
-        name="Style"
+        name={t('Style')}
         value={
           themeMode == null
-            ? 'Default'
+            ? t('Default')
             : themeMode === ThemeMode.light
-            ? 'Light'
-            : 'Dark'
+            ? t('Light')
+            : t('Dark')
         }
-        description="Card Styling"
+        description={t('Card Styling')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Card Style Property',
+            title: t('Card Style Property'),
             mobileOpen: true,
             children: <CardStyling />
           })
@@ -146,13 +185,13 @@ export function Card({
       <Attribute
         icon={<FlexAlignBottom1Icon />}
         id={`${id}-fullscreen`}
-        name="Layout"
-        value={fullscreen ? 'Expanded' : 'Contained'}
-        description="Content Appearance"
+        name={t('Layout')}
+        value={fullscreen ? t('Expanded') : t('Contained')}
+        description={t('Content Appearance')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Card Layout Property',
+            title: t('Card Layout Property'),
             mobileOpen: true,
             children: <CardLayout />
           })

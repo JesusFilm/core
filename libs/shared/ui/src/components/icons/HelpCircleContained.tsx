@@ -2,8 +2,8 @@ import { createSvgIcon } from '@mui/material/utils'
 
 export default createSvgIcon(
   <path
-    fill-rule="evenodd"
-    clip-rule="evenodd"
+    fillRule="evenodd"
+    clipRule="evenodd"
     d="M12 3.4a8.6 8.6 0 1 0 0 17.2 8.6 8.6 0 0 0 0-17.2ZM1.4 12C1.4 6.146 6.146 1.4 12 1.4c5.854 0 10.6 4.746 10.6 10.6 0 5.855-4.746 10.6-10.6 10.6-5.854 0-10.6-4.745-10.6-10.6ZM12 7.6c-.756 0-1.4.63-1.4 1.446a1 1 0 1 1-2 0C8.6 7.16 10.105 5.6 12 5.6s3.4 1.56 3.4 3.446A3.444 3.444 0 0 1 13 12.34l-.001.781a1 1 0 1 1-2 0v-1.153L11 11.49a1 1 0 0 1 1-.999c.756 0 1.4-.63 1.4-1.445 0-.816-.644-1.446-1.4-1.446Zm-.001 8.2a1 1 0 0 1 1 1v.043a1 1 0 1 1-2 0V16.8a1 1 0 0 1 1-1Z"
   />,
   'HelpCircleContained'

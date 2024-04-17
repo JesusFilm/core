@@ -12,15 +12,6 @@ import { USER_INVITE_REMOVE } from './RemoveUser/RemoveUser'
 
 import { UserListItem } from '.'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 const owner: UserJourney = {
   __typename: 'UserJourney',
   id: 'userJourneyOwner.id',

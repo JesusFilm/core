@@ -1,20 +1,33 @@
-import { NormalizedCacheObject } from '@apollo/client'
+import { NormalizedCacheObject, gql } from '@apollo/client'
 import { GetStaticProps } from 'next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 
 import {
   GetHomeVideos,
   GetHomeVideos_videos as Video
 } from '../__generated__/GetHomeVideos'
+import i18nConfig from '../next-i18next.config'
 import { Videos } from '../src/components/VideosPage'
-import {
-  GET_LANGUAGES,
-  GET_VIDEOS,
-  limit
-} from '../src/components/VideosPage/VideosPage'
+import { GET_LANGUAGES } from '../src/components/VideosPage/VideosPage'
 import { createApolloClient } from '../src/libs/apolloClient'
+import { VIDEO_CHILD_FIELDS } from '../src/libs/videoChildFields'
 
 import { GET_HOME_VIDEOS } from './index'
+
+const GET_VIDEOS = gql`
+  ${VIDEO_CHILD_FIELDS}
+  query GetVideos(
+    $where: VideosFilter
+    $offset: Int
+    $limit: Int
+    $languageId: ID
+  ) {
+    videos(where: $where, offset: $offset, limit: $limit) {
+      ...VideoChildFields
+    }
+  }
+`
 
 interface VideosPageProps {
   initialApolloState: NormalizedCacheObject
@@ -47,7 +60,9 @@ const videoIds = [
   'LUMOCollection'
 ]
 
-export const getStaticProps: GetStaticProps<VideosPageProps> = async () => {
+export const getStaticProps: GetStaticProps<VideosPageProps> = async ({
+  locale
+}) => {
   const apolloClient = createApolloClient()
 
   const { data } = await apolloClient.query<GetHomeVideos>({
@@ -69,7 +84,7 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async () => {
     variables: {
       where: {},
       offset: 0,
-      limit,
+      limit: 20,
       languageId: '529'
     }
   })
@@ -84,7 +99,12 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async () => {
     revalidate: 3600,
     props: {
       initialApolloState: apolloClient.cache.extract(),
-      videos
+      videos,
+      ...(await serverSideTranslations(
+        locale ?? 'en',
+        ['apps-watch'],
+        i18nConfig
+      ))
     }
   }
 }

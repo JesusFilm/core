@@ -74,11 +74,13 @@ describe('TeamMembersList', () => {
             title: 'Team Title',
             publicTitle: null,
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           }
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: 'teamId'
         }
       }

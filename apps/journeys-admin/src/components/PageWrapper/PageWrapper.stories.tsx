@@ -17,7 +17,7 @@ import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'
 import { Drawer } from '../Editor/Drawer'
 
-import { GET_ME } from './NavigationDrawer'
+import { GET_ME } from './NavigationDrawer/UserNavigation'
 import { SidePanelContainer } from './SidePanelContainer'
 
 import { PageWrapper } from '.'
@@ -67,7 +67,8 @@ const Template: StoryObj<typeof PageWrapper> = {
         mocks={[
           {
             request: {
-              query: GET_ME
+              query: GET_ME,
+              variables: { input: { redirect: undefined } }
             },
             result: {
               data: {
@@ -221,6 +222,23 @@ export const CustomSidePanel = {
     chromatic: {
       viewports: [1200]
     }
+  }
+}
+
+export const NoNavBar = {
+  ...Template,
+  args: {
+    ...Default.args,
+    showNavBar: false
+  }
+}
+
+export const NoHeader = {
+  ...Template,
+  args: {
+    ...Default.args,
+    showMainHeader: false,
+    showAppHeader: false
   }
 }
 

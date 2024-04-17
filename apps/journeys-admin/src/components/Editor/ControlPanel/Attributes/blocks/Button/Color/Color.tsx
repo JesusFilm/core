@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -25,6 +26,7 @@ export const BUTTON_BLOCK_UPDATE = gql`
 `
 
 export function Color(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [buttonBlockUpdate] =
     useMutation<ButtonBlockUpdateColor>(BUTTON_BLOCK_UPDATE)
 
@@ -56,17 +58,17 @@ export function Color(): ReactElement {
   const options = [
     {
       value: ButtonColor.primary,
-      label: 'Primary',
+      label: t('Primary'),
       icon: <ColorDisplayIcon color={ButtonColor.primary} />
     },
     {
       value: ButtonColor.secondary,
-      label: 'Secondary',
+      label: t('Secondary'),
       icon: <ColorDisplayIcon color={ButtonColor.secondary} />
     },
     {
       value: ButtonColor.error,
-      label: 'Error',
+      label: t('Error'),
       icon: <ColorDisplayIcon color={ButtonColor.error} />
     }
   ]

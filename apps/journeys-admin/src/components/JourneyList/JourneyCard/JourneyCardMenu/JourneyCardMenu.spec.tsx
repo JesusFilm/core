@@ -9,7 +9,7 @@ import { ThemeProvider } from '../../../ThemeProvider'
 import { JourneyCardMenu } from '.'
 
 describe('JourneyCardMenu', () => {
-  it('should open default menu on click', () => {
+  it('should open default menu on click', async () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -38,14 +38,16 @@ describe('JourneyCardMenu', () => {
       'aria-labelledby',
       'journey-actions'
     )
-    expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+    )
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
   })
 
-  it('should open trash menu on click', () => {
+  it('should open trash menu on click', async () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -72,7 +74,9 @@ describe('JourneyCardMenu', () => {
       'aria-labelledby',
       'journey-actions'
     )
-    expect(getByRole('menuitem', { name: 'Restore' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('menuitem', { name: 'Restore' })).toBeInTheDocument()
+    )
     expect(
       getByRole('menuitem', { name: 'Delete Forever' })
     ).toBeInTheDocument()
@@ -98,7 +102,9 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Access' }))
 
-    expect(queryByText('Manage Editors')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(queryByText('Manage Editors')).toBeInTheDocument()
+    )
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByText('Manage Editors')).not.toBeInTheDocument()
@@ -125,7 +131,9 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
 
-    expect(queryByText('Trash Journey?')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(queryByText('Trash Journey?')).toBeInTheDocument()
+    )
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByText('Trash Journey?')).not.toBeInTheDocument()
@@ -150,7 +158,9 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Restore' }))
 
-    expect(queryByText('Restore Journey?')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(queryByText('Restore Journey?')).toBeInTheDocument()
+    )
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByText('Restore Journey?')).not.toBeInTheDocument()
@@ -175,7 +185,9 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByRole('button'))
     fireEvent.click(getByRole('menuitem', { name: 'Delete Forever' }))
 
-    expect(queryByText('Delete Forever?')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(queryByText('Delete Forever?')).toBeInTheDocument()
+    )
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByText('Delete Forever?')).not.toBeInTheDocument()

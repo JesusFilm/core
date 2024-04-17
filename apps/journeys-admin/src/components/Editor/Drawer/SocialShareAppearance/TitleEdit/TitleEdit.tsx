@@ -1,14 +1,14 @@
 import { gql, useMutation } from '@apollo/client'
-import TextField, { TextFieldProps } from '@mui/material/TextField'
+import TextField from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
-import { ReactElement, useEffect, useRef } from 'react'
+import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneySeoTitleUpdate } from '../../../../../../__generated__/JourneySeoTitleUpdate'
-import { useSocialPreview } from '../../../SocialProvider'
 
 export const JOURNEY_SEO_TITLE_UPDATE = gql`
   mutation JourneySeoTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -20,25 +20,12 @@ export const JOURNEY_SEO_TITLE_UPDATE = gql`
 `
 
 export function TitleEdit(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useMutation<JourneySeoTitleUpdate>(
     JOURNEY_SEO_TITLE_UPDATE
   )
 
   const { journey } = useJourney()
-
-  const ref = useRef<TextFieldProps | null>()
-  const { setSeoTitle } = useSocialPreview()
-  const once = useRef(false)
-  useEffect(() => {
-    if (!once.current && journey != null) {
-      setSeoTitle(journey?.seoTitle)
-      once.current = true
-    }
-  }, [journey, setSeoTitle])
-
-  function handleKeyUp(): void {
-    setSeoTitle(ref.current?.value as string)
-  }
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     if (journey == null) return
@@ -68,7 +55,7 @@ export function TitleEdit(): ReactElement {
       : null
 
   const seoTitleSchema = object().shape({
-    seoTitle: string().max(50, 'Character limit reached')
+    seoTitle: string().max(50, t('Character limit reached'))
   })
 
   return (
@@ -82,11 +69,10 @@ export function TitleEdit(): ReactElement {
           {({ values, touched, errors, handleChange, handleBlur }) => (
             <Form>
               <TextField
-                inputRef={ref}
                 id="seoTitle"
                 name="seoTitle"
                 variant="filled"
-                label="Title"
+                label={t('Title')}
                 fullWidth
                 multiline
                 maxRows={2}
@@ -95,10 +81,9 @@ export function TitleEdit(): ReactElement {
                 helperText={
                   errors.seoTitle != null
                     ? (errors.seoTitle as string)
-                    : 'Recommended length: 5 words'
+                    : t('Recommended length: 5 words')
                 }
                 onChange={handleChange}
-                onKeyUp={handleKeyUp}
                 onBlur={(e) => {
                   handleBlur(e)
                   if (errors.seoTitle == null) void handleSubmit(e)
@@ -114,10 +99,10 @@ export function TitleEdit(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label="Title"
+          label={t('Title')}
           fullWidth
           disabled
-          helperText="Recommended length: 5 words"
+          helperText={t('Recommended length: 5 words')}
           sx={{
             pb: 4
           }}

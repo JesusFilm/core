@@ -1,17 +1,17 @@
 import CircleRoundedIcon from '@mui/icons-material/CircleRounded'
 import Badge from '@mui/material/Badge'
-import Skeleton from '@mui/material/Skeleton'
 import { styled } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
 interface JourneyCardTextProps {
-  journey?: Journey
+  journey: Journey
   variant: JourneyCardVariant
 }
 
@@ -28,6 +28,8 @@ export function JourneyCardText({
   journey,
   variant
 }: JourneyCardTextProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <StyledBadge
@@ -36,7 +38,7 @@ export function JourneyCardText({
         data-testid="new-journey-badge"
         sx={{ width: '100%' }}
         badgeContent={
-          <Tooltip title="New">
+          <Tooltip title={t('New')}>
             <CircleRoundedIcon color="warning" sx={{ fontSize: '10px' }} />
           </Tooltip>
         }
@@ -48,11 +50,7 @@ export function JourneyCardText({
           gutterBottom
           sx={{ color: 'secondary.main' }}
         >
-          {journey != null ? (
-            journey.title
-          ) : (
-            <Skeleton variant="text" width={400} />
-          )}
+          {journey.title}
         </Typography>
       </StyledBadge>
 
@@ -63,19 +61,14 @@ export function JourneyCardText({
           display: 'block',
           color: 'secondary.main'
         }}
+        suppressHydrationWarning
       >
-        {journey != null ? (
-          intlFormat(parseISO(journey.createdAt), {
-            day: 'numeric',
-            month: 'long',
-            year: isThisYear(parseISO(journey.createdAt))
-              ? undefined
-              : 'numeric'
-          })
-        ) : (
-          <Skeleton variant="text" width={120} />
-        )}
-        {journey?.description != null && ` - ${journey.description}`}
+        {intlFormat(parseISO(journey.createdAt), {
+          day: 'numeric',
+          month: 'long',
+          year: isThisYear(parseISO(journey.createdAt)) ? undefined : 'numeric'
+        })}
+        {journey.description != null && ` - ${journey.description}`}
       </Typography>
     </>
   )

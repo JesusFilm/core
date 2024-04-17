@@ -15,6 +15,9 @@ resource "aws_instance" "bastion" {
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = var.security_group_ids
   key_name                    = aws_key_pair.default.key_name
+  tags = {
+    Name = "bastion-${var.env}"
+  }
 }
 
 resource "aws_route53_record" "record" {

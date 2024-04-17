@@ -1,0 +1,1 @@
+export { useUserRoleSuspenseQuery } from './useUserRoleSuspenseQuery'

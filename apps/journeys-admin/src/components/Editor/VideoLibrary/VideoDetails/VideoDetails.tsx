@@ -9,6 +9,7 @@ import { Theme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -67,6 +68,7 @@ export function VideoDetails({
     BLOCK_DELETE_FOR_COVER_IMAGE
   )
   const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
 
   let Details: (
     props: Pick<VideoDetailsProps, 'id' | 'open' | 'onSelect'>
@@ -111,15 +113,18 @@ export function VideoDetails({
       source: VideoBlockSource.internal
     })
   }
+
   return (
     <>
       <Drawer
+        SlideProps={{ appear: true }}
         anchor={smUp ? 'right' : 'bottom'}
         variant="temporary"
         open={open}
         elevation={smUp ? 1 : 0}
         hideBackdrop
         sx={{
+          zIndex: (theme) => theme.zIndex.modal,
           left: {
             xs: 0,
             sm: 'unset'
@@ -140,7 +145,7 @@ export function VideoDetails({
               component="div"
               sx={{ flexGrow: 1 }}
             >
-              Video Details
+              {t('Video Details')}
             </Typography>
             <IconButton
               onClick={() => onClose(false)}
@@ -168,7 +173,7 @@ export function VideoDetails({
                 size="small"
                 onClick={() => onClose(false)}
               >
-                Change Video
+                {t('Change Video')}
               </Button>
               <IconButton
                 onClick={handleClearVideo}

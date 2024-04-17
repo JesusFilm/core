@@ -8,10 +8,7 @@
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["libs/journeys/ui/**/*.{ts,tsx,js,jsx}"]
-      }
+      "outputs": ["{options.outputFile}"]
     },
     "type-check": {
       "executor": "nx:run-commands",
@@ -23,8 +20,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/journeys/ui"],
       "options": {
-        "jestConfig": "libs/journeys/ui/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/journeys/ui/jest.config.ts"
       }
     },
     "demo": {

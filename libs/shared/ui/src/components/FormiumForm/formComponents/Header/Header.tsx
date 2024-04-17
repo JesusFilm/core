@@ -40,16 +40,16 @@ interface PageChild {
 }
 
 export function Header({ page: { title } }: HeaderProps): ReactElement {
-  const { hiddenPageTitle } = useFormium()
+  const { hideHeader, headerAsPageTitle } = useFormium()
 
-  return hiddenPageTitle === true ? (
-    <NextSeo title={title} />
-  ) : (
+  return (
     <>
-      <NextSeo title={title} />
-      <Typography variant="h4" sx={{ pb: '30px' }}>
-        {title}
-      </Typography>
+      {headerAsPageTitle === true && <NextSeo title={title} />}
+      {hideHeader !== true && (
+        <Typography variant="h4" sx={{ pb: '30px' }}>
+          {title}
+        </Typography>
+      )}
     </>
   )
 }

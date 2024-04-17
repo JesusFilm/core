@@ -26,6 +26,10 @@ export const TEAM_CREATE = gql`
           imageUrl
         }
       }
+      customDomains {
+        id
+        name
+      }
     }
   }
 `

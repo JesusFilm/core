@@ -124,8 +124,7 @@ describe('PageWrapper', () => {
         queryByRole('button', { name: 'open-drawer' })
       ).not.toBeInTheDocument()
 
-      const button = getByTestId('toggle-nav-drawer')
-      fireEvent.click(button)
+      fireEvent.click(getByTestId('NavigationListItemToggle'))
       expect(getByText('Discover')).toBeInTheDocument()
     })
   })

@@ -1,11 +1,12 @@
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import Box from '@mui/material/Box'
-import { useTheme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { ReactElement, useState } from 'react'
-import SwiperCore, { Mousewheel, SwiperOptions } from 'swiper'
+import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { SwiperOptions } from 'swiper/types'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -15,8 +16,6 @@ import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 interface TemplateVideoPreviewProps {
   videoBlocks: Array<TreeBlock<VideoBlock>>
 }
-
-SwiperCore.use([Mousewheel])
 
 const DynamicTemplateVideoPlayer = dynamic<{
   id?: string | null
@@ -34,6 +33,8 @@ const DynamicTemplateVideoPlayer = dynamic<{
 interface TemplateVideoPreviewItemProps {
   block?: TreeBlock<VideoBlock>
 }
+
+const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
 
 function TemplateVideoPreviewItem({
   block
@@ -126,6 +127,7 @@ export function TemplateVideoPreview({
 
   return (
     <Swiper
+      modules={[Mousewheel, FreeMode, A11y]}
       mousewheel={{
         forceToAxis: true
       }}
@@ -143,13 +145,13 @@ export function TemplateVideoPreview({
     >
       {videoBlocks?.map((block) => {
         return (
-          <SwiperSlide
+          <StyledSwiperSlide
             data-testid="TemplateVideosSwiperSlide"
             key={block.id}
-            style={{ width: 'fit-content', zIndex: 2 }}
+            sx={{ width: 'unset !important', zIndex: 2, mr: { xs: 3, sm: 7 } }}
           >
             <TemplateVideoPreviewItem block={block} />
-          </SwiperSlide>
+          </StyledSwiperSlide>
         )
       })}
     </Swiper>

@@ -6,26 +6,26 @@ import {
   withUser,
   withUserTokenSSR
 } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
 import {
   GetAdminJourney,
-  GetAdminJourney_journey as Journey
+  GetAdminJourneyVariables
 } from '../../__generated__/GetAdminJourney'
+import { GetCustomDomains } from '../../__generated__/GetCustomDomains'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
+import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
 import { ControlPanel } from '../../src/components/Editor/ControlPanel'
 import { Drawer } from '../../src/components/Editor/Drawer'
 import { EditToolbar } from '../../src/components/Editor/EditToolbar'
-import { JourneyEdit } from '../../src/components/Editor/JourneyEdit'
-import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect/useInvalidJourneyRedirect'
+import { GET_CUSTOM_DOMAINS } from '../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
 
 export const GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -44,42 +44,47 @@ export const USER_JOURNEY_OPEN = gql`
   }
 `
 
-function JourneyEditPage(): ReactElement {
+function JourneyEditPage({ status }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const user = useUser()
-  const { data } = useQuery<GetAdminJourney>(GET_ADMIN_JOURNEY, {
-    variables: { id: router.query.journeyId }
-  })
-  useInvalidJourneyRedirect(data)
+  const { data } = useQuery<GetAdminJourney, GetAdminJourneyVariables>(
+    GET_ADMIN_JOURNEY,
+    {
+      variables: { id: router.query.journeyId as string }
+    }
+  )
 
   return (
     <>
       <NextSeo
         title={
-          data?.journey?.title != null
+          status === 'noAccess'
+            ? t('Request Access')
+            : data?.journey?.title != null
             ? t('Edit {{title}}', { title: data.journey.title })
             : t('Edit Journey')
         }
         description={data?.journey?.description ?? undefined}
       />
-      <Editor
-        journey={data?.journey ?? undefined}
-        selectedStepId={router.query.stepId as string | undefined}
-        view={router.query.view as ActiveJourneyEditContent | undefined}
-      >
-        <PageWrapper
-          title={data?.journey?.title ?? t('Edit Journey')}
-          backHref="/"
-          mainHeaderChildren={<EditToolbar />}
-          mainBodyPadding={false}
-          bottomPanelChildren={<ControlPanel />}
-          customSidePanel={<Drawer />}
-          user={user}
-        >
-          <JourneyEdit />
-        </PageWrapper>
-      </Editor>
+      {status === 'noAccess' ? (
+        <AccessDenied />
+      ) : (
+        <Editor
+          journey={data?.journey ?? undefined}
+          selectedStepId={router.query.stepId as string | undefined}
+          view={router.query.view as ActiveJourneyEditContent | undefined}
+          PageWrapperProps={{
+            title: data?.journey?.title ?? t('Edit Journey'),
+            backHref: '/',
+            mainHeaderChildren: <EditToolbar />,
+            mainBodyPadding: false,
+            bottomPanelChildren: <ControlPanel />,
+            customSidePanel: <Drawer />,
+            user
+          }}
+        />
+      )}
     </>
   )
 }
@@ -90,7 +95,7 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, redirect, translations } = await initAndAuthApp({
+  const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -98,7 +103,6 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  let journey: Journey | null
   try {
     const { data } = await apolloClient.query<GetAdminJourney>({
       query: GET_ADMIN_JOURNEY,
@@ -107,33 +111,56 @@ export const getServerSideProps = withUserTokenSSR({
       }
     })
 
-    journey = data?.journey
+    if (data.journey?.team?.id != null) {
+      // from: src/components/Editor/Properties/JourneyLink/JourneyLink.tsx
+      await apolloClient.query<GetCustomDomains>({
+        query: GET_CUSTOM_DOMAINS,
+        variables: {
+          teamId: data.journey.team.id
+        }
+      })
+    }
+
+    if (data.journey?.template === true) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: `/publisher/${data.journey?.id}`
+        }
+      }
+    }
+    await apolloClient.mutate<UserJourneyOpen>({
+      mutation: USER_JOURNEY_OPEN,
+      variables: { id: data.journey?.id }
+    })
   } catch (error) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/journeys/${query?.journeyId as string}`
+    if (error.message === 'journey not found') {
+      return {
+        redirect: {
+          permanent: false,
+          destination: `/`
+        }
       }
     }
-  }
-
-  if (journey?.template === true) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/publisher/${journey?.id}`
+    if (error.message === 'user is not allowed to view journey') {
+      return {
+        props: {
+          status: 'noAccess',
+          ...translations,
+          flags,
+          initialApolloState: apolloClient.cache.extract()
+        }
       }
     }
+    throw error
   }
-
-  await apolloClient.mutate<UserJourneyOpen>({
-    mutation: USER_JOURNEY_OPEN,
-    variables: { id: query?.journeyId }
-  })
 
   return {
     props: {
-      ...translations
+      status: 'success',
+      ...translations,
+      flags,
+      initialApolloState: apolloClient.cache.extract()
     }
   }
 })

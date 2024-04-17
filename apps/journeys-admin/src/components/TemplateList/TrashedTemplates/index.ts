@@ -1,1 +1,0 @@
-export { TrashedTemplates } from './TrashedTemplates'

@@ -1,5 +1,6 @@
+import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -10,7 +11,13 @@ import LockOpen1Icon from '@core/shared/ui/icons/LockOpen1'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../../Attribute'
 
-import { NextCard } from './NextCard'
+const NextCard = dynamic(
+  async () =>
+    await import(/* webpackChunkName: "NextCard" */ './NextCard').then(
+      (module) => module.NextCard
+    ),
+  { ssr: false }
+)
 
 export function Step({
   id,
@@ -34,15 +41,15 @@ export function Step({
   const heading =
     nextStep != null && steps != null
       ? getStepHeading(nextStep.id, nextStep.children, steps, t)
-      : 'None'
+      : t('None')
 
   return (
     <Attribute
       id={`next-step-${id}`}
       icon={locked ? <Lock1Icon /> : <LockOpen1Icon />}
-      name="Next Card"
+      name={t('Next Card')}
       value={heading}
-      description={locked ? 'Locked With Interaction' : 'Unlocked Card'}
+      description={locked ? t('Locked With Interaction') : t('Unlocked Card')}
       onClick={() => {
         dispatch({
           type: 'SetDrawerPropsAction',

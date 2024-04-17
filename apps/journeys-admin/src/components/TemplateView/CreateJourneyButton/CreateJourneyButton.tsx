@@ -1,36 +1,41 @@
 import Button from '@mui/material/Button'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
-import { useTranslation } from 'react-i18next'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
-import { CopyToTeamDialog } from '../../Team/CopyToTeamDialog'
-import { useTeam } from '../../Team/TeamProvider'
+import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
+  openTeamDialog: boolean
+  setOpenTeamDialog: React.Dispatch<React.SetStateAction<boolean>>
 }
 
+const DynamicCopyToTeamDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CopyToTeamDialog" */
+      '../../Team/CopyToTeamDialog'
+    ).then((mod) => mod.CopyToTeamDialog)
+)
+
 export function CreateJourneyButton({
-  signedIn = false
+  signedIn = false,
+  openTeamDialog,
+  setOpenTeamDialog
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { query } = useTeam()
+
   const router = useRouter()
   const { journey } = useJourney()
-  const [openTeamDialog, setOpenTeamDialog] = useState(false)
+  const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const [loadingJourney, setLoadingJourney] = useState(false)
   const [journeyDuplicate] = useJourneyDuplicateMutation()
-
-  useEffect(() => {
-    if (!signedIn) {
-      // Prefetch the dashboard page
-      void router.prefetch('/users/sign-in')
-    }
-  }, [signedIn, router])
 
   const handleCreateJourney = useCallback(
     async (teamId: string): Promise<void> => {
@@ -65,35 +70,45 @@ export function CreateJourneyButton({
   )
 
   const handleCheckSignIn = (): void => {
-    if (signedIn) {
+    if (signedIn && setOpenTeamDialog !== undefined) {
       setOpenTeamDialog(true)
     } else {
-      void router
-        .push(
-          {
-            pathname: '/users/sign-in',
-            query: {
-              redirect: `${
-                window.location.origin + router.asPath
-              }?createNew=true`
-            }
-          },
-          undefined,
-          {
-            shallow: true
-          }
-        )
-        .then(() => {
-          setOpenTeamDialog(true)
-        })
+      setOpenAccountDialog(true)
     }
   }
 
+  const handleSignIn = (login): void => {
+    const url = window.location.origin + router.asPath
+    void router.push(
+      {
+        pathname: '/users/sign-in',
+        query: {
+          redirect: url.includes('createNew')
+            ? url
+            : `${window.location.origin + router.asPath}?createNew=true`,
+          login: login ?? false
+        }
+      },
+      undefined,
+      {
+        shallow: true
+      }
+    )
+  }
+
   useEffect(() => {
-    if (router.query.createNew === 'true') {
+    if (!signedIn) {
+      // Prefetch the dashboard page
+      void router.prefetch('/users/sign-in')
+    }
+    if (
+      router.query.createNew === 'true' &&
+      signedIn &&
+      setOpenTeamDialog !== undefined
+    ) {
       setOpenTeamDialog(true)
     }
-  }, [router, query, handleCreateJourney])
+  }, [signedIn, router, handleCreateJourney, setOpenTeamDialog])
 
   return (
     <>
@@ -106,14 +121,23 @@ export function CreateJourneyButton({
       >
         {t('Use This Template')}
       </Button>
-      <CopyToTeamDialog
-        submitLabel="Add"
-        title="Add Journey to Team"
-        open={openTeamDialog}
-        loading={loadingJourney}
-        onClose={() => setOpenTeamDialog(false)}
-        submitAction={handleCreateJourney}
+      <AccountCheckDialog
+        open={openAccountDialog}
+        handleSignIn={handleSignIn}
+        onClose={() => setOpenAccountDialog(false)}
       />
+      {openTeamDialog != null && (
+        <DynamicCopyToTeamDialog
+          submitLabel={t('Add')}
+          title={t('Add Journey to Team')}
+          open={openTeamDialog}
+          loading={loadingJourney}
+          onClose={() =>
+            setOpenTeamDialog !== undefined && setOpenTeamDialog(false)
+          }
+          submitAction={handleCreateJourney}
+        />
+      )}
     </>
   )
 }

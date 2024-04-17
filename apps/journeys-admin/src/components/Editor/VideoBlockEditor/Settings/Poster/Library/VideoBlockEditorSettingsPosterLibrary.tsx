@@ -227,14 +227,18 @@ export function VideoBlockEditorSettingsPosterLibrary({
   }
 
   return (
-    <ImageLibrary
-      open={open}
-      onClose={onClose}
-      onChange={handleChange}
-      onDelete={deleteCoverBlock}
-      loading={createLoading || updateLoading}
-      selectedBlock={selectedBlock}
-      error={createError != null ?? updateError != null}
-    />
+    <>
+      {open != null && (
+        <ImageLibrary
+          open={open}
+          onClose={onClose}
+          onChange={handleChange}
+          onDelete={deleteCoverBlock}
+          loading={createLoading || updateLoading}
+          selectedBlock={selectedBlock}
+          error={createError != null ?? updateError != null}
+        />
+      )}
+    </>
   )
 }

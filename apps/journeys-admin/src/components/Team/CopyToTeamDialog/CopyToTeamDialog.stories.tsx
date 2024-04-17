@@ -33,11 +33,13 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
           title: 'Spider Society',
           publicTitle: null,
           __typename: 'Team',
-          userTeams: []
+          userTeams: [],
+          customDomains: []
         }
       ],
       getJourneyProfile: {
         __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
         lastActiveTeamId: 'teamId'
       }
     }

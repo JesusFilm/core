@@ -1,8 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
-import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '../../libs/block'
@@ -35,18 +35,18 @@ export function Step({
   const [stepViewEventCreate] = useMutation<StepViewEventCreate>(
     STEP_VIEW_EVENT_CREATE
   )
-
   const { variant, journey } = useJourney()
   const { treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
 
+  const activeJourneyStep =
+    (variant === 'default' || variant === 'embed') &&
+    isActiveBlockOrDescendant(blockId)
+
   const heading = getStepHeading(blockId, children, treeBlocks, t)
 
   useEffect(() => {
-    if (
-      (variant === 'default' || variant === 'embed') &&
-      isActiveBlockOrDescendant(blockId)
-    ) {
+    if (activeJourneyStep && wrappers === undefined) {
       const id = uuidv4()
       void stepViewEventCreate({
         variables: { input: { id, blockId, value: heading } }
@@ -60,11 +60,18 @@ export function Step({
         }
       })
     }
-  }, [blockId, stepViewEventCreate, variant, heading])
+  }, [
+    blockId,
+    stepViewEventCreate,
+    variant,
+    heading,
+    activeJourneyStep,
+    wrappers
+  ])
 
   return (
     <>
-      {(variant === 'default' || variant === 'embed') &&
+      {activeJourneyStep &&
         (treeBlocks[0]?.id !== blockId ? (
           <NextSeo title={`${heading} (${journey?.title ?? ''})`} />
         ) : (

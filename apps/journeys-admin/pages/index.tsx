@@ -6,16 +6,27 @@ import {
   withUser,
   withUserTokenSSR
 } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../__generated__/globalTypes'
+import {
+  UpdateLastActiveTeamId,
+  UpdateLastActiveTeamIdVariables
+} from '../__generated__/UpdateLastActiveTeamId'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../src/components/Team/TeamSelect/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+import { GET_ADMIN_JOURNEYS } from '../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -30,12 +41,14 @@ function IndexPage(): ReactElement {
         mainHeaderChildren={
           <Stack
             direction="row"
-            flexGrow={1}
             justifyContent="space-between"
             alignItems="center"
+            width="100%"
           >
             <TeamSelect onboarding={router.query.onboarding === 'true'} />
-            <TeamMenu />
+            <Stack direction="row" alignItems="center">
+              <TeamMenu />
+            </Stack>
           </Stack>
         }
         sidePanelChildren={<OnboardingPanel />}
@@ -49,11 +62,11 @@ function IndexPage(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl }) => {
+})(async ({ user, locale, resolvedUrl, query }) => {
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { redirect, translations } = await initAndAuthApp({
+  const { apolloClient, redirect, translations, flags } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -61,9 +74,54 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
+  let variables: GetAdminJourneysVariables = {}
+
+  switch (query.tab ?? 'active') {
+    case 'active':
+      variables = {
+        // from src/components/JourneyList/ActiveJourneyList useAdminJourneysQuery
+        status: [JourneyStatus.draft, JourneyStatus.published],
+        useLastActiveTeamId: true
+      }
+      break
+    case 'archived':
+      variables = {
+        // from src/components/JourneyList/ArchivedJourneyList useAdminJourneysQuery
+        status: [JourneyStatus.archived],
+        useLastActiveTeamId: true
+      }
+      break
+    case 'trashed':
+      variables = {
+        // from src/components/JourneyList/TrashedJourneyList useAdminJourneysQuery
+        status: [JourneyStatus.trashed],
+        useLastActiveTeamId: true
+      }
+      break
+  }
+
+  if (query?.activeTeam != null) {
+    await apolloClient.mutate<
+      UpdateLastActiveTeamId,
+      UpdateLastActiveTeamIdVariables
+    >({
+      mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: {
+        input: { lastActiveTeamId: query.activeTeam as string }
+      }
+    })
+  }
+
+  await apolloClient.query<GetAdminJourneys, GetAdminJourneysVariables>({
+    query: GET_ADMIN_JOURNEYS,
+    variables
+  })
+
   return {
     props: {
-      ...translations
+      initialApolloState: apolloClient.cache.extract(),
+      ...translations,
+      flags
     }
   }
 })

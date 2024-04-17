@@ -11,15 +11,6 @@ import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { MetadataTabPanel } from './MetadataTabPanel'
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
-
 describe('MetadataTabPanel', () => {
   afterEach(() => jest.clearAllMocks())
 
@@ -44,7 +35,7 @@ describe('MetadataTabPanel', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('textbox', { name: '' })).toHaveValue('01/01/2023')
+    expect(getByRole('textbox', { name: '' })).toHaveValue('01/01/2021')
   })
 
   it('should handle form change', () => {

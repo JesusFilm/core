@@ -1,13 +1,24 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
-import { treeBlocksVar } from '@core/journeys/ui/block'
+import { blockHistoryVar } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 
-import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../__generated__/GetJourney'
+import {
+  ChatPlatform,
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../__generated__/JourneyFields'
 import { basic } from '../../libs/testData/storyData'
+import {
+  JOURNEY_VIEW_EVENT_CREATE,
+  JOURNEY_VISITOR_UPDATE
+} from '../Conductor/Conductor'
 
 import { EmbeddedPreview } from './EmbeddedPreview'
 
@@ -21,55 +32,180 @@ jest.mock('uuid', () => ({
   v4: jest.fn()
 }))
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
+const journey: Journey = {
+  __typename: 'Journey',
+  id: 'journeyId',
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
+  title: 'My Journey',
+  seoTitle: 'My Journey',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
+  slug: 'my journey',
+  description: 'my cool journey',
+  status: JourneyStatus.draft,
+  createdAt: '2021-11-19T12:34:56.647Z',
+  publishedAt: null,
+  primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
+  userJourneys: [],
+  featuredAt: null,
+  strategySlug: null,
+  seoDescription: null,
+  template: null,
+  chatButtons: [
+    {
+      __typename: 'ChatButton',
+      id: 'chatButtonId',
+      link: 'http://me.com',
+      platform: ChatPlatform.facebook
     }
-  }
-}))
+  ],
+  host: {
+    __typename: 'Host',
+    id: 'hostId',
+    teamId: 'teamId',
+    title: 'Bob Jones and Michael Smith',
+    location: 'Auckland, NZ',
+    src1: 'https://tinyurl.com/3bxusmyb',
+    src2: 'https://tinyurl.com/mr4a78kb'
+  },
+  team: null,
+  blocks: basic,
+  tags: []
+}
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
+global.fetch = jest.fn(
+  async () =>
+    await Promise.resolve({
+      json: async () =>
+        await Promise.resolve({
+          city: 'Blenheim',
+          region: 'Marlborough',
+          country: 'New Zealand'
+        })
+    })
+) as jest.Mock
+
+const mocks: MockedResponse[] = [
+  {
+    request: {
+      query: JOURNEY_VISITOR_UPDATE,
+      variables: {
+        input: {
+          countryCode: 'Blenheim, Marlborough, New Zealand',
+          referrer: undefined
+        }
+      }
+    },
+    result: {
+      data: {
+        visitorUpdateForCurrentUser: {
+          id: 'uuid',
+          __typename: 'Visitor'
+        }
+      }
+    }
+  },
+  {
+    request: {
+      query: JOURNEY_VIEW_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          journeyId: 'journeyId',
+          label: 'My Journey',
+          value: '529'
+        }
+      }
+    },
+    result: {
+      data: {
+        journeyViewEventCreate: {
+          id: 'uuid',
+          __typename: 'JourneyViewEvent'
+        }
+      }
+    }
+  },
+  {
+    request: {
+      query: STEP_VIEW_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          blockId: 'step1.id',
+          value: 'Step 1'
+        }
+      }
+    },
+    result: {
+      data: {
+        stepViewEventCreate: {
+          id: 'uuid',
+          __typename: 'StepViewEvent'
+        }
+      }
+    }
+  }
+]
+
 describe('EmbeddedPreview', () => {
+  mockUuidv4.mockReturnValue('uuid')
+
+  beforeEach(() => {
+    document.exitFullscreen = jest.fn()
+    document.documentElement.requestFullscreen = jest.fn()
+  })
+
+  afterEach(() => jest.clearAllMocks())
+
   it('renders first block', async () => {
-    mockUuidv4.mockReturnValueOnce('uuid')
-    treeBlocksVar(basic)
-    const { getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: STEP_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'step1.id',
-                  value: 'Step 1'
-                }
-              }
-            },
-            result: {
-              data: {
-                stepViewEventCreate: {
-                  id: 'uuid',
-                  __typename: 'StepViewEvent'
-                }
-              }
-            }
-          }
-        ]}
-      >
+    render(
+      <MockedProvider mocks={mocks}>
         <SnackbarProvider>
-          <EmbeddedPreview blocks={basic} />
+          <JourneyProvider value={{ journey, variant: 'embed' }}>
+            <EmbeddedPreview blocks={basic} />
+          </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
-    await waitFor(() => {
-      expect(
-        getByText((basic[0].children[0].children[0] as TypographyBlock).content)
-      ).toBeInTheDocument()
-    })
+    await waitFor(() => expect(blockHistoryVar()[0].id).toBe('step1.id'))
+  })
+
+  it('should toggle fullscreen', async () => {
+    const { getByTestId } = render(
+      <MockedProvider mocks={mocks}>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, variant: 'embed' }}>
+            <EmbeddedPreview blocks={basic} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByTestId('clickable-card-embed')).toBeInTheDocument()
+    )
+    fireEvent.click(getByTestId('clickable-card-embed'))
+    expect(document?.documentElement.requestFullscreen).toHaveBeenCalled()
+    await waitFor(() =>
+      expect(getByTestId('CloseIconButton')).toBeInTheDocument()
+    )
+    fireEvent.click(getByTestId('CloseIconButton'))
+    expect(document?.exitFullscreen).toHaveBeenCalled()
   })
 })

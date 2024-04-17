@@ -1,14 +1,16 @@
 schema
   @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
+  @link(url: "https://specs.apollo.dev/join/v0.4", for: EXECUTION)
 {
   query: Query
   mutation: Mutation
 }
 
+directive @join__directive(graphs: [join__Graph!], name: String!, args: join__DirectiveArguments) repeatable on SCHEMA | OBJECT | INTERFACE | FIELD_DEFINITION
+
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
 
-directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean, overrideLabel: String) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
@@ -27,6 +29,84 @@ interface Action
   gtmEventName: String
 }
 
+input AddResourceFromGoogleDriveInput
+  @join__type(graph: NEXUS)
+{
+  accessToken: String!
+  fileId: String!
+  nexusId: String!
+}
+
+type Batch
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  nexusId: String!
+  channelId: String!
+  channel: Channel
+  resources: [BatchResource]
+  name: String!
+  status: BatchStatus!
+  averagePercent: Float
+  createdAt: DateTime!
+}
+
+input BatchFilter
+  @join__type(graph: NEXUS)
+{
+  ids: [ID!]
+  name: String
+  nexusId: String
+  status: BatchStatus
+  limit: Int
+}
+
+input BatchJobBatch
+  @join__type(graph: NEXUS)
+{
+  id: ID!
+  batchName: String!
+}
+
+input BatchJobInput
+  @join__type(graph: NEXUS)
+{
+  batch: BatchJobBatch!
+  resources: [BatchJobResource]!
+}
+
+input BatchJobResource
+  @join__type(graph: NEXUS)
+{
+  resource: ID!
+  channel: ID!
+}
+
+type BatchResource
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  batchId: String!
+  resourceId: String!
+  isCompleted: Boolean
+  error: String
+  percent: Float
+}
+
+enum BatchStatus
+  @join__type(graph: NEXUS)
+{
+  pending @join__enumValue(graph: NEXUS)
+  running @join__enumValue(graph: NEXUS)
+  completed @join__enumValue(graph: NEXUS)
+  failed @join__enumValue(graph: NEXUS)
+  cancelled @join__enumValue(graph: NEXUS)
+  paused @join__enumValue(graph: NEXUS)
+  error @join__enumValue(graph: NEXUS)
+  warning @join__enumValue(graph: NEXUS)
+  scheduled @join__enumValue(graph: NEXUS)
+}
+
 interface Block
   @join__type(graph: JOURNEYS)
 {
@@ -34,6 +114,13 @@ interface Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+}
+
+input BlocksFilter
+  @join__type(graph: JOURNEYS)
+{
+  journeyIds: [ID!]
+  typenames: [String!]
 }
 
 type Browser
@@ -256,6 +343,10 @@ type Channel
   nexusId: String!
   name: String!
   platform: String
+  connected: Boolean
+  youtube: ChannelYoutube
+  status: ChannelStatus!
+  createdAt: DateTime!
 }
 
 input ChannelCreateInput
@@ -273,6 +364,15 @@ input ChannelFilter
   name: String
   nexusId: String
   limit: Int
+  connected: Boolean
+  status: ChannelStatus
+}
+
+enum ChannelStatus
+  @join__type(graph: NEXUS)
+{
+  deleted @join__enumValue(graph: NEXUS)
+  published @join__enumValue(graph: NEXUS)
 }
 
 input ChannelUpdateInput
@@ -281,6 +381,19 @@ input ChannelUpdateInput
   name: String
   nexusId: String
   platform: String
+}
+
+type ChannelYoutube
+  @join__type(graph: NEXUS)
+{
+  id: ID!
+  channelId: String
+  channel: Channel
+  title: String
+  description: String
+  youtubeId: String
+  imageUrl: String
+  refreshToken: String
 }
 
 type ChatButton
@@ -380,6 +493,86 @@ type CloudflareVideo
   readyToStream: Boolean!
 }
 
+input ConnectYoutubeChannelInput
+  @join__type(graph: NEXUS)
+{
+  channelId: String!
+  authCode: String!
+  redirectUri: String!
+}
+
+input CreateVerificationRequestInput
+  @join__type(graph: USERS)
+{
+  redirect: String
+}
+
+type CustomDomain
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  team: Team!
+  name: String!
+  apexName: String!
+  journeyCollection: JourneyCollection
+  routeAllTeamJourneys: Boolean!
+}
+
+type CustomDomainCheck
+  @join__type(graph: JOURNEYS)
+{
+  """
+  Is the domain correctly configured in the DNS?
+  If false, A Record and CNAME Record should be added by the user.
+  """
+  configured: Boolean!
+
+  """
+  Does the domain belong to the team?
+  If false, verification and verificationResponse will be populated.
+  """
+  verified: Boolean!
+
+  """Verification records to be added to the DNS to confirm ownership."""
+  verification: [CustomDomainVerification!]
+
+  """Reasoning as to why verification is required."""
+  verificationResponse: CustomDomainVerificationResponse
+}
+
+input CustomDomainCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID
+  teamId: String!
+  name: String!
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
+input CustomDomainUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  journeyCollectionId: ID
+  routeAllTeamJourneys: Boolean
+}
+
+type CustomDomainVerification
+  @join__type(graph: JOURNEYS)
+{
+  type: String!
+  domain: String!
+  value: String!
+  reason: String!
+}
+
+type CustomDomainVerificationResponse
+  @join__type(graph: JOURNEYS)
+{
+  code: String!
+  message: String!
+}
+
 scalar DateTime
   @join__type(graph: JOURNEYS)
   @join__type(graph: NEXUS)
@@ -427,6 +620,73 @@ interface Event
   createdAt: DateTime!
   label: String
   value: String
+}
+
+type FormBlock implements Block
+  @join__implements(graph: JOURNEYS, interface: "Block")
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  action: Action
+  form: Json
+  projects: [FormiumProject!]!
+  projectId: String
+  forms: [FormiumForm!]!
+  formSlug: String
+  apiTokenExists: Boolean!
+}
+
+input FormBlockCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
+
+input FormBlockUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  projectId: String
+  apiToken: String
+  formSlug: String
+}
+
+type FormiumForm
+  @join__type(graph: JOURNEYS)
+{
+  """The formSlug of the form"""
+  slug: String!
+
+  """The name of the form"""
+  name: String!
+}
+
+type FormiumProject
+  @join__type(graph: JOURNEYS)
+{
+  """The projectId of the project"""
+  id: String!
+
+  """The name of the project"""
+  name: String!
+}
+
+input GoogleAuthInput
+  @join__type(graph: NEXUS)
+{
+  authCode: String!
+  url: String!
+}
+
+type GoogleAuthResponse
+  @join__type(graph: NEXUS)
+{
+  id: ID!
+  accessToken: String!
 }
 
 enum GridAlignItems
@@ -661,6 +921,8 @@ input ImageBlockUpdateInput
   height: Int
 }
 
+scalar join__DirectiveArguments
+
 scalar join__FieldSet
 
 enum join__Graph {
@@ -702,7 +964,34 @@ type Journey
   team: Team
   strategySlug: String
   tags: [Tag!]!
+  journeyCollections: [JourneyCollection!]!
   userJourneys: [UserJourney!]
+}
+
+type JourneyCollection
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  team: Team!
+  title: String
+  customDomains: [CustomDomain!]
+  journeys: [Journey!]
+}
+
+input JourneyCollectionCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID
+  teamId: String!
+  title: String
+  journeyIds: [String!]
+}
+
+input JourneyCollectionUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  title: String
+  journeyIds: [String!]
 }
 
 input JourneyCreateInput
@@ -745,6 +1034,22 @@ input JourneyProfileUpdateInput
   lastActiveTeamId: String
 }
 
+type JourneysEmailPreference
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
+  unsubscribeAll: Boolean!
+  accountNotifications: Boolean!
+}
+
+input JourneysEmailPreferenceUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
+  preference: String!
+  value: Boolean!
+}
+
 input JourneysFilter
   @join__type(graph: JOURNEYS)
 {
@@ -755,6 +1060,24 @@ input JourneysFilter
   languageIds: [ID!]
   limit: Int
   orderByRecent: Boolean
+}
+
+input JourneysQueryOptions
+  @join__type(graph: JOURNEYS)
+{
+  """
+  hostname filters journeys to those that belong to a team with a custom domain
+  matching the hostname.
+  """
+  hostname: String
+
+  """is this being requested from an embed url"""
+  embedded: Boolean
+
+  """
+  limit results to journeys in a journey collection (currently only available when using hostname option)
+  """
+  journeyCollection: Boolean
 }
 
 enum JourneysReportType
@@ -963,6 +1286,9 @@ enum JourneyVisitorSort
   activity @join__enumValue(graph: JOURNEYS)
 }
 
+scalar Json
+  @join__type(graph: JOURNEYS)
+
 type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
@@ -1027,6 +1353,12 @@ input LinkActionInput
   gtmEventName: String
   url: String!
   target: String
+}
+
+input MeInput
+  @join__type(graph: USERS)
+{
+  redirect: String
 }
 
 enum MessagePlatform
@@ -1106,6 +1438,8 @@ type Mutation
     """drop this parameter after merging teams"""
     journeyId: ID
   ): CardBlock! @join__field(graph: JOURNEYS)
+  formBlockCreate(input: FormBlockCreateInput!): FormBlock! @join__field(graph: JOURNEYS)
+  formBlockUpdate(id: ID!, input: FormBlockUpdateInput!): FormBlock @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
   iconBlockUpdate(
     id: ID!
@@ -1181,6 +1515,10 @@ type Mutation
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton! @join__field(graph: JOURNEYS)
   chatButtonRemove(id: ID!): ChatButton! @join__field(graph: JOURNEYS)
+  customDomainCreate(input: CustomDomainCreateInput!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainDelete(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomainCheck(id: ID!): CustomDomainCheck! @join__field(graph: JOURNEYS)
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
@@ -1224,9 +1562,13 @@ type Mutation
 
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
+  journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyCollectionDelete(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
+  updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference @join__field(graph: JOURNEYS)
   teamCreate(input: TeamCreateInput): Team! @join__field(graph: JOURNEYS)
   teamUpdate(id: ID!, input: TeamUpdateInput): Team! @join__field(graph: JOURNEYS)
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite @join__field(graph: JOURNEYS)
@@ -1270,13 +1612,21 @@ type Mutation
   channelCreate(input: ChannelCreateInput!): Channel! @join__field(graph: NEXUS)
   channelUpdate(id: ID!, input: ChannelUpdateInput!): Channel! @join__field(graph: NEXUS)
   channelDelete(id: ID!): Channel! @join__field(graph: NEXUS)
+  connectYoutubeChannel(input: ConnectYoutubeChannelInput!): Channel! @join__field(graph: NEXUS)
   nexusCreate(input: NexusCreateInput!): Nexus! @join__field(graph: NEXUS)
   nexusUpdate(id: ID!, input: NexusUpdateInput!): Nexus! @join__field(graph: NEXUS)
-  nexusDelete(id: ID!): Nexus! @join__field(graph: NEXUS)
+  nexusDelete(id: ID!): Boolean! @join__field(graph: NEXUS)
   resourceCreate(input: ResourceCreateInput!): Resource! @join__field(graph: NEXUS)
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource! @join__field(graph: NEXUS)
   resourceDelete(id: ID!): Resource! @join__field(graph: NEXUS)
+  resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!] @join__field(graph: NEXUS)
+  resourceFromTemplate(nexusId: String!, tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!] @join__field(graph: NEXUS)
+  getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse! @join__field(graph: NEXUS)
+  uploadToYoutube(channelId: String!, resourceId: String!): Boolean @join__field(graph: NEXUS)
+  resourceBatchJob(input: BatchJobInput!): String @join__field(graph: NEXUS)
   userImpersonate(email: String!): String @join__field(graph: USERS)
+  createVerificationRequest(input: CreateVerificationRequestInput): Boolean @join__field(graph: USERS)
+  validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
 }
 
 """
@@ -1413,6 +1763,14 @@ type PowerBiEmbed
   expiration: String!
 }
 
+enum PrivacyStatus
+  @join__type(graph: NEXUS)
+{
+  public @join__enumValue(graph: NEXUS)
+  unlisted @join__enumValue(graph: NEXUS)
+  private @join__enumValue(graph: NEXUS)
+}
+
 type Query
   @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
@@ -1422,6 +1780,10 @@ type Query
   @join__type(graph: USERS)
   @join__type(graph: VIDEOS)
 {
+  blocks(where: BlocksFilter): [Block!]! @join__field(graph: JOURNEYS)
+  block(id: ID!): Block! @join__field(graph: JOURNEYS)
+  customDomain(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
+  customDomains(teamId: ID!): [CustomDomain!]! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
   """
@@ -1430,11 +1792,20 @@ type Query
   where the user is not a member of a team but is an editor or owner of the
   journey
   """
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: ID
+
+    """Use Last Active Team Id from JourneyProfile (if null will error)"""
+    useLastActiveTeamId: Boolean
+  ): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   adminJourney(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
-  journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
-  journey(id: ID!, idType: IdType): Journey! @join__field(graph: JOURNEYS)
+  journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]! @join__field(graph: JOURNEYS)
+  journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey! @join__field(graph: JOURNEYS)
+  journeyCollection(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyCollections(teamId: ID!): [JourneyCollection]! @join__field(graph: JOURNEYS)
   getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
 
   """Get a list of Visitor Information by Journey"""
@@ -1454,6 +1825,7 @@ type Query
 
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
+  journeysEmailPreference(email: String!): JourneysEmailPreference @join__field(graph: JOURNEYS)
   teams: [Team!]! @join__field(graph: JOURNEYS)
   team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
@@ -1483,6 +1855,8 @@ type Query
   getMyCloudflareVideo(id: ID!): CloudflareVideo @join__field(graph: MEDIA)
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
+  batches(where: BatchFilter): [Batch!] @join__field(graph: NEXUS)
+  batch(id: ID!): Batch! @join__field(graph: NEXUS)
   channels(where: ChannelFilter): [Channel!] @join__field(graph: NEXUS)
   channel(id: ID!): Channel! @join__field(graph: NEXUS)
   nexuses(where: NexusFilter): [Nexus!]! @join__field(graph: NEXUS)
@@ -1490,7 +1864,9 @@ type Query
   resources(where: ResourceFilter): [Resource!] @join__field(graph: NEXUS)
   resource(id: ID!): Resource! @join__field(graph: NEXUS)
   tags: [Tag!]! @join__field(graph: TAGS)
-  me: User @join__field(graph: USERS)
+  me(input: MeInput): User @join__field(graph: USERS)
+  user(id: ID!): User @join__field(graph: USERS)
+  userByEmail(email: String!): User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
 }
@@ -1585,9 +1961,17 @@ type Resource
 {
   id: ID!
   nexusId: String!
+  nexus: Nexus!
   name: String!
-  refLink: String
-  videoId: String
+  status: ResourceStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
+  googleDriveLink: String
+  category: String!
+  privacy: PrivacyStatus!
+  sourceType: SourceType!
+  localizations: [ResourceLocalization]!
 }
 
 input ResourceCreateInput
@@ -1595,8 +1979,6 @@ input ResourceCreateInput
 {
   nexusId: String!
   name: String!
-  refLink: String
-  videoId: String
 }
 
 input ResourceFilter
@@ -1605,15 +1987,50 @@ input ResourceFilter
   ids: [ID!]
   name: String
   nexusId: String
+  status: ResourceStatus
   limit: Int
+}
+
+input ResourceFromGoogleDriveInput
+  @join__type(graph: NEXUS)
+{
+  fileIds: [String!]!
+  authCode: String!
+  nexusId: String!
+}
+
+input ResourceFromSpreadsheetInput
+  @join__type(graph: NEXUS)
+{
+  file: Upload
+  nexusId: String!
+}
+
+type ResourceLocalization
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  resourceId: String!
+  title: String!
+  description: String!
+  keywords: String!
+  language: String!
+}
+
+enum ResourceStatus
+  @join__type(graph: NEXUS)
+{
+  deleted @join__enumValue(graph: NEXUS)
+  published @join__enumValue(graph: NEXUS)
+  processing @join__enumValue(graph: NEXUS)
+  error @join__enumValue(graph: NEXUS)
+  uploaded @join__enumValue(graph: NEXUS)
 }
 
 input ResourceUpdateInput
   @join__type(graph: NEXUS)
 {
   name: String
-  refLink: String
-  videoId: String
 }
 
 enum Role
@@ -1717,6 +2134,15 @@ input SignUpSubmissionEventCreateInput
   email: String!
 }
 
+enum SourceType
+  @join__type(graph: NEXUS)
+{
+  googleDrive @join__enumValue(graph: NEXUS)
+  template @join__enumValue(graph: NEXUS)
+  archlight @join__enumValue(graph: NEXUS)
+  other @join__enumValue(graph: NEXUS)
+}
+
 type StepBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -1739,6 +2165,18 @@ type StepBlock implements Block
   locked: Boolean!
   parentBlockId: ID
   parentOrder: Int
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 input StepBlockCreateInput
@@ -1748,6 +2186,18 @@ input StepBlockCreateInput
   journeyId: ID!
   nextBlockId: ID
   locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 input StepBlockUpdateInput
@@ -1755,6 +2205,18 @@ input StepBlockUpdateInput
 {
   nextBlockId: ID
   locked: Boolean
+
+  """
+  x is used to position the block horizontally in the journey flow diagram on
+  the editor.
+  """
+  x: Int
+
+  """
+  y is used to position the block vertically in the journey flow diagram on
+  the editor.
+  """
+  y: Int
 }
 
 type StepNextEvent implements Event
@@ -1890,6 +2352,7 @@ type Team
   createdAt: DateTime!
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
+  customDomains: [CustomDomain!]!
 }
 
 input TeamCreateInput
@@ -2204,6 +2667,9 @@ type UnsplashUserLinks
   followers: String!
 }
 
+scalar Upload
+  @join__type(graph: NEXUS)
+
 type User
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: USERS, key: "id")
@@ -2214,6 +2680,7 @@ type User
   email: String! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   superAdmin: Boolean @join__field(graph: USERS)
+  emailVerified: Boolean! @join__field(graph: USERS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""

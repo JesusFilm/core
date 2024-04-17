@@ -6,17 +6,13 @@
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["libs/nest/common/**/*.ts"]
-      }
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/nest/common"],
       "options": {
-        "jestConfig": "libs/nest/common/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/nest/common/jest.config.ts"
       }
     },
     "codecov": {

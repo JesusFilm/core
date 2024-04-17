@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
@@ -36,6 +37,7 @@ interface HostTitleFieldFormProps {
 export function HostTitleFieldForm({
   empty = false
 }: HostTitleFieldFormProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [hostCreate] = useMutation<CreateHost>(CREATE_HOST)
   const [journeyHostUpdate] =
     useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST)
@@ -45,7 +47,7 @@ export function HostTitleFieldForm({
   const host = journey?.host
 
   const titleSchema = object({
-    hostTitle: string().required('Please enter a host name')
+    hostTitle: string().required(t('Please enter a host name'))
   })
 
   async function handleSubmit(value: string): Promise<void> {
@@ -86,7 +88,7 @@ export function HostTitleFieldForm({
   return (
     <TextFieldForm
       id="hostTitle"
-      label="Host Name"
+      label={t('Host Name')}
       initialValue={empty ? '' : host?.title}
       validationSchema={titleSchema}
       onSubmit={handleSubmit}

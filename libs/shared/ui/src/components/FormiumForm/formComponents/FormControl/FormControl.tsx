@@ -20,12 +20,12 @@ export function FormControl({
     <>
       <Box data-testid="FieldHeader" sx={{ pb: 4 }}>
         {label != null && (
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="subtitle1" gutterBottom>
             {label}
           </Typography>
         )}
         {description != null && (
-          <Typography variant="body2">{description}</Typography>
+          <Typography variant="body1">{description}</Typography>
         )}
       </Box>
       {children}

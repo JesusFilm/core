@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 
@@ -17,7 +17,7 @@ export function ReportsNavigation({
   journeyId,
   selected
 }: ReportsNavigationProps): ReactElement {
-  const { t } = useTranslation('journeys-admin')
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Stack
       direction="row"

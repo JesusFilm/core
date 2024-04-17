@@ -19,6 +19,7 @@ interface PageWrapperProps {
   showAppHeader?: boolean
   title?: string
   showMainHeader?: boolean
+  showNavBar?: boolean
   backHref?: string
   backHrefHistory?: boolean
   mainHeaderChildren?: ReactNode
@@ -41,6 +42,7 @@ export function PageWrapper({
   showAppHeader = true,
   title,
   showMainHeader = true,
+  showNavBar = true,
   backHref,
   backHrefHistory,
   mainHeaderChildren,
@@ -71,20 +73,25 @@ export function PageWrapper({
         data-testid="JourneysAdminPageWrapper"
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
-          <NavigationDrawer
-            open={open}
-            onClose={setOpen}
-            user={user}
-            router={router}
-          />
+          {showNavBar && (
+            <NavigationDrawer
+              open={open}
+              onClose={setOpen}
+              user={user}
+              selectedPage={router?.pathname?.split('/')[1]}
+            />
+          )}
 
           <Stack
             flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
               backgroundColor: 'background.default',
-              width: { xs: '100vw', md: `calc(100vw - ${navbar.width})` },
-              pt: { xs: toolbar.height, md: 0 },
+              width: {
+                xs: '100vw',
+                md: showNavBar ? `calc(100vw - ${navbar.width})` : '100vw'
+              },
+              pt: { xs: showAppHeader ? toolbar.height : 0, md: 0 },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
                 md: 0

@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { videos } from './data'
 
@@ -30,7 +30,7 @@ describe('VideoList', () => {
     expect(getByText('The Demoniac')).toBeInTheDocument()
   })
 
-  it('should call onSelect when Video is clicked', () => {
+  it('should call onSelect when Video is clicked', async () => {
     const onSelect = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
@@ -48,7 +48,9 @@ describe('VideoList', () => {
         name: "Andreas' Story After living a life full of fighter planes and porsches, Andreas realizes something is missing. 03:06"
       })
     )
-    fireEvent.click(getByRole('button', { name: 'Select' }))
+    await waitFor(() =>
+      fireEvent.click(getByRole('button', { name: 'Select' }))
+    )
     expect(onSelect).toHaveBeenCalled()
   })
 

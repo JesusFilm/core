@@ -37,16 +37,19 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
           title: 'Jesus Film Project',
           publicTitle: null,
           __typename: 'Team',
-          userTeams: []
+          userTeams: [],
+          customDomains: []
         }
       ],
       getJourneyProfile: {
         __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
         lastActiveTeamId: 'teamId'
       }
     }
   }
 }
+
 const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -56,6 +59,7 @@ const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
       teams: [],
       getJourneyProfile: {
         __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
         lastActiveTeamId: null
       }
     }

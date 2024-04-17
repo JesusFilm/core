@@ -1,8 +1,21 @@
+import { render } from '@testing-library/react'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '../block'
 
-import { ActiveJourneyEditContent, reducer } from './EditorProvider'
+import {
+  ActiveJourneyEditContent,
+  EditorProvider,
+  reducer,
+  useEditor
+} from './EditorProvider'
 
 import { ActiveFab, ActiveTab } from '.'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
 
 describe('EditorContext', () => {
   describe('reducer', () => {
@@ -436,6 +449,31 @@ describe('EditorContext', () => {
           journeyEditContentComponent: ActiveJourneyEditContent.Canvas
         })
       })
+    })
+  })
+
+  describe('EditorProvider', () => {
+    function TestState(): ReactElement {
+      const { state } = useEditor()
+      return <div>drawerTitle: {state.drawerTitle}</div>
+    }
+
+    it('should render children when component', () => {
+      const { getByText } = render(
+        <EditorProvider initialState={{ drawerTitle: 'test' }}>
+          <TestState />
+        </EditorProvider>
+      )
+      expect(getByText('drawerTitle: test')).toBeInTheDocument()
+    })
+
+    it('should render children when function', () => {
+      const { getByText } = render(
+        <EditorProvider initialState={{ drawerTitle: 'test' }}>
+          {(state) => <div>drawerTitle: {state.drawerTitle}</div>}
+        </EditorProvider>
+      )
+      expect(getByText('drawerTitle: test')).toBeInTheDocument()
     })
   })
 })

@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
 import { object, string } from 'yup'
 
@@ -39,6 +40,7 @@ export function ActionEditor({
   goalLabel,
   setSelectedAction
 }: ActionEditorProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
   const blocks = (journey?.blocks ?? [])
@@ -68,14 +70,15 @@ export function ActionEditor({
 
   const linkActionSchema = object({
     link: string()
-      .test('valid-url', 'Invalid URL', checkURL)
-      .required('Required')
+      .test('valid-url', t('Invalid URL'), checkURL)
+      .required(t('Required'))
   })
 
   async function handleSubmit(src: string): Promise<void> {
     if (journey == null) return
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     blocks.map(async (block) => {
       await linkActionUpdate({
         variables: {
@@ -106,10 +109,10 @@ export function ActionEditor({
 
   let icon: ReactNode
   switch (goalLabel?.(url)) {
-    case 'Start a Conversation':
+    case t('Start a Conversation'):
       icon = <MessageChat1Icon sx={{ color: 'secondary.light' }} />
       break
-    case 'Link to Bible':
+    case t('Link to Bible'):
       icon = <BibleIcon sx={{ color: 'secondary.light' }} />
       break
     default:
@@ -121,7 +124,7 @@ export function ActionEditor({
     <Box sx={{ pt: 6 }} data-testid="ActionEditor">
       <TextFieldForm
         id="link"
-        label="Navigate to"
+        label={t('Navigate to')}
         initialValue={url}
         validationSchema={linkActionSchema}
         onSubmit={handleSubmit}

@@ -1,6 +1,7 @@
 import { ApolloQueryResult } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -10,8 +11,10 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
+import { useTeam } from '../../../../Team/TeamProvider'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
@@ -41,6 +44,13 @@ export function DefaultMenu({
   template,
   refetch
 }: DefaultMenuProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const { activeTeam } = useTeam()
+  const { hostname } = useCustomDomainsQuery({
+    variables: { teamId: activeTeam?.id ?? '' },
+    skip: activeTeam?.id == null
+  })
+
   return (
     <>
       <NextLink
@@ -53,11 +63,11 @@ export function DefaultMenu({
         legacyBehavior
         prefetch={false}
       >
-        <MenuItem label="Edit" icon={<Edit2Icon color="secondary" />} />
+        <MenuItem label={t('Edit')} icon={<Edit2Icon color="secondary" />} />
       </NextLink>
       {template !== true && (
         <MenuItem
-          label="Access"
+          label={t('Access')}
           icon={<UsersProfiles2Icon color="secondary" />}
           onClick={() => {
             setOpenAccessDialog()
@@ -66,13 +76,15 @@ export function DefaultMenu({
         />
       )}
       <NextLink
-        href={`/api/preview?slug=${slug}`}
+        href={`/api/preview?slug=${slug}${
+          hostname != null ? `&hostname=${hostname}` : ''
+        }`}
         passHref
         legacyBehavior
         prefetch={false}
       >
         <MenuItem
-          label="Preview"
+          label={t('Preview')}
           icon={<EyeOpenIcon color="secondary" />}
           openInNew
         />
@@ -90,7 +102,7 @@ export function DefaultMenu({
         refetch={refetch}
       />
       <MenuItem
-        label="Trash"
+        label={t('Trash')}
         icon={<Trash2Icon color="secondary" />}
         onClick={() => {
           setOpenTrashDialog()

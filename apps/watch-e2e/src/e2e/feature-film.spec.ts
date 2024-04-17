@@ -26,7 +26,7 @@ test.describe('firefox only', () => {
     // Set test time out as it has video
     test.setTimeout(5 * 60 * 1000)
 
-    await page.goto('/')
+    await page.goto('/watch')
 
     // Get and log the current URL
     console.log('Current URL:', page.url())
@@ -75,7 +75,7 @@ test.describe('firefox only', () => {
       fullPage: true
     })
 
-    await page.getByRole('button', { name: 'Play' }).click()
+    await page.getByRole('button', { name: 'Play' }).first().click()
 
     // wait for 60 seconds to see if the video is complete. Until there are some events in the code to figure this out
     // eslint-disable-next-line

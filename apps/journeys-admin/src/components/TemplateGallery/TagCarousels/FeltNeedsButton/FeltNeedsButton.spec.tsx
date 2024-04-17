@@ -17,25 +17,25 @@ describe('FeltNeedsButton', () => {
 
   // TODO: Image is missing required "src" property error cause by jest transforming image to a string in test instead of object with src
   it('should render a felt needs button', () => {
-    const { getByRole } = render(
+    const { getByRole, queryByTestId } = render(
       <FeltNeedsButton item={tag} onClick={jest.fn()} />
     )
 
     expect(
-      getByRole('button', { name: 'Acceptance Acceptance' })
+      getByRole('button', { name: 'Acceptance Acceptance Acceptance' })
     ).toBeInTheDocument()
+    expect(queryByTestId('felt-needs-button-loading')).not.toBeInTheDocument()
   })
 
   it('should render loading skeleton if no tag is passed', () => {
     const { getByTestId } = render(
       <FeltNeedsButton item={undefined} onClick={jest.fn()} />
     )
-
     expect(getByTestId('felt-needs-button-loading')).toBeInTheDocument()
   })
 
-  it('should render nothing if no tag image', () => {
-    const { queryByRole, queryByTestId } = render(
+  it('should render without image', () => {
+    const { getByRole, queryByTestId } = render(
       <FeltNeedsButton
         item={{
           ...tag,
@@ -50,7 +50,9 @@ describe('FeltNeedsButton', () => {
         onClick={jest.fn()}
       />
     )
-    expect(queryByRole('button')).not.toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'invalid name invalid name' })
+    ).toBeInTheDocument()
     expect(queryByTestId('felt-needs-button-loading')).not.toBeInTheDocument()
   })
 
@@ -60,7 +62,9 @@ describe('FeltNeedsButton', () => {
       <FeltNeedsButton item={tag} onClick={onClick} />
     )
 
-    fireEvent.click(getByRole('button', { name: 'Acceptance Acceptance' }))
+    fireEvent.click(
+      getByRole('button', { name: 'Acceptance Acceptance Acceptance' })
+    )
 
     expect(onClick).toHaveBeenCalledWith(tag.id)
   })

@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
 import { ComponentProps, ReactNode, useState } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd'
 
@@ -685,7 +686,7 @@ const CardPreviewComponent = ({ ...args }): ReactNode => {
           variant: 'admin'
         }}
       >
-        <DragDropContext>
+        <DragDropContext onDragEnd={noop}>
           <CardPreview
             onSelect={(step) => ({ step })}
             selected={selected}

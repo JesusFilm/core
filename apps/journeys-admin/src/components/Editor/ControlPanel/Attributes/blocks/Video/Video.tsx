@@ -1,3 +1,4 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -13,13 +14,13 @@ import { VideoOptions } from './Options/VideoOptions'
 
 export function Video(block: TreeBlock<VideoBlock>): ReactElement {
   const { id, videoId } = block
-
+  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
 
   const openDrawer = (): void =>
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Video',
+      title: t('Video'),
       mobileOpen: true,
       children: <VideoOptions />
     })
@@ -35,23 +36,23 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
     })
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Video',
+      title: t('Video'),
       children: <VideoOptions />
     })
-  }, [id, videoId, dispatch])
+  }, [id, videoId, dispatch, t])
 
   return (
     <>
       <Attribute
         id={`${id}-video-action`}
         icon={<LinkIcon />}
-        name="Action"
-        value={selectedAction?.label ?? 'None'}
-        description="Action"
+        name={t('Action')}
+        value={t(selectedAction?.label ?? 'None')}
+        description={t('Action')}
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Action',
+            title: t('Action'),
             mobileOpen: true,
             children: <Action />
           })
@@ -61,9 +62,9 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
       <Attribute
         id={`${id}-video-options`}
         icon={<Play1Icon />}
-        name="Video Source"
+        name={t('Video Source')}
         value={block.video?.title?.[0]?.value ?? block.title ?? ''}
-        description="Video Options"
+        description={t('Video Options')}
         onClick={openDrawer}
       />
     </>

@@ -80,10 +80,10 @@
       "database": "nexus",
       "username": "postgres",
       "password": "postgres"
-    },
+    }
   ],
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "always"
   },
   "eslint.validate": ["javascript", "typescript"],
   "yaml.schemas": {

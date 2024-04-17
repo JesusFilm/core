@@ -3,8 +3,8 @@ import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 import { object, string } from 'yup'
 
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
@@ -114,7 +114,7 @@ export function EmailInviteForm({
             helperText={
               touched?.email != null && errors.email != null
                 ? (errors.email as string)
-                : t('No email notifications. New users get access instantly.')
+                : t('New users get access instantly.')
             }
             InputProps={{
               endAdornment: (

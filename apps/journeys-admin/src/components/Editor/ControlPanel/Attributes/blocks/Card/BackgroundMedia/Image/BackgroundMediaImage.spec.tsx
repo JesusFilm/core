@@ -201,7 +201,7 @@ describe('BackgroundMediaImage', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
-    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    await waitFor(() => fireEvent.click(getByRole('tab', { name: 'Custom' })))
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = await getByRole('textbox')
     fireEvent.change(textBox, {
@@ -298,7 +298,7 @@ describe('BackgroundMediaImage', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
-    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    await waitFor(() => fireEvent.click(getByRole('tab', { name: 'Custom' })))
     fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
     const textBox = await getByRole('textbox')
     fireEvent.change(textBox, {

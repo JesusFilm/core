@@ -1,17 +1,17 @@
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
+import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { MenuItem } from '../../../../MenuItem'
 
-const DynamicLanguageDialog = dynamic<{
-  open: boolean
-  onClose: () => void
-}>(
+const LanguageDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "MenuLanguageDialog" */
+      /* webpackChunkName: "Editor/EditToolbar/Menu/LanguageDialog" */
       './LanguageDialog'
     ).then((mod) => mod.LanguageDialog)
 )
@@ -23,9 +23,22 @@ interface LanguageMenuItemProps {
 export function LanguageMenuItem({
   onClose
 }: LanguageMenuItemProps): ReactElement {
-  const [showLanguageDialog, setShowLanguageDialog] = useState(false)
+  const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
+  const [showLanguageDialog, setShowLanguageDialog] = useState<
+    boolean | undefined
+  >()
+
+  function setRoute(param: string): void {
+    router.query.param = param
+    void router.push(router, undefined, { shallow: true })
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed(param)
+    })
+  }
 
   const handleUpdateLanguage = (): void => {
+    setRoute('languages')
     setShowLanguageDialog(true)
   }
 
@@ -37,16 +50,13 @@ export function LanguageMenuItem({
   return (
     <>
       <MenuItem
-        label="Language"
+        label={t('Language')}
         icon={<Globe1Icon />}
         onClick={handleUpdateLanguage}
         testId="Language"
       />
-      {showLanguageDialog && (
-        <DynamicLanguageDialog
-          open={showLanguageDialog}
-          onClose={handleClose}
-        />
+      {showLanguageDialog != null && (
+        <LanguageDialog open={showLanguageDialog} onClose={handleClose} />
       )}
     </>
   )

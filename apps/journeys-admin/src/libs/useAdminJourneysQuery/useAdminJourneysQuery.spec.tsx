@@ -9,10 +9,9 @@ import {
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
 
-import {
-  GET_ADMIN_JOURNEYS,
-  useAdminJourneysQuery
-} from './useAdminJourneysQuery'
+import { GET_ADMIN_JOURNEYS } from './useAdminJourneysQuery'
+
+import { useAdminJourneysQuery } from '.'
 
 describe('useAdminJourneysQuery', () => {
   it('should get journeys', async () => {

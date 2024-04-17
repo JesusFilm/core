@@ -261,6 +261,26 @@ describe('TemplateSections', () => {
       ).toBeInTheDocument()
       expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
     })
+
+    it('should getByTestId image loading for primary carousel but not tag carousels', async () => {
+      const { getByTestId } = render(
+        <MockedProvider mocks={[getJourneysMock]}>
+          <TemplateSections languageIds={['529']} />
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(
+          getByTestId(
+            'featured-new-template-gallery-carousel'
+          ).getElementsByClassName('MuiImageBackground-root')[0]
+        ).toHaveAttribute('rel', 'preload')
+      )
+      expect(
+        getByTestId(
+          'acceptance-template-gallery-carousel'
+        ).getElementsByClassName('MuiImageBackground-root')[0]
+      ).not.toHaveAttribute('rel')
+    })
   })
 
   describe('Relevant Templates', () => {

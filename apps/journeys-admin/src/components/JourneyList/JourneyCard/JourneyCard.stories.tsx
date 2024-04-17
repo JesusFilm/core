@@ -21,6 +21,8 @@ import {
 import { JourneyCard } from './JourneyCard'
 import { JourneyCardVariant } from './journeyCardVariant'
 
+import '../../../../test/i18n'
+
 const TestStory: Meta<typeof JourneyCard> = {
   ...journeysAdminConfig,
   component: JourneyCard,
@@ -76,13 +78,6 @@ export const PreYear = {
   ...Template,
   args: {
     journey: oldJourney
-  }
-}
-
-export const Loading = {
-  ...Template,
-  args: {
-    journey: undefined
   }
 }
 

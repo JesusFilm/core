@@ -42,7 +42,8 @@ describe('TeamCreateDialog', () => {
           title: 'Team Title',
           publicTitle: null,
           __typename: 'Team',
-          userTeams: []
+          userTeams: [],
+          customDomains: []
         }
       }
     }
@@ -68,11 +69,13 @@ describe('TeamCreateDialog', () => {
             title: 'Team 1 Title',
             publicTitle: null,
             __typename: 'Team',
-            userTeams: []
+            userTeams: [],
+            customDomains: []
           }
         ],
         getJourneyProfile: {
           __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
           lastActiveTeamId: null
         }
       }

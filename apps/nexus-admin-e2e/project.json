@@ -2,21 +2,45 @@
   "name": "nexus-admin-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/nexus-admin-e2e/src",
+  "projectType": "application",
   "targets": {
     "e2e": {
-      "executor": "@nx/playwright:playwright",
-      "outputs": ["{workspaceRoot}/dist/.playwright/apps/nexus-admin-e2e"],
+      "executor": "nx:run-commands",
       "options": {
-        "config": "apps/nexus-admin-e2e/playwright.config.ts"
+        "commands": ["playwright test"],
+        "cwd": "apps/nexus-admin-e2e"
       }
     },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
+    "update-snapshots": {
+      "executor": "nx:run-commands",
       "options": {
-        "lintFilePatterns": ["apps/nexus-admin-e2e/**/*.{js,ts}"]
+        "commands": ["playwright test --update-snapshots"],
+        "cwd": "apps/nexus-admin-e2e"
+      }
+    },
+    "debug": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0"
+        ],
+        "cwd": "apps/nexus-admin-e2e"
+      }
+    },
+    "show-report": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright show-report"],
+        "cwd": "apps/nexus-admin-e2e"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/nexus-admin-e2e/tsconfig.json"
       }
     }
   },
+  "tags": [],
   "implicitDependencies": ["nexus-admin"]
 }

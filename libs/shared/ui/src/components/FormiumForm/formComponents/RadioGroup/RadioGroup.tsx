@@ -1,12 +1,11 @@
 import { RadioGroupProps } from '@formium/react/dist/inputs'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Radio from '@mui/material/Radio'
 import MuiRadioGroup from '@mui/material/RadioGroup'
 import { ReactElement } from 'react'
-
-import CheckContainedIcon from '../../../icons/CheckContained'
-import CircleIcon from '../../../icons/Circle'
 
 export function RadioGroup({
   disabled,
@@ -25,8 +24,8 @@ export function RadioGroup({
             control={
               <Radio
                 color="secondary"
-                icon={<CircleIcon />}
-                checkedIcon={<CheckContainedIcon />}
+                icon={<RadioButtonUncheckedIcon />}
+                checkedIcon={<CheckCircleIcon />}
               />
             }
           />

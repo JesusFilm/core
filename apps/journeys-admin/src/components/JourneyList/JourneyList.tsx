@@ -1,16 +1,15 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { ReactElement, useState } from 'react'
 
 import { StatusTabPanel } from '../StatusTabPanel'
 
-import { ActiveJourneyList } from './ActiveJourneyList'
 import { AddJourneyFab } from './AddJourneyFab'
-import { ArchivedJourneyList } from './ArchivedJourneyList'
 import { SortOrder } from './JourneySort'
-import { TrashedJourneyList } from './TrashedJourneyList'
+import { LoadingJourneyList } from './LoadingJourneyList'
 
 export interface JourneyListProps {
   sortOrder?: SortOrder
@@ -28,6 +27,33 @@ export type JourneyListEvent =
   | 'restoreAllTrashed'
   | 'deleteAllTrashed'
   | 'refetchTrashed'
+
+const ActiveJourneyList = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "ActiveJourneyList" */
+      './ActiveJourneyList'
+    ).then((mod) => mod.ActiveJourneyList),
+  { loading: () => <LoadingJourneyList /> }
+)
+
+const ArchivedJourneyList = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "ArchivedJourneyList" */
+      './ArchivedJourneyList'
+    ).then((mod) => mod.ArchivedJourneyList),
+  { loading: () => <LoadingJourneyList /> }
+)
+
+const TrashedJourneyList = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TrashedJourneyList" */
+      './TrashedJourneyList'
+    ).then((mod) => mod.TrashedJourneyList),
+  { loading: () => <LoadingJourneyList /> }
+)
 
 export function JourneyList({
   user
@@ -50,6 +76,8 @@ export function JourneyList({
     event
   }
 
+  const activeTab = router?.query?.tab?.toString() ?? 'active'
+
   return (
     <>
       <Box
@@ -67,9 +95,7 @@ export function JourneyList({
           />
         </Container>
       </Box>
-      {!['archived', 'trashed'].includes(
-        router?.query?.tab?.toString() ?? ''
-      ) && <AddJourneyFab />}
+      {activeTab === 'active' && <AddJourneyFab />}
     </>
   )
 }

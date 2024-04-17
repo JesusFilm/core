@@ -6,9 +6,9 @@ import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
-import { useTranslation } from 'react-i18next'
 import {
   DefaultHttpStack,
   DetailedError,
@@ -257,7 +257,7 @@ export function AddByFile({
         />
         {error != null ? (
           <Typography variant="caption">
-            Something went wrong, try again
+            {t('Something went wrong, try again')}
           </Typography>
         ) : fileRejected ? (
           <Typography variant="caption">

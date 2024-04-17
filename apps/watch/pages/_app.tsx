@@ -4,6 +4,7 @@ import { CacheProvider } from '@emotion/react'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
+import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
@@ -12,9 +13,13 @@ import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import 'swiper/swiper.min.css'
-import '../public/fonts/fonts.css'
+import i18nConfig from '../next-i18next.config'
 import { useApolloClient } from '../src/libs/apolloClient'
+
+import 'swiper/css'
+import 'swiper/css/a11y'
+import 'swiper/css/navigation'
+import '../public/fonts/fonts.css'
 
 const clientSideEmotionCache = createEmotionCache({ prepend: false })
 
@@ -22,7 +27,7 @@ type WatchAppProps = NextJsAppProps & {
   emotionCache?: EmotionCache
 }
 
-export default function WatchApp({
+function WatchApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
@@ -56,6 +61,7 @@ export default function WatchApp({
           description="Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages."
         />
         <Head>
+          <meta name="theme-color" content="#000" />
           <meta
             name="viewport"
             content="minimum-scale=1, initial-scale=1, width=device-width"
@@ -105,3 +111,5 @@ export default function WatchApp({
     </ApolloProvider>
   )
 }
+
+export default appWithTranslation(WatchApp, i18nConfig)

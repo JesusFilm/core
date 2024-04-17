@@ -99,6 +99,14 @@ module "api-media" {
   vpc_security_group_id = module.prod.private_rds_security_group_id
 }
 
+module "api-nexus" {
+  source                = "../../../apps/api-nexus/infrastructure"
+  ecs_config            = local.internal_ecs_config
+  doppler_token         = data.aws_ssm_parameter.doppler_api_nexus_prod_token.value
+  subnet_group_name     = module.prod.vpc.db_subnet_group_name
+  vpc_security_group_id = module.prod.private_rds_security_group_id
+}
+
 module "bastion" {
   source             = "../../modules/aws/ec2-bastion"
   name               = "bastion"
@@ -160,4 +168,28 @@ module "datadog_aurora" {
       password         = module.api-languages.database.random_password.result
       db_instance_name = module.api-languages.database.aws_rds_cluster.id
   }]
+}
+
+module "redis" {
+  source            = "../../modules/aws/elasticache"
+  cluster_id        = "redis-prod"
+  subnet_ids        = module.prod.vpc.internal_subnets
+  security_group_id = module.prod.ecs.internal_ecs_security_group_id
+  cidr              = module.prod.cidr
+  vpc_id            = module.prod.vpc.id
+}
+
+module "journeys-admin" {
+  source = "../../../apps/journeys-admin/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/api/health"
+      health_check_port = "3000"
+    })
+    alb_listener = merge(local.public_ecs_config.alb_listener, {
+      dns_name        = "admin.nextstep.is"
+      certificate_arn = data.aws_acm_certificate.acm_nextstep_is.arn
+    })
+  })
+  doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_prod_token.value
 }

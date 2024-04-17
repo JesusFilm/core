@@ -255,6 +255,11 @@ export class EmailActionInput {
     email: string;
 }
 
+export class BlocksFilter {
+    journeyIds?: Nullable<string[]>;
+    typenames?: Nullable<string[]>;
+}
+
 export class ButtonBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -291,6 +296,18 @@ export class CardBlockUpdateInput {
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
+}
+
+export class FormBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+}
+
+export class FormBlockUpdateInput {
+    projectId?: Nullable<string>;
+    apiToken?: Nullable<string>;
+    formSlug?: Nullable<string>;
 }
 
 export class IconBlockCreateInput {
@@ -365,11 +382,15 @@ export class StepBlockCreateInput {
     journeyId: string;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
 }
 
 export class StepBlockUpdateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
 }
 
 export class TextResponseBlockCreateInput {
@@ -448,6 +469,19 @@ export class ChatButtonCreateInput {
 export class ChatButtonUpdateInput {
     link?: Nullable<string>;
     platform?: Nullable<ChatPlatform>;
+}
+
+export class CustomDomainCreateInput {
+    id?: Nullable<string>;
+    teamId: string;
+    name: string;
+    journeyCollectionId?: Nullable<string>;
+    routeAllTeamJourneys?: Nullable<boolean>;
+}
+
+export class CustomDomainUpdateInput {
+    journeyCollectionId?: Nullable<string>;
+    routeAllTeamJourneys?: Nullable<boolean>;
 }
 
 export class ButtonClickEventCreateInput {
@@ -609,6 +643,12 @@ export class JourneysFilter {
     orderByRecent?: Nullable<boolean>;
 }
 
+export class JourneysQueryOptions {
+    hostname?: Nullable<string>;
+    embedded?: Nullable<boolean>;
+    journeyCollection?: Nullable<boolean>;
+}
+
 export class JourneyCreateInput {
     id?: Nullable<string>;
     title: string;
@@ -640,6 +680,18 @@ export class JourneyTemplateInput {
     template?: Nullable<boolean>;
 }
 
+export class JourneyCollectionCreateInput {
+    id?: Nullable<string>;
+    teamId: string;
+    title?: Nullable<string>;
+    journeyIds?: Nullable<string[]>;
+}
+
+export class JourneyCollectionUpdateInput {
+    title?: Nullable<string>;
+    journeyIds?: Nullable<string[]>;
+}
+
 export class JourneyProfileUpdateInput {
     lastActiveTeamId?: Nullable<string>;
 }
@@ -652,6 +704,12 @@ export class JourneyVisitorFilter {
     hasIcon?: Nullable<boolean>;
     hideInactive?: Nullable<boolean>;
     countryCode?: Nullable<string>;
+}
+
+export class JourneysEmailPreferenceUpdateInput {
+    email: string;
+    preference: string;
+    value: boolean;
 }
 
 export class TeamCreateInput {
@@ -775,7 +833,62 @@ export class Journey {
     team?: Nullable<Team>;
     strategySlug?: Nullable<string>;
     tags: Tag[];
+    journeyCollections: JourneyCollection[];
     userJourneys?: Nullable<UserJourney[]>;
+}
+
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract blocks(where?: Nullable<BlocksFilter>): Block[] | Promise<Block[]>;
+
+    abstract block(id: string): Block | Promise<Block>;
+
+    abstract customDomain(id: string): CustomDomain | Promise<CustomDomain>;
+
+    abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
+
+    abstract hosts(teamId: string): Host[] | Promise<Host[]>;
+
+    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
+
+    abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
+
+    abstract adminJourney(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
+
+    abstract journeys(where?: Nullable<JourneysFilter>, options?: Nullable<JourneysQueryOptions>): Journey[] | Promise<Journey[]>;
+
+    abstract journey(id: string, idType?: Nullable<IdType>, options?: Nullable<JourneysQueryOptions>): Journey | Promise<Journey>;
+
+    abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
+
+    abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
+
+    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
+
+    abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
+
+    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
+
+    abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
+
+    abstract teams(): Team[] | Promise<Team[]>;
+
+    abstract team(id: string): Team | Promise<Team>;
+
+    abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
+
+    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
+
+    abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
+
+    abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
+
+    abstract userTeamInvites(teamId: string): UserTeamInvite[] | Promise<UserTeamInvite[]>;
+
+    abstract visitorsConnection(teamId?: Nullable<string>, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
+
+    abstract visitor(id: string): Visitor | Promise<Visitor>;
 }
 
 export class ButtonBlock implements Block {
@@ -804,6 +917,33 @@ export class CardBlock implements Block {
     fullscreen: boolean;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
+}
+
+export class FormiumProject {
+    __typename?: 'FormiumProject';
+    id: string;
+    name: string;
+}
+
+export class FormiumForm {
+    __typename?: 'FormiumForm';
+    slug: string;
+    name: string;
+}
+
+export class FormBlock implements Block {
+    __typename?: 'FormBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    action?: Nullable<Action>;
+    form?: Nullable<Json>;
+    projects: FormiumProject[];
+    projectId?: Nullable<string>;
+    forms: FormiumForm[];
+    formSlug?: Nullable<string>;
+    apiTokenExists: boolean;
 }
 
 export class GridContainerBlock implements Block {
@@ -890,6 +1030,8 @@ export class StepBlock implements Block {
     locked: boolean;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
 }
 
 export class TextResponseBlock implements Block {
@@ -957,6 +1099,38 @@ export class ChatButton {
     id: string;
     link?: Nullable<string>;
     platform?: Nullable<ChatPlatform>;
+}
+
+export class CustomDomain {
+    __typename?: 'CustomDomain';
+    id: string;
+    team: Team;
+    name: string;
+    apexName: string;
+    journeyCollection?: Nullable<JourneyCollection>;
+    routeAllTeamJourneys: boolean;
+}
+
+export class CustomDomainCheck {
+    __typename?: 'CustomDomainCheck';
+    configured: boolean;
+    verified: boolean;
+    verification?: Nullable<CustomDomainVerification[]>;
+    verificationResponse?: Nullable<CustomDomainVerificationResponse>;
+}
+
+export class CustomDomainVerification {
+    __typename?: 'CustomDomainVerification';
+    type: string;
+    domain: string;
+    value: string;
+    reason: string;
+}
+
+export class CustomDomainVerificationResponse {
+    __typename?: 'CustomDomainVerificationResponse';
+    code: string;
+    message: string;
 }
 
 export class ButtonClickEvent implements Event {
@@ -1133,46 +1307,6 @@ export class Host {
     src2?: Nullable<string>;
 }
 
-export abstract class IQuery {
-    __typename?: 'IQuery';
-
-    abstract hosts(teamId: string): Host[] | Promise<Host[]>;
-
-    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
-
-    abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
-
-    abstract adminJourney(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
-
-    abstract journeys(where?: Nullable<JourneysFilter>): Journey[] | Promise<Journey[]>;
-
-    abstract journey(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
-
-    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
-
-    abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
-
-    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
-
-    abstract teams(): Team[] | Promise<Team[]>;
-
-    abstract team(id: string): Team | Promise<Team>;
-
-    abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
-
-    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
-
-    abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
-
-    abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
-
-    abstract userTeamInvites(teamId: string): UserTeamInvite[] | Promise<UserTeamInvite[]>;
-
-    abstract visitorsConnection(teamId?: Nullable<string>, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
-
-    abstract visitor(id: string): Visitor | Promise<Visitor>;
-}
-
 export class PowerBiEmbed {
     __typename?: 'PowerBiEmbed';
     reportId: string;
@@ -1191,6 +1325,15 @@ export class UserJourney {
     role: UserJourneyRole;
     user?: Nullable<User>;
     openedAt?: Nullable<DateTime>;
+}
+
+export class JourneyCollection {
+    __typename?: 'JourneyCollection';
+    id: string;
+    team: Team;
+    title?: Nullable<string>;
+    customDomains?: Nullable<CustomDomain[]>;
+    journeys?: Nullable<Journey[]>;
 }
 
 export class JourneyProfile {
@@ -1234,6 +1377,13 @@ export class JourneyVisitorsConnection {
     pageInfo: PageInfo;
 }
 
+export class JourneysEmailPreference {
+    __typename?: 'JourneysEmailPreference';
+    email: string;
+    unsubscribeAll: boolean;
+    accountNotifications: boolean;
+}
+
 export class Team {
     __typename?: 'Team';
     id: string;
@@ -1242,6 +1392,7 @@ export class Team {
     createdAt: DateTime;
     updatedAt: DateTime;
     userTeams: UserTeam[];
+    customDomains: CustomDomain[];
 }
 
 export class UserInvite {
@@ -1380,6 +1531,10 @@ export abstract class IMutation {
 
     abstract cardBlockUpdate(id: string, input: CardBlockUpdateInput, journeyId?: Nullable<string>): CardBlock | Promise<CardBlock>;
 
+    abstract formBlockCreate(input: FormBlockCreateInput): FormBlock | Promise<FormBlock>;
+
+    abstract formBlockUpdate(id: string, input: FormBlockUpdateInput): Nullable<FormBlock> | Promise<Nullable<FormBlock>>;
+
     abstract iconBlockCreate(input: IconBlockCreateInput): IconBlock | Promise<IconBlock>;
 
     abstract iconBlockUpdate(id: string, input: IconBlockUpdateInput, journeyId?: Nullable<string>): IconBlock | Promise<IconBlock>;
@@ -1421,6 +1576,14 @@ export abstract class IMutation {
     abstract chatButtonUpdate(id: string, journeyId: string, input: ChatButtonUpdateInput): ChatButton | Promise<ChatButton>;
 
     abstract chatButtonRemove(id: string): ChatButton | Promise<ChatButton>;
+
+    abstract customDomainCreate(input: CustomDomainCreateInput): CustomDomain | Promise<CustomDomain>;
+
+    abstract customDomainUpdate(id: string, input: CustomDomainUpdateInput): CustomDomain | Promise<CustomDomain>;
+
+    abstract customDomainDelete(id: string): CustomDomain | Promise<CustomDomain>;
+
+    abstract customDomainCheck(id: string): CustomDomainCheck | Promise<CustomDomainCheck>;
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
@@ -1480,11 +1643,19 @@ export abstract class IMutation {
 
     abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
 
+    abstract journeyCollectionCreate(input: JourneyCollectionCreateInput): JourneyCollection | Promise<JourneyCollection>;
+
+    abstract journeyCollectionUpdate(id: string, input: JourneyCollectionUpdateInput): JourneyCollection | Promise<JourneyCollection>;
+
+    abstract journeyCollectionDelete(id: string): JourneyCollection | Promise<JourneyCollection>;
+
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyProfileOnboardingFormComplete(): JourneyProfile | Promise<JourneyProfile>;
+
+    abstract updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 
@@ -1541,4 +1712,5 @@ export class User {
 }
 
 export type DateTime = String;
+export type Json = any;
 type Nullable<T> = T | null;

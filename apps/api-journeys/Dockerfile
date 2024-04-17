@@ -2,10 +2,9 @@ FROM node:18-alpine
 
 EXPOSE 4001
 
-ENV PRISMA_LOCATION=/app/node_modules/.prisma/api-journeys-client
+ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
 
 RUN apk upgrade --update-cache --available && \
-    apk add openssl1.1-compat && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
@@ -16,7 +15,7 @@ RUN npm install --production --silent
 
 WORKDIR /prisma
 COPY ./apps/api-journeys/db .
-RUN npx prisma@^5.2.0 generate
+RUN npx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
 

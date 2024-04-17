@@ -1,6 +1,6 @@
 import { intlFormat, parseISO } from 'date-fns'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import ArrowRightContained1Icon from '@core/shared/ui/icons/ArrowRightContained1'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
@@ -50,8 +50,8 @@ export function TimelineEvent({
       break
     case 'ChatOpenEvent':
       icon = <MessageText1Icon />
-      activity = `${t('Chat Opened')}:`
-      label = t('{{messagePlatform}}', {
+      activity = t('Chat Opened:')
+      label = t('{{ messagePlatform }}', {
         messagePlatform:
           event.messagePlatform != null
             ? messagePlatformToLabel(event.messagePlatform, t)
@@ -68,19 +68,19 @@ export function TimelineEvent({
       break
     case 'TextResponseSubmissionEvent':
       icon = <MessageText1Icon />
-      activity = `${t('Text submitted')}:`
+      activity = t('Text submitted:')
       label = event.label
       variant = EventVariant.featured
       break
     case 'ButtonClickEvent':
       icon = <CheckContainedIcon />
-      activity = `${t('Button click')}:`
+      activity = t('Button click:')
       label = getButtonLabel(event, t)
       value = event.label
       variant = EventVariant.featured
       break
     case 'SignUpSubmissionEvent':
-      activity = `${t('Form submitted')}:`
+      activity = t('Form submitted:')
       icon = <EmailIcon />
       label = t('Sign Up Submission')
       value = (
@@ -102,7 +102,7 @@ export function TimelineEvent({
     // default
     case 'StepNextEvent':
       icon = <ArrowRightContained1Icon color="disabled" />
-      activity = `${t('Skip Step')}:`
+      activity = t('Skip Step:')
       label = event.label
       break
     case 'StepViewEvent':
@@ -124,22 +124,23 @@ export function TimelineEvent({
     case 'VideoPauseEvent':
       icon = <Pause2Icon color="disabled" />
       activity = t('Video Pause')
-      value = `${event.label as string} paused at ${videoPositionToLabel(
-        event.position
-      )}`
+      value = t('{{ label }} paused at {{ position }}', {
+        label: event.label as string,
+        position: videoPositionToLabel(event.position)
+      })
       break
     case 'VideoProgressEvent':
       icon = <Play2Icon color="disabled" />
-      activity = `${t('Video Progress')} ${
-        event.progress as unknown as string
-      }%`
+      activity = t('Video Progress {{ progress }}%', {
+        progress: event.progress as unknown as string
+      })
       value = event.label
       break
     case 'VideoExpandEvent':
       icon = <Play2Icon color="disabled" />
-      activity = `${t(
-        'Video expanded to fullscreen at'
-      )} (${videoPositionToLabel(event.position)})`
+      activity = t('Video expanded to fullscreen at ({{ position }})', {
+        position: videoPositionToLabel(event.position)
+      })
       value = event.label
       break
     case 'VideoCompleteEvent':

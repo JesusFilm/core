@@ -1,13 +1,16 @@
-import 'swiper/swiper.min.css'
-import 'swiper/components/scrollbar/scrollbar.min.css'
-
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { ReactElement, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import SwiperCore, { A11y, Mousewheel, Scrollbar } from 'swiper'
+import { User } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useMemo,
+  useState
+} from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -23,9 +26,17 @@ import {
 import { TemplateCardPreview } from './TemplateCardPreview/TemplateCardPreview'
 import { TemplateVideoPreview } from './TemplateVideoPreview'
 
-SwiperCore.use([Mousewheel, Scrollbar, A11y])
+interface TemplatePreviewTabsProps {
+  authUser?: User
+  openTeamDialog: boolean
+  setOpenTeamDialog: Dispatch<SetStateAction<boolean>>
+}
 
-export function TemplatePreviewTabs(): ReactElement {
+export function TemplatePreviewTabs({
+  authUser,
+  openTeamDialog,
+  setOpenTeamDialog
+}: TemplatePreviewTabsProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -66,6 +77,7 @@ export function TemplatePreviewTabs(): ReactElement {
         sx={{ borderBottom: 1, borderColor: 'divider', mb: { xs: 3, sm: 7 } }}
       >
         <Tab
+          suppressHydrationWarning
           label={
             steps != null ? (
               t('{{count}} Cards', { count: steps.length })
@@ -77,6 +89,7 @@ export function TemplatePreviewTabs(): ReactElement {
           sx={{ flexGrow: { xs: 1, sm: 0 }, minWidth: { sm: 200 } }}
         />
         <Tab
+          suppressHydrationWarning
           disabled={videos?.length === 0 || videos == null}
           label={
             videos != null ? (
@@ -90,7 +103,12 @@ export function TemplatePreviewTabs(): ReactElement {
         />
       </Tabs>
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>
-        <TemplateCardPreview steps={steps} />
+        <TemplateCardPreview
+          steps={steps}
+          authUser={authUser}
+          openTeamDialog={openTeamDialog}
+          setOpenTeamDialog={setOpenTeamDialog}
+        />
       </TabPanel>
       <TabPanel name="videos-preview-tab" value={tabValue} index={1}>
         <TemplateVideoPreview videoBlocks={videos} />

@@ -11,17 +11,19 @@ import {
   useState
 } from 'react'
 import { use100vh } from 'react-div-100vh'
-import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import { TreeBlock, useBlocks } from '../../libs/block'
+import {
+  TreeBlock,
+  isActiveBlockOrDescendant,
+  useBlocks
+} from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { useEditor } from '../../libs/EditorProvider'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -30,8 +32,8 @@ import { VideoTrigger } from '../VideoTrigger'
 import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
 import { VideoFields } from './__generated__/VideoFields'
+import { InitAndPlay } from './InitAndPlay'
 import { VideoControls } from './VideoControls'
-
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
 
@@ -71,14 +73,17 @@ export function Video({
   action,
   objectFit
 }: TreeBlock<VideoFields>): ReactElement {
+  const { blockHistory } = useBlocks()
   const [loading, setLoading] = useState(true)
   const [showPoster, setShowPoster] = useState(true)
   const theme = useTheme()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<Player>()
-  const { blockHistory } = useBlocks()
-  const activeBlock = blockHistory[blockHistory.length - 1]
   const hundredVh = use100vh()
+  const [activeStep, setActiveStep] = useState(false)
+  useEffect(() => {
+    setActiveStep(isActiveBlockOrDescendant(blockId))
+  }, [blockId, blockHistory])
 
   const {
     state: { selectedBlock }
@@ -100,34 +105,6 @@ export function Video({
       : undefined
   }, [posterBlock, theme])
 
-  // Initiate video player
-  useEffect(() => {
-    if (videoRef.current != null) {
-      setPlayer(
-        videojs(videoRef.current, {
-          ...defaultVideoJsOptions,
-          controls: false,
-          controlBar: false,
-          bigPlayButton: false,
-          loadingSpinner: false,
-          // Make video fill container instead of set aspect ratio
-          fill: true,
-          userActions: {
-            hotkeys: true,
-            doubleClick: true
-          },
-          responsive: true,
-          muted: muted === true,
-          autoplay
-        })
-      )
-    }
-  }, [startAt, endAt, muted, posterBlock, autoplay])
-
-  useEffect(() => {
-    if (videoRef.current != null) videoRef.current.pause()
-  }, [])
-
   const triggerTimes = useMemo(() => {
     return children
       .filter((block) => block.__typename === 'VideoTriggerBlock')
@@ -137,101 +114,6 @@ export function Video({
   const [videoEndTime, setVideoEndTime] = useState(
     Math.min(...triggerTimes, endAt ?? 10000)
   )
-
-  // Initiate video player listeners
-  useEffect(() => {
-    const startTime = startAt ?? 0
-
-    const handleStopLoading = (): void => {
-      if (player != null && (player.currentTime() ?? 0) < startTime) {
-        player.currentTime(startTime)
-      }
-      setLoading(false)
-    }
-
-    const handleVideoReady = (): void => {
-      if (player != null) {
-        player.currentTime(startTime)
-
-        // iOS blocks videos from calling seeked so loading hangs
-        void handleStopLoading()
-        if (autoplay === true) {
-          const onFirstStep = activeBlock?.parentOrder === 0
-          const activeCard = activeBlock?.children[0]?.children
-          if (
-            onFirstStep &&
-            activeCard?.find((child: TreeBlock) => child.id === blockId) != null
-          ) {
-            player.muted(true)
-          }
-          void player.play()
-        }
-      }
-    }
-    const handlePlaying = (): void => {
-      handleStopLoading()
-      setShowPoster(false)
-    }
-
-    const handleVideoEnd = (): void => {
-      setLoading(false)
-      if (player?.isFullscreen() === true && player != null) {
-        void player.exitFullscreen()
-      }
-    }
-
-    if (player != null) {
-      if (selectedBlock === undefined) {
-        player.on('ready', handleVideoReady)
-        // Video jumps to new time and finishes loading - occurs on autoplay
-        player.on('seeked', handleStopLoading)
-        player.on('canplay', handleStopLoading)
-        player.on('playing', handlePlaying)
-        player.on('ended', handleVideoEnd)
-      }
-    }
-    return () => {
-      if (player != null) {
-        player.off('ready', handleVideoReady)
-        player.off('seeked', handleStopLoading)
-        player.off('canplay', handleStopLoading)
-        player.off('playing', handlePlaying)
-        player.off('ended', handleVideoEnd)
-      }
-    }
-  }, [player, selectedBlock, startAt, autoplay, activeBlock, blockId])
-
-  // player.duration() can change after play
-  useEffect(() => {
-    if (player != null) {
-      const handleDurationChange = (): void => {
-        if (player != null) {
-          const playerDuration =
-            (player.duration() ?? 0) > 0 ? player.duration() : null
-
-          if (playerDuration != null) {
-            setVideoEndTime(Math.min(videoEndTime, playerDuration))
-          }
-        }
-      }
-
-      if (selectedBlock === undefined) {
-        player.on('durationchange', handleDurationChange)
-      }
-      return () => {
-        if (player != null) {
-          player.off('durationchange', handleDurationChange)
-        }
-      }
-    }
-  }, [endAt, player, selectedBlock, triggerTimes, videoEndTime])
-
-  // Pause video if admin
-  useEffect(() => {
-    if (selectedBlock !== undefined) {
-      player?.pause()
-    }
-  }, [selectedBlock, player])
 
   // Set video layout
   let videoFit: CSSProperties['objectFit']
@@ -283,17 +165,40 @@ export function Video({
         }
       }}
     >
-      {player != null && eventVideoTitle != null && eventVideoId != null && (
-        <VideoEvents
-          player={player}
-          blockId={blockId}
-          videoTitle={eventVideoTitle}
-          source={source}
-          videoId={eventVideoId}
-          startAt={startAt}
-          endAt={endAt}
-        />
-      )}
+      <InitAndPlay
+        videoRef={videoRef}
+        player={player}
+        setPlayer={setPlayer}
+        triggerTimes={triggerTimes}
+        videoEndTime={videoEndTime}
+        selectedBlock={selectedBlock}
+        blockId={blockId}
+        muted={muted}
+        startAt={startAt}
+        endAt={endAt}
+        autoplay={autoplay}
+        posterBlock={posterBlock}
+        setLoading={setLoading}
+        setShowPoster={setShowPoster}
+        setVideoEndTime={setVideoEndTime}
+        source={source}
+        activeStep={activeStep}
+      />
+      {activeStep &&
+        player != null &&
+        eventVideoTitle != null &&
+        eventVideoId != null && (
+          <VideoEvents
+            player={player}
+            blockId={blockId}
+            videoTitle={eventVideoTitle}
+            source={source}
+            videoId={eventVideoId}
+            startAt={startAt}
+            endAt={videoEndTime}
+          />
+        )}
+
       {videoId != null ? (
         <>
           <StyledVideoGradient />
@@ -319,6 +224,7 @@ export function Video({
               ref={videoRef}
               className="video-js vjs-tech"
               playsInline
+              preload="auto"
               sx={{
                 '&.video-js.vjs-youtube.vjs-fill': {
                   transform: 'scale(1.01)'
@@ -342,7 +248,9 @@ export function Video({
                   src={`https://customer-${
                     process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
                     ''
-                  }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
+                  }.cloudflarestream.com/${
+                    videoId ?? ''
+                  }/manifest/video.m3u8?clientBandwidthHint=10`}
                   type="application/x-mpegURL"
                 />
               )}
@@ -373,6 +281,7 @@ export function Video({
                 loading={loading}
                 autoplay={autoplay ?? false}
                 muted={muted ?? false}
+                activeStep={activeStep}
               />
             </ThemeProvider>
           )}

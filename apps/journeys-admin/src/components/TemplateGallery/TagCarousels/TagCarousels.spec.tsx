@@ -9,7 +9,7 @@ describe('TagCarousels', () => {
   it('should render TagCarousels', async () => {
     const { getByTestId, getAllByTestId, getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels selectedTagIds={[]} onChange={jest.fn()} />
+        <TagCarousels onChange={jest.fn()} />
       </MockedProvider>
     )
 
@@ -24,13 +24,13 @@ describe('TagCarousels', () => {
     await waitFor(async () => {
       await expect(
         within(feltNeedsCarousel).getByRole('button', {
-          name: 'Acceptance Acceptance'
+          name: 'Acceptance Acceptance Acceptance'
         })
       ).toBeInTheDocument()
 
       await expect(
         getByRole('button', {
-          name: 'NUA NUA'
+          name: 'NUA NUA NUA'
         })
       ).toBeInTheDocument()
     })
@@ -40,21 +40,21 @@ describe('TagCarousels', () => {
     const onChange = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels selectedTagIds={[]} onChange={onChange} />
+        <TagCarousels onChange={onChange} />
       </MockedProvider>
     )
 
     await waitFor(async () => {
       await expect(
         getByRole('button', {
-          name: 'Acceptance Acceptance'
+          name: 'Acceptance Acceptance Acceptance'
         })
       ).toBeInTheDocument()
     })
 
     fireEvent.click(
       getByRole('button', {
-        name: 'Acceptance Acceptance'
+        name: 'Acceptance Acceptance Acceptance'
       })
     )
 
@@ -65,21 +65,21 @@ describe('TagCarousels', () => {
     const onChange = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels selectedTagIds={[]} onChange={onChange} />
+        <TagCarousels onChange={onChange} />
       </MockedProvider>
     )
 
     await waitFor(async () => {
       await expect(
         getByRole('button', {
-          name: 'NUA NUA'
+          name: 'NUA NUA NUA'
         })
       ).toBeInTheDocument()
     })
 
     fireEvent.click(
       getByRole('button', {
-        name: 'NUA NUA'
+        name: 'NUA NUA NUA'
       })
     )
 

@@ -19,9 +19,8 @@ export function SubmitButton({
       disabled={disabled}
       onClick={onClick}
       fullWidth
-      color="secondary"
       endIcon={submitIcon ?? <CheckBrokenIcon />}
-      sx={{ py: 3.25, borderRadius: '12px' }}
+      sx={{ height: '36.5px' }}
     >
       {submitText ?? children}
     </Button>

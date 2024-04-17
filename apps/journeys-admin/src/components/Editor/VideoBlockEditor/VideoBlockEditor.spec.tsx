@@ -114,7 +114,7 @@ const videoYouTube: TreeBlock<VideoBlock> = {
 
 describe('VideoBlockEditor', () => {
   describe('no existing block', () => {
-    it('shows placeholders on null', () => {
+    it('shows placeholders on null', async () => {
       const { getByText } = render(
         <ThemeProvider>
           <MockedProvider mocks={mocks}>
@@ -124,7 +124,7 @@ describe('VideoBlockEditor', () => {
           </MockedProvider>
         </ThemeProvider>
       )
-      expect(getByText('Select Video')).toBeInTheDocument()
+      await waitFor(() => expect(getByText('Select Video')).toBeInTheDocument())
     })
   })
 
@@ -142,7 +142,10 @@ describe('VideoBlockEditor', () => {
           </MockedProvider>
         </ThemeProvider>
       )
-      expect(getByText('FallingPlates')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('FallingPlates')).toBeInTheDocument()
+      )
+
       await waitFor(() => expect(getByText('English')).toBeInTheDocument())
     })
 
@@ -294,7 +297,9 @@ describe('VideoBlockEditor', () => {
           </MockedProvider>
         </ThemeProvider>
       )
-      expect(getByText('What is the Bible?')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('What is the Bible?')).toBeInTheDocument()
+      )
     })
   })
 

@@ -324,7 +324,7 @@ describe('Card', () => {
         </MockedProvider>
       )
       fireEvent.click(getByText('FallingPlates'))
-      expect(getByText('Background Media Properties')).toBeInTheDocument()
+      expect(getByText('Background Media')).toBeInTheDocument()
     })
   })
 

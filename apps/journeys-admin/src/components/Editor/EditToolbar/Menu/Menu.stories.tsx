@@ -12,6 +12,8 @@ import { journeysAdminConfig } from '../../../../libs/storybook'
 
 import { Menu } from '.'
 
+import '../../../../../test/i18n'
+
 const MenuStory: Meta<typeof Menu> = {
   ...journeysAdminConfig,
   component: Menu,

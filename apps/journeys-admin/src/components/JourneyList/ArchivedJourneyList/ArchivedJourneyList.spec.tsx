@@ -117,26 +117,11 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1English'
+        'a lower case titleJanuary 1, 2021English'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
       'An Old Journey HeadingNovember 19, 2020 - Journey created before the current year should also show the year in the dateEnglish'
-    )
-  })
-
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ArchivedJourneyList />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')).toHaveLength(3)
     )
   })
 
@@ -154,7 +139,7 @@ describe('ArchivedJourneyList', () => {
       result
     }
 
-    it('should display the unarchive all dialog', () => {
+    it('should display the unarchive all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
@@ -165,7 +150,9 @@ describe('ArchivedJourneyList', () => {
         </MockedProvider>
       )
 
-      expect(getByText('Unarchive Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Unarchive Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should unarchive all journeys', async () => {
@@ -232,7 +219,7 @@ describe('ArchivedJourneyList', () => {
       result
     }
 
-    it('should display the trash all dialog', () => {
+    it('should display the trash all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
@@ -243,7 +230,9 @@ describe('ArchivedJourneyList', () => {
         </MockedProvider>
       )
 
-      expect(getByText('Trash Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Trash Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should trash all journeys', async () => {

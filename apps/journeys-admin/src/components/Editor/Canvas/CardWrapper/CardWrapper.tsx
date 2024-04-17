@@ -2,14 +2,21 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
+import { Trans, useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import type { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { Card } from '@core/journeys/ui/Card'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { CardTemplateDrawer } from '../../CardTemplateDrawer'
+const CardTemplateDrawer = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CardTemplateDrawer" */ '../../CardTemplateDrawer'
+    ).then((module) => module.CardTemplateDrawer),
+  { ssr: false }
+)
 
 export function CardWrapper({ block, children }: WrapperProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -80,17 +87,19 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
               spacing={5}
             >
               <Typography>{t('Fill this card with content')}</Typography>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={openCardTemplateDrawer}
-                fullWidth
-              >
-                {t('Select Card Template')}
-              </Button>
-              <Typography variant="body2">
-                {t('or add blocks from the list below ⤵')}
-              </Typography>
+              <Trans t={t}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={openCardTemplateDrawer}
+                  fullWidth
+                >
+                  Select Card Template
+                </Button>
+                <Typography variant="body2">
+                  or add blocks from the list below ⤵
+                </Typography>
+              </Trans>
             </Stack>
           )}
         </Box>

@@ -1,9 +1,12 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import NoSsr from '@mui/material/NoSsr'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { FormikValues } from 'formik'
+import { useRouter } from 'next/router'
+import { Trans, useTranslation } from 'next-i18next'
 import {
   ComponentProps,
   ReactElement,
@@ -12,10 +15,10 @@ import {
   useMemo,
   useState
 } from 'react'
-import { Trans, useTranslation } from 'react-i18next'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
@@ -89,7 +92,18 @@ function LocalButton({
               sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
             />
           ) : (
-            (children as unknown as ReactNode)
+            <NoSsr
+              fallback={
+                <Skeleton
+                  sx={{
+                    width: { xs: 145, md: 274 },
+                    height: { xs: 30, md: 36 }
+                  }}
+                />
+              }
+            >
+              {children as unknown as ReactNode}
+            </NoSsr>
           )}
         </Typography>
         <Typography
@@ -106,7 +120,18 @@ function LocalButton({
               sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
             />
           ) : (
-            (children as unknown as ReactNode)
+            <NoSsr
+              fallback={
+                <Skeleton
+                  sx={{
+                    width: { xs: 145, md: 274 },
+                    height: { xs: 30, md: 36 }
+                  }}
+                />
+              }
+            >
+              {children as unknown as ReactNode}
+            </NoSsr>
           )}
         </Typography>
         {loading !== true && (
@@ -132,6 +157,7 @@ export function HeaderAndLanguageFilter({
   selectedLanguageIds,
   onChange
 }: LanguageFilterProps): ReactElement {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const { t } = useTranslation('apps-journeys-admin')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -143,6 +169,7 @@ export function HeaderAndLanguageFilter({
 
   const { data, loading } = useLanguagesQuery({
     languageId: '529',
+    // make sure these variables are the same as in pages/templates/index.ts
     where: {
       ids: [
         '529', // English
@@ -154,7 +181,12 @@ export function HeaderAndLanguageFilter({
         '584', // Português, Portuguese, Brazil
         '21028', // Español, Spanish, Latin American
         '20615', // 普通話, Chinese, Mandarin
-        '3934' // Русский, Russian
+        '3934', // Русский, Russian
+        '22658', // Arabic Modern
+        '7083', // Japanese
+        '16639', // Bahasa Indonesia
+        '3887', // Vietnamese
+        '13169' // Thai
       ]
     }
   })
@@ -179,6 +211,11 @@ export function HeaderAndLanguageFilter({
   const localButtonProps: LocalButtonProps = {
     loading,
     onClick: (e) => {
+      router.query.param = 'template-language'
+      void router.push(router)
+      router.events.on('routeChangeComplete', () => {
+        setBeaconPageViewed('template-language')
+      })
       setOpen(!open)
     }
   }

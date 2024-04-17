@@ -3,6 +3,7 @@ import Paper from '@mui/material/Paper'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import {
   Dispatch,
   ReactElement,
@@ -40,21 +41,22 @@ export function StatusTabPanel({
   setSortOrder,
   sortOrder
 }: StatusTabPanelProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const journeyStatusTabs: StatusOptions[] = [
     {
       queryParam: 'active',
-      displayValue: 'Active',
+      displayValue: t('Active'),
       tabIndex: 0
     },
     {
       queryParam: 'archived',
-      displayValue: 'Archived',
+      displayValue: t('Archived'),
       tabIndex: 1
     },
     {
       queryParam: 'trashed',
-      displayValue: 'Trash',
+      displayValue: t('Trash'),
       tabIndex: 2
     }
   ]
@@ -160,7 +162,9 @@ export function StatusTabPanel({
         name="active-status-panel"
         value={activeTab}
         index={journeyStatusTabs[0].tabIndex}
-        unmountOnExit
+        unmountUntilVisible={
+          router?.query?.tab !== undefined && router?.query?.tab !== 'active'
+        }
       >
         {activeList}
       </TabPanel>
@@ -168,7 +172,7 @@ export function StatusTabPanel({
         name="archived-status-panel"
         value={activeTab}
         index={journeyStatusTabs[1].tabIndex}
-        unmountOnExit
+        unmountUntilVisible={router?.query?.tab !== 'archived'}
       >
         {archivedList}
       </TabPanel>
@@ -176,7 +180,7 @@ export function StatusTabPanel({
         name="trashed-status-panel"
         value={activeTab}
         index={journeyStatusTabs[2].tabIndex}
-        unmountOnExit
+        unmountUntilVisible={router?.query?.tab !== 'trashed'}
       >
         {trashedList}
       </TabPanel>

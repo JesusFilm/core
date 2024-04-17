@@ -1,4 +1,4 @@
-// version 2
+// version 3
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import isEmpty from 'lodash/isEmpty'

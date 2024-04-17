@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import TagManager from 'react-gtm-module'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -11,22 +10,12 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../../Team/TeamProvider'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -41,10 +30,6 @@ jest.mock('react-gtm-module', () => ({
     dataLayer: jest.fn()
   }
 }))
-
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
->
 
 describe('CreateJourneyButton', () => {
   const journey: Journey = {
@@ -97,12 +82,14 @@ describe('CreateJourneyButton', () => {
     }
   }))
 
+  const setOpenTeamDialogMock = jest.fn()
+
   it('should open team dialog if url query set to createNew', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: 'true' }
     } as unknown as NextRouter)
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -113,16 +100,18 @@ describe('CreateJourneyButton', () => {
           }
         ]}
       >
-        <CreateJourneyButton signedIn />
+        <CreateJourneyButton
+          signedIn
+          openTeamDialog={false}
+          setOpenTeamDialog={setOpenTeamDialogMock}
+        />
       </MockedProvider>
     )
 
-    expect(
-      getByRole('dialog', { name: 'Add Journey to Team' })
-    ).toBeInTheDocument()
+    expect(setOpenTeamDialogMock).toHaveBeenCalledWith(true)
   })
 
-  it('should open team dialog on button click if signed in', () => {
+  it('should open team dialog on button click if signed in', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: false }
     } as unknown as NextRouter)
@@ -139,19 +128,21 @@ describe('CreateJourneyButton', () => {
         ]}
       >
         <JourneyProvider value={{ journey }}>
-          <CreateJourneyButton signedIn />
+          <CreateJourneyButton
+            signedIn
+            openTeamDialog={false}
+            setOpenTeamDialog={setOpenTeamDialogMock}
+          />
         </JourneyProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByRole('button', { name: 'Use This Template' }))
 
-    expect(
-      getByRole('dialog', { name: 'Add Journey to Team' })
-    ).toBeInTheDocument()
+    expect(setOpenTeamDialogMock).toHaveBeenCalledWith(true)
   })
 
-  it('should redirect to sign in page on button click if not signed in', async () => {
+  it('should open account check dialog and redirect to sign in page when login is clicked if not signed in', async () => {
     const prefetch = jest.fn()
     const push = jest.fn().mockResolvedValueOnce('')
     mockUseRouter.mockReturnValue({
@@ -179,7 +170,10 @@ describe('CreateJourneyButton', () => {
         ]}
       >
         <JourneyProvider value={{ journey }}>
-          <CreateJourneyButton />
+          <CreateJourneyButton
+            openTeamDialog={false}
+            setOpenTeamDialog={setOpenTeamDialogMock}
+          />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -188,11 +182,9 @@ describe('CreateJourneyButton', () => {
       expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
     })
 
-    expect(
-      getByRole('button', { name: 'Use This Template' })
-    ).toBeInTheDocument()
-
     fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+
+    fireEvent.click(getByRole('button', { name: 'Login with my account' }))
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -200,7 +192,8 @@ describe('CreateJourneyButton', () => {
           pathname: '/users/sign-in',
           query: {
             redirect:
-              'http://localhost:4200/templates/[journeyId]?createNew=true'
+              'http://localhost:4200/templates/[journeyId]?createNew=true',
+            login: true
           }
         },
         undefined,
@@ -209,21 +202,20 @@ describe('CreateJourneyButton', () => {
     })
   })
 
-  it('should create journey from template and redirect on dialog submit', async () => {
+  it('should open account check dialog and redirect to sign in page when create account is clicked if not signed in', async () => {
+    const prefetch = jest.fn()
     const push = jest.fn().mockResolvedValueOnce('')
     mockUseRouter.mockReturnValue({
+      prefetch,
       push,
-      query: { createNew: false }
+      query: { createNew: false },
+      asPath: '/templates/[journeyId]'
     } as unknown as NextRouter)
 
-    const result = jest.fn(() => {
-      return {
-        data: {
-          journeyDuplicate: {
-            id: 'duplicatedJourneyId'
-          }
-        }
-      }
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      enumerable: true,
+      value: { origin: 'http://localhost:4200' }
     })
 
     const { getByRole } = render(
@@ -234,50 +226,36 @@ describe('CreateJourneyButton', () => {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
             result: teamResult
-          },
-          {
-            request: {
-              query: JOURNEY_DUPLICATE,
-              variables: {
-                id: 'journeyId',
-                teamId: 'teamId'
-              }
-            },
-            result
           }
         ]}
       >
-        <TeamProvider>
-          <JourneyProvider value={{ journey }}>
-            <CreateJourneyButton signedIn />
-          </JourneyProvider>
-        </TeamProvider>
+        <JourneyProvider value={{ journey }}>
+          <CreateJourneyButton
+            openTeamDialog={false}
+            setOpenTeamDialog={setOpenTeamDialogMock}
+          />
+        </JourneyProvider>
       </MockedProvider>
     )
 
+    await waitFor(() => {
+      expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
+    })
+
     fireEvent.click(getByRole('button', { name: 'Use This Template' }))
 
-    await waitFor(() => expect(teamResult).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Create a new account' }))
 
-    expect(
-      getByRole('button', { name: 'Select Team Team Name' })
-    ).toBeInTheDocument()
-
-    fireEvent.click(getByRole('button', { name: 'Add' }))
-
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'template_use',
-          journeyId: 'journeyId',
-          journeyTitle: 'Template'
-        }
-      })
-    )
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
-        '/journeys/duplicatedJourneyId',
+        {
+          pathname: '/users/sign-in',
+          query: {
+            redirect:
+              'http://localhost:4200/templates/[journeyId]?createNew=true',
+            login: false
+          }
+        },
         undefined,
         { shallow: true }
       )
@@ -289,10 +267,23 @@ describe('CreateJourneyButton', () => {
       query: { createNew: false }
     } as unknown as NextRouter)
     const { getByRole } = render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          }
+        ]}
+      >
         <TeamProvider>
           <JourneyProvider value={{}}>
-            <CreateJourneyButton signedIn />
+            <CreateJourneyButton
+              signedIn
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
+            />
           </JourneyProvider>
         </TeamProvider>
       </MockedProvider>

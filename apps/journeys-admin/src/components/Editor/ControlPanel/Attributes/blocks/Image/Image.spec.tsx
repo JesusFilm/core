@@ -1,29 +1,25 @@
-import { render } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
   ActiveJourneyEditContent,
   ActiveTab,
-  EditorState,
-  useEditor
+  EditorProvider,
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { Image } from './Image'
-import { ImageOptions } from './Options/ImageOptions'
 
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
 
 describe('Image', () => {
   const block: TreeBlock<ImageBlock> = {
@@ -46,13 +42,6 @@ describe('Image', () => {
     journeyEditContentComponent: ActiveJourneyEditContent.Canvas
   }
 
-  beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch: jest.fn()
-    })
-  })
-
   it('should display Image Options', () => {
     const { getByText } = render(<Image {...block} alt={block.alt} />)
 
@@ -60,22 +49,24 @@ describe('Image', () => {
     expect(getByText(block.alt)).toBeInTheDocument()
   })
 
-  it('should open property drawer for variant', () => {
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-    render(<Image {...block} alt={block.alt} />)
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedAttributeIdAction',
-      id: 'image1.id-image-options'
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      mobileOpen: true,
-      title: 'Image',
-      children: <ImageOptions />
-    })
+  it('should open property drawer for variant', async () => {
+    const { getByText, getByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={state}>
+            <Image {...block} alt={block.alt} />
+            <TestEditorState renderChildren />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(
+      getByText('selectedAttributeId: image1.id-image-options')
+    ).toBeInTheDocument()
+    expect(getByText('drawerMobileOpen: true')).toBeInTheDocument()
+    expect(getByText('drawerTitle: Image')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByTestId('ImageBlockEditor')).toBeInTheDocument()
+    )
   })
 })
