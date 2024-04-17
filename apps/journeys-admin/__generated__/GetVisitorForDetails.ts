@@ -24,7 +24,7 @@ export interface GetVisitorForDetails_visitor {
    * The last time the visitor called the ButtonClickEvent mutation where the url
    * is in the format of a recognized chat platform.
    */
-  lastChatStartedAt: any | null;
+  lastChatStartedAt: DateTime | null;
   /**
    * The country code of the visitor as poulated by visitor ip address detected in
    * the JourneyViewEventCreate mutation. This field country code is converted

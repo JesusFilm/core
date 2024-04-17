@@ -72,7 +72,10 @@ export function RegisterPage({
     await signInWithEmailAndPassword(auth, email, password)
   }
 
-  async function handleCreateAccount(values, { setFieldError }): Promise<void> {
+  async function handleCreateAccount(
+    values: { email: string; name: string; password: string },
+    { setFieldError }
+  ): Promise<void> {
     try {
       await createAccountAndSignIn(values.email, values.name, values.password)
     } catch (error) {

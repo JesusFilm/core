@@ -25,7 +25,7 @@ export interface GetVisitorForForm_visitor {
    * The last time the visitor called the ButtonClickEvent mutation where the url
    * is in the format of a recognized chat platform.
    */
-  lastChatStartedAt: any | null;
+  lastChatStartedAt: DateTime | null;
   /**
    * ID of the visitor as set by VisitorUpdate mutation. This could be a phone
    * number, user id or other unique identifier provided by the message platform.

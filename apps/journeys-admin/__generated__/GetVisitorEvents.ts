@@ -15,7 +15,7 @@ export interface GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent {
   journeyId: string;
   label: string | null;
   value: string | null;
-  createdAt: any;
+  createdAt: DateTime;
 }
 
 export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
@@ -36,7 +36,7 @@ export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: DateTime;
   /**
    * Action type of the button when it was clicked
    */
@@ -80,7 +80,7 @@ export interface GetVisitorEvents_visitor_events_JourneyViewEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: DateTime;
   /**
    * language of the journey being viewed (based on the ID in the value field)
    */
@@ -105,7 +105,7 @@ export interface GetVisitorEvents_visitor_events_SignUpSubmissionEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: DateTime;
   /**
    * email from the signUpBlock form
    */
@@ -130,7 +130,7 @@ export interface GetVisitorEvents_visitor_events_VideoStartEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: DateTime;
   /**
    * source of the video (based on the source in the value field)
    */
@@ -159,7 +159,7 @@ export interface GetVisitorEvents_visitor_events_VideoCompleteEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: DateTime;
   /**
    * source of the video (based on the source in the value field)
    */
@@ -184,7 +184,7 @@ export interface GetVisitorEvents_visitor_events_ChatOpenEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: DateTime;
   /**
    * messagePlatform of the link used for chat (based on the messagePlatform in the value field)
    */
@@ -209,7 +209,7 @@ export interface GetVisitorEvents_visitor_events_VideoCollapseEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: DateTime;
   /**
    * duration of the video played when the VideoCollapseEvent is triggered
    */
@@ -238,7 +238,7 @@ export interface GetVisitorEvents_visitor_events_VideoExpandEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: DateTime;
   /**
    * duration of the video played when the VideoExpandEvent is triggered
    */
@@ -267,7 +267,7 @@ export interface GetVisitorEvents_visitor_events_VideoPauseEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: DateTime;
   /**
    * duration of the video played when the VideoPauseEvent is triggered
    */
@@ -296,7 +296,7 @@ export interface GetVisitorEvents_visitor_events_VideoPlayEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: DateTime;
   /**
    * duration of the video played when the VideoPlayEvent is triggered
    */
@@ -325,7 +325,7 @@ export interface GetVisitorEvents_visitor_events_VideoProgressEvent {
   /**
    * time event was created
    */
-  createdAt: any;
+  createdAt: DateTime;
   /**
    * duration of the video played when the VideoProgressEvent is triggered
    */

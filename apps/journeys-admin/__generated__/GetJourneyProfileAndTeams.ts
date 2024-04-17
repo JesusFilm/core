@@ -11,8 +11,8 @@ export interface GetJourneyProfileAndTeams_getJourneyProfile {
   __typename: "JourneyProfile";
   id: string;
   userId: string;
-  acceptedTermsAt: any | null;
-  onboardingFormCompletedAt: any | null;
+  acceptedTermsAt: DateTime | null;
+  onboardingFormCompletedAt: DateTime | null;
 }
 
 export interface GetJourneyProfileAndTeams_teams {

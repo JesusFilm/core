@@ -100,7 +100,7 @@ export class JourneyResolver {
     try {
       return await getPowerBiEmbed(config, reportId, userId)
     } catch (err) {
-      throw new GraphQLError(err.message, {
+      throw new GraphQLError(err.message as string, {
         extensions: { code: 'BAD_REQUEST' }
       })
     }

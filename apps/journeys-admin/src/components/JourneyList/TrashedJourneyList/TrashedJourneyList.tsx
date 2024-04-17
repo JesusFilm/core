@@ -94,10 +94,12 @@ export function TrashedJourneyList({
         .map((journey) => journey.id)
       await restoreTrashed({ variables: { ids: journeyIds } })
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
     handleClose()
   }
@@ -114,10 +116,12 @@ export function TrashedJourneyList({
         .map((journey) => journey.id)
       await deleteTrashed({ variables: { ids: journeyIds } })
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
     handleClose()
   }

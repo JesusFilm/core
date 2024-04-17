@@ -677,7 +677,7 @@ export interface JourneyFields_userJourneys {
   /**
    * Date time of when the journey was first opened
    */
-  openedAt: any | null;
+  openedAt: DateTime | null;
   user: JourneyFields_userJourneys_user | null;
 }
 
@@ -732,9 +732,9 @@ export interface JourneyFields {
   description: string | null;
   status: JourneyStatus;
   language: JourneyFields_language;
-  createdAt: any;
-  featuredAt: any | null;
-  publishedAt: any | null;
+  createdAt: DateTime;
+  featuredAt: DateTime | null;
+  publishedAt: DateTime | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
   strategySlug: string | null;

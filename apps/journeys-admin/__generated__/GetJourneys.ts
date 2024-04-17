@@ -36,7 +36,7 @@ export interface GetJourneys_journeys_userJourneys {
   /**
    * Date time of when the journey was first opened
    */
-  openedAt: any | null;
+  openedAt: DateTime | null;
   user: GetJourneys_journeys_userJourneys_user | null;
 }
 
@@ -79,10 +79,10 @@ export interface GetJourneys_journeys {
   __typename: "Journey";
   id: string;
   title: string;
-  createdAt: any;
-  publishedAt: any | null;
-  featuredAt: any | null;
-  trashedAt: any | null;
+  createdAt: DateTime;
+  publishedAt: DateTime | null;
+  featuredAt: DateTime | null;
+  trashedAt: DateTime | null;
   description: string | null;
   slug: string;
   themeName: ThemeName;

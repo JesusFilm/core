@@ -677,7 +677,7 @@ export interface GetPublisherTemplate_publisherTemplate_userJourneys {
   /**
    * Date time of when the journey was first opened
    */
-  openedAt: any | null;
+  openedAt: DateTime | null;
   user: GetPublisherTemplate_publisherTemplate_userJourneys_user | null;
 }
 
@@ -732,9 +732,9 @@ export interface GetPublisherTemplate_publisherTemplate {
   description: string | null;
   status: JourneyStatus;
   language: GetPublisherTemplate_publisherTemplate_language;
-  createdAt: any;
-  featuredAt: any | null;
-  publishedAt: any | null;
+  createdAt: DateTime;
+  featuredAt: DateTime | null;
+  publishedAt: DateTime | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
   strategySlug: string | null;
