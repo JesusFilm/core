@@ -259,6 +259,26 @@ describe('Properties', () => {
     )
   })
 
+  it('should return properties for RadioQuestion block', async () => {
+    const block = {
+      __typename: 'RadioQuestionBlock',
+      id: 'block.id',
+      children: []
+    } as unknown as TreeBlock
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <Properties block={block} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('RadioQuestionProperties')).toBeInTheDocument()
+    )
+  })
+
   it('should return properties for Radio Option block', async () => {
     const block = {
       __typename: 'RadioOptionBlock',
