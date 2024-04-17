@@ -1,6 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -136,7 +137,7 @@ describe('DeleteBlock', () => {
       }
     })
     const deleteBlockResultMock = jest.fn(() => ({ ...deleteBlockMock.result }))
-    const { getByRole, getByTestId } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider
           cache={cache}
@@ -155,8 +156,10 @@ describe('DeleteBlock', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toContainElement(getByTestId('Trash2Icon'))
-    fireEvent.click(getByRole('button'))
+    expect(screen.getByRole('button')).toContainElement(
+      screen.getByTestId('Trash2Icon')
+    )
+    await userEvent.click(screen.getByRole('button'))
     await waitFor(() => expect(deleteBlockResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:card1.id' }
@@ -182,7 +185,7 @@ describe('DeleteBlock', () => {
       }
     })
     const deleteBlockResultMock = jest.fn(() => ({ ...deleteBlockMock.result }))
-    const { getByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider
           cache={cache}
@@ -201,7 +204,9 @@ describe('DeleteBlock', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    await fireEvent.click(getByRole('menuitem', { name: 'Delete Block' }))
+    await userEvent.click(
+      screen.getByRole('menuitem', { name: 'Delete Block' })
+    )
     await waitFor(() => expect(deleteBlockResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:card1.id' }
@@ -233,7 +238,7 @@ describe('DeleteBlock', () => {
       }
     })
     const deleteCardResultMock = jest.fn(() => ({ ...deleteCardMock.result }))
-    const { getByRole, getByTestId } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider
           cache={cache}
@@ -253,11 +258,16 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
 
-    expect(getByRole('button')).toContainElement(getByTestId('Trash2Icon'))
-    fireEvent.click(getByRole('button'))
-
-    expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Delete' }))
+    expect(screen.getByRole('button')).toContainElement(
+      screen.getByTestId('Trash2Icon')
+    )
+    await userEvent.click(screen.getByRole('button'))
+    await waitFor(() =>
+      expect(
+        screen.getByRole('dialog', { name: 'Delete Card?' })
+      ).toBeInTheDocument()
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
@@ -288,7 +298,7 @@ describe('DeleteBlock', () => {
       }
     })
     const deleteCardResultMock = jest.fn(() => ({ ...deleteCardMock.result }))
-    const { getByRole, queryByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider
           cache={cache}
@@ -308,37 +318,43 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getByRole('menuitem', { name: 'Delete Card' }))
-
-    expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Delete' }))
-
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
+    await waitFor(() =>
+      expect(
+        screen.getByRole('dialog', { name: 'Delete Card?' })
+      ).toBeInTheDocument()
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
-    await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument())
-    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+    )
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    )
   })
 
   it('should be disabled if nothing is selected', () => {
-    const { getByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider>
           <DeleteBlock variant="button" />
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toBeDisabled()
+    expect(screen.getByRole('button')).toBeDisabled()
   })
 
   it('should be disabled if manually disabling button', () => {
-    const { getByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider>
           <DeleteBlock variant="button" disabled />
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toBeDisabled()
+    expect(screen.getByRole('button')).toBeDisabled()
   })
 
   it('should delete the card that is passed in', async () => {
@@ -401,7 +417,7 @@ describe('DeleteBlock', () => {
     })
 
     const deleteCardResultMock = jest.fn(() => ({ ...deleteCardMock.result }))
-    const { getByRole, getByText } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider
           cache={cache}
@@ -424,10 +440,13 @@ describe('DeleteBlock', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByRole('menuitem', { name: 'Delete Card' }))
-
-    expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Delete' }))
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
+    await waitFor(() =>
+      expect(
+        screen.getByRole('dialog', { name: 'Delete Card?' })
+      ).toBeInTheDocument()
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     await waitFor(() =>
       expect(passedInStepDeleteMock.result).toHaveBeenCalled()
@@ -435,6 +454,8 @@ describe('DeleteBlock', () => {
     await waitFor(() => expect(deleteCardResultMock).not.toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
 
-    expect(getByText(`selectedBlock: ${selectedStep.id}`)).toBeInTheDocument()
+    expect(
+      screen.getByText(`selectedBlock: ${selectedStep.id}`)
+    ).toBeInTheDocument()
   })
 })

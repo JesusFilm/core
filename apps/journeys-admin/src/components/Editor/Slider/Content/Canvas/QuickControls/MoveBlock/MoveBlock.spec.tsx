@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -80,7 +81,7 @@ describe('MoveBlockButton', () => {
   }))
 
   it('should move selected block up on click', async () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -110,13 +111,13 @@ describe('MoveBlockButton', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'move-block-up' }))
+    await userEvent.click(screen.getByRole('button', { name: 'move-block-up' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('should move selected block down on click', async () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -146,13 +147,15 @@ describe('MoveBlockButton', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'move-block-down' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'move-block-down' })
+    )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('should disable move up if first block', async () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <EditorProvider
           initialState={{ selectedBlock: block1, selectedStep: step }}
@@ -162,12 +165,14 @@ describe('MoveBlockButton', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('button', { name: 'move-block-up' })).toBeDisabled()
-    expect(getByRole('button', { name: 'move-block-down' })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: 'move-block-up' })).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'move-block-down' })
+    ).not.toBeDisabled()
   })
 
   it('should disable move down if last block', async () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <EditorProvider
           initialState={{ selectedBlock: block2, selectedStep: step }}
@@ -177,8 +182,12 @@ describe('MoveBlockButton', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('button', { name: 'move-block-up' })).not.toBeDisabled()
-    expect(getByRole('button', { name: 'move-block-down' })).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'move-block-up' })
+    ).not.toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'move-block-down' })
+    ).toBeDisabled()
   })
 
   it('should disable move if single block', async () => {
@@ -197,7 +206,7 @@ describe('MoveBlockButton', () => {
 
     const stepWithOneBlock = { ...step, children: [card] }
 
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <EditorProvider
           initialState={{
@@ -210,7 +219,9 @@ describe('MoveBlockButton', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('button', { name: 'move-block-up' })).toBeDisabled()
-    expect(getByRole('button', { name: 'move-block-down' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'move-block-up' })).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'move-block-down' })
+    ).toBeDisabled()
   })
 })

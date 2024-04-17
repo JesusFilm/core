@@ -60,7 +60,7 @@ export function MoveBlock(): ReactElement {
       <IconButton
         aria-label="move-block-up"
         disabled={selectedBlock?.parentOrder === 0}
-        onClick={handleMove('up')}
+        onMouseUp={handleMove('up')}
         onMouseDown={(e) => e.preventDefault()}
       >
         <ChevronUpIcon />
@@ -68,7 +68,7 @@ export function MoveBlock(): ReactElement {
       <IconButton
         aria-label="move-block-down"
         disabled={selectedBlock?.parentOrder === lastBlockIndex}
-        onClick={handleMove('down')}
+        onMouseUp={handleMove('down')}
         onMouseDown={(e) => e.preventDefault()}
       >
         <ChevronDownIcon />
