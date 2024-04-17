@@ -138,7 +138,7 @@ export function BaseNode({
             type="source"
             position={Position.Bottom}
             onConnect={onSourceConnect}
-            onClick={handleClick}
+            onMouseDown={handleClick}
             style={{
               position: 'fixed',
               width: 40,
