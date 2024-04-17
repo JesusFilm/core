@@ -1,9 +1,9 @@
-import { jfNexus } from './seeds/jfNexus'
+import { jfNexus } from './seeds/jfNexus';
 
 async function main(): Promise<void> {
-    await jfNexus()
+  await jfNexus();
 }
 main().catch((e) => {
-    console.error(e)
-    process.exit(1)
-})
+  console.error(e);
+  process.exit(1);
+});

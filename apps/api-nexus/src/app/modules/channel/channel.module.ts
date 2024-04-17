@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common'
+import { Module } from '@nestjs/common';
 
-import { GoogleYoutubeService } from '../../lib/googleAPI/googleYoutubeService'
-import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth'
-import { PrismaService } from '../../lib/prisma.service'
+import { GoogleYoutubeService } from '../../lib/googleAPI/googleYoutubeService';
+import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
+import { PrismaService } from '../../lib/prisma.service';
 
-import { ChannelResolver } from './channel.resolver'
+import { ChannelResolver } from './channel.resolver';
 
 @Module({
   imports: [],
@@ -12,7 +12,7 @@ import { ChannelResolver } from './channel.resolver'
     ChannelResolver,
     PrismaService,
     GoogleOAuthService,
-    GoogleYoutubeService
-  ]
+    GoogleYoutubeService,
+  ],
 })
 export class ChannelsModule {}

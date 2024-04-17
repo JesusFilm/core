@@ -21,26 +21,28 @@
         ],
         "generatePackageJson": true,
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "apps/api-nexus/webpack.config.js"
       },
       "configurations": {
-        "development": {},
-        "production": {}
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/api-nexus/src/environments/environment.ts",
+              "with": "apps/api-nexus/src/environments/environment.prod.ts"
+            }
+          ]
+        }
       }
     },
     "serve": {
       "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "api-nexus:build"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "api-nexus:build:development"
-        },
-        "production": {
-          "buildTarget": "api-nexus:build:production"
-        }
+        "buildTarget": "api-nexus:build",
+        "inspect": false
       }
     },
     "watcher": {
@@ -51,23 +53,19 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["apps/api-nexus/**/*.ts"]
-      }
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/api-nexus"],
       "options": {
         "jestConfig": "apps/api-nexus/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
+        "fileReplacements": [
+          {
+            "replace": "apps/api-nexus/src/environments/environment.ts",
+            "with": "apps/api-nexus/src/environments/environment.testing.ts"
+          }
+        ]
       }
     },
     "generate-graphql": {
@@ -80,6 +78,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-nexus --schema apps/api-nexus/schema.graphql"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_NEXUS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-nexus > apps/api-nexus/.env"
       }
     },
     "prisma-generate": {
@@ -99,7 +103,11 @@
         ]
       },
       "configurations": {
-        "production": {}
+        "production": {
+          "commands": [
+            "npx prisma migrate deploy --schema apps/api-nexus/db/schema.prisma"
+          ]
+        }
       }
     },
     "prisma-reset": {

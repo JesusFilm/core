@@ -6,6 +6,7 @@ type Channel @key(fields: "id") {
   connected: Boolean
   youtube: ChannelYoutube
   status: ChannelStatus!
+  createdAt: DateTime!
 }
 
 enum ChannelStatus {
