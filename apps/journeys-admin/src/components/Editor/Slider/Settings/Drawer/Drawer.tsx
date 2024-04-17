@@ -10,7 +10,7 @@ import { ReactElement, ReactNode } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../../../constants'
+import { DRAWER_WIDTH } from '../../../constants'
 
 interface DrawerTitleProps {
   title?: string
@@ -84,7 +84,7 @@ export function Drawer({
     <MuiDrawer
       data-testid="SettingsDrawer"
       anchor={smUp ? 'right' : 'bottom'}
-      variant={open != null ? 'temporary' : 'permanent'}
+      variant={open != null ? 'persistent' : 'permanent'}
       SlideProps={{ appear: true }}
       open={open}
       elevation={0}
@@ -93,12 +93,12 @@ export function Drawer({
         '& .MuiDrawer-paper':
           open != null
             ? {
-                // temporary drawer
+                // persistent drawer
                 borderRadius: 4,
                 borderBottomLeftRadius: { xs: 0, sm: 16 },
                 borderBottomRightRadius: { xs: 0, sm: 16 },
                 width: smUp ? DRAWER_WIDTH : 'auto',
-                top: EDIT_TOOLBAR_HEIGHT + 20,
+                top: { xs: 0, sm: 20 },
                 left: { xs: 0, sm: 'auto' },
                 right: { xs: 0, sm: 20 },
                 bottom: { xs: 0, sm: 20 },
