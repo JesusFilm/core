@@ -34,8 +34,8 @@ describe('FeltNeedsButton', () => {
     expect(getByTestId('felt-needs-button-loading')).toBeInTheDocument()
   })
 
-  it('should render without image', () => {
-    const { getByRole, queryByTestId } = render(
+  it('should not render unless it has an image', () => {
+    const { queryByRole, queryByTestId } = render(
       <FeltNeedsButton
         item={{
           ...tag,
@@ -51,8 +51,8 @@ describe('FeltNeedsButton', () => {
       />
     )
     expect(
-      getByRole('button', { name: 'invalid name invalid name' })
-    ).toBeInTheDocument()
+      queryByRole('button', { name: 'invalid name invalid name' })
+    ).not.toBeInTheDocument()
     expect(queryByTestId('felt-needs-button-loading')).not.toBeInTheDocument()
   })
 
