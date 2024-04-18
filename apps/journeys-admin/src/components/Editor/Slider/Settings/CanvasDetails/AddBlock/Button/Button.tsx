@@ -91,7 +91,8 @@ export function Button({
                 borderColor: { xs: 'editor.divider', sm: 'primary.main' },
                 borderWidth: { xs: '1px', sm: '2px' },
                 '.plus2-icon': {
-                  display: 'flex'
+                  display: 'flex',
+                  opacity: { xs: 0, sm: 1 }
                 }
               }
             }}
