@@ -44,7 +44,6 @@ export function Button({
   const handleClick = (): void => {
     onClick?.()
   }
-
   return (
     <Box
       onMouseDown={(e) => e.preventDefault()}
@@ -52,12 +51,7 @@ export function Button({
     >
       <StyledTooltip
         title={
-          <Typography
-            display={{ xs: 'none', sm: 'flex' }}
-            variant="caption"
-            lineHeight="12px"
-            sx={{ my: 1.25 }}
-          >
+          <Typography variant="caption" lineHeight="12px" sx={{ my: 1.25 }}>
             {t(
               disabled && value === 'Video'
                 ? 'Video Block cannot be placed on top of Blocks'
@@ -79,6 +73,7 @@ export function Button({
             ]
           }
         }}
+        sx={{ opacity: { xs: 0, sm: 1 } }}
       >
         <Box>
           <Card
