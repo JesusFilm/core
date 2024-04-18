@@ -66,12 +66,11 @@ describe('AlgoliaService', () => {
       )
     })
 
-    it('should sync videos to Algolia', async () => {
+    it('should sync videos english to Algolia', async () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
       process.env.ALGOLIA_INDEX = 'video-variants'
       prismaService.videoVariant.findMany
-        .mockResolvedValue([])
         .mockResolvedValueOnce([
           {
             id: 'id',
@@ -90,6 +89,7 @@ describe('AlgoliaService', () => {
             slug: 'slug'
           } as unknown as VideoVariant
         ])
+        .mockResolvedValueOnce([])
 
       await service.syncVideosToAlgolia()
       expect(prismaService.videoVariant.findMany).toHaveBeenCalledWith({
@@ -98,6 +98,9 @@ describe('AlgoliaService', () => {
         include: {
           video: { include: { title: true } },
           subtitle: true
+        },
+        where: {
+          languageId: '529'
         }
       })
       expect(mockAlgoliaSearch).toHaveBeenCalledWith('id', 'key')
@@ -118,6 +121,22 @@ describe('AlgoliaService', () => {
           videoId: 'videoId'
         }
       ])
+    })
+
+    it('should sync all videos to Algolia when prd', async () => {
+      process.env.ALGOLIA_API_KEY = 'key'
+      process.env.ALGOLIA_APPLICATION_ID = 'id'
+      process.env.ALGOLIA_INDEX = 'video-variants-prd'
+      prismaService.videoVariant.findMany.mockResolvedValueOnce([])
+      await service.syncVideosToAlgolia()
+      expect(prismaService.videoVariant.findMany).toHaveBeenCalledWith({
+        take: 1000,
+        skip: 0,
+        include: {
+          video: { include: { title: true } },
+          subtitle: true
+        }
+      })
     })
   })
 })
