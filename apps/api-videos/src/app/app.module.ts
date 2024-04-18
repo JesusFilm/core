@@ -5,6 +5,7 @@ import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
+import { BullModule } from '@nestjs/bullmq'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
@@ -13,6 +14,7 @@ import { LoggerModule } from 'nestjs-pino'
 
 import TranslationModule from '@core/nest/common/TranslationModule'
 
+import { AlgoliaModule } from './modules/algolia/algolia.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { VideoModule } from './modules/video/video.module'
 import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
@@ -21,6 +23,7 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
   imports: [
     NestHealthModule,
     TranslationModule,
+    AlgoliaModule,
     VideoModule,
     VideoVariantModule,
     CacheModule.register(),
@@ -61,6 +64,12 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
               }
             : undefined,
         level: process.env.NODE_ENV !== 'production' ? 'trace' : 'info'
+      }
+    }),
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_URL ?? 'redis',
+        port: 6379
       }
     }),
     DatadogTraceModule.forRoot()
