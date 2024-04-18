@@ -10,14 +10,13 @@ export class BigQueryConsumer extends WorkerHost {
   }
 
   async process(job: Job): Promise<void> {
-    console.log('job start')
     const tablesToFetch = [
       {
         tableName: 'arclight-test-data.arclight_test.test',
-        transformAndLoadFunction: async function functionThatConsumesMyIterator(
+        transformAndLoadFunction: async (
           tableName: string,
           bigQueryService: BigQueryService
-        ) {
+        ) => {
           try {
             const iterator =
               await bigQueryService.getBigQueryDataFromTableIterator(tableName)
