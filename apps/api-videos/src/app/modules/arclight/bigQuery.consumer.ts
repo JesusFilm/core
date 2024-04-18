@@ -10,25 +10,39 @@ export class BigQueryConsumer extends WorkerHost {
   }
 
   async process(job: Job): Promise<void> {
-    try {
-      const iterator =
-        await this.bigQueryService.getBigQueryDataFromTableIterator(
-          'arclight-test-data.arclight_test.test'
-        )
-      let results: unknown[] = []
-      let res = await iterator.next()
-      while (!res.done) {
-        results = results.concat(res.value)
-        // TODO: incremental write to db
-        res = await iterator.next()
+    console.log('job start')
+    const tablesToFetch = [
+      {
+        tableName: 'arclight-test-data.arclight_test.test',
+        transformAndLoadFunction: async function functionThatConsumesMyIterator(
+          tableName: string,
+          bigQueryService: BigQueryService
+        ) {
+          try {
+            const iterator =
+              await bigQueryService.getBigQueryDataFromTableIterator(tableName)
+            let results: unknown[] = []
+            let res = await iterator.next()
+            while (!res.done) {
+              results = results.concat(res.value)
+              // TODO: incremental write to db
+              res = await iterator.next()
+            }
+            // concat last api call
+            results = results.concat(res.value)
+            // TODO: transform
+            // TODO: write to db last call
+          } catch (e) {
+            console.log(e.message)
+          }
+        }
       }
-      // concat last api call
-      results = results.concat(res.value)
-      // TODO: write to db last call
-    } catch (e) {
-      throw new Error(e.message)
-    }
-
+    ]
+    await Promise.all(
+      tablesToFetch.map(async ({ tableName, transformAndLoadFunction }) => {
+        await transformAndLoadFunction(tableName, this.bigQueryService)
+      })
+    )
     console.log(`${job.name} has run`)
   }
 }

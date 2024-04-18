@@ -19,25 +19,30 @@ export class BigQueryService {
       value: QueryRowsResponse
     }>
   }> {
-    let rowsRes
-    let pageToken
+    const maxResults = 500
+
+    let rowRes
+    let pageToken: string | undefined
+    let results: unknown[] = []
 
     const query = `SELECT * FROM ${table}`
-    // create a query job in BQ
+
     const [job] = await bigquery.createQueryJob({ query })
+    const res = await job.getQueryResults({ maxResults, pageToken })
+    results = res[0]
+    pageToken = res[1]?.pageToken
+
     return {
       async next() {
-        try {
-          // poll query job in BQ
-          const res = await job.getQueryResults({ maxResults: 500, pageToken })
-          rowsRes = res[0]
+        if (results.length === 0) {
+          const res = await job.getQueryResults({ maxResults, pageToken })
+          results = res[0]
           pageToken = res[1]?.pageToken
-        } catch (e) {
-          throw new Error(e.message)
         }
+        rowRes = results.shift()
         return {
-          done: pageToken == null,
-          value: rowsRes
+          done: pageToken == null && results.length === 0,
+          value: rowRes
         }
       }
     }
