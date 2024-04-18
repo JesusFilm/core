@@ -48,7 +48,7 @@ export function CopyToTeamDialog({
   )
 
   async function handleSubmit(
-    values: FormikValues,
+    values: { teamSelect: string },
     { resetForm }: FormikHelpers<FormikValues>
   ): Promise<void> {
     await updateLastActiveTeamId({

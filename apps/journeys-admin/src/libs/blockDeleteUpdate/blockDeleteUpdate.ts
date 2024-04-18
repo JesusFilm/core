@@ -41,7 +41,7 @@ export const blockDeleteUpdate = (
     cache.modify({
       id: cache.identify({ __typename: 'Journey', id: journeyId }),
       fields: {
-        blocks(existingBlockRefs = []) {
+        blocks(existingBlockRefs: Array<{ __ref: string }>) {
           return reject(existingBlockRefs, (block) => {
             return blockRefs.includes(block.__ref)
           })

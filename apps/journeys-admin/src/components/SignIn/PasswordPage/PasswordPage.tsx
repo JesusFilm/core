@@ -14,6 +14,11 @@ import { object, string } from 'yup'
 
 import { PageProps } from '../types'
 
+interface Values {
+  email: string
+  password: string
+}
+
 export function PasswordPage({
   userEmail,
   userPassword,
@@ -36,10 +41,7 @@ export function PasswordPage({
       .required(t('Please enter your email address')),
     password: string().required(t('Enter your password'))
   })
-  async function handleLogin(
-    values: { email: string; password: string },
-    { setFieldError }
-  ): Promise<void> {
+  async function handleLogin(values: Values, { setFieldError }): Promise<void> {
     console.log(values)
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password)

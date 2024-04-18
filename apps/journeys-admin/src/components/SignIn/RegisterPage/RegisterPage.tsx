@@ -21,6 +21,12 @@ import { object, string } from 'yup'
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
 
+interface Values {
+  email: string
+  name: string
+  password: string
+}
+
 export function RegisterPage({
   setActivePage,
   userEmail
@@ -73,7 +79,7 @@ export function RegisterPage({
   }
 
   async function handleCreateAccount(
-    values: { email: string; name: string; password: string },
+    values: Values,
     { setFieldError }
   ): Promise<void> {
     try {

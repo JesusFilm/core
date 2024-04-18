@@ -178,7 +178,7 @@ export interface JourneyFields_blocks_FormBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  form: any | null;
+  form: Json | null;
   action: JourneyFields_blocks_FormBlock_action | null;
 }
 
