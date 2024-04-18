@@ -42,7 +42,6 @@ export function PasswordPage({
     password: string().required(t('Enter your password'))
   })
   async function handleLogin(values: Values, { setFieldError }): Promise<void> {
-    console.log(values)
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password)
     } catch (error) {
