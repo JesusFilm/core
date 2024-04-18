@@ -236,7 +236,8 @@ export class BlockService {
         // All ids that link to child blocks should include BlockId in the key name.
         // TODO: startIconId and endIconId should be renamed as IconBlockId's
       } else if (key.includes('BlockId') || key.includes('IconId')) {
-        updatedBlockProps[key] = childIds.get(block[key]) ?? null
+        const blockId: string | null | undefined = block[key]
+        updatedBlockProps[key] = blockId != null ? childIds.get(blockId) : null
       }
       if (key === 'action') {
         const action = omit(block.action, 'parentBlockId') as unknown as Action

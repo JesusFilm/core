@@ -1,6 +1,6 @@
 import { ExecutionContext } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
-import { cert, initializeApp } from 'firebase-admin/app'
+import { ServiceAccount, cert, initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
 import get from 'lodash/get'
 
@@ -17,7 +17,9 @@ export const firebaseClient = initializeApp(
   process.env.GOOGLE_APPLICATION_JSON != null &&
     process.env.GOOGLE_APPLICATION_JSON !== ''
     ? {
-        credential: cert(JSON.parse(process.env.GOOGLE_APPLICATION_JSON))
+        credential: cert(
+          JSON.parse(process.env.GOOGLE_APPLICATION_JSON) as ServiceAccount
+        )
       }
     : undefined
 )

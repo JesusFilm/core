@@ -17,6 +17,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import {
   Block,
+  Action as BlockAction,
   ChatButton,
   Host,
   Journey,
@@ -49,6 +50,8 @@ import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
+
+type BlockWithAction = Block & { action: BlockAction | null }
 
 @Resolver('Journey')
 export class JourneyResolver {
@@ -453,7 +456,7 @@ export class JourneyResolver {
       duplicateStepIds
     )
 
-    let duplicatePrimaryImageBlock
+    let duplicatePrimaryImageBlock: BlockWithAction | undefined
     if (journey.primaryImageBlockId != null) {
       const primaryImageBlock = await this.prismaService.block.findUnique({
         where: { id: journey.primaryImageBlockId },
@@ -462,7 +465,7 @@ export class JourneyResolver {
       if (primaryImageBlock != null) {
         const id = uuidv4()
         duplicatePrimaryImageBlock = {
-          ...omit(primaryImageBlock, ['id', 'journeyId', 'action']),
+          ...omit(primaryImageBlock, ['id']),
           id
         }
 

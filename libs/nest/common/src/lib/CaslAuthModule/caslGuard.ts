@@ -1,3 +1,4 @@
+import { PureAbility } from '@casl/ability'
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { GqlExecutionContext } from '@nestjs/graphql'
@@ -33,7 +34,13 @@ export class CaslGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = GqlExecutionContext.create(context).getContext().req
+    const req = GqlExecutionContext.create(context).getContext<{
+      req: {
+        userId?: string | null
+        roles?: string[] | null
+        ability?: PureAbility | null
+      }
+    }>().req
 
     if (req.userId == null) {
       req.userId = await contextToUserId(context)
@@ -61,7 +68,9 @@ export class CaslGuard implements CanActivate {
       ) ?? []
     const policies = classPolicies.concat(handlerPolicies)
 
-    return policies.every((handler) => handler(req.ability))
+    return policies.every(
+      (handler) => req.ability != null && handler(req.ability)
+    )
   }
 
   protected async loadRoles(_userId: string): Promise<string[]> {
