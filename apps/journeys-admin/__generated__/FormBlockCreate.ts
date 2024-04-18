@@ -62,7 +62,7 @@ export interface FormBlockCreate_formBlockCreate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  form: any | null;
+  form: Json | null;
   action: FormBlockCreate_formBlockCreate_action | null;
 }
 

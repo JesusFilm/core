@@ -178,7 +178,7 @@ export interface GetJourney_journey_blocks_FormBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  form: any | null;
+  form: Json | null;
   action: GetJourney_journey_blocks_FormBlock_action | null;
 }
 

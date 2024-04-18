@@ -178,7 +178,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  form: any | null;
+  form: Json | null;
   action: GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action | null;
 }
 
