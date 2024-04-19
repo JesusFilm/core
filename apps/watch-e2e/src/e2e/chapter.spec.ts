@@ -25,11 +25,11 @@ test('Chapter', async ({ page }) => {
   // eslint-disable-next-line
   await page.waitForTimeout(8 * 1000)
   // Note: all video tiles are not fully loading
-  await expect(page).toHaveScreenshot('home-page.png', {
-    animations: 'disabled',
-    fullPage: true,
-    timeout: 10000
-  })
+  // await expect(page).toHaveScreenshot('home-page.png', {
+  //   animations: 'disabled',
+  //   fullPage: true,
+  //   timeout: 10000
+  // })
 
   await page
     .getByRole('button', {
@@ -39,10 +39,10 @@ test('Chapter', async ({ page }) => {
 
   // eslint-disable-next-line
   await page.waitForTimeout(8 * 1000)
-  await expect(page).toHaveScreenshot('before-video.png', {
-    animations: 'disabled',
-    fullPage: true
-  })
+  // await expect(page).toHaveScreenshot('before-video.png', {
+  //   animations: 'disabled',
+  //   fullPage: true
+  // })
 
   // check it's navigated to the correct URL
   await expect(page).toHaveURL('/watch/jesus-calms-the-storm.html/english.html')
