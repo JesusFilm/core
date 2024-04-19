@@ -1,17 +1,18 @@
 import { createWriteStream } from 'fs'
 import path from 'path'
 
+import { drive, drive_v3 } from '@googleapis/drive'
 import { Injectable } from '@nestjs/common/decorators/core'
 import axios from 'axios'
-import { drive_v3, google } from 'googleapis'
 import { OAuth2Client } from 'googleapis-common'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Channel } from '../../__generated__/graphql'
-import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService'
-import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth'
-import { PrismaService } from '../../lib/prisma.service'
-import { YoutubeService } from '../../lib/youtube/youtubeService'
+import { PrismaService } from '../prisma.service'
+import { YoutubeService } from '../youtube/youtubeService'
+
+import { GoogleOAuthService } from './oauth.service'
+import { GoogleSheetsService } from './sheets.service'
 
 interface FileRequest {
   fileId: string
@@ -131,8 +132,8 @@ export class GoogleDriveService {
     folderId: string,
     fileName: string
   ): Promise<drive_v3.Schema$File | null> {
-    const drive = google.drive({ version: 'v3', auth })
-    const driveResponse = await drive.files.list({
+    const client = drive({ version: 'v3', auth })
+    const driveResponse = await client.files.list({
       q: `'${folderId}' in parents and name='${fileName}' and trashed=false`,
       fields: 'files(id, name, mimeType, kind)'
     })
@@ -144,8 +145,8 @@ export class GoogleDriveService {
     auth: OAuth2Client,
     folderId: string
   ): Promise<drive_v3.Schema$File[] | undefined> {
-    const drive = google.drive({ version: 'v3', auth })
-    const driveResponse = await drive.files.list({
+    const client = drive({ version: 'v3', auth })
+    const driveResponse = await client.files.list({
       q: `'${folderId}' in parents and trashed=false`,
       fields: 'files(id, name, mimeType, kind)'
     })

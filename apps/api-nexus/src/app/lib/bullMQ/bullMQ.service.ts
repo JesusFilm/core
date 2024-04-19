@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common'
 import Bull, { Queue } from 'bull'
 
 import { Batch, Channel } from '../../__generated__/graphql'
-import { PrismaService } from '../../lib/prisma.service'
+import { PrismaService } from '../prisma.service'
 
 export interface UploadToYoutbeTask {
   channelId: string

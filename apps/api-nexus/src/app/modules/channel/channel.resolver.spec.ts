@@ -4,8 +4,8 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { Channel } from '.prisma/api-nexus-client'
 
 import { ChannelFilter, ChannelStatus } from '../../__generated__/graphql'
-import { GoogleYoutubeService } from '../../lib/googleAPI/googleYoutubeService'
-import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth'
+import { GoogleOAuthService } from '../../lib/google/oauth.service'
+import { GoogleYoutubeService } from '../../lib/google/youtube.service'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { ChannelResolver } from './channel.resolver'

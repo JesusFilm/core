@@ -17,13 +17,13 @@ import {
   ResourceFromGoogleDriveInput,
   ResourceUpdateInput
 } from '../../__generated__/graphql'
+import { BullMQService } from '../../lib/bullMQ/bullMQ.service'
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
-import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService'
-import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth'
+import { GoogleDriveService } from '../../lib/google/drive.service'
+import { GoogleOAuthService } from '../../lib/google/oauth.service'
+import { GoogleSheetsService } from '../../lib/google/sheets.service'
 import { PrismaService } from '../../lib/prisma.service'
 import { YoutubeService } from '../../lib/youtube/youtubeService'
-import { BullMQService } from '../bullMQ/bullMQ.service'
-import { GoogleDriveService } from '../google-drive/googleDriveService'
 
 @Resolver('Resource')
 export class ResourceResolver {

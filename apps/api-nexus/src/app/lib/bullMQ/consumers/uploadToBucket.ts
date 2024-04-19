@@ -1,10 +1,10 @@
 import { Process, Processor } from '@nestjs/bull'
 import { Job } from 'bull'
 
-import { BucketService } from '../../../lib/bucket/bucketService'
-import { GoogleOAuthService } from '../../../lib/googleOAuth/googleOAuth'
-import { YoutubeService } from '../../../lib/youtube/youtubeService'
-import { GoogleDriveService } from '../../google-drive/googleDriveService'
+import { BucketService } from '../../bucket/bucketService'
+import { GoogleDriveService } from '../../google/drive.service'
+import { GoogleOAuthService } from '../../google/oauth.service'
+import { YoutubeService } from '../../youtube/youtubeService'
 import { UploadToBucketToYoutube } from '../bullMQ.service'
 
 @Processor('nexus-bucket')

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { createReadStream, statSync } from 'fs'
 
+import { youtube } from '@googleapis/youtube'
 import { Injectable } from '@nestjs/common'
-import { google } from 'googleapis'
 import { OAuth2Client } from 'googleapis-common'
 
 interface Credential {
@@ -24,7 +24,7 @@ export class YoutubeService {
   }
 
   authorize(token: string): OAuth2Client {
-    const oAuth2Client = new google.auth.OAuth2(
+    const oAuth2Client = new OAuth2Client(
       this.credential.client_id,
       this.credential.client_secret,
       this.credential.redirect_uris[0]
@@ -46,7 +46,7 @@ export class YoutubeService {
     },
     progressCallback?: (progress: number) => Promise<void>
   ): Promise<unknown> {
-    const service = google.youtube('v3')
+    const service = youtube('v3')
     const fileSize = statSync(youtubeData.filePath).size
 
     return await service.videos.insert(

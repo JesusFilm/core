@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common'
 import { Role } from '.prisma/api-journeys-client'
 import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 
+import { channelAcl } from '../../../modules/channel/channel.acl'
 import { nexusAcl } from '../../../modules/nexus/nexus.acl'
 import { PrismaSubjects } from '../__generated__/prismaSubjects'
 import { PrismaQuery, createPrismaAbility } from '../caslPrisma'
@@ -38,7 +39,7 @@ export class AppCaslFactory extends CaslFactory<Role> {
     const { can, cannot, build } = new AbilityBuilder<AppAbility>(
       createPrismaAbility
     )
-    const acls = [nexusAcl]
+    const acls = [nexusAcl, channelAcl]
     acls.forEach((acl) => acl({ can, cannot, user }))
 
     return build()

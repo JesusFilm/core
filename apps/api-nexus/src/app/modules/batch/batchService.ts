@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 
 import { PrismaService } from '../../lib/prisma.service'
-import { BullMQService } from '../bullMQ/bullMQ.service'
+import { BullMQService } from '../../lib/bullMQ/bullMQ.service'
 
 @Injectable()
 export class BatchService {

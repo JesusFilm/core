@@ -3,13 +3,13 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { Resource, ResourceStatus, SourceType } from '.prisma/api-nexus-client'
 
+import { BullMQService } from '../../lib/bullMQ/bullMQ.service'
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
-import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService'
-import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth'
+import { GoogleDriveService } from '../../lib/google/drive.service'
+import { GoogleOAuthService } from '../../lib/google/oauth.service'
+import { GoogleSheetsService } from '../../lib/google/sheets.service'
 import { PrismaService } from '../../lib/prisma.service'
 import { YoutubeService } from '../../lib/youtube/youtubeService'
-import { BullMQService } from '../bullMQ/bullMQ.service'
-import { GoogleDriveService } from '../google-drive/googleDriveService'
 
 import { ResourceResolver } from './resource.resolver'
 

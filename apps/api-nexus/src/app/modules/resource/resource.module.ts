@@ -1,20 +1,22 @@
 import { Module } from '@nestjs/common'
 
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import { BullMQModule } from '../../lib/bullMQ/bullMQ.module'
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
-import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService'
-import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth'
+import { GoogleDriveService } from '../../lib/google/drive.service'
+import { GoogleOAuthService } from '../../lib/google/oauth.service'
+import { GoogleSheetsService } from '../../lib/google/sheets.service'
 import { PrismaService } from '../../lib/prisma.service'
 import { YoutubeService } from '../../lib/youtube/youtubeService'
 import { BatchModule } from '../batch/batch.module'
 import { BatchService } from '../batch/batchService'
-import { BullMQModule } from '../bullMQ/bullMQ.module'
-import { GoogleDriveModule } from '../google-drive/googleDrive.module'
-import { GoogleDriveService } from '../google-drive/googleDriveService'
 
 import { ResourceResolver } from './resource.resolver'
 
 @Module({
-  imports: [GoogleDriveModule, BatchModule],
+  imports: [BatchModule, CaslAuthModule.register(AppCaslFactory)],
   providers: [
     ResourceResolver,
     PrismaService,

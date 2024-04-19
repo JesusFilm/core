@@ -3,7 +3,7 @@ import { InjectQueue } from '@nestjs/bull'
 import { Injectable, OnModuleInit } from '@nestjs/common'
 import { Job, Queue } from 'bull'
 
-import { PrismaService } from '../../../lib/prisma.service'
+import { PrismaService } from '../../prisma.service'
 import { UploadToBucketToYoutube } from '../bullMQ.service'
 
 @Injectable()

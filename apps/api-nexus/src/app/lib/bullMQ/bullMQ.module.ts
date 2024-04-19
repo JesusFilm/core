@@ -1,13 +1,12 @@
 import { BullModule } from '@nestjs/bull'
 import { Global, Module } from '@nestjs/common'
 
-import { BucketService } from '../../lib/bucket/bucketService'
-import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService'
-import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth'
-import { PrismaService } from '../../lib/prisma.service'
-import { YoutubeService } from '../../lib/youtube/youtubeService'
-import { GoogleDriveModule } from '../google-drive/googleDrive.module'
-import { GoogleDriveService } from '../google-drive/googleDriveService'
+import { BucketService } from '../bucket/bucketService'
+import { GoogleDriveService } from '../google/drive.service'
+import { GoogleOAuthService } from '../google/oauth.service'
+import { GoogleSheetsService } from '../google/sheets.service'
+import { PrismaService } from '../prisma.service'
+import { YoutubeService } from '../youtube/youtubeService'
 
 import { BullMQService } from './bullMQ.service'
 import { UploadToBucket } from './consumers/uploadToBucket'
@@ -33,8 +32,7 @@ import { NexusJobListener } from './listener/jobListener'
       {
         name: 'nexus-bucket'
       }
-    ),
-    GoogleDriveModule
+    )
   ],
   providers: [
     BullMQService,
