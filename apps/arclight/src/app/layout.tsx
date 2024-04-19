@@ -1,3 +1,4 @@
+import CssBaseline from '@mui/material/CssBaseline'
 import { ReactNode } from 'react'
 
 export const metadata = {
@@ -11,6 +12,7 @@ export default function RootLayout({
 }): ReactNode {
   return (
     <html lang="en">
+      <CssBaseline />
       <body>{children}</body>
     </html>
   )
