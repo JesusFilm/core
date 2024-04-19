@@ -26,6 +26,12 @@
       "env": {
         "jest": true
       }
+    },
+    {
+      "files": ["next-env.d.ts"],
+      "rules": {
+        "@typescript-eslint/triple-slash-reference": "off"
+      }
     }
   ]
 }
