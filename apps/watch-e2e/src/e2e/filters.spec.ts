@@ -28,17 +28,45 @@ test('Filters', async ({ page }) => {
   // })
 
   // Choose audio language
-  await page.getByTestId('FilterList').locator('div').filter({ hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages' }).getByLabel('Open').click();
-  await page.getByTestId('FilterList').locator('div').filter({ hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages' }).getByLabel('Search Languages').fill('telu');
-  await page.getByRole('option', { name: 'Telugu తెలుగు' }).click();
+  await page
+    .getByTestId('FilterList')
+    .locator('div')
+    .filter({
+      hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages'
+    })
+    .getByLabel('Open')
+    .click()
+  await page
+    .getByTestId('FilterList')
+    .locator('div')
+    .filter({
+      hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages'
+    })
+    .getByLabel('Search Languages')
+    .fill('telu')
+  await page.getByRole('option', { name: 'Telugu తెలుగు' }).click()
 
   // Choose subtittles language
-  await page.getByTestId('FilterList').locator('div').filter({ hasText: 'SubtitlesSearch LanguagesSearch Languages54 languages' }).getByLabel('Open').click();
-  await page.getByTestId('FilterList').locator('div').filter({ hasText: 'SubtitlesSearch LanguagesSearch Languages54 languages' }).getByLabel('Search Languages').fill('eng');
-  await page.getByRole('option', { name: 'English' }).click();
-  await page.waitForLoadState('networkidle');
-  await page.press('body', 'Tab');
-  
+  await page
+    .getByTestId('FilterList')
+    .locator('div')
+    .filter({
+      hasText: 'SubtitlesSearch LanguagesSearch Languages54 languages'
+    })
+    .getByLabel('Open')
+    .click()
+  await page
+    .getByTestId('FilterList')
+    .locator('div')
+    .filter({
+      hasText: 'SubtitlesSearch LanguagesSearch Languages54 languages'
+    })
+    .getByLabel('Search Languages')
+    .fill('eng')
+  await page.getByRole('option', { name: 'English' }).click()
+  await page.waitForLoadState('networkidle')
+  await page.press('body', 'Tab')
+
   await expect(page).toHaveURL('/watch/videos?languages=5848&subtitles=529')
 
   // const filtersList = page.getByTestId('FilterList')
