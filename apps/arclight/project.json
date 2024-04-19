@@ -70,7 +70,7 @@
       "options": {
         "buildTarget": "arclight:_build",
         "dev": true,
-        "port": 4150
+        "port": 4600
       },
       "configurations": {
         "development": {
