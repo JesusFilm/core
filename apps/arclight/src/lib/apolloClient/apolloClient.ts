@@ -11,7 +11,7 @@ export const { getClient: getApolloClient } = registerApolloClient(() => {
   return new ApolloClient({
     link: httpLink,
     cache: new InMemoryCache(cache),
-    name: 'watch',
+    name: 'arclight',
     version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
     connectToDevTools: true
   })
