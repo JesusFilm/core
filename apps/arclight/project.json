@@ -68,17 +68,17 @@
       "executor": "@nx/next:server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "arclight:build",
+        "buildTarget": "arclight:_build",
         "dev": true,
         "port": 4150
       },
       "configurations": {
         "development": {
-          "buildTarget": "arclight:build:development",
+          "buildTarget": "arclight:_build:development",
           "dev": true
         },
         "production": {
-          "buildTarget": "arclight:build:production",
+          "buildTarget": "arclight:_build:production",
           "dev": false
         }
       }
