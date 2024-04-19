@@ -53,22 +53,6 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
-          },
-          {
-            "command": "rm -rf apps/arclight/__generated__"
-          },
-          {
-            "command": "npx apollo client:codegen --config apps/arclight/apollo.config.js --target typescript --outputFlat apps/arclight/__generated__"
-          }
-        ]
-      }
-    },
     "fetch-secrets": {
       "executor": "nx:run-commands",
       "options": {
