@@ -100,6 +100,7 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          ARCLIGHT_VERCEL_PROJECT_ID: ${{ secrets.ARCLIGHT_VERCEL_PROJECT_ID }}
           DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
           JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
@@ -247,6 +248,7 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          ARCLIGHT_VERCEL_PROJECT_ID: ${{ secrets.ARCLIGHT_VERCEL_PROJECT_ID }}
           DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
           JOURNEYS_VERCEL_PROJECT_ID: ${{ github.ref == 'refs/heads/stage' && secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID || secrets.JOURNEYS_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
