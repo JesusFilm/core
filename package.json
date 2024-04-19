@@ -92,6 +92,7 @@
     "form-data": "^4.0.0",
     "formik": "^2.4.4",
     "fscreen": "^1.2.0",
+    "gql.tada": "^1.5.3",
     "graphql": "^16.8.0",
     "i18next": "23.6.0",
     "instantsearch.js": "^4.63.0",
@@ -154,6 +155,7 @@
     "yup": "^1.0.0"
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.10.1",
     "@babel/core": "^7.22.15",
     "@babel/preset-env": "^7.22.15",
     "@babel/preset-typescript": "^7.22.15",
