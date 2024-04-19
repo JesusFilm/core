@@ -36,7 +36,7 @@ export interface FormBlockUpdateCredentials_formBlockUpdate_forms {
 export interface FormBlockUpdateCredentials_formBlockUpdate {
   __typename: "FormBlock";
   id: string;
-  form: JSON | null;
+  form: any | null;
   projects: FormBlockUpdateCredentials_formBlockUpdate_projects[];
   forms: FormBlockUpdateCredentials_formBlockUpdate_forms[];
   projectId: string | null;

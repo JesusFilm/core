@@ -36,7 +36,7 @@ export interface GetAdminJourneys_journeys_userJourneys {
   /**
    * Date time of when the journey was first opened
    */
-  openedAt: DateTime | null;
+  openedAt: any | null;
   user: GetAdminJourneys_journeys_userJourneys_user | null;
 }
 
@@ -60,9 +60,9 @@ export interface GetAdminJourneys_journeys {
   __typename: "Journey";
   id: string;
   title: string;
-  createdAt: DateTime;
-  publishedAt: DateTime | null;
-  trashedAt: DateTime | null;
+  createdAt: any;
+  publishedAt: any | null;
+  trashedAt: any | null;
   description: string | null;
   slug: string;
   themeName: ThemeName;

@@ -11,7 +11,7 @@ export interface JourneyProfileCreate_journeyProfileCreate {
   __typename: "JourneyProfile";
   id: string;
   userId: string;
-  acceptedTermsAt: DateTime | null;
+  acceptedTermsAt: any | null;
 }
 
 export interface JourneyProfileCreate {

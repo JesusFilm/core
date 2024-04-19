@@ -13,8 +13,8 @@ export interface UserInviteCreate_userInviteCreate {
   __typename: "UserInvite";
   id: string;
   email: string;
-  removedAt: DateTime | null;
-  acceptedAt: DateTime | null;
+  removedAt: any | null;
+  acceptedAt: any | null;
 }
 
 export interface UserInviteCreate {

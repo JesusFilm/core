@@ -10,7 +10,7 @@
 export interface JourneyFeature_journeyFeature {
   __typename: "Journey";
   id: string;
-  featuredAt: DateTime | null;
+  featuredAt: any | null;
 }
 
 export interface JourneyFeature {

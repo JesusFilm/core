@@ -164,7 +164,7 @@ export interface BlockFields_FormBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  form: JSON | null;
+  form: any | null;
   action: BlockFields_FormBlock_action | null;
 }
 

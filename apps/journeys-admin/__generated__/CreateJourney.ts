@@ -39,8 +39,8 @@ export interface CreateJourney_journeyCreate {
   __typename: "Journey";
   id: string;
   title: string;
-  createdAt: DateTime;
-  publishedAt: DateTime | null;
+  createdAt: any;
+  publishedAt: any | null;
   description: string | null;
   slug: string;
   themeName: ThemeName;

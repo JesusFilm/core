@@ -178,7 +178,7 @@ export interface GetAdminJourney_journey_blocks_FormBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  form: JSON | null;
+  form: any | null;
   action: GetAdminJourney_journey_blocks_FormBlock_action | null;
 }
 
@@ -677,7 +677,7 @@ export interface GetAdminJourney_journey_userJourneys {
   /**
    * Date time of when the journey was first opened
    */
-  openedAt: DateTime | null;
+  openedAt: any | null;
   user: GetAdminJourney_journey_userJourneys_user | null;
 }
 
@@ -732,9 +732,9 @@ export interface GetAdminJourney_journey {
   description: string | null;
   status: JourneyStatus;
   language: GetAdminJourney_journey_language;
-  createdAt: DateTime;
-  featuredAt: DateTime | null;
-  publishedAt: DateTime | null;
+  createdAt: any;
+  featuredAt: any | null;
+  publishedAt: any | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
   strategySlug: string | null;

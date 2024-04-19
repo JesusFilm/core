@@ -21,7 +21,7 @@ export interface GetVisitors_visitors_edges_node {
    * The last time the visitor called StepViewEvent mutation. It is populated when
    * the visitor is first created, and is updated by all event creation mutations.
    */
-  lastStepViewedAt: DateTime | null;
+  lastStepViewedAt: any | null;
   /**
    * The label of a link action button of the last time the visitor clicked a
    * link action button. Populated by ButtonClickEvent

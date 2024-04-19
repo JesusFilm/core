@@ -12,8 +12,8 @@ export interface GetUserInvites_userInvites {
   id: string;
   journeyId: string;
   email: string;
-  acceptedAt: DateTime | null;
-  removedAt: DateTime | null;
+  acceptedAt: any | null;
+  removedAt: any | null;
 }
 
 export interface GetUserInvites {

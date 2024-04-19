@@ -11,7 +11,7 @@ export interface UserInviteRemove_userInviteRemove {
   __typename: "UserInvite";
   id: string;
   journeyId: string;
-  removedAt: DateTime | null;
+  removedAt: any | null;
 }
 
 export interface UserInviteRemove {

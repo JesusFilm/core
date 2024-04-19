@@ -38,7 +38,7 @@ export interface GetJourneyVisitors_visitors_edges_node_visitor {
 export interface GetJourneyVisitors_visitors_edges_node_events {
   __typename: "ButtonClickEvent" | "ChatOpenEvent" | "JourneyViewEvent" | "RadioQuestionSubmissionEvent" | "SignUpSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "TextResponseSubmissionEvent" | "VideoStartEvent" | "VideoPlayEvent" | "VideoPauseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoCollapseEvent" | "VideoProgressEvent";
   id: string;
-  createdAt: DateTime;
+  createdAt: any;
   label: string | null;
   value: string | null;
 }
@@ -50,7 +50,7 @@ export interface GetJourneyVisitors_visitors_edges_node {
    * The time when the visitor created their first event on a journey connected
    * to the requested team.
    */
-  createdAt: DateTime;
+  createdAt: any;
   /**
    * Duration between createdAt and lastStepViewedAt in seconds
    */
