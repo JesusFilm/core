@@ -78,6 +78,3 @@ terraform.tfstate.backup
 
 # react-email
 .react-email
-
-# gql.tada generated files
-graphql-env.d.ts
