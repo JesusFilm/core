@@ -61,7 +61,7 @@ export function VisitorCardDetails({
                 <DetailsRow
                   key={event.id}
                   label={t('Chat Started')}
-                  value={format(parseISO(event.createdAt), 'h:mmaaa')}
+                  value={format(parseISO(String(event.createdAt)), 'h:mmaaa')}
                   chatEvent
                   loading={loading}
                 />

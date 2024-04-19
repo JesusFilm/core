@@ -153,7 +153,7 @@ export function TrashedJourneyList({
     data?.journeys != null
       ? sortJourneys(
           data.journeys.filter(
-            (journey) => new Date(journey.trashedAt) > daysAgo
+            (journey) => new Date(String(journey.trashedAt)) > daysAgo
           ),
           sortOrder
         )

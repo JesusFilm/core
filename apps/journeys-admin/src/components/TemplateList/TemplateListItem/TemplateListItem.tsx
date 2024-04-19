@@ -50,10 +50,10 @@ export function TemplateListItem({
 
   const date =
     journey != null
-      ? intlFormat(parseISO(journey.createdAt), {
+      ? intlFormat(parseISO(String(journey.createdAt)), {
           day: 'numeric',
           month: 'long',
-          year: isThisYear(parseISO(journey.createdAt)) ? undefined : 'numeric'
+          year: isThisYear(parseISO(String(journey.createdAt))) ? undefined : 'numeric'
         })
       : ''
 
