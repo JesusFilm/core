@@ -96,13 +96,13 @@ describe('EditorContext', () => {
     })
 
     describe('SetActiveSlideAction', () => {
-      it('should set active slide and active content for JourneyFlow', () => {
+      it('should set active slide and active content', () => {
         const state: EditorState = {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.Content,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Social
         }
         expect(
           reducer(state, {
@@ -111,7 +111,7 @@ describe('EditorContext', () => {
           })
         ).toEqual({
           ...state,
-          activeContent: ActiveContent.Canvas,
+          activeContent: ActiveContent.Social,
           activeSlide: ActiveSlide.JourneyFlow
         })
       })

@@ -156,10 +156,7 @@ export const reducer = (
     case 'SetActiveSlideAction':
       return {
         ...state,
-        activeContent:
-          action.activeSlide === ActiveSlide.JourneyFlow
-            ? ActiveContent.Canvas
-            : state.activeContent,
+        activeContent: state.activeContent,
         activeSlide: action.activeSlide
       }
     case 'SetSelectedAttributeIdAction':
