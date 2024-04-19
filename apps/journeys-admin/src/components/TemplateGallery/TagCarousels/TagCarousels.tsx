@@ -37,7 +37,8 @@ export function TagCarousels({
 
   const feltNeedsTags = useMemo(() => {
     return feltNeedsTagId != null
-      ? childTags.filter((tag) => tag.parentId === feltNeedsTagId)
+      ? childTags.filter((tag) => tag.parentId === feltNeedsTagId 
+        && hasBgImg(tag.name[0].value))
       : []
   }, [childTags, feltNeedsTagId])
 
@@ -91,4 +92,11 @@ export function TagCarousels({
       </Stack>
     </Stack>
   )
+}
+
+function hasBgImg(tag: string): boolean {
+  // Temporary fix: Only display these tags that have background images 
+  // (images currently hard-coded in FeltNeedsButton)
+  return ['Depression', 'Fear/Anxiety', 'Forgiveness', 'Hope', 'Loneliness', 
+  'Love', 'Security', 'Significance', 'Acceptance'].includes(tag)
 }
