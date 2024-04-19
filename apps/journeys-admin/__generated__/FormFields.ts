@@ -60,6 +60,6 @@ export interface FormFields {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  form: Json | null;
+  form: JSON | null;
   action: FormFields_action | null;
 }
