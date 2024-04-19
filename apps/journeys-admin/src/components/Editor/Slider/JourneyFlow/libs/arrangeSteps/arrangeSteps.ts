@@ -40,7 +40,7 @@ export function arrangeSteps(steps: TreeStepBlock[]): PositionMap {
       return visitStepId(step.nextBlockId)
   }
 
-  function getDecendantStepsOfStep(step: TreeStepBlock): TreeStepBlock[] {
+  function getDescendantStepsOfStep(step: TreeStepBlock): TreeStepBlock[] {
     const descendants: TreeStepBlock[] = []
     const nextStep = getNextStep(step)
     if (nextStep != null) descendants.push(nextStep)
@@ -59,7 +59,7 @@ export function arrangeSteps(steps: TreeStepBlock[]): PositionMap {
   function processSteps(steps: TreeStepBlock[]): void {
     blocks.push(steps)
     const descendants = steps.flatMap((step) => {
-      return getDecendantStepsOfStep(step)
+      return getDescendantStepsOfStep(step)
     })
     if (descendants.length > 0) processSteps(descendants)
   }

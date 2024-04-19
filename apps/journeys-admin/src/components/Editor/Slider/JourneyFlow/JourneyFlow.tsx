@@ -191,6 +191,7 @@ export function JourneyFlow(): ReactElement {
       } else {
         // action
         await navigateToBlockActionUpdate(block, newStepId)
+        // TODO POS: update edges
       }
     },
     []
