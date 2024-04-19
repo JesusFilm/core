@@ -53,7 +53,9 @@ export function TemplateListItem({
       ? intlFormat(parseISO(String(journey.createdAt)), {
           day: 'numeric',
           month: 'long',
-          year: isThisYear(parseISO(String(journey.createdAt))) ? undefined : 'numeric'
+          year: isThisYear(parseISO(String(journey.createdAt)))
+            ? undefined
+            : 'numeric'
         })
       : ''
 
