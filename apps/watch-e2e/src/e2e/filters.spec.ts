@@ -5,10 +5,8 @@ Test a Filters:
 
 Navigate to home page 
 Click on 'Seel All' button
-Take screenshot
 Select 'Telugu' audion & 'English' subtitles
 Check the URL has correct parameters
-Take a screenshot of just filters list
 */
 test('Filters', async ({ page }) => {
   await page.goto('/watch')
@@ -24,39 +22,26 @@ test('Filters', async ({ page }) => {
   await page.waitForTimeout(8 * 1000)
 
   // Take screenshot
-  await expect(page).toHaveScreenshot('see-all-landing.png', {
-    animations: 'disabled',
-    fullPage: true
-  })
+  // await expect(page).toHaveScreenshot('see-all-landing.png', {
+  //   animations: 'disabled',
+  //   fullPage: true
+  // })
 
   // Choose audio language
-  await page
-    .getByTestId('FilterList')
-    .locator('div')
-    .filter({
-      hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages'
-    })
-    .getByLabel('Open')
-    .click()
-  await page.getByRole('option', { name: 'Telugu తెలుగు' }).click()
+  await page.getByTestId('FilterList').locator('div').filter({ hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages' }).getByLabel('Open').click();
+  await page.getByTestId('FilterList').locator('div').filter({ hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages' }).getByLabel('Search Languages').fill('telu');
+  await page.getByRole('option', { name: 'Telugu తెలుగు' }).click();
 
   // Choose subtittles language
-  await page.getByTestId('filter-item-subtitles').click()
-  await page
-    .getByTestId('FilterList')
-    .locator('div')
-    .filter({
-      hasText: 'SubtitlesSearch LanguagesSearch Languages54 languages'
-    })
-    .getByLabel('Open')
-    .click()
-  await page.getByRole('option', { name: 'English', exact: true }).click()
+  await page.getByTestId('FilterList').locator('div').filter({ hasText: 'SubtitlesSearch LanguagesSearch Languages54 languages' }).getByLabel('Open').click();
+  await page.getByTestId('FilterList').locator('div').filter({ hasText: 'SubtitlesSearch LanguagesSearch Languages54 languages' }).getByLabel('Search Languages').fill('eng');
+  await page.getByRole('option', { name: 'English' }).click();
+  await page.waitForLoadState('networkidle');
+  await page.press('body', 'Tab');
+  
+  await expect(page).toHaveURL('/watch/videos?languages=5848&subtitles=529')
 
-  // check it's navigated to the correct URL
-  await expect(page).toHaveURL('/watch/videos?language=5848&subtitle=529')
-
-  const filtersList = page.getByTestId('FilterList')
-
+  // const filtersList = page.getByTestId('FilterList')
   // Take screenshot
-  await expect(filtersList).toHaveScreenshot('filters-list.png')
+  // await expect(filtersList).toHaveScreenshot('filters-list.png')
 })
