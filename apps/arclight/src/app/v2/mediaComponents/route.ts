@@ -105,10 +105,41 @@ export async function GET(
   }))
 
   const queryString = new URLSearchParams(queryObject).toString()
+  const firstQueryString = new URLSearchParams({
+    ...queryObject,
+    page: '1'
+  }).toString()
+  // TODO: Needs new query in gql
+  const lastQueryString = new URLSearchParams({
+    ...queryObject,
+    page: '1192'
+  }).toString()
+  const nextQueryString = new URLSearchParams({
+    ...queryObject,
+    page: (page + 1).toString()
+  }).toString()
+
   const response = {
+    page,
+    limit,
+    // TODO: Needs new query in gql
+    pages: 1192,
+    // TODO: Needs new query in gql
+    total: 1192,
+    // TODO: Needs new query in gql
+    apiSessionId: '',
     _links: {
       self: {
         href: `https://api.arclight.com/v2/mediaComponents?${queryString}`
+      },
+      first: {
+        href: `https://api.arclight.com/v2/mediaComponents?${firstQueryString}`
+      },
+      last: {
+        href: `https://api.arclight.com/v2/mediaComponents?${lastQueryString}`
+      },
+      next: {
+        href: `https://api.arclight.com/v2/mediaComponents?${nextQueryString}`
       }
     },
     _embedded: {
