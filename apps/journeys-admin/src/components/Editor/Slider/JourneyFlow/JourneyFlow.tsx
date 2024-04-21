@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import {
   MouseEvent,
   ReactElement,
+  TouchEvent,
   useCallback,
   useMemo,
   useRef,
@@ -204,7 +205,7 @@ export function JourneyFlow(): ReactElement {
     connectingParams.current = params
   }, [])
   const onConnectEnd = useCallback<OnConnectEnd>(
-    (event: MouseEvent) => {
+    (event) => {
       if (
         reactFlowInstance == null ||
         connectingParams.current == null ||
@@ -224,9 +225,21 @@ export function JourneyFlow(): ReactElement {
 
       if (step == null || block == null) return
 
+      let clientX = 0
+      let clientY = 0
+      if (event.type === 'touchend') {
+        const touchEvent = event as unknown as TouchEvent
+        clientX = touchEvent.changedTouches[0].clientX
+        clientY = touchEvent.changedTouches[0].clientY
+      } else if (event.type === 'mouseup') {
+        const mouseEvent = event as unknown as MouseEvent
+        clientX = mouseEvent.clientX
+        clientY = mouseEvent.clientY
+      }
+
       const { x, y } = reactFlowInstance.screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY
+        x: clientX,
+        y: clientY
       })
 
       void createNewStepAndConnectBlock(
