@@ -5,7 +5,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-import { NodeProps } from 'reactflow'
+import { NodeProps, OnConnect } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -39,22 +39,25 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const { journey } = useJourney()
 
-  async function handleSourceConnect(params): Promise<void> {
-    if (journey == null) return
+  async function handleSourceConnect(
+    params: { target: string } | Parameters<OnConnect>[0]
+  ): Promise<void> {
+    const id = params.target
+    if (journey == null || id == null) return
 
     await stepBlockNextBlockUpdate({
       variables: {
-        id: params.source,
+        id,
         journeyId: journey.id,
         input: {
-          nextBlockId: params.target
+          nextBlockId: id
         }
       },
       optimisticResponse: {
         stepBlockUpdate: {
-          id: params.source,
+          id,
           __typename: 'StepBlock',
-          nextBlockId: params.target
+          nextBlockId: id
         }
       }
     })
