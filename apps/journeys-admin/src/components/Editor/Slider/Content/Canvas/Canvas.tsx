@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { ReactElement, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { ReactElement, useLayoutEffect, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -29,6 +29,8 @@ import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 
 export function Canvas(): ReactElement {
+  const [scale, setScale] = useState(1)
+
   const frameRef = useRef<HTMLIFrameElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   // this ref handles if the mouseDown event of the onClick event's target is the card component
@@ -106,19 +108,6 @@ export function Canvas(): ReactElement {
 
   const theme =
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
-
-  // const scale = useMemo(() => {
-  //   if (containerRef.current != null) {
-  //     return Math.min(
-  //       containerRef.current?.clientWidth / 375,
-  //       containerRef.current?.clientHeight / 670
-  //     )
-  //   }
-  //   return 1
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [containerRef.current?.clientWidth, containerRef.current?.clientHeight])
-
-  const [scale, setScale] = useState(1)
 
   useLayoutEffect(() => {
     if (containerRef.current != null) {
