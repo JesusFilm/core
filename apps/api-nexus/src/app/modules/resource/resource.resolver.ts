@@ -22,8 +22,8 @@ import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
 import { GoogleDriveService } from '../../lib/google/drive.service'
 import { GoogleOAuthService } from '../../lib/google/oauth.service'
 import { GoogleSheetsService } from '../../lib/google/sheets.service'
+import { GoogleYoutubeService } from '../../lib/google/youtube.service'
 import { PrismaService } from '../../lib/prisma.service'
-import { YoutubeService } from '../../lib/youtube/youtubeService'
 
 @Resolver('Resource')
 export class ResourceResolver {
@@ -31,10 +31,10 @@ export class ResourceResolver {
     private readonly prismaService: PrismaService,
     private readonly googleOAuthService: GoogleOAuthService,
     private readonly googleDriveService: GoogleDriveService,
+    private readonly googleSheetsService: GoogleSheetsService,
+    private readonly googleYoutubeService: GoogleYoutubeService,
     private readonly cloudFlareService: CloudFlareService,
-    private readonly youtubeService: YoutubeService,
-    private readonly bullMQService: BullMQService,
-    private readonly googleSheetsService: GoogleSheetsService
+    private readonly bullMQService: BullMQService
   ) {}
 
   @Query()

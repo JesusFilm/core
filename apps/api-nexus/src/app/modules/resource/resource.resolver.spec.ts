@@ -8,8 +8,8 @@ import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
 import { GoogleDriveService } from '../../lib/google/drive.service'
 import { GoogleOAuthService } from '../../lib/google/oauth.service'
 import { GoogleSheetsService } from '../../lib/google/sheets.service'
+import { GoogleYoutubeService } from '../../lib/google/youtube.service'
 import { PrismaService } from '../../lib/prisma.service'
-import { YoutubeService } from '../../lib/youtube/youtubeService'
 
 import { ResourceResolver } from './resource.resolver'
 
@@ -30,13 +30,16 @@ describe('ResourceResolver', () => {
           provide: GoogleDriveService,
           useValue: mockDeep<GoogleDriveService>()
         },
-        { provide: CloudFlareService, useValue: mockDeep<CloudFlareService>() },
-        { provide: YoutubeService, useValue: mockDeep<YoutubeService>() },
-        { provide: BullMQService, useValue: mockDeep<BullMQService>() },
         {
           provide: GoogleSheetsService,
           useValue: mockDeep<GoogleSheetsService>()
-        }
+        },
+        {
+          provide: GoogleYoutubeService,
+          useValue: mockDeep<GoogleYoutubeService>()
+        },
+        { provide: CloudFlareService, useValue: mockDeep<CloudFlareService>() },
+        { provide: BullMQService, useValue: mockDeep<BullMQService>() }
       ]
     }).compile()
 

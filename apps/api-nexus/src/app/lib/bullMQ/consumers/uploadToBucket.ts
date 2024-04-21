@@ -4,7 +4,7 @@ import { Job } from 'bull'
 import { BucketService } from '../../bucket/bucketService'
 import { GoogleDriveService } from '../../google/drive.service'
 import { GoogleOAuthService } from '../../google/oauth.service'
-import { YoutubeService } from '../../youtube/youtubeService'
+import { GoogleYoutubeService } from '../../google/youtube.service'
 import { UploadToBucketToYoutube } from '../bullMQ.service'
 
 @Processor('nexus-bucket')
@@ -13,7 +13,7 @@ export class UploadToBucket {
     private readonly googleDriveService: GoogleDriveService,
     private readonly googleOAuthService: GoogleOAuthService,
     private readonly bucketService: BucketService,
-    private readonly youtubeService: YoutubeService
+    private readonly googleYoutubeService: GoogleYoutubeService
   ) {}
 
   @Process('process')
@@ -46,7 +46,7 @@ export class UploadToBucket {
       job.data.channel.refreshToken
     )
 
-    const youtubeData = await this.youtubeService.uploadVideo(
+    const youtubeData = await this.googleYoutubeService.uploadVideo(
       {
         token: youtubeToken,
         filePath,

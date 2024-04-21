@@ -9,10 +9,10 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { Channel } from '../../__generated__/graphql'
 import { PrismaService } from '../prisma.service'
-import { YoutubeService } from '../youtube/youtubeService'
 
 import { GoogleOAuthService } from './oauth.service'
 import { GoogleSheetsService } from './sheets.service'
+import { GoogleYoutubeService } from './youtube.service'
 
 interface FileRequest {
   fileId: string
@@ -46,7 +46,7 @@ export class GoogleDriveService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly googleOAuthService: GoogleOAuthService,
-    private readonly youtubeService: YoutubeService,
+    private readonly googleYoutubeService: GoogleYoutubeService,
     private readonly googleSheetsService: GoogleSheetsService
   ) {
     this.rootUrl = 'https://www.googleapis.com/drive/v3'
