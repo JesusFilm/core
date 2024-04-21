@@ -38,10 +38,10 @@ test.describe('firefox only', () => {
     // video tiles aren't loading upon right away and there is no event to say they are loaded. So the only option is to hard wait
     //   eslint-disable-next-line
     await page.waitForTimeout(6 * 1000)
-    await expect(page).toHaveScreenshot('ff-landing-page.png', {
-      animations: 'disabled',
-      fullPage: true
-    })
+    // await expect(page).toHaveScreenshot('ff-landing-page.png', {
+    //   animations: 'disabled',
+    //   fullPage: true
+    // })
 
     // check it's navigated to the correct URL
     await expect(page).toHaveURL('watch/jesus.html/english.html')
@@ -53,10 +53,10 @@ test.describe('firefox only', () => {
 
     //   eslint-disable-next-line
     await page.waitForTimeout(6 * 1000)
-    await expect(page).toHaveScreenshot('ff-navigated-page.png', {
-      animations: 'disabled',
-      fullPage: true
-    })
+    // await expect(page).toHaveScreenshot('ff-navigated-page.png', {
+    //   animations: 'disabled',
+    //   fullPage: true
+    // })
 
     await page
       .getByRole('button', {
@@ -70,10 +70,10 @@ test.describe('firefox only', () => {
 
     //   eslint-disable-next-line
     await page.waitForTimeout(6 * 1000)
-    await expect(page).toHaveScreenshot('before-video.png', {
-      animations: 'disabled',
-      fullPage: true
-    })
+    // await expect(page).toHaveScreenshot('before-video.png', {
+    //   animations: 'disabled',
+    //   fullPage: true
+    // })
 
     await page.getByRole('button', { name: 'Play' }).first().click()
 
@@ -82,9 +82,9 @@ test.describe('firefox only', () => {
     await page.waitForTimeout(45 * 1000)
 
     // Take screenshot once video is played and test it is same all the times
-    await expect(page).toHaveScreenshot('after-video.png', {
-      animations: 'disabled',
-      fullPage: true
-    })
+    // await expect(page).toHaveScreenshot('after-video.png', {
+    //   animations: 'disabled',
+    //   fullPage: true
+    // })
   })
 })

@@ -2,10 +2,7 @@ supergraph:
   listen: 0.0.0.0:4000
   introspection: true
 cors:
-  match_origins:
-    # any localhost
-    - '^http://localhost:\d+$'
-  max_age: 24h
+  allow_any_origin: true
 headers:
   all:
     request:
