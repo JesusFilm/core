@@ -249,7 +249,7 @@ export function JourneyFlow(): ReactElement {
         parseInt(y.toString())
       )
     },
-    [reactFlowInstance, connectingParams, createNewStepAndConnectBlock]
+    [reactFlowInstance, connectingParams, createNewStepAndConnectBlock, steps]
   )
 
   const nodeTypes = useMemo(
