@@ -49,7 +49,37 @@ export class BullMQService {
     @InjectQueue('nexus-bucket') private readonly bucketQueue: Queue
   ) {}
 
-  async createBatchJob(batchJobId: string): Promise<Array<Bull.Job<unknown>>> {
+  async createBatch(
+    batchName: string,
+    nexusId: string,
+    channel: Channel,
+    resources: Array<{ id: string }>
+  ): Promise<Batch> {
+    const batch = await this.prismaService.batch.create({
+      data: {
+        name: batchName,
+        nexusId,
+        channelId: channel.id
+      }
+    })
+
+    await this.prismaService.batchResource.createMany({
+      data: resources.map((resource) => {
+        return {
+          batchId: batch.id,
+          resourceId: resource.id
+        }
+      })
+    })
+
+    await this.createBatchJob(batch.id)
+
+    return batch as unknown as Batch
+  }
+
+  private async createBatchJob(
+    batchJobId: string
+  ): Promise<Array<Bull.Job<unknown>>> {
     const batch = await this.prismaService.batch.findUnique({
       where: {
         id: batchJobId
@@ -87,33 +117,5 @@ export class BullMQService {
       }
     })
     return await this.bucketQueue.addBulk(jobs ?? [])
-  }
-
-  async createBatch(
-    batchName: string,
-    nexusId: string,
-    channel: Channel,
-    resources: Array<{ id: string }>
-  ): Promise<Batch> {
-    const batch = await this.prismaService.batch.create({
-      data: {
-        name: batchName,
-        nexusId,
-        channelId: channel.id
-      }
-    })
-
-    await this.prismaService.batchResource.createMany({
-      data: resources.map((resource) => {
-        return {
-          batchId: batch.id,
-          resourceId: resource.id
-        }
-      })
-    })
-
-    await this.createBatchJob(batch.id)
-
-    return batch as unknown as Batch
   }
 }

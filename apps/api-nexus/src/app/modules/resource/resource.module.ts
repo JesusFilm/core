@@ -11,7 +11,7 @@ import { GoogleSheetsService } from '../../lib/google/sheets.service'
 import { GoogleYoutubeService } from '../../lib/google/youtube.service'
 import { PrismaService } from '../../lib/prisma.service'
 import { BatchModule } from '../batch/batch.module'
-import { BatchService } from '../batch/batchService'
+import { BatchService } from '../batch/batch.service'
 
 import { ResourceResolver } from './resource.resolver'
 

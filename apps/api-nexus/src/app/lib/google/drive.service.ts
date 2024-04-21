@@ -12,20 +12,16 @@ import { PrismaService } from '../prisma.service'
 
 import { GoogleOAuthService } from './oauth.service'
 import { GoogleSheetsService } from './sheets.service'
-import { GoogleYoutubeService } from './youtube.service'
 
 interface FileRequest {
   fileId: string
   accessToken: string
 }
 
-interface FileResponse {
-  kind: string
-  id: string
-  name: string
-  mimeType: string
-  thumbnailLink: string
-}
+type FileResponse = Pick<
+  drive_v3.Schema$File,
+  'id' | 'name' | 'mimeType' | 'thumbnailLink' | 'kind'
+>
 
 interface SpreadsheetRow {
   driveFile?: drive_v3.Schema$File
@@ -42,43 +38,29 @@ interface SpreadsheetRow {
 
 @Injectable()
 export class GoogleDriveService {
-  rootUrl: string
   constructor(
     private readonly prismaService: PrismaService,
     private readonly googleOAuthService: GoogleOAuthService,
-    private readonly googleYoutubeService: GoogleYoutubeService,
     private readonly googleSheetsService: GoogleSheetsService
-  ) {
-    this.rootUrl = 'https://www.googleapis.com/drive/v3'
+  ) {}
+
+  async getFile({ fileId, accessToken }: FileRequest): Promise<FileResponse> {
+    const client = drive({ version: 'v3', auth: accessToken })
+    const res = await client.files.get({
+      fileId,
+      fields: 'id,name,mimeType,thumbnailLink,kind'
+    })
+    return res.data
   }
 
-  async getFile(req: FileRequest): Promise<FileResponse> {
-    const response = await fetch(
-      `${this.rootUrl}/files/${req.fileId}?fields=id,thumbnailLink,name,mimeType,kind`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${req.accessToken}`
-        }
-      }
-    )
-
-    return await response.json()
-  }
-
-  async setFilePermission(req: {
-    fileId: string
-    accessToken: string
-  }): Promise<void> {
-    await fetch(`${this.rootUrl}/files/${req.fileId}/permissions`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${req.accessToken}`
-      },
-      body: JSON.stringify({
+  async setFilePermission({ fileId, accessToken }: FileRequest): Promise<void> {
+    const client = drive({ version: 'v3', auth: accessToken })
+    await client.permissions.create({
+      fileId,
+      requestBody: {
         role: 'reader',
         type: 'anyone'
-      })
+      }
     })
   }
 
@@ -179,6 +161,9 @@ export class GoogleDriveService {
       accessToken
     )
 
+    if (firstSheetName == null)
+      throw new Error('Spreadsheet does not contain first sheet')
+
     console.log('downloadSpreadsheet')
     const spreadsheetData = await this.googleSheetsService.downloadSpreadsheet(
       spreadsheetId,
@@ -189,7 +174,7 @@ export class GoogleDriveService {
     console.log('Prepare spreadsheetRows')
     let spreadsheetRows: SpreadsheetRow[] = []
 
-    if (spreadsheetData.length > 0) {
+    if (spreadsheetData != null && spreadsheetData.length > 0) {
       const header = spreadsheetData[0] as string[]
       spreadsheetRows = spreadsheetData.slice(1).map((row) => {
         const rowObject = {}
