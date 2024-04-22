@@ -33,9 +33,9 @@ export function getCardMetadata(
           '-' +
           secondsToTimeFormat(priorityBlock.endAt, { trimZeroes: true })
         : undefined
-    const bgImage =
-      // Use posterBlockId image or default poster image on video
-      (priorityBlock?.posterBlockId != null
+
+    const posterBlockImage =
+      priorityBlock?.posterBlockId != null
         ? (
             priorityBlock.children.find(
               (block) =>
@@ -43,7 +43,14 @@ export function getCardMetadata(
                 block.__typename === 'ImageBlock'
             ) as TreeBlock<ImageBlock>
           )?.src
-        : priorityBlock?.video?.image ?? priorityBlock.image) ?? undefined
+        : undefined
+
+    const bgImage =
+      // Use posterBlockId image or default poster image on video
+      posterBlockImage ??
+      priorityBlock?.video?.image ??
+      priorityBlock.image ??
+      undefined
 
     return { title, subtitle, priorityBlock, bgImage }
   } else {
