@@ -25,7 +25,7 @@ export class AlgoliaService {
         take: 1000,
         skip: offset,
         include: {
-          video: { include: { title: true } },
+          video: { include: { title: true, description: true, snippet: true } },
           subtitle: true
         }
       })
@@ -39,9 +39,9 @@ export class AlgoliaService {
           objectID: videoVariant.id,
           videoId: videoVariant.videoId,
           titles: videoVariant.video?.title.map((title) => title.value),
-          description: (
-            videoVariant.video?.description as unknown as Translation[]
-          ).map((description) => description?.value),
+          description: videoVariant.video?.description.map(
+            (description) => description?.value
+          ),
           duration: videoVariant.duration,
           languageId: videoVariant.languageId,
           subtitles: videoVariant.subtitle.map(

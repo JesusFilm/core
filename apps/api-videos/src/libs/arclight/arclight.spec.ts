@@ -393,17 +393,26 @@ describe('arclight', () => {
     const video = {
       id: 'mediaComponentId',
       description: [
-        { languageId: '529', primary: true, value: 'longDescription' }
+        {
+          videoId: 'mediaComponentId',
+          languageId: '529',
+          primary: true,
+          value: 'longDescription'
+        }
       ],
       image: 'mobileCinematicHigh',
       imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
       label: 'episode',
       noIndex: false,
       primaryLanguageId: '529',
-      seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
       slug: 'title',
       snippet: [
-        { languageId: '529', primary: true, value: 'shortDescription' }
+        {
+          videoId: 'mediaComponentId',
+          languageId: '529',
+          primary: true,
+          value: 'shortDescription'
+        }
       ],
       studyQuestions: [],
       title: [
@@ -542,14 +551,6 @@ describe('arclight', () => {
         title: [
           {
             videoId: 'mediaComponentId',
-            languageId: '529',
-            primary: true,
-            value:
-              'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Over 100 Characters'
-          }
-        ],
-        seoTitle: [
-          {
             languageId: '529',
             primary: true,
             value:
@@ -746,7 +747,12 @@ describe('arclight', () => {
       )
       expect(video).toEqual({
         description: [
-          { languageId: '529', primary: true, value: 'longDescription' }
+          {
+            videoId: 'mediaComponentId',
+            languageId: '529',
+            primary: true,
+            value: 'longDescription'
+          }
         ],
         id: 'mediaComponentId',
         image: 'mobileCinematicHigh',
@@ -754,10 +760,14 @@ describe('arclight', () => {
         label: 'episode',
         noIndex: false,
         primaryLanguageId: '529',
-        seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
         slug: 'title',
         snippet: [
-          { languageId: '529', primary: true, value: 'shortDescription' }
+          {
+            videoId: 'mediaComponentId',
+            languageId: '529',
+            primary: true,
+            value: 'shortDescription'
+          }
         ],
         studyQuestions: [],
         title: [

@@ -8,6 +8,8 @@ import {
   Prisma,
   PrismaClient,
   Video,
+  VideoDescription,
+  VideoSnippet,
   VideoTitle,
   VideoVariant,
   VideoVariantDownload,
@@ -16,6 +18,8 @@ import {
 
 export type PrismaVideo = Omit<Video, 'childIds'> & {
   title: VideoTitle[]
+  snippet: VideoSnippet[]
+  description: VideoDescription[]
   variants: Array<
     VideoVariant & {
       subtitle: VideoVariantSubtitle[]
@@ -26,10 +30,12 @@ export type PrismaVideo = Omit<Video, 'childIds'> & {
 
 export type PrismaVideoCreateInput = Omit<
   Prisma.VideoUncheckedCreateInput,
-  'variants' | 'title' | 'childIds' | 'id'
+  'variants' | 'title' | 'snippet' | 'description' | 'childIds' | 'id'
 > & {
   id: string
   title: Prisma.VideoTitleUncheckedCreateInput[]
+  snippet: Prisma.VideoSnippetUncheckedCreateInput[]
+  description: Prisma.VideoDescriptionUncheckedCreateInput[]
   variants: Array<
     Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads' | 'subtitle'> & {
       downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
@@ -77,7 +83,6 @@ async function handlePrismaVideo(
     'id',
     'label',
     'primaryLanguageId',
-    'seoTitle',
     'snippet',
     'description',
     'studyQuestions',
@@ -90,14 +95,20 @@ async function handlePrismaVideo(
   if (existingVideo == null || hasChanges) {
     await tx.video.upsert({
       where: { id: video.id },
-      create: omit(video, ['variants', 'title']),
+      create: omit(video, ['variants', 'title', 'snippet', 'description']),
       update: {
-        ...omit(video, ['variants', 'title'])
+        ...omit(video, ['variants', 'title', 'snippet', 'description'])
       }
     })
   }
   if (delta.title != null) {
     await handlePrismaVideoTitle(video, existingVideo, tx, delta)
+  }
+  if (delta.description != null) {
+    await handlePrismaVideoDescription(video, existingVideo, tx, delta)
+  }
+  if (delta.snippet != null) {
+    await handlePrismaVideoSnippet(video, existingVideo, tx, delta)
   }
 }
 
@@ -146,6 +157,108 @@ async function handlePrismaVideoTitle(
           }
         },
         data: getChangedValues<Prisma.VideoTitleUncheckedUpdateInput>(title)
+      })
+    }
+  }
+}
+
+async function handlePrismaVideoDescription(
+  video: PrismaVideoCreateInput,
+  existingVideo: PrismaVideoCreateInput,
+  tx: Prisma.TransactionClient,
+  delta: Delta
+): Promise<void> {
+  // key is languageId
+  for (const key in delta.description) {
+    // ignore _t on index 0
+    if (key === '_t') continue
+
+    const description = delta.description[key]
+
+    // ignore moved items
+    if (isMovedItem(description)) continue
+
+    const languageId = key.startsWith('_')
+      ? existingVideo?.description[toNumber(key)].languageId
+      : video.description[toNumber(key)].languageId
+
+    if (isArray(description) && description.length === 1) {
+      // handle create
+      await tx.videoDescription.create({
+        data: description[0]
+      })
+    } else if (isArray(description) && description[2] === 0) {
+      // handle delete
+      await tx.videoDescription.delete({
+        where: {
+          videoId_languageId: {
+            videoId: video.id,
+            languageId: description[0].languageId
+          }
+        }
+      })
+    } else if (Object.keys(description).length > 0 && languageId != null) {
+      // handle update
+      await tx.videoDescription.update({
+        where: {
+          videoId_languageId: {
+            videoId: video.id,
+            languageId
+          }
+        },
+        data: getChangedValues<Prisma.VideoDescriptionUncheckedUpdateInput>(
+          description
+        )
+      })
+    }
+  }
+}
+
+async function handlePrismaVideoSnippet(
+  video: PrismaVideoCreateInput,
+  existingVideo: PrismaVideoCreateInput,
+  tx: Prisma.TransactionClient,
+  delta: Delta
+): Promise<void> {
+  // key is languageId
+  for (const key in delta.snippet) {
+    // ignore _t on index 0
+    if (key === '_t') continue
+
+    const snippet = delta.snippet[key]
+
+    // ignore moved items
+    if (isMovedItem(snippet)) continue
+
+    const languageId = key.startsWith('_')
+      ? existingVideo?.snippet[toNumber(key)].languageId
+      : video.snippet[toNumber(key)].languageId
+
+    if (isArray(snippet) && snippet.length === 1) {
+      // handle create
+      await tx.videoSnippet.create({
+        data: snippet[0]
+      })
+    } else if (isArray(snippet) && snippet[2] === 0) {
+      // handle delete
+      await tx.videoSnippet.delete({
+        where: {
+          videoId_languageId: {
+            videoId: video.id,
+            languageId: snippet[0].languageId
+          }
+        }
+      })
+    } else if (Object.keys(snippet).length > 0 && languageId != null) {
+      // handle update
+      await tx.videoSnippet.update({
+        where: {
+          videoId_languageId: {
+            videoId: video.id,
+            languageId
+          }
+        },
+        data: getChangedValues<Prisma.VideoSnippetUncheckedUpdateInput>(snippet)
       })
     }
   }
@@ -356,6 +469,8 @@ async function getExistingVideo(video): Promise<PrismaVideoCreateInput | null> {
       where: { id: video.id },
       include: {
         title: {},
+        description: {},
+        snippet: {},
         variants: {
           include: {
             subtitle: {
@@ -373,6 +488,10 @@ async function getExistingVideo(video): Promise<PrismaVideoCreateInput | null> {
     existingVideo = {
       ...existingVideo,
       title: existingVideo.title.map((title) => omit(title, 'id')),
+      description: existingVideo.description.map((description) =>
+        omit(description, 'id')
+      ),
+      snippet: existingVideo.snippet.map((snippet) => omit(snippet, 'id')),
       variants: sortBy(existingVideo.variants, ['id']).map((variant) => ({
         ...variant,
         subtitle: variant.subtitle?.map((subtitle) => omit(subtitle, 'id')),
@@ -393,6 +512,8 @@ export async function handleVideo(
   console.log('processing video:', video.id)
 
   video.title = sortBy(video.title, ['languageId'])
+  video.description = sortBy(video.description, ['languageId'])
+  video.snippet = sortBy(video.snippet, ['languageId'])
   video.variants = sortBy(video.variants, ['id']).map((variant) => ({
     ...variant,
     subtitle: sortBy(variant.subtitle, ['languageId']),
