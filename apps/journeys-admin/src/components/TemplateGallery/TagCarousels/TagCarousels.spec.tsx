@@ -22,15 +22,16 @@ describe('TagCarousels', () => {
     expect(getAllByTestId('collections-button-loading')).toHaveLength(2)
 
     await waitFor(async () => {
-      await expect(
+      expect(
         within(feltNeedsCarousel).getByRole('button', {
-          name: 'Acceptance Acceptance Acceptance'
+          // The name of the tag is the alt text + tag label + tag label
+          name: 'Acceptance tag Acceptance Acceptance'
         })
       ).toBeInTheDocument()
 
-      await expect(
+      expect(
         getByRole('button', {
-          name: 'NUA NUA NUA'
+          name: 'NUA tag NUA NUA'
         })
       ).toBeInTheDocument()
     })
@@ -45,16 +46,16 @@ describe('TagCarousels', () => {
     )
 
     await waitFor(async () => {
-      await expect(
+      expect(
         getByRole('button', {
-          name: 'Acceptance Acceptance Acceptance'
+          name: 'Acceptance tag Acceptance Acceptance'
         })
       ).toBeInTheDocument()
     })
 
     fireEvent.click(
       getByRole('button', {
-        name: 'Acceptance Acceptance Acceptance'
+        name: 'Acceptance tag Acceptance Acceptance'
       })
     )
 
@@ -71,16 +72,16 @@ describe('TagCarousels', () => {
 
     // Check that carousel has loaded properly
     await waitFor(async () => {
-      await expect(
+      expect(
         getByRole('button', {
-          name: 'Acceptance Acceptance Acceptance'
+          name: 'Acceptance tag Acceptance Acceptance'
         })
       ).toBeInTheDocument()
     })
 
     // Assert no background tag is filtered out
     await waitFor(async () => {
-      await expect(queryAllByText('Fear/Power')).toHaveLength(0)
+      expect(queryAllByText('Fear/Power')).toHaveLength(0)
     })
   })
 
@@ -93,16 +94,16 @@ describe('TagCarousels', () => {
     )
 
     await waitFor(async () => {
-      await expect(
+       expect(
         getByRole('button', {
-          name: 'NUA NUA NUA'
+          name: 'NUA tag NUA NUA'
         })
       ).toBeInTheDocument()
     })
 
     fireEvent.click(
       getByRole('button', {
-        name: 'NUA NUA NUA'
+        name: 'NUA tag NUA NUA'
       })
     )
 
