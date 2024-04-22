@@ -61,6 +61,29 @@ describe('TagCarousels', () => {
     expect(onChange).toHaveBeenCalledWith('acceptanceTagId')
   })
 
+  it('should filter out felt needs tags that have no backgrounds', async () => {
+    const onChange = jest.fn()
+    const { getByRole, queryAllByText } = render(
+      <MockedProvider mocks={[getTagsMock]}>
+        <TagCarousels onChange={onChange} />
+      </MockedProvider>
+    )
+
+    // Check that carousel has loaded properly
+    await waitFor(async () => {
+      await expect(
+        getByRole('button', {
+          name: 'Acceptance Acceptance Acceptance'
+        })
+      ).toBeInTheDocument()
+    })
+
+    // Assert no background tag is filtered out
+    await waitFor(async () => {
+      await expect(queryAllByText('Fear/Power')).toHaveLength(0)
+    })
+  })
+
   it('should filter by collections tag', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
