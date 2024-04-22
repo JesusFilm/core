@@ -1,7 +1,23 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../lib/apolloClient'
+import { paramsToRecord } from '../../../lib/paramsToRecord'
+
+/* TODO: 
+  querystring:
+    apiKey
+    term
+    ids
+    languageIds
+    type
+    subTypes
+    contentTypes
+    expand
+    filter
+    metadataLanguageTags
+    isDeprecated
+*/
 
 const GET_VIDEOS = graphql(`
   query GetVideos($limit: Int, $offset: Int) {
@@ -37,21 +53,7 @@ const GET_VIDEOS = graphql(`
   }
 `)
 
-function paramsToRecord(
-  entries: IterableIterator<[string, string]>
-): Record<string, string> {
-  const result: Record<string, string> = {}
-  for (const [key, value] of entries) {
-    // each 'entry' is a [key, value] tupple
-    result[key] = value
-  }
-  return result
-}
-
-export async function GET(
-  request: NextRequest,
-  res: NextResponse
-): Promise<Response> {
+export async function GET(request: NextRequest): Promise<Response> {
   const query = request.nextUrl.searchParams
 
   const page = Number(query.get('page') ?? 1)
@@ -67,9 +69,8 @@ export async function GET(
     }
   })
 
-  const entries = query.entries()
   const queryObject: Record<string, string> = {
-    ...paramsToRecord(entries),
+    ...paramsToRecord(query.entries()),
     page: page.toString(),
     limit: limit.toString()
   }
