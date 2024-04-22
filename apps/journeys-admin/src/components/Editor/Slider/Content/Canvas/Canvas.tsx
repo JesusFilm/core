@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { ReactElement, useLayoutEffect, useRef, useState } from 'react'
+import { ReactElement, RefObject, useEffect, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -28,9 +28,13 @@ import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 
-export function Canvas(): ReactElement {
-  const [scale, setScale] = useState(1)
+function calculateScale({ current }: RefObject<HTMLDivElement>): number {
+  return current != null
+    ? Math.min(current.clientWidth / 375, current.clientHeight / 670)
+    : 1
+}
 
+export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   // this ref handles if the mouseDown event of the onClick event's target is the card component
@@ -47,6 +51,19 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
+
+  const [scale, setScale] = useState(calculateScale(containerRef))
+
+  useEffect(() => {
+    const handleResize = (): void => {
+      console.log('I am getting resized')
+      setScale(calculateScale(containerRef))
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   function handleFooterClick(): void {
     dispatch({
@@ -108,17 +125,6 @@ export function Canvas(): ReactElement {
 
   const theme =
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
-
-  useLayoutEffect(() => {
-    if (containerRef.current != null) {
-      setScale(
-        Math.min(
-          containerRef.current.clientWidth / 375,
-          containerRef.current.clientHeight / 670
-        )
-      )
-    }
-  }, [])
 
   return (
     <Stack
