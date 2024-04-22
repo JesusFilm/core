@@ -1,4 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ComponentProps, ReactNode, useState } from 'react'
@@ -25,9 +28,6 @@ import {
 import { journeysAdminConfig } from '../../libs/storybook'
 
 import { CardPreview } from '.'
-import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
-import Skeleton from '@mui/material/Skeleton'
 
 const CardPreviewStory: Meta<typeof CardPreview> = {
   ...journeysAdminConfig,
@@ -706,7 +706,7 @@ const CardPreviewComponent = ({ ...args }): ReactNode => {
   )
 }
 
-const CustomLoadingComponent = ({ testId }) => {
+const CustomLoadingComponent = ({ ...args }): ReactNode => {
   return (
     <Stack
       direction="row"
@@ -788,7 +788,7 @@ export const WithNavigationCards = {
   ...Template,
   args: {
     steps,
-    CustomLoadingComponent: CustomLoadingComponent
+    CustomLoadingComponent
   }
 }
 
