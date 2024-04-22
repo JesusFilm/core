@@ -133,7 +133,7 @@ describe('AlgoliaService', () => {
         take: 1000,
         skip: 0,
         include: {
-          video: { include: { title: true } },
+          video: { include: { title: true, description: true, snippet: true } },
           subtitle: true
         }
       })
