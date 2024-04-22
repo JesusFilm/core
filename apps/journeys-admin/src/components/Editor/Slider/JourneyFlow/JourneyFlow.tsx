@@ -20,9 +20,6 @@ import {
   OnConnectStartParams,
   ReactFlow,
   ReactFlowInstance,
-  getConnectedEdges,
-  getIncomers,
-  getOutgoers,
   useEdgesState,
   useNodesState
 } from 'reactflow'
@@ -73,7 +70,27 @@ export function JourneyFlow(): ReactElement {
 
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
-  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
+  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation({
+    update(cache, { data }) {
+      if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
+        cache.modify({
+          fields: {
+            blocks(existingBlockRefs = []) {
+              const newStepBlockRef = cache.writeFragment({
+                data: data.stepBlockCreate,
+                fragment: gql`
+                  fragment NewBlock on Block {
+                    id
+                  }
+                `
+              })
+              return [...existingBlockRefs, newStepBlockRef]
+            }
+          }
+        })
+      }
+    }
+  })
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
@@ -81,6 +98,7 @@ export function JourneyFlow(): ReactElement {
     GetStepBlocksWithPosition,
     GetStepBlocksWithPositionVariables
   >(GET_STEP_BLOCKS_WITH_POSITION, {
+    notifyOnNetworkStatusChange: true,
     variables: { journeyIds: journey?.id != null ? [journey.id] : undefined },
     onCompleted: (data) => {
       if (steps == null || journey == null) return
@@ -131,9 +149,6 @@ export function JourneyFlow(): ReactElement {
 
   useEffect(() => {
     if (steps == null || data?.blocks == null) return
-    if (steps.length !== data.blocks.length) {
-      void refetch()
-    }
     const positions: PositionMap =
       data.blocks.reduce((acc, block) => {
         if (
@@ -153,10 +168,6 @@ export function JourneyFlow(): ReactElement {
         positions[step.id].y != null
       )
     })
-
-    // console.log('Steps: ', steps)
-    // console.log('Pos: ', positions)
-    // console.log('Valid: ', validSteps)
 
     if (!validSteps) return
 
@@ -305,9 +316,6 @@ export function JourneyFlow(): ReactElement {
     }),
     []
   )
-
-  // console.log('Blocks: ', data?.blocks)
-  // console.log('Steps: ', steps)
 
   return (
     <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">

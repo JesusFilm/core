@@ -44,7 +44,9 @@ export function useStepAndCardBlockCreateMutation(
     StepAndCardBlockCreateVariables
   >(STEP_AND_CARD_BLOCK_CREATE, {
     ...options,
-    update(cache, { data }) {
+    update(...args) {
+      options?.update?.(...args)
+      const [cache, { data }] = args
       if (journey == null) return
       if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
         cache.modify({
