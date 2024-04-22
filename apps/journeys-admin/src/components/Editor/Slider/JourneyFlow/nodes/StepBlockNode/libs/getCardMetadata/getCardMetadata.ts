@@ -1,7 +1,10 @@
 import { TreeBlock } from '@core/journeys/ui/block'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import { BlockFields_CardBlock } from '../../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_ImageBlock as ImageBlock
+} from '../../../../../../../../../__generated__/BlockFields'
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'
@@ -15,7 +18,7 @@ interface CardMetadata {
 }
 
 export function getCardMetadata(
-  card: TreeBlock<BlockFields_CardBlock> | undefined
+  card: TreeBlock<CardBlock> | undefined
 ): CardMetadata {
   if (card == null) return {}
 
@@ -23,9 +26,7 @@ export function getCardMetadata(
 
   if (priorityBlock?.__typename === 'VideoBlock') {
     const title =
-      priorityBlock.video !== null
-        ? priorityBlock.video.title[0].value
-        : undefined
+      priorityBlock.video?.title?.[0]?.value ?? priorityBlock.title ?? undefined
     const subtitle =
       priorityBlock.startAt !== null && priorityBlock.endAt !== null
         ? secondsToTimeFormat(priorityBlock.startAt, { trimZeroes: true }) +
@@ -33,9 +34,16 @@ export function getCardMetadata(
           secondsToTimeFormat(priorityBlock.endAt, { trimZeroes: true })
         : undefined
     const bgImage =
-      priorityBlock.video?.image !== null
-        ? priorityBlock.video?.image
-        : undefined
+      // Use posterBlockId image or default poster image on video
+      (priorityBlock?.posterBlockId != null
+        ? (
+            priorityBlock.children.find(
+              (block) =>
+                block.id === priorityBlock.posterBlockId &&
+                block.__typename === 'ImageBlock'
+            ) as TreeBlock<ImageBlock>
+          )?.src
+        : priorityBlock?.video?.image ?? priorityBlock.image) ?? undefined
 
     return { title, subtitle, priorityBlock, bgImage }
   } else {
