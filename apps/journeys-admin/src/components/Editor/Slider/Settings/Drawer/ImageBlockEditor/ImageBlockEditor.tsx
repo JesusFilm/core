@@ -130,86 +130,114 @@ export function ImageBlockEditor({
   return (
     <>
       <Box
-        sx={{ width: '100%', justifyContent: 'center', display: 'flex', py: 4 }}
-      >
-        <ImageBlockHeader
-          selectedBlock={selectedBlock}
-          onDelete={onDelete}
-          loading={uploading != null ? uploading : loading}
-          showAdd={showAdd}
-          error={error}
-          unsplashAuthor={unsplashAuthor}
-        />
-      </Box>
-      <Box
-        data-testid="ImageBlockEditor"
         sx={{
-          borderBottom: 1,
-          borderColor: 'divider',
-          backgroundColor: (theme) => theme.palette.background.paper
+          width: '100%',
+          height: 183
         }}
       >
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          aria-label="image selection tabs"
-          variant="fullWidth"
+        <Box
+          sx={{
+            width: '100%',
+            justifyContent: 'center',
+            display: 'flex',
+            py: 4
+          }}
         >
-          <Tab
-            icon={<Grid1Icon />}
-            label={<Typography variant="subtitle2">{t('Gallery')}</Typography>}
-            {...tabA11yProps('gallery', 0)}
-          />
-          <Tab
-            icon={<Image3Icon />}
-            label={<Typography variant="subtitle2">{t('Custom')}</Typography>}
-            {...tabA11yProps('custom', 1)}
-          />
-          <Tab
-            icon={<StarsIcon />}
-            label={<Typography variant="subtitle2">{t('AI')}</Typography>}
-            {...tabA11yProps('custom', 3)}
-          />
-        </Tabs>
-      </Box>
-      <TabPanel
-        name="gallery"
-        value={tabValue}
-        index={0}
-        sx={{ flexGrow: 1, overflow: 'auto' }}
-      >
-        {tabValue === 0 && <UnsplashGallery onChange={handleUnsplashChange} />}
-      </TabPanel>
-      <TabPanel
-        name="custom"
-        value={tabValue}
-        index={1}
-        sx={{ flexGrow: 1, overflow: 'auto' }}
-      >
-        {tabValue === 1 && (
-          <CustomImage
-            onChange={handleSrcChange}
-            setUploading={(upload) => setUploading(upload)}
+          <ImageBlockHeader
             selectedBlock={selectedBlock}
+            onDelete={onDelete}
             loading={uploading != null ? uploading : loading}
+            showAdd={showAdd}
             error={error}
+            unsplashAuthor={unsplashAuthor}
           />
-        )}
-      </TabPanel>
-      <TabPanel
-        name="generative"
-        value={tabValue}
-        index={2}
-        sx={{ flexGrow: 1, overflow: 'auto' }}
+        </Box>
+        <Box
+          data-testid="ImageBlockEditor"
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+            backgroundColor: (theme) => theme.palette.background.paper
+          }}
+        >
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            aria-label="image selection tabs"
+            variant="fullWidth"
+          >
+            <Tab
+              icon={<Grid1Icon />}
+              label={
+                <Typography variant="subtitle2">{t('Gallery')}</Typography>
+              }
+              {...tabA11yProps('gallery', 0)}
+            />
+            <Tab
+              icon={<Image3Icon />}
+              label={<Typography variant="subtitle2">{t('Custom')}</Typography>}
+              {...tabA11yProps('custom', 1)}
+            />
+            <Tab
+              icon={<StarsIcon />}
+              label={<Typography variant="subtitle2">{t('AI')}</Typography>}
+              {...tabA11yProps('custom', 3)}
+            />
+          </Tabs>
+        </Box>
+      </Box>
+
+      <Box
+        sx={{
+          width: '100%',
+          height: {
+            xs: 'calc(100vh - 405px)',
+            sm: 'calc(100vh - 375px)'
+          },
+          overflowY: 'auto'
+        }}
       >
-        {tabValue === 2 && (
-          <AIGallery
-            onChange={handleSrcChange}
-            setUploading={setUploading}
-            loading={uploading != null ? uploading : loading}
-          />
-        )}
-      </TabPanel>
+        <TabPanel
+          name="gallery"
+          value={tabValue}
+          index={0}
+          sx={{ flexGrow: 1, overflow: 'auto' }}
+        >
+          {tabValue === 0 && (
+            <UnsplashGallery onChange={handleUnsplashChange} />
+          )}
+        </TabPanel>
+        <TabPanel
+          name="custom"
+          value={tabValue}
+          index={1}
+          sx={{ flexGrow: 1, overflow: 'auto' }}
+        >
+          {tabValue === 1 && (
+            <CustomImage
+              onChange={handleSrcChange}
+              setUploading={(upload) => setUploading(upload)}
+              selectedBlock={selectedBlock}
+              loading={uploading != null ? uploading : loading}
+              error={error}
+            />
+          )}
+        </TabPanel>
+        <TabPanel
+          name="generative"
+          value={tabValue}
+          index={2}
+          sx={{ flexGrow: 1, overflow: 'auto' }}
+        >
+          {tabValue === 2 && (
+            <AIGallery
+              onChange={handleSrcChange}
+              setUploading={setUploading}
+              loading={uploading != null ? uploading : loading}
+            />
+          )}
+        </TabPanel>
+      </Box>
     </>
   )
 }
