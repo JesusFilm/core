@@ -215,7 +215,8 @@ export function StepBlockNode({
                     marginBottom: 1,
                     lineHeight: 1.3,
                     alignItems: 'flex-end',
-                    color: '#26262E'
+                    color: '#26262E',
+                    wordBreak: 'break-all'
                   }}
                 >
                   {title != null && title !== '' ? (
