@@ -64,7 +64,7 @@ describe('ImageLibrary', () => {
       expect(getByText('Custom')).toBeInTheDocument()
       expect(
         getByTestId('ImageBlockEditor').parentElement?.parentElement
-      ).toHaveClass('MuiDrawer-paperAnchorRight')
+      ).toHaveClass('swiper-no-swiping MuiBox-root css-2qcwma')
     })
 
     it('should close ImageLibrary on close Icon click', () => {
@@ -110,7 +110,7 @@ describe('ImageLibrary', () => {
       expect(getByText('Custom')).toBeInTheDocument()
       expect(
         getByTestId('ImageBlockEditor').parentElement?.parentElement
-      ).toHaveClass('MuiDrawer-paperAnchorBottom')
+      ).toHaveClass('swiper-no-swiping MuiBox-root css-2qcwma')
     })
   })
 })
