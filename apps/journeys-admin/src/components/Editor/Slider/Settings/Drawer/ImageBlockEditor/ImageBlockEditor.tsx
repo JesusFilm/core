@@ -129,7 +129,7 @@ export function ImageBlockEditor({
 
   return (
     <>
-      <Box // try stack if this doesnt worjk
+      <Box
         sx={{
           width: '100%',
           height: 183
