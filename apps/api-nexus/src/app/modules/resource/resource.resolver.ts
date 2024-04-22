@@ -1,8 +1,11 @@
+import { subject } from '@casl/ability'
+import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Prisma, Resource } from '.prisma/api-nexus-client'
+import { NexusStatus, Prisma, Resource } from '.prisma/api-nexus-client'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
@@ -18,11 +21,11 @@ import {
   ResourceUpdateInput
 } from '../../__generated__/graphql'
 import { BullMQService } from '../../lib/bullMQ/bullMQ.service'
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
 import { GoogleDriveService } from '../../lib/google/drive.service'
 import { GoogleOAuthService } from '../../lib/google/oauth.service'
-import { GoogleSheetsService } from '../../lib/google/sheets.service'
-import { GoogleYoutubeService } from '../../lib/google/youtube.service'
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Resource')
@@ -31,117 +34,148 @@ export class ResourceResolver {
     private readonly prismaService: PrismaService,
     private readonly googleOAuthService: GoogleOAuthService,
     private readonly googleDriveService: GoogleDriveService,
-    private readonly googleSheetsService: GoogleSheetsService,
-    private readonly googleYoutubeService: GoogleYoutubeService,
     private readonly cloudFlareService: CloudFlareService,
     private readonly bullMQService: BullMQService
   ) {}
 
   @Query()
+  @UseGuards(AppCaslGuard)
   async resources(
-    @CurrentUserId() userId: string,
+    @CaslAccessible('Resource') accessibleResources: Prisma.ResourceWhereInput,
     @Args('where') where?: ResourceFilter
   ): Promise<Resource[]> {
     const filter: Prisma.ResourceWhereInput = {}
     if (where?.ids != null) filter.id = { in: where?.ids }
-    filter.nexusId = where?.nexusId ?? undefined
+    if (where?.nexusId != null) filter.nexusId = where.nexusId
 
-    const resources = await this.prismaService.resource.findMany({
+    return await this.prismaService.resource.findMany({
       where: {
-        AND: [
-          filter,
-          {
-            nexus: {
-              userNexuses: {
-                every: { userId }
-              }
-            }
-          },
-          {
-            NOT: { status: 'deleted' }
-          }
-        ]
+        AND: [accessibleResources, filter]
       },
       orderBy: { createdAt: 'desc' },
       include: { localizations: true },
       take: where?.limit ?? undefined
     })
-
-    return resources
   }
 
   @Query()
   async resource(
-    @CurrentUserId() userId: string,
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string
   ): Promise<Resource | null> {
-    const filter: Prisma.ResourceWhereUniqueInput = { id }
     const resource = await this.prismaService.resource.findUnique({
       where: {
-        id,
-        AND: [filter, { nexus: { userNexuses: { every: { userId } } } }]
+        id
+      },
+      include: {
+        localizations: true,
+        nexus: { include: { userNexuses: true } }
       }
     })
+    if (resource == null)
+      throw new GraphQLError('resource not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(Action.Read, subject('Resource', resource)))
+      throw new GraphQLError('user is not allowed to view resource', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     return resource
   }
 
   @Mutation()
   async resourceCreate(
-    @CurrentUserId() userId: string,
+    @CaslAbility() ability: AppAbility,
     @Args('input') input: ResourceCreateInput
   ): Promise<Resource | undefined> {
-    const nexus = await this.prismaService.nexus.findUnique({
-      where: { id: input.nexusId, userNexuses: { every: { userId } } }
-    })
-    if (nexus == null)
-      throw new GraphQLError('nexus not found', {
-        extensions: { code: 'NOT_FOUND' }
+    const id = uuidv4()
+    return await this.prismaService.$transaction(async (tx) => {
+      await this.prismaService.resource.create({
+        data: {
+          ...input,
+          id,
+          sourceType: 'other',
+          status: 'published'
+        }
       })
-
-    const resource = await this.prismaService.resource.create({
-      data: {
-        ...input,
-        nexusId: nexus.id,
-        id: uuidv4(),
-        sourceType: 'other'
-      }
+      const resource = await tx.resource.findUnique({
+        where: { id },
+        include: {
+          localizations: true,
+          nexus: { include: { userNexuses: true } }
+        }
+      })
+      if (resource == null)
+        throw new GraphQLError('resource not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      if (!ability.can(Action.Create, subject('Resource', resource)))
+        throw new GraphQLError('user is not allowed to create resource', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      return resource
     })
-
-    return resource
   }
 
   @Mutation()
   async resourceUpdate(
-    @CurrentUserId() userId: string,
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('input') input: ResourceUpdateInput
   ): Promise<Resource> {
+    const resource = await this.prismaService.resource.findUnique({
+      where: { id },
+      include: {
+        nexus: { include: { userNexuses: true } }
+      }
+    })
+    if (resource == null)
+      throw new GraphQLError('resource not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (ability.cannot(Action.Update, subject('Resource', resource)))
+      throw new GraphQLError('user is not allowed to update resource', {
+        extensions: { code: 'FORBIDDEN' }
+      })
     return await this.prismaService.resource.update({
-      where: {
-        id,
-        nexus: { userNexuses: { every: { userId } } }
-      },
+      where: { id },
       data: {
         name: input.name ?? undefined
+      },
+      include: {
+        localizations: true
       }
     })
   }
 
   @Mutation()
   async resourceDelete(
-    @CurrentUserId() userId: string,
+    @CaslAbility() ability: AppAbility,
     @Args('id') id: string
   ): Promise<Resource> {
-    const resource = await this.prismaService.resource.update({
+    const resource = await this.prismaService.resource.findUnique({
+      where: { id },
+      include: { nexus: { include: { userNexuses: true } } }
+    })
+    if (resource == null)
+      throw new GraphQLError('resource not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(Action.Delete, subject('Resource', resource)))
+      throw new GraphQLError('user is not allowed to delete resource', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.prismaService.resource.update({
       where: {
-        id,
-        nexus: { userNexuses: { every: { userId } } }
+        id
       },
       data: {
-        status: 'deleted'
+        status: NexusStatus.deleted
+      },
+      include: {
+        localizations: true
       }
     })
-    return resource
   }
 
   @Mutation()

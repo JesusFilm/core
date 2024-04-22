@@ -1,7 +1,7 @@
 import { subject } from '@casl/ability'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { Channel, Nexus, NexusStatus } from '.prisma/api-nexus-client'
+import { Channel, Nexus, NexusStatus, Resource } from '.prisma/api-nexus-client'
 
 import { Action, AppAbility, AppCaslFactory } from '.'
 
@@ -74,6 +74,40 @@ describe('AppCaslFactory', () => {
               status: NexusStatus.published
             }
           } as unknown as Channel)
+        )
+      ).toBe(true)
+    })
+  })
+
+  describe('Resource', () => {
+    it('allow create when user is nexus owner', () => {
+      expect(
+        ability.can(
+          Action.Create,
+          subject('Resource', {
+            id: 'resourceId',
+            status: NexusStatus.published,
+            nexus: {
+              userNexuses: [{ userId: user.id, role: 'owner' }],
+              status: NexusStatus.published
+            }
+          } as unknown as Resource)
+        )
+      ).toBe(true)
+    })
+
+    it('allow manage when user is nexus owner', () => {
+      expect(
+        ability.can(
+          Action.Manage,
+          subject('Resource', {
+            id: 'resourceId',
+            status: NexusStatus.published,
+            nexus: {
+              userNexuses: [{ userId: user.id, role: 'owner' }],
+              status: NexusStatus.published
+            }
+          } as unknown as Resource)
         )
       ).toBe(true)
     })

@@ -6,6 +6,7 @@ import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 
 import { channelAcl } from '../../../modules/channel/channel.acl'
 import { nexusAcl } from '../../../modules/nexus/nexus.acl'
+import { resourceAcl } from '../../../modules/resource/resource.acl'
 import { PrismaSubjects } from '../__generated__/prismaSubjects'
 import { PrismaQuery, createPrismaAbility } from '../caslPrisma'
 
@@ -39,7 +40,7 @@ export class AppCaslFactory extends CaslFactory<Role> {
     const { can, cannot, build } = new AbilityBuilder<AppAbility>(
       createPrismaAbility
     )
-    const acls = [nexusAcl, channelAcl]
+    const acls = [nexusAcl, channelAcl, resourceAcl]
     acls.forEach((acl) => acl({ can, cannot, user }))
 
     return build()
