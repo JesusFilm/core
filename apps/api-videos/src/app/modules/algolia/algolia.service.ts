@@ -27,7 +27,13 @@ export class AlgoliaService {
         include: {
           video: { include: { title: true, description: true, snippet: true } },
           subtitle: true
-        }
+        },
+        where:
+          appIndex === 'video-variants-prd'
+            ? undefined
+            : {
+                languageId: '529'
+              }
       })
 
       if (videoVariants.length === 0) {
