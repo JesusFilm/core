@@ -194,8 +194,7 @@ export function ImageBlockEditor({
             xs: 'calc(100vh - 405px)',
             sm: 'calc(100vh - 375px)'
           },
-          overflowY: 'auto',
-          dispaly: 'flex'
+          overflowY: 'auto'
         }}
       >
         <TabPanel
