@@ -149,7 +149,6 @@ export function VideoLibrary({
             },
             overflowY: 'auto'
           }}
-          data-testid="VideoLibrary"
         >
           <TabPanel
             name="video-from-local"
