@@ -1,34 +1,52 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { v4 as uuidv4 } from 'uuid'
 
-import { Channel } from '.prisma/api-nexus-client'
+import { Channel, NexusStatus, Prisma } from '.prisma/api-nexus-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
-import { ChannelFilter, ChannelStatus } from '../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { GoogleOAuthService } from '../../lib/google/oauth.service'
 import { GoogleYoutubeService } from '../../lib/google/youtube.service'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { ChannelResolver } from './channel.resolver'
 
-describe('ChannelResolver', () => {
-  let resolver: ChannelResolver
-  let prismaService: DeepMockProxy<PrismaService>
-  let googleOAuthService: DeepMockProxy<GoogleOAuthService>
-  let googleYoutubeService: DeepMockProxy<GoogleYoutubeService>
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
 
-  const channelExample: Channel = {
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
+describe('ChannelResolver', () => {
+  let resolver: ChannelResolver,
+    prismaService: DeepMockProxy<PrismaService>,
+    googleOAuthService: DeepMockProxy<GoogleOAuthService>,
+    googleYoutubeService: DeepMockProxy<GoogleYoutubeService>,
+    ability: AppAbility
+
+  const channel: Channel = {
     id: 'channelId',
     name: 'Channel Name',
-    status: 'published',
+    status: NexusStatus.published,
     nexusId: 'nexusId',
     connected: true,
     platform: 'youtube',
     createdAt: new Date(),
     deletedAt: null
   }
+  const channelWithNexusUserNexus = {
+    ...channel,
+    nexus: {
+      userNexuses: [{ userId: 'userId', role: 'owner' }],
+      status: NexusStatus.published
+    }
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         ChannelResolver,
         { provide: PrismaService, useValue: mockDeep<PrismaService>() },
@@ -53,142 +71,227 @@ describe('ChannelResolver', () => {
     googleYoutubeService = module.get<GoogleYoutubeService>(
       GoogleYoutubeService
     ) as DeepMockProxy<GoogleYoutubeService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
   describe('channels', () => {
-    it('fetches channels based on filter', async () => {
-      prismaService.channel.findMany.mockResolvedValue([channelExample])
-      const filter: ChannelFilter = {
-        status: ChannelStatus.published,
-        nexusId: 'nexusId',
-        limit: 10
-      }
+    const accessibleChannels: Prisma.ChannelWhereInput = { OR: [{}] }
 
-      const channels = await resolver.channels(filter)
+    beforeEach(() => {
+      prismaService.channel.findMany.mockResolvedValueOnce([channel])
+    })
+
+    it('returns channels', async () => {
+      expect(await resolver.channels(accessibleChannels)).toEqual([channel])
       expect(prismaService.channel.findMany).toHaveBeenCalledWith({
         where: {
-          AND: [
-            { status: 'published', nexusId: 'nexusId' },
-            { nexus: { userNexuses: {} } }
-          ]
+          AND: [accessibleChannels, {}]
         },
-        take: 10,
-        include: {
-          youtube: true
-        }
+        include: { youtube: true }
       })
-      expect(channels).toEqual([channelExample])
+    })
+
+    it('returns channels with filter', async () => {
+      const filter = { nexusId: 'nexusId' }
+      expect(await resolver.channels(accessibleChannels, filter)).toEqual([
+        channel
+      ])
+      expect(prismaService.channel.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [accessibleChannels, { nexusId: 'nexusId' }]
+        },
+        include: { youtube: true }
+      })
+    })
+
+    it('returns channels with take', async () => {
+      const filter = { limit: 1 }
+      expect(await resolver.channels(accessibleChannels, filter)).toEqual([
+        channel
+      ])
+      expect(prismaService.channel.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [accessibleChannels, {}]
+        },
+        take: 1,
+        include: { youtube: true }
+      })
     })
   })
 
   describe('channel', () => {
-    it('fetches a single channel by ID for the current user', async () => {
-      prismaService.channel.findUnique.mockResolvedValue(channelExample)
-      const userId = 'userId'
-      const channel = await resolver.channel(userId, 'channelId')
+    it('returns channel', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce(
+        channelWithNexusUserNexus
+      )
+      expect(await resolver.channel(ability, 'channelId')).toEqual(
+        channelWithNexusUserNexus
+      )
       expect(prismaService.channel.findUnique).toHaveBeenCalledWith({
         where: {
-          id: 'channelId',
-          AND: [
-            { id: 'channelId' },
-            { nexus: { userNexuses: { every: { userId } } } }
-          ]
+          id: 'channelId'
         },
-        include: {
-          youtube: true
-        }
+        include: { youtube: true, nexus: { include: { userNexuses: true } } }
       })
-      expect(channel).toEqual(channelExample)
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce(null)
+      await expect(resolver.channel(ability, 'channelId')).rejects.toThrow(
+        'channel not found'
+      )
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce(channel)
+      await expect(resolver.channel(ability, 'channelId')).rejects.toThrow(
+        'user is not allowed to view channel'
+      )
     })
   })
 
   describe('channelCreate', () => {
-    it('creates a channel with the given input and associates it with the nexus', async () => {
-      prismaService.nexus.findUnique.mockResolvedValue({
-        id: 'nexusId',
-        name: 'Nexus Name',
-        description: 'Nexus Description',
-        createdAt: new Date(),
-        deletedAt: null,
-        status: 'published'
-      })
-      prismaService.channel.create.mockResolvedValue(channelExample)
-      const userId = 'userId'
-      const input = {
-        name: 'New Channel',
-        nexusId: 'nexusId',
-        platform: 'youtube',
-        status: 'published'
-      }
-      const channel = await resolver.channelCreate(userId, input)
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+    })
+
+    it('creates a channel', async () => {
+      prismaService.channel.create.mockResolvedValueOnce(channel)
+      prismaService.channel.findUnique.mockResolvedValue(
+        channelWithNexusUserNexus
+      )
+      mockUuidv4.mockReturnValueOnce('channelId')
+      expect(
+        await resolver.channelCreate(ability, {
+          nexusId: 'nexusId',
+          name: 'New Channel',
+          platform: 'Youtube'
+        })
+      ).toEqual(channelWithNexusUserNexus)
       expect(prismaService.channel.create).toHaveBeenCalledWith({
-        data: expect.objectContaining({
-          id: expect.any(String),
-          ...input
-        }),
-        include: {
-          youtube: true
+        data: {
+          id: 'channelId',
+          name: 'New Channel',
+          nexusId: 'nexusId',
+          platform: 'Youtube',
+          status: 'published'
         }
       })
-      expect(channel).toEqual(channelExample)
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.channel.create.mockResolvedValueOnce(channel)
+      prismaService.channel.findUnique.mockResolvedValue(null)
+      await expect(
+        resolver.channelCreate(ability, {
+          nexusId: 'nexusId',
+          name: 'New Channel',
+          platform: 'Youtube'
+        })
+      ).rejects.toThrow('channel not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.channel.create.mockResolvedValueOnce(channel)
+      prismaService.channel.findUnique.mockResolvedValue(channel)
+      await expect(
+        resolver.channelCreate(ability, {
+          nexusId: 'nexusId',
+          name: 'New Channel',
+          platform: 'Youtube'
+        })
+      ).rejects.toThrow('user is not allowed to create channel')
     })
   })
 
   describe('channelUpdate', () => {
-    it('updates a channel with the given input for the current user', async () => {
-      prismaService.channel.update.mockResolvedValue(channelExample)
-      const userId = 'userId'
+    it('updates a channel', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce(
+        channelWithNexusUserNexus
+      )
+      prismaService.channel.update.mockResolvedValueOnce(channel)
       const input = {
         name: 'Updated Channel Name',
-        nexusId: 'nexusId',
-        platform: 'youtube'
+        platform: 'Updated Platform'
       }
-      const channel = await resolver.channelUpdate(userId, 'channelId', input)
+      expect(await resolver.channelUpdate(ability, 'channelId', input)).toEqual(
+        channel
+      )
       expect(prismaService.channel.update).toHaveBeenCalledWith({
-        where: {
-          id: 'channelId',
-          nexus: { userNexuses: { every: { userId } } }
-        },
+        where: { id: 'channelId' },
         data: input,
-        include: {
-          youtube: true
-        }
+        include: { youtube: true }
       })
-      expect(channel).toEqual(channelExample)
+    })
+
+    it('updates a channel with empty fields when not passed in', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce(
+        channelWithNexusUserNexus
+      )
+      await resolver.channelUpdate(ability, 'channelId', {
+        name: null,
+        platform: null
+      })
+      expect(prismaService.channel.update).toHaveBeenCalledWith({
+        where: { id: 'channelId' },
+        data: {
+          name: undefined,
+          platform: undefined
+        },
+        include: { youtube: true }
+      })
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce(channel)
+      await expect(
+        resolver.channelUpdate(ability, 'channelId', { name: 'new title' })
+      ).rejects.toThrow('user is not allowed to update channel')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.channelUpdate(ability, 'channelId', { name: 'new title' })
+      ).rejects.toThrow('channel not found')
     })
   })
 
   describe('channelDelete', () => {
-    it('marks a channel as deleted for the current user', async () => {
-      prismaService.channel.update.mockResolvedValue({
-        ...channelExample,
-        status: 'deleted'
-      })
-      const userId = 'userId'
-      const channel = await resolver.channelDelete(userId, 'channelId')
+    it('deletes a channel', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce(
+        channelWithNexusUserNexus
+      )
+      prismaService.channel.update.mockResolvedValueOnce(channel)
+      expect(await resolver.channelDelete(ability, 'channelId')).toEqual(
+        channel
+      )
       expect(prismaService.channel.update).toHaveBeenCalledWith({
-        where: {
-          id: 'channelId',
-          nexus: { userNexuses: { every: { userId } } }
-        },
-        data: {
-          status: 'deleted',
-          connected: false
-        }
+        where: { id: 'channelId' },
+        data: { status: NexusStatus.deleted, connected: false },
+        include: { youtube: true }
       })
-      expect(channel).toMatchObject({ ...channelExample, status: 'deleted' })
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce(channel)
+      await expect(
+        resolver.channelDelete(ability, 'channelId')
+      ).rejects.toThrow('user is not allowed to delete channel')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.channelDelete(ability, 'channelId')
+      ).rejects.toThrow('channel not found')
     })
   })
 
   describe('connectYoutubeChannel', () => {
-    it('connects a YouTube channel using the provided auth code and updates the channel', async () => {
-      const userId = 'userId'
-      const input = {
-        channelId: 'channelId',
-        authCode: 'authCode',
-        redirectUri: 'redirectUri'
-      }
-
+    it('connects a nexus channel to a youtube channel', async () => {
       const authResponse = {
         access_token: 'accessToken',
         refresh_token: 'refreshToken',
@@ -236,9 +339,11 @@ describe('ChannelResolver', () => {
         etag: '"etagListResponse"'
       }
 
+      prismaService.channel.findUnique.mockResolvedValue(
+        channelWithNexusUserNexus
+      )
       googleOAuthService.getAccessToken.mockResolvedValue(authResponse)
       googleYoutubeService.getChannels.mockResolvedValue(youtubeChannels)
-      prismaService.channel.findUnique.mockResolvedValue(channelExample)
       prismaService.channelYoutube.create.mockResolvedValue({
         id: 'channelYoutubeId',
         channelId: 'channelId',
@@ -249,16 +354,25 @@ describe('ChannelResolver', () => {
         refreshToken: 'refreshToken'
       })
       prismaService.channel.update.mockResolvedValue({
-        ...channelExample,
+        ...channel,
         connected: true
       })
 
-      const channel = await resolver.connectYoutubeChannel(userId, input)
+      expect(
+        await resolver.connectYoutubeChannel(ability, {
+          channelId: 'channelId',
+          authCode: 'authCode',
+          redirectUri: 'redirectUri'
+        })
+      ).toEqual({
+        ...channel,
+        connected: true
+      })
 
       expect(googleOAuthService.getAccessToken).toHaveBeenCalledWith({
-        code: input.authCode,
+        code: 'authCode',
         grant_type: 'authorization_code',
-        redirect_uri: input.redirectUri
+        redirect_uri: 'redirectUri'
       })
       expect(googleYoutubeService.getChannels).toHaveBeenCalledWith({
         accessToken: authResponse.access_token
@@ -266,7 +380,28 @@ describe('ChannelResolver', () => {
       expect(prismaService.channel.update).toHaveBeenCalledWith(
         expect.any(Object)
       )
-      expect(channel).toMatchObject({ ...channelExample, connected: true })
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce(channel)
+      await expect(
+        resolver.connectYoutubeChannel(ability, {
+          channelId: 'channelId',
+          authCode: 'authCode',
+          redirectUri: 'redirectUri'
+        })
+      ).rejects.toThrow('user is not allowed to manage channel')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.connectYoutubeChannel(ability, {
+          channelId: 'channelId',
+          authCode: 'authCode',
+          redirectUri: 'redirectUri'
+        })
+      ).rejects.toThrow('channel not found')
     })
   })
 })

@@ -163,7 +163,12 @@ export class ResourceResolver {
         fileId,
         accessToken: input.authCode ?? ''
       })
-      if (driveFile == null)
+      if (
+        driveFile == null ||
+        driveFile.id == null ||
+        driveFile.name == null ||
+        driveFile.mimeType == null
+      )
         throw new GraphQLError('file not found', {
           extensions: { code: 'NOT_FOUND' }
         })

@@ -28,7 +28,7 @@ export class NexusResolver {
     @Args('where') where?: NexusFilter
   ): Promise<Nexus[]> {
     const filter: Prisma.NexusWhereInput = {}
-    if (where?.ids != null) filter.id = { in: where?.ids }
+    if (where?.ids != null) filter.id = { in: where.ids }
 
     return await this.prismaService.nexus.findMany({
       where: {

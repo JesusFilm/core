@@ -4,7 +4,7 @@ import { Job } from 'bull'
 import { UploadToBucketToYoutube } from '../bullMQ.service'
 
 @Processor('nexus-youtube')
-export class UploadToYoutube {
+export class NexusYoutubeProcessor {
   @Process('process')
   async process(
     job: Job<UploadToBucketToYoutube>

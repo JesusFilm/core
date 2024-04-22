@@ -9,8 +9,8 @@ import { GoogleYoutubeService } from '../google/youtube.service'
 import { PrismaService } from '../prisma.service'
 
 import { BullMQService } from './bullMQ.service'
-import { UploadToBucket } from './consumers/uploadToBucket'
-import { UploadToYoutube } from './consumers/uploadToYoutube'
+import { NexusBucketProcessor } from './consumers/nexusBucket.processor'
+import { NexusYoutubeProcessor } from './consumers/nexusYoutube.processor'
 import { NexusJobListener } from './listener/jobListener'
 
 @Global()
@@ -23,21 +23,14 @@ import { NexusJobListener } from './listener/jobListener'
       }
     }),
     BullModule.registerQueue(
-      {
-        name: 'nexus-batches'
-      },
-      {
-        name: 'nexus-youtube'
-      },
-      {
-        name: 'nexus-bucket'
-      }
+      { name: 'nexus-youtube' },
+      { name: 'nexus-bucket' }
     )
   ],
   providers: [
     BullMQService,
-    UploadToBucket,
-    UploadToYoutube,
+    NexusBucketProcessor,
+    NexusYoutubeProcessor,
     GoogleDriveService,
     GoogleOAuthService,
     GoogleSheetsService,

@@ -113,14 +113,13 @@ export class ChannelResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (ability.cannot(Action.Update, subject('Channel', channel)))
-      throw new GraphQLError('user is not allowed to update nexus', {
+      throw new GraphQLError('user is not allowed to update channel', {
         extensions: { code: 'FORBIDDEN' }
       })
     return await this.prismaService.channel.update({
       where: { id },
       data: {
         name: input.name ?? undefined,
-        nexusId: input.nexusId ?? undefined,
         platform: input.platform ?? undefined
       },
       include: { youtube: true }
@@ -142,7 +141,7 @@ export class ChannelResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     if (!ability.can(Action.Delete, subject('Channel', channel)))
-      throw new GraphQLError('user is not allowed to delete nexus', {
+      throw new GraphQLError('user is not allowed to delete channel', {
         extensions: { code: 'FORBIDDEN' }
       })
     return await this.prismaService.channel.update({
@@ -184,8 +183,22 @@ export class ChannelResolver {
     const youtubeChannels = await this.googleYoutube.getChannels({
       accessToken: authResponse.access_token
     })
+    if (youtubeChannels.items?.[0] == null)
+      throw new GraphQLError('youtube channel not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
 
-    console.log('youtubeChannels', youtubeChannels)
+    if (
+      youtubeChannels.items[0].id == null ||
+      youtubeChannels.items[0].snippet == null ||
+      youtubeChannels.items[0].snippet.title == null ||
+      youtubeChannels.items[0].snippet.description == null ||
+      youtubeChannels.items[0].snippet.thumbnails?.high?.url == null
+    )
+      throw new GraphQLError('youtube channel properties not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+
     await this.prismaService.channelYoutube.create({
       data: {
         channelId: channel.id,

@@ -8,12 +8,6 @@ interface ChannelsRequest {
   accessToken: string
 }
 
-interface Credential {
-  client_secret: string
-  client_id: string
-  redirect_uris: string[]
-}
-
 @Injectable()
 export class GoogleYoutubeService {
   async getChannels({
@@ -51,10 +45,10 @@ export class GoogleYoutubeService {
     },
     progressCallback?: (progress: number) => Promise<void>
   ): Promise<youtube_v3.Schema$Video> {
-    const service = youtube('v3')
+    const client = youtube({ version: 'v3' })
     const fileSize = statSync(youtubeData.filePath).size
 
-    const result = await service.videos.insert(
+    const result = await client.videos.insert(
       {
         auth: this.authorize(youtubeData.token),
         part: ['id', 'snippet', 'status'],

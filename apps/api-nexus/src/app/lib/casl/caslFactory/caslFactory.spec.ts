@@ -1,16 +1,7 @@
 import { subject } from '@casl/ability'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import {
-  Host,
-  Journey,
-  JourneyVisitor,
-  UserInvite,
-  UserTeam,
-  UserTeamInvite,
-  UserTeamRole,
-  Visitor
-} from '.prisma/api-journeys-client'
+import { Channel, Nexus, NexusStatus } from '.prisma/api-nexus-client'
 
 import { Action, AppAbility, AppCaslFactory } from '.'
 
@@ -26,121 +17,63 @@ describe('AppCaslFactory', () => {
     ability = await factory.createAbility(user)
   })
 
-  describe('Host', () => {
-    it('allow manage when user is team manager', () => {
-      expect(
-        ability.can(
-          Action.Manage,
-          subject('Host', {
-            id: 'hostId',
-            team: {
-              userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
-            }
-          } as unknown as Host)
-        )
-      ).toBe(true)
-    })
-  })
-
-  describe('Journey', () => {
-    it('allow create when user is team manager', () => {
+  describe('Nexus', () => {
+    it('allow create when user is owner', () => {
       expect(
         ability.can(
           Action.Create,
-          subject('Journey', {
-            id: 'hostId',
-            team: {
-              userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
-            }
-          } as unknown as Journey)
+          subject('Nexus', {
+            id: 'nexusId',
+            status: NexusStatus.published,
+            userNexuses: [{ userId: user.id, role: 'owner' }]
+          } as unknown as Nexus)
+        )
+      ).toBe(true)
+    })
+
+    it('allow manage when user is owner', () => {
+      expect(
+        ability.can(
+          Action.Manage,
+          subject('Nexus', {
+            id: 'nexusId',
+            status: NexusStatus.published,
+            userNexuses: [{ userId: user.id, role: 'owner' }]
+          } as unknown as Nexus)
         )
       ).toBe(true)
     })
   })
 
-  describe('JourneyVisitor', () => {
-    it('allow manage when visitor is user', () => {
+  describe('Channel', () => {
+    it('allow create when user is nexus owner', () => {
       expect(
         ability.can(
-          Action.Manage,
-          subject('JourneyVisitor', {
-            visitor: {
-              userId: 'userId'
+          Action.Create,
+          subject('Channel', {
+            id: 'channelId',
+            status: NexusStatus.published,
+            nexus: {
+              userNexuses: [{ userId: user.id, role: 'owner' }],
+              status: NexusStatus.published
             }
-          } as unknown as JourneyVisitor)
+          } as unknown as Channel)
         )
       ).toBe(true)
     })
-  })
 
-  describe('Team', () => {
-    it('allow create', () => {
-      expect(ability.can(Action.Create, 'Team')).toBe(true)
-    })
-  })
-
-  describe('UserInvite', () => {
-    it('allow manage when user is team manager', () => {
+    it('allow manage when user is nexus owner', () => {
       expect(
         ability.can(
           Action.Manage,
-          subject('UserInvite', {
-            removedAt: null,
-            acceptedAt: null,
-            id: 'userInviteId',
-            journey: {
-              team: {
-                userTeams: [{ userId: user.id, role: UserTeamRole.member }]
-              }
+          subject('Channel', {
+            id: 'channelId',
+            status: NexusStatus.published,
+            nexus: {
+              userNexuses: [{ userId: user.id, role: 'owner' }],
+              status: NexusStatus.published
             }
-          } as unknown as UserInvite)
-        )
-      ).toBe(true)
-    })
-  })
-
-  describe('UserTeam', () => {
-    it('allow manage when user is team manager', () => {
-      expect(
-        ability.can(
-          Action.Manage,
-          subject('UserTeam', {
-            id: 'userTeamId',
-            team: {
-              userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
-            }
-          } as unknown as UserTeam)
-        )
-      ).toBe(true)
-    })
-  })
-
-  describe('UserTeamInvite', () => {
-    it('allow manage when user is team manager', () => {
-      expect(
-        ability.can(
-          Action.Manage,
-          subject('UserTeamInvite', {
-            removedAt: null,
-            acceptedAt: null,
-            id: 'userTeamInviteId',
-            team: {
-              userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
-            }
-          } as unknown as UserTeamInvite)
-        )
-      ).toBe(true)
-    })
-  })
-
-  describe('Visitor', () => {
-    it('allow manage when visitor is user', () => {
-      expect(
-        ability.can(
-          Action.Manage,
-          subject('Visitor', {
-            userId: 'userId'
-          } as unknown as Visitor)
+          } as unknown as Channel)
         )
       ).toBe(true)
     })

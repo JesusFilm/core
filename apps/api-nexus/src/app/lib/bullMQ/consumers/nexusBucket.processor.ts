@@ -8,7 +8,7 @@ import { GoogleYoutubeService } from '../../google/youtube.service'
 import { UploadToBucketToYoutube } from '../bullMQ.service'
 
 @Processor('nexus-bucket')
-export class UploadToBucket {
+export class NexusBucketProcessor {
   constructor(
     private readonly googleDriveService: GoogleDriveService,
     private readonly googleOAuthService: GoogleOAuthService,
