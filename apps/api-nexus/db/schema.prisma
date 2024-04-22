@@ -157,3 +157,15 @@ model BatchResource {
 
     @@unique([batchId, resourceId])
 }
+
+enum Role {
+    publisher
+}
+
+model UserRole {
+    id     String @id @default(uuid())
+    userId String @unique
+    roles  Role[]
+
+    @@index(userId)
+}

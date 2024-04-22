@@ -67,7 +67,6 @@ export class ChannelCreateInput {
 
 export class ChannelUpdateInput {
     name?: Nullable<string>;
-    nexusId?: Nullable<string>;
     platform?: Nullable<string>;
 }
 
