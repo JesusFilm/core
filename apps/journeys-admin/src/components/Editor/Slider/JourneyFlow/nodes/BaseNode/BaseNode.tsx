@@ -38,36 +38,6 @@ export function BaseNode({
   sourceHandleProps,
   children
 }: BaseNodeProps): ReactElement {
-  const { journey } = useJourney()
-  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
-
-  const handleClick = async (): Promise<void> => {
-    if (journey == null) return
-
-    const stepId = uuidv4()
-    const cardId = uuidv4()
-    const { data } = await stepAndCardBlockCreate({
-      variables: {
-        stepBlockCreateInput: {
-          id: stepId,
-          journeyId: journey.id
-        },
-        cardBlockCreateInput: {
-          id: cardId,
-          journeyId: journey.id,
-          parentBlockId: stepId,
-          themeMode: ThemeMode.dark,
-          themeName: ThemeName.base
-        }
-      }
-    })
-    if (data?.stepBlockCreate != null) {
-      onSourceConnect?.({
-        target: data.stepBlockCreate.id
-      })
-    }
-  }
-
   return (
     <Box
       data-testid="BaseNode"
@@ -104,7 +74,6 @@ export function BaseNode({
           type="source"
           position={Position.Bottom}
           onConnect={onSourceConnect}
-          onClick={handleClick}
           {...sourceHandleProps}
           sx={{
             width: 7.5,

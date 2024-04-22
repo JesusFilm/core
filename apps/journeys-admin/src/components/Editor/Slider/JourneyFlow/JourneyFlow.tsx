@@ -5,6 +5,7 @@ import {
   ReactElement,
   TouchEvent,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState
@@ -19,6 +20,9 @@ import {
   OnConnectStartParams,
   ReactFlow,
   ReactFlowInstance,
+  getConnectedEdges,
+  getIncomers,
+  getOutgoers,
   useEdgesState,
   useNodesState
 } from 'reactflow'
@@ -73,57 +77,93 @@ export function JourneyFlow(): ReactElement {
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
-  useQuery<GetStepBlocksWithPosition, GetStepBlocksWithPositionVariables>(
-    GET_STEP_BLOCKS_WITH_POSITION,
-    {
-      variables: { journeyIds: journey?.id != null ? [journey.id] : undefined },
-      onCompleted: (data) => {
-        if (steps == null || journey == null) return
-        let positions: PositionMap = {}
-        if (
-          data.blocks.some(
-            (block) =>
-              block.__typename === 'StepBlock' &&
-              (block.x == null || block.y == null)
-          )
-        ) {
-          // some steps have no x or y coordinates
-          positions = arrangeSteps(steps)
-          Object.entries(positions).forEach(([id, position]) => {
-            void stepBlockPositionUpdate({
-              variables: {
+  const { data, refetch } = useQuery<
+    GetStepBlocksWithPosition,
+    GetStepBlocksWithPositionVariables
+  >(GET_STEP_BLOCKS_WITH_POSITION, {
+    variables: { journeyIds: journey?.id != null ? [journey.id] : undefined },
+    onCompleted: (data) => {
+      if (steps == null || journey == null) return
+      let positions: PositionMap = {}
+      if (
+        data.blocks.some(
+          (block) =>
+            block.__typename === 'StepBlock' &&
+            (block.x == null || block.y == null)
+        )
+      ) {
+        // some steps have no x or y coordinates
+        positions = arrangeSteps(steps)
+        Object.entries(positions).forEach(([id, position]) => {
+          void stepBlockPositionUpdate({
+            variables: {
+              id,
+              journeyId: journey.id,
+              x: position.x,
+              y: position.y
+            },
+            optimisticResponse: {
+              stepBlockUpdate: {
                 id,
-                journeyId: journey.id,
+                __typename: 'StepBlock',
                 x: position.x,
                 y: position.y
-              },
-              optimisticResponse: {
-                stepBlockUpdate: {
-                  id,
-                  __typename: 'StepBlock',
-                  x: position.x,
-                  y: position.y
-                }
               }
-            })
-          })
-        } else {
-          data.blocks.forEach((block) => {
-            if (
-              block.__typename === 'StepBlock' &&
-              block.x != null &&
-              block.y != null
-            ) {
-              positions[block.id] = { x: block.x, y: block.y }
             }
           })
-        }
-        const { nodes, edges } = transformSteps(steps, positions)
-        setEdges(edges)
-        setNodes(nodes)
+        })
+      } else {
+        data.blocks.forEach((block) => {
+          if (
+            block.__typename === 'StepBlock' &&
+            block.x != null &&
+            block.y != null
+          ) {
+            positions[block.id] = { x: block.x, y: block.y }
+          }
+        })
       }
+      const { nodes, edges } = transformSteps(steps, positions)
+      setEdges(edges)
+      setNodes(nodes)
     }
-  )
+  })
+
+  useEffect(() => {
+    if (steps == null || data?.blocks == null) return
+    if (steps.length !== data.blocks.length) {
+      void refetch()
+    }
+    const positions: PositionMap =
+      data.blocks.reduce((acc, block) => {
+        if (
+          block.__typename === 'StepBlock' &&
+          block.x != null &&
+          block.y != null
+        ) {
+          acc[block.id] = { x: block.x, y: block.y }
+        }
+        return acc
+      }, {}) ?? {}
+
+    const validSteps = steps.every((step) => {
+      return (
+        positions[step.id] != null &&
+        positions[step.id].x != null &&
+        positions[step.id].y != null
+      )
+    })
+
+    // console.log('Steps: ', steps)
+    // console.log('Pos: ', positions)
+    // console.log('Valid: ', validSteps)
+
+    if (!validSteps) return
+
+    const { nodes, edges } = transformSteps(steps, positions)
+    setEdges(edges)
+    setNodes(nodes)
+  }, [steps, data, setEdges, setNodes, refetch])
 
   const createNewStepAndConnectBlock = useCallback(
     async function createNewStepAndConnectBlock(
@@ -153,14 +193,6 @@ export function JourneyFlow(): ReactElement {
           }
         }
       })
-      setNodes((oldNodes) =>
-        oldNodes.concat({
-          id: newStepId,
-          type: 'StepBlock',
-          data: {},
-          position: { x, y }
-        })
-      )
       if (step.id === block.id) {
         // step
         await stepBlockNextBlockUpdate({
@@ -179,20 +211,9 @@ export function JourneyFlow(): ReactElement {
             }
           }
         })
-        setEdges((oldEdges) =>
-          oldEdges.concat({
-            id: `${step.id}->${newStepId}`,
-            source: step.id,
-            target: newStepId,
-            style: {
-              strokeDasharray: 4
-            }
-          })
-        )
       } else {
         // action
         await navigateToBlockActionUpdate(block, newStepId)
-        // TODO POS: update edges
       }
     },
     []
@@ -251,15 +272,6 @@ export function JourneyFlow(): ReactElement {
     },
     [reactFlowInstance, connectingParams, createNewStepAndConnectBlock, steps]
   )
-
-  const nodeTypes = useMemo(
-    () => ({
-      StepBlock: StepBlockNode,
-      SocialPreview: SocialPreviewNode
-    }),
-    []
-  )
-
   const onNodeDragStop: NodeDragHandler = async (
     _event,
     node
@@ -285,6 +297,17 @@ export function JourneyFlow(): ReactElement {
       }
     })
   }
+
+  const nodeTypes = useMemo(
+    () => ({
+      StepBlock: StepBlockNode,
+      SocialPreview: SocialPreviewNode
+    }),
+    []
+  )
+
+  // console.log('Blocks: ', data?.blocks)
+  // console.log('Steps: ', steps)
 
   return (
     <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">
