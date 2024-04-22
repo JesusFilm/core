@@ -25,7 +25,7 @@ export class AlgoliaService {
         take: 1000,
         skip: offset,
         include: {
-          video: { include: { title: true, description: true, snippet: true } },
+          video: { include: { title: true, description: true } },
           subtitle: true
         },
         where:
