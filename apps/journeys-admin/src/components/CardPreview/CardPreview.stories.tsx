@@ -25,6 +25,9 @@ import {
 import { journeysAdminConfig } from '../../libs/storybook'
 
 import { CardPreview } from '.'
+import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 
 const CardPreviewStory: Meta<typeof CardPreview> = {
   ...journeysAdminConfig,
@@ -703,6 +706,59 @@ const CardPreviewComponent = ({ ...args }): ReactNode => {
   )
 }
 
+const CustomLoadingComponent = ({ testId }) => {
+  return (
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        py: 5,
+        px: 6
+      }}
+      data-testId={`CardPreview${testId ?? ''}`}
+    >
+      <Box
+        sx={{
+          border: '3px solid transparent'
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          width={87}
+          height={132}
+          sx={{ m: 1, borderRadius: 1 }}
+        />
+      </Box>
+      <Box
+        sx={{
+          border: '3px solid transparent'
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          width={87}
+          height={132}
+          sx={{ m: 1, borderRadius: 1 }}
+        />
+      </Box>
+      <Box
+        sx={{
+          border: '3px solid transparent'
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          width={87}
+          height={132}
+          sx={{ m: 1, borderRadius: 1 }}
+        />
+      </Box>
+    </Stack>
+  )
+}
+
 const Template: StoryObj<
   ComponentProps<typeof CardPreview> & { steps: Array<TreeBlock<StepBlock>> }
 > = {
@@ -726,13 +782,13 @@ export const AddButton = {
   }
 }
 
-export const Loading = { ...Template, args: { steps: undefined } }
+export const Loading = { ...CustomLoadingComponent }
 
 export const WithNavigationCards = {
   ...Template,
   args: {
     steps,
-    showNavigationCards: true
+    CustomLoadingComponent: CustomLoadingComponent
   }
 }
 
