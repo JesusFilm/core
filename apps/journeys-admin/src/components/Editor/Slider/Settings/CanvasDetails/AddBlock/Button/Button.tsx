@@ -73,7 +73,7 @@ export function Button({
             ]
           }
         }}
-        sx={{ opacity: { xs: 0, sm: 1 } }}
+        sx={{ display: { xs: 'none', sm: 'flex' } }}
       >
         <Box>
           <Card
@@ -86,8 +86,7 @@ export function Button({
                 borderColor: { xs: 'editor.divider', sm: 'primary.main' },
                 borderWidth: { xs: '1px', sm: '2px' },
                 '.plus2-icon': {
-                  display: 'flex',
-                  opacity: { xs: 0, sm: 1 }
+                  display: { xs: 'none', sm: 'flex' }
                 }
               }
             }}
