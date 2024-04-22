@@ -33,7 +33,7 @@ function tagImage(tagLabel?: string):
         backgroundStyle:
           'linear-gradient(0deg, rgba(66, 66, 66, 0.8) 0%,rgba(66, 66, 66, 0) 60%,rgba(66, 66, 66, 0.0) 100%)'
       }
-    case 'Fear/Anxiety':
+    case 'Anxiety':
       return {
         tagImg: fearAnxietyImage,
         backgroundStyle:

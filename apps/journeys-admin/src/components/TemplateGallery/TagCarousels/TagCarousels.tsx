@@ -101,7 +101,7 @@ function hasBgImg(tag: string): boolean {
   // (images currently hard-coded in FeltNeedsButton)
   return [
     'Depression',
-    'Fear/Anxiety',
+    'Anxiety',
     'Forgiveness',
     'Hope',
     'Loneliness',
