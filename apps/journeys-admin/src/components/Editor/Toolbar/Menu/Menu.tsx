@@ -19,6 +19,7 @@ import { CreateTemplateItem } from '../Items/CreateTemplateItem'
 import { DescriptionItem } from '../Items/DescriptionItem'
 import { LanguageItem } from '../Items/LanguageItem'
 import { PreviewItem } from '../Items/PreviewItem'
+import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
 import { TitleItem } from '../Items/TitleItem'
@@ -95,7 +96,10 @@ export function Menu(): ReactElement {
           <CreateTemplateItem variant="menu-item" />
         )}
         {!smUp && (
-          <StrategyItem variant="menu-item" closeMenu={handleCloseMenu} />
+          <>
+            <StrategyItem variant="menu-item" closeMenu={handleCloseMenu} />
+            <ShareItem variant="menu-item" closeMenu={handleCloseMenu} />
+          </>
         )}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && (

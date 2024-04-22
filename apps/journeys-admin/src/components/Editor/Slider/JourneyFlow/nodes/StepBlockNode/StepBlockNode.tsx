@@ -55,7 +55,7 @@ export function StepBlockNode({
 
     await stepBlockNextBlockUpdate({
       variables: {
-        id: params.source,
+        id: params.source != null ? params.source : step.id,
         journeyId: journey.id,
         input: {
           nextBlockId: params.target
@@ -63,7 +63,7 @@ export function StepBlockNode({
       },
       optimisticResponse: {
         stepBlockUpdate: {
-          id: params.source,
+          id: params.source != null ? params.source : step.id,
           __typename: 'StepBlock',
           nextBlockId: params.target
         }

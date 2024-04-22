@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { ReactFlowProvider } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -178,8 +179,7 @@ describe('BaseNode', () => {
 
     const sourceHandle = screen.getByTestId('BaseNodeSourceHandleArea')
 
-    fireEvent.click(sourceHandle)
-
+    await userEvent.click(sourceHandle)
     await waitFor(() =>
       expect(mockStepAndCardBlockCreate.result).toHaveBeenCalled()
     )
