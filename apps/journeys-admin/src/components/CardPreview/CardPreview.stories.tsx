@@ -717,7 +717,6 @@ const CustomLoadingComponent = ({ ...args }): ReactNode => {
         py: 5,
         px: 6
       }}
-      data-testId={`CardPreview${testId ?? ''}`}
     >
       <Box
         sx={{
