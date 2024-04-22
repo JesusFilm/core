@@ -46,20 +46,13 @@ export class NexusBucketProcessor {
       job.data.channel.refreshToken
     )
 
-    const youtubeData = await this.googleYoutubeService.uploadVideo(
-      {
-        token: youtubeToken,
-        filePath,
-        channelId: job.data.channel.channelId,
-        title: job.data.resource.title ?? '',
-        description: job.data.resource.description ?? ''
-      },
-      async (progress) => {
-        progress = 66 + progress / 3
-        await job.progress(progress)
-        return await Promise.resolve()
-      }
-    )
+    const youtubeData = await this.googleYoutubeService.uploadVideo({
+      token: youtubeToken,
+      filePath,
+      channelId: job.data.channel.channelId,
+      title: job.data.resource.title ?? '',
+      description: job.data.resource.description ?? ''
+    })
     console.log('YOUTUBE DATA: ', youtubeData)
     await job.progress(100)
     return job.returnvalue

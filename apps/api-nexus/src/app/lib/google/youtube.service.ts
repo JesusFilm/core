@@ -1,4 +1,4 @@
-import { createReadStream, statSync } from 'fs'
+import { createReadStream } from 'fs'
 
 import { youtube, youtube_v3 } from '@googleapis/youtube'
 import { Injectable } from '@nestjs/common/decorators/core'
@@ -6,6 +6,14 @@ import { OAuth2Client } from 'googleapis-common'
 
 interface ChannelsRequest {
   accessToken: string
+}
+
+interface UploadVideoRequest {
+  token: string
+  filePath: string
+  channelId: string
+  title: string
+  description: string
 }
 
 @Injectable()
@@ -35,47 +43,32 @@ export class GoogleYoutubeService {
     return oAuth2Client
   }
 
-  async uploadVideo(
-    youtubeData: {
-      token: string
-      filePath: string
-      channelId: string
-      title: string
-      description: string
-    },
-    progressCallback?: (progress: number) => Promise<void>
-  ): Promise<youtube_v3.Schema$Video> {
+  async uploadVideo({
+    token,
+    filePath,
+    channelId,
+    title,
+    description
+  }: UploadVideoRequest): Promise<youtube_v3.Schema$Video> {
     const client = youtube({ version: 'v3' })
-    const fileSize = statSync(youtubeData.filePath).size
-
-    const result = await client.videos.insert(
-      {
-        auth: this.authorize(youtubeData.token),
-        part: ['id', 'snippet', 'status'],
-        notifySubscribers: false,
-        requestBody: {
-          snippet: {
-            title: youtubeData.title,
-            description: youtubeData.description,
-            channelId: youtubeData.channelId
-          },
-          status: {
-            privacyStatus: 'private'
-          }
+    const result = await client.videos.insert({
+      auth: this.authorize(token),
+      part: ['id', 'snippet', 'status'],
+      notifySubscribers: false,
+      requestBody: {
+        snippet: {
+          title,
+          description,
+          channelId
         },
-        media: {
-          body: createReadStream(youtubeData.filePath)
+        status: {
+          privacyStatus: 'private'
         }
       },
-      {
-        onUploadProgress: async (evt) => {
-          const progress = (evt.bytesRead / fileSize) * 100
-          if (progressCallback != null) {
-            await progressCallback(progress)
-          }
-        }
+      media: {
+        body: createReadStream(filePath)
       }
-    )
+    })
 
     return result.data
   }
