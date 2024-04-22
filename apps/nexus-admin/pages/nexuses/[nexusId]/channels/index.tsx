@@ -1,21 +1,25 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Stack } from '@mui/material'
+import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
 
-import { type Channel, type Channel_channel } from '../../__generated__/Channel'
-import { type ChannelCreate } from '../../__generated__/ChannelCreate'
-import { type ChannelDelete } from '../../__generated__/ChannelDelete'
+import {
+  type Channel,
+  type Channel_channel
+} from '../../../../__generated__/Channel'
+import { type ChannelCreate } from '../../../../__generated__/ChannelCreate'
+import { type ChannelDelete } from '../../../../__generated__/ChannelDelete'
 import {
   type Channels,
   type Channels_channels
-} from '../../__generated__/Channels'
-import { type ChannelUpdate } from '../../__generated__/ChannelUpdate'
-import { ChannelsTable } from '../../src/components/ChannelsTable'
-import { CreateChannelModal } from '../../src/components/CreateChannelModal'
-import { DeleteModal } from '../../src/components/DeleteModal'
-import { MainLayout } from '../../src/components/MainLayout'
-import { UpdateChannelModal } from '../../src/components/UpdateChannelModal'
+} from '../../../../__generated__/Channels'
+import { type ChannelUpdate } from '../../../../__generated__/ChannelUpdate'
+import { ChannelsTable } from '../../../../src/components/ChannelsTable'
+import { CreateChannelModal } from '../../../../src/components/CreateChannelModal'
+import { DeleteModal } from '../../../../src/components/DeleteModal'
+import { MainLayout } from '../../../../src/components/MainLayout'
+import { UpdateChannelModal } from '../../../../src/components/UpdateChannelModal'
 
 export const GET_CHANNELS = gql`
   query Channels($where: ChannelFilter) {
@@ -83,15 +87,14 @@ const ChannelsPage = () => {
   const [deleteChannelModal, setDeleteChannelModal] = useState<boolean>(false)
   const [channelId, setChannelId] = useState<string>('')
   const [channels, setChannels] = useState<Channels_channels[]>([])
-  const nexusId =
-    typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
+  const { query } = useRouter()
   const [channel, setChannel] = useState<Channel_channel | null>(null)
 
   const { data, loading } = useQuery<Channels>(GET_CHANNELS, {
     variables: {
       where: {
         status: 'published',
-        nexusId
+        nexusId: query.nexusId?.toString()
       }
     }
   })
@@ -100,7 +103,7 @@ const ChannelsPage = () => {
     skip: !channelId,
     variables: {
       channelID: channelId,
-      nexusId
+      nexusId: query.nexusId?.toString()
     }
   })
 
@@ -159,7 +162,7 @@ const ChannelsPage = () => {
         onCreate={(channelData) => {
           channelCreate({
             variables: {
-              input: { nexusId, ...channelData }
+              input: { nexusId: query.nexusId?.toString(), ...channelData }
             },
             onCompleted: () => {
               setOpenCreateChannelModal(false)

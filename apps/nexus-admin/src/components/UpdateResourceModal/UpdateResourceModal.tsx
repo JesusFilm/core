@@ -1,12 +1,12 @@
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import { useFormik } from 'formik'
 import { type FC, useEffect } from 'react'
 import { object, string } from 'yup'
 
 import { type Resource_resource } from '../../../__generated__/Resource'
 import { Modal } from '../Modal'
-import Stack from '@mui/material/Stack'
-import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField'
 
 interface UpdateResourceModalProps {
   open: boolean

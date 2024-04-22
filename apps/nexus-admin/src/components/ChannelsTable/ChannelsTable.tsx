@@ -14,7 +14,7 @@ import { type FC, useState } from 'react'
 
 import { type Channels_channels } from '../../../__generated__/Channels'
 import { type ConnectChannel } from '../../../__generated__/ConnectChannel'
-import { GET_CHANNELS } from '../../../pages/channels'
+import { GET_CHANNELS } from '../../../pages/nexuses/[nexusId]/channels'
 import { Table } from '../Table'
 
 const CHANNEL_CONNECT = gql`

@@ -4,7 +4,7 @@ import { useFormik } from 'formik'
 import { type FC } from 'react'
 import { object, string } from 'yup'
 
-import { GET_NEXUSES } from '../../../pages'
+import { GET_NEXUSES } from '../../../pages/nexuses'
 import { Modal } from '../Modal'
 
 interface CreateNexusModalProps {

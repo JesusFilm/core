@@ -1,5 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Stack } from '@mui/material'
+import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
@@ -8,15 +9,21 @@ import {
   type PickerConfiguration
 } from 'react-google-drive-picker/dist/typeDefs'
 
-import { type Resource, type Resource_resource } from '../../__generated__/Resource'
-import { type ResourceDelete } from '../../__generated__/ResourceDelete'
-import { type ResourceFromGoogleDrive } from '../../__generated__/ResourceFromGoogleDrive'
-import { type Resources, type Resources_resources } from '../../__generated__/Resources'
-import { type ResourceUpdate } from '../../__generated__/ResourceUpdate'
-import { DeleteModal } from '../../src/components/DeleteModal'
-import { MainLayout } from '../../src/components/MainLayout'
-import { ResourcesTable } from '../../src/components/ResourcesTable'
-import { UpdateResourceModal } from '../../src/components/UpdateResourceModal'
+import {
+  type Resource,
+  type Resource_resource
+} from '../../../../__generated__/Resource'
+import { type ResourceDelete } from '../../../../__generated__/ResourceDelete'
+import { type ResourceFromGoogleDrive } from '../../../../__generated__/ResourceFromGoogleDrive'
+import {
+  type Resources,
+  type Resources_resources
+} from '../../../../__generated__/Resources'
+import { type ResourceUpdate } from '../../../../__generated__/ResourceUpdate'
+import { DeleteModal } from '../../../../src/components/DeleteModal'
+import { MainLayout } from '../../../../src/components/MainLayout'
+import { ResourcesTable } from '../../../../src/components/ResourcesTable'
+import { UpdateResourceModal } from '../../../../src/components/UpdateResourceModal'
 
 export const GET_RESOURCES = gql`
   query Resources($where: ResourceFilter) {
@@ -89,16 +96,15 @@ const ResourcesPage = () => {
   const [resource, setResource] = useState<Resource_resource | null>(null)
   const [openUpdateResourceModal, setOpenUpdateResourceModal] =
     useState<boolean>(false)
+  const { query } = useRouter()
 
   const [openPicker] = useDrivePicker()
-  const isSSRMode = typeof window !== 'undefined'
-  const nexusId = isSSRMode ? localStorage.getItem('nexusId') : ''
 
   const { data, loading } = useQuery<Resources>(GET_RESOURCES, {
     variables: {
       where: {
         status: 'published',
-        nexusId
+        nexusId: query.nexusId?.toString()
       }
     }
   })
@@ -107,7 +113,7 @@ const ResourcesPage = () => {
     skip: !resourceId,
     variables: {
       resourceId,
-      nexusId
+      nexusId: query.nexusId?.toString()
     }
   })
 
@@ -201,7 +207,12 @@ const ResourcesPage = () => {
             pt: 4
           }}
         >
-          <Button variant="contained" onClick={async () => { await openGooglePicker(); }}>
+          <Button
+            variant="contained"
+            onClick={async () => {
+              await openGooglePicker()
+            }}
+          >
             Load from Google drive
           </Button>
         </Stack>
@@ -220,7 +231,9 @@ const ResourcesPage = () => {
       </Stack>
       <UpdateResourceModal
         open={openUpdateResourceModal}
-        onClose={() => { setOpenUpdateResourceModal(false); }}
+        onClose={() => {
+          setOpenUpdateResourceModal(false)
+        }}
         data={resource}
         onUpdate={(resourceData) => {
           resourceUpdate({
@@ -237,7 +250,9 @@ const ResourcesPage = () => {
       />
       <DeleteModal
         open={deleteResourceModal}
-        onClose={() => { setDeleteResourceModal(false); }}
+        onClose={() => {
+          setDeleteResourceModal(false)
+        }}
         content="Are you sure you would like to delete this resource?"
         onDelete={() => {
           resourceDelete({

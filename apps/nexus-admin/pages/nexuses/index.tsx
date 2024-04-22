@@ -14,9 +14,9 @@ import { useRouter } from 'next/navigation'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useEffect, useState } from 'react'
 
-import { type Nexuses, type Nexuses_nexuses } from '../__generated__/Nexuses'
-import { CreateNexusModal } from '../src/components/CreateNexusModal'
-import { Loader } from '../src/components/Loader'
+import { type Nexuses, type Nexuses_nexuses } from '../../__generated__/Nexuses'
+import { CreateNexusModal } from '../../src/components/CreateNexusModal'
+import { Loader } from '../../src/components/Loader'
 
 export const GET_NEXUSES = gql`
   query Nexuses {
@@ -46,11 +46,6 @@ export function Index() {
     return <Loader />
   }
 
-  const redirectToDashboard = (nexusId: string) => {
-    localStorage.setItem('nexusId', nexusId)
-    router.push('/channels')
-  }
-
   return (
     <Stack
       alignItems="center"
@@ -77,11 +72,7 @@ export function Index() {
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <Button
-                    onClick={() => {
-                      redirectToDashboard(nexusApp.id)
-                    }}
-                  >
+                  <Button href={`/nexuses/${nexusApp.id}/channels`}>
                     Select
                   </Button>
                 </CardActions>

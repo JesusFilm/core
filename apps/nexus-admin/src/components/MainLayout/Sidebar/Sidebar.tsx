@@ -17,6 +17,7 @@ import {
 } from '@mui/material'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/router'
 import { type FC, type ReactElement, useState } from 'react'
 
 interface SidebarLink {
@@ -31,6 +32,7 @@ export const Sidebar: FC = () => {
   const [miniVariant, setMiniVariant] = useState<boolean>(false)
   const drawerWidth = 240
   const miniDrawerWidth = 56
+  const { query } = useRouter()
 
   const sidebarLinks: SidebarLink[] = [
     {
@@ -92,7 +94,11 @@ export const Sidebar: FC = () => {
       }}
     >
       <Stack alignItems={miniVariant ? 'center' : 'flex-start'}>
-        <IconButton onClick={() => { setMiniVariant(!miniVariant); }}>
+        <IconButton
+          onClick={() => {
+            setMiniVariant(!miniVariant)
+          }}
+        >
           {miniVariant ? (
             <ArrowCircleRightIcon
               sx={{
@@ -114,7 +120,7 @@ export const Sidebar: FC = () => {
           <ListItem disablePadding key={sidebarLink.id}>
             <ListItemButton
               LinkComponent={Link}
-              href={sidebarLink.slug}
+              href={`/nexuses/${query.nexusId?.toString()}${sidebarLink.slug}`}
               sx={{
                 px: miniVariant ? '12px' : '16px'
               }}
