@@ -34,21 +34,20 @@ enum VideoLabel {
 }
 
 model Video {
-  id                String         @id @default(uuid())
+  id                String             @id @default(uuid())
   label             VideoLabel
   primaryLanguageId String
   title             VideoTitle[]
-  seoTitle          Json[]
-  snippet           Json[]
-  description       Json[]
+  snippet           VideoSnippet[]
+  description       VideoDescription[]
   studyQuestions    Json[]
   image             String?
   imageAlt          Json[]
-  slug              String?        @unique
+  slug              String?            @unique
   noIndex           Boolean?
   childIds          String[] // needed for child sort order
-  children          Video[]        @relation("ParentChild")
-  parent            Video[]        @relation("ParentChild")
+  children          Video[]            @relation("ParentChild")
+  parent            Video[]            @relation("ParentChild")
   variants          VideoVariant[]
 
   @@index(label)
@@ -56,6 +55,34 @@ model Video {
 }
 
 model VideoTitle {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  primary    Boolean
+  videoId    String?
+  video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+  @@index(value(type: Gin))
+  @@index(primary)
+  @@index(languageId)
+}
+
+model VideoSnippet {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  primary    Boolean
+  videoId    String?
+  video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+  @@index(value(type: Gin))
+  @@index(primary)
+  @@index(languageId)
+}
+
+model VideoDescription {
   id         String  @id @default(uuid())
   value      String
   languageId String
