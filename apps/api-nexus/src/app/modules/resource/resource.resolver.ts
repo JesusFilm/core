@@ -4,7 +4,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
-import { NexusStatus, Prisma, Resource } from '.prisma/api-nexus-client'
+import { Prisma, Resource, ResourceStatus } from '.prisma/api-nexus-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
@@ -95,7 +95,7 @@ export class ResourceResolver {
           ...input,
           id,
           sourceType: 'other',
-          status: 'published'
+          status: ResourceStatus.published
         }
       })
       const resource = await tx.resource.findUnique({
@@ -170,7 +170,7 @@ export class ResourceResolver {
         id
       },
       data: {
-        status: NexusStatus.deleted
+        status: ResourceStatus.deleted
       },
       include: {
         localizations: true

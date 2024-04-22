@@ -4,7 +4,7 @@ import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const channelAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
   can(Action.Create, 'Channel', {
-    status: NexusStatus.published,
+    status: { not: NexusStatus.deleted },
     nexus: {
       is: {
         userNexuses: {
@@ -13,12 +13,12 @@ export const channelAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
             role: 'owner'
           }
         },
-        status: NexusStatus.published
+        status: { not: NexusStatus.deleted }
       }
     }
   })
   can(Action.Manage, 'Channel', {
-    status: NexusStatus.published,
+    status: { not: NexusStatus.deleted },
     nexus: {
       is: {
         userNexuses: {
@@ -27,7 +27,7 @@ export const channelAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
             role: 'owner'
           }
         },
-        status: NexusStatus.published
+        status: { not: NexusStatus.deleted }
       }
     }
   })

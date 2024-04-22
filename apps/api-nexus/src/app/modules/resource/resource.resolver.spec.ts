@@ -287,7 +287,7 @@ describe('ResourceResolver', () => {
       )
       expect(prismaService.resource.update).toHaveBeenCalledWith({
         where: { id: 'resourceId' },
-        data: { status: NexusStatus.deleted },
+        data: { status: ResourceStatus.deleted },
         include: {
           localizations: true
         }

@@ -10,7 +10,7 @@ export const nexusAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
         role: 'owner'
       }
     },
-    status: NexusStatus.published
+    status: { not: NexusStatus.deleted }
   })
   can(Action.Manage, 'Nexus', {
     userNexuses: {
@@ -19,6 +19,6 @@ export const nexusAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
         role: 'owner'
       }
     },
-    status: NexusStatus.published
+    status: { not: NexusStatus.deleted }
   })
 }

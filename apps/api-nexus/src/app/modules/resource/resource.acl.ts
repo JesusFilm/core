@@ -1,10 +1,10 @@
-import { NexusStatus } from '.prisma/api-nexus-client'
+import { NexusStatus, ResourceStatus } from '.prisma/api-nexus-client'
 
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const resourceAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
   can(Action.Create, 'Resource', {
-    status: NexusStatus.published,
+    status: { not: ResourceStatus.deleted },
     nexus: {
       is: {
         userNexuses: {
@@ -13,12 +13,12 @@ export const resourceAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
             role: 'owner'
           }
         },
-        status: NexusStatus.published
+        status: { not: NexusStatus.deleted }
       }
     }
   })
   can(Action.Manage, 'Resource', {
-    status: NexusStatus.published,
+    status: { not: ResourceStatus.deleted },
     nexus: {
       is: {
         userNexuses: {
@@ -27,7 +27,7 @@ export const resourceAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
             role: 'owner'
           }
         },
-        status: NexusStatus.published
+        status: { not: NexusStatus.deleted }
       }
     }
   })
