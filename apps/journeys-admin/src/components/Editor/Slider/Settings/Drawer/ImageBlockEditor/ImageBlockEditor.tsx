@@ -129,10 +129,10 @@ export function ImageBlockEditor({
 
   return (
     <>
-      <Box
+      <Box // try stack if this doesnt worjk
         sx={{
           width: '100%',
-          height: 'auto' // 183
+          height: 183
         }}
       >
         <Box
@@ -190,7 +190,10 @@ export function ImageBlockEditor({
       <Box
         sx={{
           width: '100%',
-          height: { xs: '60%', sm: '70%', m: 600, l: 600, xl: 600 },
+          height: {
+            xs: 'calc(100vh - 405px)',
+            sm: 'calc(100vh - 375px)'
+          },
           overflowY: 'auto',
           dispaly: 'flex'
         }}
