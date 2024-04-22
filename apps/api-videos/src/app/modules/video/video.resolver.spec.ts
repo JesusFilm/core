@@ -6,6 +6,8 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
   Prisma,
   Video,
+  VideoDescription,
+  VideoSnippet,
   VideoTitle,
   VideoVariant
 } from '.prisma/api-videos-client'
@@ -26,9 +28,6 @@ describe('VideoResolver', () => {
     slug: 'video-slug',
     label: 'featureFilm',
     primaryLanguageId: '529',
-    seoTitle: [],
-    snippet: [],
-    description: [],
     studyQuestions: [],
     image: '',
     imageAlt: [],
@@ -50,6 +49,22 @@ describe('VideoResolver', () => {
   const videoTitle: VideoTitle = {
     value: '普通話',
     primary: false,
+    languageId: '529',
+    id: '1',
+    videoId: '20615'
+  }
+
+  const videoSnippet: VideoSnippet = {
+    value: 'This is a video snippet',
+    primary: true,
+    languageId: '529',
+    id: '1',
+    videoId: '20615'
+  }
+
+  const videoDescription: VideoDescription = {
+    value: 'This is a video description',
+    primary: true,
     languageId: '529',
     id: '1',
     videoId: '20615'
@@ -82,6 +97,10 @@ describe('VideoResolver', () => {
     prismaService.video.findUnique.mockResolvedValue(video)
     prismaService.video.findFirst.mockResolvedValue(video)
     prismaService.videoTitle.findMany.mockResolvedValue([videoTitle])
+    prismaService.videoSnippet.findMany.mockResolvedValue([videoSnippet])
+    prismaService.videoDescription.findMany.mockResolvedValue([
+      videoDescription
+    ])
     prismaService.videoVariant.findUnique.mockResolvedValue(videoVariant[0])
     prismaService.videoVariant.findMany.mockResolvedValue(videoVariant)
     prismaService.video.count.mockResolvedValue(1)
@@ -283,6 +302,52 @@ describe('VideoResolver', () => {
     it('returns filtered titles', async () => {
       expect(await resolver.title(video, '529', true)).toEqual([videoTitle])
       expect(prismaService.videoTitle.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ primary: true }, { languageId: '529' }]
+        }
+      })
+    })
+  })
+
+  describe('snippet', () => {
+    it('returns snippets', async () => {
+      expect(await resolver.snippet(video)).toEqual([videoSnippet])
+      expect(prismaService.videoSnippet.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ languageId: '529' }]
+        }
+      })
+    })
+
+    it('returns filtered snippets', async () => {
+      expect(await resolver.snippet(video, '529', true)).toEqual([videoSnippet])
+      expect(prismaService.videoSnippet.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ primary: true }, { languageId: '529' }]
+        }
+      })
+    })
+  })
+
+  describe('description', () => {
+    it('returns descriptions', async () => {
+      expect(await resolver.description(video)).toEqual([videoDescription])
+      expect(prismaService.videoDescription.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ languageId: '529' }]
+        }
+      })
+    })
+
+    it('returns filtered descriptions', async () => {
+      expect(await resolver.description(video, '529', true)).toEqual([
+        videoDescription
+      ])
+      expect(prismaService.videoDescription.findMany).toHaveBeenCalledWith({
         where: {
           videoId: video.id,
           OR: [{ primary: true }, { languageId: '529' }]

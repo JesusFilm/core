@@ -135,28 +135,50 @@ export class VideoResolver {
   }
 
   @ResolveField()
-  @TranslationField('seoTitle')
-  seoTitle(
-    @Parent() language,
+  async snippet(
+    @Parent() video,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {}
+  ): Promise<VideoTitle[]> {
+    return await this.prismaService.videoSnippet.findMany({
+      where: {
+        videoId: video.id,
+        OR: compact([
+          primary != null
+            ? {
+                primary
+              }
+            : undefined,
+          {
+            languageId: languageId ?? '529'
+          }
+        ])
+      }
+    })
+  }
 
   @ResolveField()
-  @TranslationField('snippet')
-  snippet(
-    @Parent() language,
+  async description(
+    @Parent() video,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {}
-
-  @ResolveField()
-  @TranslationField('description')
-  description(
-    @Parent() language,
-    @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean
-  ): void {}
+  ): Promise<VideoTitle[]> {
+    return await this.prismaService.videoDescription.findMany({
+      where: {
+        videoId: video.id,
+        OR: compact([
+          primary != null
+            ? {
+                primary
+              }
+            : undefined,
+          {
+            languageId: languageId ?? '529'
+          }
+        ])
+      }
+    })
+  }
 
   @ResolveField()
   @TranslationField('studyQuestions')
