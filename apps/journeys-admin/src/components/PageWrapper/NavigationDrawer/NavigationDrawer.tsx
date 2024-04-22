@@ -112,7 +112,7 @@ export function NavigationDrawer({
         <ListItemButton
           onClick={handleClose}
           data-testid="NavigationListItemToggle"
-          aria-label='Navigation Drawer Toggle'
+          aria-label="Navigation Drawer Toggle"
         >
           <ListItemIcon
             sx={{

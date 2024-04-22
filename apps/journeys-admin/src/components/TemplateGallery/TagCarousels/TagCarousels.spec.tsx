@@ -94,7 +94,7 @@ describe('TagCarousels', () => {
     )
 
     await waitFor(async () => {
-       expect(
+      expect(
         getByRole('button', {
           name: 'NUA tag NUA NUA'
         })
