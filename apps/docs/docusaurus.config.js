@@ -1,4 +1,5 @@
 // @ts-check
+// just to run e2e tests
 // Note: type annotations allow type checking and IDEs autocompletion
 require('dotenv').config()
 const darkCodeTheme = require('prism-react-renderer/themes/dracula')

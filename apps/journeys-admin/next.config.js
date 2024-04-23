@@ -1,3 +1,4 @@
+// just to run e2e tests
 const withBundleAnalyzer = require('@next/bundle-analyzer')
 const { composePlugins, withNx } = require('@nx/next')
 

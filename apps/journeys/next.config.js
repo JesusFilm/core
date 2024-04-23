@@ -1,3 +1,4 @@
+// just to run e2e tests
 const { composePlugins, withNx } = require('@nx/next')
 
 const { i18n } = require('./next-i18next.config')

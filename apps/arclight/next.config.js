@@ -1,5 +1,5 @@
 // @ts-check
-
+// just to run e2e tests
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { composePlugins, withNx } = require('@nx/next')
 
