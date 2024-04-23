@@ -25,7 +25,7 @@ export function Slider(): ReactElement {
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const {
-    state: { activeSlide },
+    state: { activeSlide, selectedStep },
     dispatch
   } = useEditor()
 
@@ -40,21 +40,27 @@ export function Slider(): ReactElement {
     }
   }
 
+  useEffect(() => {
+    if (
+      swiperRef.current != null &&
+      swiperRef.current.swiper.activeIndex !== activeSlide
+    ) {
+      if (activeSlide === ActiveSlide.JourneyFlow) {
+        dispatch({
+          type: 'SetSelectedBlockAction',
+          selectedBlock: selectedStep
+        })
+      }
+      swiperRef.current.swiper.slideTo(activeSlide)
+    }
+  }, [activeSlide])
+
   function handlePrev(): void {
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: activeSlide - 1
     })
   }
-
-  useEffect(() => {
-    if (
-      swiperRef.current != null &&
-      swiperRef.current.swiper.activeIndex !== activeSlide
-    ) {
-      swiperRef.current.swiper.slideTo(activeSlide)
-    }
-  }, [activeSlide])
 
   return (
     <StyledSwiper
