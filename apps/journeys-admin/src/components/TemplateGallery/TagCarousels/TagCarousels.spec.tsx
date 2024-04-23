@@ -70,7 +70,7 @@ describe('TagCarousels', () => {
       </MockedProvider>
     )
 
-    // Check that carousel has loaded properly
+    // Not for test but needed in order to ensure rendering is correct
     await waitFor(async () => {
       expect(
         getByRole('button', {
@@ -79,7 +79,7 @@ describe('TagCarousels', () => {
       ).toBeInTheDocument()
     })
 
-    // Assert no background tag is filtered out
+    // Assert tags without backgrounds are filtered out
     await waitFor(async () => {
       expect(queryAllByText('Fear/Power')).toHaveLength(0)
     })
