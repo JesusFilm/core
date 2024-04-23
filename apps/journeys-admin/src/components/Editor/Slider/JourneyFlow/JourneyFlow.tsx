@@ -261,6 +261,7 @@ export function JourneyFlow(): ReactElement {
       let clientY = 0
       if (event.type === 'touchend') {
         const touchEvent = event as unknown as TouchEvent
+        touchEvent.preventDefault()
         clientX = touchEvent.changedTouches[0].clientX
         clientY = touchEvent.changedTouches[0].clientY
       } else if (event.type === 'mouseup') {

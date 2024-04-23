@@ -2,16 +2,7 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
 import { ComponentProps, ReactElement, ReactNode } from 'react'
-import { Handle, HandleProps, OnConnect, Position } from 'reactflow'
-import { v4 as uuidv4 } from 'uuid'
-
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-
-import {
-  ThemeMode,
-  ThemeName
-} from '../../../../../../../__generated__/globalTypes'
-import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
+import { Handle, OnConnect, Position } from 'reactflow'
 
 const StyledHandle = styled(Handle)(() => ({}))
 
