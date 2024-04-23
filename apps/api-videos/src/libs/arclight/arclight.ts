@@ -264,13 +264,6 @@ export function transformArclightMediaComponentToVideo(
         primary: true
       }
     ],
-    seoTitle: [
-      {
-        value: mediaComponent.title,
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
     snippet: [
       {
         value: mediaComponent.shortDescription,
@@ -278,8 +271,24 @@ export function transformArclightMediaComponentToVideo(
         primary: true
       }
     ],
+    newSnippet: [
+      {
+        videoId: mediaComponent.mediaComponentId,
+        value: mediaComponent.shortDescription,
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
     description: [
       {
+        value: mediaComponent.longDescription,
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
+    newDescription: [
+      {
+        videoId: mediaComponent.mediaComponentId,
         value: mediaComponent.longDescription,
         languageId: metadataLanguageId,
         primary: true
