@@ -169,9 +169,9 @@ model VideoStudyQuestion {
   videoId    String?
   video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
-  @@unique([videoId, languageId])
   @@unique([videoId, languageId, order])
   @@index(value(type: Hash))
   @@index(primary(type: Hash))
   @@index(languageId(type: Hash))
+  @@index(order)
 }

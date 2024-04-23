@@ -544,6 +544,15 @@ describe('arclight', () => {
             primary: true,
             value: 'How can I know Jesus?'
           }
+        ],
+        newStudyQuestions: [
+          {
+            videoId: 'mediaComponentId',
+            languageId: '529',
+            order: 1,
+            value: 'How can I know Jesus?',
+            primary: true
+          }
         ]
       })
       expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
@@ -579,6 +588,15 @@ describe('arclight', () => {
             primary: true,
             value:
               'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Ove'
+          }
+        ],
+        newImageAlt: [
+          {
+            videoId: 'mediaComponentId',
+            languageId: '529',
+            value:
+              'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Ove',
+            primary: true
           }
         ],
         slug: 'the-quick-brown-fox-jumps-over-the-lazy-dog-many-times-over-and-over-until-it-gets-cut-off-when-over-100-characters',

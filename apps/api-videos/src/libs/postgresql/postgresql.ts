@@ -169,7 +169,7 @@ async function handlePrismaVideo(
     )
   }
   if (delta.newStudyQuestions != null) {
-    await handlePrismaTranslationTables<Prisma.VideoStudyQuestionUncheckedUpdateInput>(
+    await handlePrismaOrderedTranslationTables<Prisma.VideoStudyQuestionUncheckedUpdateInput>(
       'newStudyQuestions',
       'videoStudyQuestion',
       video,
@@ -227,6 +227,36 @@ async function handlePrismaTranslationTables<T>(
           }
         },
         data: getChangedValues<T>(fieldDelta)
+      })
+    }
+  }
+}
+
+async function handlePrismaOrderedTranslationTables<T>(
+  field: string,
+  prismaField: string,
+  video: PrismaVideoCreateInput,
+  existingVideo: PrismaVideoCreateInput,
+  tx: Prisma.TransactionClient,
+  delta: Delta
+): Promise<void> {
+  // key is languageId
+  for (const key in delta[field]) {
+    // ignore _t on index 0
+    if (key === '_t') continue
+
+    const fieldDelta = delta[field][key]
+
+    // replace all changes since delta isn't able to fully handle ordered arrays
+    await tx[prismaField].deleteMany({
+      where: {
+        videoId: video.id,
+        languageId: fieldDelta[0].languageId
+      }
+    })
+    if (fieldDelta.length > 0) {
+      await tx[prismaField].createMany({
+        data: fieldDelta[0]
       })
     }
   }

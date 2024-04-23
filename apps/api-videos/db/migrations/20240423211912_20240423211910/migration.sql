@@ -98,7 +98,7 @@ CREATE INDEX "VideoStudyQuestion_primary_idx" ON "VideoStudyQuestion"("primary")
 CREATE INDEX "VideoStudyQuestion_languageId_idx" ON "VideoStudyQuestion"("languageId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "VideoStudyQuestion_videoId_languageId_key" ON "VideoStudyQuestion"("videoId", "languageId");
+CREATE INDEX "VideoStudyQuestion_order_idx" ON "VideoStudyQuestion"("order");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "VideoStudyQuestion_videoId_languageId_order_key" ON "VideoStudyQuestion"("videoId", "languageId", "order");

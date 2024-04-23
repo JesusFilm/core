@@ -303,7 +303,7 @@ export function transformArclightMediaComponentToVideo(
       (studyQuestion, index) => ({
         videoId: mediaComponent.mediaComponentId,
         languageId: metadataLanguageId,
-        order: index,
+        order: index + 1,
         value: studyQuestion,
         primary: true
       })
