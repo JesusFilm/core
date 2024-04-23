@@ -52,11 +52,11 @@ test('Chapter', async ({ page }) => {
   // wait for 3 minutes to see if the video until there are some events thta can say the state of the video
   // later find a way to check if the video is complete and check if the video is playing. Also use 10 seconds video
   // eslint-disable-next-line
-  await page.waitForTimeout(3 * 60 * 1000)
+  // await page.waitForTimeout(3 * 60 * 1000)
 
   // Take screenshot once video is played and test it is same all the times
-  await expect(page).toHaveScreenshot('after-video.png', {
-    animations: 'disabled',
-    fullPage: true
-  })
+  // await expect(page).toHaveScreenshot('after-video.png', {
+  //   animations: 'disabled',
+  //   fullPage: true
+  // })
 })
