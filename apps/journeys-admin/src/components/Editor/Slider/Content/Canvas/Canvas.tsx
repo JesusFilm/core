@@ -29,9 +29,11 @@ import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 
 function calculateScale({ current }: RefObject<HTMLDivElement>): number {
-  return current != null
-    ? Math.min(current.clientWidth / 375, current.clientHeight / 670)
-    : 1
+  if (current == null) return 1
+  const clientWidth = current.clientWidth / 375
+  const clientHeight = current.clientHeight / 670
+  const scale = Math.min(clientWidth, clientHeight)
+  return Math.min(scale, 1)
 }
 
 export function Canvas(): ReactElement {
@@ -53,12 +55,10 @@ export function Canvas(): ReactElement {
   const router = useRouter()
 
   const [scale, setScale] = useState(calculateScale(containerRef))
+  console.log('scale', scale)
 
   useEffect(() => {
-    const handleResize = (): void => {
-      console.log('I am getting resized')
-      setScale(calculateScale(containerRef))
-    }
+    const handleResize = (): void => setScale(calculateScale(containerRef))
 
     handleResize()
     window.addEventListener('resize', handleResize)
@@ -128,6 +128,7 @@ export function Canvas(): ReactElement {
 
   return (
     <Stack
+      ref={containerRef}
       className="EditorCanvas"
       onClick={handleSelectCard}
       onMouseDown={() => {
@@ -160,7 +161,6 @@ export function Canvas(): ReactElement {
           }}
         >
           <Box
-            ref={containerRef}
             sx={{
               width: { xs: '100%', sm: 387 },
               height: { xs: '100%', sm: 682 },
