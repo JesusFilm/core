@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -187,7 +187,7 @@ describe('BackgroundMediaVideo', () => {
       }
     }))
     const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
-    const { getByRole, getByText } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -229,12 +229,14 @@ describe('BackgroundMediaVideo', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      fireEvent.click(getByRole('button', { name: 'Select Video' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
     )
-    await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
-    fireEvent.click(getByText('Brand Video'))
+    await waitFor(() =>
+      expect(screen.getByText('Brand Video')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByText('Brand Video'))
     await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
-    fireEvent.click(getByRole('button', { name: 'Select' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:cardId' },
@@ -267,7 +269,7 @@ describe('BackgroundMediaVideo', () => {
       }
     }))
     const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
-    const { getByRole, getByText } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -308,11 +310,13 @@ describe('BackgroundMediaVideo', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Video' }))
-    await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
-    fireEvent.click(getByText('Brand Video'))
+    fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
+    await waitFor(() =>
+      expect(screen.getByText('Brand Video')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByText('Brand Video'))
     await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
-    fireEvent.click(getByRole('button', { name: 'Select' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:cardId' },
@@ -347,7 +351,7 @@ describe('BackgroundMediaVideo', () => {
         }
       }))
       const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
-      const { getByRole, getByText } = render(
+      render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -389,14 +393,16 @@ describe('BackgroundMediaVideo', () => {
       )
       await waitFor(() =>
         fireEvent.click(
-          getByRole('button', { name: '#FallingPlates #FallingPlates' })
+          screen.getByRole('button', { name: '#FallingPlates #FallingPlates' })
         )
       )
-      await waitFor(() => expect(getByText('Brand_Video')).toBeInTheDocument())
-      fireEvent.click(getByRole('button', { name: 'clear-video' }))
-      fireEvent.click(getByText('Brand Video'))
+      await waitFor(() =>
+        expect(screen.getByText('Brand_Video')).toBeInTheDocument()
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'clear-video' }))
+      fireEvent.click(screen.getByText('Brand Video'))
       await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
-      fireEvent.click(getByRole('button', { name: 'Select' }))
+      fireEvent.click(screen.getAllByRole('button', { name: 'Select' })[0])
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
         { __ref: 'CardBlock:cardId' },
@@ -421,7 +427,7 @@ describe('BackgroundMediaVideo', () => {
           blockDelete: []
         }
       }))
-      const { getByRole, getByText } = render(
+      render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -455,10 +461,12 @@ describe('BackgroundMediaVideo', () => {
         </MockedProvider>
       )
       fireEvent.click(
-        getByRole('button', { name: '#FallingPlates #FallingPlates' })
+        screen.getByRole('button', { name: '#FallingPlates #FallingPlates' })
       )
-      await waitFor(() => expect(getByText('Brand_Video')).toBeInTheDocument())
-      fireEvent.click(getByRole('button', { name: 'clear-video' }))
+      await waitFor(() =>
+        expect(screen.getByText('Brand_Video')).toBeInTheDocument()
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'clear-video' }))
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
         { __ref: 'CardBlock:cardId' }
@@ -473,7 +481,7 @@ describe('BackgroundMediaVideo', () => {
       }
 
       it('shows settings', async () => {
-        const { getAllByRole } = render(
+        render(
           <MockedProvider>
             <JourneyProvider
               value={{
@@ -489,14 +497,18 @@ describe('BackgroundMediaVideo', () => {
             </JourneyProvider>
           </MockedProvider>
         )
-        expect(getAllByRole('checkbox', { name: 'Muted' })[0]).toBeChecked()
-        expect(getAllByRole('checkbox', { name: 'Autoplay' })[0]).toBeChecked()
-        expect(getAllByRole('textbox', { name: 'Starts At' })[0]).toHaveValue(
-          '00:00:00'
-        )
-        expect(getAllByRole('textbox', { name: 'Ends At' })[0]).toHaveValue(
-          '00:02:24'
-        )
+        expect(
+          screen.getAllByRole('checkbox', { name: 'Muted' })[0]
+        ).toBeChecked()
+        expect(
+          screen.getAllByRole('checkbox', { name: 'Autoplay' })[0]
+        ).toBeChecked()
+        expect(
+          screen.getAllByRole('textbox', { name: 'Starts At' })[0]
+        ).toHaveValue('00:00:00')
+        expect(
+          screen.getAllByRole('textbox', { name: 'Ends At' })[0]
+        ).toHaveValue('00:02:24')
       })
 
       it('updates autoplay', async () => {
@@ -519,7 +531,7 @@ describe('BackgroundMediaVideo', () => {
             }
           }
         }))
-        const { getAllByRole } = render(
+        render(
           <MockedProvider
             cache={cache}
             mocks={[
@@ -556,7 +568,9 @@ describe('BackgroundMediaVideo', () => {
             </JourneyProvider>
           </MockedProvider>
         )
-        const checkbox = await getAllByRole('checkbox', { name: 'Autoplay' })[0]
+        const checkbox = await screen.getAllByRole('checkbox', {
+          name: 'Autoplay'
+        })[0]
         fireEvent.click(checkbox)
         await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       })
@@ -578,7 +592,7 @@ describe('BackgroundMediaVideo', () => {
             videoBlockUpdate: video
           }
         }))
-        const { getAllByRole } = render(
+        render(
           <MockedProvider
             cache={cache}
             mocks={[
@@ -615,7 +629,9 @@ describe('BackgroundMediaVideo', () => {
             </JourneyProvider>
           </MockedProvider>
         )
-        const checkbox = await getAllByRole('checkbox', { name: 'Muted' })[0]
+        const checkbox = await screen.getAllByRole('checkbox', {
+          name: 'Muted'
+        })[0]
         fireEvent.click(checkbox)
         await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       })
@@ -637,7 +653,7 @@ describe('BackgroundMediaVideo', () => {
             videoBlockUpdate: video
           }
         }))
-        const { getAllByRole } = render(
+        render(
           <MockedProvider
             cache={cache}
             mocks={[
@@ -674,7 +690,9 @@ describe('BackgroundMediaVideo', () => {
             </JourneyProvider>
           </MockedProvider>
         )
-        const textbox = await getAllByRole('textbox', { name: 'Starts At' })[0]
+        const textbox = await screen.getAllByRole('textbox', {
+          name: 'Starts At'
+        })[0]
         fireEvent.change(textbox, { target: { value: '00:00:11' } })
         fireEvent.blur(textbox)
         await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
@@ -697,7 +715,7 @@ describe('BackgroundMediaVideo', () => {
             videoBlockUpdate: video
           }
         }))
-        const { getAllByRole } = render(
+        render(
           <MockedProvider
             cache={cache}
             mocks={[
@@ -734,7 +752,9 @@ describe('BackgroundMediaVideo', () => {
             </ThemeProvider>
           </MockedProvider>
         )
-        const textbox = await getAllByRole('textbox', { name: 'Ends At' })[0]
+        const textbox = await screen.getAllByRole('textbox', {
+          name: 'Ends At'
+        })[0]
         fireEvent.change(textbox, { target: { value: '00:00:31' } })
         fireEvent.blur(textbox)
         await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
