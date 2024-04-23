@@ -66,16 +66,33 @@ export function DuplicateBlock({
         update(cache, { data }) {
           if (data?.blockDuplicate != null) {
             handleClick?.()
+            const nextBlock = data.blockDuplicate[parentOrder + 1]
+            const lastStep = last(
+              data.blockDuplicate.filter(
+                (block) => block.__typename === 'StepBlock'
+              )
+            )
+            if (currentBlock.__typename === 'StepBlock') {
+              cache.modify({
+                fields: {
+                  blocks(existingBlockRefs = []) {
+                    const newStepBlockRef = cache.writeFragment({
+                      data: lastStep,
+                      fragment: gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                    })
+                    return [...existingBlockRefs, newStepBlockRef]
+                  }
+                }
+              })
+            }
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
-                  const nextBlock = data.blockDuplicate[parentOrder + 1]
-                  const lastStep = last(
-                    data.blockDuplicate.filter(
-                      (block) => block.__typename === 'StepBlock'
-                    )
-                  )
                   const duplicatedBlockRef = cache.writeFragment({
                     data:
                       currentBlock.__typename === 'StepBlock'
