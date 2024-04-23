@@ -20,7 +20,7 @@ describe('CollectionButton', () => {
       <CollectionButton item={tag} onClick={jest.fn()} />
     )
 
-    expect(getByRole('button', { name: 'NUA NUA NUA' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'NUA tag NUA NUA' })).toBeInTheDocument()
     expect(getByRole('img')).toBeInTheDocument()
   })
 
@@ -63,7 +63,7 @@ describe('CollectionButton', () => {
       <CollectionButton item={tag} onClick={onClick} />
     )
 
-    fireEvent.click(getByRole('button', { name: 'NUA NUA NUA' }))
+    fireEvent.click(getByRole('button', { name: 'NUA tag NUA NUA' }))
 
     expect(onClick).toHaveBeenCalledWith(tag.id)
   })
