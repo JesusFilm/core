@@ -9,7 +9,9 @@ import {
   PrismaClient,
   Video,
   VideoDescription,
+  VideoImageAlt,
   VideoSnippet,
+  VideoStudyQuestion,
   VideoTitle,
   VideoVariant,
   VideoVariantDownload,
@@ -19,7 +21,9 @@ import {
 export type PrismaVideo = Omit<Video, 'childIds'> & {
   title: VideoTitle[]
   newDescription: VideoDescription[]
+  newImageAlt: VideoImageAlt[]
   newSnippet: VideoSnippet[]
+  newStudyQuestions: VideoStudyQuestion[]
   variants: Array<
     VideoVariant & {
       subtitle: VideoVariantSubtitle[]
@@ -30,12 +34,21 @@ export type PrismaVideo = Omit<Video, 'childIds'> & {
 
 export type PrismaVideoCreateInput = Omit<
   Prisma.VideoUncheckedCreateInput,
-  'variants' | 'title' | 'childIds' | 'id' | 'newDescription' | 'newSnippet'
+  | 'variants'
+  | 'title'
+  | 'childIds'
+  | 'id'
+  | 'newDescription'
+  | 'newSnippet'
+  | 'newImageAlt'
+  | 'newStudyQuestions'
 > & {
   id: string
   title: Prisma.VideoTitleUncheckedCreateInput[]
   newDescription: Prisma.VideoDescriptionUncheckedCreateInput[]
   newSnippet: Prisma.VideoSnippetUncheckedCreateInput[]
+  newStudyQuestions: Prisma.VideoStudyQuestionUncheckedCreateInput[]
+  newImageAlt: Prisma.VideoImageAltUncheckedCreateInput[]
   variants: Array<
     Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads' | 'subtitle'> & {
       downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
@@ -99,10 +112,19 @@ async function handlePrismaVideo(
         'variants',
         'title',
         'newDescription',
-        'newSnippet'
+        'newSnippet',
+        'newImageAlt',
+        'newStudyQuestions'
       ]),
       update: {
-        ...omit(video, ['variants', 'title', 'newDescription', 'newSnippet'])
+        ...omit(video, [
+          'variants',
+          'title',
+          'newDescription',
+          'newSnippet',
+          'newImageAlt',
+          'newStudyQuestions'
+        ])
       }
     })
   }
@@ -130,6 +152,26 @@ async function handlePrismaVideo(
     await handlePrismaTranslationTables<Prisma.VideoSnippetUncheckedUpdateInput>(
       'newSnippet',
       'videoSnippet',
+      video,
+      existingVideo,
+      tx,
+      delta
+    )
+  }
+  if (delta.newImageAlt != null) {
+    await handlePrismaTranslationTables<Prisma.VideoImageAltUncheckedUpdateInput>(
+      'newImageAlt',
+      'videoImageAlt',
+      video,
+      existingVideo,
+      tx,
+      delta
+    )
+  }
+  if (delta.newStudyQuestions != null) {
+    await handlePrismaTranslationTables<Prisma.VideoStudyQuestionUncheckedUpdateInput>(
+      'newStudyQuestions',
+      'videoStudyQuestion',
       video,
       existingVideo,
       tx,
@@ -397,6 +439,8 @@ async function getExistingVideo(video): Promise<PrismaVideoCreateInput | null> {
         title: true,
         newDescription: true,
         newSnippet: true,
+        newImageAlt: true,
+        newStudyQuestions: true,
         variants: {
           include: {
             subtitle: {
@@ -420,6 +464,12 @@ async function getExistingVideo(video): Promise<PrismaVideoCreateInput | null> {
       newSnippet: existingVideo.newSnippet.map((snippet) =>
         omit(snippet, 'id')
       ),
+      newImageAlt: existingVideo.newImageAlt.map((imageAlt) =>
+        omit(imageAlt, 'id')
+      ),
+      newStudyQuestions: existingVideo.newStudyQuestions.map((studyQuestion) =>
+        omit(studyQuestion, 'id')
+      ),
       variants: sortBy(existingVideo.variants, ['id']).map((variant) => ({
         ...variant,
         subtitle: variant.subtitle?.map((subtitle) => omit(subtitle, 'id')),
@@ -442,6 +492,8 @@ export async function handleVideo(
   video.title = sortBy(video.title, ['languageId'])
   video.newDescription = sortBy(video.newDescription, ['languageId'])
   video.newSnippet = sortBy(video.newSnippet, ['languageId'])
+  video.newImageAlt = sortBy(video.newImageAlt, ['languageId'])
+  video.newStudyQuestions = sortBy(video.newStudyQuestions, ['order'])
   video.variants = sortBy(video.variants, ['id']).map((variant) => ({
     ...variant,
     subtitle: sortBy(variant.subtitle, ['languageId']),

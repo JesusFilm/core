@@ -299,9 +299,29 @@ export function transformArclightMediaComponentToVideo(
       value: studyQuestion,
       primary: true
     })),
+    newStudyQuestions: mediaComponent.studyQuestions.map(
+      (studyQuestion, index) => ({
+        videoId: mediaComponent.mediaComponentId,
+        languageId: metadataLanguageId,
+        order: index,
+        value: studyQuestion,
+        primary: true
+      })
+    ),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     imageAlt: [
       {
+        value:
+          mediaComponent.title.length <= 100
+            ? mediaComponent.title
+            : mediaComponent.title.substring(0, 99),
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
+    newImageAlt: [
+      {
+        videoId: mediaComponent.mediaComponentId,
         value:
           mediaComponent.title.length <= 100
             ? mediaComponent.title

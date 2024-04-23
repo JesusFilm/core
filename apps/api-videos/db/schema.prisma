@@ -34,7 +34,7 @@ enum VideoLabel {
 }
 
 model Video {
-  id                String             @id @default(uuid())
+  id                String               @id @default(uuid())
   label             VideoLabel
   primaryLanguageId String
   title             VideoTitle[]
@@ -43,13 +43,15 @@ model Video {
   description       Json[]
   newDescription    VideoDescription[]
   studyQuestions    Json[]
+  newStudyQuestions VideoStudyQuestion[]
   image             String?
   imageAlt          Json[]
-  slug              String?            @unique
+  newImageAlt       VideoImageAlt[]
+  slug              String?              @unique
   noIndex           Boolean?
   childIds          String[] // needed for child sort order
-  children          Video[]            @relation("ParentChild")
-  parent            Video[]            @relation("ParentChild")
+  children          Video[]              @relation("ParentChild")
+  parent            Video[]              @relation("ParentChild")
   variants          VideoVariant[]
 
   @@index(label)
@@ -139,6 +141,36 @@ model VideoDescription {
   video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@unique([videoId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+model VideoImageAlt {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  primary    Boolean
+  videoId    String?
+  video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+model VideoStudyQuestion {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  order      Int
+  primary    Boolean
+  videoId    String?
+  video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+  @@unique([videoId, languageId, order])
   @@index(value(type: Hash))
   @@index(primary(type: Hash))
   @@index(languageId(type: Hash))

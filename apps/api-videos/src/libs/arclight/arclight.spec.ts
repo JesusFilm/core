@@ -406,6 +406,14 @@ describe('arclight', () => {
       ],
       image: 'mobileCinematicHigh',
       imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
+      newImageAlt: [
+        {
+          videoId: 'mediaComponentId',
+          languageId: '529',
+          value: 'title',
+          primary: true
+        }
+      ],
       label: 'episode',
       noIndex: false,
       primaryLanguageId: '529',
@@ -422,6 +430,7 @@ describe('arclight', () => {
         }
       ],
       studyQuestions: [],
+      newStudyQuestions: [],
       title: [
         {
           videoId: 'mediaComponentId',
@@ -767,6 +776,14 @@ describe('arclight', () => {
         id: 'mediaComponentId',
         image: 'mobileCinematicHigh',
         imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
+        newImageAlt: [
+          {
+            videoId: 'mediaComponentId',
+            languageId: '529',
+            value: 'title',
+            primary: true
+          }
+        ],
         label: 'episode',
         noIndex: false,
         primaryLanguageId: '529',
@@ -783,6 +800,7 @@ describe('arclight', () => {
           }
         ],
         studyQuestions: [],
+        newStudyQuestions: [],
         title: [
           {
             languageId: '529',
