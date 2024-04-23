@@ -176,8 +176,8 @@ export function JourneyFlow(): ReactElement {
     setNodes(nodes)
   }, [steps, data, setEdges, setNodes, refetch])
 
-  const createNewStepAndConnectBlock = useCallback(
-    async function createNewStepAndConnectBlock(
+  const createStepAndCardBlock = useCallback(
+    async function createStepAndCardBlock(
       step: TreeBlock,
       block: TreeBlock,
       x: number,
@@ -275,14 +275,14 @@ export function JourneyFlow(): ReactElement {
         y: clientY
       })
 
-      void createNewStepAndConnectBlock(
+      void createStepAndCardBlock(
         step,
         block,
         parseInt(x.toString()) - STEP_NODE_WIDTH / 2,
         parseInt(y.toString())
       )
     },
-    [reactFlowInstance, connectingParams, createNewStepAndConnectBlock, steps]
+    [reactFlowInstance, connectingParams, createStepAndCardBlock, steps]
   )
   const onNodeDragStop: NodeDragHandler = async (
     _event,
