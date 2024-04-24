@@ -386,7 +386,6 @@ input ChannelUpdateInput
   @join__type(graph: NEXUS)
 {
   name: String
-  nexusId: String
   platform: String
 }
 

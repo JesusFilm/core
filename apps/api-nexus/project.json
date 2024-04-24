@@ -91,7 +91,8 @@
       "options": {
         "parallel": false,
         "commands": [
-          "npx prisma generate --schema apps/api-nexus/db/schema.prisma"
+          "npx prisma generate --schema apps/api-nexus/db/schema.prisma",
+          "npm run ts-node apps/api-nexus/src/app/lib/casl/caslPrismaGenerator.ts"
         ]
       }
     },

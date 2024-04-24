@@ -1,52 +1,48 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { BatchStatus } from '.prisma/api-nexus-client';
+import { BatchStatus } from '.prisma/api-nexus-client'
 
-import { PrismaService } from '../../lib/prisma.service';
+import { PrismaService } from '../../lib/prisma.service'
 
-import { BatchResolver } from './batch.resolver';
+import { BatchResolver } from './batch.resolver'
 
 describe('BatchResolver', () => {
-  let resolver: BatchResolver;
-  let prismaService: DeepMockProxy<PrismaService>;
+  let resolver: BatchResolver
+  let prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BatchResolver,
-        { provide: PrismaService, useValue: mockDeep<PrismaService>() },
-      ],
-    }).compile();
+        { provide: PrismaService, useValue: mockDeep<PrismaService>() }
+      ]
+    }).compile()
 
-    resolver = module.get<BatchResolver>(BatchResolver);
+    resolver = module.get<BatchResolver>(BatchResolver)
     prismaService = module.get<PrismaService>(
-      PrismaService,
-    ) as DeepMockProxy<PrismaService>;
-  });
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+  })
 
   describe('batches', () => {
-    it('should return an array of batches', async () => {
-      const userId = 'someUserId';
+    it('should return an array of batches with average percentages', async () => {
+      const userId = 'someUserId'
       const mockBatches = [
         {
           id: 'batch1',
           nexusId: 'nexus1',
           name: 'Batch 1',
           status: BatchStatus.completed,
-          totalTasks: 0,
-          completedTasks: 0,
-          failedTasks: 0,
-          progress: 0,
-          tasks: [],
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date),
-        },
-      ];
+          createdAt: new Date(),
+          resources: [{ percent: 50 }, { percent: 100 }],
+          averagePercent: 75
+        }
+      ]
 
-      prismaService.batch.findMany.mockResolvedValue(mockBatches);
+      prismaService.batch.findMany.mockResolvedValue(mockBatches)
 
-      const result = await resolver.batches(userId, {});
+      const result = await resolver.batches(userId, {})
 
       expect(result).toEqual(
         expect.arrayContaining([
@@ -55,17 +51,11 @@ describe('BatchResolver', () => {
             nexusId: 'nexus1',
             name: 'Batch 1',
             status: BatchStatus.completed,
-            totalTasks: 0,
-            completedTasks: 0,
-            failedTasks: 0,
-            progress: 0,
-            tasks: [],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          }),
-        ]),
-      );
-      expect(prismaService.batch.findMany).toHaveBeenCalled();
-    });
-  });
-});
+            averagePercent: 75
+          })
+        ])
+      )
+      expect(prismaService.batch.findMany).toHaveBeenCalled()
+    })
+  })
+})
