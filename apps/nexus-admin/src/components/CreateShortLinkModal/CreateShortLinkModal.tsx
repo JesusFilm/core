@@ -114,6 +114,7 @@ export const CreateShortLinkModal: FC<CreateShortLinkModalProps> = ({
         {
           link: {
             workspaceId: process.env.NEXT_PUBLIC_SWITCHY_WORKSPACE_ID ?? 34782,
+            folderId: process.env.NEXT_PUBLIC_SWITCHY_FOLDER_ID ?? 65091,
             ...switchyData
           }
         },

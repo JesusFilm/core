@@ -43,7 +43,7 @@ const ShortLinksPage: FC = () => {
       orderBy: { createdDate: 'desc' },
       where: {
         folderId: {
-          _is_null: true
+          _eq: process.env.NEXT_PUBLIC_SWITCHY_FOLDER_ID ?? 65091
         }
       }
     }

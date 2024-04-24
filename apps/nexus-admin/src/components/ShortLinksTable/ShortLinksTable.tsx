@@ -91,10 +91,10 @@ export const ShortLinksTable: FC<ShortLinksTableProps> = ({
         return (
           <Box
             onClick={async () =>
-              await copyToClipBoard(`${row.domain}/${row.id}`)
+              await copyToClipBoard(`https://${row.domain}/${row.id}`)
             }
             sx={{ cursor: 'pointer' }}
-          >{`${row.domain}/${row.id}`}</Box>
+          >{`https://${row.domain}/${row.id}`}</Box>
         )
       }
     },
