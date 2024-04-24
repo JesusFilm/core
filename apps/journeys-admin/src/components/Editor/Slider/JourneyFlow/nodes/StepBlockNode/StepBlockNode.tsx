@@ -52,13 +52,6 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
         input: {
           nextBlockId: id
         }
-      },
-      optimisticResponse: {
-        stepBlockUpdate: {
-          id,
-          __typename: 'StepBlock',
-          nextBlockId: id
-        }
       }
     })
   }
