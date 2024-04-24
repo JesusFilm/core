@@ -1,21 +1,18 @@
 import { BigQuery, RowMetadata } from '@google-cloud/bigquery'
 import { Injectable } from '@nestjs/common'
 
-const bqClient = new BigQuery({
-  credentials: {
-    type: 'service_account',
-    project_id: process.env.BIG_QUERY_PROJECT_ID,
-    private_key:
-      process.env.BIG_QUERY_PRIVATE_KEY != null
-        ? process.env.BIG_QUERY_PRIVATE_KEY.split(String.raw`\n`).join('\n')
-        : '',
-    client_email: process.env.BIG_QUERY_CLIENT_EMAIL
-  },
-  projectId: process.env.BIG_QUERY_PROJECT_ID
-})
-
 @Injectable()
 export class BigQueryService {
+  client: BigQuery
+  constructor() {
+    this.client = new BigQuery({
+      credentials:
+        process.env.BIG_QUERY_APPLICATION_JSON != null
+          ? JSON.parse(process.env.BIG_QUERY_APPLICATION_JSON)
+          : undefined
+    })
+  }
+
   async bigQueryRowIterator(table: string): Promise<{
     next: () => Promise<{
       done: boolean
@@ -23,35 +20,42 @@ export class BigQueryService {
     }>
   }> {
     const maxResults = 500
+    let jobRes
+
+    const query = `SELECT * FROM \`${table}\``
+
+    try {
+      const [job] = await this.client.createQueryJob({ query })
+      jobRes = job
+    } catch (e) {
+      throw new Error(`failed to create job in Big Query: ${e.message}`)
+    }
+
     let rowRes
     let pageToken: string | undefined
     let results: unknown[] = []
-    let jobRes
-    const query = `SELECT * FROM \`${table}\``
-    try {
-      const [job] = await bqClient.createQueryJob({ query })
-      jobRes = job
-      const res = await jobRes.getQueryResults({ maxResults, pageToken })
-      results = res[0]
-      pageToken = res[1]?.pageToken
-    } catch (e) {
-      console.log('failed to fetch from big query: ', e)
-    }
+
+    let maxRows = 0
+    let returnedResults = 0
 
     return {
       async next() {
+        returnedResults++
         if (results.length === 0) {
           try {
             const res = await jobRes.getQueryResults({ maxResults, pageToken })
             results = res[0]
             pageToken = res[1]?.pageToken
+            maxRows = +res[2]?.totalRows
           } catch (e) {
-            console.log('failed to fetch from big query: ', e)
+            throw new Error(
+              `failed to fetch query results from Big Query: ${e.message}`
+            )
           }
         }
         rowRes = results.shift()
         return {
-          done: pageToken == null && results.length === 0,
+          done: returnedResults === maxRows + 1,
           value: rowRes
         }
       }

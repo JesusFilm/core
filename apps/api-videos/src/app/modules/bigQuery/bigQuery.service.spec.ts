@@ -30,7 +30,8 @@ describe('bigQueryService', () => {
         .fn()
         .mockResolvedValue([
           [{ mockKey: 'mockValue' }],
-          { pageToken: undefined }
+          { pageToken: undefined },
+          { totalRows: '1' }
         ])
       process.env.BIG_QUERY_PRIVATE_KEY = 'someKey'
       jest
@@ -44,11 +45,14 @@ describe('bigQueryService', () => {
       const itr = await service.bigQueryRowIterator(
         'mockDataSetname.mockTableName'
       )
-      const res = await itr.next()
-      expect(res.done).toBe(true)
+      let res = await itr.next()
+      expect(res.done).toBe(false)
       expect(res.value).toStrictEqual({
         mockKey: 'mockValue'
       })
+      res = await itr.next()
+      expect(res.done).toBe(true)
+      expect(res.value).toBeUndefined()
       expect(getQueryResults).toHaveBeenCalledWith({
         maxResults: 500,
         pageToken: undefined
@@ -94,7 +98,7 @@ describe('bigQueryService', () => {
         pageToken: 'mockPageToken'
       })
       res = await itr.next()
-      expect(res.done).toBe(true)
+      expect(res.done).toBe(false)
       expect(res.value).toStrictEqual({
         mockKey: 'mockValueTwo'
       })

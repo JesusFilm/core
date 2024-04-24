@@ -8,7 +8,7 @@ import { BigQueryService } from './bigQuery.service'
 
 const TABLES_TO_FETCH = [
   {
-    tableName: 'jfp-data-warehouse.src_arclight.media-components-call'
+    tableName: 'jfp-data-warehouse.src_arclight.core_video_arclight_data'
   }
 ]
 

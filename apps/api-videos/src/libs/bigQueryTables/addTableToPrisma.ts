@@ -7,5 +7,6 @@ export async function addTableToPrisma(
   tableName: string,
   prismaService: PrismaService
 ): Promise<void> {
+  console.log(row)
   noop()
 }
