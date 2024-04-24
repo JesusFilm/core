@@ -97,7 +97,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
             <Card
               sx={{
                 borderRadius: 2,
-                border: (theme) =>
+                outline: (theme) =>
                   `2px solid ${
                     selected === true ? theme.palette.primary.main : 'white'
                   }`,
