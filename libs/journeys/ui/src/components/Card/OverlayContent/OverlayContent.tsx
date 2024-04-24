@@ -23,7 +23,8 @@ export function OverlayContent({
     // Hide on all others https://caniuse.com/?search=webkit-scrollbar
     '&::-webkit-scrollbar': {
       display: 'none'
-    }
+    },
+    overscrollBehavior: 'contain'
   }
 
   const topBottomEdgeFadeEffect: SxProps = !hasFullscreenVideo

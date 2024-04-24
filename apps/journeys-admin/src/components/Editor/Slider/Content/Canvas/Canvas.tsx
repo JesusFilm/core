@@ -71,12 +71,79 @@ export function Canvas(): ReactElement {
     })
   }
 
+  const iframe = frameRef.current?.contentDocument
+  // ??
+  // frameRef.current?.contentWindow?.document
+
+  let startY
+  console.log(iframe)
+
+  // iframe?.addEventListener('touchstart', function (event) {
+  //   startY = event.touches[0].clientY
+  //   // console.log('touch start')
+  // })
+
+  // iframe?.addEventListener(
+  //   'touchmove',
+  //   function (event) {
+  //     //  console.log('touch move')
+  //     // Calculate the distance moved vertically
+  //     const deltaY = event.touches[0].clientY - startY
+
+  //     // If the iframe content is not scrolled to the top and the user is swiping up,
+  //     // or if the iframe content is not scrolled to the bottom and the user is swiping down,
+  //     // allow the default behavior (scrolling within the iframe)
+  //     if (
+  //       (iframe.scrollTop !== 0 && deltaY > 0) ||
+  //       (iframe.scrollTop + iframe.clientHeight !== iframe.scrollHeight &&
+  //         deltaY < 0)
+  //     ) {
+  //       // console.log('returning from move')
+  //       return
+  //     }
+
+  //     // Prevent pull-to-refresh behavior
+  //     event.preventDefault()
+  //   },
+  //   { passive: false }
+  // )
+
+  iframe?.addEventListener(
+    'touchmove',
+    (e) => {
+      // e.preventDefault()
+
+      const targetElement = e.target as Element
+
+      const scrollElement = 'CardOverlayContent'
+      let isTouchInScrollableElement = false
+      let currentElement: Element | null = targetElement
+      while (currentElement !== null) {
+        if (targetElement.getAttribute('data-testid') === scrollElement) {
+          isTouchInScrollableElement = true
+          break
+        }
+        currentElement = currentElement.parentElement
+      }
+      if (isTouchInScrollableElement) {
+        console.log('Scrollable!')
+        return
+      }
+      e.preventDefault()
+    },
+    { passive: false }
+  )
+
   function handleSelectCard(): void {
     const iframeDocument =
       frameRef.current?.contentDocument ??
       frameRef.current?.contentWindow?.document
 
+    console.log(iframeDocument)
+
     const selectedText = iframeDocument?.getSelection()?.toString()
+
+    console.log(selectionRef)
 
     // if user is copying from typog blocks or text, keep focus on typog blocks
     if (selectedText != null && selectedText !== '' && !selectionRef.current) {
