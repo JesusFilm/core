@@ -1,7 +1,7 @@
 import { BullModule } from '@nestjs/bull'
 import { Global, Module } from '@nestjs/common'
 
-import { BucketService } from '../bucket/bucketService'
+import { BucketService } from '../bucket/bucket.service'
 import { GoogleDriveService } from '../google/drive.service'
 import { GoogleOAuthService } from '../google/oauth.service'
 import { GoogleSheetsService } from '../google/sheets.service'

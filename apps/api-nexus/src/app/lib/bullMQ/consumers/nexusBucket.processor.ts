@@ -1,7 +1,7 @@
 import { Process, Processor } from '@nestjs/bull'
 import { Job } from 'bull'
 
-import { BucketService } from '../../bucket/bucketService'
+import { BucketService } from '../../bucket/bucket.service'
 import { GoogleDriveService } from '../../google/drive.service'
 import { GoogleOAuthService } from '../../google/oauth.service'
 import { GoogleYoutubeService } from '../../google/youtube.service'
