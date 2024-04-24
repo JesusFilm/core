@@ -22,15 +22,16 @@ describe('TagCarousels', () => {
     expect(getAllByTestId('collections-button-loading')).toHaveLength(2)
 
     await waitFor(async () => {
-      await expect(
+      expect(
         within(feltNeedsCarousel).getByRole('button', {
-          name: 'Acceptance Acceptance Acceptance'
+          // The name of the tag is the alt text + tag label + tag label
+          name: 'Acceptance tag Acceptance Acceptance'
         })
       ).toBeInTheDocument()
 
-      await expect(
+      expect(
         getByRole('button', {
-          name: 'NUA NUA NUA'
+          name: 'NUA tag NUA NUA'
         })
       ).toBeInTheDocument()
     })
@@ -45,20 +46,43 @@ describe('TagCarousels', () => {
     )
 
     await waitFor(async () => {
-      await expect(
+      expect(
         getByRole('button', {
-          name: 'Acceptance Acceptance Acceptance'
+          name: 'Acceptance tag Acceptance Acceptance'
         })
       ).toBeInTheDocument()
     })
 
     fireEvent.click(
       getByRole('button', {
-        name: 'Acceptance Acceptance Acceptance'
+        name: 'Acceptance tag Acceptance Acceptance'
       })
     )
 
     expect(onChange).toHaveBeenCalledWith('acceptanceTagId')
+  })
+
+  it('should filter out felt needs tags that have no backgrounds', async () => {
+    const onChange = jest.fn()
+    const { getByRole, queryAllByText } = render(
+      <MockedProvider mocks={[getTagsMock]}>
+        <TagCarousels onChange={onChange} />
+      </MockedProvider>
+    )
+
+    // Not for test but needed in order to ensure rendering is correct
+    await waitFor(async () => {
+      expect(
+        getByRole('button', {
+          name: 'Acceptance tag Acceptance Acceptance'
+        })
+      ).toBeInTheDocument()
+    })
+
+    // Assert tags without backgrounds are filtered out
+    await waitFor(async () => {
+      expect(queryAllByText('Fear/Power')).toHaveLength(0)
+    })
   })
 
   it('should filter by collections tag', async () => {
@@ -70,16 +94,16 @@ describe('TagCarousels', () => {
     )
 
     await waitFor(async () => {
-      await expect(
+      expect(
         getByRole('button', {
-          name: 'NUA NUA NUA'
+          name: 'NUA tag NUA NUA'
         })
       ).toBeInTheDocument()
     })
 
     fireEvent.click(
       getByRole('button', {
-        name: 'NUA NUA NUA'
+        name: 'NUA tag NUA NUA'
       })
     )
 
