@@ -12,7 +12,8 @@ import {
   Nexus, 
   Resource, 
   ResourceLocalization, 
-  UserNexus
+  UserNexus, 
+  UserRole
 } from '.prisma/api-nexus-client'
 
 export type PrismaSubjects = Subjects<{
@@ -25,5 +26,6 @@ export type PrismaSubjects = Subjects<{
   Nexus: Nexus, 
   Resource: Resource, 
   ResourceLocalization: ResourceLocalization, 
-  UserNexus: UserNexus
+  UserNexus: UserNexus, 
+  UserRole: UserRole
 }>
