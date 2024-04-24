@@ -42,112 +42,6 @@ export interface UploadToBucketToYoutube {
   }
 }
 
-export interface UpdateVideoThumbnail {
-  batchId: string;
-  resource: {
-    id: string;
-    driveId: string;
-    refreshToken: string;
-    videoId: string;
-  };
-  channel: {
-    id: string;
-    channelId: string;
-    refreshToken: string;
-  };
-}
-
-// export interface UpdateVideoLocalization {
-//   batchId: string;
-//   localization: {
-//     resourceId: string;
-//     title: string;
-//     description: string;
-//     youtubeId: string | null;
-//     tags: string[];
-//     language: string;
-//   };
-//   channel: {
-//     id: string;
-//     channelId: string;
-//     refreshToken: string;
-//   };
-// }
-export interface UpdateVideoLocalization {
-  batchId: string;
-  batchTaskId: string;
-  videoId: string;
-  channel: {
-    id: string;
-    channelId: string;
-    refreshToken: string;
-  };
-  localizations: Array<{
-    resourceId: string;
-    title: string;
-    description: string;
-    tags: string[];
-    language: string;
-  }>;
-}
-
-export interface UpdateVideoCaption {
-  batchId: string;
-  batchTaskId: string;
-  resource: {
-    id: string;
-    driveId: string;
-    mimeType: string;
-    refreshToken: string;
-    videoId: string;
-    language: string;
-  };
-  channel: {
-    id: string;
-    channelId: string;
-    refreshToken: string;
-  };
-}
-
-// export interface ResourceLocalizationJobData {
-//   batchId: string;
-//   localization: {
-//     resourceId: string;
-//     youtubeId: string | null;
-//     title: string;
-//     description: string;
-//     tags: string[];
-//     language: string;
-//   };
-//   channel: {
-//     id: string;
-//     channelId: string | undefined;
-//     refreshToken: string | undefined;
-//   };
-// }
-
-export interface ResourceLocalizationJobData {
-  batchId: string;
-  videoId: string;
-  channel: {
-    id: string;
-    channelId: string | undefined;
-    refreshToken: string | undefined;
-  };
-  localizations: Array<{
-    resourceId: string;
-    title: string;
-    description: string;
-    tags: string[];
-    language: string;
-  }>;
-}
-
-interface Job {
-  name: string;
-  data: object;
-}
-
 @Injectable()
 export class BullMQService {
   constructor(
@@ -200,32 +94,11 @@ export class BullMQService {
       }
     })
 
-    if (batch == null) {
-      throw new Error('Batch not found');
-    }
-
-    const channelData = await this.prismaService.channel.findUnique({
-      where: { id: channel.id },
-      include: { youtube: true },
-    });
-
-    const jobs = await Promise.all(
-      batch.tasks.map(async (task) => {
-        const resource = await this.prismaService.resource.findUnique({
-          where: { id: task.resourceId },
-          include: {
-            googleDrive: true,
-            localizations: true,
-          },
-        });
-
-        if (resource == null) {
-          throw new Error('Resource not found');
-        }
-
-        const jobData = {
+    const jobs = batch?.resources.map((batchResource) => {
+      return {
+        name: 'process',
+        data: {
           batchId: batch.id,
-          batchTaskId: task.id,
           resource: {
             id: batchResource.resource.id ?? '',
             driveId: batchResource.resource.googleDrive?.driveId ?? '',

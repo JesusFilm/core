@@ -23,9 +23,9 @@ export class NexusJobListener implements OnModuleInit {
     this.uploadQueue.on(
       'progress',
       async (job: Job<UploadToBucketToYoutube>, progress: number) => {
-        console.log('Job Progress:', job.id, progress);
+        // console.log('Job Progress:', job.id, progress);
         void Promise.all([
-          await this.prismaService.batchTask.update({
+          await this.prismaService.batchResource.updateMany({
             data: {
               percent: progress
             },
@@ -45,7 +45,7 @@ export class NexusJobListener implements OnModuleInit {
       async (job: Job<UploadToBucketToYoutube>) => {
         console.log('Job completed: ', job.id)
         void Promise.all([
-          await this.prismaService.batchTask.update({
+          await this.prismaService.batchResource.updateMany({
             data: {
               isCompleted: true,
               percent: 100

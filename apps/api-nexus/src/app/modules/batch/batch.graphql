@@ -1,12 +1,12 @@
-scalar Object
-
 type Batch @key(fields: "id") {
   id: ID!
   nexusId: String!
+  channelId: String!
+  channel: Channel
+  resources: [BatchResource]
   name: String!
   status: BatchStatus!
-  tasks: [BatchTask!]!
-  progress: Float
+  averagePercent: Float
   createdAt: DateTime!
 }
 
@@ -22,27 +22,13 @@ enum BatchStatus {
   scheduled
 }
 
-type BatchTask @key(fields: "id") {
+type BatchResource @key(fields: "id") {
   id: ID!
   batchId: String!
-  type: BatchTaskType!
-  status: TaskStatus!
-  progress: Float
-  metadata: Object
+  resourceId: String!
+  isCompleted: Boolean
   error: String
-}
-
-enum BatchTaskType {
-  video_upload
-  caption_processing
-  localization
-}
-
-enum TaskStatus {
-  pending
-  processing
-  completed
-  failed
+  percent: Float
 }
 
 input BatchFilter {
