@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { ReactElement, RefObject, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -26,18 +26,14 @@ import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
+import {
+  CARD_HEIGHT,
+  CARD_WIDTH,
+  calculateScale,
+  calculateScaledHeight,
+  calculateScaledMargin
+} from './utils/calculateDimensions'
 import { VideoWrapper } from './VideoWrapper'
-
-function calculateScale(ref: RefObject<HTMLDivElement>): number | undefined {
-  const current = ref.current
-  if (current == null) return
-
-  const clientWidth = current.clientWidth / 375
-  const clientHeight = current.clientHeight / 670
-  const scale = Math.min(clientWidth, clientHeight)
-
-  return scale <= 0 ? 1 : Math.min(scale, 1)
-}
 
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
@@ -127,6 +123,9 @@ export function Canvas(): ReactElement {
   const theme =
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
 
+  // TODO: figure out why container Ref is null
+  console.log('ref', containerRef)
+
   return (
     <Stack
       ref={containerRef}
@@ -151,7 +150,7 @@ export function Canvas(): ReactElement {
       {selectedStep != null && theme != null && (
         <Stack
           direction="column"
-          alignItems="flex-end"
+          alignItems={{ xs: 'center', sm: 'flex-end' }}
           gap={1.5}
           sx={{
             flexGrow: { xs: 1, sm: 0 },
@@ -163,8 +162,8 @@ export function Canvas(): ReactElement {
         >
           <Box
             sx={{
-              width: { xs: '100%', sm: 327, xl: 387 },
-              height: { xs: '100%', sm: 402, md: 492, lg: 592, xl: 682 },
+              flexDirection: 'column',
+              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`,
               display: 'flex'
             }}
           >
@@ -172,11 +171,13 @@ export function Canvas(): ReactElement {
               data-testId="CanvasContainer"
               sx={{
                 position: 'relative',
-                left: '50%',
-                top: '50%',
-                width: { sm: 325, xl: 375 },
-                height: { sm: 520, lg: 590, xl: 670 },
-                transform: `translate(-50%, -50%) scale(${scale})`,
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
+                transform: `scale(${scale})`,
+                margin: `${calculateScaledMargin(
+                  CARD_HEIGHT,
+                  scale
+                )} ${calculateScaledMargin(CARD_WIDTH, scale)}`,
                 borderRadius: 6,
                 transition: (theme) =>
                   theme.transitions.create('border-color', {
@@ -289,9 +290,9 @@ export function Canvas(): ReactElement {
                 </ThemeProvider>
               </FramePortal>
             </Box>
-          </Box>
-          <Box sx={{ mr: 4 }}>
-            <Fab variant="canvas" />
+            <Box sx={{ mt: 4, alignSelf: 'end' }}>
+              <Fab variant="canvas" />
+            </Box>
           </Box>
         </Stack>
       )}
