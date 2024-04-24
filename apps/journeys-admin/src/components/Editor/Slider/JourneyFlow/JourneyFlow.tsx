@@ -212,7 +212,12 @@ export function JourneyFlow(): ReactElement {
         await navigateToBlockActionUpdate(block, newStepId)
       }
     },
-    []
+    [
+      journey,
+      navigateToBlockActionUpdate,
+      stepAndCardBlockCreate,
+      stepBlockNextBlockUpdate
+    ]
   )
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections
