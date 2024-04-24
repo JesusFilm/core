@@ -95,7 +95,9 @@ describe('BaseNode', () => {
           parentBlockId: null,
           parentOrder: 1,
           locked: false,
-          nextBlockId: null
+          nextBlockId: null,
+          x: null,
+          y: null
         },
         cardBlockCreate: {
           __typename: 'CardBlock',

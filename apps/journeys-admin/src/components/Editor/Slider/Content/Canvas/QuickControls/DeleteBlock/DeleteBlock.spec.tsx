@@ -111,7 +111,8 @@ describe('DeleteBlock', () => {
           {
             __typename: 'StepBlock',
             id: selectedStep.id,
-            parentOrder: selectedStep.parentOrder
+            parentOrder: selectedStep.parentOrder,
+            nextBlockId: null
           }
         ]
       }
@@ -396,7 +397,8 @@ describe('DeleteBlock', () => {
             {
               __typename: 'StepBlock',
               id: passedInStep.id,
-              parentOrder: passedInStep.parentOrder
+              parentOrder: passedInStep.parentOrder,
+              nextBlockId: null
             }
           ]
         }
