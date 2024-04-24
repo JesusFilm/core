@@ -64,7 +64,11 @@ const jsondiffpatch = create({
     detectMove: true
   },
   objectHash: (obj, index) => {
-    return obj.id ?? obj.languageId ?? `$$index:${index as string}`
+    return (
+      obj.id ??
+      `${obj.languageId}${obj.order != null ? `:${obj.order}` : ''}` ??
+      `$$index:${index as string}`
+    )
   },
   textDiff: {
     minLength: 4096
@@ -247,18 +251,60 @@ async function handlePrismaOrderedTranslationTables<T>(
 
     const fieldDelta = delta[field][key]
 
-    // replace all changes since delta isn't able to fully handle ordered arrays
-    await tx[prismaField].deleteMany({
-      where: {
-        videoId: video.id,
-        languageId: fieldDelta[0].languageId
-      }
-    })
-    if (fieldDelta.length > 0) {
-      await tx[prismaField].createMany({
+    // ignore moved items
+    if (isMovedItem(fieldDelta)) continue
+
+    const languageId = key.startsWith('_')
+      ? fieldDelta[0].languageId
+      : video[field][toNumber(key)].languageId
+
+    const order = key.startsWith('_') ? fieldDelta[0].order : Number(key) + 1
+
+    if (isArray(fieldDelta) && fieldDelta.length === 1) {
+      // handle create
+      await tx[prismaField].create({
         data: fieldDelta[0]
       })
+    } else if (isArray(fieldDelta) && fieldDelta[2] === 0) {
+      // handle delete
+      await tx[prismaField].delete({
+        where: {
+          videoId_languageId_order: {
+            videoId: video.id,
+            languageId,
+            order
+          }
+        }
+      })
+    } else if (Object.keys(fieldDelta).length > 0 && languageId != null) {
+      // handle update
+      await tx[prismaField].update({
+        where: {
+          videoId_languageId_order: {
+            videoId: video.id,
+            languageId,
+            order
+          }
+        },
+        data: getChangedValues<T>(fieldDelta)
+      })
     }
+    // const languageId = key.startsWith('_')
+    //   ? existingVideo?.[field][toNumber(key)].languageId
+    //   : video[field][toNumber(key)].languageId
+
+    //   // replace all changes since delta isn't able to fully handle ordered arrays
+    //   await tx[prismaField].deleteMany({
+    //     where: {
+    //       videoId: video.id,
+    //       languageId
+    //     }
+    //   })
+    //   if (fieldDelta.length > 0) {
+    //     await tx[prismaField].createMany({
+    //       data: fieldDelta
+    //     })
+    //   }
   }
 }
 
