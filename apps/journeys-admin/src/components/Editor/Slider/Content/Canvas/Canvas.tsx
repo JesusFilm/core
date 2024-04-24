@@ -290,7 +290,13 @@ export function Canvas(): ReactElement {
                 </ThemeProvider>
               </FramePortal>
             </Box>
-            <Box sx={{ mt: 4, alignSelf: 'end' }}>
+            <Box
+              sx={{
+                mt: 4,
+                alignSelf: 'end',
+                transform: `scale(${scale})`
+              }}
+            >
               <Fab variant="canvas" />
             </Box>
           </Box>
