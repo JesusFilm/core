@@ -28,12 +28,15 @@ import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
 
-function calculateScale({ current }: RefObject<HTMLDivElement>): number {
-  if (current == null) return 1
+function calculateScale(ref: RefObject<HTMLDivElement>): number | undefined {
+  const current = ref.current
+  if (current == null) return
+
   const clientWidth = current.clientWidth / 375
   const clientHeight = current.clientHeight / 670
   const scale = Math.min(clientWidth, clientHeight)
-  return Math.min(scale, 1)
+
+  return scale <= 0 ? 1 : Math.min(scale, 1)
 }
 
 export function Canvas(): ReactElement {
@@ -55,11 +58,9 @@ export function Canvas(): ReactElement {
   const router = useRouter()
 
   const [scale, setScale] = useState(calculateScale(containerRef))
-  console.log('scale', scale)
 
   useEffect(() => {
     const handleResize = (): void => setScale(calculateScale(containerRef))
-
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
@@ -162,8 +163,8 @@ export function Canvas(): ReactElement {
         >
           <Box
             sx={{
-              width: { xs: '100%', sm: 387 },
-              height: { xs: '100%', sm: 682 },
+              width: { xs: '100%', sm: 327, xl: 387 },
+              height: { xs: '100%', sm: 402, md: 492, lg: 592, xl: 682 },
               display: 'flex'
             }}
           >
@@ -173,8 +174,8 @@ export function Canvas(): ReactElement {
                 position: 'relative',
                 left: '50%',
                 top: '50%',
-                width: 375,
-                height: 670,
+                width: { sm: 325, xl: 375 },
+                height: { sm: 520, lg: 590, xl: 670 },
                 transform: `translate(-50%, -50%) scale(${scale})`,
                 borderRadius: 6,
                 transition: (theme) =>
