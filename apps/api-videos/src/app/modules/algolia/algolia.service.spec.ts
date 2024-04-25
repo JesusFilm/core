@@ -60,8 +60,10 @@ describe('AlgoliaService', () => {
 
   describe('syncVideosToAlgolia', () => {
     it('should throw if no API key', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
-      expect(service.syncVideosToAlgolia()).rejects.toThrow(
+      process.env.ALGOLIA_API_KEY = undefined
+      process.env.ALGOLIA_APPLICATION_ID = undefined
+      process.env.ALGOLIA_INDEX = undefined
+      await expect(service.syncVideosToAlgolia()).rejects.toThrow(
         'algolia environment variables not set'
       )
     })
