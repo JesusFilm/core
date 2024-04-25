@@ -535,9 +535,10 @@ describe('arclight', () => {
             languageId: '529',
             primary: true,
             order: 1,
-            value: 'How can I know Jesus?'
+            value: 'How can I know Jesus?',
+            videoId: 'mediaComponentId'
           }
-        ],
+        ]
       })
       expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
     })
