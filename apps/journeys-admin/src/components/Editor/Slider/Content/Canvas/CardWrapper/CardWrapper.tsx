@@ -10,6 +10,7 @@ import { MouseEvent, ReactElement } from 'react'
 import type { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { Card } from '@core/journeys/ui/Card'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 export function CardWrapper({ block, children }: WrapperProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -84,8 +85,24 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
                 >
                   Select Card Template
                 </Button>
-                <Typography variant="body2">
-                  or add blocks from the list below ⤵
+                <Typography
+                  variant="body2"
+                  display="flex"
+                  flex-direction="column"
+                  justifyContent="top"
+                  height="24px"
+                >
+                  or add blocks using the
+                  <Plus2Icon
+                    fontSize="small"
+                    sx={{
+                      backgroundColor: '#C52D3A',
+                      borderRadius: 100,
+                      ml: 1,
+                      mr: 1
+                    }}
+                  />
+                  button below
                 </Typography>
               </Trans>
             </Stack>
