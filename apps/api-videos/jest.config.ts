@@ -1,4 +1,5 @@
 import type { Config } from 'jest'
+
 const config: Config = {
   displayName: 'api-videos',
   globals: {},
