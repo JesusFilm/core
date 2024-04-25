@@ -3,15 +3,20 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Job } from 'bullmq'
 import { mockDeep } from 'jest-mock-extended'
 
-import { addTableToPrisma } from '../../../libs/bigQueryTables/addTableToPrisma'
+import { coreVideoArclightData } from '../../../libs/bigQueryTables/coreVideoArclightData/coreVideoArclightData'
+import { coreVideoTitleArclightData } from '../../../libs/bigQueryTables/coreVideoTitleArclightData/coreVideoTitleArclightData'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { BigQueryConsumer } from './bigQuery.consumer'
 import { BigQueryService } from './bigQuery.service'
 
-jest.mock('../../../libs/bigQueryTables/addTableToPrisma')
-
 jest.mock('@google-cloud/bigquery')
+jest.mock(
+  '../../../libs/bigQueryTables/coreVideoTitleArclightData/coreVideoTitleArclightData'
+)
+jest.mock(
+  '../../../libs/bigQueryTables/coreVideoArclightData/coreVideoArclightData'
+)
 
 describe('BigQueryConsumer', () => {
   const OLD_ENV = { ...process.env } // clone env
@@ -64,6 +69,11 @@ describe('BigQueryConsumer', () => {
           { pageToken: 'mockPageToken' },
           { totalRows: '2' }
         ])
+        .mockResolvedValueOnce([
+          [{ mockKey: 'mockValue' }, { mockKey: 'mockValueTwo' }],
+          { pageToken: 'mockPageToken' },
+          { totalRows: '2' }
+        ])
 
       process.env.BIG_QUERY_PRIVATE_KEY = 'someKey'
       jest
@@ -75,7 +85,8 @@ describe('BigQueryConsumer', () => {
         ])
 
       await consumer.process({ name: 'mockjobTwo' } as unknown as Job)
-      expect(addTableToPrisma).toHaveBeenCalledTimes(2)
+      expect(coreVideoTitleArclightData).toHaveBeenCalledTimes(2)
+      expect(coreVideoArclightData).toHaveBeenCalledTimes(2)
     })
   })
 })
