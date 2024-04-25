@@ -108,6 +108,8 @@ export function VideoLibrary({
           sx={{
             borderBottom: 1,
             borderColor: 'divider',
+            width: '100%',
+            height: 73,
             backgroundColor: (theme) => theme.palette.background.paper
           }}
           data-testid="VideoLibrary"
@@ -137,32 +139,44 @@ export function VideoLibrary({
             />
           </Tabs>
         </Box>
-        <TabPanel
-          name="video-from-local"
-          value={activeTab}
-          index={0}
-          sx={{ flexGrow: 1, overflow: 'auto' }}
+
+        <Box
+          sx={{
+            width: '100%',
+            height: {
+              xs: 'calc(100vh - 295px)',
+              sm: 'calc(100vh - 265px)'
+            },
+            overflowY: 'auto'
+          }}
         >
-          <VideoFromLocal onSelect={onSelect} />
-        </TabPanel>
-        <TabPanel
-          name="video-from-youtube"
-          value={activeTab}
-          index={1}
-          sx={{ flexGrow: 1, overflow: 'auto' }}
-          unmountUntilVisible
-        >
-          <VideoFromYouTube onSelect={onSelect} />
-        </TabPanel>
-        <TabPanel
-          name="video-from-cloudflare"
-          value={activeTab}
-          index={2}
-          sx={{ flexGrow: 1, overflow: 'auto' }}
-          unmountUntilVisible
-        >
-          <VideoFromCloudflare onSelect={onSelect} />
-        </TabPanel>
+          <TabPanel
+            name="video-from-local"
+            value={activeTab}
+            index={0}
+            sx={{ flexGrow: 1, overflow: 'auto' }}
+          >
+            <VideoFromLocal onSelect={onSelect} />
+          </TabPanel>
+          <TabPanel
+            name="video-from-youtube"
+            value={activeTab}
+            index={1}
+            sx={{ flexGrow: 1, overflow: 'auto' }}
+            unmountUntilVisible
+          >
+            <VideoFromYouTube onSelect={onSelect} />
+          </TabPanel>
+          <TabPanel
+            name="video-from-cloudflare"
+            value={activeTab}
+            index={2}
+            sx={{ flexGrow: 1, overflow: 'auto' }}
+            unmountUntilVisible
+          >
+            <VideoFromCloudflare onSelect={onSelect} />
+          </TabPanel>
+        </Box>
       </Drawer>
       {selectedBlock?.videoId != null && (
         <VideoDetails
