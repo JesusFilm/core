@@ -45,7 +45,9 @@ export function initAuth(): void {
       const redirectPath =
         typeof window === 'undefined' ? ctx?.resolvedUrl : window.location.href
       const redirectUrl = new URL(redirectPath ?? '', origin)
-      return `/login?redirect=${encodeURIComponent(redirectUrl.toString())}`
+      return `/users/sign-in?redirect=${encodeURIComponent(
+        redirectUrl.toString()
+      )}`
     },
     appPageURL: ({ ctx }) => {
       const isServerSide = typeof window === 'undefined'
