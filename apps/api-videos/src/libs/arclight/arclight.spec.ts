@@ -401,14 +401,6 @@ describe('arclight', () => {
           value: 'longDescription'
         }
       ],
-      newDescription: [
-        {
-          videoId: 'mediaComponentId',
-          languageId: '529',
-          primary: true,
-          value: 'longDescription'
-        }
-      ],
       image: 'mobileCinematicHigh',
       imageAlt: [
         {
@@ -430,16 +422,7 @@ describe('arclight', () => {
           value: 'shortDescription'
         }
       ],
-      newSnippet: [
-        {
-          videoId: 'mediaComponentId',
-          languageId: '529',
-          primary: true,
-          value: 'shortDescription'
-        }
-      ],
       studyQuestions: [],
-      newStudyQuestions: [],
       title: [
         {
           videoId: 'mediaComponentId',
@@ -555,15 +538,6 @@ describe('arclight', () => {
             value: 'How can I know Jesus?',
             videoId: 'mediaComponentId'
           }
-        ],
-        newStudyQuestions: [
-          {
-            videoId: 'mediaComponentId',
-            languageId: '529',
-            order: 1,
-            value: 'How can I know Jesus?',
-            primary: true
-          }
         ]
       })
       expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
@@ -594,15 +568,6 @@ describe('arclight', () => {
           }
         ],
         imageAlt: [
-          {
-            videoId: 'mediaComponentId',
-            languageId: '529',
-            value:
-              'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Ove',
-            primary: true
-          }
-        ],
-        newImageAlt: [
           {
             videoId: 'mediaComponentId',
             languageId: '529',
@@ -800,14 +765,6 @@ describe('arclight', () => {
             value: 'longDescription'
           }
         ],
-        newDescription: [
-          {
-            videoId: 'mediaComponentId',
-            languageId: '529',
-            primary: true,
-            value: 'longDescription'
-          }
-        ],
         id: 'mediaComponentId',
         image: 'mobileCinematicHigh',
         imageAlt: [
@@ -830,16 +787,7 @@ describe('arclight', () => {
             value: 'shortDescription'
           }
         ],
-        newSnippet: [
-          {
-            videoId: 'mediaComponentId',
-            languageId: '529',
-            primary: true,
-            value: 'shortDescription'
-          }
-        ],
         studyQuestions: [],
-        newStudyQuestions: [],
         title: [
           {
             languageId: '529',
