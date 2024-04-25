@@ -4,6 +4,16 @@ import { NextRequest } from 'next/server'
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { paramsToRecord } from '../../../../lib/paramsToRecord'
 
+/* TODO: 
+  querystring:
+    apiKey
+    expand
+    rel
+    languageIds
+    isDeprecated
+    metadataLanguageTags
+*/
+
 interface GetParams {
   params: { mediaComponentId: string }
 }
