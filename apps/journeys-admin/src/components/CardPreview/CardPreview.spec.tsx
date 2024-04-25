@@ -155,7 +155,9 @@ describe('CardPreview', () => {
           locked: false,
           nextBlockId: null,
           parentBlockId: null,
-          parentOrder: 0
+          parentOrder: 0,
+          x: null,
+          y: null
         }
       })
     )
