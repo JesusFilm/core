@@ -21,16 +21,6 @@ export class BigQueryService {
   }> {
     const maxResults = 500
     let jobRes
-
-    const query = `SELECT * FROM \`${table}\``
-
-    try {
-      const [job] = await this.client.createQueryJob({ query })
-      jobRes = job
-    } catch (e) {
-      throw new Error(`failed to create job in Big Query: ${e.message}`)
-    }
-
     let rowRes
     let pageToken: string | undefined
     let results: unknown[] = []
@@ -38,10 +28,22 @@ export class BigQueryService {
     let maxRows = 0
     let returnedResults = 0
 
+    const query = `SELECT * FROM \`${table}\``
+
+    try {
+      const [job] = await this.client.createQueryJob({ query })
+      jobRes = job
+      const res = await jobRes.getQueryResults({ maxResults, pageToken })
+      results = res[0]
+      pageToken = res[1]?.pageToken
+      maxRows = +res[2]?.totalRows
+    } catch (e) {
+      throw new Error(`failed to create job in Big Query: ${e.message}`)
+    }
+
     return {
       async next() {
-        returnedResults++
-        if (results.length === 0) {
+        if (results.length === 0 && returnedResults !== maxRows) {
           try {
             const res = await jobRes.getQueryResults({ maxResults, pageToken })
             results = res[0]
@@ -54,8 +56,9 @@ export class BigQueryService {
           }
         }
         rowRes = results.shift()
+        returnedResults++
         return {
-          done: returnedResults === maxRows + 1,
+          done: returnedResults === maxRows + 1 && results.length === 0,
           value: rowRes
         }
       }

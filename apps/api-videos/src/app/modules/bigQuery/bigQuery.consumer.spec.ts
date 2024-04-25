@@ -56,16 +56,13 @@ describe('BigQueryConsumer', () => {
       expect(bigQueryService.bigQueryRowIterator).toHaveBeenCalled()
     })
 
-    it('should call load function', async () => {
+    it('should call load functions', async () => {
       const getQueryResults = jest
         .fn()
         .mockResolvedValueOnce([
-          [{ mockKey: 'mockValue' }],
-          { pageToken: 'mockPageToken' }
-        ])
-        .mockResolvedValueOnce([
-          [{ mockKey: 'mockValueTwo' }],
-          { pageToken: undefined }
+          [{ mockKey: 'mockValue' }, { mockKey: 'mockValueTwo' }],
+          { pageToken: 'mockPageToken' },
+          { totalRows: '2' }
         ])
 
       process.env.BIG_QUERY_PRIVATE_KEY = 'someKey'
@@ -78,7 +75,7 @@ describe('BigQueryConsumer', () => {
         ])
 
       await consumer.process({ name: 'mockjobTwo' } as unknown as Job)
-      expect(addTableToPrisma).toHaveBeenCalled()
+      expect(addTableToPrisma).toHaveBeenCalledTimes(2)
     })
   })
 })

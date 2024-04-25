@@ -64,11 +64,13 @@ describe('bigQueryService', () => {
         .fn()
         .mockResolvedValueOnce([
           [{ mockKey: 'mockValue' }],
-          { pageToken: 'mockPageToken' }
+          { pageToken: 'mockPageToken' },
+          { totalRows: '2' }
         ])
         .mockResolvedValueOnce([
           [{ mockKey: 'mockValueTwo' }],
-          { pageToken: undefined }
+          { pageToken: undefined },
+          { totalRows: '2' }
         ])
       process.env.BIG_QUERY_PRIVATE_KEY = 'someKey'
       jest
