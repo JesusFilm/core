@@ -45,15 +45,25 @@ export function Slider(): ReactElement {
       swiperRef.current != null &&
       swiperRef.current.swiper.activeIndex !== activeSlide
     ) {
-      if (activeSlide === ActiveSlide.JourneyFlow) {
-        dispatch({
-          type: 'SetSelectedBlockAction',
-          selectedBlock: selectedStep
-        })
-      }
       swiperRef.current.swiper.slideTo(activeSlide)
     }
   }, [activeSlide])
+
+  function resetCanvasFocus(): void {
+    if (isSlideChangingTo(ActiveSlide.JourneyFlow)) {
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: selectedStep
+      })
+    }
+  }
+
+  function isSlideChangingTo(slide): boolean {
+    return (
+      swiperRef.current != null &&
+      swiperRef.current?.swiper.activeIndex === slide
+    )
+  }
 
   function handlePrev(): void {
     dispatch({
@@ -69,6 +79,7 @@ export function Slider(): ReactElement {
       slidesPerView="auto"
       breakpoints={swiperBreakpoints}
       onActiveIndexChange={(swiper) => {
+        resetCanvasFocus()
         dispatch({
           type: 'SetActiveSlideAction',
           activeSlide: swiper.activeIndex
