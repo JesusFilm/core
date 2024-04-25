@@ -3,11 +3,9 @@ import { RefObject } from 'react'
 export const CARD_WIDTH = 375
 export const CARD_HEIGHT = 670
 
-export function calculateScale(
-  ref: RefObject<HTMLDivElement>
-): number | undefined {
+export function calculateScale(ref: RefObject<HTMLDivElement>): number {
   const current = ref.current
-  if (current == null) return
+  if (current == null) return 0
 
   const clientWidth = current.clientWidth / CARD_WIDTH
   const clientHeight = current.clientHeight / CARD_HEIGHT
