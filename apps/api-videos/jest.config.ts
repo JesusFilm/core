@@ -12,10 +12,6 @@ const config: Config = {
     ]
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  // TODO: Remove modulePathIgnorePatterns once seed is in
-  modulePathIgnorePatterns: [
-    '<rootDir>/src/app/modules/bigQuery/bigQuery.queue.test.ts'
-  ],
   coverageDirectory: '../../coverage/apps/api-videos',
   collectCoverage: true,
   coverageReporters: ['cobertura'],
