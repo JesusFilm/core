@@ -40,6 +40,7 @@ export function Canvas(): ReactElement {
   const containerRef = useRef<HTMLDivElement>(null)
   // this ref handles if the mouseDown event of the onClick event's target is the card component
   const selectionRef = useRef(false)
+  const [scale, setScale] = useState(calculateScale(containerRef))
   const {
     state: {
       selectedStep,
@@ -52,8 +53,6 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
-
-  const [scale, setScale] = useState(calculateScale(containerRef))
 
   useEffect(() => {
     const handleResize = (): void => setScale(calculateScale(containerRef))
@@ -122,9 +121,6 @@ export function Canvas(): ReactElement {
 
   const theme =
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
-
-  // TODO: figure out why container Ref is null
-  console.log('ref', containerRef)
 
   return (
     <Stack
