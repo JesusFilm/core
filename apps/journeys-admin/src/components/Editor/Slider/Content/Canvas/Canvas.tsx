@@ -158,9 +158,9 @@ export function Canvas(): ReactElement {
         >
           <Box
             sx={{
+              display: 'flex',
               flexDirection: 'column',
-              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`,
-              display: 'flex'
+              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`
             }}
           >
             <Box
