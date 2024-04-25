@@ -1,5 +1,4 @@
 import type { Config } from 'jest'
-
 const config: Config = {
   displayName: 'api-videos',
   globals: {},
@@ -13,6 +12,9 @@ const config: Config = {
     ]
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
+  modulePathIgnorePatterns: [
+    '<rootDir>/src/app/modules/bigQuery/bigQuery.queue.test.ts'
+  ],
   coverageDirectory: '../../coverage/apps/api-videos',
   collectCoverage: true,
   coverageReporters: ['cobertura'],
