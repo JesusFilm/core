@@ -1,14 +1,20 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { Job } from 'bullmq'
 
-import { addTableToPrisma } from '../../../libs/bigQueryTables/addTableToPrisma'
+import { coreVideoArclightData } from '../../../libs/bigQueryTables/coreVideoArclightData/coreVideoArclightData'
+import { coreVideoTitleArclightData } from '../../../libs/bigQueryTables/coreVideoTitleArclightData/coreVideoTitleArclightData'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { BigQueryService } from './bigQuery.service'
 
 const TABLES_TO_FETCH = [
   {
-    tableName: 'jfp-data-warehouse.src_arclight.core_video_arclight_data'
+    tableName: 'jfp-data-warehouse.src_arclight.core_videoTitle_arclight_data',
+    transformAndLoadFunction: coreVideoTitleArclightData
+  },
+  {
+    tableName: 'jfp-data-warehouse.src_arclight.core_video_arclight_data',
+    transformAndLoadFunction: coreVideoArclightData
   }
 ]
 
@@ -22,11 +28,11 @@ export class BigQueryConsumer extends WorkerHost {
   }
 
   async process(job: Job): Promise<void> {
-    for (const { tableName } of TABLES_TO_FETCH) {
+    for (const { tableName, transformAndLoadFunction } of TABLES_TO_FETCH) {
       const iterator = await this.bigQueryService.bigQueryRowIterator(tableName)
       let res = await iterator.next()
       while (!res.done) {
-        await addTableToPrisma(res.value, tableName, this.prismaService)
+        await transformAndLoadFunction(res.value, this.prismaService)
         res = await iterator.next()
       }
     }
