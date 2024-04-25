@@ -12,7 +12,6 @@ import { Card } from '@core/journeys/ui/Card'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
-
 export function CardWrapper({ block, children }: WrapperProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
