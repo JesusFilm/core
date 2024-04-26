@@ -90,7 +90,8 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
               '&:hover .fab': {
                 transform: 'scale(1)',
                 opacity: 1
-              }
+              },
+              position: 'relative'
             }}
           >
             <StepBlockNodeMenu className="fab" step={step} />
