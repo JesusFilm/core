@@ -99,7 +99,12 @@ describe('AlgoliaService', () => {
         skip: 0,
         include: {
           video: {
-            include: { title: true, description: true, imageAlt: true }
+            include: {
+              title: true,
+              description: true,
+              imageAlt: true,
+              snippet: true
+            }
           },
           subtitle: true
         },
@@ -138,7 +143,12 @@ describe('AlgoliaService', () => {
         skip: 0,
         include: {
           video: {
-            include: { title: true, description: true, imageAlt: true }
+            include: {
+              title: true,
+              description: true,
+              imageAlt: true,
+              snippet: true
+            }
           },
           subtitle: true
         }
