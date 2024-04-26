@@ -36,11 +36,14 @@ import {
 import { VideoWrapper } from './VideoWrapper'
 
 export function Canvas(): ReactElement {
+  const [scale, setScale] = useState(
+    typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
+  )
   const frameRef = useRef<HTMLIFrameElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   // this ref handles if the mouseDown event of the onClick event's target is the card component
   const selectionRef = useRef(false)
-  const [scale, setScale] = useState(calculateScale(containerRef))
+
   const {
     state: {
       selectedStep,
@@ -155,6 +158,7 @@ export function Canvas(): ReactElement {
             px: { xs: 3, sm: 0 },
             justifyContent: 'center'
           }}
+          data-testid="stack here"
         >
           <Box
             sx={{
