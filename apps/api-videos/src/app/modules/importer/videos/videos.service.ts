@@ -1,55 +1,49 @@
 import { Injectable } from '@nestjs/common'
-import get from 'lodash/get'
-import { mixed, object, string } from 'yup'
+import { InferType, mixed, object, string } from 'yup'
 
 import { VideoLabel } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 
+const videoSchema = object({
+  id: string().required(),
+  label: mixed<VideoLabel>()
+    .transform((value) => {
+      switch (value) {
+        case 'short':
+          return VideoLabel.shortFilm
+        case 'feature':
+          return VideoLabel.featureFilm
+        case 'behind_the_scenes':
+          return VideoLabel.behindTheScenes
+        default:
+          return value
+      }
+    })
+    .oneOf(Object.values(VideoLabel))
+    .required(),
+  primaryLanguageId: string().required()
+})
+
+type Video = InferType<typeof videoSchema>
+
 @Injectable()
-export class VideosService extends ImporterService {
+export class VideosService extends ImporterService<Video> {
+  schema = videoSchema
+
   constructor(private readonly prismaService: PrismaService) {
     super()
   }
 
-  async import(row: unknown): Promise<void> {
-    const videoSchema = object({
-      id: string().required(),
-      label: mixed<VideoLabel>()
-        .transform((value) => {
-          switch (value) {
-            case 'short':
-              return VideoLabel.shortFilm
-            case 'feature':
-              return VideoLabel.featureFilm
-            case 'behind_the_scenes':
-              return VideoLabel.behindTheScenes
-            default:
-              return value
-          }
-        })
-        .oneOf(Object.values(VideoLabel))
-        .required(),
-      primaryLanguageId: string().required()
+  protected async save(video: Video): Promise<void> {
+    const record = await this.prismaService.video.findUnique({
+      where: { id: video.id }
     })
-    if (await videoSchema.isValid(row)) {
-      const video = videoSchema.noUnknown().cast(row)
-      if (
-        (await this.prismaService.video.findUnique({
-          where: { id: video.id }
-        })) != null
-      )
-        await this.prismaService.video.update({
-          where: { id: video.id },
-          data: video
-        })
-    } else {
-      throw new Error(
-        `row does not match schema: ${
-          get(row, 'id') ?? 'unknownId'
-        }\n${JSON.stringify(row, null, 2)}`
-      )
-    }
+    if (record != null)
+      await this.prismaService.video.update({
+        where: { id: video.id },
+        data: video
+      })
   }
 }
