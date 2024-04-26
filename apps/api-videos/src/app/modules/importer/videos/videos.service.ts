@@ -23,6 +23,8 @@ export class VideosService extends ImporterService {
               return VideoLabel.shortFilm
             case 'feature':
               return VideoLabel.featureFilm
+            case 'behind_the_scenes':
+              return VideoLabel.behindTheScenes
             default:
               return value
           }

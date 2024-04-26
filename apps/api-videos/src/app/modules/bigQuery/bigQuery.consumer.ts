@@ -35,7 +35,7 @@ export class BigQueryConsumer extends WorkerHost {
     ]
   }
 
-  async process(job: Job): Promise<void> {
+  async process(_job: Job): Promise<void> {
     for (const { service, bigQueryTableName } of this.tables) {
       const errors: BigQueryRowError[] = []
       for await (const row of this.bigQueryService.getRowsFromTable(

@@ -24,7 +24,9 @@ export enum VideoLabel {
     featureFilm = "featureFilm",
     segment = "segment",
     series = "series",
-    shortFilm = "shortFilm"
+    shortFilm = "shortFilm",
+    trailer = "trailer",
+    behindTheScenes = "behindTheScenes"
 }
 
 export enum VideoVariantDownloadQuality {
