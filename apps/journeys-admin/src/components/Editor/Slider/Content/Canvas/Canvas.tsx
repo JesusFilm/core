@@ -36,9 +36,6 @@ import {
 import { VideoWrapper } from './VideoWrapper'
 
 export function Canvas(): ReactElement {
-  const [scale, setScale] = useState(
-    typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
-  )
   const frameRef = useRef<HTMLIFrameElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   // this ref handles if the mouseDown event of the onClick event's target is the card component
@@ -56,6 +53,10 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
+
+  const initialScale =
+    typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
+  const [scale, setScale] = useState(initialScale)
 
   useEffect(() => {
     const handleResize = (): void => setScale(calculateScale(containerRef))
