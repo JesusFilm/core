@@ -40,7 +40,6 @@ export function Canvas(): ReactElement {
   const containerRef = useRef<HTMLDivElement>(null)
   // this ref handles if the mouseDown event of the onClick event's target is the card component
   const selectionRef = useRef(false)
-
   const {
     state: {
       selectedStep,
