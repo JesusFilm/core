@@ -1,58 +1,57 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { Job } from 'bullmq'
-import { mixed, number, object, string } from 'yup'
+import get from 'lodash/get'
 
-import { VideoLabel } from '.prisma/api-videos-client'
-
-import { PrismaService } from '../../lib/prisma.service'
+import { ImporterService } from '../importer/importer.service'
+import { VideosService } from '../importer/videos/videos.service'
 
 import { BigQueryService } from './bigQuery.service'
 
-const TABLES_TO_FETCH = {
-  videos: 'jfp-data-warehouse.src_arclight.core_video_arclight_data'
+interface Table {
+  service: ImporterService
+  bigQueryTableName: string
 }
 
+interface BigQueryRowError {
+  bigQueryTableName: string
+  id: string
+  message: string
+}
 @Processor('api-videos-arclight')
 export class BigQueryConsumer extends WorkerHost {
+  tables: Table[] = []
+
   constructor(
     private readonly bigQueryService: BigQueryService,
-    private readonly prismaService: PrismaService
+    private readonly videosService: VideosService
   ) {
     super()
+    this.tables = [
+      {
+        service: this.videosService,
+        bigQueryTableName:
+          'jfp-data-warehouse.src_arclight.core_video_arclight_data'
+      }
+    ]
   }
 
   async process(job: Job): Promise<void> {
-    for (const [localTableName, remoteTableName] of Object.entries(
-      TABLES_TO_FETCH
-    )) {
+    for (const { service, bigQueryTableName } of this.tables) {
+      const errors: BigQueryRowError[] = []
       for await (const row of this.bigQueryService.getRowsFromTable(
-        remoteTableName
+        bigQueryTableName
       )) {
-        await this[localTableName](row)
-      }
-    }
-    console.log(`${job.name} has run`)
-  }
-
-  async videos(row: unknown): Promise<void> {
-    const videoSchema = object({
-      id: string().required(),
-      label: mixed<VideoLabel>().oneOf(Object.values(VideoLabel)).required(),
-      primaryLanguageId: number().required()
-    })
-    const video = videoSchema.noUnknown().cast(row)
-    if (
-      (await this.prismaService.video.findUnique({
-        where: { id: video.id }
-      })) != null
-    ) {
-      await this.prismaService.video.update({
-        where: { id: video.id },
-        data: {
-          ...video,
-          primaryLanguageId: video.primaryLanguageId.toString()
+        try {
+          await service.import(row)
+        } catch (error) {
+          errors.push({
+            bigQueryTableName,
+            id: get(row, 'id') ?? 'unknownId',
+            message: error.message
+          })
         }
-      })
+      }
+      console.log(`finished processing ${bigQueryTableName}`, errors)
     }
   }
 }
