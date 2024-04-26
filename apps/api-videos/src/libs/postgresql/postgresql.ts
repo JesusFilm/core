@@ -20,10 +20,10 @@ import {
 
 export type PrismaVideo = Omit<Video, 'childIds'> & {
   title: VideoTitle[]
-  newDescription: VideoDescription[]
-  newImageAlt: VideoImageAlt[]
-  newSnippet: VideoSnippet[]
-  newStudyQuestions: VideoStudyQuestion[]
+  description: VideoDescription[]
+  imageAlt: VideoImageAlt[]
+  snippet: VideoSnippet[]
+  studyQuestions: VideoStudyQuestion[]
   variants: Array<
     VideoVariant & {
       subtitle: VideoVariantSubtitle[]
@@ -38,17 +38,17 @@ export type PrismaVideoCreateInput = Omit<
   | 'title'
   | 'childIds'
   | 'id'
-  | 'newDescription'
-  | 'newSnippet'
-  | 'newImageAlt'
-  | 'newStudyQuestions'
+  | 'description'
+  | 'snippet'
+  | 'imageAlt'
+  | 'studyQuestions'
 > & {
   id: string
   title: Prisma.VideoTitleUncheckedCreateInput[]
-  newDescription: Prisma.VideoDescriptionUncheckedCreateInput[]
-  newSnippet: Prisma.VideoSnippetUncheckedCreateInput[]
-  newStudyQuestions: Prisma.VideoStudyQuestionUncheckedCreateInput[]
-  newImageAlt: Prisma.VideoImageAltUncheckedCreateInput[]
+  description: Prisma.VideoDescriptionUncheckedCreateInput[]
+  snippet: Prisma.VideoSnippetUncheckedCreateInput[]
+  studyQuestions: Prisma.VideoStudyQuestionUncheckedCreateInput[]
+  imageAlt: Prisma.VideoImageAltUncheckedCreateInput[]
   variants: Array<
     Omit<Prisma.VideoVariantUncheckedCreateInput, 'downloads' | 'subtitle'> & {
       downloads?: Prisma.VideoVariantDownloadUncheckedCreateInput[]
@@ -100,11 +100,7 @@ async function handlePrismaVideo(
     'id',
     'label',
     'primaryLanguageId',
-    'snippet',
-    'description',
-    'studyQuestions',
     'image',
-    'imageAlt',
     'slug',
     'noIndex'
   ]
@@ -115,19 +111,19 @@ async function handlePrismaVideo(
       create: omit(video, [
         'variants',
         'title',
-        'newDescription',
-        'newSnippet',
-        'newImageAlt',
-        'newStudyQuestions'
+        'description',
+        'snippet',
+        'imageAlt',
+        'studyQuestions'
       ]),
       update: {
         ...omit(video, [
           'variants',
           'title',
-          'newDescription',
-          'newSnippet',
-          'newImageAlt',
-          'newStudyQuestions'
+          'description',
+          'snippet',
+          'imageAlt',
+          'studyQuestions'
         ])
       }
     })
@@ -142,9 +138,9 @@ async function handlePrismaVideo(
       delta
     )
   }
-  if (delta.newDescription != null) {
+  if (delta.description != null) {
     await handlePrismaTranslationTables<Prisma.VideoDescriptionUncheckedUpdateInput>(
-      'newDescription',
+      'description',
       'videoDescription',
       video,
       existingVideo,
@@ -152,9 +148,9 @@ async function handlePrismaVideo(
       delta
     )
   }
-  if (delta.newSnippet != null) {
+  if (delta.snippet != null) {
     await handlePrismaTranslationTables<Prisma.VideoSnippetUncheckedUpdateInput>(
-      'newSnippet',
+      'snippet',
       'videoSnippet',
       video,
       existingVideo,
@@ -162,9 +158,9 @@ async function handlePrismaVideo(
       delta
     )
   }
-  if (delta.newImageAlt != null) {
+  if (delta.imageAlt != null) {
     await handlePrismaTranslationTables<Prisma.VideoImageAltUncheckedUpdateInput>(
-      'newImageAlt',
+      'imageAlt',
       'videoImageAlt',
       video,
       existingVideo,
@@ -172,9 +168,9 @@ async function handlePrismaVideo(
       delta
     )
   }
-  if (delta.newStudyQuestions != null) {
+  if (delta.studyQuestions != null) {
     await handlePrismaOrderedTranslationTables<Prisma.VideoStudyQuestionUncheckedUpdateInput>(
-      'newStudyQuestions',
+      'studyQuestions',
       'videoStudyQuestion',
       video,
       existingVideo,
@@ -199,9 +195,11 @@ async function handlePrismaTranslationTables<T>(
 
     const title = delta.title[key] as Record<string, unknown>
     const fieldDelta = delta[field][key]
-
     // ignore moved items
     if (isMovedItem(fieldDelta)) continue
+
+    // ignore empty add
+    if (key === '0' && fieldDelta.length === 0) continue
 
     const languageId = key.startsWith('_')
       ? existingVideo?.[field][toNumber(key)].languageId
@@ -255,16 +253,19 @@ async function handlePrismaOrderedTranslationTables<T>(
     // ignore moved items
     if (isMovedItem(fieldDelta)) continue
 
+    // ignore empty add
+    if (key === '0' && fieldDelta.length === 0) continue
+
     const languageId = key.startsWith('_')
       ? fieldDelta[0].languageId
       : video[field][toNumber(key)].languageId
 
     const order = key.startsWith('_') ? fieldDelta[0].order : Number(key) + 1
 
-    if (isArray(fieldDelta) && fieldDelta.length === 1) {
+    if (isArray(fieldDelta) && !isNaN(parseInt(key))) {
       // handle create
-      await tx[prismaField].create({
-        data: fieldDelta[0]
+      await tx[prismaField].createMany({
+        data: fieldDelta
       })
     } else if (isArray(fieldDelta) && fieldDelta[2] === 0) {
       // handle delete
@@ -290,22 +291,6 @@ async function handlePrismaOrderedTranslationTables<T>(
         data: getChangedValues<T>(fieldDelta)
       })
     }
-    // const languageId = key.startsWith('_')
-    //   ? existingVideo?.[field][toNumber(key)].languageId
-    //   : video[field][toNumber(key)].languageId
-
-    //   // replace all changes since delta isn't able to fully handle ordered arrays
-    //   await tx[prismaField].deleteMany({
-    //     where: {
-    //       videoId: video.id,
-    //       languageId
-    //     }
-    //   })
-    //   if (fieldDelta.length > 0) {
-    //     await tx[prismaField].createMany({
-    //       data: fieldDelta
-    //     })
-    //   }
   }
 }
 
@@ -514,10 +499,10 @@ async function getExistingVideo(video): Promise<PrismaVideoCreateInput | null> {
       where: { id: video.id },
       include: {
         title: true,
-        newDescription: true,
-        newSnippet: true,
-        newImageAlt: true,
-        newStudyQuestions: true,
+        description: true,
+        snippet: true,
+        imageAlt: true,
+        studyQuestions: true,
         variants: {
           include: {
             subtitle: {
@@ -535,16 +520,12 @@ async function getExistingVideo(video): Promise<PrismaVideoCreateInput | null> {
     existingVideo = {
       ...existingVideo,
       title: existingVideo.title.map((title) => omit(title, 'id')),
-      newDescription: existingVideo.newDescription.map((description) =>
+      description: existingVideo.description.map((description) =>
         omit(description, 'id')
       ),
-      newSnippet: existingVideo.newSnippet.map((snippet) =>
-        omit(snippet, 'id')
-      ),
-      newImageAlt: existingVideo.newImageAlt.map((imageAlt) =>
-        omit(imageAlt, 'id')
-      ),
-      newStudyQuestions: existingVideo.newStudyQuestions.map((studyQuestion) =>
+      snippet: existingVideo.snippet.map((snippet) => omit(snippet, 'id')),
+      imageAlt: existingVideo.imageAlt.map((imageAlt) => omit(imageAlt, 'id')),
+      studyQuestions: existingVideo.studyQuestions.map((studyQuestion) =>
         omit(studyQuestion, 'id')
       ),
       variants: sortBy(existingVideo.variants, ['id']).map((variant) => ({
@@ -567,10 +548,10 @@ export async function handleVideo(
   console.log('processing video:', video.id)
 
   video.title = sortBy(video.title, ['languageId'])
-  video.newDescription = sortBy(video.newDescription, ['languageId'])
-  video.newSnippet = sortBy(video.newSnippet, ['languageId'])
-  video.newImageAlt = sortBy(video.newImageAlt, ['languageId'])
-  video.newStudyQuestions = sortBy(video.newStudyQuestions, ['order'])
+  video.description = sortBy(video.description, ['languageId'])
+  video.snippet = sortBy(video.snippet, ['languageId'])
+  video.imageAlt = sortBy(video.imageAlt, ['languageId'])
+  video.studyQuestions = sortBy(video.studyQuestions, ['order'])
   video.variants = sortBy(video.variants, ['id']).map((variant) => ({
     ...variant,
     subtitle: sortBy(variant.subtitle, ['languageId']),
