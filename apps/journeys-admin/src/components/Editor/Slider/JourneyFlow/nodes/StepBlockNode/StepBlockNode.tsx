@@ -82,6 +82,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
     }
   }
 
+  // update build
   const mobileStyle = {
     '.fab': {
       opacity: isSelected ? 1 : 0, // Only visible if isSelected is true
