@@ -38,15 +38,11 @@ model Video {
   label             VideoLabel
   primaryLanguageId String
   title             VideoTitle[]
-  snippet           Json[]
-  newSnippet        VideoSnippet[]
-  description       Json[]
-  newDescription    VideoDescription[]
-  studyQuestions    Json[]
-  newStudyQuestions VideoStudyQuestion[]
+  snippet           VideoSnippet[]
+  description       VideoDescription[]
+  studyQuestions    VideoStudyQuestion[]
   image             String?
-  imageAlt          Json[]
-  newImageAlt       VideoImageAlt[]
+  imageAlt          VideoImageAlt[]
   slug              String?              @unique
   noIndex           Boolean?
   childIds          String[] // needed for child sort order
