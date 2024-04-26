@@ -7,11 +7,6 @@ import { VideosService } from '../importer/videos/videos.service'
 
 import { BigQueryService } from './bigQuery.service'
 
-interface Table {
-  service: ImporterService
-  bigQueryTableName: string
-}
-
 interface BigQueryRowError {
   bigQueryTableName: string
   id: string
@@ -19,24 +14,21 @@ interface BigQueryRowError {
 }
 @Processor('api-videos-arclight')
 export class BigQueryConsumer extends WorkerHost {
-  tables: Table[] = []
+  tables: Record<string, ImporterService> = {}
 
   constructor(
     private readonly bigQueryService: BigQueryService,
     private readonly videosService: VideosService
   ) {
     super()
-    this.tables = [
-      {
-        service: this.videosService,
-        bigQueryTableName:
-          'jfp-data-warehouse.src_arclight.core_video_arclight_data'
-      }
-    ]
+    this.tables = {
+      'jfp-data-warehouse.src_arclight.core_video_arclight_data':
+        this.videosService
+    }
   }
 
   async process(_job: Job): Promise<void> {
-    for (const { service, bigQueryTableName } of this.tables) {
+    for (const [bigQueryTableName, service] of Object.entries(this.tables)) {
       const errors: BigQueryRowError[] = []
       for await (const row of this.bigQueryService.getRowsFromTable(
         bigQueryTableName
