@@ -82,11 +82,10 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
     }
   }
 
-  // update build comment
   const mobileStyle = {
     '.fab': {
-      opacity: isSelected ? 1 : 0, // Only visible if isSelected is true
-      transform: isSelected ? 'scale(1)' : 'scale(0.5)', // Scale based on isSelected state
+      opacity: isSelected ? 1 : 0,
+      transform: isSelected ? 'scale(1)' : 'scale(0.5)',
       transition: (theme) =>
         theme.transitions.create(['opacity', 'transform'], {
           duration: 250

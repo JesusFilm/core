@@ -1,6 +1,7 @@
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
+import { Theme, styled } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import isFunction from 'lodash/isFunction'
 import { ComponentProps, ReactElement, ReactNode } from 'react'
 import { Handle, OnConnect, Position } from 'reactflow'
@@ -30,19 +31,26 @@ export function BaseNode({
   sourceHandleProps,
   children
 }: BaseNodeProps): ReactElement {
+  const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const desktopStyle = {
+    position: 'relative',
+    '.show-on-hover': {
+      visibility: 'hidden'
+    },
+    ':hover .show-on-hover': {
+      visibility: 'visible'
+    }
+  }
+
+  const mobileStyle = {
+    position: 'relative',
+    '.show-on-hover': {
+      visibility:
+        typeof selected === 'boolean' && selected ? 'visible' : 'hidden'
+    }
+  }
   return (
-    <Box
-      data-testid="BaseNode"
-      sx={{
-        position: 'relative'
-        // '.show-on-hover': {
-        //   visibility: 'hidden'
-        // },
-        // ':hover .show-on-hover': {
-        //   visibility: 'visible'
-        // }
-      }}
-    >
+    <Box data-testid="BaseNode" sx={isDesktop ? desktopStyle : mobileStyle}>
       {isFunction(children) ? children({ selected }) : children}
       {isTargetConnectable && (
         <StyledHandle
@@ -86,7 +94,7 @@ export function BaseNode({
               data-testid="BaseNodeDownwardArrowIcon"
               className="show-on-hover"
               style={{
-                display: 'none',
+                display: 'flex',
                 position: 'absolute',
                 borderRadius: '50%',
                 color: 'white',
