@@ -52,6 +52,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
       }
       return child
     })
+
     return (
       <>
         <Box
