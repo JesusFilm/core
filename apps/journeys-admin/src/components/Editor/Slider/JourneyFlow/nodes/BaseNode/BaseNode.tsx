@@ -34,17 +34,17 @@ export function BaseNode({
   const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const desktopStyle = {
     position: 'relative',
-    '.show-on-hover': {
+    '.arrow': {
       visibility: 'hidden'
     },
-    ':hover .show-on-hover': {
+    ':hover .arrow': {
       visibility: 'visible'
     }
   }
 
   const mobileStyle = {
     position: 'relative',
-    '.show-on-hover': {
+    '.arrow': {
       visibility:
         typeof selected === 'boolean' && selected ? 'visible' : 'hidden'
     }
@@ -94,7 +94,7 @@ export function BaseNode({
           {isSourceConnectable === 'arrow' && (
             <ArrowDownwardRoundedIcon
               data-testid="BaseNodeDownwardArrowIcon"
-              className="show-on-hover"
+              className="arrow"
               style={{
                 display: 'flex',
                 position: 'absolute',
