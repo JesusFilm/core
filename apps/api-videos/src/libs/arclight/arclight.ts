@@ -264,15 +264,16 @@ export function transformArclightMediaComponentToVideo(
         primary: true
       }
     ],
-    seoTitle: [
+    snippet: [
       {
-        value: mediaComponent.title,
+        value: mediaComponent.shortDescription,
         languageId: metadataLanguageId,
         primary: true
       }
     ],
-    snippet: [
+    newSnippet: [
       {
+        videoId: mediaComponent.mediaComponentId,
         value: mediaComponent.shortDescription,
         languageId: metadataLanguageId,
         primary: true
@@ -285,14 +286,42 @@ export function transformArclightMediaComponentToVideo(
         primary: true
       }
     ],
+    newDescription: [
+      {
+        videoId: mediaComponent.mediaComponentId,
+        value: mediaComponent.longDescription,
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
     studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => ({
       languageId: metadataLanguageId,
       value: studyQuestion,
       primary: true
     })),
+    newStudyQuestions: mediaComponent.studyQuestions.map(
+      (studyQuestion, index) => ({
+        videoId: mediaComponent.mediaComponentId,
+        languageId: metadataLanguageId,
+        order: index + 1,
+        value: studyQuestion,
+        primary: true
+      })
+    ),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     imageAlt: [
       {
+        value:
+          mediaComponent.title.length <= 100
+            ? mediaComponent.title
+            : mediaComponent.title.substring(0, 99),
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
+    newImageAlt: [
+      {
+        videoId: mediaComponent.mediaComponentId,
         value:
           mediaComponent.title.length <= 100
             ? mediaComponent.title
