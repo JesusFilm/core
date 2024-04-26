@@ -30,7 +30,7 @@ describe('coreVideoArclightData', () => {
     ])
     prismaService.videoTitle.findUnique.mockResolvedValue({
       id: 'videoTitleId',
-      value: 'mockVIdeoTitle',
+      value: 'Mock Video Title',
       languageId: '529',
       primary: true,
       videoId: 'videoId'
@@ -58,7 +58,12 @@ describe('coreVideoArclightData', () => {
         label: 'segment',
         noIndex: false,
         primaryLanguageId: '529',
-        slug: 'mockvideotitle'
+        slug: 'mock-video-title',
+        title: {
+          connect: {
+            id: 'videoTitleId'
+          }
+        }
       },
       update: {
         id: 'id',
@@ -66,7 +71,12 @@ describe('coreVideoArclightData', () => {
         label: 'segment',
         noIndex: false,
         primaryLanguageId: '529',
-        slug: 'mockvideotitle'
+        slug: 'mock-video-title',
+        title: {
+          connect: {
+            id: 'videoTitleId'
+          }
+        }
       },
       where: {
         id: 'id'

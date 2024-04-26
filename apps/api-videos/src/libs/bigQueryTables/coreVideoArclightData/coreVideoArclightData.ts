@@ -53,7 +53,7 @@ export async function coreVideoArclightData(
 
   await prismaService.video.upsert({
     where: { id },
-    update: video,
-    create: video
+    update: { ...video, title: { connect: { id: title?.id } } },
+    create: { ...video, title: { connect: { id: title?.id } } }
   })
 }
