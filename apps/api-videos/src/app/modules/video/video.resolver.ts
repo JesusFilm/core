@@ -135,14 +135,6 @@ export class VideoResolver {
   }
 
   @ResolveField()
-  @TranslationField('seoTitle')
-  seoTitle(
-    @Parent() language,
-    @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean
-  ): void {}
-
-  @ResolveField()
   @TranslationField('snippet')
   snippet(
     @Parent() language,

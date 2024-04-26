@@ -26,7 +26,6 @@ describe('VideoResolver', () => {
     slug: 'video-slug',
     label: 'featureFilm',
     primaryLanguageId: '529',
-    seoTitle: [],
     snippet: [],
     description: [],
     studyQuestions: [],

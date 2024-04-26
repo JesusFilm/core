@@ -390,22 +390,47 @@ describe('arclight', () => {
         slug: 'english'
       }
     ]
+
     const video = {
       id: 'mediaComponentId',
       description: [
         { languageId: '529', primary: true, value: 'longDescription' }
       ],
+      newDescription: [
+        {
+          videoId: 'mediaComponentId',
+          languageId: '529',
+          primary: true,
+          value: 'longDescription'
+        }
+      ],
       image: 'mobileCinematicHigh',
       imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
+      newImageAlt: [
+        {
+          videoId: 'mediaComponentId',
+          languageId: '529',
+          value: 'title',
+          primary: true
+        }
+      ],
       label: 'episode',
       noIndex: false,
       primaryLanguageId: '529',
-      seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
       slug: 'title',
       snippet: [
         { languageId: '529', primary: true, value: 'shortDescription' }
       ],
+      newSnippet: [
+        {
+          videoId: 'mediaComponentId',
+          languageId: '529',
+          primary: true,
+          value: 'shortDescription'
+        }
+      ],
       studyQuestions: [],
+      newStudyQuestions: [],
       title: [
         {
           videoId: 'mediaComponentId',
@@ -519,6 +544,15 @@ describe('arclight', () => {
             primary: true,
             value: 'How can I know Jesus?'
           }
+        ],
+        newStudyQuestions: [
+          {
+            videoId: 'mediaComponentId',
+            languageId: '529',
+            order: 1,
+            value: 'How can I know Jesus?',
+            primary: true
+          }
         ]
       })
       expect(usedSlugs).toEqual({ title: 'mediaComponentId' })
@@ -548,20 +582,21 @@ describe('arclight', () => {
               'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Over 100 Characters'
           }
         ],
-        seoTitle: [
-          {
-            languageId: '529',
-            primary: true,
-            value:
-              'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Over 100 Characters'
-          }
-        ],
         imageAlt: [
           {
             languageId: '529',
             primary: true,
             value:
               'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Ove'
+          }
+        ],
+        newImageAlt: [
+          {
+            videoId: 'mediaComponentId',
+            languageId: '529',
+            value:
+              'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Ove',
+            primary: true
           }
         ],
         slug: 'the-quick-brown-fox-jumps-over-the-lazy-dog-many-times-over-and-over-until-it-gets-cut-off-when-over-100-characters',
@@ -748,18 +783,42 @@ describe('arclight', () => {
         description: [
           { languageId: '529', primary: true, value: 'longDescription' }
         ],
+        newDescription: [
+          {
+            videoId: 'mediaComponentId',
+            languageId: '529',
+            primary: true,
+            value: 'longDescription'
+          }
+        ],
         id: 'mediaComponentId',
         image: 'mobileCinematicHigh',
         imageAlt: [{ languageId: '529', primary: true, value: 'title' }],
+        newImageAlt: [
+          {
+            videoId: 'mediaComponentId',
+            languageId: '529',
+            value: 'title',
+            primary: true
+          }
+        ],
         label: 'episode',
         noIndex: false,
         primaryLanguageId: '529',
-        seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
         slug: 'title',
         snippet: [
           { languageId: '529', primary: true, value: 'shortDescription' }
         ],
+        newSnippet: [
+          {
+            videoId: 'mediaComponentId',
+            languageId: '529',
+            primary: true,
+            value: 'shortDescription'
+          }
+        ],
         studyQuestions: [],
+        newStudyQuestions: [],
         title: [
           {
             languageId: '529',
