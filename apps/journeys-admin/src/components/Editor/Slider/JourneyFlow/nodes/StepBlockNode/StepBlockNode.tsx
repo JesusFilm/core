@@ -40,17 +40,18 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
   const { journey } = useJourney()
 
   async function handleSourceConnect(
-    params: { target: string } | Parameters<OnConnect>[0]
+    params: { target: string; source: string } | Parameters<OnConnect>[0]
   ): Promise<void> {
-    const id = params.target
-    if (journey == null || id == null) return
+    const targetId = params.target
+    const sourceId = params.source
+    if (journey == null || targetId == null || sourceId == null) return
 
     await stepBlockNextBlockUpdate({
       variables: {
-        id,
+        id: sourceId,
         journeyId: journey.id,
         input: {
-          nextBlockId: id
+          nextBlockId: targetId
         }
       }
     })
