@@ -1,22 +1,19 @@
-import { BigQuery } from '@google-cloud/bigquery'
 import { Test, TestingModule } from '@nestjs/testing'
 import { Job } from 'bullmq'
-import { mockDeep } from 'jest-mock-extended'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { addTableToPrisma } from '../../../libs/bigQueryTables/addTableToPrisma'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { BigQueryConsumer } from './bigQuery.consumer'
 import { BigQueryService } from './bigQuery.service'
 
-jest.mock('../../../libs/bigQueryTables/addTableToPrisma')
-
 jest.mock('@google-cloud/bigquery')
 
 describe('BigQueryConsumer', () => {
   const OLD_ENV = { ...process.env } // clone env
-  let consumer: BigQueryConsumer
-  let bigQueryService: BigQueryService
+  let consumer: BigQueryConsumer,
+    bigQueryService: BigQueryService,
+    prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     process.env = { ...OLD_ENV } // reset env before test
@@ -33,6 +30,9 @@ describe('BigQueryConsumer', () => {
 
     consumer = module.get<BigQueryConsumer>(BigQueryConsumer)
     bigQueryService = module.get<BigQueryService>(BigQueryService)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
 
   afterAll(() => {
@@ -41,41 +41,24 @@ describe('BigQueryConsumer', () => {
   })
 
   describe('process', () => {
-    it('should call bigQueryRowIterator', async () => {
-      bigQueryService.bigQueryRowIterator = jest.fn(
-        async () =>
-          await Promise.resolve({
-            next: jest.fn(
-              async () =>
-                await Promise.resolve({ done: true, value: 'someValue' })
-            )
-          })
-      )
+    it('should call rows', async () => {
+      bigQueryService.getRowsFromTable = jest.fn(async function* generator() {
+        const data = [{ id: 'mockValue0' }, { id: 'mockValue1' }]
+        for (let index = 0; index < data.length; index++) {
+          yield data[index]
+        }
+      })
 
       await consumer.process({ name: 'mockjob' } as unknown as Job)
-      expect(bigQueryService.bigQueryRowIterator).toHaveBeenCalled()
-    })
-
-    it('should call load functions', async () => {
-      const getQueryResults = jest
-        .fn()
-        .mockResolvedValueOnce([
-          [{ mockKey: 'mockValue' }, { mockKey: 'mockValueTwo' }],
-          { pageToken: 'mockPageToken' },
-          { totalRows: '2' }
-        ])
-
-      process.env.BIG_QUERY_PRIVATE_KEY = 'someKey'
-      jest
-        .spyOn(BigQuery.prototype, 'createQueryJob')
-        .mockImplementation(() => [
-          {
-            getQueryResults
-          }
-        ])
-
-      await consumer.process({ name: 'mockjobTwo' } as unknown as Job)
-      expect(addTableToPrisma).toHaveBeenCalledTimes(2)
+      expect(bigQueryService.getRowsFromTable).toHaveBeenCalled()
+      expect(prismaService.video.update).toHaveBeenNthCalledWith(1, {
+        where: { id: 'mockValue0' },
+        data: { id: 'mockValue0' }
+      })
+      expect(prismaService.video.update).toHaveBeenNthCalledWith(2, {
+        where: { id: 'mockValue1' },
+        data: { id: 'mockValue1' }
+      })
     })
   })
 })

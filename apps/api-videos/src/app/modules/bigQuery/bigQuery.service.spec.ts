@@ -1,4 +1,4 @@
-import { BigQuery } from '@google-cloud/bigquery'
+import { BigQuery, RowMetadata } from '@google-cloud/bigquery'
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { BigQueryService } from './bigQuery.service'
@@ -24,12 +24,12 @@ describe('bigQueryService', () => {
     process.env = OLD_ENV // restore old env
   })
 
-  describe('bigQueryRowIterator', () => {
+  describe('getRowsFromTable', () => {
     it('should return big query table row', async () => {
       const getQueryResults = jest
         .fn()
-        .mockResolvedValue([
-          [{ mockKey: 'mockValue' }],
+        .mockResolvedValueOnce([
+          [{ mockKey: 'mockValue1' }],
           { pageToken: undefined },
           { totalRows: '1' }
         ])
@@ -42,17 +42,13 @@ describe('bigQueryService', () => {
           }
         ])
 
-      const itr = await service.bigQueryRowIterator(
+      for await (const row of service.getRowsFromTable(
         'mockDataSetname.mockTableName'
-      )
-      let res = await itr.next()
-      expect(res.done).toBe(false)
-      expect(res.value).toStrictEqual({
-        mockKey: 'mockValue'
-      })
-      res = await itr.next()
-      expect(res.done).toBe(true)
-      expect(res.value).toBeUndefined()
+      )) {
+        expect(row).toEqual({
+          mockKey: 'mockValue1'
+        })
+      }
       expect(getQueryResults).toHaveBeenCalledWith({
         maxResults: 500,
         pageToken: undefined
@@ -63,14 +59,14 @@ describe('bigQueryService', () => {
       const getQueryResults = jest
         .fn()
         .mockResolvedValueOnce([
-          [{ mockKey: 'mockValue' }],
+          [{ mockKey: 'mockValue0' }, { mockKey: 'mockValue1' }],
           { pageToken: 'mockPageToken' },
-          { totalRows: '2' }
+          { totalRows: '4' }
         ])
         .mockResolvedValueOnce([
-          [{ mockKey: 'mockValueTwo' }],
+          [{ mockKey: 'mockValue2' }, { mockKey: 'mockValue3' }],
           { pageToken: undefined },
-          { totalRows: '2' }
+          { totalRows: '4' }
         ])
       process.env.BIG_QUERY_PRIVATE_KEY = 'someKey'
       jest
@@ -81,31 +77,24 @@ describe('bigQueryService', () => {
           }
         ])
 
-      const itr = await service.bigQueryRowIterator(
+      const rows: RowMetadata[] = []
+      for await (const row of service.getRowsFromTable(
         'mockDataSetname.mockTableName'
-      )
-      let res = await itr.next()
-      expect(res.done).toBe(false)
-      expect(res.value).toStrictEqual({
-        mockKey: 'mockValue'
-      })
-      // ensure that job was called without the token
-      expect(getQueryResults).toHaveBeenCalledWith({
+      )) {
+        rows.push(row)
+      }
+      expect(rows).toEqual([
+        { mockKey: 'mockValue0' },
+        { mockKey: 'mockValue1' },
+        { mockKey: 'mockValue2' },
+        { mockKey: 'mockValue3' }
+      ])
+
+      expect(getQueryResults).toHaveBeenNthCalledWith(1, {
         maxResults: 500,
         pageToken: undefined
       })
-      // ensure that job was called without the token
-      expect(getQueryResults).not.toHaveBeenCalledWith({
-        maxResults: 500,
-        pageToken: 'mockPageToken'
-      })
-      res = await itr.next()
-      expect(res.done).toBe(false)
-      expect(res.value).toStrictEqual({
-        mockKey: 'mockValueTwo'
-      })
-      // job called with token to refetch queries
-      expect(getQueryResults).toHaveBeenCalledWith({
+      expect(getQueryResults).toHaveBeenNthCalledWith(2, {
         maxResults: 500,
         pageToken: 'mockPageToken'
       })
