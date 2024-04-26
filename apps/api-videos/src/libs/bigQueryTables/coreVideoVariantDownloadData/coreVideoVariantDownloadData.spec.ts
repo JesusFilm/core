@@ -3,9 +3,9 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { PrismaService } from '../../../app/lib/prisma.service'
 
-import { coreVideoVariantDownload } from './coreVideoVariantDownload'
+import { coreVideoVariantDownloadData } from './coreVideoVariantDownloadData'
 
-describe('coreVideoVariantDownload', () => {
+describe('coreVideoVariantDownloadData', () => {
   let prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
@@ -25,7 +25,7 @@ describe('coreVideoVariantDownload', () => {
   })
 
   it('should load video variant download to postgres', async () => {
-    await coreVideoVariantDownload(
+    await coreVideoVariantDownloadData(
       {
         quality: 'low',
         size: 1234567,

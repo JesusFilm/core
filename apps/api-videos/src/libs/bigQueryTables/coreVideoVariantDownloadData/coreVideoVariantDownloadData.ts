@@ -8,7 +8,7 @@ interface Row {
   videoVariantId: string
 }
 
-export async function coreVideoVariantDownload(
+export async function coreVideoVariantDownloadData(
   row: Row,
   prismaService: PrismaService
 ): Promise<void> {
