@@ -3,7 +3,9 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 import { NodeProps, OnConnect } from 'reactflow'
 
@@ -60,14 +62,43 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
     dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
   }
 
+  const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
+  const isSelected =
+    activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
+
+  const desktopStyle = {
+    '.fab': {
+      opacity: 0,
+      transform: 'scale(0.5)',
+      transition: (theme) =>
+        theme.transitions.create(['opacity', 'transform'], {
+          duration: 250
+        })
+    },
+    '&:hover .fab': {
+      transform: 'scale(1)',
+      opacity: 1
+    }
+  }
+
+  const mobileStyle = {
+    '.fab': {
+      opacity: isSelected ? 1 : 0, // Only visible if isSelected is true
+      transform: isSelected ? 'scale(1)' : 'scale(0.5)', // Scale based on isSelected state
+      transition: (theme) =>
+        theme.transitions.create(['opacity', 'transform'], {
+          duration: 250
+        })
+    }
+  }
+
   return step != null ? (
     <BaseNode
       id={step.id}
       isTargetConnectable
       isSourceConnectable="arrow"
-      selected={
-        activeContent === ActiveContent.Canvas && selectedStep?.id === step.id
-      }
+      selected={isSelected}
       onSourceConnect={handleSourceConnect}
       sourceHandleProps={{
         sx: {
@@ -77,22 +108,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
     >
       {({ selected }) => (
         <Stack alignItems="center" spacing={3}>
-          <Box
-            sx={{
-              '.fab': {
-                opacity: 0,
-                transform: 'scale(0.5)',
-                transition: (theme) =>
-                  theme.transitions.create(['opacity', 'transform'], {
-                    duration: 250
-                  })
-              },
-              '&:hover .fab': {
-                transform: 'scale(1)',
-                opacity: 1
-              }
-            }}
-          >
+          <Box sx={isDesktop ? desktopStyle : mobileStyle}>
             <StepBlockNodeMenu className="fab" step={step} />
             <Card
               sx={{
