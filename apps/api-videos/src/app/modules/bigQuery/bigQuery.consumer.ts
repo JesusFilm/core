@@ -1,5 +1,8 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { Job } from 'bullmq'
+import { mixed, number, object, string } from 'yup'
+
+import { VideoLabel } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -31,11 +34,25 @@ export class BigQueryConsumer extends WorkerHost {
     console.log(`${job.name} has run`)
   }
 
-  async videos(row: Record<string, unknown>): Promise<void> {
-    const id = row.id as string
-    await this.prismaService.video.update({
-      where: { id },
-      data: { id }
+  async videos(row: unknown): Promise<void> {
+    const videoSchema = object({
+      id: string().required(),
+      label: mixed<VideoLabel>().oneOf(Object.values(VideoLabel)).required(),
+      primaryLanguageId: number().required()
     })
+    const video = videoSchema.noUnknown().cast(row)
+    if (
+      (await this.prismaService.video.findUnique({
+        where: { id: video.id }
+      })) != null
+    ) {
+      await this.prismaService.video.update({
+        where: { id: video.id },
+        data: {
+          ...video,
+          primaryLanguageId: video.primaryLanguageId.toString()
+        }
+      })
+    }
   }
 }

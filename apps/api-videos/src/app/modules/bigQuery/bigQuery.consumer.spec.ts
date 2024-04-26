@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
+import { Video } from '.prisma/api-videos-client'
+
 import { PrismaService } from '../../lib/prisma.service'
 
 import { BigQueryConsumer } from './bigQuery.consumer'
@@ -41,24 +43,28 @@ describe('BigQueryConsumer', () => {
   })
 
   describe('process', () => {
-    it('should call rows', async () => {
+    it('should process rows', async () => {
       bigQueryService.getRowsFromTable = jest.fn(async function* generator() {
-        const data = [{ id: 'mockValue0' }, { id: 'mockValue1' }]
+        const data = [
+          { id: 'mockValue0', label: 'shortFilm', primaryLanguageId: 529 },
+          { id: 'mockValue1', label: 'shortFilm', primaryLanguageId: 529 }
+        ]
         for (let index = 0; index < data.length; index++) {
           yield data[index]
         }
       })
+      prismaService.video.findUnique.mockResolvedValueOnce({
+        id: 'mockValue0'
+      } as unknown as Video)
 
       await consumer.process({ name: 'mockjob' } as unknown as Job)
       expect(bigQueryService.getRowsFromTable).toHaveBeenCalled()
-      expect(prismaService.video.update).toHaveBeenNthCalledWith(1, {
+      expect(prismaService.video.update).toHaveBeenCalledWith({
         where: { id: 'mockValue0' },
-        data: { id: 'mockValue0' }
+        data: { id: 'mockValue0', label: 'shortFilm', primaryLanguageId: '529' }
       })
-      expect(prismaService.video.update).toHaveBeenNthCalledWith(2, {
-        where: { id: 'mockValue1' },
-        data: { id: 'mockValue1' }
-      })
+      expect(prismaService.video.findUnique).toHaveBeenCalledTimes(2)
+      expect(prismaService.video.update).toHaveBeenCalledTimes(1)
     })
   })
 })
