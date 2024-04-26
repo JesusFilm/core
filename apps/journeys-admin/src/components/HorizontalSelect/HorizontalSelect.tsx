@@ -73,9 +73,7 @@ export function HorizontalSelect({
                 cursor: 'pointer'
               }}
               onClick={() => {
-                onChange?.(
-                  (child.props.id ?? child.props.draggableId) as string
-                )
+                onChange?.(child.props.id ?? child.props.draggableId)
               }}
             >
               <Box

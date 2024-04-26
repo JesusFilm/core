@@ -25,6 +25,7 @@ import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
 import { messagePlatformToLabel } from '../VisitorJourneysList/utils'
 
 import { ChatButton } from './ChatButton'
+import { InferType } from 'prop-types'
 
 export const GET_VISITOR_FOR_FORM = gql`
   query GetVisitorForForm($id: ID!) {
@@ -66,7 +67,7 @@ export function DetailsForm({ id }: DetailsFormProps): ReactElement {
     variables: { id }
   })
 
-  async function handleSubmit(values: Record<string, unknown>): Promise<void> {
+  async function handleSubmit(values: InferType<string>): Promise<void> {
     const formattedValues = Object.keys(values).reduce((acc, key) => {
       acc[key] = values[key] === '' ? null : values[key]
       return acc

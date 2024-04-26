@@ -68,9 +68,10 @@ export class CaslGuard implements CanActivate {
       ) ?? []
     const policies = classPolicies.concat(handlerPolicies)
 
-    return policies.every(
-      (handler) => req.ability != null && handler(req.ability)
-    )
+    if (req.ability != null)
+      return policies.every((handler) => req.ability && handler(req.ability))
+
+    return false
   }
 
   protected async loadRoles(_userId: string): Promise<string[]> {

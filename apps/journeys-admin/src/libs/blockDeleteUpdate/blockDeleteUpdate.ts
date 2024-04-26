@@ -1,4 +1,4 @@
-import { ApolloCache } from '@apollo/client'
+import { ApolloCache, Reference } from '@apollo/client'
 import reject from 'lodash/reject'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -41,7 +41,7 @@ export const blockDeleteUpdate = (
     cache.modify({
       id: cache.identify({ __typename: 'Journey', id: journeyId }),
       fields: {
-        blocks(existingBlockRefs: Array<{ __ref: string }>) {
+        blocks(existingBlockRefs: Reference[]) {
           return reject(existingBlockRefs, (block) => {
             return blockRefs.includes(block.__ref)
           })

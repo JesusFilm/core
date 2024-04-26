@@ -96,7 +96,8 @@ export function VideoLibrary({
     newValue: number
   ): void => {
     setActiveTab(newValue)
-    const route: string = TabParams[newValue]
+    const route: 'unsplash-image' | 'custom-image' | 'ai-image' =
+      TabParams[newValue]
     if (route != null) setRoute(route)
   }
 

@@ -221,7 +221,7 @@ export function HeaderAndLanguageFilter({
   }
 
   function handleSubmit(values: FormikValues): void {
-    const ids: string[] = values.languages.map((language) => language.id)
+    const ids = values.languages.map((language) => language.id)
     onChange(ids)
   }
 

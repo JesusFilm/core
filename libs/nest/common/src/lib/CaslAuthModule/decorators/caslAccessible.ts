@@ -36,7 +36,7 @@ export const CaslAccessible = createParamDecorator(
 
     const req: {
       ability?: PureAbility
-      accessibleWhereInputs: Record<string, unknown>
+      accessibleWhereInputs?: Record<string, unknown>
     } = GqlExecutionContext.create(context).getContext().req
 
     if (req.ability == null)

@@ -16,7 +16,7 @@ import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
-import { object, string } from 'yup'
+import { InferType, object, string } from 'yup'
 
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
@@ -79,7 +79,7 @@ export function RegisterPage({
   }
 
   async function handleCreateAccount(
-    values: Values,
+    values: InferType<typeof validationSchema>,
     { setFieldError }
   ): Promise<void> {
     try {
