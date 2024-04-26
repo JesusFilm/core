@@ -3,6 +3,7 @@ import { Job } from 'bullmq'
 
 import { coreVideoArclightData } from '../../../libs/bigQueryTables/coreVideoArclightData/coreVideoArclightData'
 import { coreVideoTitleArclightData } from '../../../libs/bigQueryTables/coreVideoTitleArclightData/coreVideoTitleArclightData'
+import { coreVideoVariantDownload } from '../../../libs/bigQueryTables/coreVideoVariantDownload/coreVideoVariantDownload'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { BigQueryService } from './bigQuery.service'
@@ -15,6 +16,11 @@ const TABLES_TO_FETCH = [
   {
     tableName: 'jfp-data-warehouse.src_arclight.core_video_arclight_data',
     transformAndLoadFunction: coreVideoArclightData
+  },
+  {
+    tableName:
+      'jfp-data-warehouse.src_arclight.core_videoVariantDownload_arclight_data',
+    transformAndLoadFunction: coreVideoVariantDownload
   }
 ]
 

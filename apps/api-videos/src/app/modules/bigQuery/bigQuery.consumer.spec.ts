@@ -5,6 +5,7 @@ import { mockDeep } from 'jest-mock-extended'
 
 import { coreVideoArclightData } from '../../../libs/bigQueryTables/coreVideoArclightData/coreVideoArclightData'
 import { coreVideoTitleArclightData } from '../../../libs/bigQueryTables/coreVideoTitleArclightData/coreVideoTitleArclightData'
+import { coreVideoVariantDownload } from '../../../libs/bigQueryTables/coreVideoVariantDownload/coreVideoVariantDownload'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { BigQueryConsumer } from './bigQuery.consumer'
@@ -16,6 +17,9 @@ jest.mock(
 )
 jest.mock(
   '../../../libs/bigQueryTables/coreVideoArclightData/coreVideoArclightData'
+)
+jest.mock(
+  '../../../libs/bigQueryTables/coreVideoVariantDownload/coreVideoVariantDownload'
 )
 
 describe('BigQueryConsumer', () => {
@@ -74,6 +78,11 @@ describe('BigQueryConsumer', () => {
           { pageToken: 'mockPageToken' },
           { totalRows: '2' }
         ])
+        .mockResolvedValueOnce([
+          [{ mockKey: 'mockValue' }, { mockKey: 'mockValueTwo' }],
+          { pageToken: 'mockPageToken' },
+          { totalRows: '2' }
+        ])
 
       process.env.BIG_QUERY_PRIVATE_KEY = 'someKey'
       jest
@@ -87,6 +96,7 @@ describe('BigQueryConsumer', () => {
       await consumer.process({ name: 'mockjobTwo' } as unknown as Job)
       expect(coreVideoTitleArclightData).toHaveBeenCalledTimes(2)
       expect(coreVideoArclightData).toHaveBeenCalledTimes(2)
+      expect(coreVideoVariantDownload).toHaveBeenCalledTimes(2)
     })
   })
 })
