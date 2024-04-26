@@ -42,17 +42,18 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
   const { journey } = useJourney()
 
   async function handleSourceConnect(
-    params: { target: string } | Parameters<OnConnect>[0]
+    params: { target: string; source: string } | Parameters<OnConnect>[0]
   ): Promise<void> {
-    const id = params.target
-    if (journey == null || id == null) return
+    const targetId = params.target
+    const sourceId = params.source
+    if (journey == null || targetId == null || sourceId == null) return
 
     await stepBlockNextBlockUpdate({
       variables: {
-        id,
+        id: sourceId,
         journeyId: journey.id,
         input: {
-          nextBlockId: id
+          nextBlockId: targetId
         }
       }
     })
@@ -79,7 +80,8 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
     '&:hover .fab': {
       transform: 'scale(1)',
       opacity: 1
-    }
+    },
+    position: 'relative'
   }
 
   const mobileStyle = {
@@ -90,7 +92,8 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
         theme.transitions.create(['opacity', 'transform'], {
           duration: 250
         })
-    }
+    },
+    position: 'relative'
   }
 
   return step != null ? (
