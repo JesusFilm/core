@@ -146,9 +146,8 @@ export class VisitorResolver {
 
   @ResolveField()
   userAgent(@Parent() visitor): IResult | undefined {
-    if (visitor.userAgent != null) {
-      const userAgent: string = visitor.userAgent
-      return new UAParser(userAgent).getResult()
+    if (visitor.userAgent != null && typeof visitor.userAgent === 'string') {
+      return new UAParser(visitor.userAgent).getResult()
     }
   }
 }

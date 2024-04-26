@@ -103,9 +103,15 @@ export class JourneyResolver {
     try {
       return await getPowerBiEmbed(config, reportId, userId)
     } catch (err) {
-      throw new GraphQLError(err.message as string, {
-        extensions: { code: 'BAD_REQUEST' }
-      })
+      if (err instanceof Error) {
+        throw new GraphQLError(err.message, {
+          extensions: { code: 'BAD_REQUEST' }
+        })
+      } else {
+        throw new GraphQLError('An unexpected error occurred', {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        })
+      }
     }
   }
 
