@@ -52,7 +52,7 @@ export function Slider(): ReactElement {
   function resetCanvasFocus(): void {
     if (isSlideChangingTo(ActiveSlide.JourneyFlow)) {
       dispatch({
-        type: 'SetSelectedBlockAction',
+        type: 'SetSelectedBlockOnlyAction',
         selectedBlock: selectedStep
       })
     }
@@ -79,12 +79,12 @@ export function Slider(): ReactElement {
       slidesPerView="auto"
       breakpoints={swiperBreakpoints}
       onActiveIndexChange={(swiper) => {
-        resetCanvasFocus()
         dispatch({
           type: 'SetActiveSlideAction',
           activeSlide: swiper.activeIndex
         })
       }}
+      onTransitionEnd={resetCanvasFocus}
       sx={{
         height: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px)`
       }}
