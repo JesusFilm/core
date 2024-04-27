@@ -9,11 +9,13 @@ import { useVideo } from '../../../../libs/videoContext'
 import { VideoControls } from './VideoControls'
 
 interface VideoPlayerProps {
+  languageId: string
   setControlsVisible: (visible: boolean) => void
 }
 
 export function VideoPlayer({
-  setControlsVisible
+  setControlsVisible,
+  languageId
 }: VideoPlayerProps): ReactElement {
   const { variant } = useVideo()
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -52,6 +54,7 @@ export function VideoPlayer({
       )}
       {player != null && (
         <VideoControls
+          languageId={languageId}
           player={player}
           onVisibleChanged={(controlsVisible) =>
             setControlsVisible(controlsVisible)

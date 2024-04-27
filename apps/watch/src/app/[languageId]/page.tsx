@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import { ReactElement } from 'react'
 
 import {
@@ -7,16 +6,8 @@ import {
 } from '../../../__generated__/GetHomeVideos'
 import { HomePage } from '../../components/HomePage'
 import { getApolloClient } from '../../libs/apolloClient/apolloClient'
-import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
 
-export const GET_HOME_VIDEOS = gql`
-  ${VIDEO_CHILD_FIELDS}
-  query GetHomeVideos($ids: [ID!]!, $languageId: ID) {
-    videos(where: { ids: $ids }) {
-      ...VideoChildFields
-    }
-  }
-`
+import { GET_HOME_VIDEOS } from './grahql'
 
 const videoIds = [
   '1_jf-0-0',

@@ -5,7 +5,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
-import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -13,17 +12,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { useTranslation } from '../../../libs/il8n/client'
 import { useVideo } from '../../../libs/videoContext'
-
-const DynamicAudioLanguageDialog = dynamic<{
-  open: boolean
-  onClose: () => void
-}>(
-  async () =>
-    await import(
-      /* webpackChunkName: "AudioLanguageDialog" */
-      '../../AudioLanguageDialog'
-    ).then((mod) => mod.AudioLanguageDialog)
-)
+import { AudioLanguageDialog } from '../../AudioLanguageDialog'
 
 interface AudioLanguageButtonProps {
   componentVariant: 'button' | 'icon'
@@ -103,7 +92,7 @@ export function AudioLanguageButton({
         </IconButton>
       )}
       {loadAudioLanguageDialog && (
-        <DynamicAudioLanguageDialog
+        <AudioLanguageDialog
           open={openAudioLanguageDialog}
           onClose={() => setOpenAudioLanguageDialog(false)}
         />

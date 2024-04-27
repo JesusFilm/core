@@ -94,6 +94,7 @@ export function VideoContentPage({
             <VideoHero
               onPlay={() => setHasPlayed(true)}
               hasPlayed={hasPlayed}
+              languageId={languageId}
             />
             <Stack
               sx={{

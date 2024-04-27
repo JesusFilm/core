@@ -1,28 +1,11 @@
-import { gql } from '@apollo/client'
 import { notFound, redirect } from 'next/navigation'
 import { ReactElement } from 'react'
 
 import { GetVideoContainerAndVideoContent } from '../../../../../../__generated__/GetVideoContainerAndVideoContent'
 import { getApolloClient } from '../../../../../libs/apolloClient/apolloClient'
-import { VIDEO_CONTENT_FIELDS } from '../../../../../libs/videoContentFields'
 
+import { GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT } from './graphql'
 import Page3PageClient from './pageClient'
-
-export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
-  ${VIDEO_CONTENT_FIELDS}
-  query GetVideoContainerAndVideoContent(
-    $containerId: ID!
-    $contentId: ID!
-    $languageId: ID
-  ) {
-    container: video(id: $containerId, idType: slug) {
-      ...VideoContentFields
-    }
-    content: video(id: $contentId, idType: slug) {
-      ...VideoContentFields
-    }
-  }
-`
 
 interface Page3PageProps {
   params: {

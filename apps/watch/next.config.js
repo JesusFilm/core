@@ -9,7 +9,16 @@ const { composePlugins, withNx } = require('@nx/next')
 const nextConfig = {
   swcMinify: true,
   images: {
-    domains: ['localhost', 'd1wl257kev7hsz.cloudfront.net'],
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost'
+      },
+      {
+        protocol: 'https',
+        hostname: 'd1wl257kev7hsz.cloudfront.net'
+      }
+    ],
     minimumCacheTTL: 31536000
   },
   modularizeImports: {

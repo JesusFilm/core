@@ -6,7 +6,7 @@ import {
 } from '../../../../__generated__/GetHomeVideos'
 import { Videos } from '../../../components/VideosPage'
 import { getApolloClient } from '../../../libs/apolloClient/apolloClient'
-import { GET_HOME_VIDEOS } from '../page'
+import { GET_HOME_VIDEOS } from '../grahql'
 
 const videoIds = [
   '1_jf-0-0',

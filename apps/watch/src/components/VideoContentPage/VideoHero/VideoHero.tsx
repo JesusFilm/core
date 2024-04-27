@@ -1,38 +1,26 @@
 import Box from '@mui/material/Box'
 import fscreen from 'fscreen'
-import dynamic from 'next/dynamic'
-import {
-  Dispatch,
-  ReactElement,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState
-} from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import Div100vh from 'react-div-100vh'
 
 import { Header } from '../../Header'
 
 import { VideoHeroOverlay } from './VideoHeroOverlay'
+import { VideoPlayer } from './VideoPlayer'
 
 const VIDEO_HERO_BOTTOM_SPACING = 150
 
-const DynamicVideoPlayer = dynamic<{
-  setControlsVisible: Dispatch<SetStateAction<boolean>>
-}>(
-  async () =>
-    await import(
-      /* webpackChunkName: "VideoPlayer" */
-      './VideoPlayer'
-    ).then((mod) => mod.VideoPlayer)
-)
-
 interface VideoHeroProps {
+  languageId: string
   onPlay?: () => void
   hasPlayed?: boolean
 }
 
-export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
+export function VideoHero({
+  onPlay,
+  hasPlayed,
+  languageId
+}: VideoHeroProps): ReactElement {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [controlsVisible, setControlsVisible] = useState(true)
@@ -57,9 +45,9 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
 
   return (
     <>
-      <Header hideAbsoluteAppBar={!controlsVisible} />
+      <Header hideAbsoluteAppBar={!controlsVisible} languageId={languageId} />
       <Div100vh
-        css={{
+        style={{
           marginBottom: isFullscreen ? 0 : -VIDEO_HERO_BOTTOM_SPACING,
           paddingBottom: isFullscreen ? 0 : VIDEO_HERO_BOTTOM_SPACING,
           minHeight: 560
@@ -82,9 +70,17 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
           data-testid="VideoHero"
         >
           {hasPlayed === true ? (
-            <DynamicVideoPlayer setControlsVisible={setControlsVisible} />
+            <VideoPlayer
+              languageId={languageId}
+              setControlsVisible={setControlsVisible}
+            />
           ) : (
-            !isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />
+            !isPlaying && (
+              <VideoHeroOverlay
+                languageId={languageId}
+                handlePlay={handlePlay}
+              />
+            )
           )}
         </Box>
       </Div100vh>

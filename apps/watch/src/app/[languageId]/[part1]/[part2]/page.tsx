@@ -1,21 +1,11 @@
-import { gql } from '@apollo/client'
 import { notFound, redirect } from 'next/navigation'
 import { ReactElement } from 'react'
 
 import { GetVideoContent } from '../../../../../__generated__/GetVideoContent'
 import { getApolloClient } from '../../../../libs/apolloClient/apolloClient'
-import { VIDEO_CONTENT_FIELDS } from '../../../../libs/videoContentFields'
 
+import { GET_VIDEO_CONTENT } from './graphql'
 import Page2PageClient from './pageClient'
-
-export const GET_VIDEO_CONTENT = gql`
-  ${VIDEO_CONTENT_FIELDS}
-  query GetVideoContent($id: ID!, $languageId: ID) {
-    content: video(id: $id, idType: slug) {
-      ...VideoContentFields
-    }
-  }
-`
 
 interface Page2PageProps {
   params: {
