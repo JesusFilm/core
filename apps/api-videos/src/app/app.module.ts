@@ -15,6 +15,7 @@ import { LoggerModule } from 'nestjs-pino'
 import TranslationModule from '@core/nest/common/TranslationModule'
 
 import { AlgoliaModule } from './modules/algolia/algolia.module'
+import { CrowdinModule } from './modules/crowdin/crowdin.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { VideoModule } from './modules/video/video.module'
 import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
@@ -24,6 +25,7 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
     NestHealthModule,
     TranslationModule,
     AlgoliaModule,
+    CrowdinModule,
     VideoModule,
     VideoVariantModule,
     CacheModule.register(),

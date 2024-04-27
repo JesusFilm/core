@@ -6,29 +6,6 @@ import { xliff12ToJs } from 'xliff'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-// const ISO_CODE_WESS_ID_MAP = {
-//   ar: '22658',
-//   bn: '139081',
-//   'zh-CN': '21754', // simplified
-//   'zh-TW': '21753', // chinese-traditional
-//   fr: '496',
-//   de: '1106',
-//   he: '6930',
-//   hi: '6464',
-//   id: '16639', // there are two indonesian langauges, pick Bahasa for now
-//   ja: '7083',
-//   ko: '3804',
-//   fa: '6788',
-//   'pt-BR': '584',
-//   ru: '3934',
-//   'es-MX': '21028',
-//   tl: '', // missing Tagalog in api-languages
-//   th: '13169',
-//   tr: '1942',
-//   'ur-PK': '407', // urdu
-//   vi: '3887'
-// }
-
 type CrowdinFileName =
   | '/Arclight/collection_title.csv'
   | '/Arclight/collection_long_description.csv'
@@ -64,15 +41,12 @@ export class CrowdinService {
     })
 
     const languages = await client.getTranslations()
-    console.log(languages)
+
     const wessLanguageMap = mapValues(languages, (language) => {
       const regex = /\/content\/(.*?)\.xliff/
       const match = language[0].file.match(regex)
       return match != null ? match[1] : ''
     })
-    console.log(wessLanguageMap)
-
-    console.log(wessLanguageMap)
 
     await Promise.all(
       map(languages, async (files, languageCode) => {
@@ -125,37 +99,7 @@ export class CrowdinService {
     if (languageId !== '' && !isNaN(Number(languageId)))
       switch (fileName) {
         case '/Arclight/media_metadata_tile.csv':
-        case '/Arclight/collection_title.csv': {
-          const videoId = resName
-          const videos = await this.prisma.video.findMany({
-            select: { id: true },
-            where: {
-              id: { endsWith: videoId }
-            }
-          })
-          if (videos.length !== 1)
-            throw new Error(`no matching videoId found for ${videoId}`)
-          await this.prisma.videoTitle.upsert({
-            where: {
-              videoId_languageId: {
-                videoId: videos[0].id,
-                languageId
-              }
-            },
-            update: {
-              value
-            },
-            create: {
-              value,
-              languageId,
-              primary: false,
-              videoId: videos[0].id
-            }
-          })
-          break
-        }
-        case '/Arclight/collection_long_description.csv':
-        case '/Arclight/media_metadata_description.csv':
+        case '/Arclight/collection_title.csv':
           {
             const videoId = resName
             const videos = await this.prisma.video.findMany({
@@ -166,7 +110,7 @@ export class CrowdinService {
             })
             if (videos.length !== 1)
               throw new Error(`no matching videoId found for ${videoId}`)
-            await this.prisma.videoDescription.upsert({
+            await this.prisma.videoTitle.upsert({
               where: {
                 videoId_languageId: {
                   videoId: videos[0].id,
@@ -185,6 +129,35 @@ export class CrowdinService {
             })
           }
           break
+        case '/Arclight/collection_long_description.csv':
+        case '/Arclight/media_metadata_description.csv': {
+          const videoId = resName
+          const videos = await this.prisma.video.findMany({
+            select: { id: true },
+            where: {
+              id: { endsWith: videoId }
+            }
+          })
+          if (videos.length !== 1)
+            throw new Error(`no matching videoId found for ${videoId}`)
+          await this.prisma.videoDescription.upsert({
+            where: {
+              videoId_languageId: {
+                videoId: videos[0].id,
+                languageId
+              }
+            },
+            update: {
+              value
+            },
+            create: {
+              value,
+              languageId,
+              primary: false,
+              videoId: videos[0].id
+            }
+          })
+        }
         // case '/Arclight/study_questions.csv': {
         //   const englishStudyQuestion = this.prisma.studyQuestion.findUnique({
         //     where: { id: resName }
