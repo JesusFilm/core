@@ -147,12 +147,27 @@ describe('VideoOptions', () => {
   }
 
   it('updates video block', async () => {
-    const videoBlockResult = jest.fn(() => ({
-      data: {
-        videoBlockUpdate: video
+    const videoBlockResult = jest.fn((...args) => {
+      console.log(args)
+      return {
+        data: {
+          videoBlockUpdate: video
+        }
       }
-    }))
+    })
     const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const videoBlockUpdateVariables = {
+      id: video.id,
+      journeyId: 'journeyId',
+      input: {
+        videoId: '2_0-Brand_Video',
+        videoVariantLanguageId: '529',
+        source: VideoBlockSource.internal,
+        startAt: 0,
+        endAt: 144,
+        duration: 144
+      }
+    }
     const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
@@ -161,18 +176,7 @@ describe('VideoOptions', () => {
           {
             request: {
               query: VIDEO_BLOCK_UPDATE,
-              variables: {
-                id: video.id,
-                journeyId: 'journeyId',
-                input: {
-                  videoId: '2_0-Brand_Video',
-                  videoVariantLanguageId: '529',
-                  source: VideoBlockSource.internal,
-                  startAt: 0,
-                  endAt: 144,
-                  duration: 144
-                }
-              }
+              variables: videoBlockUpdateVariables
             },
             result: videoBlockResult
           }
@@ -203,9 +207,13 @@ describe('VideoOptions', () => {
     )
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(result).toHaveBeenCalledWith(getVideoMock.request.variables)
+    )
     fireEvent.click(getByRole('button', { name: 'Select' }))
-    await waitFor(() => expect(videoBlockResult).toHaveBeenCalledWith())
+    await waitFor(() =>
+      expect(videoBlockResult).toHaveBeenCalledWith(videoBlockUpdateVariables)
+    )
   })
 
   it('updates video nextBlockId to the next step by default', async () => {

@@ -34,21 +34,20 @@ enum VideoLabel {
 }
 
 model Video {
-  id                String         @id @default(uuid())
+  id                String               @id @default(uuid())
   label             VideoLabel
   primaryLanguageId String
   title             VideoTitle[]
-  seoTitle          Json[]
-  snippet           Json[]
-  description       Json[]
-  studyQuestions    Json[]
+  snippet           VideoSnippet[]
+  description       VideoDescription[]
+  studyQuestions    VideoStudyQuestion[]
   image             String?
-  imageAlt          Json[]
-  slug              String?        @unique
+  imageAlt          VideoImageAlt[]
+  slug              String?              @unique
   noIndex           Boolean?
   childIds          String[] // needed for child sort order
-  children          Video[]        @relation("ParentChild")
-  parent            Video[]        @relation("ParentChild")
+  children          Video[]              @relation("ParentChild")
+  parent            Video[]              @relation("ParentChild")
   variants          VideoVariant[]
 
   @@index(label)
@@ -64,9 +63,9 @@ model VideoTitle {
   video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@unique([videoId, languageId])
-  @@index(value(type: Gin))
-  @@index(primary)
-  @@index(languageId)
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
 }
 
 enum VideoVariantDownloadQuality {
@@ -113,4 +112,62 @@ model VideoVariantSubtitle {
   @@unique([videoVariantId, languageId])
   @@index(languageId)
   @@index(videoVariantId)
+}
+
+model VideoSnippet {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  primary    Boolean
+  videoId    String?
+  video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+model VideoDescription {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  primary    Boolean
+  videoId    String?
+  video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+model VideoImageAlt {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  primary    Boolean
+  videoId    String?
+  video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+model VideoStudyQuestion {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  order      Int
+  primary    Boolean
+  videoId    String?
+  video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId, order])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+  @@index(order)
 }

@@ -48,6 +48,7 @@
     "@emotion/styled": "11.11.0",
     "@formium/client": "^0.1.4",
     "@formium/react": "^0.2.0",
+    "@google-cloud/bigquery": "^7.6.0",
     "@mailchimp/mailchimp_marketing": "^3.0.80",
     "@mdx-js/react": "^2.3.0",
     "@mui/icons-material": "^5.14.8",
@@ -93,6 +94,7 @@
     "form-data": "^4.0.0",
     "formik": "^2.4.4",
     "fscreen": "^1.2.0",
+    "gql.tada": "^1.5.3",
     "graphql": "^16.8.0",
     "i18next": "23.6.0",
     "i18next-browser-languagedetector": "^7.2.1",
@@ -158,6 +160,7 @@
     "yup": "^1.0.0"
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.10.1",
     "@babel/core": "^7.22.15",
     "@babel/preset-env": "^7.22.15",
     "@babel/preset-typescript": "^7.22.15",
