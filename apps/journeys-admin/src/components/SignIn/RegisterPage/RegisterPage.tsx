@@ -21,12 +21,6 @@ import { InferType, object, string } from 'yup'
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
 
-interface Values {
-  email: string
-  name: string
-  password: string
-}
-
 export function RegisterPage({
   setActivePage,
   userEmail

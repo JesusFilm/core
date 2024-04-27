@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import pick from 'lodash/pick'
 import { useTranslation } from 'next-i18next'
+import { InferType } from 'prop-types'
 import { ReactElement } from 'react'
 
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
@@ -25,7 +26,6 @@ import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
 import { messagePlatformToLabel } from '../VisitorJourneysList/utils'
 
 import { ChatButton } from './ChatButton'
-import { InferType } from 'prop-types'
 
 export const GET_VISITOR_FOR_FORM = gql`
   query GetVisitorForForm($id: ID!) {
@@ -68,10 +68,13 @@ export function DetailsForm({ id }: DetailsFormProps): ReactElement {
   })
 
   async function handleSubmit(values: InferType<string>): Promise<void> {
-    const formattedValues = Object.keys(values).reduce((acc, key) => {
-      acc[key] = values[key] === '' ? null : values[key]
-      return acc
-    }, {})
+    const formattedValues = Object.keys(values as string[]).reduce(
+      (acc, key) => {
+        acc[key] = values[key] === '' ? null : values[key]
+        return acc
+      },
+      {}
+    )
     await visitorUpdate({
       variables: {
         id,

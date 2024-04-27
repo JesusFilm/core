@@ -92,7 +92,8 @@ export function HostSidePanel(): ReactElement {
 
   const handleSelectHost = async (hostId: string): Promise<void> => {
     const foundHost = teamHosts.hosts.find((host) => host.id === hostId)
-    const selectedHost = foundHost ? (foundHost as Hosts_hosts) : undefined
+    const selectedHost =
+      foundHost != null ? (foundHost as Hosts_hosts) : undefined
     setSelectedHost(selectedHost)
     setOpenSelect(false)
   }

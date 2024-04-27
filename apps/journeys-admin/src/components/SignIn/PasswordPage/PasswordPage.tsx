@@ -14,11 +14,6 @@ import { InferType, object, string } from 'yup'
 
 import { PageProps } from '../types'
 
-interface Values {
-  email: string
-  password: string
-}
-
 export function PasswordPage({
   userEmail,
   userPassword,

@@ -33,7 +33,7 @@ export function LanguageFilterDialog({
 
   const handleSubmit = (values: FormikValues): void => {
     const ids = values.languages.map((language) => language.id)
-    onChange(ids)
+    onChange(ids as string[])
     onClose()
   }
 

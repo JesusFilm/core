@@ -69,7 +69,9 @@ export class CaslGuard implements CanActivate {
     const policies = classPolicies.concat(handlerPolicies)
 
     if (req.ability != null)
-      return policies.every((handler) => req.ability && handler(req.ability))
+      return policies.every(
+        (handler) => req.ability != null && handler(req.ability)
+      )
 
     return false
   }

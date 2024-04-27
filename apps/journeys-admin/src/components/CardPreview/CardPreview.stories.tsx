@@ -672,7 +672,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
 
 const CardPreviewComponent = ({ ...args }): ReactNode => {
   const [selected] = useState<TreeBlock<StepBlock>>(
-    args.steps && args.steps.length > 0
+    args.steps != null && args.steps.length > 0
       ? (args.steps[0] as TreeBlock<StepBlock>)
       : {
           id: 'defaultId',

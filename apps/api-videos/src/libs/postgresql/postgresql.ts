@@ -193,8 +193,7 @@ async function handlePrismaTranslationTables<T>(
     // ignore _t on index 0
     if (key === '_t') continue
 
-    const title = delta.title[key] as Record<string, unknown>
-    const fieldDelta = delta[field][key]
+    const fieldDelta = delta[field][key] as Record<string, unknown>
     // ignore moved items
     if (isMovedItem(fieldDelta)) continue
 
@@ -278,7 +277,10 @@ async function handlePrismaOrderedTranslationTables<T>(
           }
         }
       })
-    } else if (Object.keys(fieldDelta).length > 0 && languageId != null) {
+    } else if (
+      Object.keys(fieldDelta as Array<Record<string, unknown>>).length > 0 &&
+      languageId != null
+    ) {
       // handle update
       await tx[prismaField].update({
         where: {
