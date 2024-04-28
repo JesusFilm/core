@@ -51,7 +51,7 @@ export function StepBlockNode({
 
     await stepBlockNextBlockUpdate({
       variables: {
-        id: params.source,
+        id: params.source != null ? params.source : step.id,
         journeyId: journey.id,
         input: {
           nextBlockId: params.target
@@ -59,7 +59,7 @@ export function StepBlockNode({
       },
       optimisticResponse: {
         stepBlockUpdate: {
-          id: params.source,
+          id: params.source != null ? params.source : step.id,
           __typename: 'StepBlock',
           nextBlockId: params.target
         }
@@ -199,7 +199,8 @@ export function StepBlockNode({
                     marginBottom: 1,
                     lineHeight: 1.3,
                     alignItems: 'flex-end',
-                    color: '#26262E'
+                    color: '#26262E',
+                    wordBreak: 'break-all'
                   }}
                 >
                   {title != null && title !== '' ? (

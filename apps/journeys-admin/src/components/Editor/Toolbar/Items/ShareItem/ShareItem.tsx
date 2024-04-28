@@ -37,9 +37,13 @@ const SlugDialog = dynamic(
 
 interface ShareItemProps {
   variant: ComponentProps<typeof Item>['variant']
+  closeMenu?: () => void
 }
 
-export function ShareItem({ variant }: ShareItemProps): ReactElement {
+export function ShareItem({
+  variant,
+  closeMenu
+}: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { hostname } = useCustomDomainsQuery({
@@ -56,6 +60,7 @@ export function ShareItem({ variant }: ShareItemProps): ReactElement {
   }
   function handleCloseMenu(): void {
     setAnchorEl(null)
+    closeMenu?.() // test e2e
   }
   function setRoute(param: string): void {
     router.query.param = param
@@ -102,6 +107,10 @@ export function ShareItem({ variant }: ShareItemProps): ReactElement {
               size="small"
               startIcon={<Edit2Icon />}
               disabled={journey == null}
+              style={{
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
+              }}
             >
               {t('Edit URL')}
             </Button>
@@ -113,6 +122,10 @@ export function ShareItem({ variant }: ShareItemProps): ReactElement {
               size="small"
               startIcon={<Code1Icon />}
               disabled={journey == null}
+              style={{
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
+              }}
             >
               {t('Embed Journey')}
             </Button>

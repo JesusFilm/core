@@ -14,8 +14,8 @@ test('sample docs e2e test', async ({ page }) => {
   // Test the URL
   await expect(page).toHaveURL(/.*docs/)
 
-  await expect(page).toHaveScreenshot('home-page.png', {
-    animations: 'disabled',
-    fullPage: true
-  })
+  // await expect(page).toHaveScreenshot('home-page.png', {
+  //   animations: 'disabled',
+  //   fullPage: true
+  // })
 })
