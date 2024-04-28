@@ -22,7 +22,7 @@ export class BigQueryConsumer extends WorkerHost {
   ) {
     super()
     this.tables = {
-      'jfp-data-warehouse.src_arclight.core_video_arclight_data':
+      'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data':
         this.videosService
     }
   }
