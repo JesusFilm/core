@@ -164,6 +164,7 @@ model VideoStudyQuestion {
   languageId String
   order      Int
   primary    Boolean
+  crowdInId  String?
   videoId    String?
   video      Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
