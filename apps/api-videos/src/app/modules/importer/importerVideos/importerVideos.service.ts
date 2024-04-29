@@ -32,7 +32,7 @@ const videoSchema = object({
 type Video = InferType<typeof videoSchema>
 
 @Injectable()
-export class VideosService extends ImporterService<Video> {
+export class ImporterVideosService extends ImporterService<Video> {
   schema = videoSchema
   usedSlugs: Record<string, string> | undefined
   ids: string[] = []

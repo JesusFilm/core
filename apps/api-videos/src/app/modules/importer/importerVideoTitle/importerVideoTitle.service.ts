@@ -14,7 +14,7 @@ const videoTitleSchema = object({
 type VideoTitle = InferType<typeof videoTitleSchema>
 
 @Injectable()
-export class VideoTitleService extends ImporterService<VideoTitle> {
+export class ImporterVideoTitleService extends ImporterService<VideoTitle> {
   schema = videoTitleSchema
 
   constructor(private readonly prismaService: PrismaService) {

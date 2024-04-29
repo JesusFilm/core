@@ -5,15 +5,16 @@ import { Video } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../../lib/prisma.service'
 
-import { VideosService } from './videos.service'
+import { ImporterVideosService } from './importerVideos.service'
 
-describe('VideosService', () => {
-  let service: VideosService, prismaService: DeepMockProxy<PrismaService>
+describe('ImporterVideosService', () => {
+  let service: ImporterVideosService,
+    prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        VideosService,
+        ImporterVideosService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -21,7 +22,7 @@ describe('VideosService', () => {
       ]
     }).compile()
 
-    service = module.get<VideosService>(VideosService)
+    service = module.get<ImporterVideosService>(ImporterVideosService)
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
