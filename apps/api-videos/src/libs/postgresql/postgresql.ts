@@ -100,11 +100,7 @@ async function handlePrismaVideo(
     'id',
     'label',
     'primaryLanguageId',
-    'snippet',
-    'description',
-    'studyQuestions',
     'image',
-    'imageAlt',
     'slug',
     'noIndex'
   ]
@@ -265,7 +261,7 @@ async function handlePrismaOrderedTranslationTables<T>(
 
     const order = key.startsWith('_') ? fieldDelta[0].order : Number(key) + 1
 
-    if (isArray(fieldDelta) && key === '0') {
+    if (isArray(fieldDelta) && !isNaN(parseInt(key))) {
       // handle create
       await tx[prismaField].createMany({
         data: fieldDelta

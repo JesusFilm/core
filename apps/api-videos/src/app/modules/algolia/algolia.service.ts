@@ -26,7 +26,12 @@ export class AlgoliaService {
         skip: offset,
         include: {
           video: {
-            include: { title: true, description: true, imageAlt: true }
+            include: {
+              title: true,
+              description: true,
+              imageAlt: true,
+              snippet: true
+            }
           },
           subtitle: true
         },
