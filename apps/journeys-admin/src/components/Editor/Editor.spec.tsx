@@ -1,10 +1,11 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
 import {
   JourneyStatus,
   ThemeMode,
@@ -12,6 +13,8 @@ import {
 } from '../../../__generated__/globalTypes'
 import { mockReactFlow } from '../../../test/mockReactFlow'
 import { ThemeProvider } from '../ThemeProvider'
+
+import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
 
 import { Editor } from '.'
 
@@ -152,8 +155,30 @@ describe('Editor', () => {
         }
       ]
     }
+
+    const mockGetStepBlocksWithPosition: MockedResponse<GetStepBlocksWithPosition> =
+      {
+        request: {
+          query: GET_STEP_BLOCKS_WITH_POSITION,
+          variables: {
+            journeyIds: [journey.id]
+          }
+        },
+        result: {
+          data: {
+            blocks: [
+              {
+                __typename: 'StepBlock',
+                id: 'step0.id',
+                x: 0,
+                y: 0
+              }
+            ]
+          }
+        }
+      }
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[mockGetStepBlocksWithPosition]}>
         <SnackbarProvider>
           <ThemeProvider>
             <Editor journey={withTypographyBlock} selectedStepId="step0.id" />

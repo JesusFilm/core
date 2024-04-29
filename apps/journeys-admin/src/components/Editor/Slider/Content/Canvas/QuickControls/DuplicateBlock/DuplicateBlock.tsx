@@ -65,17 +65,16 @@ export function DuplicateBlock({
         },
         update(cache, { data }) {
           if (data?.blockDuplicate != null) {
-            handleClick?.()
+            const nextBlock = data.blockDuplicate[parentOrder + 1]
+            const lastStep = last(
+              data.blockDuplicate.filter(
+                (block) => block.__typename === 'StepBlock'
+              )
+            )
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
-                  const nextBlock = data.blockDuplicate[parentOrder + 1]
-                  const lastStep = last(
-                    data.blockDuplicate.filter(
-                      (block) => block.__typename === 'StepBlock'
-                    )
-                  )
                   const duplicatedBlockRef = cache.writeFragment({
                     data:
                       currentBlock.__typename === 'StepBlock'
@@ -91,6 +90,23 @@ export function DuplicateBlock({
                 }
               }
             })
+            if (currentBlock.__typename === 'StepBlock') {
+              cache.modify({
+                fields: {
+                  blocks(existingBlockRefs = []) {
+                    const newStepBlockRef = cache.writeFragment({
+                      data: lastStep,
+                      fragment: gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                    })
+                    return [...existingBlockRefs, newStepBlockRef]
+                  }
+                }
+              })
+            }
           }
         }
       })
@@ -103,10 +119,6 @@ export function DuplicateBlock({
             (block) => block.__typename === 'StepBlock'
           )
           const duplicatedStep = last(steps)
-          dispatch({
-            type: 'SetStepsAction',
-            steps
-          })
           dispatch({
             type: 'SetSelectedStepAction',
             selectedStep: duplicatedStep
@@ -130,6 +142,7 @@ export function DuplicateBlock({
         preventDuplicate: true
       }
     )
+    handleClick?.()
   }
 
   return (

@@ -177,12 +177,41 @@ describe('EditorContext', () => {
         }
         expect(
           reducer(state, {
-            type: 'SetSelectedBlockAction',
+            type: 'SetSelectedBlockOnlyAction',
             selectedBlock: block
           })
         ).toEqual({
           ...state,
           selectedBlock: block
+        })
+      })
+
+      it('should change to content view when block selected', () => {
+        const block: TreeBlock = {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children: []
+        }
+        const state: EditorState = {
+          steps: [block],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetSelectedBlockAction',
+            selectedBlock: block
+          })
+        ).toEqual({
+          ...state,
+          selectedBlock: block,
+          activeSlide: ActiveSlide.Content
         })
       })
     })
