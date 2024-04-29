@@ -4,7 +4,7 @@ import Tabs from '@mui/material/Tabs'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, SyntheticEvent, useState } from 'react'
+import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import MediaStrip1Icon from '@core/shared/ui/icons/MediaStrip1'
@@ -60,6 +60,12 @@ export function VideoLibrary({
   )
   const [activeTab, setActiveTab] = useState(0)
   const router = useRouter()
+
+  useEffect(() => {
+    if (selectedBlock?.videoId != null && open) {
+      setOpenVideoDetails(true)
+    }
+  }, [open, selectedBlock?.videoId])
 
   const TabParams = {
     0: 'video-library',
