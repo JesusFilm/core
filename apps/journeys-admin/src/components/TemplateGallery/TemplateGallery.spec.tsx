@@ -166,12 +166,12 @@ describe('TemplateGallery', () => {
 
     await waitFor(() => {
       expect(
-        getByRole('button', { name: 'Acceptance Acceptance Acceptance' })
+        getByRole('button', { name: 'Acceptance tag Acceptance Acceptance' })
       ).toBeInTheDocument()
     })
 
     fireEvent.click(
-      getByRole('button', { name: 'Acceptance Acceptance Acceptance' })
+      getByRole('button', { name: 'Acceptance tag Acceptance Acceptance' })
     )
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith({

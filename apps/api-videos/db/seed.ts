@@ -28,7 +28,7 @@ let mode = process.argv[2] ?? null
 if (mode == null || mode === 'undefined' || mode === '') {
   console.log('No mode argument provided. Using default complete mode.')
   console.log(
-    'usage: nx prisma-seed api-videos --mode={mode} --target={target arclight id for replace/update/resume}'
+    'usage: nx prisma-seed api-videos --mode={mode} --id={target arclight id for replace/update/resume}'
   )
   console.log('valid modes: missing, replace, update, complete, resume')
   mode = 'complete'

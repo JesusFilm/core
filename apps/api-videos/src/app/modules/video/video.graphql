@@ -14,6 +14,8 @@ enum VideoLabel {
   segment
   series
   shortFilm
+  trailer
+  behindTheScenes
 }
 
 type LanguageWithSlug {
@@ -26,7 +28,6 @@ type Video @key(fields: "id primaryLanguageId") @cacheControl(maxAge: 86400) {
   label: VideoLabel!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
-  seoTitle(languageId: ID, primary: Boolean): [Translation!]!
   snippet(languageId: ID, primary: Boolean): [Translation!]!
   description(languageId: ID, primary: Boolean): [Translation!]!
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]!

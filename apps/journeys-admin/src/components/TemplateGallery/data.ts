@@ -390,13 +390,13 @@ export const getTagsMock: MockedResponse<GetTags> = {
         },
         {
           __typename: 'Tag',
-          id: 'fearTagId',
+          id: 'anxietyTagId',
           service: null,
           parentId: 'parentId1',
           name: [
             {
               __typename: 'Translation',
-              value: 'Fear/Anxiety',
+              value: 'Anxiety',
               primary: true
             }
           ]
@@ -475,6 +475,19 @@ export const getTagsMock: MockedResponse<GetTags> = {
             {
               __typename: 'Translation',
               value: 'Significance',
+              primary: true
+            }
+          ]
+        },
+        {
+          __typename: 'Tag',
+          id: 'fearPowerTagId',
+          service: null,
+          parentId: 'parentId1',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Fear/Power',
               primary: true
             }
           ]

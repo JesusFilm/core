@@ -2463,7 +2463,6 @@ type Video
   primaryLanguageId: ID!
   label: VideoLabel! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
@@ -2855,6 +2854,8 @@ enum VideoLabel
   segment @join__enumValue(graph: VIDEOS)
   series @join__enumValue(graph: VIDEOS)
   shortFilm @join__enumValue(graph: VIDEOS)
+  trailer @join__enumValue(graph: VIDEOS)
+  behindTheScenes @join__enumValue(graph: VIDEOS)
 }
 
 type VideoPauseEvent implements Event
