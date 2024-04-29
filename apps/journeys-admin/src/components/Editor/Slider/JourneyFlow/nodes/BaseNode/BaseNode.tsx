@@ -1,4 +1,3 @@
-import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
 import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
