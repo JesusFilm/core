@@ -84,6 +84,7 @@ describe('VideoResolver', () => {
     languageId: '529',
     id: '1',
     order: 1,
+    crowdInId: '12',
     videoId: '20615'
   }
 
