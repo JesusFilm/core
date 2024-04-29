@@ -8,7 +8,8 @@ import { Align } from '.'
 const AlignStory: Meta<typeof Align> = {
   ...simpleComponentConfig,
   component: Align,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Typography/Align'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Typography/Align'
 }
 
 export const Default: StoryObj<typeof Align> = {

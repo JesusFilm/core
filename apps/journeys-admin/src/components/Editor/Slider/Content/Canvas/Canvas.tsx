@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { ReactElement, useMemo, useRef } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -26,6 +26,13 @@ import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
+import {
+  CARD_HEIGHT,
+  CARD_WIDTH,
+  calculateScale,
+  calculateScaledHeight,
+  calculateScaledMargin
+} from './utils/calculateDimensions'
 import { VideoWrapper } from './VideoWrapper'
 
 export function Canvas(): ReactElement {
@@ -45,6 +52,17 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
+
+  const initialScale =
+    typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
+  const [scale, setScale] = useState(initialScale)
+
+  useEffect(() => {
+    const handleResize = (): void => setScale(calculateScale(containerRef))
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   function handleFooterClick(): void {
     dispatch({
@@ -107,19 +125,9 @@ export function Canvas(): ReactElement {
   const theme =
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
 
-  const scale = useMemo(() => {
-    if (containerRef.current != null) {
-      return Math.min(
-        containerRef.current?.clientWidth / 375,
-        containerRef.current?.clientHeight / 670
-      )
-    }
-    return 1
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containerRef.current?.clientWidth, containerRef.current?.clientHeight])
-
   return (
     <Stack
+      ref={containerRef}
       className="EditorCanvas"
       onClick={handleSelectCard}
       onMouseDown={() => {
@@ -141,32 +149,35 @@ export function Canvas(): ReactElement {
       {selectedStep != null && theme != null && (
         <Stack
           direction="column"
-          alignItems="flex-end"
+          alignItems={{ xs: 'center', sm: 'flex-end' }}
           gap={1.5}
           sx={{
             flexGrow: { xs: 1, sm: 0 },
             height: { xs: '100%', sm: 'auto' },
-            p: { xs: 3, sm: 0 },
+            pb: { xs: 5, sm: 0 },
+            px: { xs: 3, sm: 0 },
             justifyContent: 'center'
           }}
+          data-testid="stack here"
         >
           <Box
-            ref={containerRef}
             sx={{
-              width: { xs: '100%', sm: 387 },
-              height: { xs: '100%', sm: 682 },
-              display: 'flex'
+              display: 'flex',
+              flexDirection: 'column',
+              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`
             }}
           >
             <Box
               data-testId="CanvasContainer"
               sx={{
                 position: 'relative',
-                left: '50%',
-                top: '50%',
-                width: 375,
-                height: 670,
-                transform: `translate(-50%, -50%) scale(${scale})`,
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
+                transform: `scale(${scale})`,
+                margin: `${calculateScaledMargin(
+                  CARD_HEIGHT,
+                  scale
+                )} ${calculateScaledMargin(CARD_WIDTH, scale)}`,
                 borderRadius: 6,
                 transition: (theme) =>
                   theme.transitions.create('border-color', {
@@ -279,9 +290,15 @@ export function Canvas(): ReactElement {
                 </ThemeProvider>
               </FramePortal>
             </Box>
-          </Box>
-          <Box sx={{ mr: 4 }}>
-            <Fab variant="canvas" />
+            <Box
+              sx={{
+                mt: 4,
+                alignSelf: 'end',
+                transform: `scale(${scale})`
+              }}
+            >
+              <Fab variant="canvas" />
+            </Box>
           </Box>
         </Stack>
       )}

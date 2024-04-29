@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -51,7 +51,7 @@ describe('HostAvatarsButton', () => {
   } as unknown as Journey
 
   it('should display default icon if no avatars set', () => {
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <ThemeProvider>
           <SnackbarProvider>
@@ -68,18 +68,18 @@ describe('HostAvatarsButton', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('avatar1').firstChild).toHaveAttribute(
+    expect(screen.getByTestId('avatar1').firstChild).toHaveAttribute(
       'data-testid',
       'UserProfile2Icon'
     )
-    expect(getByTestId('avatar2').firstChild).toHaveAttribute(
+    expect(screen.getByTestId('avatar2').firstChild).toHaveAttribute(
       'data-testid',
       'Plus2Icon'
     )
   })
 
   it('should display avatar image if set', () => {
-    const { getByAltText } = render(
+    render(
       <MockedProvider>
         <ThemeProvider>
           <SnackbarProvider>
@@ -103,12 +103,12 @@ describe('HostAvatarsButton', () => {
       </MockedProvider>
     )
 
-    expect(getByAltText('avatar1')).toHaveAttribute('src', 'avatar1Src')
-    expect(getByAltText('avatar2')).toHaveAttribute('src', 'avatar2Src')
+    expect(screen.getByAltText('avatar1')).toHaveAttribute('src', 'avatar1Src')
+    expect(screen.getByAltText('avatar2')).toHaveAttribute('src', 'avatar2Src')
   })
 
   it('should disable avatar click', () => {
-    const { getByTestId, queryByTestId } = render(
+    render(
       <MockedProvider>
         <ThemeProvider>
           <SnackbarProvider>
@@ -120,12 +120,12 @@ describe('HostAvatarsButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('avatar1'))
-    expect(queryByTestId('ImageBlockHeader')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('avatar1'))
+    expect(screen.queryByTestId('ImageBlockHeader')).not.toBeInTheDocument()
   })
 
   it('should open image edit library on avatar click', async () => {
-    const { getByRole, getByTestId } = render(
+    render(
       <MockedProvider>
         <ThemeProvider>
           <SnackbarProvider>
@@ -145,16 +145,18 @@ describe('HostAvatarsButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('avatar1'))
+    fireEvent.click(screen.getByTestId('avatar1'))
     await waitFor(() =>
-      expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
+      expect(screen.getByTestId('ImageBlockHeader')).toBeInTheDocument()
     )
 
-    expect(getByRole('img')).toHaveAttribute('src', 'avatar1Src')
-    fireEvent.click(getByRole('button', { name: 'close-image-library' }))
+    expect(screen.getAllByRole('img')[0]).toHaveAttribute('src', 'avatar1Src')
+    fireEvent.click(screen.getByRole('button', { name: 'close-image-library' }))
 
-    fireEvent.click(getByTestId('avatar2'))
-    expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('avatar2'))
+    expect(
+      screen.getByTestId('imageBlockThumbnailPlaceholder')
+    ).toBeInTheDocument()
   })
 
   // TODO: Add to E2E when can mock out unsplash
@@ -173,7 +175,7 @@ describe('HostAvatarsButton', () => {
       }
     }))
 
-    const { getByTestId } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -213,16 +215,18 @@ describe('HostAvatarsButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('avatar1'))
-    expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
-    fireEvent.click(getByTestId('imageBlockHeaderDelete'))
+    fireEvent.click(screen.getByTestId('avatar1'))
+    expect(screen.getByTestId('ImageBlockHeader')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
 
     void waitFor(() => {
-      expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('imageBlockThumbnailPlaceholder')
+      ).toBeInTheDocument()
     })
     void waitFor(() => expect(result).toHaveBeenCalled())
     void waitFor(() =>
-      expect(getByTestId('avatar1').firstChild).toHaveAttribute(
+      expect(screen.getByTestId('avatar1').firstChild).toHaveAttribute(
         'data-testid',
         'UserProfileAddIcon'
       )
@@ -256,7 +260,7 @@ describe('HostAvatarsButton', () => {
       }
     }))
 
-    const { getByRole, getByTestId, getByAltText } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -309,17 +313,22 @@ describe('HostAvatarsButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('avatar1'))
-    expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
-    fireEvent.click(getByTestId('imageBlockHeaderDelete'))
+    fireEvent.click(screen.getByTestId('avatar1'))
+    expect(screen.getByTestId('ImageBlockHeader')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
     void waitFor(() => {
-      expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('imageBlockThumbnailPlaceholder')
+      ).toBeInTheDocument()
     })
-    fireEvent.click(getByRole('button', { name: 'close-image-library' }))
+    fireEvent.click(screen.getByRole('button', { name: 'close-image-library' }))
 
     void waitFor(() => {
-      expect(getByAltText('avatar1')).toHaveAttribute('src', 'avatar2Src')
-      expect(getByTestId('avatar2').firstChild).toHaveAttribute(
+      expect(screen.getByAltText('avatar1')).toHaveAttribute(
+        'src',
+        'avatar2Src'
+      )
+      expect(screen.getByTestId('avatar2').firstChild).toHaveAttribute(
         'data-testid',
         'UserProfileAddIcon'
       )

@@ -66,6 +66,14 @@ const TextResponse = dynamic(
   { ssr: false }
 )
 
+const RadioQuestion = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/RadioOption" */ './blocks/RadioQuestion'
+    ).then((mod) => mod.RadioQuestion),
+  { ssr: false }
+)
+
 const RadioOption = dynamic(
   async () =>
     await import(
@@ -143,6 +151,10 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
     case 'ButtonBlock':
       title = t('Button Properties')
       component = <Button {...selectedBlock} />
+      break
+    case 'RadioQuestionBlock':
+      title = t('Poll Block Selected')
+      component = <RadioQuestion {...selectedBlock} />
       break
     case 'RadioOptionBlock':
       title = t('Poll Option Properties')
