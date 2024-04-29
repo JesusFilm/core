@@ -8,20 +8,15 @@ const videoTitleSchema = object({
   value: string().required(),
   videoId: string().required(),
   languageId: string().required(),
-  primary: boolean().transform((value) => {
-    switch (value) {
-      case 1:
-        return true
-      default:
-        return false
-    }
-  })
+  primary: boolean()
 })
 
 type VideoTitle = InferType<typeof videoTitleSchema>
 
 @Injectable()
 export class VideoTitleService extends ImporterService<VideoTitle> {
+  schema = videoTitleSchema
+
   constructor(private readonly prismaService: PrismaService) {
     super()
   }

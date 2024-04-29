@@ -32,10 +32,12 @@ describe('VideosService', () => {
       prismaService.video.findUnique.mockResolvedValueOnce({
         id: 'mockValue0'
       } as unknown as Video)
+      prismaService.video.findMany.mockResolvedValueOnce([])
       await service.import({
         id: 'mockValue0',
         label: 'short',
         primaryLanguageId: 529,
+        title: 'Some Title',
         extraStuff: 'randomData'
       })
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({
@@ -43,7 +45,12 @@ describe('VideosService', () => {
       })
       expect(prismaService.video.update).toHaveBeenCalledWith({
         where: { id: 'mockValue0' },
-        data: { id: 'mockValue0', label: 'shortFilm', primaryLanguageId: '529' }
+        data: {
+          id: 'mockValue0',
+          label: 'shortFilm',
+          primaryLanguageId: '529',
+          slug: 'some-title'
+        }
       })
     })
 
@@ -51,10 +58,17 @@ describe('VideosService', () => {
       prismaService.video.findUnique.mockResolvedValueOnce({
         id: 'mockValue0'
       } as unknown as Video)
+      prismaService.video.findMany.mockResolvedValueOnce([
+        {
+          slug: 'someslug',
+          id: 'mockValue0'
+        } as unknown as Video
+      ])
       await service.import({
         id: 'mockValue0',
         label: 'feature',
         primaryLanguageId: 529,
+        title: 'Some Title',
         extraStuff: 'randomData'
       })
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({
@@ -65,7 +79,8 @@ describe('VideosService', () => {
         data: {
           id: 'mockValue0',
           label: 'featureFilm',
-          primaryLanguageId: '529'
+          primaryLanguageId: '529',
+          slug: 'some-title'
         }
       })
     })
@@ -74,10 +89,17 @@ describe('VideosService', () => {
       prismaService.video.findUnique.mockResolvedValueOnce({
         id: 'mockValue0'
       } as unknown as Video)
+      prismaService.video.findMany.mockResolvedValueOnce([
+        {
+          slug: 'someslug',
+          id: 'mockValue0'
+        } as unknown as Video
+      ])
       await service.import({
         id: 'mockValue0',
         label: 'behind_the_scenes',
         primaryLanguageId: 529,
+        title: 'Some Title',
         extraStuff: 'randomData'
       })
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({
@@ -88,7 +110,8 @@ describe('VideosService', () => {
         data: {
           id: 'mockValue0',
           label: 'behindTheScenes',
-          primaryLanguageId: '529'
+          primaryLanguageId: '529',
+          slug: 'some-title'
         }
       })
     })
@@ -98,11 +121,13 @@ describe('VideosService', () => {
         id: 'mockValue0',
         label: 'shortFilm',
         primaryLanguageId: 529,
+        title: 'Some Title',
         extraStuff: 'randomData'
       })
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({
         where: { id: 'mockValue0' }
       })
+
       expect(prismaService.video.update).not.toHaveBeenCalled()
     })
 
