@@ -338,72 +338,115 @@ export class ResourceResolver {
     const videoCount = await this.videoPrismaService.video.count();
     const languagecount = await this.languagePrismaService.language.count();
 
-    const videos = await this.videoPrismaService.video.findMany();
+    const videos = await this.videoPrismaService.video.findMany({
+      take: 2,
+      include: {
+        title: true,
+        variants: true,
+      },
+    });
 
-    console.log(videos[0]);
+    // const columnHeaders = Object.keys(videos[0]);
 
-    const columnHeaders = Object.keys(videos[0]);
+    const columnHeaders = [
+      'media-component-id',
+      'title',
+      'description',
+      'description-long',
+      'language-id',
+      'language-name-en',
+      'language-native',
+      'language-bcp47',
+      'language-iso',
+      'media-component-questions',
+      'meta-data-language-tag',
+      'length',
+      'language-country',
+    ];
 
     const spreadsheetData = [columnHeaders];
 
-    videos.forEach((video) => {
-      const id = video.id;
-      const label = video.label;
-      const primaryLanguageId = video.primaryLanguageId;
-      const seoTitle = video.seoTitle
-        .map(
-          (title: { value: string; primary: boolean; languageId: string }) =>
-            title.value ?? '',
-        )
-        .toString();
-      const snippet = video.snippet
-        .map(
-          (snip: { value: string; primary: boolean; languageId: string }) =>
-            snip.value ?? '',
-        )
-        .toString();
-      const description = video.description
-        .map(
-          (desc: { value: string; primary: boolean; languageId: string }) =>
-            desc.value ?? '',
-        )
-        .toString();
-      const studyQuestions = video.studyQuestions
-        .map(
-          (studyQuestion: {
-            value: string;
-            primary: boolean;
-            languageId: string;
-          }) => studyQuestion.value ?? '',
-        )
-        .toString();
-      const image = video.image ?? '';
-      const imageAlt = video.imageAlt
-        .map(
-          (imageAlt: { value: string; primary: boolean; languageId: string }) =>
-            imageAlt.value ?? '',
-        )
-        .toString();
-      const slug = video.slug ?? '';
-      const noIndex = video.noIndex?.toString() ?? '';
-      const childIds = video.childIds
-        .map((childId: string | null) => childId ?? '')
-        .toString();
+    videos.forEach(async (video) => {
+      const videoLanguage = await this.languagePrismaService.language.findFirst(
+        {
+          where: {
+            id: video.primaryLanguageId,
+          },
+        },
+      );
 
-      spreadsheetData.push([
-        id,
-        label,
-        primaryLanguageId,
-        seoTitle,
-        snippet,
-        description,
-        studyQuestions,
-        image,
-        imageAlt,
-        slug,
-        noIndex,
-        childIds,
-      ]);
+      const id = video.id ?? '';
+      const label = video.title.map((title) => title.value).toString() ?? '';
+      const snippet =
+        video.snippet
+          .map(
+            (snip: { value: string; primary: boolean; languageId: string }) =>
+              snip.value,
+          )
+          .toString() ?? '';
+      const description =
+        video.description
+          .map(
+            (desc: { value: string; primary: boolean; languageId: string }) =>
+              desc.value,
+          )
+          .toString() ?? '';
+      const primaryLanguageId = video.primaryLanguageId ?? '';
+      const languageName =
+        videoLanguage?.name
+          ?.map(
+            (lang: { value: string; primary: boolean; languageId: string }) =>
+              lang.value,
+          )
+          .toString() ?? '';
+      const languageBcp = videoLanguage?.bcp47 ?? '';
+      const languageIso = videoLanguage?.iso3 ?? '';
+      const studyQuestions =
+        video.studyQuestions
+          .map(
+            (studyQuestion: {
+              value: string;
+              primary: boolean;
+              languageId: string;
+            }) => studyQuestion.value,
+          )
+          .toString() ?? '';
+      const image = video.image ?? '';
+
+      video.variants.forEach(async (variant) => {
+        const duration = variant.duration?.toString() ?? '';
+
+        const variantLanguage =
+          await this.languagePrismaService.language.findFirst({
+            where: {
+              id: variant.languageId,
+            },
+          });
+
+        const languageNative =
+          variantLanguage?.name
+            ?.map(
+              (lang: { value: string; primary: boolean; languageId: string }) =>
+                lang.value,
+            )
+            .toString() ?? '';
+
+        spreadsheetData.push([
+          id,
+          label,
+          snippet,
+          description,
+          primaryLanguageId,
+          languageName,
+          languageNative,
+          languageBcp,
+          languageIso,
+          studyQuestions,
+          '',
+          duration,
+          '',
+        ]);
+      });
     });
 
     const googleAccessToken =
