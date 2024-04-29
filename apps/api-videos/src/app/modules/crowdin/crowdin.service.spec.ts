@@ -219,16 +219,7 @@ describe('CrowdinService', () => {
         ]
       })
 
-      await service.getCrowdinTranslations()
-
-      expect(prismaService.video.findMany).toHaveBeenCalledWith({
-        select: { id: true },
-        where: {
-          id: { endsWith: 'ohno' }
-        }
-      })
-
-      await expect(prismaService).rejects.toThrow(
+      await expect(service.getCrowdinTranslations()).rejects.toThrow(
         'no matching videoId found for ohno'
       )
     })
