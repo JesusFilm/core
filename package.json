@@ -69,7 +69,6 @@
     "@react-email/components": "^0.0.14",
     "@react-email/render": "^0.0.12",
     "@storybook/core-server": "7.6.6",
-    "@tisoap/react-flow-smart-edge": "^3.0.0",
     "@types/mailchimp__mailchimp_marketing": "^3.0.19",
     "adal-node": "^0.2.3",
     "algoliasearch": "^4.22.0",

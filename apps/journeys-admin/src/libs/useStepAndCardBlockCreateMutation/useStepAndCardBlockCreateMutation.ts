@@ -23,6 +23,8 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
   ) {
     stepBlockCreate(input: $stepBlockCreateInput) {
       ...StepFields
+      x
+      y
     }
     cardBlockCreate(input: $cardBlockCreateInput) {
       ...CardFields
@@ -42,7 +44,9 @@ export function useStepAndCardBlockCreateMutation(
     StepAndCardBlockCreateVariables
   >(STEP_AND_CARD_BLOCK_CREATE, {
     ...options,
-    update(cache, { data }) {
+    update(...args) {
+      options?.update?.(...args)
+      const [cache, { data }] = args
       if (journey == null) return
       if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
         cache.modify({
