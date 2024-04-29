@@ -1,4 +1,1 @@
-export {
-  SocialPreviewNode,
-  type SocialPreviewNodeData
-} from './SocialPreviewNode'
+export { SocialPreviewNode } from './SocialPreviewNode'

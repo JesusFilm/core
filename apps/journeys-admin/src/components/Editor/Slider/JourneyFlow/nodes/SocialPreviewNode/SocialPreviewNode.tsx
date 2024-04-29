@@ -17,10 +17,6 @@ import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
 import { BaseNode } from '../BaseNode'
 
-export interface SocialPreviewNodeData {
-  __typename: 'SocialPreview'
-}
-
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
   const {

@@ -56,7 +56,9 @@ const stepAndCardBlockCreateMock: MockedResponse<
         parentOrder: 0,
         locked: false,
         nextBlockId: null,
-        __typename: 'StepBlock'
+        __typename: 'StepBlock',
+        x: null,
+        y: null
       },
       cardBlockCreate: {
         id: 'cardId',
