@@ -42,5 +42,5 @@
     }
   },
   "tags": [],
-  "implicitDependencies": ["watch-old"]
+  "implicitDependencies": ["watch"]
 }

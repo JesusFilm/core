@@ -1,5 +1,3 @@
-import path from 'path'
-
 import { InitOptions } from 'i18next'
 
 export const fallbackLanguageId = 'en'

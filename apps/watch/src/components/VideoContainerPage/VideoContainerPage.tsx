@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { useRouter } from 'next/navigation'
 import { ReactElement, useState } from 'react'
 
 import { useVideoChildren } from '../../libs/useVideoChildren'
@@ -23,9 +22,7 @@ export function VideoContainerPage({
 }: VideoContainerPageProps): ReactElement {
   const { snippet, slug, variant } = useVideo()
   const { loading, children } = useVideoChildren(variant?.slug)
-  // const router = useRouter()
   const [shareDialog, setShareDialog] = useState<boolean>(false)
-  // const routeArray: string[] = []
   const realChildren = children.filter((video) => video.variant !== null)
   function handleOpenDialog(): void {
     setShareDialog(true)
@@ -34,14 +31,6 @@ export function VideoContainerPage({
   function handleCloseDialog(): void {
     setShareDialog(false)
   }
-
-  // if (router != null) {
-  //   Object.values(router?.query).forEach((value) => {
-  //     if (typeof value === 'string') {
-  //       routeArray.push(value)
-  //     }
-  //   })
-  // }
 
   return (
     <PageWrapper
