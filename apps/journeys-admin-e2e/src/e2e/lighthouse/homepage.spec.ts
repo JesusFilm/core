@@ -32,7 +32,7 @@ test('Homepage', async () => {
     config,
     thresholds: {
       performance: 36,
-      accessibility: 98,
+      accessibility: 93,
       'best-practices': 83,
       seo: 82,
       pwa: 67

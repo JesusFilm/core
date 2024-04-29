@@ -22,7 +22,7 @@ describe('FeltNeedsButton', () => {
     )
 
     expect(
-      getByRole('button', { name: 'Acceptance Acceptance Acceptance' })
+      getByRole('button', { name: 'Acceptance tag Acceptance Acceptance' })
     ).toBeInTheDocument()
     expect(queryByTestId('felt-needs-button-loading')).not.toBeInTheDocument()
   })
@@ -63,7 +63,7 @@ describe('FeltNeedsButton', () => {
     )
 
     fireEvent.click(
-      getByRole('button', { name: 'Acceptance Acceptance Acceptance' })
+      getByRole('button', { name: 'Acceptance tag Acceptance Acceptance' })
     )
 
     expect(onClick).toHaveBeenCalledWith(tag.id)
