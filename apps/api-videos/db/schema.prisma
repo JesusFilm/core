@@ -31,6 +31,8 @@ enum VideoLabel {
   segment
   series
   shortFilm
+  trailer
+  behindTheScenes
 }
 
 model Video {
