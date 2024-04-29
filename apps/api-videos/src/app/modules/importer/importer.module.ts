@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-import { VideosService } from './videos/videos.service'
-import { VideoTitleService } from './importerVideoTitle/importerVideoTitle.service'
+import { ImporterVideosService } from './importerVideos/importerVideos.service'
+import { ImporterVideoTitleService } from './importerVideoTitle/importerVideoTitle.service'
 
 @Module({
-  providers: [PrismaService, VideosService, VideoTitleService],
-  exports: [VideosService, VideoTitleService]
+  providers: [PrismaService, ImporterVideosService, ImporterVideoTitleService],
+  exports: [ImporterVideosService, ImporterVideoTitleService]
 })
 export class ImporterModule {}
