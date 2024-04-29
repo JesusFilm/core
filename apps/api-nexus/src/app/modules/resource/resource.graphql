@@ -31,6 +31,10 @@ type GoogleAuthResponse {
   accessToken: String!
 }
 
+type ExportResponse {
+  name: String!
+}
+
 enum PrivacyStatus {
   public
   unlisted
@@ -106,6 +110,11 @@ input BatchJobInput {
   resources: [BatchJobResource]!
 }
 
+input ResourceExportData {
+  id: ID!
+  folderId: String!
+}
+
 extend type Query {
   resources(where: ResourceFilter): [Resource!]
   resource(id: ID!): Resource!
@@ -125,6 +134,7 @@ extend type Mutation {
   getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
   resourceBatchJob(input: BatchJobInput!): String
+  resourceExportData(input: ResourceExportData): ExportResponse
   getSheetData(
     nexusId: String!
     tokenId: String!

@@ -16,26 +16,29 @@ import {
   ResourceUpdateInput,
 } from '../../__generated__/graphql';
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
+import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
 import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
-import { PrismaService } from '../../lib/prisma.service';
-import { YoutubeService } from '../../lib/youtube/youtubeService';
+import {
+  LanguagePrismaService,
+  PrismaService,
+  VideoPrismaService,
+} from '../../lib/prisma.service';
 import { BatchService } from '../batch/batchService';
 import { BullMQService } from '../bullMQ/bullMQ.service';
-import {
-  GoogleDriveService,
-  SpreadsheetTemplateType,
-} from '../google-drive/googleDriveService';
+import { GoogleDriveService } from '../google-drive/googleDriveService';
 
 @Resolver('Resource')
 export class ResourceResolver {
   constructor(
     private readonly prismaService: PrismaService,
+    private readonly videoPrismaService: VideoPrismaService,
+    private readonly languagePrismaService: LanguagePrismaService,
     private readonly googleOAuthService: GoogleOAuthService,
     private readonly googleDriveService: GoogleDriveService,
     private readonly cloudFlareService: CloudFlareService,
-    private readonly youtubeService: YoutubeService,
     private readonly bullMQService: BullMQService,
     private readonly batchService: BatchService,
+    private readonly googleSheetsService: GoogleSheetsService,
   ) {}
 
   @Query()
@@ -249,7 +252,7 @@ export class ResourceResolver {
         data,
       );
 
-    if (templateType === SpreadsheetTemplateType.UPLOAD) {
+    if (templateType === 'upload') {
       console.log('IN UPLOAD');
       console.log('spreadsheetData', spreadsheetData);
       const batchResources =
@@ -277,7 +280,7 @@ export class ResourceResolver {
         );
       }
       return batchResources.map((item) => item.resource);
-    } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
+    } else if (templateType === 'localization') {
       console.log('IN LOCALIZATION');
       console.log('spreadsheetData', spreadsheetData);
       const batchLocalizations =
@@ -329,37 +332,101 @@ export class ResourceResolver {
   }
 
   @Mutation()
-  async getSheetData(
-    @CurrentUserId() userId: string,
-    @Args('nexusId') nexusId: string,
-    @Args('tokenId') tokenId: string,
-    @Args('spreadsheetId') spreadsheetId: string,
-  ): Promise<any> {
-    console.log('Get Sheet Data . . .');
-    const nexus = await this.prismaService.nexus.findUnique({
-      where: {
-        id: nexusId,
-        userNexuses: { every: { userId } },
-      },
-    });
+  async resourceExportData(
+    @Args('input') input: { id: string; folderId: string },
+  ): Promise<{ name: string }> {
+    const videoCount = await this.videoPrismaService.video.count();
+    const languagecount = await this.languagePrismaService.language.count();
 
-    if (nexus == null)
-      throw new GraphQLError('nexus not found', {
-        extensions: { code: 'NOT_FOUND' },
-      });
+    const videos = await this.videoPrismaService.video.findMany();
+
+    console.log(videos[0]);
+
+    const columnHeaders = Object.keys(videos[0]);
+
+    const spreadsheetData = [columnHeaders];
+
+    videos.forEach((video) => {
+      const id = video.id;
+      const label = video.label;
+      const primaryLanguageId = video.primaryLanguageId;
+      const seoTitle = video.seoTitle
+        .map(
+          (title: { value: string; primary: boolean; languageId: string }) =>
+            title.value ?? '',
+        )
+        .toString();
+      const snippet = video.snippet
+        .map(
+          (snip: { value: string; primary: boolean; languageId: string }) =>
+            snip.value ?? '',
+        )
+        .toString();
+      const description = video.description
+        .map(
+          (desc: { value: string; primary: boolean; languageId: string }) =>
+            desc.value ?? '',
+        )
+        .toString();
+      const studyQuestions = video.studyQuestions
+        .map(
+          (studyQuestion: {
+            value: string;
+            primary: boolean;
+            languageId: string;
+          }) => studyQuestion.value ?? '',
+        )
+        .toString();
+      const image = video.image ?? '';
+      const imageAlt = video.imageAlt
+        .map(
+          (imageAlt: { value: string; primary: boolean; languageId: string }) =>
+            imageAlt.value ?? '',
+        )
+        .toString();
+      const slug = video.slug ?? '';
+      const noIndex = video.noIndex?.toString() ?? '';
+      const childIds = video.childIds
+        .map((childId: string | null) => childId ?? '')
+        .toString();
+
+      spreadsheetData.push([
+        id,
+        label,
+        primaryLanguageId,
+        seoTitle,
+        snippet,
+        description,
+        studyQuestions,
+        image,
+        imageAlt,
+        slug,
+        noIndex,
+        childIds,
+      ]);
+    });
 
     const googleAccessToken =
       await this.prismaService.googleAccessToken.findUnique({
-        where: { id: tokenId },
+        where: { id: input.id },
       });
 
     if (googleAccessToken === null) {
       throw new Error('Invalid tokenId');
     }
 
-    const { accessToken, data } =
-      await this.googleDriveService.getSpreadsheetData(tokenId, spreadsheetId);
+    const accessToken = await this.googleOAuthService.getNewAccessToken(
+      googleAccessToken.refreshToken,
+    );
 
-    return data;
+    await this.googleSheetsService.createAndPopulateSpreadsheet(
+      spreadsheetData,
+      accessToken,
+      input.folderId,
+    );
+
+    return {
+      name: `Video-Count: $ ${videoCount} | Language-Count: ${languagecount}`,
+    };
   }
 }

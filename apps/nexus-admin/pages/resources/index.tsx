@@ -1,4 +1,5 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
+import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { useGoogleLogin } from '@react-oauth/google'
@@ -84,6 +85,14 @@ const RESOURCE_DELETE = gql`
   }
 `
 
+const RESOURCE_EXPORT = gql`
+  mutation ResourceExportData($input: ResourceExportData) {
+    resourceExportData(input: $input) {
+      name
+    }
+  }
+`
+
 const ResourcesPage: FC = () => {
   const [deleteResourceModal, setDeleteResourceModal] = useState<boolean>(false)
   const [resourceId, setResourceId] = useState<string>('')
@@ -130,6 +139,8 @@ const ResourcesPage: FC = () => {
 
   const [resourceUpdate] = useMutation<ResourceUpdate>(RESOURCE_UPDATE)
   const [resourceDelete] = useMutation<ResourceDelete>(RESOURCE_DELETE)
+  const [resourceExport, { loading: isExporting }] =
+    useMutation(RESOURCE_EXPORT)
   const [getGoogleAccessToken] = useMutation<getGoogleAccessToken>(
     GET_GOOGLE_ACCESS_TOKEN
   )
@@ -165,14 +176,36 @@ const ResourcesPage: FC = () => {
         if (data.action === 'picked') {
           // TODO: send to backend the access token id and the selected directory id
           const folderId = data.docs[0]?.id
+
           console.log({
             googleAccessTokenId,
             folderId
+          })
+
+          void resourceExport({
+            variables: {
+              input: {
+                id: googleAccessTokenId,
+                folderId
+              }
+            },
+            onCompleted: () => {
+              enqueueSnackbar('Data Exported', {
+                variant: 'success',
+                preventDuplicate: true
+              })
+            }
           })
         }
       }
     })
   }
+
+  useEffect(() => {
+    if (googleAccessToken !== '') {
+      directoryPicker()
+    }
+  }, [googleAccessToken])
 
   return (
     <MainLayout title="Resources">
@@ -193,7 +226,7 @@ const ResourcesPage: FC = () => {
           >
             {t('Import from Youtube Template')}
           </Button>
-          <Button
+          <LoadingButton
             variant="contained"
             onClick={() => {
               if (googleAccessToken === '') {
@@ -202,9 +235,11 @@ const ResourcesPage: FC = () => {
                 directoryPicker()
               }
             }}
+            loading={isExporting}
+            loadingIndicator="Exporting..."
           >
-            {t('Generate Template')}
-          </Button>
+            {t('Export database data')}
+          </LoadingButton>
         </Stack>
         <ResourcesTable
           loading={loading}
