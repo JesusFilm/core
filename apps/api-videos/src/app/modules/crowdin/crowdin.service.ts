@@ -130,63 +130,68 @@ export class CrowdinService {
           }
           break
         case '/Arclight/collection_long_description.csv':
-        case '/Arclight/media_metadata_description.csv': {
-          const videoId = resName
-          const videos = await this.prisma.video.findMany({
-            select: { id: true },
-            where: {
-              id: { endsWith: videoId }
-            }
-          })
-          if (videos.length !== 1)
-            throw new Error(`no matching videoId found for ${videoId}`)
-          await this.prisma.videoDescription.upsert({
-            where: {
-              videoId_languageId: {
-                videoId: videos[0].id,
-                languageId
+        case '/Arclight/media_metadata_description.csv':
+          {
+            const videoId = resName
+            const videos = await this.prisma.video.findMany({
+              select: { id: true },
+              where: {
+                id: { endsWith: videoId }
               }
-            },
-            update: {
-              value
-            },
-            create: {
-              value,
-              languageId,
-              primary: false,
-              videoId: videos[0].id
-            }
-          })
+            })
+            if (videos.length !== 1)
+              throw new Error(`no matching videoId found for ${videoId}`)
+            await this.prisma.videoDescription.upsert({
+              where: {
+                videoId_languageId: {
+                  videoId: videos[0].id,
+                  languageId
+                }
+              },
+              update: {
+                value
+              },
+              create: {
+                value,
+                languageId,
+                primary: false,
+                videoId: videos[0].id
+              }
+            })
+          }
+          break
+        case '/Arclight/study_questions.csv': {
+          // const englishStudyQuestion =
+          //   this.prisma.videoStudyQuestion.findUnique({
+          //     where: { id: resName }
+          //   })
+          // const videoId = englishStudyQuestion?.videoId
+          // if (videoId == null)
+          //   throw new Error(
+          //     `no matching english study question with id ${resName}`
+          //   )
+          // if (languageId !== '' && !isNaN(Number(languageId)))
+          //   await this.prisma.videoStudyQuestion.upsert({
+          //     where: {
+          //       videoId_languageId: {
+          //         videoId,
+          //         languageId
+          //       }
+          //     },
+          //     update: {
+          //       value,
+          //       order: englishStudyQuestion.order
+          //     },
+          //     create: {
+          //       value,
+          //       languageId,
+          //       primary: false,
+          //       videoId,
+          //       order: englishStudyQuestion.order
+          //     }
+          //   })
+          // break
         }
-        // case '/Arclight/study_questions.csv': {
-        //   const englishStudyQuestion = this.prisma.studyQuestion.findUnique({
-        //     where: { id: resName }
-        //   })
-        //   const videoId = englishStudyQuestion?.videoId
-        //   if (videoId == null)
-        //     throw new Error(`no matching english study question with id ${resName}`)
-        //   if (languageId !== '' && !isNaN(Number(languageId)))
-        //     await this.prisma.studyQuestion.upsert({
-        //       where: {
-        //         videoId_languageId: {
-        //           videoId,
-        //           languageId
-        //         }
-        //       },
-        //       update: {
-        //         value,
-        //         order: englishStudyQuestion.order
-        //       },
-        //       create: {
-        //         value,
-        //         languageId,
-        //         primary: false,
-        //         videoId,
-        //         order: englishStudyQuestion.order
-        //       }
-        //     })
-        //   break
-        // }
       }
   }
 }
