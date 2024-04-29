@@ -1,8 +1,9 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
 import {
   JourneyStatus,
   ThemeMode,
@@ -10,7 +11,8 @@ import {
 } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
 
-import { blocks } from './data'
+import { blocks, blocksWithStepBlockPosition } from './data'
+import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
 
 import { Editor } from '.'
 
@@ -71,10 +73,25 @@ const journey: Journey = {
   tags: []
 }
 
+const mockGetStepBlocksWithPosition: MockedResponse<GetStepBlocksWithPosition> =
+  {
+    request: {
+      query: GET_STEP_BLOCKS_WITH_POSITION,
+      variables: {
+        journeyIds: [journey.id]
+      }
+    },
+    result: {
+      data: {
+        blocks: blocksWithStepBlockPosition
+      }
+    }
+  }
+
 const Template: StoryObj<typeof Editor> = {
   render: (args) => {
     return (
-      <MockedProvider>
+      <MockedProvider mocks={[mockGetStepBlocksWithPosition]}>
         <Editor journey={args.journey} initialState={args.initialState} />
       </MockedProvider>
     )
