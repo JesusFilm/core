@@ -1,6 +1,5 @@
 import { useQuery } from '@apollo/client'
 import { GetStaticProps } from 'next'
-import { useRouter } from 'next/router'
 import { useUser, withUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
@@ -27,12 +26,7 @@ import { GET_TAGS } from '../../src/libs/useTagsQuery/useTagsQuery'
 function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
-  const router = useRouter()
   const { data } = useQuery<GetMe>(GET_ME)
-
-  if (data?.me?.id != null && !data?.me?.emailVerified) {
-    void router.push('/users/verify?redirect=/templates')
-  }
 
   return (
     <>
@@ -42,8 +36,8 @@ function TemplateIndexPage(): ReactElement {
         user={user}
         mainBodyPadding={false}
         showMainHeader={false}
-        showAppHeader={user?.id != null}
-        showNavBar={user?.id != null}
+        showAppHeader={data?.me?.id != null}
+        showNavBar={data?.me?.id != null}
       >
         <TemplateGallery />
       </PageWrapper>
