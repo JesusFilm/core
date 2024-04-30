@@ -48,7 +48,7 @@ export class BigQueryService {
   ): Promise<QueryResults> {
     try {
       const res = await job.getQueryResults({
-        maxResults: 5000,
+        maxResults: 500,
         pageToken
       })
       return {
