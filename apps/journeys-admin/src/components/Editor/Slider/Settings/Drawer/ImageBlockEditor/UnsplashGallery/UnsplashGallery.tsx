@@ -111,9 +111,10 @@ export function UnsplashGallery({
   )
 
   const {
-    data: listData,
-    refetch: refetchList,
-    fetchMore: fetchMoreList
+    data: collectionData,
+    loading: loadingCollection,
+    refetch: refetchCollection,
+    fetchMore: fetchMoreCollection
   } = useQuery<ListUnsplashCollectionPhotos>(LIST_UNSPLASH_COLLECTION_PHOTOS, {
     variables: { collectionId, page, perPage: 20 },
     skip: query != null
@@ -121,6 +122,7 @@ export function UnsplashGallery({
 
   const {
     data: searchData,
+    loading: loadingSearch,
     refetch: refetchSearch,
     fetchMore: fetchMoreSearch
   } = useQuery<SearchUnsplashPhotos>(SEARCH_UNSPLASH_PHOTOS, {
@@ -140,21 +142,21 @@ export function UnsplashGallery({
     void triggerUnsplashDownload({ variables: { url: downloadLocation } })
   }
 
-  async function handleSubmit(value: string): Promise<void> {
+  async function handleSubmit(query: string): Promise<void> {
     const variables = { page: 1, perPage: 20 }
-    if (value == null) {
-      await refetchList({ collectionId, ...variables })
+    if (query == null) {
+      await refetchCollection({ collectionId, ...variables })
     } else {
-      await refetchSearch({ query: value, ...variables })
+      await refetchSearch({ query, ...variables })
     }
-    setQuery(value)
+    setQuery(query)
     setPage(1)
   }
 
   async function handleFetchMore(): Promise<void> {
     const variables = { page: page + 1, perPage: 20 }
     if (query == null) {
-      await fetchMoreList({
+      await fetchMoreCollection({
         variables: { collectionId, ...variables }
       })
     } else {
@@ -180,9 +182,9 @@ export function UnsplashGallery({
         </Typography>
         <Typography variant="h6">{t('Featured Images')}</Typography>
       </Stack>
-      {query == null && listData != null && (
+      {query == null && collectionData != null && (
         <UnsplashList
-          gallery={listData.listUnsplashCollectionPhotos}
+          gallery={collectionData.listUnsplashCollectionPhotos}
           onChange={handleChange}
         />
       )}
@@ -192,8 +194,13 @@ export function UnsplashGallery({
           onChange={handleChange}
         />
       )}
-      <LoadingButton variant="outlined" onClick={handleFetchMore} size="medium">
-        {t('Load More')}
+      <LoadingButton
+        variant="outlined"
+        disabled={loadingCollection || loadingSearch}
+        onClick={handleFetchMore}
+        size="medium"
+      >
+        {loadingCollection || loadingSearch ? t('Loading...') : t('Load More')}
       </LoadingButton>
     </Stack>
   )
