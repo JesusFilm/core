@@ -60,7 +60,7 @@ describe('ImporterVideoVariantsService', () => {
       })
     })
 
-    it('should not update video when not found', async () => {
+    it('should not update video variant when not found', async () => {
       await service.import({
         id: 'mockId',
         hls: 'www.example.com',

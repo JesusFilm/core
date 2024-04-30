@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
+import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
@@ -30,6 +31,10 @@ describe('BigQueryConsumer', () => {
         {
           provide: ImporterVideoTitleService,
           useValue: mockDeep<ImporterVideoTitleService>()
+        },
+        {
+          provide: ImporterVideoDescriptionService,
+          useValue: mockDeep<ImporterVideoDescriptionService>()
         },
         {
           provide: ImporterVideoVariantsService,
