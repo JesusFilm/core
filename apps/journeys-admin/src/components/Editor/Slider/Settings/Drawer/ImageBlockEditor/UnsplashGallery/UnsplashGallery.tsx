@@ -130,16 +130,16 @@ export function UnsplashGallery({
     skip: query == null
   })
 
-  function handleChange(
+  async function handleChange(
     src: string,
     unsplashAuthor: UnsplashAuthor,
     downloadLocation: string,
     blurhash?: string,
     width?: number,
     height?: number
-  ): void {
+  ): Promise<void> {
     onChange(src, unsplashAuthor, blurhash, width, height)
-    void triggerUnsplashDownload({ variables: { url: downloadLocation } })
+    await triggerUnsplashDownload({ variables: { url: downloadLocation } })
   }
 
   async function handleSubmit(query: string): Promise<void> {
