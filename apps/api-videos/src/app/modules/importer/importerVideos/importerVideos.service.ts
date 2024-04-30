@@ -26,7 +26,7 @@ const videoSchema = object({
     .oneOf(Object.values(VideoLabel))
     .required(),
   primaryLanguageId: string().required(),
-  title: string().required()
+  slug: string().required()
 })
 
 type Video = InferType<typeof videoSchema>
@@ -53,10 +53,10 @@ export class ImporterVideosService extends ImporterService<Video> {
       }
     }
 
-    const slug = slugify(video.id, video.title, this.usedSlugs)
+    const slug = slugify(video.id, video.slug, this.usedSlugs)
 
     return {
-      ...omit(video, ['title']),
+      ...omit(video, ['slug']),
       slug
     }
   }

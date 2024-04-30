@@ -2,7 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { VideosService } from '../importer/videos/videos.service'
+import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
+import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 
 import { BigQueryConsumer } from './bigQuery.consumer'
 import { BigQueryService } from './bigQuery.service'
@@ -13,7 +15,7 @@ describe('BigQueryConsumer', () => {
   const OLD_ENV = { ...process.env } // clone env
   let consumer: BigQueryConsumer,
     bigQueryService: BigQueryService,
-    videosService: DeepMockProxy<VideosService>
+    videosService: DeepMockProxy<ImporterVideosService>
 
   beforeEach(async () => {
     process.env = { ...OLD_ENV } // reset env before test
@@ -22,17 +24,25 @@ describe('BigQueryConsumer', () => {
         BigQueryConsumer,
         BigQueryService,
         {
-          provide: VideosService,
-          useValue: mockDeep<VideosService>()
+          provide: ImporterVideosService,
+          useValue: mockDeep<ImporterVideosService>()
+        },
+        {
+          provide: ImporterVideoTitleService,
+          useValue: mockDeep<ImporterVideoTitleService>()
+        },
+        {
+          provide: ImporterVideoVariantsService,
+          useValue: mockDeep<ImporterVideoVariantsService>()
         }
       ]
     }).compile()
 
     consumer = module.get<BigQueryConsumer>(BigQueryConsumer)
     bigQueryService = module.get<BigQueryService>(BigQueryService)
-    videosService = module.get<VideosService>(
-      VideosService
-    ) as DeepMockProxy<VideosService>
+    videosService = module.get<ImporterVideosService>(
+      ImporterVideosService
+    ) as DeepMockProxy<ImporterVideosService>
   })
 
   afterAll(() => {

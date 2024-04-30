@@ -4,7 +4,8 @@ import get from 'lodash/get'
 
 import { ImporterService } from '../importer/importer.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
-import { ImporterVideoTitleService } from '../importer/importerVideoTitle/importerVideoTitle.service'
+import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
+import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 
 import { BigQueryService } from './bigQuery.service'
 
@@ -20,14 +21,17 @@ export class BigQueryConsumer extends WorkerHost {
   constructor(
     private readonly bigQueryService: BigQueryService,
     private readonly importerVideosService: ImporterVideosService,
-    private readonly importerVideoTitleService: ImporterVideoTitleService
+    private readonly importerVideoTitleService: ImporterVideoTitleService,
+    private readonly importerVideoVariantsService: ImporterVideoVariantsService
   ) {
     super()
     this.tables = {
       'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data':
         this.importerVideosService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoTitle_arclight_data':
-        this.importerVideoTitleService
+        this.importerVideoTitleService,
+      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
+        this.importerVideoVariantsService
     }
   }
 

@@ -38,7 +38,7 @@ describe('ImporterVideosService', () => {
         id: 'mockValue0',
         label: 'short',
         primaryLanguageId: 529,
-        title: 'Some Title',
+        slug: 'Some Title',
         extraStuff: 'randomData'
       })
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({
@@ -69,7 +69,7 @@ describe('ImporterVideosService', () => {
         id: 'mockValue0',
         label: 'feature',
         primaryLanguageId: 529,
-        title: 'Some Title',
+        slug: 'Some Title',
         extraStuff: 'randomData'
       })
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({
@@ -100,7 +100,7 @@ describe('ImporterVideosService', () => {
         id: 'mockValue0',
         label: 'behind_the_scenes',
         primaryLanguageId: 529,
-        title: 'Some Title',
+        slug: 'Some Title',
         extraStuff: 'randomData'
       })
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({
@@ -122,7 +122,7 @@ describe('ImporterVideosService', () => {
         id: 'mockValue0',
         label: 'shortFilm',
         primaryLanguageId: 529,
-        title: 'Some Title',
+        slug: 'Some Title',
         extraStuff: 'randomData'
       })
       expect(prismaService.video.findUnique).toHaveBeenCalledWith({
