@@ -143,6 +143,7 @@ export function UnsplashGallery({
   }
 
   async function handleSubmit(query: string): Promise<void> {
+    setPage(1)
     const variables = { page: 1, perPage: 20 }
     if (query == null) {
       await refetchCollection({ collectionId, ...variables })
@@ -150,10 +151,10 @@ export function UnsplashGallery({
       await refetchSearch({ query, ...variables })
     }
     setQuery(query)
-    setPage(1)
   }
 
   async function handleFetchMore(): Promise<void> {
+    setPage(page + 1)
     const variables = { page: page + 1, perPage: 20 }
     if (query == null) {
       await fetchMoreCollection({
@@ -164,7 +165,6 @@ export function UnsplashGallery({
         variables: { query, ...variables }
       })
     }
-    setPage(page + 1)
   }
 
   function handleCollectionChange(id, query): void {
