@@ -88,7 +88,7 @@ export function MetadataTabPanel(): ReactElement {
           <TextField
             hiddenLabel
             variant="filled"
-            value={format(parseISO(String(journey?.publishedAt)), 'P')}
+            value={format(parseISO(journey?.publishedAt as string), 'P')}
             InputProps={{
               readOnly: true
             }}
