@@ -10,14 +10,32 @@ export class CrowdinQueue implements OnModuleInit {
 
   async onModuleInit(): Promise<void> {
     const hash = process.env.CROWDIN_DISTRIBUTION_HASH ?? ''
+    const nodeEnv = process.env.NODE_ENV ?? ''
 
-    if (hash === '') {
-      console.log('no hash')
+    if (hash === '' || nodeEnv !== 'production') {
       return
     }
 
     const name = 'api-videos-crowdin'
+    const repeatableJobs = await this.crowdinQueue.getRepeatableJobs()
 
-    await this.crowdinQueue.add(name, {})
+    for (const job of repeatableJobs) {
+      if (job.name === name) {
+        await this.crowdinQueue.removeRepeatableByKey(job.key)
+      }
+    }
+
+    // await this.crowdinQueue.add(name, {})
+
+    // Schedule a new instance
+    await this.crowdinQueue.add(
+      name,
+      {},
+      {
+        repeat: {
+          pattern: '0 */12 * * *' // Run every 12 hours
+        }
+      }
+    )
   }
 }

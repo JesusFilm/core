@@ -196,6 +196,98 @@ describe('CrowdinService', () => {
       expect(prismaService.videoDescription.upsert).toHaveBeenCalledTimes(2)
     })
 
+    it('should get crowdin translations for study questions and push to api-videos', async () => {
+      process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
+
+      prismaService.videoStudyQuestion.findMany.mockResolvedValue([
+        {
+          id: '1',
+          value: 'Why?',
+          languageId: '529',
+          order: 1,
+          primary: true,
+          crowdInId: '1',
+          videoId: 'video1'
+        },
+        {
+          id: '2',
+          value: 'Why?',
+          languageId: '529',
+          order: 1,
+          primary: true,
+          crowdInId: '1',
+          videoId: 'video2'
+        }
+      ])
+      mockGetTranslations.mockResolvedValue({
+        ko: [
+          {
+            content: `<?xml version="1.0" encoding="UTF-8"?>
+            <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+            <file id="35" original="/Arclight/study_questions.csv" source-language="en" target-language="ko">
+              <body>
+              <trans-unit id="1" resname="1">
+                <source>Why?</source>
+                <target>그 이유는?</target>
+              </trans-unit>
+              </body>
+            </file>
+            </xliff>`,
+            file: '/content/3804.xliff'
+          }
+        ]
+      })
+
+      await service.getCrowdinTranslations()
+      expect(mockOtaClient).toHaveBeenCalledWith('hash', {
+        disableManifestCache: true,
+        disableStringsCache: true
+      })
+      expect(prismaService.videoStudyQuestion.upsert).toHaveBeenNthCalledWith(
+        1,
+        {
+          where: {
+            videoId_languageId_order: {
+              languageId: '3804',
+              videoId: 'video1',
+              order: 1
+            }
+          },
+          update: { value: '그 이유는?' },
+          create: {
+            value: '그 이유는?',
+            languageId: '3804',
+            order: 1,
+            primary: false,
+            crowdInId: '1',
+            videoId: 'video1'
+          }
+        }
+      )
+      expect(prismaService.videoStudyQuestion.upsert).toHaveBeenNthCalledWith(
+        2,
+        {
+          where: {
+            videoId_languageId_order: {
+              languageId: '3804',
+              videoId: 'video2',
+              order: 1
+            }
+          },
+          update: { value: '그 이유는?' },
+          create: {
+            value: '그 이유는?',
+            languageId: '3804',
+            order: 1,
+            primary: false,
+            crowdInId: '1',
+            videoId: 'video2'
+          }
+        }
+      )
+      expect(prismaService.videoStudyQuestion.upsert).toHaveBeenCalledTimes(2)
+    })
+
     it('should throw if no matching videoId', async () => {
       process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
       prismaService.video.findMany.mockResolvedValue([])
@@ -221,6 +313,72 @@ describe('CrowdinService', () => {
 
       await expect(service.getCrowdinTranslations()).rejects.toThrow(
         'no matching videoId found for ohno'
+      )
+    })
+
+    it('should throw if no matching videoId for study questions upsert', async () => {
+      process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
+      prismaService.videoStudyQuestion.findMany.mockResolvedValue([
+        {
+          id: '1',
+          value: 'Why?',
+          languageId: '529',
+          order: 1,
+          primary: true,
+          crowdInId: '1',
+          videoId: null
+        }
+      ])
+
+      mockGetTranslations.mockResolvedValue({
+        ko: [
+          {
+            content: `<?xml version="1.0" encoding="UTF-8"?>
+            <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+            <file id="35" original="/Arclight/study_questions.csv" source-language="en" target-language="ko">
+              <body>
+              <trans-unit id="1" resname="1">
+                <source>Why?</source>
+                <target>그 이유는?</target>
+              </trans-unit>
+              </body>
+            </file>
+            </xliff>`,
+            file: '/content/3804.xliff'
+          }
+        ]
+      })
+
+      await expect(service.getCrowdinTranslations()).rejects.toThrow(
+        'no matching videoId found for 1'
+      )
+    })
+
+    it('should throw if no matching crowdInId', async () => {
+      process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
+      prismaService.videoStudyQuestion.findMany.mockResolvedValue([])
+
+      mockGetTranslations.mockResolvedValue({
+        ko: [
+          {
+            content: `<?xml version="1.0" encoding="UTF-8"?>
+            <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+            <file id="35" original="/Arclight/study_questions.csv" source-language="en" target-language="ko">
+              <body>
+              <trans-unit id="1" resname="1">
+                <source>Why?</source>
+                <target>그 이유는?</target>
+              </trans-unit>
+              </body>
+            </file>
+            </xliff>`,
+            file: '/content/3804.xliff'
+          }
+        ]
+      })
+
+      await expect(service.getCrowdinTranslations()).rejects.toThrow(
+        'no matching crowdInId found for 1'
       )
     })
   })

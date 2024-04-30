@@ -64,7 +64,6 @@ export class CrowdinService {
     wessLanguageCode: string,
     data: CrowdinData
   ): Promise<void> {
-    console.log(data)
     await Promise.all(
       map(data.resources, async (translations, fileName) => {
         await Promise.all(
@@ -161,36 +160,47 @@ export class CrowdinService {
           }
           break
         case '/Arclight/study_questions.csv': {
-          // const englishStudyQuestion =
-          //   this.prisma.videoStudyQuestion.findUnique({
-          //     where: { id: resName }
-          //   })
-          // const videoId = englishStudyQuestion?.videoId
-          // if (videoId == null)
-          //   throw new Error(
-          //     `no matching english study question with id ${resName}`
-          //   )
-          // if (languageId !== '' && !isNaN(Number(languageId)))
-          //   await this.prisma.videoStudyQuestion.upsert({
-          //     where: {
-          //       videoId_languageId: {
-          //         videoId,
-          //         languageId
-          //       }
-          //     },
-          //     update: {
-          //       value,
-          //       order: englishStudyQuestion.order
-          //     },
-          //     create: {
-          //       value,
-          //       languageId,
-          //       primary: false,
-          //       videoId,
-          //       order: englishStudyQuestion.order
-          //     }
-          //   })
-          // break
+          const englishStudyQuestions =
+            await this.prisma.videoStudyQuestion.findMany({
+              select: {
+                videoId: true,
+                order: true
+              },
+              where: { crowdInId: resName }
+            })
+
+          if (englishStudyQuestions.length === 0)
+            throw new Error(`no matching crowdInId found for ${resName}`)
+
+          if (languageId !== '' && !isNaN(Number(languageId)))
+            await Promise.all(
+              map(englishStudyQuestions, async (englishStudyQuestion) => {
+                const videoId = englishStudyQuestion.videoId
+                if (videoId === null)
+                  throw new Error(`no matching videoId found for ${resName}`)
+                await this.prisma.videoStudyQuestion.upsert({
+                  where: {
+                    videoId_languageId_order: {
+                      videoId,
+                      languageId,
+                      order: englishStudyQuestion.order
+                    }
+                  },
+                  update: {
+                    value
+                  },
+                  create: {
+                    value,
+                    languageId,
+                    primary: false,
+                    videoId,
+                    order: englishStudyQuestion.order,
+                    crowdInId: resName
+                  }
+                })
+              })
+            )
+          break
         }
       }
   }

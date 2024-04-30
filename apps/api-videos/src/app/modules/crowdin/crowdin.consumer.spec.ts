@@ -20,7 +20,7 @@ describe('CrowdinConsumer', () => {
   })
 
   describe('process', () => {
-    it('should call syncVideosToAlgolia', async () => {
+    it('should call getCrowdinTranslations', async () => {
       crowdinService.getCrowdinTranslations = jest.fn()
 
       await consumer.process({} as unknown as Job)
