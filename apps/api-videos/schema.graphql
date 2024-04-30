@@ -35,6 +35,8 @@ enum VideoLabel {
   segment
   series
   shortFilm
+  trailer
+  behindTheScenes
 }
 
 type LanguageWithSlug {
@@ -50,7 +52,6 @@ type Video
   label: VideoLabel!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
-  seoTitle(languageId: ID, primary: Boolean): [Translation!]!
   snippet(languageId: ID, primary: Boolean): [Translation!]!
   description(languageId: ID, primary: Boolean): [Translation!]!
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
