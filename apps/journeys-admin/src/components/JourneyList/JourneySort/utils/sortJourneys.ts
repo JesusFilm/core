@@ -18,8 +18,8 @@ export function sortJourneys(
           ],
           ['asc']
         )
-      : orderBy(journeys, ({ createdAt }: { createdAt: string }) =>
-          new Date(createdAt).getTime()
+      : orderBy(journeys, ({ createdAt }) =>
+          new Date(createdAt as string).getTime()
         ).reverse()
 
   return sortedJourneys
