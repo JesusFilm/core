@@ -339,7 +339,6 @@ export class ResourceResolver {
     const languagecount = await this.languagePrismaService.language.count();
 
     const videos = await this.videoPrismaService.video.findMany({
-      take: 2,
       include: {
         title: true,
         variants: true,
@@ -366,6 +365,7 @@ export class ResourceResolver {
 
     const spreadsheetData = [columnHeaders];
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     videos.forEach(async (video) => {
       const videoLanguage = await this.languagePrismaService.language.findFirst(
         {
@@ -411,42 +411,22 @@ export class ResourceResolver {
             }) => studyQuestion.value,
           )
           .toString() ?? '';
-      const image = video.image ?? '';
 
-      video.variants.forEach(async (variant) => {
-        const duration = variant.duration?.toString() ?? '';
-
-        const variantLanguage =
-          await this.languagePrismaService.language.findFirst({
-            where: {
-              id: variant.languageId,
-            },
-          });
-
-        const languageNative =
-          variantLanguage?.name
-            ?.map(
-              (lang: { value: string; primary: boolean; languageId: string }) =>
-                lang.value,
-            )
-            .toString() ?? '';
-
-        spreadsheetData.push([
-          id,
-          label,
-          snippet,
-          description,
-          primaryLanguageId,
-          languageName,
-          languageNative,
-          languageBcp,
-          languageIso,
-          studyQuestions,
-          '',
-          duration,
-          '',
-        ]);
-      });
+      spreadsheetData.push([
+        id,
+        label,
+        snippet,
+        description,
+        primaryLanguageId,
+        languageName,
+        '',
+        languageBcp,
+        languageIso,
+        studyQuestions,
+        '',
+        '',
+        '',
+      ]);
     });
 
     const googleAccessToken =
