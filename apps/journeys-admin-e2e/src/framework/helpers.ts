@@ -46,7 +46,7 @@ export async function getBaseUrl(): Promise<string> {
   return baseUrl
 }
 export async function getOTP(): Promise<string> {
-  const otp = process.env.EXAMPLE_DOMAIN_CODE?.toString()
+  const otp = process.env.EXAMPLE_EMAIL_TOKEN?.toString()
 
   if (!otp || otp === '') {
     throw new Error('OTP was not provided via environment variable')
