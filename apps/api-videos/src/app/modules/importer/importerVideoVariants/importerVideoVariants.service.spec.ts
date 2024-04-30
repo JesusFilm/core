@@ -74,7 +74,7 @@ describe('ImporterVideoVariantsService', () => {
         where: { id: 'mockId' }
       })
 
-      expect(prismaService.video.update).not.toHaveBeenCalled()
+      expect(prismaService.videoVariant.update).not.toHaveBeenCalled()
     })
 
     it('should throw error when row is invalid', async () => {

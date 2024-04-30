@@ -5,6 +5,7 @@ import get from 'lodash/get'
 import { ImporterService } from '../importer/importer.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
@@ -26,6 +27,7 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideoTitleService: ImporterVideoTitleService,
     private readonly importerVideoDescriptionService: ImporterVideoDescriptionService,
     private readonly importerVideoStudyQuestionsService: ImporterVideoStudyQuestionsService,
+    private readonly importerVideoSnippetsService: ImporterVideoSnippetsService,
     private readonly importerVideoVariantsService: ImporterVideoVariantsService
   ) {
     super()
@@ -38,6 +40,8 @@ export class BigQueryConsumer extends WorkerHost {
         this.importerVideoDescriptionService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoStudyQuestions_arclight_data':
         this.importerVideoStudyQuestionsService,
+      'jfp-data-warehouse.jfp_mmdb_prod.core_videoSnippet_arclight_data':
+        this.importerVideoSnippetsService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
         this.importerVideoVariantsService
     }

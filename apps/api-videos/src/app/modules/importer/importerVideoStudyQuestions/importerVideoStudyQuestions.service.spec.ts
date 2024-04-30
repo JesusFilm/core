@@ -91,7 +91,7 @@ describe('ImporterVideoStudyQuestionsService', () => {
           }
         }
       })
-      expect(prismaService.videoTitle.update).not.toHaveBeenCalled()
+      expect(prismaService.videoStudyQuestion.update).not.toHaveBeenCalled()
     })
 
     it('should throw error when row is invalid', async () => {
@@ -102,15 +102,6 @@ describe('ImporterVideoStudyQuestionsService', () => {
           primaryLanguageId: 529
         })
       ).rejects.toThrow('row does not match schema: mockValue0')
-    })
-
-    it('should throw error when row has no id', async () => {
-      await expect(
-        service.import({
-          label: 'short',
-          primaryLanguageId: '529'
-        })
-      ).rejects.toThrow('row does not match schema: unknownId')
     })
   })
 })

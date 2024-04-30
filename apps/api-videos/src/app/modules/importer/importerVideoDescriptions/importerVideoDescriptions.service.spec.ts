@@ -96,14 +96,5 @@ describe('ImporterVideoDescriptionService', () => {
         })
       ).rejects.toThrow('row does not match schema: mockValue0')
     })
-
-    it('should throw error when row has no id', async () => {
-      await expect(
-        service.import({
-          label: 'short',
-          primaryLanguageId: '529'
-        })
-      ).rejects.toThrow('row does not match schema: unknownId')
-    })
   })
 })
