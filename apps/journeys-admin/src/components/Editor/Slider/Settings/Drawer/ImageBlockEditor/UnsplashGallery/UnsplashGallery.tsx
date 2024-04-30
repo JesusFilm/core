@@ -5,7 +5,10 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { ListUnsplashCollectionPhotos } from '../../../../../../../../__generated__/ListUnsplashCollectionPhotos'
+import {
+  ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos as CollectionPhotos,
+  ListUnsplashCollectionPhotos
+} from '../../../../../../../../__generated__/ListUnsplashCollectionPhotos'
 import { SearchUnsplashPhotos } from '../../../../../../../../__generated__/SearchUnsplashPhotos'
 import { TriggerUnsplashDownload } from '../../../../../../../../__generated__/TriggerUnsplashDownload'
 
@@ -116,8 +119,9 @@ export function UnsplashGallery({
     refetch: refetchCollection,
     fetchMore: fetchMoreCollection
   } = useQuery<ListUnsplashCollectionPhotos>(LIST_UNSPLASH_COLLECTION_PHOTOS, {
-    variables: { collectionId, page, perPage: 20 },
-    skip: query != null
+    skip: query != null,
+    notifyOnNetworkStatusChange: true,
+    variables: { collectionId, page, perPage: 20 }
   })
 
   const {
@@ -126,8 +130,9 @@ export function UnsplashGallery({
     refetch: refetchSearch,
     fetchMore: fetchMoreSearch
   } = useQuery<SearchUnsplashPhotos>(SEARCH_UNSPLASH_PHOTOS, {
-    variables: { query, page, perPage: 20 },
-    skip: query == null
+    skip: query == null,
+    notifyOnNetworkStatusChange: true,
+    variables: { query, page, perPage: 20 }
   })
 
   async function handleChange(
@@ -154,17 +159,35 @@ export function UnsplashGallery({
   }
 
   async function handleFetchMore(): Promise<void> {
-    setPage(page + 1)
-    const variables = { page: page + 1, perPage: 20 }
+    const newPage = page + 1
+    const variables = { page: newPage, perPage: 20 }
     if (query == null) {
       await fetchMoreCollection({
-        variables: { collectionId, ...variables }
+        variables: { collectionId, ...variables },
+        updateQuery: (prevResult, { fetchMoreResult }) => {
+          // bandage fix, prev result initially returns null for page 1
+          if (prevResult.listUnsplashCollectionPhotos == null && page === 1) {
+            return {
+              listUnsplashCollectionPhotos: [
+                ...(collectionData?.listUnsplashCollectionPhotos as CollectionPhotos[]),
+                ...fetchMoreResult.listUnsplashCollectionPhotos
+              ]
+            }
+          } else {
+            return {
+              listUnsplashCollectionPhotos: [
+                ...fetchMoreResult.listUnsplashCollectionPhotos
+              ]
+            }
+          }
+        }
       })
     } else {
       await fetchMoreSearch({
         variables: { query, ...variables }
       })
     }
+    setPage(newPage)
   }
 
   function handleCollectionChange(id, query): void {
