@@ -8,21 +8,21 @@
 // ====================================================
 
 export interface GetLanguages_languages_name {
-  __typename: 'Translation'
-  value: string
-  primary: boolean
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
 }
 
 export interface GetLanguages_languages {
-  __typename: 'Language'
-  id: string
-  name: GetLanguages_languages_name[]
+  __typename: "Language";
+  id: string;
+  name: GetLanguages_languages_name[];
 }
 
 export interface GetLanguages {
-  languages: GetLanguages_languages[]
+  languages: GetLanguages_languages[];
 }
 
 export interface GetLanguagesVariables {
-  languageId?: string | null
+  languageId?: string | null;
 }

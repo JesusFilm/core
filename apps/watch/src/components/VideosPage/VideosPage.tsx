@@ -1,35 +1,22 @@
-import { gql, useQuery } from '@apollo/client'
+'use client'
+
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
-import { useRouter } from 'next/navigation'
-import { ReactElement, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { ReactElement } from 'react'
 
-import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 
 import { FilterList } from './FilterList'
+import { VideoPageFilter } from './FilterList/FilterList'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 import { checkFilterApplied } from './utils/checkFilterApplied'
-import { getQueryParameters } from './utils/getQueryParameters'
-import type { VideoPageFilter } from './utils/getQueryParameters'
 import { useVideoSearch } from './utils/useVideoSearch'
-
-export const GET_LANGUAGES = gql`
-  query GetLanguages($languageId: ID) {
-    languages(limit: 5000) {
-      id
-      name(languageId: $languageId, primary: true) {
-        value
-        primary
-      }
-    }
-  }
-`
 
 interface VideoProps {
   videos: VideoChildFields[]
@@ -41,47 +28,31 @@ export function VideosPage({ videos, languageId }: VideoProps): ReactElement {
 
   const localVideos = videos.filter((video) => video != null)
 
-  const { data: languagesData, loading: languagesLoading } =
-    useQuery<GetLanguages>(GET_LANGUAGES, {
-      variables: { languageId: '529' }
-    })
+  const searchParams = useSearchParams()
 
-  const filter = getQueryParameters()
-
-  const { algoliaVideos, isEnd, loading, handleSearch, handleLoadMore } =
-    useVideoSearch({ filter })
-
-  function handleFilterChange(filter: VideoPageFilter): void {
-    const params = new URLSearchParams()
-
-    const setQueryParam = (paramName: string, value?: string | null): void => {
-      if (value != null) {
-        params.set(paramName, value)
-      }
-    }
-
-    setQueryParam('languages', filter.availableVariantLanguageIds?.[0])
-    setQueryParam('subtitles', filter.subtitleLanguageIds?.[0])
-    setQueryParam('title', filter.title)
-
-    void router.push(`/videos?${params.toString()}`)
-    void handleSearch(filter, 0)
+  const filter = {
+    availableVariantLanguageIds:
+      searchParams.get('languages')?.split(',') ?? [],
+    subtitleLanguageIds:
+      searchParams.get('subtitles')?.split(',') ?? ([] as string[]),
+    title: searchParams.get('title') ?? undefined
   }
 
-  useEffect(() => {
-    const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
-    if (checkFilterApplied(filter)) {
-      void handleSearch(
-        {
-          title,
-          availableVariantLanguageIds,
-          subtitleLanguageIds
-        },
-        0
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const { algoliaVideos, isEnd, loading, handleLoadMore } = useVideoSearch({
+    filter
+  })
+
+  function handleFilterChange(filter: VideoPageFilter): void {
+    const queryObject: Record<string, string> = {}
+    if (filter.availableVariantLanguageIds?.[0] != null)
+      queryObject.languages = filter.availableVariantLanguageIds[0]
+    if (filter.subtitleLanguageIds?.[0] != null)
+      queryObject.subtitles = filter.subtitleLanguageIds[0]
+    if (filter.title != null) queryObject.title = filter.title
+
+    const querystring = new URLSearchParams(queryObject).toString()
+    router.push(`?${querystring}`, { scroll: false })
+  }
 
   return (
     <PageWrapper
@@ -99,12 +70,7 @@ export function VideosPage({ videos, languageId }: VideoProps): ReactElement {
           spacing={{ xs: 4, xl: 8 }}
         >
           <Box sx={{ minWidth: '278px' }}>
-            <FilterList
-              filter={filter}
-              onChange={handleFilterChange}
-              languagesData={languagesData}
-              languagesLoading={languagesLoading}
-            />
+            <FilterList filter={filter} onChange={handleFilterChange} />
           </Box>
           <Box sx={{ width: '100%' }}>
             <VideoGrid

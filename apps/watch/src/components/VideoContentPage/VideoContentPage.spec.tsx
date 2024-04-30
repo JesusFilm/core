@@ -14,7 +14,7 @@ describe('VideoContentPage', () => {
       <MockedProvider>
         <SnackbarProvider>
           <VideoProvider value={{ content: videos[0] }}>
-            <VideoContentPage />
+            <VideoContentPage languageId="en" />
           </VideoProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -28,7 +28,7 @@ describe('VideoContentPage', () => {
       <MockedProvider>
         <SnackbarProvider>
           <VideoProvider value={{ content: videos[0] }}>
-            <VideoContentPage />
+            <VideoContentPage languageId="en" />
           </VideoProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -41,7 +41,7 @@ describe('VideoContentPage', () => {
       <MockedProvider mocks={[getVideoChildrenMock]}>
         <SnackbarProvider>
           <VideoProvider value={{ content: videos[0] }}>
-            <VideoContentPage />
+            <VideoContentPage languageId="en" />
           </VideoProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -59,7 +59,7 @@ describe('VideoContentPage', () => {
       <MockedProvider>
         <SnackbarProvider>
           <VideoProvider value={{ content: videos[0] }}>
-            <VideoContentPage />
+            <VideoContentPage languageId="en" />
           </VideoProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -76,7 +76,7 @@ describe('VideoContentPage', () => {
       <MockedProvider>
         <SnackbarProvider>
           <VideoProvider value={{ content: videos[0] }}>
-            <VideoContentPage />
+            <VideoContentPage languageId="en" />
           </VideoProvider>
         </SnackbarProvider>
       </MockedProvider>

@@ -3,21 +3,21 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonClickEventCreateInput } from './globalTypes'
+import { ButtonClickEventCreateInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ButtonClickEventCreate
 // ====================================================
 
 export interface ButtonClickEventCreate_buttonClickEventCreate {
-  __typename: 'ButtonClickEvent'
-  id: string
+  __typename: "ButtonClickEvent";
+  id: string;
 }
 
 export interface ButtonClickEventCreate {
-  buttonClickEventCreate: ButtonClickEventCreate_buttonClickEventCreate
+  buttonClickEventCreate: ButtonClickEventCreate_buttonClickEventCreate;
 }
 
 export interface ButtonClickEventCreateVariables {
-  input: ButtonClickEventCreateInput
+  input: ButtonClickEventCreateInput;
 }

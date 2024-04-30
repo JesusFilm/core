@@ -3,21 +3,21 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { RadioQuestionSubmissionEventCreateInput } from './globalTypes'
+import { RadioQuestionSubmissionEventCreateInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: RadioQuestionSubmissionEventCreate
 // ====================================================
 
 export interface RadioQuestionSubmissionEventCreate_radioQuestionSubmissionEventCreate {
-  __typename: 'RadioQuestionSubmissionEvent'
-  id: string
+  __typename: "RadioQuestionSubmissionEvent";
+  id: string;
 }
 
 export interface RadioQuestionSubmissionEventCreate {
-  radioQuestionSubmissionEventCreate: RadioQuestionSubmissionEventCreate_radioQuestionSubmissionEventCreate
+  radioQuestionSubmissionEventCreate: RadioQuestionSubmissionEventCreate_radioQuestionSubmissionEventCreate;
 }
 
 export interface RadioQuestionSubmissionEventCreateVariables {
-  input: RadioQuestionSubmissionEventCreateInput
+  input: RadioQuestionSubmissionEventCreateInput;
 }

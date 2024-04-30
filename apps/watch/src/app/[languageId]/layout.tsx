@@ -5,7 +5,6 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { ApolloWrapper } from '../../libs/apolloClient/apolloWrapper'
-import { languages } from '../../libs/il8n/settings'
 
 import 'swiper/css'
 import 'swiper/css/a11y'
@@ -16,12 +15,6 @@ export const metadata = {
   title: 'Watch | Jesus Film Project',
   description:
     'Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages.'
-}
-
-export async function generateStaticParams(): Promise<
-  Array<{ languageId: string }>
-> {
-  return languages.map((languageId) => ({ languageId }))
 }
 
 export default function RootLayout({

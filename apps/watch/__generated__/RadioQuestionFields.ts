@@ -8,8 +8,8 @@
 // ====================================================
 
 export interface RadioQuestionFields {
-  __typename: 'RadioQuestionBlock'
-  id: string
-  parentBlockId: string | null
-  parentOrder: number | null
+  __typename: "RadioQuestionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
 }

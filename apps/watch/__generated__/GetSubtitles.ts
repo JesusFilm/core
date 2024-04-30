@@ -8,38 +8,38 @@
 // ====================================================
 
 export interface GetSubtitles_video_variant_subtitle_language_name {
-  __typename: 'Translation'
-  value: string
-  primary: boolean
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
 }
 
 export interface GetSubtitles_video_variant_subtitle_language {
-  __typename: 'Language'
-  name: GetSubtitles_video_variant_subtitle_language_name[]
-  bcp47: string | null
-  id: string
+  __typename: "Language";
+  name: GetSubtitles_video_variant_subtitle_language_name[];
+  bcp47: string | null;
+  id: string;
 }
 
 export interface GetSubtitles_video_variant_subtitle {
-  __typename: 'Translation'
-  language: GetSubtitles_video_variant_subtitle_language
-  value: string
+  __typename: "Translation";
+  language: GetSubtitles_video_variant_subtitle_language;
+  value: string;
 }
 
 export interface GetSubtitles_video_variant {
-  __typename: 'VideoVariant'
-  subtitle: GetSubtitles_video_variant_subtitle[]
+  __typename: "VideoVariant";
+  subtitle: GetSubtitles_video_variant_subtitle[];
 }
 
 export interface GetSubtitles_video {
-  __typename: 'Video'
-  variant: GetSubtitles_video_variant | null
+  __typename: "Video";
+  variant: GetSubtitles_video_variant | null;
 }
 
 export interface GetSubtitles {
-  video: GetSubtitles_video | null
+  video: GetSubtitles_video | null;
 }
 
 export interface GetSubtitlesVariables {
-  id: string
+  id: string;
 }
