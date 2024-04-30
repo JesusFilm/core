@@ -2,23 +2,29 @@ import { expect, test } from '@playwright/test'
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
 import { TeamsPage } from '../../pages/teams-page'
+import { Register } from '../../pages/register-Page'
+
+let userEmail = ''
 
 test.describe('Verify Add member', () => {
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll('Register new account', async ({ browser }) => {
     const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
     const teamsPage = new TeamsPage(page)
-    const loginPage = new LoginPage(page)
+    const landingPage = new LandingPage(page)
+    const register = new Register(page)
     await landingPage.goToAdminUrl()
-    await loginPage.login()
+    await register.registerNewAccount() // registering new user account
+    userEmail = await register.getUserEmailId() // storing the registered user email id
     await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
+    console.log('userName : ' + userEmail)
     await page.close()
   })
+
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.login()
+    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
   })
   //Verify the user able to add the member through member option in discover page
   test('Add a member through member option in discover page', async ({

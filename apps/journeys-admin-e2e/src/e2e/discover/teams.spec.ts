@@ -3,13 +3,27 @@ import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
 import { JourneyPage } from '../../pages/journey-page'
 import { TeamsPage } from '../../pages/teams-page'
+import { Register } from '../../pages/register-Page'
+
+let userEmail = ''
 
 test.describe('Teams', () => {
+  test.beforeAll('Register new account', async ({ browser }) => {
+    const page = await browser.newPage()
+    const landingPage = new LandingPage(page)
+    const register = new Register(page)
+    await landingPage.goToAdminUrl()
+    await register.registerNewAccount() // registering new user account
+    userEmail = await register.getUserEmailId() // storing the registered user email id
+    console.log('userName : ' + userEmail)
+    await page.close()
+  })
+
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.login()
+    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
   })
 
   /*

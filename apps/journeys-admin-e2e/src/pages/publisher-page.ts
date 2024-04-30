@@ -9,7 +9,9 @@ export class AssessmentPage {
 
   constructor(page: Page) {
     this.page = page
-    randomNumber = dayjs().format('DDMMYY-hhmmss')
+    randomNumber =
+      dayjs().format('DDMMYY-hhmmss') +
+      Math.floor(Math.random() * (100 - 999 + 1) + 999)
   }
 
   async createAndVerifyCustomJourney() {

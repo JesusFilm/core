@@ -7,7 +7,9 @@ export class TeamsPage {
   readonly page: Page
   constructor(page: Page) {
     this.page = page
-    randomNumber = dayjs().format('DDMMYY-hhmmss')
+    randomNumber =
+      dayjs().format('DDMMYY-hhmmss') +
+      Math.floor(Math.random() * (100 - 999 + 1) + 999)
   }
   teamName = ''
   renameTeamName = ''
@@ -21,8 +23,7 @@ export class TeamsPage {
     await this.verifyTeamCreatedSnackbarMsg()
     await this.clickDiaLogBoxCloseBtn()
     await this.clickTeamSelectionDropDown()
-    // Have to select last team due to the bug https://3.basecamp.com/3105655/buckets/36562260/todolists/7145232907
-    await this.selectLastTeam()
+    await this.selectLastTeam() // due to bug
     await this.clickTeamSelectionDropDown()
     await this.selectCreatedNewTeam()
     await this.verifyTeamNameUpdatedInTeamSelectDropdown()
@@ -54,7 +55,7 @@ export class TeamsPage {
   async clickThreeDotOfTeams() {
     await this.page
       .locator(
-        'div[data-testid="TeamSelect"] ~  button svg[data-testid="MoreIcon"]'
+        'div[data-testid="TeamSelect"] ~ div  button svg[data-testid="MoreIcon"]'
       )
       .click()
   }
@@ -75,9 +76,11 @@ export class TeamsPage {
       .click()
   }
   async verifyTeamCreatedSnackbarMsg() {
-    await expect(this.page.locator('div#notistack-snackbar')).toContainText(
-      this.teamName + ' created.'
-    )
+    await expect(
+      this.page.locator('div#notistack-snackbar', {
+        hasText: this.teamName + ' created.'
+      })
+    ).toBeVisible()
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
       timeout: 30000
     })
