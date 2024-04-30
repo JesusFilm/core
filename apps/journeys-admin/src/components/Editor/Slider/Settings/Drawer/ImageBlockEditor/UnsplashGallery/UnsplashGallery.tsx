@@ -13,6 +13,8 @@ import { UnsplashCollections } from './UnsplashCollections'
 import { UnsplashList } from './UnsplashList'
 import { UnsplashSearch } from './UnsplashSearch'
 
+const INITIAL_COLLECTION_ID = '4924556'
+
 export const LIST_UNSPLASH_COLLECTION_PHOTOS = gql`
   query ListUnsplashCollectionPhotos(
     $collectionId: String!
@@ -98,7 +100,7 @@ export function UnsplashGallery({
   const { t } = useTranslation('apps-journeys-admin')
   const [query, setQuery] = useState<string>()
   const [page, setPage] = useState(1)
-  const [collectionId, setCollectionId] = useState('4924556')
+  const [collectionId, setCollectionId] = useState(INITIAL_COLLECTION_ID)
 
   useEffect(() => {
     setPage(1)
@@ -138,24 +140,26 @@ export function UnsplashGallery({
     void triggerUnsplashDownload({ variables: { url: downloadLocation } })
   }
 
-  function handleSubmit(value: string): void {
+  async function handleSubmit(value: string): Promise<void> {
+    const variables = { page: 1, perPage: 20 }
     if (value == null) {
-      void refetchList({ collectionId, page: 1, perPage: 20 })
+      await refetchList({ collectionId, ...variables })
     } else {
-      void refetchSearch({ query: value, page: 1, perPage: 20 })
+      await refetchSearch({ query: value, ...variables })
     }
     setQuery(value)
     setPage(1)
   }
 
-  function handleFetchMore(): void {
+  async function handleFetchMore(): Promise<void> {
+    const variables = { page: page + 1, perPage: 20 }
     if (query == null) {
-      void fetchMoreList({
-        variables: { collectionId, page: page + 1, perPage: 20 }
+      await fetchMoreList({
+        variables: { collectionId, ...variables }
       })
     } else {
-      void fetchMoreSearch({
-        variables: { query, page: page + 1, perPage: 20 }
+      await fetchMoreSearch({
+        variables: { query, ...variables }
       })
     }
     setPage(page + 1)
