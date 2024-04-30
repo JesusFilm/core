@@ -28,7 +28,7 @@ const GET_LANGUAGE = graphql(`
 `)
 
 interface GetParams {
-  params: { mediaComponentId: string }
+  params: { languageId: string }
 }
 
 export async function GET(
@@ -63,7 +63,7 @@ export async function GET(
   const queryString = new URLSearchParams(queryObject).toString()
 
   const response = {
-    languageId: languageId,
+    languageId,
     iso3: data.language.iso3,
     bcp47: data.language.bcp47,
     // TODO: investigate
