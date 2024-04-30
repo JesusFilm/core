@@ -4,6 +4,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 
@@ -35,6 +36,10 @@ describe('BigQueryConsumer', () => {
         {
           provide: ImporterVideoDescriptionService,
           useValue: mockDeep<ImporterVideoDescriptionService>()
+        },
+        {
+          provide: ImporterVideoStudyQuestionsService,
+          useValue: mockDeep<ImporterVideoStudyQuestionsService>()
         },
         {
           provide: ImporterVideoVariantsService,
