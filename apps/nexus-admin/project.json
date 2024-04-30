@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/nexus-admin",
   "projectType": "application",
+  "implicitDependencies": ["nexus-admin-e2e"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",

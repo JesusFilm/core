@@ -4,7 +4,7 @@
   "sourceRoot": "libs/journeys/ui/src",
   "projectType": "library",
   "tags": [],
-  "implicitDependencies": ["locales"],
+  "implicitDependencies": ["locales", "journeys-e2e"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint",
