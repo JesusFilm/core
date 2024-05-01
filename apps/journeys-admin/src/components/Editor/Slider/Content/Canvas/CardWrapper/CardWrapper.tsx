@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { Trans, useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement } from 'react'
 
 import type { WrapperProps } from '@core/journeys/ui/BlockRenderer'
@@ -52,7 +52,6 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
       }
       return child
     })
-
     return (
       <>
         <Box
@@ -82,35 +81,34 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
               spacing={5}
             >
               <Typography>{t('Fill this card with content')}</Typography>
-              <Trans t={t}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={openCardTemplates}
-                  fullWidth
-                >
-                  Select Card Template
-                </Button>
-                <Typography
-                  variant="body2"
-                  display="flex"
-                  flex-direction="column"
-                  justifyContent="top"
-                  height="24px"
-                >
-                  or add blocks using the
-                  <Plus2Icon
-                    fontSize="small"
-                    sx={{
-                      backgroundColor: '#C52D3A',
-                      borderRadius: 100,
-                      ml: 1,
-                      mr: 1
-                    }}
-                  />
-                  button below
-                </Typography>
-              </Trans>
+
+              <Button
+                variant="contained"
+                size="large"
+                onClick={openCardTemplates}
+                fullWidth
+              >
+                {t('Select Card Template')}
+              </Button>
+              <Typography
+                variant="body2"
+                display="flex"
+                flex-direction="column"
+                justifyContent="top"
+                height="24px"
+              >
+                {t('or add blocks using the')}
+                <Plus2Icon
+                  fontSize="small"
+                  sx={{
+                    backgroundColor: '#C52D3A',
+                    borderRadius: 100,
+                    ml: 1,
+                    mr: 1
+                  }}
+                />
+                {t('button below')}
+              </Typography>
             </Stack>
           )}
         </Box>
