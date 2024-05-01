@@ -59,14 +59,10 @@ export class ImporterVideosService extends ImporterService<Video> {
   }
 
   protected async save(video: Video): Promise<void> {
-    const record = await this.prismaService.video.findUnique({
-      where: { id: video.id }
+    await this.prismaService.video.upsert({
+      where: { id: video.id },
+      update: { ...video, slug: await this.slugify(video.id, video.slug) },
+      create: { ...video, slug: await this.slugify(video.id, video.slug) }
     })
-    if (record != null) {
-      await this.prismaService.video.update({
-        where: { id: video.id },
-        data: { ...video, slug: await this.slugify(video.id, video.slug) }
-      })
-    }
   }
 }
