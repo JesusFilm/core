@@ -75,7 +75,11 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
             value={activeTeam?.id ?? ''}
             disableUnderline
             onChange={handleChange}
-            renderValue={() => activeTeam?.title ?? t('Shared With Me')}
+            renderValue={() =>
+              activeTeam?.title != null || query.loading
+                ? activeTeam?.title
+                : t('Shared With Me')
+            }
             autoWidth
             sx={{
               '> .MuiSelect-select': {
