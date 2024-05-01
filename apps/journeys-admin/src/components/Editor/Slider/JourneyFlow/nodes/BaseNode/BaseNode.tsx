@@ -62,11 +62,11 @@ export function BaseNode({
   return (
     <Box
       data-testid="BaseNode"
-      // onMouseEnter={handleHoverStart}
-      // onMouseLeave={handleHoverEnd}
+      onMouseEnter={handleHoverStart}
+      onMouseLeave={handleHoverEnd}
       sx={{
-        position: 'relative',
-        ...(isDesktop ? desktopStyle : mobileStyle)
+        position: 'relative'
+        // ...(isDesktop ? desktopStyle : mobileStyle)
       }}
     >
       {isFunction(children) ? children({ selected }) : children}
@@ -95,8 +95,8 @@ export function BaseNode({
             data-testid="BaseNodeBottomHandle"
             position={Position.Bottom}
             onConnect={onSourceConnect}
-            onMouseEnter={handleHoverStart}
-            onMouseLeave={handleHoverEnd}
+            // onMouseEnter={handleHoverStart}
+            // onMouseLeave={handleHoverEnd}
             {...sourceHandleProps}
             sx={{
               width: 7.5,
@@ -123,7 +123,7 @@ export function BaseNode({
               }
             }}
           >
-            {isSourceConnectable === 'arrow' && (
+            {isSourceConnectable === 'arrow' && showArrow && (
               <ArrowDownwardRoundedIcon
                 data-testid="BaseNodeDownwardArrowIcon"
                 className="arrow"

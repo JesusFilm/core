@@ -116,7 +116,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
         onSourceConnect={handleSourceConnect}
         sourceHandleProps={{
           sx: {
-            bottom: actionBlocks.length > 0 ? 35 : 0
+            //  bottom: actionBlocks.length > 0 ? 35 : 0
           }
         }}
       >
