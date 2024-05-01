@@ -13,6 +13,7 @@ import { ImporterVideoVariantSubtitlesService } from '../importer/importerVideoV
 
 import { BigQueryConsumer } from './bigQuery.consumer'
 import { BigQueryService } from './bigQuery.service'
+import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 
 jest.mock('@google-cloud/bigquery')
 
@@ -47,6 +48,10 @@ describe('BigQueryConsumer', () => {
         {
           provide: ImporterVideoSnippetsService,
           useValue: mockDeep<ImporterVideoSnippetsService>()
+        },
+        {
+          provide: ImporterVideoImageAltService,
+          useValue: mockDeep<ImporterVideoImageAltService>()
         },
         {
           provide: ImporterVideoVariantDownloadsService,

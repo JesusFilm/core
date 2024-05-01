@@ -10,6 +10,7 @@ import { ImporterVideoTitleService } from './importerVideoTitles/importerVideoTi
 import { ImporterVideoVariantDownloadsService } from './importerVideoVariantDownloads/importerVideoVariantDownloads.service'
 import { ImporterVideoVariantsService } from './importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideoVariantSubtitlesService } from './importerVideoVariantSubtitle/importerVideovariantSubtitile.service'
+import { ImporterVideoImageAltService } from './importerVideoImageAlt/importerVideoImageAlt.service'
 
 @Module({
   providers: [
@@ -19,6 +20,7 @@ import { ImporterVideoVariantSubtitlesService } from './importerVideoVariantSubt
     ImporterVideoDescriptionService,
     ImporterVideoStudyQuestionsService,
     ImporterVideoSnippetsService,
+    ImporterVideoImageAltService,
     ImporterVideoVariantsService,
     ImporterVideoVariantDownloadsService,
     ImporterVideoVariantSubtitlesService
@@ -29,6 +31,7 @@ import { ImporterVideoVariantSubtitlesService } from './importerVideoVariantSubt
     ImporterVideoDescriptionService,
     ImporterVideoStudyQuestionsService,
     ImporterVideoSnippetsService,
+    ImporterVideoImageAltService,
     ImporterVideoVariantsService,
     ImporterVideoVariantDownloadsService,
     ImporterVideoVariantSubtitlesService

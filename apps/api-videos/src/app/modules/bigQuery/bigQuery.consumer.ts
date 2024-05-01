@@ -13,6 +13,7 @@ import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/
 import { ImporterVideoVariantSubtitlesService } from '../importer/importerVideoVariantSubtitle/importerVideovariantSubtitile.service'
 
 import { BigQueryService } from './bigQuery.service'
+import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 
 interface BigQueryRowError {
   bigQueryTableName: string
@@ -31,6 +32,7 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideoStudyQuestionsService: ImporterVideoStudyQuestionsService,
     private readonly importerVideoSnippetsService: ImporterVideoSnippetsService,
     private readonly importerVideoVariantsService: ImporterVideoVariantsService,
+    private readonly importerVideoImageAltService: ImporterVideoImageAltService,
     private readonly importerVideoVariantsDownloadService: ImporterVideoVariantDownloadsService,
     private readonly importerVideoVariantsSubtitleService: ImporterVideoVariantSubtitlesService
   ) {
@@ -46,6 +48,8 @@ export class BigQueryConsumer extends WorkerHost {
         this.importerVideoStudyQuestionsService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoSnippet_arclight_data':
         this.importerVideoSnippetsService,
+      'jfp-data-warehouse.jfp_mmdb_prod.core_videoImageAlt_arclight_data':
+        this.importerVideoImageAltService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
         this.importerVideoVariantsService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data':
