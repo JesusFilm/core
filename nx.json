@@ -100,12 +100,6 @@
         "devTargetName": "dev",
         "startTargetName": "start"
       }
-    },
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
     }
   ],
   "defaultBase": "main"
