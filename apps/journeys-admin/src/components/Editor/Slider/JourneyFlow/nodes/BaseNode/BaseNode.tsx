@@ -95,7 +95,6 @@ export function BaseNode({
             data-testid="BaseNodeBottomHandle"
             position={Position.Bottom}
             onConnect={onSourceConnect}
-            // onMouseEnter={(e) => e.()}
             onMouseEnter={handleHoverStart}
             onMouseLeave={handleHoverEnd}
             {...sourceHandleProps}
@@ -122,17 +121,6 @@ export function BaseNode({
                 backgroundColor: 'transparent',
                 borderRadius: '50%'
               }
-              // '.arrow': {
-              //   visibility: 'hidden'
-              // },
-              // ':hover .arrow': {
-              //   visibility: 'visible'
-              // }
-              // ':hover': {
-              //   backgroundColor: 'green'
-              // }
-              // ...(isDesktop && isTargetConnectable ? desktopStyle : {})
-              // ...(isDesktop ? desktopStyle : mobileStyle)
             }}
           >
             {isSourceConnectable === 'arrow' && (
@@ -140,7 +128,7 @@ export function BaseNode({
                 data-testid="BaseNodeDownwardArrowIcon"
                 className="arrow"
                 style={{
-                  display: 'none',
+                  display: 'flex',
                   position: 'absolute',
                   borderRadius: '50%',
                   color: 'white',
