@@ -284,6 +284,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
       <Stack
         data-testid="ActionsStack"
         direction="row"
+        justifyContent="center"
         spacing={2}
         sx={{
           height: actionBlocks.length > 0 ? 28 : 0
