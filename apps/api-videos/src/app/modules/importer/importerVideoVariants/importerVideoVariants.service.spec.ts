@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { VideoVariant } from '.prisma/api-videos-client'
+import { Video, VideoVariant } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../../lib/prisma.service'
 
@@ -35,12 +35,18 @@ describe('ImporterVideoVariantsService', () => {
       prismaService.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'mockValue0'
       } as unknown as VideoVariant)
+      prismaService.video.findUnique.mockResolvedValueOnce({
+        id: 'mockValue1',
+        slug: 'video-slug'
+      } as unknown as Video)
       await service.import({
         id: 'mockId',
         hls: 'www.example.com',
         duration: 123.123,
         languageId: 529,
         videoId: 'videoId',
+        slug: 'Variant Title',
+        languageName: 'english',
         otherValues: 'some otherValue',
         someValue: 'otherValue'
       })
@@ -54,18 +60,22 @@ describe('ImporterVideoVariantsService', () => {
           hls: 'www.example.com',
           id: 'mockId',
           languageId: '529',
+          slug: 'video-slug/english',
           videoId: 'videoId'
         }
       })
     })
 
     it('should not update video variant when not found', async () => {
+      prismaService.video.findMany.mockResolvedValueOnce([])
       await service.import({
         id: 'mockId',
         hls: 'www.example.com',
         duration: 123.123,
         languageId: 529,
         videoId: 'videoId',
+        slug: 'Variant Title',
+        languageName: 'english',
         otherValues: 'some otherValue',
         someValue: 'otherValue'
       })
@@ -74,6 +84,27 @@ describe('ImporterVideoVariantsService', () => {
       })
 
       expect(prismaService.videoVariant.update).not.toHaveBeenCalled()
+    })
+
+    it('should throw error if cannot find video for the video variant', async () => {
+      prismaService.videoVariant.findUnique.mockResolvedValueOnce({
+        id: 'mockValue0'
+      } as unknown as VideoVariant)
+      prismaService.video.findUnique.mockResolvedValueOnce(null)
+
+      await expect(
+        service.import({
+          id: 'mockId',
+          hls: 'www.example.com',
+          duration: 123.123,
+          languageId: 529,
+          videoId: 'videoId',
+          slug: 'Variant Title',
+          languageName: 'english',
+          otherValues: 'some otherValue',
+          someValue: 'otherValue'
+        })
+      ).rejects.toThrow('video for variant id: mockId - does not exist!')
     })
 
     it('should throw error when row is invalid', async () => {
