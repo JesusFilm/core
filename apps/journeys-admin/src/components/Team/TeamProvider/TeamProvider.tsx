@@ -66,6 +66,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   const query = useQuery<GetLastActiveTeamIdAndTeams>(
     GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
     {
+      notifyOnNetworkStatusChange: true,
       onCompleted: (data) => {
         if (activeTeam != null || data.teams == null) return
         TagManager.dataLayer({
