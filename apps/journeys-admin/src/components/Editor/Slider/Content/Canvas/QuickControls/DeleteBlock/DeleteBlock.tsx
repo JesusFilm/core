@@ -22,6 +22,9 @@ export const BLOCK_DELETE = gql`
     blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
       id
       parentOrder
+      ... on StepBlock {
+        nextBlockId
+      }
     }
   }
 `

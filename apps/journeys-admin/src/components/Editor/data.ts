@@ -1,5 +1,6 @@
 import { BlockFields as Block } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { GetStepBlocksWithPosition_blocks_StepBlock as StepBlockWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
 import {
   ButtonColor,
   ButtonSize,
@@ -752,3 +753,14 @@ export const blocks: Block[] = [
     iconSize: IconSize.md
   }
 ]
+
+export const blocksWithStepBlockPosition: StepBlockWithPosition[] = blocks
+  .filter((block) => block.__typename === 'StepBlock')
+  .map((block) => {
+    return {
+      __typename: 'StepBlock',
+      id: block.id,
+      x: null,
+      y: null
+    }
+  })

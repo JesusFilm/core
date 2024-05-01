@@ -25,7 +25,7 @@ export function Slider(): ReactElement {
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const {
-    state: { activeSlide },
+    state: { activeSlide, selectedStep },
     dispatch
   } = useEditor()
 
@@ -40,13 +40,6 @@ export function Slider(): ReactElement {
     }
   }
 
-  function handlePrev(): void {
-    dispatch({
-      type: 'SetActiveSlideAction',
-      activeSlide: activeSlide - 1
-    })
-  }
-
   useEffect(() => {
     if (
       swiperRef.current != null &&
@@ -55,6 +48,29 @@ export function Slider(): ReactElement {
       swiperRef.current.swiper.slideTo(activeSlide)
     }
   }, [activeSlide])
+
+  function resetCanvasFocus(): void {
+    if (isSlideChangingTo(ActiveSlide.JourneyFlow)) {
+      dispatch({
+        type: 'SetSelectedBlockOnlyAction',
+        selectedBlock: selectedStep
+      })
+    }
+  }
+
+  function isSlideChangingTo(slide): boolean {
+    return (
+      swiperRef.current != null &&
+      swiperRef.current?.swiper.activeIndex === slide
+    )
+  }
+
+  function handlePrev(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: activeSlide - 1
+    })
+  }
 
   return (
     <StyledSwiper
@@ -68,6 +84,7 @@ export function Slider(): ReactElement {
           activeSlide: swiper.activeIndex
         })
       }}
+      onTransitionEnd={resetCanvasFocus}
       sx={{
         height: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px)`
       }}

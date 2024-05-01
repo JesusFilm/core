@@ -6,6 +6,12 @@ import { ComponentPropsWithoutRef } from 'react'
 import { Background, ReactFlow } from 'reactflow'
 import 'reactflow/dist/style.css'
 
+import {
+  ActiveContent,
+  EditorProvider,
+  EditorState
+} from '@core/journeys/ui/EditorProvider'
+
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 
 import { StepBlockNode } from '.'
@@ -472,7 +478,7 @@ const textResponseNode = {
     steps: [
       {
         __typename: 'StepBlock',
-        id: '00f4be94-80b3-4c7f-b7b6-866b6eaeee09',
+        id: 'd9d8295b-8e4d-4b63-bf0c-97661e6341d8',
         parentBlockId: null,
         parentOrder: 4,
         locked: false,
@@ -751,15 +757,19 @@ const defaultFlowProps = {
   proOptions: { hideAttribution: true }
 }
 
-const Template: StoryObj<ComponentPropsWithoutRef<typeof StepBlockNode>> = {
-  render: (args) => {
+const Template: StoryObj<
+  ComponentPropsWithoutRef<typeof StepBlockNode> & { initialState: EditorState }
+> = {
+  render: ({ initialState, ...args }) => {
     return (
       <MockedProvider>
-        <Box sx={{ height: 400, width: 600 }}>
-          <ReactFlow {...args}>
-            <Background color="#aaa" gap={16} />
-          </ReactFlow>
-        </Box>
+        <EditorProvider initialState={initialState}>
+          <Box sx={{ height: 400, width: 600 }}>
+            <ReactFlow {...args}>
+              <Background color="#aaa" gap={16} />
+            </ReactFlow>
+          </Box>
+        </EditorProvider>
       </MockedProvider>
     )
   }
@@ -772,6 +782,11 @@ export const Default = {
     nodes: [defaultNode],
     nodeTypes: {
       StepBlock: StepBlockNode
+    },
+    initialState: {
+      steps: [...defaultNode.data.steps],
+      selectedStep: defaultNode.data.steps[0],
+      activeContent: ActiveContent.Canvas
     }
   }
 }
@@ -783,6 +798,11 @@ export const Video = {
     nodes: [videoNode],
     nodeTypes: {
       StepBlock: StepBlockNode
+    },
+    initialState: {
+      steps: [...videoNode.data.steps],
+      selectedStep: videoNode.data.steps[0],
+      activeContent: ActiveContent.Canvas
     }
   }
 }
@@ -794,6 +814,11 @@ export const TextResponse = {
     nodes: [textResponseNode],
     nodeTypes: {
       StepBlock: StepBlockNode
+    },
+    initialState: {
+      steps: [...textResponseNode.data.steps],
+      selectedStep: textResponseNode.data.steps[0],
+      activeContent: ActiveContent.Canvas
     }
   }
 }
@@ -805,6 +830,11 @@ export const Button = {
     nodes: [buttonNode],
     nodeTypes: {
       StepBlock: StepBlockNode
+    },
+    initialState: {
+      steps: [...buttonNode.data.steps],
+      selectedStep: buttonNode.data.steps[0],
+      activeContent: ActiveContent.Canvas
     }
   }
 }
@@ -816,6 +846,11 @@ export const Typography = {
     nodes: [typographyNode],
     nodeTypes: {
       StepBlock: StepBlockNode
+    },
+    initialState: {
+      steps: [...typographyNode.data.steps],
+      selectedStep: typographyNode.data.steps[0],
+      activeContent: ActiveContent.Canvas
     }
   }
 }
@@ -827,6 +862,11 @@ export const SignUp = {
     nodes: [signUpNode],
     nodeTypes: {
       StepBlock: StepBlockNode
+    },
+    initialState: {
+      steps: [...signUpNode.data.steps],
+      selectedStep: signUpNode.data.steps[0],
+      activeContent: ActiveContent.Canvas
     }
   }
 }
@@ -838,6 +878,11 @@ export const Hover = {
     nodes: [defaultNode],
     nodeTypes: {
       StepBlock: StepBlockNode
+    },
+    initialState: {
+      steps: [...defaultNode.data.steps],
+      selectedStep: defaultNode.data.steps[0],
+      activeContent: ActiveContent.Canvas
     }
   },
   play: async ({ canvasElement }) => {
