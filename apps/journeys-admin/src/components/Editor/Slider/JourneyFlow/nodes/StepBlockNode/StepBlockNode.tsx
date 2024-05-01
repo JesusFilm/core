@@ -1,3 +1,4 @@
+import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -60,6 +61,9 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
   }
 
   function handleClick(): void {
+    const space = actionBlocks.length > 0 ? 3 : 0
+    console.log('space: ', space)
+
     dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
   }
 
@@ -82,6 +86,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
       opacity: 1
     },
     position: 'relative'
+    // pb: 2
   }
 
   const mobileStyle = {
@@ -105,13 +110,36 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
       onSourceConnect={handleSourceConnect}
       sourceHandleProps={{
         sx: {
-          bottom: 35
+          bottom: actionBlocks.length > 0 ? 35 : 0
+          // bottom: 35
         }
       }}
     >
       {({ selected }) => (
-        <Stack alignItems="center" spacing={3}>
-          <Box sx={isDesktop ? desktopStyle : mobileStyle}>
+        <Stack
+          data-testid="spacingStack"
+          alignItems="center"
+          spacing={actionBlocks.length > 0 ? 3 : 1.5}
+
+          // spacing={3}
+        >
+          <Box
+            onTouchStart={() => console.log('touch')}
+            sx={{
+              ...(isDesktop ? desktopStyle : mobileStyle),
+              '&:after': {
+                content: '""',
+                position: 'absolute',
+                transform: 'translate(-50%, -50%)',
+                top: STEP_NODE_HEIGHT + 3,
+                left: '50%',
+                width: STEP_NODE_WIDTH - 5,
+                height: 18,
+                backgroundColor: 'transparent'
+                // borderRadius: '50%'
+              }
+            }}
+          >
             <StepBlockNodeMenu className="fab" step={step} />
             <Card
               sx={{
@@ -257,13 +285,34 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
                 </Box>
               </CardContent>
             </Card>
+
+            <ArrowDownwardRoundedIcon
+              data-testid="BaseNodeDownwardArrowIcon"
+              className="fab"
+              style={{
+                display: 'flex',
+                position: 'absolute',
+                borderRadius: '50%',
+                color: 'white',
+                fontSize: 'large',
+                top: 69,
+                backgroundColor: '#c52d3aff',
+                left: '50%',
+                transform: 'translate(-50%, 0)',
+                pointerEvents: 'none',
+                zIndex: 1000
+              }}
+            />
           </Box>
 
           <Stack
+            data-testid="ActionsStack"
             direction="row"
             spacing={2}
             sx={{
-              height: 28
+              height: actionBlocks.length > 0 ? 28 : 0
+              // pointerEvents: 'none'
+              // height: 28
             }}
           >
             {actionBlocks.map((block) => (

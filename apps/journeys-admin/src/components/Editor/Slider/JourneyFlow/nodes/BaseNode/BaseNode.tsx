@@ -1,8 +1,9 @@
+import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
 import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import isFunction from 'lodash/isFunction'
-import { ComponentProps, ReactElement, ReactNode } from 'react'
+import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
 import { Handle, OnConnect, Position } from 'reactflow'
 
 const StyledHandle = styled(Handle)(() => ({}))
@@ -30,9 +31,10 @@ export function BaseNode({
   sourceHandleProps,
   children
 }: BaseNodeProps): ReactElement {
+  const [showArrow, setShowArrow] = useState(false)
+
   const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const desktopStyle = {
-    position: 'relative',
     '.arrow': {
       visibility: 'hidden'
     },
@@ -42,14 +44,31 @@ export function BaseNode({
   }
 
   const mobileStyle = {
-    position: 'relative',
     '.arrow': {
       visibility:
         typeof selected === 'boolean' && selected ? 'visible' : 'hidden'
     }
   }
+
+  const handleHoverStart = (): void => {
+    setShowArrow(true)
+  }
+
+  const handleHoverEnd = (): void => {
+    setShowArrow(false)
+  }
+  // console.log(sourceHandleProps?.sx)
+
   return (
-    <Box data-testid="BaseNode" sx={isDesktop ? desktopStyle : mobileStyle}>
+    <Box
+      data-testid="BaseNode"
+      // onMouseEnter={handleHoverStart}
+      // onMouseLeave={handleHoverEnd}
+      sx={{
+        position: 'relative',
+        ...(isDesktop ? desktopStyle : mobileStyle)
+      }}
+    >
       {isFunction(children) ? children({ selected }) : children}
       {isTargetConnectable && (
         <StyledHandle
@@ -76,6 +95,9 @@ export function BaseNode({
             data-testid="BaseNodeBottomHandle"
             position={Position.Bottom}
             onConnect={onSourceConnect}
+            // onMouseEnter={(e) => e.()}
+            onMouseEnter={handleHoverStart}
+            onMouseLeave={handleHoverEnd}
             {...sourceHandleProps}
             sx={{
               width: 7.5,
@@ -87,26 +109,51 @@ export function BaseNode({
                   : '2px solid #aaacbb',
               outline: '1px solid',
               outlineColor: 'white',
-              ...sourceHandleProps?.sx
-            }}
-          />
-          {isSourceConnectable === 'arrow' && (
-            <ArrowDownwardRoundedIcon
-              data-testid="BaseNodeDownwardArrowIcon"
-              className="arrow"
-              style={{
-                display: 'flex',
+              ...sourceHandleProps?.sx,
+
+              '&:after': {
+                content: '""',
                 position: 'absolute',
-                borderRadius: '50%',
-                color: 'white',
-                fontSize: 'large',
-                top: 72,
-                backgroundColor: '#c52d3aff',
+                transform: 'translate(-50%, -50%)',
+                top: '50%',
                 left: '50%',
-                transform: 'translate(-50%, 0)'
-              }}
-            />
-          )}
+                width: 18,
+                height: 18,
+                backgroundColor: 'transparent',
+                borderRadius: '50%'
+              }
+              // '.arrow': {
+              //   visibility: 'hidden'
+              // },
+              // ':hover .arrow': {
+              //   visibility: 'visible'
+              // }
+              // ':hover': {
+              //   backgroundColor: 'green'
+              // }
+              // ...(isDesktop && isTargetConnectable ? desktopStyle : {})
+              // ...(isDesktop ? desktopStyle : mobileStyle)
+            }}
+          >
+            {isSourceConnectable === 'arrow' && (
+              <ArrowDownwardRoundedIcon
+                data-testid="BaseNodeDownwardArrowIcon"
+                className="arrow"
+                style={{
+                  display: 'none',
+                  position: 'absolute',
+                  borderRadius: '50%',
+                  color: 'white',
+                  fontSize: 'large',
+                  top: '50%',
+                  backgroundColor: '#c52d3aff',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  pointerEvents: 'none'
+                }}
+              />
+            )}{' '}
+          </StyledHandle>
         </>
       )}
     </Box>
