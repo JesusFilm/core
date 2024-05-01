@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import omit from 'lodash/omit'
+
 import { InferType, mixed, object, string } from 'yup'
 
-import { Prisma, VideoLabel } from '.prisma/api-videos-client'
+import { VideoLabel } from '.prisma/api-videos-client'
 
 import { slugify } from '../../../../libs/slugify'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -41,7 +41,7 @@ export class ImporterVideosService extends ImporterService<Video> {
     super()
   }
 
-  private async transform(video: Video): Promise<Prisma.VideoCreateInput> {
+  private async slugify(id: string, title: string): Promise<string> {
     if (this.usedSlugs == null) {
       const results = await this.prismaService.video.findMany({
         select: { slug: true, id: true }
@@ -53,12 +53,9 @@ export class ImporterVideosService extends ImporterService<Video> {
       }
     }
 
-    const slug = slugify(video.id, video.slug, this.usedSlugs)
+    const slug = slugify(id, title, this.usedSlugs)
 
-    return {
-      ...omit(video, ['slug']),
-      slug
-    }
+    return slug
   }
 
   protected async save(video: Video): Promise<void> {
@@ -66,10 +63,9 @@ export class ImporterVideosService extends ImporterService<Video> {
       where: { id: video.id }
     })
     if (record != null) {
-      const videoObj = await this.transform(video)
       await this.prismaService.video.update({
-        where: { id: videoObj.id },
-        data: videoObj
+        where: { id: video.id },
+        data: { ...video, slug: await this.slugify(video.id, video.slug) }
       })
     }
   }
