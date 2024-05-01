@@ -62,9 +62,7 @@ export function VideoLibrary({
   const router = useRouter()
 
   useEffect(() => {
-    if (selectedBlock?.videoId != null && open) {
-      setOpenVideoDetails(true)
-    }
+    setOpenVideoDetails(selectedBlock?.videoId != null && open)
   }, [open, selectedBlock?.videoId])
 
   const TabParams = {
