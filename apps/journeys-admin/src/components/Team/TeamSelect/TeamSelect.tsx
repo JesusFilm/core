@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
@@ -55,6 +55,12 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
       }
     })
   }
+
+  useEffect(() => {
+    // TODO: remove once finished testing
+    console.log('I have refetched')
+    void query.refetch()
+  }, [])
 
   return (
     <>
