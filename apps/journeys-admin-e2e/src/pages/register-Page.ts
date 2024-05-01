@@ -152,7 +152,7 @@ export class Register {
     await expect(
       this.page.locator('div[data-testid="NavigationListItemProfile"]')
     ).toBeVisible({ timeout: 65000 })
-  }  
+  }
   async waitUntilTheToestMsgDisappear() {
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
       timeout: 30000
