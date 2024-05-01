@@ -1,7 +1,4 @@
 {
-  "affected": {
-    "defaultBase": "main"
-  },
   "tasksRunnerOptions": {
     "default": {
       "options": {
@@ -110,5 +107,6 @@
         "targetName": "lint"
       }
     }
-  ]
+  ],
+  "defaultBase": "main"
 }

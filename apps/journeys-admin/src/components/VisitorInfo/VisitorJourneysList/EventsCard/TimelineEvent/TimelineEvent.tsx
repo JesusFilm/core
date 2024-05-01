@@ -57,7 +57,7 @@ export function TimelineEvent({
             ? messagePlatformToLabel(event.messagePlatform, t)
             : t('Message Platform')
       })
-      value = intlFormat(parseISO(event.createdAt), {
+      value = intlFormat(parseISO(String(event.createdAt)), {
         hour: 'numeric',
         minute: 'numeric',
         hour12: true,

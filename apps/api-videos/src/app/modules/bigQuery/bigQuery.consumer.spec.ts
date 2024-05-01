@@ -2,9 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Video } from '.prisma/api-videos-client'
-
-import { PrismaService } from '../../lib/prisma.service'
+import { VideosService } from '../importer/videos/videos.service'
 
 import { BigQueryConsumer } from './bigQuery.consumer'
 import { BigQueryService } from './bigQuery.service'
@@ -15,7 +13,7 @@ describe('BigQueryConsumer', () => {
   const OLD_ENV = { ...process.env } // clone env
   let consumer: BigQueryConsumer,
     bigQueryService: BigQueryService,
-    prismaService: DeepMockProxy<PrismaService>
+    videosService: DeepMockProxy<VideosService>
 
   beforeEach(async () => {
     process.env = { ...OLD_ENV } // reset env before test
@@ -24,17 +22,17 @@ describe('BigQueryConsumer', () => {
         BigQueryConsumer,
         BigQueryService,
         {
-          provide: PrismaService,
-          useValue: mockDeep<PrismaService>()
+          provide: VideosService,
+          useValue: mockDeep<VideosService>()
         }
       ]
     }).compile()
 
     consumer = module.get<BigQueryConsumer>(BigQueryConsumer)
     bigQueryService = module.get<BigQueryService>(BigQueryService)
-    prismaService = module.get<PrismaService>(
-      PrismaService
-    ) as DeepMockProxy<PrismaService>
+    videosService = module.get<VideosService>(
+      VideosService
+    ) as DeepMockProxy<VideosService>
   })
 
   afterAll(() => {
@@ -44,27 +42,20 @@ describe('BigQueryConsumer', () => {
 
   describe('process', () => {
     it('should process rows', async () => {
+      const data = [
+        { id: 'mockValue0', label: 'shortFilm', primaryLanguageId: 529 },
+        { id: 'mockValue1', label: 'shortFilm', primaryLanguageId: 529 }
+      ]
       bigQueryService.getRowsFromTable = jest.fn(async function* generator() {
-        const data = [
-          { id: 'mockValue0', label: 'shortFilm', primaryLanguageId: 529 },
-          { id: 'mockValue1', label: 'shortFilm', primaryLanguageId: 529 }
-        ]
         for (let index = 0; index < data.length; index++) {
           yield data[index]
         }
       })
-      prismaService.video.findUnique.mockResolvedValueOnce({
-        id: 'mockValue0'
-      } as unknown as Video)
-
+      videosService.import.mockResolvedValue()
       await consumer.process({ name: 'mockjob' } as unknown as Job)
       expect(bigQueryService.getRowsFromTable).toHaveBeenCalled()
-      expect(prismaService.video.update).toHaveBeenCalledWith({
-        where: { id: 'mockValue0' },
-        data: { id: 'mockValue0', label: 'shortFilm', primaryLanguageId: '529' }
-      })
-      expect(prismaService.video.findUnique).toHaveBeenCalledTimes(2)
-      expect(prismaService.video.update).toHaveBeenCalledTimes(1)
+      expect(videosService.import).toHaveBeenCalledWith(data[0])
+      expect(videosService.import).toHaveBeenCalledWith(data[1])
     })
   })
 })

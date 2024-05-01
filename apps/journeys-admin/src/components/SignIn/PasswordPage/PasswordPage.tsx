@@ -10,7 +10,7 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { object, string } from 'yup'
+import { InferType, object, string } from 'yup'
 
 import { PageProps } from '../types'
 
@@ -36,7 +36,10 @@ export function PasswordPage({
       .required(t('Please enter your email address')),
     password: string().required(t('Enter your password'))
   })
-  async function handleLogin(values, { setFieldError }): Promise<void> {
+  async function handleLogin(
+    values: InferType<typeof validationSchema>,
+    { setFieldError }
+  ): Promise<void> {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password)
     } catch (error) {

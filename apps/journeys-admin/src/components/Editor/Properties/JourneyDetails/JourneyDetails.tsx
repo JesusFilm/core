@@ -32,10 +32,10 @@ export function JourneyDetails({
           sx={{ ml: 2 }}
         >
           {journey != null ? (
-            intlFormat(parseISO(journey.createdAt), {
+            intlFormat(parseISO(journey.createdAt as string), {
               day: 'numeric',
               month: 'long',
-              year: isThisYear(parseISO(journey.createdAt))
+              year: isThisYear(parseISO(String(journey.createdAt)))
                 ? undefined
                 : 'numeric'
             })
