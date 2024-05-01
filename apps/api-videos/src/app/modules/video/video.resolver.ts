@@ -14,8 +14,15 @@ import { FieldNode, GraphQLError, GraphQLResolveInfo, Kind } from 'graphql'
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 
-import { Video, VideoTitle, VideoVariant } from '.prisma/api-videos-client'
-import { TranslationField } from '@core/nest/decorators/TranslationField'
+import {
+  Video,
+  VideoDescription,
+  VideoImageAlt,
+  VideoSnippet,
+  VideoStudyQuestion,
+  VideoTitle,
+  VideoVariant
+} from '.prisma/api-videos-client'
 
 import { IdType, VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -135,44 +142,97 @@ export class VideoResolver {
   }
 
   @ResolveField()
-  @TranslationField('seoTitle')
-  seoTitle(
-    @Parent() language,
+  async description(
+    @Parent() video,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {}
+  ): Promise<VideoDescription[]> {
+    return await this.prismaService.videoDescription.findMany({
+      where: {
+        videoId: video.id,
+        OR: compact([
+          primary != null
+            ? {
+                primary
+              }
+            : undefined,
+          {
+            languageId: languageId ?? '529'
+          }
+        ])
+      }
+    })
+  }
 
   @ResolveField()
-  @TranslationField('snippet')
-  snippet(
-    @Parent() language,
+  async snippet(
+    @Parent() video,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {}
+  ): Promise<VideoSnippet[]> {
+    return await this.prismaService.videoSnippet.findMany({
+      where: {
+        videoId: video.id,
+        OR: compact([
+          primary != null
+            ? {
+                primary
+              }
+            : undefined,
+          {
+            languageId: languageId ?? '529'
+          }
+        ])
+      }
+    })
+  }
 
   @ResolveField()
-  @TranslationField('description')
-  description(
-    @Parent() language,
+  async imageAlt(
+    @Parent() video,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {}
+  ): Promise<VideoImageAlt[]> {
+    return await this.prismaService.videoImageAlt.findMany({
+      where: {
+        videoId: video.id,
+        OR: compact([
+          primary != null
+            ? {
+                primary
+              }
+            : undefined,
+          {
+            languageId: languageId ?? '529'
+          }
+        ])
+      }
+    })
+  }
 
   @ResolveField()
-  @TranslationField('studyQuestions')
-  studyQuestions(
-    @Parent() language,
+  async studyQuestions(
+    @Parent() video,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {}
-
-  @ResolveField()
-  @TranslationField('imageAlt')
-  imageAlt(
-    @Parent() language,
-    @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean
-  ): void {}
+  ): Promise<VideoStudyQuestion[]> {
+    return await this.prismaService.videoStudyQuestion.findMany({
+      where: {
+        videoId: video.id,
+        OR: compact([
+          primary != null
+            ? {
+                primary
+              }
+            : undefined,
+          {
+            languageId: languageId ?? '529'
+          }
+        ])
+      },
+      orderBy: { order: 'asc' }
+    })
+  }
 
   @ResolveField()
   async childrenCount(@Parent() video): Promise<number> {
