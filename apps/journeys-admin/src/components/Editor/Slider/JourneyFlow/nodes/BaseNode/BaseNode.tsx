@@ -1,9 +1,8 @@
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
-import { Theme, styled } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import { styled } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
-import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
+import { ComponentProps, ReactElement, ReactNode } from 'react'
 import { Handle, OnConnect, Position } from 'reactflow'
 
 const StyledHandle = styled(Handle)(() => ({}))
@@ -31,9 +30,8 @@ export function BaseNode({
   sourceHandleProps,
   children
 }: BaseNodeProps): ReactElement {
-  const [showArrow, setShowArrow] = useState(false)
+  const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches
 
-  const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const desktopStyle = {
     '.arrow': {
       visibility: 'hidden'
@@ -43,30 +41,19 @@ export function BaseNode({
     }
   }
 
-  const mobileStyle = {
+  const touchStyle = {
     '.arrow': {
       visibility:
         typeof selected === 'boolean' && selected ? 'visible' : 'hidden'
     }
   }
 
-  const handleHoverStart = (): void => {
-    setShowArrow(true)
-  }
-
-  const handleHoverEnd = (): void => {
-    setShowArrow(false)
-  }
-  // console.log(sourceHandleProps?.sx)
-
   return (
     <Box
       data-testid="BaseNode"
-      onMouseEnter={handleHoverStart}
-      onMouseLeave={handleHoverEnd}
       sx={{
-        position: 'relative'
-        // ...(isDesktop ? desktopStyle : mobileStyle)
+        position: 'relative',
+        ...(isTouchDevice ? touchStyle : desktopStyle)
       }}
     >
       {isFunction(children) ? children({ selected }) : children}
@@ -95,8 +82,6 @@ export function BaseNode({
             data-testid="BaseNodeBottomHandle"
             position={Position.Bottom}
             onConnect={onSourceConnect}
-            // onMouseEnter={handleHoverStart}
-            // onMouseLeave={handleHoverEnd}
             {...sourceHandleProps}
             sx={{
               width: 7.5,
@@ -123,7 +108,7 @@ export function BaseNode({
               }
             }}
           >
-            {isSourceConnectable === 'arrow' && showArrow && (
+            {isSourceConnectable === 'arrow' && (
               <ArrowDownwardRoundedIcon
                 data-testid="BaseNodeDownwardArrowIcon"
                 className="arrow"

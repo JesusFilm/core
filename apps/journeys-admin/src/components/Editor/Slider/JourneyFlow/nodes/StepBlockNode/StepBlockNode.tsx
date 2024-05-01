@@ -1,12 +1,9 @@
-import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 import { NodeProps, OnConnect } from 'reactflow'
 
@@ -60,15 +57,11 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
     })
   }
 
-  function handleClick(): void {
-    const space = actionBlocks.length > 0 ? 3 : 0
-    console.log('space: ', space)
+  const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches
 
+  function handleClick(): void {
     dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
   }
-
-  const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
@@ -88,7 +81,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
     position: 'relative'
   }
 
-  const mobileStyle = {
+  const touchStyle = {
     '.fab': {
       opacity: isSelected ? 1 : 0,
       transform: isSelected ? 'scale(1)' : 'scale(0.5)',
@@ -125,7 +118,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
             <Box
               onTouchStart={() => console.log('touch')}
               sx={{
-                ...(isDesktop ? desktopStyle : mobileStyle),
+                ...(isTouchDevice ? touchStyle : desktopStyle),
                 '&:after': {
                   content: '""',
                   position: 'absolute',
@@ -135,7 +128,6 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
                   width: STEP_NODE_WIDTH - 5,
                   height: 18,
                   backgroundColor: 'transparent'
-                  // borderRadius: '50%'
                 }
               }}
             >
