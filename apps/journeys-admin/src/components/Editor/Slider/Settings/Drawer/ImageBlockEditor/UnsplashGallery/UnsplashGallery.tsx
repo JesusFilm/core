@@ -16,7 +16,7 @@ import { UnsplashCollections } from './UnsplashCollections'
 import { UnsplashList } from './UnsplashList'
 import { UnsplashSearch } from './UnsplashSearch'
 
-const INITIAL_COLLECTION_ID = '4924556'
+const DEFAULT_COLLECTION_ID = '4924556'
 
 export const LIST_UNSPLASH_COLLECTION_PHOTOS = gql`
   query ListUnsplashCollectionPhotos(
@@ -103,7 +103,7 @@ export function UnsplashGallery({
   const { t } = useTranslation('apps-journeys-admin')
   const [query, setQuery] = useState<string>()
   const [page, setPage] = useState(1)
-  const [collectionId, setCollectionId] = useState(INITIAL_COLLECTION_ID)
+  const [collectionId, setCollectionId] = useState(DEFAULT_COLLECTION_ID)
 
   useEffect(() => {
     setPage(1)
