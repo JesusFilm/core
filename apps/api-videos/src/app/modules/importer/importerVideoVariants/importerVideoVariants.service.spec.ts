@@ -35,7 +35,6 @@ describe('ImporterVideoVariantsService', () => {
       prismaService.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'mockValue0'
       } as unknown as VideoVariant)
-      prismaService.videoVariant.findMany.mockResolvedValueOnce([])
       await service.import({
         id: 'mockId',
         hls: 'www.example.com',

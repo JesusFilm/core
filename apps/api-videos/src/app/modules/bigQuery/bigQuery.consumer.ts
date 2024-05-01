@@ -8,6 +8,7 @@ import { ImporterVideosService } from '../importer/importerVideos/importerVideos
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
+import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoVariantDownloads/importerVideoVariantDownloads.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 
 import { BigQueryService } from './bigQuery.service'
@@ -28,7 +29,8 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideoDescriptionService: ImporterVideoDescriptionService,
     private readonly importerVideoStudyQuestionsService: ImporterVideoStudyQuestionsService,
     private readonly importerVideoSnippetsService: ImporterVideoSnippetsService,
-    private readonly importerVideoVariantsService: ImporterVideoVariantsService
+    private readonly importerVideoVariantsService: ImporterVideoVariantsService,
+    private readonly importerVideoVariantsDownloadService: ImporterVideoVariantDownloadsService
   ) {
     super()
     this.tables = {
@@ -43,7 +45,9 @@ export class BigQueryConsumer extends WorkerHost {
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoSnippet_arclight_data':
         this.importerVideoSnippetsService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
-        this.importerVideoVariantsService
+        this.importerVideoVariantsService,
+      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data':
+        this.importerVideoVariantsDownloadService
     }
   }
 

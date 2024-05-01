@@ -7,6 +7,7 @@ import { ImporterVideosService } from './importerVideos/importerVideos.service'
 import { ImporterVideoSnippetsService } from './importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from './importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoTitleService } from './importerVideoTitles/importerVideoTitle.service'
+import { ImporterVideoVariantDownloadsService } from './importerVideoVariantDownloads/importerVideoVariantDownloads.service'
 import { ImporterVideoVariantsService } from './importerVideoVariants/importerVideoVariants.service'
 
 @Module({
@@ -17,7 +18,8 @@ import { ImporterVideoVariantsService } from './importerVideoVariants/importerVi
     ImporterVideoDescriptionService,
     ImporterVideoStudyQuestionsService,
     ImporterVideoSnippetsService,
-    ImporterVideoVariantsService
+    ImporterVideoVariantsService,
+    ImporterVideoVariantDownloadsService
   ],
   exports: [
     ImporterVideosService,
@@ -25,7 +27,8 @@ import { ImporterVideoVariantsService } from './importerVideoVariants/importerVi
     ImporterVideoDescriptionService,
     ImporterVideoStudyQuestionsService,
     ImporterVideoSnippetsService,
-    ImporterVideoVariantsService
+    ImporterVideoVariantsService,
+    ImporterVideoVariantDownloadsService
   ]
 })
 export class ImporterModule {}
