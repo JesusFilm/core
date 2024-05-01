@@ -2,7 +2,6 @@ import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
 import { Theme, styled } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { gridColumnLookupSelector } from '@mui/x-data-grid'
 import isFunction from 'lodash/isFunction'
 import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
 import { Handle, OnConnect, Position } from 'reactflow'
@@ -52,12 +51,10 @@ export function BaseNode({
   }
 
   const handleHoverStart = (): void => {
-    console.log('hover start')
     setShowArrow(true)
   }
 
   const handleHoverEnd = (): void => {
-    console.log('hover end')
     setShowArrow(false)
   }
   // console.log(sourceHandleProps?.sx)
@@ -65,13 +62,11 @@ export function BaseNode({
   return (
     <Box
       data-testid="BaseNode"
-      onMouseEnter={handleHoverStart}
-      onMouseLeave={handleHoverEnd}
-      // onTouchStart={() => console.log('touch')}
-      // onTouchEnd={() => console.log('end touch')}
+      // onMouseEnter={handleHoverStart}
+      // onMouseLeave={handleHoverEnd}
       sx={{
-        position: 'relative'
-        // ...(isDesktop ? desktopStyle : mobileStyle)
+        position: 'relative',
+        ...(isDesktop ? desktopStyle : mobileStyle)
       }}
     >
       {isFunction(children) ? children({ selected }) : children}
@@ -100,8 +95,8 @@ export function BaseNode({
             data-testid="BaseNodeBottomHandle"
             position={Position.Bottom}
             onConnect={onSourceConnect}
-            // onMouseEnter={handleHoverStart}
-            // onMouseLeave={handleHoverEnd}
+            onMouseEnter={handleHoverStart}
+            onMouseLeave={handleHoverEnd}
             {...sourceHandleProps}
             sx={{
               width: 7.5,
@@ -113,7 +108,7 @@ export function BaseNode({
                   : '2px solid #aaacbb',
               outline: '1px solid',
               outlineColor: 'white',
-              // ...sourceHandleProps?.sx,
+              ...sourceHandleProps?.sx,
 
               '&:after': {
                 content: '""',
@@ -128,7 +123,7 @@ export function BaseNode({
               }
             }}
           >
-            {isSourceConnectable === 'arrow' && showArrow && (
+            {isSourceConnectable === 'arrow' && (
               <ArrowDownwardRoundedIcon
                 data-testid="BaseNodeDownwardArrowIcon"
                 className="arrow"
