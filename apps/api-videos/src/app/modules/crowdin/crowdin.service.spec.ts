@@ -288,7 +288,7 @@ describe('CrowdinService', () => {
       expect(prismaService.videoStudyQuestion.upsert).toHaveBeenCalledTimes(2)
     })
 
-    it('should throw if no matching videoId', async () => {
+    it('should throw if no matching videoId for descriptions', async () => {
       process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
       prismaService.video.findMany.mockResolvedValue([])
 
@@ -299,7 +299,7 @@ describe('CrowdinService', () => {
             <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
             <file id="35" original="/Arclight/collection_long_description.csv" source-language="en" target-language="ko">
               <body>
-              <trans-unit id="1" resname="ohno">
+              <trans-unit id="1" resname="cl13-0-0">
                 <source>StoryClubs</source>
                 <target>스토리 클럽</target>
               </trans-unit>
@@ -312,7 +312,35 @@ describe('CrowdinService', () => {
       })
 
       await expect(service.getCrowdinTranslations()).rejects.toThrow(
-        'no matching videoId found for ohno'
+        'no matching videoId found for cl13-0-0'
+      )
+    })
+
+    it('should throw if no matching videoId for titles', async () => {
+      process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
+      prismaService.video.findMany.mockResolvedValue([])
+
+      mockGetTranslations.mockResolvedValue({
+        ko: [
+          {
+            content: `<?xml version="1.0" encoding="UTF-8"?>
+            <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+            <file id="35" original="/Arclight/media_metadata_tile.csv" source-language="en" target-language="ko">
+              <body>
+              <trans-unit id="1" resname="cl13-0-0">
+                <source>StoryClubs</source>
+                <target>스토리 클럽</target>
+              </trans-unit>
+              </body>
+            </file>
+            </xliff>`,
+            file: '/content/3804.xliff'
+          }
+        ]
+      })
+
+      await expect(service.getCrowdinTranslations()).rejects.toThrow(
+        'no matching videoId found for cl13-0-0'
       )
     })
 
