@@ -81,7 +81,8 @@ export function ImageBlockEditor({
     newValue: number
   ): void => {
     setTabValue(newValue)
-    const route = TabParams[newValue]
+    const route: 'unsplash-image' | 'custom-image' | 'ai-image' =
+      TabParams[newValue]
     if (route != null) setRoute(route)
   }
 
