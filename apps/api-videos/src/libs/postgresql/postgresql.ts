@@ -92,9 +92,9 @@ function isMovedItem(item): boolean {
 
 async function handlePrismaVideo(
   video: PrismaVideoCreateInput,
-  existingVideo,
-  tx,
-  delta
+  existingVideo: PrismaVideoCreateInput,
+  tx: Prisma.TransactionClient,
+  delta: Record<string, unknown>
 ): Promise<void> {
   const videoFields = [
     'id',
@@ -193,7 +193,7 @@ async function handlePrismaTranslationTables<T>(
     // ignore _t on index 0
     if (key === '_t') continue
 
-    const fieldDelta = delta[field][key]
+    const fieldDelta = delta[field][key] as Record<string, unknown>
     // ignore moved items
     if (isMovedItem(fieldDelta)) continue
 
@@ -277,7 +277,10 @@ async function handlePrismaOrderedTranslationTables<T>(
           }
         }
       })
-    } else if (Object.keys(fieldDelta).length > 0 && languageId != null) {
+    } else if (
+      Object.keys(fieldDelta as Array<Record<string, unknown>>).length > 0 &&
+      languageId != null
+    ) {
       // handle update
       await tx[prismaField].update({
         where: {
@@ -321,7 +324,7 @@ async function handlePrismaVideoVariants(
       // ignore _t on index 0
       if (key === '_t') continue
 
-      const variant = delta.variants[key]
+      const variant = delta.variants[key] as Record<string, unknown>
 
       // ignore moved items
       if (isMovedItem(variant)) continue
@@ -382,7 +385,7 @@ async function handlePrismaVideoVariants(
           for (const sKey in variant.subtitle) {
             if (sKey === '_t') continue
 
-            const subtitle = variant.subtitle[sKey]
+            const subtitle = variant.subtitle[sKey] as Record<string, unknown>
             // ignore moved items
             if (isMovedItem(subtitle)) continue
 
@@ -440,7 +443,7 @@ async function handlePrismaVideoVariants(
           for (const dKey in variant.downloads) {
             if (dKey === '_t') continue
 
-            const download = variant.downloads[dKey]
+            const download = variant.downloads[dKey] as Record<string, unknown>
 
             // ignore moved items
             if (isMovedItem(download)) continue
@@ -557,7 +560,9 @@ export async function handleVideo(
     downloads: sortBy(variant.downloads, ['url'])
   }))
 
-  const existingVideo = await getExistingVideo(video)
+  const existingVideo = (await getExistingVideo(
+    video
+  )) as PrismaVideoCreateInput
 
   const delta = jsondiffpatch.diff(existingVideo ?? {}, video) ?? {}
   if (Object.keys(delta).length > 0) {

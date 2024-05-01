@@ -41,9 +41,11 @@ export async function transformInput<T extends ImageBlockUpdateInput>(
       4
     )
   } catch (ex) {
-    throw new GraphQLError(ex.message, {
-      extensions: { code: 'BAD_USER_INPUT' }
-    })
+    if (ex instanceof Error) {
+      throw new GraphQLError(ex.message, {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
+    }
   }
 
   return transformedInput

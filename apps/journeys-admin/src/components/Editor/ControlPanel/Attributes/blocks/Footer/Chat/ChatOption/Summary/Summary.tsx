@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { Reference, gql, useMutation } from '@apollo/client'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Checkbox from '@mui/material/Checkbox'
 import Typography from '@mui/material/Typography'
@@ -119,7 +119,8 @@ export function Summary({
                   fields: {
                     chatButtons(refs, { readField }) {
                       return refs.filter(
-                        (ref) => chatButtonId !== readField('id', ref)
+                        (ref: Reference) =>
+                          chatButtonId !== readField('id', ref)
                       )
                     }
                   }
