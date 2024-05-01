@@ -18,13 +18,13 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 3 : undefined,
+  workers: process.env.CI ? 8 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Use URL that has been set part of app-deploy.yml */
-    baseURL: process.env.DEPLOYMENT_URL ?? 'http://localhost:4100',
+    baseURL: 'https://journeys-admin-2558-jesusfilm.vercel.app/',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',

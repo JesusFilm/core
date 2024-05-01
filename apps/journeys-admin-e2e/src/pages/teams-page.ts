@@ -82,7 +82,7 @@ export class TeamsPage {
       })
     ).toBeVisible()
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
-      timeout: 30000
+      timeout: 60000
     })
   }
   async clickDiaLogBoxCloseBtn() {

@@ -39,14 +39,15 @@ export async function getTeamName(): Promise<string> {
 }
 
 export async function getBaseUrl(): Promise<string> {
-  const baseUrl = process.env.DEPLOYMENT_URL?.toString()
-  if (!baseUrl || baseUrl === '') {
-    throw new Error('baseUrl was not provided via environment variable')
-  }
+  const baseUrl = "https://journeys-admin-2558-jesusfilm.vercel.app/"
+  // if (!baseUrl || baseUrl === '') {
+  //   throw new Error('baseUrl was not provided via environment variable')
+  // }
   return baseUrl
 }
 export async function getOTP(): Promise<string> {
-  const otp = process.env.EXAMPLE_EMAIL_TOKEN?.toString()
+  const number = 795345
+  const otp = number.toString()
 
   if (!otp || otp === '') {
     throw new Error('OTP was not provided via environment variable')

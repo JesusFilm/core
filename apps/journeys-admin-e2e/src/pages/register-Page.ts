@@ -33,7 +33,7 @@ export class Register {
     await this.clickNextBtnInFewQuestionPage()
     await this.entetTeamName()
     await this.clickCreateBtn()
-    await this.waitUntilDiscoverPageLoaded()
+    await this.waitUntilNavigationListItemProfileVisible()
     await this.waitUntilTheToestMsgDisappear()
   }
   async enterUserName() {
@@ -148,6 +148,11 @@ export class Register {
       )
     ).toBeVisible({ timeout: 65000 })
   }
+  async waitUntilNavigationListItemProfileVisible() {
+    await expect(
+      this.page.locator('div[data-testid="NavigationListItemProfile"]')
+    ).toBeVisible({ timeout: 65000 })
+  }  
   async waitUntilTheToestMsgDisappear() {
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
       timeout: 30000
