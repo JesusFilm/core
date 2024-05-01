@@ -62,7 +62,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
   }
 
   function handleClick(): void {
-    if (selectedStep?.id === step.id) {
+    if (selectedStep?.id === step?.id) {
       dispatch({
         type: 'SetSelectedBlockAction',
         selectedBlock: selectedStep
