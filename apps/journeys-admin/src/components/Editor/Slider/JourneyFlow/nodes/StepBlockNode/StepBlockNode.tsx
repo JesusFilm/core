@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { NodeProps, OnConnect } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -88,16 +88,21 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
     position: 'relative'
   }
 
-  const mobileStyle = {
+  const [showMenu, setShowMenu] = useState(false)
+
+  const handleMouseEnter = (): void => {
+    setShowMenu(true)
+  }
+  const handleMouseLeave = (): void => {
+    setShowMenu(false)
+  }
+
+  const menuTransitionStyles = {
     '.fab': {
-      opacity: isSelected ? 1 : 0,
-      transform: isSelected ? 'scale(1)' : 'scale(0.5)',
-      transition: (theme) =>
-        theme.transitions.create(['opacity', 'transform'], {
-          duration: 250
-        })
-    },
-    position: 'relative'
+      opacity: showMenu ? 1 : 0,
+      transform: showMenu ? 'scale(1)' : 'scale(0.5)',
+      transition: 'opacity 250ms, transform 250ms'
+    }
   }
 
   return step != null ? (
@@ -116,16 +121,19 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
         onSourceConnect={handleSourceConnect}
         sourceHandleProps={{
           sx: {
-            bottom: actionBlocks.length > 0 ? 35 : 0
+            // bottom: actionBlocks.length > 0 ? 35 : 0
+            // bottom: 28
           }
         }}
       >
         {({ selected }) => (
           <Stack data-testid="spacingStack" alignItems="center">
             <Box
-              onTouchStart={() => console.log('touch')}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
               sx={{
-                ...(isDesktop ? desktopStyle : mobileStyle),
+                position: 'relative',
+                ...menuTransitionStyles,
                 '&:after': {
                   content: '""',
                   position: 'absolute',
@@ -135,7 +143,6 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
                   width: STEP_NODE_WIDTH - 5,
                   height: 18,
                   backgroundColor: 'transparent'
-                  // borderRadius: '50%'
                 }
               }}
             >
