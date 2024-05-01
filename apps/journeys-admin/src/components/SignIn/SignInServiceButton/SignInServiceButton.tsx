@@ -27,11 +27,7 @@ export function SignInServiceButton({
         ? new GoogleAuthProvider()
         : new FacebookAuthProvider()
     authProvider.setCustomParameters({ prompt: 'select_account' })
-    try {
-      await signInWithPopup(auth, authProvider)
-    } catch (err) {
-      console.error(err)
-    }
+    await signInWithPopup(auth, authProvider).catch(console.error)
   }
 
   return (

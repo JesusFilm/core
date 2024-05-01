@@ -44,7 +44,7 @@ export function TeamOnboarding(): ReactElement {
           }
         }
       }),
-      await router.push(
+      router.push(
         router.query.redirect != null
           ? new URL(
               `${window.location.origin}${router.query.redirect as string}`

@@ -28,6 +28,7 @@ export function HomePage({
       .required(t('Please enter your email address')),
     password: string().min(6)
   })
+
   async function handleEmailSignIn(
     values: InferType<typeof validationSchema>
   ): Promise<void> {
@@ -53,6 +54,7 @@ export function HomePage({
     setUserEmail?.(values.email)
     setUserPassword?.(values.password ?? '')
   }
+
   return (
     <>
       <Box sx={{ pb: 3, mt: -4 }}>
