@@ -40,6 +40,7 @@ describe('ImporterVideoVariantSubtitlesService', () => {
         primary: 1,
         languageId: 529,
         videoVariantId: 'mockVideoVariantId',
+        format: 'VTT',
         extraStuff: 'randomData'
       })
       expect(
@@ -74,6 +75,7 @@ describe('ImporterVideoVariantSubtitlesService', () => {
         primary: 1,
         languageId: 529,
         videoVariantId: 'mockVideoVariantId',
+        format: 'VTT',
         extraStuff: 'randomData'
       })
       expect(

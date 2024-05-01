@@ -3,12 +3,14 @@ import { InferType, boolean, object, string } from 'yup'
 
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
+import omit from 'lodash/omit'
 
 const videoVariantSubtitlesSchema = object({
   value: string().required(),
   primary: boolean().required(),
   languageId: string().required(),
-  videoVariantId: string().required()
+  videoVariantId: string().required(),
+  format: string().required()
 })
 
 type VideoVariantSubtitles = InferType<typeof videoVariantSubtitlesSchema>
@@ -24,23 +26,25 @@ export class ImporterVideoVariantSubtitlesService extends ImporterService<VideoV
   protected async save(
     videoVariantSubtitles: VideoVariantSubtitles
   ): Promise<void> {
-    const record = await this.prismaService.videoVariantSubtitle.findUnique({
-      where: {
-        videoVariantId_languageId: {
-          videoVariantId: videoVariantSubtitles.videoVariantId,
-          languageId: videoVariantSubtitles.languageId
-        }
-      }
-    })
-    if (record != null)
-      await this.prismaService.videoVariantSubtitle.update({
+    if (videoVariantSubtitles.format === 'VTT') {
+      const record = await this.prismaService.videoVariantSubtitle.findUnique({
         where: {
           videoVariantId_languageId: {
             videoVariantId: videoVariantSubtitles.videoVariantId,
             languageId: videoVariantSubtitles.languageId
           }
-        },
-        data: videoVariantSubtitles
+        }
       })
+      if (record != null)
+        await this.prismaService.videoVariantSubtitle.update({
+          where: {
+            videoVariantId_languageId: {
+              videoVariantId: videoVariantSubtitles.videoVariantId,
+              languageId: videoVariantSubtitles.languageId
+            }
+          },
+          data: omit(videoVariantSubtitles, ['format'])
+        })
+    }
   }
 }
