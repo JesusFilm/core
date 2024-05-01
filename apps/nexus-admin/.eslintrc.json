@@ -28,7 +28,8 @@
             "allowAsStatement": true
           }
         ],
-        "@typescript-eslint/no-misused-promises": "off"
+        "@typescript-eslint/no-misused-promises": "off",
+        "i18next/no-literal-string": "off"
       }
     },
     {

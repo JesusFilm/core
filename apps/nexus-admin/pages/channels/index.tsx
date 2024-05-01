@@ -14,7 +14,7 @@ import { ChannelUpdate } from '../../__generated__/ChannelUpdate'
 import { ChannelsTable } from '../../src/components/ChannelsTable'
 import { CreateChannelModal } from '../../src/components/CreateChannelModal'
 import { DeleteModal } from '../../src/components/DeleteModal'
-import { MainLayout } from '../../src/components/MainLayout'
+import { PageWrapper } from '../../src/components/PageWrapper'
 import { UpdateChannelModal } from '../../src/components/UpdateChannelModal'
 
 export const GET_CHANNELS = gql`
@@ -123,7 +123,7 @@ const ChannelsPage: FC = () => {
   }, [channelData])
 
   return (
-    <MainLayout title="Channels">
+    <PageWrapper title="Channels">
       <Stack spacing={14}>
         <Stack
           alignItems="flex-start"
@@ -211,7 +211,7 @@ const ChannelsPage: FC = () => {
           })
         }}
       />
-    </MainLayout>
+    </PageWrapper>
   )
 }
 

@@ -7,7 +7,7 @@ import { FC, useEffect, useState } from 'react'
 
 import { CreateShortLinkModal } from '../../src/components/CreateShortLinkModal'
 import { DeleteModal } from '../../src/components/DeleteModal'
-import { MainLayout } from '../../src/components/MainLayout'
+import { PageWrapper } from '../../src/components/PageWrapper'
 import { ShortLinksTable } from '../../src/components/ShortLinksTable'
 
 export const GET_LINKS = gql`
@@ -56,7 +56,7 @@ const ShortLinksPage: FC = () => {
   }, [data])
 
   return (
-    <MainLayout title="Short Links">
+    <PageWrapper title="Short Links">
       <Stack spacing={14}>
         <Stack
           alignItems="flex-start"
@@ -93,7 +93,7 @@ const ShortLinksPage: FC = () => {
           console.log(`Delete link here`)
         }}
       />
-    </MainLayout>
+    </PageWrapper>
   )
 }
 

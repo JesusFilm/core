@@ -15,7 +15,7 @@ import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
 import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
 
-import { MainLayout } from '../../src/components/MainLayout'
+import { PageWrapper } from '../../src/components/PageWrapper'
 import { UploadConfirmationModal } from '../../src/components/UploadConfirmationModal'
 import { getOrigin } from '../../utils/getOrigin'
 
@@ -117,7 +117,7 @@ const ImportYouTubeTemplatePage: FC = () => {
   }, [googleAccessToken])
 
   return (
-    <MainLayout title="Import Youtube Template">
+    <PageWrapper title="Import Youtube Template">
       <Paper elevation={0} sx={{ px: 4, py: 8, mt: 4 }}>
         <Stack spacing={8}>
           <Stack alignItems="flex-start" spacing={2}>
@@ -212,7 +212,7 @@ const ImportYouTubeTemplatePage: FC = () => {
         selectedVideosDirectory={selectedVideosDirectory}
         googleAccessTokenId={googleAccessTokenId}
       />
-    </MainLayout>
+    </PageWrapper>
   )
 }
 
