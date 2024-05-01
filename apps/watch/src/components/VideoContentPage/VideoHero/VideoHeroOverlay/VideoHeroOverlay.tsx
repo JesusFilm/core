@@ -6,11 +6,11 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'
 
-import { useTranslation } from '../../../../libs/il8n/client'
 import { useVideo } from '../../../../libs/videoContext'
 import { DownloadDialog } from '../../../DownloadDialog'
 import { HeroOverlay } from '../../../HeroOverlay'
@@ -21,17 +21,15 @@ import { DownloadButton } from '../../DownloadButton'
 
 interface VideoHeroOverlayProps {
   handlePlay?: () => void
-  languageId: string
 }
 
 export function VideoHeroOverlay({
-  handlePlay,
-  languageId
+  handlePlay
 }: VideoHeroOverlayProps): ReactElement {
   const { image, imageAlt, title, variant } = useVideo()
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
-  const { t } = useTranslation(languageId, 'apps-watch')
+  const t = useTranslations('apps-watch')
   return (
     <Box
       sx={{
@@ -95,18 +93,13 @@ export function VideoHeroOverlay({
                   justifyContent: 'space-between'
                 }}
               >
-                <AudioLanguageButton
-                  languageId={languageId}
-                  componentVariant="button"
-                />
+                <AudioLanguageButton componentVariant="button" />
                 <Stack direction="row" spacing={5}>
                   <ShareButton
-                    languageId={languageId}
                     variant="icon"
                     onClick={() => setOpenShare(true)}
                   />
                   <DownloadButton
-                    languageId={languageId}
                     variant="icon"
                     onClick={() => setOpenDownload(true)}
                   />
@@ -166,27 +159,19 @@ export function VideoHeroOverlay({
                 ml: 10
               }}
             >
-              <AudioLanguageButton
-                languageId={languageId}
-                componentVariant="button"
-              />
+              <AudioLanguageButton componentVariant="button" />
             </Box>
           </Stack>
         </Stack>
         {variant != null && variant.downloads.length > 0 && (
           <DownloadDialog
-            languageId={languageId}
             open={openDownload}
             onClose={() => {
               setOpenDownload(false)
             }}
           />
         )}
-        <ShareDialog
-          languageId={languageId}
-          open={openShare}
-          onClose={() => setOpenShare(false)}
-        />
+        <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
       </Container>
     </Box>
   )

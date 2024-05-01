@@ -10,6 +10,7 @@ import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
 import '../../../public/fonts/fonts.css'
+import { unstable_setRequestLocale } from 'next-intl/server'
 
 export const metadata = {
   title: 'Watch | Jesus Film Project',
@@ -18,12 +19,15 @@ export const metadata = {
 }
 
 export default function RootLayout({
-  children
+  children,
+  params: { locale }
 }: {
   children: React.ReactNode
+  params: { locale: string }
 }): ReactNode {
+  unstable_setRequestLocale(locale)
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" />

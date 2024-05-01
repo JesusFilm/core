@@ -20,10 +20,9 @@ import { useVideoSearch } from './utils/useVideoSearch'
 
 interface VideoProps {
   videos: VideoChildFields[]
-  languageId: string
 }
 
-export function VideosPage({ videos, languageId }: VideoProps): ReactElement {
+export function VideosPage({ videos }: VideoProps): ReactElement {
   const router = useRouter()
 
   const localVideos = videos.filter((video) => video != null)
@@ -55,13 +54,9 @@ export function VideosPage({ videos, languageId }: VideoProps): ReactElement {
   }
 
   return (
-    <PageWrapper
-      languageId={languageId}
-      hero={<VideosHero languageId={languageId} />}
-      testId="VideosPage"
-    >
+    <PageWrapper hero={<VideosHero />} testId="VideosPage">
       <Container maxWidth="xxl">
-        <VideosSubHero languageId={languageId} />
+        <VideosSubHero />
       </Container>
       <Divider sx={{ height: 2, background: 'rgba(33, 33, 33, 0.08)' }} />
       <Container maxWidth="xxl" sx={{ py: 12 }}>
@@ -74,7 +69,6 @@ export function VideosPage({ videos, languageId }: VideoProps): ReactElement {
           </Box>
           <Box sx={{ width: '100%' }}>
             <VideoGrid
-              languageId={languageId}
               videos={
                 algoliaVideos.length === 0 && !checkFilterApplied(filter)
                   ? localVideos

@@ -14,7 +14,7 @@ const HomeHeroStory: Meta<typeof HomeHero> = {
 }
 
 const Template: StoryObj<typeof HomeHero> = {
-  render: () => <HomeHero languageId="en" />
+  render: () => <HomeHero />
 }
 
 export const Default = { ...Template }

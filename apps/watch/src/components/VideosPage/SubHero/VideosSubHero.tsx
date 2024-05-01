@@ -1,17 +1,11 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { useTranslation } from '../../../libs/il8n/client'
-
-interface VideosSubHeroStatsProps {
-  languageId: string
-}
-function VideosSubHeroStats({
-  languageId
-}: VideosSubHeroStatsProps): ReactElement {
-  const { t } = useTranslation(languageId, 'apps-watch')
+function VideosSubHeroStats(): ReactElement {
+  const t = useTranslations('apps-watch')
   return (
     <Stack
       direction="row"
@@ -31,14 +25,8 @@ function VideosSubHeroStats({
   )
 }
 
-interface VideosSubHeroProps {
-  languageId: string
-}
-
-export function VideosSubHero({
-  languageId
-}: VideosSubHeroProps): ReactElement {
-  const { t } = useTranslation(languageId, 'apps-watch')
+export function VideosSubHero(): ReactElement {
+  const t = useTranslations('apps-watch')
   return (
     <Stack
       py={12}
@@ -56,7 +44,7 @@ export function VideosSubHero({
         </Typography>
       </Box>
       <Box flex={1}>
-        <VideosSubHeroStats languageId={languageId} />
+        <VideosSubHeroStats />
       </Box>
     </Stack>
   )

@@ -20,14 +20,8 @@ import { VideoHero } from './VideoHero'
 
 import 'video.js/dist/video-js.css'
 
-interface VideoContentPageProps {
-  languageId: string
-}
-
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
-export function VideoContentPage({
-  languageId
-}: VideoContentPageProps): ReactElement {
+export function VideoContentPage(): ReactElement {
   const {
     title,
     snippet,
@@ -87,14 +81,12 @@ export function VideoContentPage({
         }}
       />
       <PageWrapper
-        languageId={languageId}
         hideHeader
         hero={
           <>
             <VideoHero
               onPlay={() => setHasPlayed(true)}
               hasPlayed={hasPlayed}
-              languageId={languageId}
             />
             <Stack
               sx={{
@@ -114,7 +106,6 @@ export function VideoContentPage({
                 videos={realChildren}
                 onShareClick={() => setOpenShare(true)}
                 onDownloadClick={() => setOpenDownload(true)}
-                languageId={languageId}
               />
               {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
                 (realChildren.length === children.length ||
@@ -125,7 +116,6 @@ export function VideoContentPage({
                       videos={realChildren}
                       containerSlug={container?.slug ?? slug}
                       activeVideoId={id}
-                      languageId={languageId}
                     />
                   </Box>
                 )}
@@ -145,20 +135,18 @@ export function VideoContentPage({
               maxWidth: '100%'
             }}
           >
-            <VideoContent languageId={languageId} />
+            <VideoContent />
             <Box sx={{ display: { xs: 'none', md: 'block' } }}>
               <Stack spacing={5} mb={8} direction={{ md: 'column', lg: 'row' }}>
                 {variant != null && variant.downloads.length > 0 && (
                   <DownloadButton
                     variant="button"
                     onClick={() => setOpenDownload(true)}
-                    languageId={languageId}
                   />
                 )}
                 <ShareButton
                   variant="button"
                   onClick={() => setOpenShare(true)}
-                  languageId={languageId}
                 />
               </Stack>
             </Box>
@@ -169,14 +157,9 @@ export function VideoContentPage({
               onClose={() => {
                 setOpenDownload(false)
               }}
-              languageId={languageId}
             />
           )}
-          <ShareDialog
-            open={openShare}
-            onClose={() => setOpenShare(false)}
-            languageId={languageId}
-          />
+          <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
         </Container>
       </PageWrapper>
     </>

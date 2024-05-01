@@ -1,22 +1,19 @@
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
-
-import { useTranslation } from '../../../libs/il8n/client'
 
 export interface DownloadButtonProps {
   variant: 'button' | 'icon'
   onClick: () => void
-  languageId: string
 }
 
 export function DownloadButton({
   variant,
-  onClick,
-  languageId
+  onClick
 }: DownloadButtonProps): ReactElement {
-  const { t } = useTranslation(languageId, 'apps-watch')
+  const t = useTranslations('apps-watch')
   return variant === 'button' ? (
     <Button
       variant="outlined"

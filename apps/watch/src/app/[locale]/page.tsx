@@ -1,30 +1,29 @@
+import { unstable_setRequestLocale } from 'next-intl/server'
 import { ReactElement } from 'react'
 
 import {
   GetHomeVideos,
   GetHomeVideos_videos as Video
 } from '../../../__generated__/GetHomeVideos'
+import { locales } from '../../../i18n'
 import { HomePage } from '../../components/HomePage'
 import { getApolloClient } from '../../libs/apolloClient/apolloClient'
-import { languages } from '../../libs/il8n/settings'
 
 import { GET_HOME_VIDEOS } from './grahql'
 import { homeVideoIds } from './homeVideoIds'
 
 export async function generateStaticParams(): Promise<
-  Array<{ languageId: string }>
+  Array<{ locale: string }>
 > {
-  return languages.map((languageId) => ({ languageId }))
+  return locales.map((locale) => ({ locale }))
 }
 
-interface HomePageProps {
-  params: {
-    languageId: string
-  }
-}
 export default async function Index({
-  params
-}: HomePageProps): Promise<ReactElement> {
+  locale
+}: {
+  locale: string
+}): Promise<ReactElement> {
+  unstable_setRequestLocale(locale)
   const { data } = await getApolloClient().query<GetHomeVideos>({
     query: GET_HOME_VIDEOS,
     variables: {
@@ -36,5 +35,5 @@ export default async function Index({
   data.videos.forEach((video) => {
     videos[homeVideoIds.indexOf(video.id)] = video
   })
-  return <HomePage languageId={params.languageId} videos={videos} />
+  return <HomePage videos={videos} />
 }

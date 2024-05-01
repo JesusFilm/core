@@ -47,7 +47,7 @@ describe('VideosPage', () => {
     it('should render a grid', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <VideosPage languageId="en" videos={videos} />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       expect(getByTestId('VideoGrid')).toBeInTheDocument()
@@ -56,7 +56,7 @@ describe('VideosPage', () => {
     it('should display videos', async () => {
       const { getByText } = render(
         <MockedProvider>
-          <VideosPage languageId="en" videos={videos} />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       await waitFor(() => {
@@ -104,7 +104,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage languageId="en" videos={[]} />
+          <VideosPage videos={[]} />
         </MockedProvider>
       )
       const comboboxEl = getAllByRole('combobox', {
@@ -152,7 +152,7 @@ describe('VideosPage', () => {
             }
           ]}
         >
-          <VideosPage languageId="en" videos={[]} />
+          <VideosPage videos={[]} />
         </MockedProvider>
       )
       const comboboxEl = getAllByRole('combobox', {
@@ -174,7 +174,7 @@ describe('VideosPage', () => {
     it('should handle title filter', async () => {
       const { getByRole } = render(
         <MockedProvider>
-          <VideosPage languageId="en" videos={[]} />
+          <VideosPage videos={[]} />
         </MockedProvider>
       )
       fireEvent.change(getByRole('textbox', { name: 'Search Titles' }), {
@@ -195,7 +195,7 @@ describe('VideosPage', () => {
     it('should disable load more button if there are no more local videos', async () => {
       const { getByRole } = render(
         <MockedProvider>
-          <VideosPage languageId="en" videos={videos} />
+          <VideosPage videos={videos} />
         </MockedProvider>
       )
       await waitFor(() => {
@@ -206,7 +206,7 @@ describe('VideosPage', () => {
     it('should disable load more button if there are no more algolia videos', async () => {
       const { getByRole } = render(
         <MockedProvider>
-          <VideosPage languageId="en" videos={[]} />
+          <VideosPage videos={[]} />
         </MockedProvider>
       )
 

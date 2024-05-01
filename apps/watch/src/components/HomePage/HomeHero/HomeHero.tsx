@@ -3,18 +3,15 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { useTranslation } from '../../../libs/il8n/client'
 import { HeroOverlay } from '../../HeroOverlay'
 
 import JesusHeader from './assets/jesus.jpg'
 
-interface HomeHeroProps {
-  languageId: string
-}
-export function HomeHero({ languageId }: HomeHeroProps): ReactElement {
-  const { t } = useTranslation(languageId, 'apps-watch')
+export function HomeHero(): ReactElement {
+  const t = useTranslations('apps-watch')
 
   return (
     <Box

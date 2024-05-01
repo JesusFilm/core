@@ -31,7 +31,6 @@ import { AudioLanguageButton } from '../../../AudioLanguageButton'
 interface VideoControlProps {
   player: Player
   onVisibleChanged?: (active: boolean) => void
-  languageId: string
 }
 
 function isMobile(): boolean {
@@ -65,8 +64,7 @@ const eventToDataLayer = debounce(evtToDataLayer, 500)
 
 export function VideoControls({
   player,
-  onVisibleChanged,
-  languageId
+  onVisibleChanged
 }: VideoControlProps): ReactElement {
   const [play, setPlay] = useState(false)
   const [active, setActive] = useState(true)
@@ -501,10 +499,7 @@ export function VideoControls({
                       }}
                     />
                   </Stack>
-                  <AudioLanguageButton
-                    languageId={languageId}
-                    componentVariant="icon"
-                  />
+                  <AudioLanguageButton componentVariant="icon" />
                   <IconButton
                     onClick={handleClick}
                     disabled={

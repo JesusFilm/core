@@ -18,8 +18,8 @@ const ShareButtonStory: Meta<typeof ShareButton> = {
 const Template: StoryObj<typeof ShareButton> = {
   render: () => (
     <>
-      <ShareButton languageId="en" variant="icon" onClick={noop} />
-      <ShareButton languageId="en" variant="button" onClick={noop} />
+      <ShareButton variant="icon" onClick={noop} />
+      <ShareButton variant="button" onClick={noop} />
     </>
   )
 }

@@ -12,14 +12,8 @@ import { VideoGrid } from '../VideoGrid/VideoGrid'
 import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'
 
-interface VideoContainerPageProps {
-  languageId: string
-}
-
 // Usually Series or Collection Videos
-export function VideoContainerPage({
-  languageId
-}: VideoContainerPageProps): ReactElement {
+export function VideoContainerPage(): ReactElement {
   const { snippet, slug, variant } = useVideo()
   const { loading, children } = useVideoChildren(variant?.slug)
   const [shareDialog, setShareDialog] = useState<boolean>(false)
@@ -33,10 +27,7 @@ export function VideoContainerPage({
   }
 
   return (
-    <PageWrapper
-      languageId={languageId}
-      hero={<ContainerHero openDialog={handleOpenDialog} />}
-    >
+    <PageWrapper hero={<ContainerHero openDialog={handleOpenDialog} />}>
       <Container maxWidth="xxl" data-testid="VideoContainerPage">
         <Stack
           spacing={{ xs: 4, md: 11 }}
@@ -46,19 +37,13 @@ export function VideoContainerPage({
           <ContainerDescription
             value={snippet[0].value}
             openDialog={handleOpenDialog}
-            languageId={languageId}
           />
-          <ShareDialog
-            languageId={languageId}
-            open={shareDialog}
-            onClose={handleCloseDialog}
-          />
+          <ShareDialog open={shareDialog} onClose={handleCloseDialog} />
           <Box>
             {loading ? (
-              <VideoGrid loading languageId={languageId} variant="expanded" />
+              <VideoGrid loading variant="expanded" />
             ) : (
               <VideoGrid
-                languageId={languageId}
                 containerSlug={slug}
                 videos={realChildren}
                 variant="expanded"

@@ -14,7 +14,7 @@ const FooterStory: Meta<typeof Footer> = {
 }
 
 const Template: StoryObj<typeof Footer> = {
-  render: () => <Footer languageId="en" />
+  render: () => <Footer />
 }
 
 export const Default = { ...Template }

@@ -64,7 +64,7 @@ describe('ShareDialog', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: video }}>
-          <ShareDialog languageId="en" open onClose={onClose} />
+          <ShareDialog open onClose={onClose} />
         </VideoProvider>
       </SnackbarProvider>
     )
@@ -83,7 +83,7 @@ describe('ShareDialog', () => {
             }
           }}
         >
-          <ShareDialog languageId="en" open onClose={onClose} />
+          <ShareDialog open onClose={onClose} />
         </VideoProvider>
       </SnackbarProvider>
     )
@@ -117,7 +117,7 @@ describe('ShareDialog', () => {
       const { getByRole } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
-            <ShareDialog languageId="en" open onClose={onClose} />
+            <ShareDialog open onClose={onClose} />
           </VideoProvider>
         </SnackbarProvider>
       )
@@ -140,7 +140,7 @@ describe('ShareDialog', () => {
       const { getByRole } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
-            <ShareDialog languageId="en" open onClose={onClose} />
+            <ShareDialog open onClose={onClose} />
           </VideoProvider>
         </SnackbarProvider>
       )
@@ -176,7 +176,7 @@ describe('ShareDialog', () => {
       const { getByRole } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
-            <ShareDialog languageId="en" open onClose={onClose} />
+            <ShareDialog open onClose={onClose} />
           </VideoProvider>
         </SnackbarProvider>
       )
@@ -197,7 +197,7 @@ describe('ShareDialog', () => {
       const { getByRole } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
-            <ShareDialog languageId="en" open onClose={onClose} />
+            <ShareDialog open onClose={onClose} />
           </VideoProvider>
         </SnackbarProvider>
       )
@@ -241,7 +241,7 @@ describe('ShareDialog', () => {
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
-            <ShareDialog languageId="en" open onClose={onClose} />
+            <ShareDialog open onClose={onClose} />
           </VideoProvider>
         </SnackbarProvider>
       )
@@ -261,7 +261,7 @@ describe('ShareDialog', () => {
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
-            <ShareDialog languageId="en" open onClose={onClose} />
+            <ShareDialog open onClose={onClose} />
           </VideoProvider>
         </SnackbarProvider>
       )

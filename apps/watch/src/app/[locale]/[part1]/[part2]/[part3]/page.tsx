@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation'
+import { unstable_setRequestLocale } from 'next-intl/server'
 import { ReactElement } from 'react'
 
 import { GetVideoContainerAndVideoContent } from '../../../../../../__generated__/GetVideoContainerAndVideoContent'
@@ -9,7 +10,7 @@ import Page3PageClient from './pageClient'
 
 interface Page3PageProps {
   params: {
-    languageId: string
+    locale: string
     part1: string
     part2: string
     part3: string
@@ -19,6 +20,7 @@ interface Page3PageProps {
 export default async function Page3Page({
   params
 }: Page3PageProps): Promise<ReactElement> {
+  unstable_setRequestLocale(params.locale)
   const [containerId, containerIdExtension] = params.part1.split('.')
   const [contentId, contentIdExtension] = params.part2.split('.')
   const [languageId, languageIdExtension] = params.part3.split('.')
@@ -43,11 +45,5 @@ export default async function Page3Page({
     return notFound()
   }
 
-  return (
-    <Page3PageClient
-      languageId={languageId}
-      content={data.content}
-      container={data.container}
-    />
-  )
+  return <Page3PageClient content={data.content} container={data.container} />
 }

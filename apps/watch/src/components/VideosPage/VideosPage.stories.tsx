@@ -16,7 +16,7 @@ const Template: StoryObj<
   ComponentProps<typeof VideosPage> & { limit: number }
 > = {
   render: () => {
-    return <VideosPage languageId="en" videos={videos} />
+    return <VideosPage videos={videos} />
   }
 }
 

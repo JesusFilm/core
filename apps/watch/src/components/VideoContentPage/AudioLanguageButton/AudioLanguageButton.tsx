@@ -5,25 +5,23 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { useTranslation } from '../../../libs/il8n/client'
 import { useVideo } from '../../../libs/videoContext'
 import { AudioLanguageDialog } from '../../AudioLanguageDialog'
 
 interface AudioLanguageButtonProps {
   componentVariant: 'button' | 'icon'
-  languageId: string
 }
 
 export function AudioLanguageButton({
-  componentVariant,
-  languageId
+  componentVariant
 }: AudioLanguageButtonProps): ReactElement {
-  const { t } = useTranslation(languageId, 'apps-watch')
+  const t = useTranslations('apps-watch')
   const { variant, variantLanguagesCount } = useVideo()
   const [openAudioLanguageDialog, setOpenAudioLanguageDialog] = useState(false)
   const [loadAudioLanguageDialog, setLoadAudioLanguageDialog] = useState(false)

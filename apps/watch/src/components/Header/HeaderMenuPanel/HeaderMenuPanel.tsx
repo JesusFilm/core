@@ -11,23 +11,21 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { useTranslation } from '../../../libs/il8n/client'
 import logo from '../assets/logo.svg'
 
 interface HeaderMenuPanelProps {
   onClose: () => void
-  languageId: string
 }
 
 export function HeaderMenuPanel({
-  onClose,
-  languageId
+  onClose
 }: HeaderMenuPanelProps): ReactElement {
   const theme = useTheme()
 
-  const { t } = useTranslation(languageId, 'apps-watch')
+  const t = useTranslations('apps-watch')
 
   const HeaderLink = ({
     url,

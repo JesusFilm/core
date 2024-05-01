@@ -14,7 +14,6 @@ interface VideoGridProps {
   onLoadMore?: () => void
   containerSlug?: string
   variant?: ComponentProps<typeof VideoCard>['variant']
-  languageId: string
 }
 
 export function VideoGrid({
@@ -23,8 +22,7 @@ export function VideoGrid({
   onLoadMore,
   videos,
   containerSlug,
-  variant = 'expanded',
-  languageId
+  variant = 'expanded'
 }: VideoGridProps): ReactElement {
   return (
     <Grid
@@ -40,17 +38,16 @@ export function VideoGrid({
               video={video}
               containerSlug={containerSlug}
               variant={variant}
-              languageId={languageId}
             />
           </Grid>
         ))}
       {loading === true && (
         <>
           <Grid item xs={12} md={4} xl={3}>
-            <VideoCard languageId={languageId} variant={variant} />
+            <VideoCard variant={variant} />
           </Grid>
           <Grid item xs={12} md={4} xl={3}>
-            <VideoCard languageId={languageId} variant={variant} />
+            <VideoCard variant={variant} />
           </Grid>
           <Grid
             item
@@ -59,7 +56,7 @@ export function VideoGrid({
             xl={3}
             sx={{ display: { xs: 'none', md: 'block' } }}
           >
-            <VideoCard languageId={languageId} variant={variant} />
+            <VideoCard variant={variant} />
           </Grid>
           <Grid
             item
@@ -68,7 +65,7 @@ export function VideoGrid({
             xl={3}
             sx={{ display: { xs: 'none', xl: 'block' } }}
           >
-            <VideoCard languageId={languageId} variant={variant} />
+            <VideoCard variant={variant} />
           </Grid>
         </>
       )}

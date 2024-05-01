@@ -16,7 +16,6 @@ interface VideoCarouselProps {
   loading?: boolean
   containerSlug?: string
   variant?: ComponentProps<typeof VideoCard>['variant']
-  languageId: string
 }
 
 export function VideoCarousel({
@@ -24,8 +23,7 @@ export function VideoCarousel({
   loading,
   videos,
   containerSlug,
-  variant = 'expanded',
-  languageId
+  variant = 'expanded'
 }: VideoCarouselProps): ReactElement {
   const { breakpoints } = useTheme()
   const nextRef = useRef<HTMLDivElement>(null)
@@ -69,28 +67,28 @@ export function VideoCarousel({
           onClick={() => false}
         >
           <SwiperSlide>
-            <VideoCard languageId={languageId} variant={variant} />
+            <VideoCard variant={variant} />
           </SwiperSlide>
           <SwiperSlide>
-            <VideoCard languageId={languageId} variant={variant} />
+            <VideoCard variant={variant} />
           </SwiperSlide>
           <SwiperSlide>
-            <VideoCard languageId={languageId} variant={variant} />
+            <VideoCard variant={variant} />
           </SwiperSlide>
           <SwiperSlide>
-            <VideoCard languageId={languageId} variant={variant} />
+            <VideoCard variant={variant} />
           </SwiperSlide>
           <SwiperSlide>
-            <VideoCard languageId={languageId} variant={variant} />
+            <VideoCard variant={variant} />
           </SwiperSlide>
           <SwiperSlide>
-            <VideoCard languageId={languageId} variant={variant} />
+            <VideoCard variant={variant} />
           </SwiperSlide>
           <SwiperSlide>
-            <VideoCard languageId={languageId} variant={variant} />
+            <VideoCard variant={variant} />
           </SwiperSlide>
           <SwiperSlide>
-            <VideoCard languageId={languageId} variant={variant} />
+            <VideoCard variant={variant} />
           </SwiperSlide>
         </Swiper>
       )}
@@ -117,7 +115,6 @@ export function VideoCarousel({
                 containerSlug={containerSlug}
                 variant={variant}
                 active={activeVideoId === video.id}
-                languageId={languageId}
               />
             </SwiperSlide>
           ))}

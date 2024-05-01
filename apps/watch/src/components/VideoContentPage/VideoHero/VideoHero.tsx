@@ -11,16 +11,11 @@ import { VideoPlayer } from './VideoPlayer'
 const VIDEO_HERO_BOTTOM_SPACING = 150
 
 interface VideoHeroProps {
-  languageId: string
   onPlay?: () => void
   hasPlayed?: boolean
 }
 
-export function VideoHero({
-  onPlay,
-  hasPlayed,
-  languageId
-}: VideoHeroProps): ReactElement {
+export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [controlsVisible, setControlsVisible] = useState(true)
@@ -45,7 +40,7 @@ export function VideoHero({
 
   return (
     <>
-      <Header hideAbsoluteAppBar={!controlsVisible} languageId={languageId} />
+      <Header hideAbsoluteAppBar={!controlsVisible} />
       <Div100vh
         style={{
           marginBottom: isFullscreen ? 0 : -VIDEO_HERO_BOTTOM_SPACING,
@@ -70,17 +65,9 @@ export function VideoHero({
           data-testid="VideoHero"
         >
           {hasPlayed === true ? (
-            <VideoPlayer
-              languageId={languageId}
-              setControlsVisible={setControlsVisible}
-            />
+            <VideoPlayer setControlsVisible={setControlsVisible} />
           ) : (
-            !isPlaying && (
-              <VideoHeroOverlay
-                languageId={languageId}
-                handlePlay={handlePlay}
-              />
-            )
+            !isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />
           )}
         </Box>
       </Div100vh>

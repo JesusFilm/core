@@ -13,7 +13,7 @@ describe('VideoHero', () => {
       <MockedProvider>
         <SnackbarProvider>
           <VideoProvider value={{ content: videos[0] }}>
-            <VideoHero languageId="en" />
+            <VideoHero />
           </VideoProvider>
         </SnackbarProvider>
       </MockedProvider>

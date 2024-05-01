@@ -27,7 +27,6 @@ const Template: StoryObj<typeof PageWrapper> = {
       }}
     >
       <PageWrapper
-        languageId="en"
         hero={
           <Box
             sx={{
