@@ -179,10 +179,12 @@ export function BackgroundMediaVideo({
         preventDuplicate: true
       })
     } catch (e) {
-      enqueueSnackbar(e.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (e instanceof Error) {
+        enqueueSnackbar(e.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
   }
 

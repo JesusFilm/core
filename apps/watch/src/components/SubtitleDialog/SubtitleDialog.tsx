@@ -59,12 +59,12 @@ export function SubtitleDialog({
     ({ language }) => language
   ) as unknown as Language[]
 
-  function handleChange(result): void {
+  function handleChange(result?: Language): void {
     setSelected(result)
-    updateSubtitle(result.id)
+    updateSubtitle(result?.id)
   }
 
-  function updateSubtitle(id): void {
+  function updateSubtitle(id: string | undefined): void {
     const selected = data?.video?.variant?.subtitle?.find(
       (subtitle) => subtitle.language.id === id
     )
