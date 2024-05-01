@@ -9,6 +9,7 @@ import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { getTheme } from '@core/shared/ui/themes'
 
 import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
+import { JourneyFields } from '../__generated__/JourneyFields'
 
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
@@ -113,9 +114,10 @@ MyDocument.getInitialProps = async (ctx) => {
   // You can consider sharing the same emotion cache between all the SSR requests to speed up performance.
   // However, be aware that it can have global side effects.
   const cache = createEmotionCache({})
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { extractCriticalToChunks } = createEmotionServer(cache)
 
-  let pageProps
+  let pageProps: Pick<JourneyFields, 'language'> | undefined
 
   ctx.renderPage = async () =>
     await originalRenderPage({
