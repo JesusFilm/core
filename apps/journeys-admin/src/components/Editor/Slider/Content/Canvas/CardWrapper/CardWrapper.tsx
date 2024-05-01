@@ -9,7 +9,7 @@ import { MouseEvent, ReactElement } from 'react'
 
 import type { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { Card } from '@core/journeys/ui/Card'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 export function CardWrapper({ block, children }: WrapperProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -18,6 +18,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
     state: { selectedStep },
     dispatch
   } = useEditor()
+
   const openCardTemplates = (e: MouseEvent): void => {
     e.stopPropagation()
     dispatch({
@@ -27,6 +28,10 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
+    })
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Drawer
     })
   }
 

@@ -101,6 +101,10 @@ interface SetSelectedBlockAction {
   type: 'SetSelectedBlockAction'
   selectedBlock?: TreeBlock
 }
+interface SetSelectedBlockOnlyAction {
+  type: 'SetSelectedBlockOnlyAction'
+  selectedBlock?: TreeBlock
+}
 export interface SetSelectedBlockByIdAction {
   type: 'SetSelectedBlockByIdAction'
   selectedBlockId?: string
@@ -128,6 +132,7 @@ type EditorAction =
   | SetActiveSlideAction
   | SetSelectedAttributeIdAction
   | SetSelectedBlockAction
+  | SetSelectedBlockOnlyAction
   | SetSelectedBlockByIdAction
   | SetSelectedGoalUrlAction
   | SetSelectedStepAction
@@ -156,10 +161,7 @@ export const reducer = (
     case 'SetActiveSlideAction':
       return {
         ...state,
-        activeContent:
-          action.activeSlide === ActiveSlide.JourneyFlow
-            ? ActiveContent.Canvas
-            : state.activeContent,
+        activeContent: state.activeContent,
         activeSlide: action.activeSlide
       }
     case 'SetSelectedAttributeIdAction':
@@ -172,6 +174,8 @@ export const reducer = (
         activeContent: ActiveContent.Canvas,
         activeSlide: ActiveSlide.Content
       }
+    case 'SetSelectedBlockOnlyAction':
+      return { ...state, selectedBlock: action.selectedBlock }
     case 'SetSelectedBlockByIdAction':
       return {
         ...state,
