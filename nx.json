@@ -92,15 +92,5 @@
     ]
   },
   "parallel": 1,
-  "plugins": [
-    {
-      "plugin": "@nx/next/plugin",
-      "options": {
-        "buildTargetName": "build",
-        "devTargetName": "dev",
-        "startTargetName": "start"
-      }
-    }
-  ],
   "defaultBase": "main"
 }
