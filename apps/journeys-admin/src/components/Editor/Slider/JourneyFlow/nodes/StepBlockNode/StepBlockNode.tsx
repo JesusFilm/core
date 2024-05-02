@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -65,7 +66,6 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
     <BaseNode
       id={step.id}
       isTargetConnectable
-      isSourceConnectable="arrow"
       selected={
         activeContent === ActiveContent.Canvas && selectedStep?.id === step.id
       }
@@ -239,20 +239,31 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
                   </Typography>
                 </Box>
               </CardContent>
+              <CardActionArea>
+                <Stack
+                  direction="column"
+                  spacing={2}
+                  sx={
+                    {
+                      // height: 28
+                    }
+                  }
+                >
+                  <ActionButton
+                    block={{
+                      __typename: 'CustomBlock',
+                      id: step.id,
+                      label: 'Swipe'
+                    }}
+                    step={step}
+                  />
+                  {actionBlocks.map((block) => (
+                    <ActionButton key={block.id} block={block} step={step} />
+                  ))}
+                </Stack>
+              </CardActionArea>
             </Card>
           </Box>
-
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              height: 28
-            }}
-          >
-            {actionBlocks.map((block) => (
-              <ActionButton key={block.id} block={block} step={step} />
-            ))}
-          </Stack>
         </Stack>
       )}
     </BaseNode>

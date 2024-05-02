@@ -47,7 +47,7 @@ export function BaseNode({
         <StyledHandle
           type="target"
           data-testid="BaseNodeTopHandle"
-          position={Position.Top}
+          position={Position.Left}
           sx={{
             width: 7.5,
             height: 7.5,
@@ -60,12 +60,12 @@ export function BaseNode({
           }}
         />
       )}
-      {isSourceConnectable !== false && (
+      {isSourceConnectable === 'arrow' && (
         <StyledHandle
           id={id}
           type="source"
           data-testid="BaseNodeBottomHandle"
-          position={Position.Bottom}
+          position={Position.Right}
           onConnect={onSourceConnect}
           {...sourceHandleProps}
           sx={{

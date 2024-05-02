@@ -11,10 +11,17 @@ import {
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../../../../libs/useNavigateToBlockActionUpdateMutation'
+import { useStepBlockNextBlockUpdateMutation } from '../../../../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { BaseNode } from '../../BaseNode'
 
+interface CustomBlock {
+  __typename: 'CustomBlock'
+  id: string
+  label: string
+}
+
 interface ActionButtonProps {
-  block: TreeBlock<Block>
+  block: TreeBlock<Block> | CustomBlock
   step: TreeBlock<StepBlock>
 }
 
@@ -42,33 +49,54 @@ export function ActionButton({ block, step }: ActionButtonProps): ReactElement {
     case 'VideoBlock':
       title = block.video?.title?.[0]?.value ?? block.title ?? t('Video')
       break
+    case 'CustomBlock':
+      title = block.label
+      break
   }
 
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
+  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const { journey } = useJourney()
 
   async function handleSourceConnect(params): Promise<void> {
     if (journey == null) return
 
-    await navigateToBlockActionUpdate(block, params.target)
+    if (block.__typename === 'CustomBlock') {
+      const targetId = params.target
+      const sourceId = params.source
+      if (journey == null || targetId == null || sourceId == null) return
+
+      await stepBlockNextBlockUpdate({
+        variables: {
+          id: sourceId,
+          journeyId: journey.id,
+          input: {
+            nextBlockId: targetId
+          }
+        }
+      })
+    } else {
+      await navigateToBlockActionUpdate(block, params.target)
+    }
   }
 
   return (
     <BaseNode
       id={block.id}
-      isSourceConnectable
+      isSourceConnectable="arrow"
       onSourceConnect={handleSourceConnect}
       isTargetConnectable={false}
     >
       <Box
         sx={{
-          borderRadius: 20,
-          border: '1px solid grey',
-          backgroundColor: '#eff2f5',
-          width: 125,
-          height: 28,
-          px: 4,
-          position: 'relative'
+          // borderRadius: 20,
+          // border: '1px solid grey',
+          borderTop: '1px solid grey'
+          // backgroundColor: '#eff2f5',
+          // width: 125,
+          // height: 28,
+          // px: 4,
+          // position: 'relative'
         }}
       >
         <Typography

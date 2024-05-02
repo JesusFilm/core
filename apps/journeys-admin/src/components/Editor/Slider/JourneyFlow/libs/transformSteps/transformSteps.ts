@@ -31,23 +31,25 @@ export function transformSteps(
   function connectBlockToNextBlock({ block, step, steps }: Connection): void {
     const index = findIndex(steps, (child) => child.id === step.id)
     if (index < 0) return
-    if (step.nextBlockId == null && steps[index + 1] != null) {
-      edges.push({
-        id: `${block.id}->${steps[index + 1].id}`,
-        source: step.id,
-        sourceHandle: block.id,
-        target: steps[index + 1].id,
-        style: {
-          strokeDasharray: 4
-        }
-      })
-    }
+    // if (step.nextBlockId == null && steps[index + 1] != null) {
+    //   edges.push({
+    //     id: `${block.id}->${steps[index + 1].id}`,
+    //     source: step.id,
+    //     sourceHandle: block.id,
+    //     target: steps[index + 1].id,
+    //     // type: 'smoothstep',
+    //     style: {
+    //       strokeDasharray: 4
+    //     }
+    //   })
+    // }
     if (step.nextBlockId != null && step.nextBlockId !== step.id) {
       edges.push({
         id: `${block.id}->${step.nextBlockId}`,
         source: step.id,
         sourceHandle: block.id !== step.id ? block.id : undefined,
         target: step.nextBlockId,
+        // type: 'smoothstep',
         style: {
           strokeDasharray: 4
         }
@@ -64,6 +66,7 @@ export function transformSteps(
         source: step.id,
         sourceHandle: block.id,
         target: block.action.blockId
+        // type: 'smoothstep'
       })
     }
     if (block.action.__typename === 'NavigateAction') {
