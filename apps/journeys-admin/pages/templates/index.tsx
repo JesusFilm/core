@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { useUser, withUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import {
   GetJourneys,
@@ -18,6 +18,7 @@ import { GetMe } from '../../__generated__/GetMe'
 import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
+import { useTeam } from '../../src/components/Team/TeamProvider'
 import { TemplateGallery } from '../../src/components/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_JOURNEYS } from '../../src/libs/useJourneysQuery/useJourneysQuery'
@@ -29,10 +30,14 @@ function TemplateIndexPage(): ReactElement {
   const user = useUser()
   const router = useRouter()
   const { data } = useQuery<GetMe>(GET_ME)
-
+  const { query } = useTeam()
   if (data?.me?.id != null && !data?.me?.emailVerified) {
     void router.push('/users/verify?redirect=/templates')
   }
+
+  useEffect(() => {
+    void query.refetch()
+  }, [user.id, query])
 
   return (
     <>
