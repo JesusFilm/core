@@ -40,14 +40,20 @@ export class BucketService {
       }
     })
 
-    bucketFile.on('httpUploadProgress', async (progress) => {
-      const percentage = ((progress.loaded ?? 0) / (progress.total ?? 1)) * 100
-      if (progressCallback != null) {
-        await progressCallback(percentage)
-      }
-      console.log('Uploading:', percentage, '%')
+    bucketFile.on('httpUploadProgress', (progress) => {
+      console.log('PROGRESS', progress)
+      const percentage = ((progress.loaded ?? 0) / (progress.total ?? 1)) * 100;
+      void Promise.all([
+        this.executeCallback(progressCallback, percentage)
+      ])
     })
 
-    return bucketFile.done()
+    return await bucketFile.done()
+  }
+
+  async executeCallback(progressCallback: ((arg0: number) => void) | null | undefined, progress: number): Promise<void> {
+    if (progressCallback != null) {
+      await progressCallback(progress)
+    }
   }
 }
