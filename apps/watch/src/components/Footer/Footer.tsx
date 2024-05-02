@@ -33,7 +33,7 @@ export function Footer(): ReactElement {
           <Stack direction="row" spacing={4} justifyContent="space-between">
             <Stack direction="row" spacing={10} justifyContent="space-between">
               <Typography variant="body2">
-                {t('Copyright © 1995-{{date}}', {
+                {t('Copyright © 1995-{date}', {
                   date: new Date().getFullYear()
                 })}
               </Typography>

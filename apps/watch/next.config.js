@@ -74,8 +74,8 @@ const nextConfig = {
 
 const plugins = [
   // Add more Next.js plugins to this list if needed.
-  withNextIntl,
-  withNx
+  withNx,
+  withNextIntl
 ]
 
 module.exports = composePlugins(...plugins)(nextConfig)

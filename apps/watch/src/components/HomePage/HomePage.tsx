@@ -11,6 +11,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { escapePeriods } from '../../libs/escapePeriods'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 

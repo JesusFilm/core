@@ -1,4 +1,6 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter'
+import { NextIntlClientProvider, useMessages } from 'next-intl'
+import { unstable_setRequestLocale } from 'next-intl/server'
 import { ReactNode } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -10,12 +12,11 @@ import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
 import '../../../public/fonts/fonts.css'
-import { unstable_setRequestLocale } from 'next-intl/server'
 
 export const metadata = {
   title: 'Watch | Jesus Film Project',
   description:
-    'Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages.'
+    'Free Gospel Video Streaming Library Watch, learn and share the gospel in over 2000 languages.'
 }
 
 export default function RootLayout({
@@ -26,6 +27,7 @@ export default function RootLayout({
   params: { locale: string }
 }): ReactNode {
   unstable_setRequestLocale(locale)
+  const messages = useMessages()
   return (
     <html lang={locale}>
       <head>
@@ -94,16 +96,18 @@ export default function RootLayout({
            `}
             </script>
           )}
-        <ApolloWrapper>
-          <AppRouterCacheProvider>
-            <ThemeProvider
-              themeName={ThemeName.website}
-              themeMode={ThemeMode.light}
-            >
-              {children}
-            </ThemeProvider>
-          </AppRouterCacheProvider>
-        </ApolloWrapper>
+        <NextIntlClientProvider messages={messages}>
+          <ApolloWrapper>
+            <AppRouterCacheProvider>
+              <ThemeProvider
+                themeName={ThemeName.website}
+                themeMode={ThemeMode.light}
+              >
+                {children}
+              </ThemeProvider>
+            </AppRouterCacheProvider>
+          </ApolloWrapper>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

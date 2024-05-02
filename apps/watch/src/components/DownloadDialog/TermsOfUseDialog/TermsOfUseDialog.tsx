@@ -1,8 +1,10 @@
 import Typography from '@mui/material/Typography'
-import { Trans, useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ComponentProps, ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+
+import { escapePeriods } from '../../../libs/escapePeriods'
 
 interface TermsOfUseDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
@@ -14,7 +16,7 @@ export function TermsOfUseDialog({
   onClose,
   onSubmit
 }: TermsOfUseDialogProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
   return (
     <Dialog
       open={open}
@@ -31,9 +33,9 @@ export function TermsOfUseDialog({
       divider
       testId="TermsOfUseDialog"
     >
-      <Trans t={t}>
-        <Typography>
-          PLEASE CAREFULLY REVIEW THE TERMS OF USE OF THIS SITE. As your use of
+      <Typography>
+        {t.markup(
+          escapePeriods(`PLEASE CAREFULLY REVIEW THE TERMS OF USE OF THIS SITE. As your use of
           the site will indicate your acceptance of these terms, do not use the
           site if you do not agree to be bound by these terms. We may
           periodically change the terms, so please check them from time to time
@@ -127,9 +129,9 @@ export function TermsOfUseDialog({
           in this site are appropriate or available for use in other locations.
           If you access this site from outside the United States, be advised
           this site may contain references to products and other information
-          that may not be available or may be prohibited in your country.
-        </Typography>
-      </Trans>
+          that may not be available or may be prohibited in your country.`)
+        )}
+      </Typography>
     </Dialog>
   )
 }

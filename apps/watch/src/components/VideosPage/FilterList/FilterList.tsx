@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
@@ -98,7 +98,7 @@ export function FilterList({
   filter,
   onChange
 }: FilterListProps): ReactElement {
-  const { t } = useTranslation()
+  const t = useTranslations('apps-watch')
   const { data: languagesData, loading: languagesLoading } =
     useQuery<GetLanguages>(GET_LANGUAGES, {
       variables: { languageId: '529' }

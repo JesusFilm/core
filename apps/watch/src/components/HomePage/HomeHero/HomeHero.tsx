@@ -63,7 +63,7 @@ export function HomeHero(): ReactElement {
             >
               {t('Streaming')}
             </Box>{' '}
-            {t('Library.')}
+            {t('Library&#46;')}
           </Typography>
           <Typography
             variant="h5"

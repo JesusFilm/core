@@ -5,8 +5,8 @@ import {
   GetHomeVideos,
   GetHomeVideos_videos as Video
 } from '../../../__generated__/GetHomeVideos'
-import { locales } from '../../../i18n'
 import { HomePage } from '../../components/HomePage'
+import { locales } from '../../i18n'
 import { getApolloClient } from '../../libs/apolloClient/apolloClient'
 
 import { GET_HOME_VIDEOS } from './grahql'
@@ -19,9 +19,9 @@ export async function generateStaticParams(): Promise<
 }
 
 export default async function Index({
-  locale
+  params: { locale }
 }: {
-  locale: string
+  params: { locale: string }
 }): Promise<ReactElement> {
   unstable_setRequestLocale(locale)
   const { data } = await getApolloClient().query<GetHomeVideos>({

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "preserve",
+    "module": "ESNext",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "types": ["node", "jest"],
