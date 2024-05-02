@@ -4,28 +4,30 @@ import { Subjects } from '@casl/prisma'
 
 import {
   Batch, 
-  BatchResource, 
+  BatchTask, 
   Channel, 
   ChannelYoutube, 
   GoogleAccessToken, 
-  GoogleDriveResource, 
   Nexus, 
   Resource, 
+  ResourceChannel, 
   ResourceLocalization, 
-  UserNexus, 
-  UserRole
+  ResourceLocalizationSource, 
+  ResourceSource, 
+  UserNexus
 } from '.prisma/api-nexus-client'
 
 export type PrismaSubjects = Subjects<{
   Batch: Batch, 
-  BatchResource: BatchResource, 
+  BatchTask: BatchTask, 
   Channel: Channel, 
   ChannelYoutube: ChannelYoutube, 
   GoogleAccessToken: GoogleAccessToken, 
-  GoogleDriveResource: GoogleDriveResource, 
   Nexus: Nexus, 
   Resource: Resource, 
+  ResourceChannel: ResourceChannel, 
   ResourceLocalization: ResourceLocalization, 
-  UserNexus: UserNexus, 
-  UserRole: UserRole
+  ResourceLocalizationSource: ResourceLocalizationSource, 
+  ResourceSource: ResourceSource, 
+  UserNexus: UserNexus
 }>

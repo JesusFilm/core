@@ -53,7 +53,7 @@ export class ResourceResolver {
         AND: [accessibleResources, filter]
       },
       orderBy: { createdAt: 'desc' },
-      include: { localizations: true },
+      include: { resourceLocalizations: true },
       take: where?.limit ?? undefined
     })
   }
@@ -68,7 +68,7 @@ export class ResourceResolver {
         id
       },
       include: {
-        localizations: true,
+        resourceLocalizations: true,
         nexus: { include: { userNexuses: true } }
       }
     })
@@ -94,14 +94,13 @@ export class ResourceResolver {
         data: {
           ...input,
           id,
-          sourceType: 'other',
           status: ResourceStatus.published
         }
       })
       const resource = await tx.resource.findUnique({
         where: { id },
         include: {
-          localizations: true,
+          resourceLocalizations: true,
           nexus: { include: { userNexuses: true } }
         }
       })
@@ -143,7 +142,7 @@ export class ResourceResolver {
         name: input.name ?? undefined
       },
       include: {
-        localizations: true
+        resourceLocalizations: true
       }
     })
   }
@@ -173,7 +172,7 @@ export class ResourceResolver {
         status: ResourceStatus.deleted
       },
       include: {
-        localizations: true
+        resourceLocalizations: true
       }
     })
   }
@@ -226,24 +225,23 @@ export class ResourceResolver {
           nexusId: nexus.id,
           status: 'published',
           createdAt: new Date(),
-          sourceType: 'googleDrive'
         }
       })
 
-      await this.prismaService.googleDriveResource.create({
+      await this.prismaService.resourceSource.create({
         data: {
           id: uuidv4(),
           resourceId: resource.id,
-          driveId: driveFile.id,
-          mimeType: driveFile.mimeType,
-          refreshToken: input.authCode ?? ''
+          videoGoogleDriveId: driveFile.id,
+          videoMimeType: driveFile.mimeType,
+          videoGoogleDriveRefreshToken: input.authCode ?? ''
         }
       })
     })
 
     return await this.prismaService.resource.findMany({
-      where: { googleDrive: { driveId: { in: input.fileIds } } },
-      include: { googleDrive: true }
+      where: { resourceSource: { videoGoogleDriveId: { in: input.fileIds } } },
+      include: { resourceSource: true }
     })
   }
 
@@ -292,11 +290,10 @@ export class ResourceResolver {
           name: row.filename ?? '',
           nexusId: nexus.id,
           status: row.channelData?.id !== null ? 'processing' : 'published',
-          sourceType: 'template',
           createdAt: new Date(),
           category: row.category,
           privacy: row.privacy as PrivacyStatus,
-          localizations: {
+          resourceLocalizations: {
             create: {
               title: row.title ?? '',
               description: row.description ?? '',
@@ -304,11 +301,11 @@ export class ResourceResolver {
               language: row.spoken_language ?? ''
             }
           },
-          googleDrive: {
+          resourceSource: {
             create: {
-              mimeType: row.driveFile?.mimeType ?? '',
-              driveId: row.driveFile?.id ?? '',
-              refreshToken: googleAccessToken.refreshToken
+              videoMimeType: row.driveFile?.mimeType ?? '',
+              videoGoogleDriveId: row.driveFile?.id ?? '',
+              videoGoogleDriveRefreshToken: googleAccessToken.refreshToken
             }
           }
         }
