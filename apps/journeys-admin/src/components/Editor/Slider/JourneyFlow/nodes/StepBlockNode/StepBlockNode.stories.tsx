@@ -885,7 +885,7 @@ export const Hover = {
       activeContent: ActiveContent.Canvas
     }
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
 
     await waitFor(async () => {

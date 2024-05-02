@@ -67,7 +67,7 @@ export const Selected = {
       goalType: GoalType.Chat
     }
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
     await userEvent.click(canvas.getByText('https://www.ClickedSelected.com/'))
   }
