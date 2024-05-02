@@ -8,7 +8,7 @@ const videoTitleSchema = object({
   value: string().required(),
   videoId: string().required(),
   languageId: string().required(),
-  primary: boolean()
+  primary: boolean().required()
 })
 
 type VideoTitle = InferType<typeof videoTitleSchema>
@@ -22,23 +22,15 @@ export class ImporterVideoTitleService extends ImporterService<VideoTitle> {
   }
 
   protected async save(videoTitle: VideoTitle): Promise<void> {
-    const record = await this.prismaService.videoTitle.findUnique({
+    await this.prismaService.videoTitle.upsert({
       where: {
         videoId_languageId: {
           videoId: videoTitle.videoId,
           languageId: videoTitle.languageId
         }
-      }
+      },
+      update: videoTitle,
+      create: videoTitle
     })
-    if (record != null)
-      await this.prismaService.videoTitle.update({
-        where: {
-          videoId_languageId: {
-            videoId: videoTitle.videoId,
-            languageId: videoTitle.languageId
-          }
-        },
-        data: videoTitle
-      })
   }
 }

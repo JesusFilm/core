@@ -29,23 +29,15 @@ export class ImporterVideoVariantDownloadsService extends ImporterService<VideoV
   protected async save(
     videoVariantDownloads: VideoVariantDownloads
   ): Promise<void> {
-    const record = await this.prismaService.videoVariantDownload.findUnique({
+    await this.prismaService.videoVariantDownload.upsert({
       where: {
         quality_videoVariantId: {
           quality: videoVariantDownloads.quality,
           videoVariantId: videoVariantDownloads.videoVariantId
         }
-      }
+      },
+      update: videoVariantDownloads,
+      create: videoVariantDownloads
     })
-    if (record != null)
-      await this.prismaService.videoVariantDownload.update({
-        where: {
-          quality_videoVariantId: {
-            quality: videoVariantDownloads.quality,
-            videoVariantId: videoVariantDownloads.videoVariantId
-          }
-        },
-        data: videoVariantDownloads
-      })
   }
 }

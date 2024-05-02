@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { VideoVariantSubtitle } from '.prisma/api-videos-client'
-
 import { PrismaService } from '../../../lib/prisma.service'
 
 import { ImporterVideoVariantSubtitlesService } from './importerVideovariantSubtitile.service'
@@ -32,9 +30,6 @@ describe('ImporterVideoVariantSubtitlesService', () => {
 
   describe('import', () => {
     it('should update video variant subtitle', async () => {
-      prismaService.videoVariantSubtitle.findUnique.mockResolvedValueOnce({
-        id: 'mockValue0'
-      } as unknown as VideoVariantSubtitle)
       await service.import({
         value: 'mockValue',
         primary: 1,
@@ -43,53 +38,26 @@ describe('ImporterVideoVariantSubtitlesService', () => {
         format: 'VTT',
         extraStuff: 'randomData'
       })
-      expect(
-        prismaService.videoVariantSubtitle.findUnique
-      ).toHaveBeenCalledWith({
-        where: {
-          videoVariantId_languageId: {
-            languageId: '529',
-            videoVariantId: 'mockVideoVariantId'
-          }
-        }
-      })
-      expect(prismaService.videoVariantSubtitle.update).toHaveBeenCalledWith({
+      expect(prismaService.videoVariantSubtitle.upsert).toHaveBeenCalledWith({
         where: {
           videoVariantId_languageId: {
             languageId: '529',
             videoVariantId: 'mockVideoVariantId'
           }
         },
-        data: {
+        create: {
+          languageId: '529',
+          primary: true,
+          value: 'mockValue',
+          videoVariantId: 'mockVideoVariantId'
+        },
+        update: {
           languageId: '529',
           primary: true,
           value: 'mockValue',
           videoVariantId: 'mockVideoVariantId'
         }
       })
-    })
-
-    it('should not update video variant subtitle when not found', async () => {
-      await service.import({
-        value: 'mockValue',
-        primary: 1,
-        languageId: 529,
-        videoVariantId: 'mockVideoVariantId',
-        format: 'VTT',
-        extraStuff: 'randomData'
-      })
-      expect(
-        prismaService.videoVariantSubtitle.findUnique
-      ).toHaveBeenCalledWith({
-        where: {
-          videoVariantId_languageId: {
-            languageId: '529',
-            videoVariantId: 'mockVideoVariantId'
-          }
-        }
-      })
-
-      expect(prismaService.videoVariantDownload.update).not.toHaveBeenCalled()
     })
 
     it('should throw error when row is invalid', async () => {

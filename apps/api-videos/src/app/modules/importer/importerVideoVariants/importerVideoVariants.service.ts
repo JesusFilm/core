@@ -48,20 +48,15 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
   }
 
   protected async save(videoVariant: VideoVariants): Promise<void> {
-    const record = await this.prismaService.videoVariant.findUnique({
+    const transformedVideoVariant = await this.transform(videoVariant)
+    await this.prismaService.videoVariant.upsert({
       where: {
         id: videoVariant.id
-      }
+      },
+      update: transformedVideoVariant,
+      create: transformedVideoVariant
     })
-    if (record != null) {
-      const transformedVideoVariant = await this.transform(videoVariant)
-      await this.prismaService.videoVariant.update({
-        where: {
-          id: transformedVideoVariant.id
-        },
-        data: transformedVideoVariant
-      })
-    }
+
     console.log('finished uploading: ', videoVariant.id)
   }
 }

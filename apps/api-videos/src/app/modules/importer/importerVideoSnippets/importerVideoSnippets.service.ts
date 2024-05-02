@@ -21,24 +21,15 @@ export class ImporterVideoSnippetsService extends ImporterService<VideoSnippet> 
   }
 
   protected async save(videoSnippet: VideoSnippet): Promise<void> {
-    const record = await this.prismaService.videoSnippet.findUnique({
+    await this.prismaService.videoSnippet.upsert({
       where: {
         videoId_languageId: {
           videoId: videoSnippet.videoId,
           languageId: videoSnippet.languageId
         }
-      }
+      },
+      update: videoSnippet,
+      create: videoSnippet
     })
-    if (record != null) {
-      await this.prismaService.videoSnippet.update({
-        where: {
-          videoId_languageId: {
-            videoId: videoSnippet.videoId,
-            languageId: videoSnippet.languageId
-          }
-        },
-        data: videoSnippet
-      })
-    }
   }
 }

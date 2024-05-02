@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { VideoVariantDownload } from '.prisma/api-videos-client'
-
 import { PrismaService } from '../../../lib/prisma.service'
 
 import { ImporterVideoVariantDownloadsService } from './importerVideoVariantDownloads.service'
@@ -31,10 +29,7 @@ describe('ImporterVideoVariantDownloadsService', () => {
   })
 
   describe('import', () => {
-    it('should update video variant download', async () => {
-      prismaService.videoVariantDownload.findUnique.mockResolvedValueOnce({
-        id: 'mockValue0'
-      } as unknown as VideoVariantDownload)
+    it('should upsert video variant download', async () => {
       await service.import({
         quality: 'low',
         size: 1111112,
@@ -42,52 +37,26 @@ describe('ImporterVideoVariantDownloadsService', () => {
         videoVariantId: 'mockVariantId',
         extraStuff: 'randomData'
       })
-      expect(
-        prismaService.videoVariantDownload.findUnique
-      ).toHaveBeenCalledWith({
-        where: {
-          quality_videoVariantId: {
-            quality: 'low',
-            videoVariantId: 'mockVariantId'
-          }
-        }
-      })
-      expect(prismaService.videoVariantDownload.update).toHaveBeenCalledWith({
+      expect(prismaService.videoVariantDownload.upsert).toHaveBeenCalledWith({
         where: {
           quality_videoVariantId: {
             quality: 'low',
             videoVariantId: 'mockVariantId'
           }
         },
-        data: {
+        create: {
+          quality: 'low',
+          size: 1111112,
+          url: 'www.example.com',
+          videoVariantId: 'mockVariantId'
+        },
+        update: {
           quality: 'low',
           size: 1111112,
           url: 'www.example.com',
           videoVariantId: 'mockVariantId'
         }
       })
-    })
-
-    it('should not update video variant download when not found', async () => {
-      await service.import({
-        quality: 'low',
-        size: 1111112,
-        url: 'www.example.com',
-        videoVariantId: 'mockVariantId',
-        extraStuff: 'randomData'
-      })
-      expect(
-        prismaService.videoVariantDownload.findUnique
-      ).toHaveBeenCalledWith({
-        where: {
-          quality_videoVariantId: {
-            quality: 'low',
-            videoVariantId: 'mockVariantId'
-          }
-        }
-      })
-
-      expect(prismaService.videoVariantDownload.update).not.toHaveBeenCalled()
     })
 
     it('should throw error when row is invalid', async () => {

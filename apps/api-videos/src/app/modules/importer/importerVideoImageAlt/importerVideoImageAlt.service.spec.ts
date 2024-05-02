@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { VideoTitle } from '.prisma/api-videos-client'
-
 import { PrismaService } from '../../../lib/prisma.service'
 
 import { ImporterVideoImageAltService } from './importerVideoImageAlt.service'
@@ -31,58 +29,33 @@ describe('ImporterVideoImageAltService', () => {
   })
 
   describe('import', () => {
-    it('should update video image alt', async () => {
-      prismaService.videoImageAlt.findUnique.mockResolvedValueOnce({
-        id: 'mockValue0',
-        videoId: 'mockVideoId',
-        languageId: '529'
-      } as unknown as VideoTitle)
+    it('should upsert video image alt', async () => {
       await service.import({
         value: 'mockValue0',
         videoId: 'mockVideoId',
         languageId: 529,
         primary: 1
       })
-      expect(prismaService.videoImageAlt.findUnique).toHaveBeenCalledWith({
+      expect(prismaService.videoImageAlt.upsert).toHaveBeenCalledWith({
         where: {
           videoId_languageId: {
             languageId: '529',
             videoId: 'mockVideoId'
           }
-        }
-      })
-      expect(prismaService.videoImageAlt.update).toHaveBeenCalledWith({
-        data: {
+        },
+        create: {
           languageId: '529',
           primary: true,
           value: 'mockValue0',
           videoId: 'mockVideoId'
         },
-        where: {
-          videoId_languageId: {
-            languageId: '529',
-            videoId: 'mockVideoId'
-          }
+        update: {
+          languageId: '529',
+          primary: true,
+          value: 'mockValue0',
+          videoId: 'mockVideoId'
         }
       })
-    })
-
-    it('should not update video image alt when not found', async () => {
-      await service.import({
-        value: 'mockValue0',
-        videoId: 'mockVideoId',
-        languageId: 529,
-        primary: 1
-      })
-      expect(prismaService.videoImageAlt.findUnique).toHaveBeenCalledWith({
-        where: {
-          videoId_languageId: {
-            languageId: '529',
-            videoId: 'mockVideoId'
-          }
-        }
-      })
-      expect(prismaService.videoImageAlt.update).not.toHaveBeenCalled()
     })
 
     it('should throw error when row is invalid', async () => {

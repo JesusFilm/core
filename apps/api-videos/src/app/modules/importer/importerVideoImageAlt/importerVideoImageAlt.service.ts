@@ -21,24 +21,15 @@ export class ImporterVideoImageAltService extends ImporterService<VideoImageAlt>
   }
 
   protected async save(videoImageAlt: VideoImageAlt): Promise<void> {
-    const record = await this.prismaService.videoImageAlt.findUnique({
+    await this.prismaService.videoImageAlt.upsert({
       where: {
         videoId_languageId: {
           videoId: videoImageAlt.videoId,
           languageId: videoImageAlt.languageId
         }
-      }
+      },
+      update: videoImageAlt,
+      create: videoImageAlt
     })
-    if (record != null) {
-      await this.prismaService.videoImageAlt.update({
-        where: {
-          videoId_languageId: {
-            videoId: videoImageAlt.videoId,
-            languageId: videoImageAlt.languageId
-          }
-        },
-        data: videoImageAlt
-      })
-    }
   }
 }

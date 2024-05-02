@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { VideoStudyQuestion } from '.prisma/api-videos-client'
-
 import { PrismaService } from '../../../lib/prisma.service'
 
 import { ImporterVideoStudyQuestionsService } from './importerVideoStudyQuestions.service'
@@ -31,12 +29,7 @@ describe('ImporterVideoStudyQuestionsService', () => {
   })
 
   describe('import', () => {
-    it('should update video study questions', async () => {
-      prismaService.videoStudyQuestion.findUnique.mockResolvedValueOnce({
-        id: 'mockValue0',
-        videoId: 'mockVideoId',
-        languageId: '529'
-      } as unknown as VideoStudyQuestion)
+    it('should upsert video study questions', async () => {
       await service.import({
         value: 'mockValue0',
         videoId: 'mockVideoId',
@@ -45,53 +38,31 @@ describe('ImporterVideoStudyQuestionsService', () => {
         order: 3,
         crowdinId: 'mockCrowdinId'
       })
-      expect(prismaService.videoStudyQuestion.findUnique).toHaveBeenCalledWith({
+      expect(prismaService.videoStudyQuestion.upsert).toHaveBeenCalledWith({
         where: {
           videoId_languageId_order: {
             languageId: '529',
             videoId: 'mockVideoId',
             order: 3
           }
-        }
-      })
-      expect(prismaService.videoStudyQuestion.update).toHaveBeenCalledWith({
-        data: {
+        },
+        create: {
+          crowdinId: 'mockCrowdinId',
           languageId: '529',
+          order: 3,
           primary: true,
           value: 'mockValue0',
-          videoId: 'mockVideoId',
-          crowdinId: 'mockCrowdinId',
-          order: 3
+          videoId: 'mockVideoId'
         },
-        where: {
-          videoId_languageId_order: {
-            languageId: '529',
-            videoId: 'mockVideoId',
-            order: 3
-          }
+        update: {
+          crowdinId: 'mockCrowdinId',
+          languageId: '529',
+          order: 3,
+          primary: true,
+          value: 'mockValue0',
+          videoId: 'mockVideoId'
         }
       })
-    })
-
-    it('should not update video study questions when not found', async () => {
-      await service.import({
-        value: 'mockValue0',
-        videoId: 'mockVideoId',
-        languageId: 529,
-        primary: 1,
-        order: 3,
-        crowdinId: 'mockCrowdinId'
-      })
-      expect(prismaService.videoStudyQuestion.findUnique).toHaveBeenCalledWith({
-        where: {
-          videoId_languageId_order: {
-            languageId: '529',
-            videoId: 'mockVideoId',
-            order: 3
-          }
-        }
-      })
-      expect(prismaService.videoStudyQuestion.update).not.toHaveBeenCalled()
     })
 
     it('should throw error when row is invalid', async () => {

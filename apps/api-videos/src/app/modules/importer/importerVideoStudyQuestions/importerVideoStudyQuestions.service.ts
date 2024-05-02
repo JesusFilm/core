@@ -8,7 +8,7 @@ const videoStudyQuestions = object({
   value: string().required(),
   videoId: string().required(),
   languageId: string().required(),
-  primary: boolean(),
+  primary: boolean().required(),
   order: number().required(),
   crowdinId: string().required()
 })
@@ -26,25 +26,16 @@ export class ImporterVideoStudyQuestionsService extends ImporterService<VideoStu
   protected async save(
     videoStudyQuestions: VideoStudyQuestions
   ): Promise<void> {
-    const record = await this.prismaService.videoStudyQuestion.findUnique({
+    await this.prismaService.videoStudyQuestion.upsert({
       where: {
         videoId_languageId_order: {
           videoId: videoStudyQuestions.videoId,
           languageId: videoStudyQuestions.languageId,
           order: videoStudyQuestions.order
         }
-      }
+      },
+      update: videoStudyQuestions,
+      create: videoStudyQuestions
     })
-    if (record != null)
-      await this.prismaService.videoStudyQuestion.update({
-        where: {
-          videoId_languageId_order: {
-            videoId: videoStudyQuestions.videoId,
-            languageId: videoStudyQuestions.languageId,
-            order: videoStudyQuestions.order
-          }
-        },
-        data: videoStudyQuestions
-      })
   }
 }

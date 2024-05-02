@@ -26,25 +26,18 @@ export class ImporterVideoVariantSubtitlesService extends ImporterService<VideoV
   protected async save(
     videoVariantSubtitles: VideoVariantSubtitles
   ): Promise<void> {
+    const input = omit(videoVariantSubtitles, ['format'])
     if (videoVariantSubtitles.format === 'VTT') {
-      const record = await this.prismaService.videoVariantSubtitle.findUnique({
+      await this.prismaService.videoVariantSubtitle.upsert({
         where: {
           videoVariantId_languageId: {
             videoVariantId: videoVariantSubtitles.videoVariantId,
             languageId: videoVariantSubtitles.languageId
           }
-        }
+        },
+        update: input,
+        create: input
       })
-      if (record != null)
-        await this.prismaService.videoVariantSubtitle.update({
-          where: {
-            videoVariantId_languageId: {
-              videoVariantId: videoVariantSubtitles.videoVariantId,
-              languageId: videoVariantSubtitles.languageId
-            }
-          },
-          data: omit(videoVariantSubtitles, ['format'])
-        })
     }
   }
 }
