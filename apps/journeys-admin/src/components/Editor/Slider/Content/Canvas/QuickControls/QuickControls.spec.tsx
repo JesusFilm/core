@@ -10,11 +10,16 @@ import { GetAdminJourney_journey_blocks_VideoBlock as VideoBlock } from '../../.
 import { QuickControls } from '.'
 
 describe('QuickControls', () => {
+  const videoBlock = {
+    __typename: 'VideoBlock',
+    id: 'video1.id'
+  } as unknown as TreeBlock<VideoBlock>
+
   it('should render buttons', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <QuickControls open anchorEl={null} />
+          <QuickControls open anchorEl={null} block={videoBlock} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -26,16 +31,11 @@ describe('QuickControls', () => {
   })
 
   it('should disable duplicate block', () => {
-    const videoBlock = {
-      __typename: 'VideoBlock',
-      id: 'video1.id'
-    } as unknown as TreeBlock<VideoBlock>
-
     render(
       <SnackbarProvider>
         <MockedProvider>
           <EditorProvider initialState={{ selectedBlock: videoBlock }}>
-            <QuickControls open anchorEl={null} />
+            <QuickControls open anchorEl={null} block={videoBlock} />
           </EditorProvider>
         </MockedProvider>
       </SnackbarProvider>
