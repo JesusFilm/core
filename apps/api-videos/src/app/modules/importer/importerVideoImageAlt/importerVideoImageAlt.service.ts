@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import omit from 'lodash/omit'
 import { InferType, boolean, number, object, string } from 'yup'
-
-import { Prisma } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
