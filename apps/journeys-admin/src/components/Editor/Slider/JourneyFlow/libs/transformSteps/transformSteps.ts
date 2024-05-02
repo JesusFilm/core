@@ -1,5 +1,5 @@
 import findIndex from 'lodash/findIndex'
-import { Edge, Node } from 'reactflow'
+import { Edge, MarkerType, Node } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -49,9 +49,14 @@ export function transformSteps(
         source: step.id,
         sourceHandle: block.id !== step.id ? block.id : undefined,
         target: step.nextBlockId,
-        // type: 'smoothstep',
-        style: {
-          strokeDasharray: 4
+        // type: 'buttonEdge'
+        // style: {
+        //   strokeDasharray: 4
+        // }
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          height: 20,
+          width: 20
         }
       })
     }
@@ -65,8 +70,13 @@ export function transformSteps(
         id: `${block.id}->${block.action.blockId}`,
         source: step.id,
         sourceHandle: block.id,
-        target: block.action.blockId
-        // type: 'smoothstep'
+        target: block.action.blockId,
+        // type: 'buttonEdge'
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          height: 30,
+          width: 30
+        }
       })
     }
     if (block.action.__typename === 'NavigateAction') {
