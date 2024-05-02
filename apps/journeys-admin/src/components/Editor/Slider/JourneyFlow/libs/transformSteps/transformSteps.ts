@@ -100,7 +100,7 @@ export function transformSteps(
     id: 'SocialPreview',
     type: 'SocialPreview',
     data: {},
-    position: { x: -165, y: -195 },
+    position: { x: -365, y: -40 },
     draggable: false
   })
 
