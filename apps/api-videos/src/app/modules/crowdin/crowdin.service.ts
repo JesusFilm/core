@@ -6,24 +6,27 @@ import { xliff12ToJs } from 'xliff'
 
 import { PrismaService } from '../../lib/prisma.service'
 
+//TODO: uncomment bible books when there is support for bible citations
+
 type CrowdinFileName =
   | '/Arclight/collection_title.csv'
   | '/Arclight/collection_long_description.csv'
   | '/Arclight/media_metadata_tile.csv'
   | '/Arclight/media_metadata_description.csv'
   | '/Arclight/study_questions.csv'
+  // | '/Arclight/Bible_books.csv'
   | string
-// '/Arclight/Bible_books.csv',
 
-interface CrowdinData {
-  resources: {
-    source: string
-    target: string
-    additionalAttributes: {
-      resname: string
-      translate?: string
-    }
+interface CrowdinResource {
+  source: string
+  target: string
+  additionalAttributes: {
+    resname: string
+    translate?: string
   }
+}
+interface CrowdinData {
+  resources: CrowdinResource
 }
 
 @Injectable()
@@ -51,7 +54,7 @@ export class CrowdinService {
     await Promise.all(
       map(languages, async (files, languageCode) => {
         await Promise.all(
-          files.map(async ({ content }) => {
+          files.map(async ({ content }: { content: string }) => {
             const data: CrowdinData = await xliff12ToJs(content)
             await this.storeTranslations(wessLanguageMap[languageCode], data)
           })
@@ -64,12 +67,17 @@ export class CrowdinService {
     wessLanguageCode: string,
     data: CrowdinData
   ): Promise<void> {
+    console.log(data.resources)
     await Promise.all(
       map(data.resources, async (translations, fileName) => {
         await Promise.all(
           map(
             translations,
-            async ({ source, target, additionalAttributes }) => {
+            async ({
+              source,
+              target,
+              additionalAttributes
+            }: CrowdinResource) => {
               if (
                 source.localeCompare(target) === 0 ||
                 additionalAttributes?.translate === 'no' ||

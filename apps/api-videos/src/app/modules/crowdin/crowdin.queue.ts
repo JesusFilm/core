@@ -25,8 +25,6 @@ export class CrowdinQueue implements OnModuleInit {
       }
     }
 
-    // await this.crowdinQueue.add(name, {})
-
     // Schedule a new instance
     await this.crowdinQueue.add(
       name,
