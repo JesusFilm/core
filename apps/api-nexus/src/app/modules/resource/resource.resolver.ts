@@ -12,19 +12,16 @@ import {
   GoogleAuthResponse,
   ResourceCreateInput,
   ResourceFilter,
-  ResourceFromGoogleDriveInput,
   ResourceUpdateInput,
 } from '../../__generated__/graphql';
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
+import { SpreadsheetTemplateType } from '../../lib/googleAPI/googleSheetsService';
 import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
 import { PrismaService } from '../../lib/prisma.service';
 import { YoutubeService } from '../../lib/youtube/youtubeService';
 import { BatchService } from '../batch/batchService';
 import { BullMQService } from '../bullMQ/bullMQ.service';
-import {
-  GoogleDriveService,
-  SpreadsheetTemplateType,
-} from '../google-drive/googleDriveService';
+import {GoogleDriveService,} from '../google-drive/googleDriveService';
 
 import { ResourceService } from './resource.service';
 
@@ -67,7 +64,7 @@ export class ResourceResolver {
         ],
       },
       orderBy: { createdAt: 'desc' },
-      include: { localizations: true },
+      include: { resourceLocalizations: true },
       take: where?.limit ?? undefined,
     });
 
@@ -85,7 +82,7 @@ export class ResourceResolver {
         id,
         AND: [filter, { nexus: { userNexuses: { every: { userId } } } }],
       },
-      include: { localizations: true },
+      include: { resourceLocalizations: true },
     });
     return resource;
   }
@@ -108,7 +105,6 @@ export class ResourceResolver {
         ...input,
         nexusId: nexus.id,
         id: uuidv4(),
-        sourceType: 'other',
       },
     });
 
@@ -150,70 +146,6 @@ export class ResourceResolver {
   }
 
   @Mutation()
-  async resourceFromGoogleDrive(
-    @CurrentUserId() userId: string,
-    @CurrentUser() user: User,
-    @Args('input') input: ResourceFromGoogleDriveInput,
-  ): Promise<Resource[]> {
-    const nexus = await this.prismaService.nexus.findUnique({
-      where: { id: input.nexusId, userNexuses: { every: { userId } } },
-    });
-    if (nexus == null)
-      throw new GraphQLError('nexus not found', {
-        extensions: { code: 'NOT_FOUND' },
-      });
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    await input.fileIds.forEach(async (fileId) => {
-      const driveFile = await this.googleDriveService.getFile({
-        fileId,
-        accessToken: input.authCode ?? '',
-      });
-      if (driveFile == null)
-        throw new GraphQLError('file not found', {
-          extensions: { code: 'NOT_FOUND' },
-        });
-
-      const fileUrl = this.googleDriveService.getFileUrl(fileId);
-      await this.googleDriveService.setFilePermission({
-        fileId,
-        accessToken: input.authCode ?? '',
-      });
-      const res = await this.cloudFlareService.uploadToCloudflareByUrl(
-        fileUrl,
-        driveFile.name,
-        userId,
-      );
-      console.log('CLOUD FLARE', res);
-
-      const resource = await this.prismaService.resource.create({
-        data: {
-          id: uuidv4(),
-          name: driveFile.name,
-          nexusId: nexus.id,
-          status: 'published',
-          createdAt: new Date(),
-          sourceType: 'googleDrive',
-        },
-      });
-
-      await this.prismaService.googleDriveResource.create({
-        data: {
-          id: uuidv4(),
-          resourceId: resource.id,
-          driveId: driveFile.id,
-          mimeType: driveFile.mimeType,
-          refreshToken: input.authCode ?? '',
-        },
-      });
-    });
-
-    return await this.prismaService.resource.findMany({
-      where: { googleDrive: { driveId: { in: input.fileIds } } },
-      include: { googleDrive: true },
-    });
-  }
-
-  @Mutation()
   async resourceFromTemplate(
     @CurrentUserId() userId: string,
     @Args('nexusId') nexusId: string,
@@ -233,12 +165,11 @@ export class ResourceResolver {
         extensions: { code: 'NOT_FOUND' },
       });
 
-    const { templateType, spreadsheetData, googleAccessToken } = await this.resourceService.getTemplateData(tokenId, spreadsheetId, drivefolderId)
-
+      const {templateType, spreadsheetData, googleAccessToken} = await this.resourceService.getSpreadSheetTemplateData(tokenId, spreadsheetId, drivefolderId);
     // CHECK SPREADSHEET TEMPLATE TYPE
     if (templateType === SpreadsheetTemplateType.UPLOAD) {
       // PROCESS UPLOAD TEMPLATE
-      return await this.resourceService.processUploadTemplateBatches(nexus.id, googleAccessToken, spreadsheetData);
+      return await this.resourceService.processUploadSpreadsheetTemplate(nexus.id, googleAccessToken, spreadsheetData);
     } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
       // PROCESS LOCALIZATION TEMPLATE
       return await this.resourceService.processLocalizationTemplateBatches(nexus.id, googleAccessToken, spreadsheetData);

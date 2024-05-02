@@ -40,14 +40,14 @@ export class BatchResolver {
         ],
       },
       include: {
-        tasks: true,
+        batchTasks: true,
       },
       orderBy: { updatedAt: 'desc' },
       take: where?.limit ?? 100,
     });
 
     const batchesWithProgress = batches.map((batch) => {
-      const progress = this.calculateBatchProgress(batch.tasks as BatchTask[]);
+      const progress = this.calculateBatchProgress(batch.batchTasks as BatchTask[]);
       return {
         ...batch,
         progress,
@@ -77,7 +77,7 @@ export class BatchResolver {
         AND: [{ nexus: { userNexuses: { some: { userId } } } }],
       },
       include: {
-        tasks: true,
+        batchTasks: true,
       },
     });
 
@@ -85,7 +85,7 @@ export class BatchResolver {
       return null;
     }
 
-    const progress = this.calculateBatchProgress(batch.tasks as BatchTask[]);
+    const progress = this.calculateBatchProgress(batch.batchTasks as BatchTask[]);
 
     return {
       ...batch,

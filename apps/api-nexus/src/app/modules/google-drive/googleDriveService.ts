@@ -9,7 +9,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Channel } from '.prisma/api-nexus-client';
 
-import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
+import {
+  GoogleSheetsService,
+  SpreadsheetRow,
+  SpreadsheetTemplateType,
+} from '../../lib/googleAPI/googleSheetsService';
 import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
 import { PrismaService } from '../../lib/prisma.service';
 import { YoutubeService } from '../../lib/youtube/youtubeService';
@@ -26,39 +30,6 @@ interface FileResponse {
   mimeType: string;
   thumbnailLink: string;
 }
-
-export enum SpreadsheetTemplateType {
-  UPLOAD = 'upload',
-  LOCALIZATION = 'localization',
-}
-
-export interface SpreadsheetRow {
-  driveFile?: drive_v3.Schema$File;
-  channel?: string;
-  channelData?: Channel;
-  filename?: string;
-  title?: string;
-  description?: string;
-  custom_thumbnail?: string;
-  keywords?: string;
-  category?: string;
-  privacy?: string;
-  spoken_language?: string;
-  video_id?: string;
-  caption_file?: string;
-  captionDriveFile?: drive_v3.Schema$File;
-  audio_track_file?: string;
-  audioTrackDriveFile?: drive_v3.Schema$File;
-  language?: string;
-  customThumbnailDriveFile?: drive_v3.Schema$File;
-  caption_language?: string;
-  notify_subscribers?: string;
-  playlist_id?: string;
-  is_made_for_kids?: string;
-  media_component_id?: string;
-  text_language?: string;
-}
-
 @Injectable()
 export class GoogleDriveService {
   rootUrl: string;
@@ -230,20 +201,20 @@ export class GoogleDriveService {
     console.log('Authorize spreadsheetRows');
     for (const spreadsheetRow of spreadsheetRows) {
       if (spreadsheetRow.filename != null) {
-        spreadsheetRow.driveFile = files?.find(
+        spreadsheetRow.videoDriveFile = files?.find(
           (file) => file.name === spreadsheetRow.filename,
         );
       }
 
-      if (spreadsheetRow.caption_file != null) {
+      if (spreadsheetRow.captionDriveFile != null) {
         spreadsheetRow.captionDriveFile = files?.find(
-          (file) => file.name === spreadsheetRow.caption_file,
+          (file) => file.name === spreadsheetRow.captionFile,
         );
       }
 
-      if (spreadsheetRow.audio_track_file != null) {
+      if (spreadsheetRow.audioTrackDriveFile != null) {
         spreadsheetRow.audioTrackDriveFile = files?.find(
-          (file) => file.name === spreadsheetRow.audio_track_file,
+          (file) => file.name === spreadsheetRow.audioTrackFile,
         );
       }
 
@@ -255,12 +226,12 @@ export class GoogleDriveService {
           })) as unknown as Channel | undefined;
       }
 
-      if (spreadsheetRow.video_id != null) {
+      if (spreadsheetRow.videoId != null) {
         spreadsheetRow.channelData =
           (await this.prismaService.channel.findFirst({
             where: {
-              resourceYoutubeChannel: {
-                every: { youtubeId: spreadsheetRow.video_id },
+              resourceChannel: {
+                every: { youtubeId: spreadsheetRow.videoId },
               },
             },
             include: { youtube: true },
@@ -334,26 +305,26 @@ export class GoogleDriveService {
     for (const spreadsheetRow of spreadsheetRows) {
       if (spreadsheetRow.filename != null) {
         templateType = SpreadsheetTemplateType.UPLOAD;
-        spreadsheetRow.driveFile = files?.find(
+        spreadsheetRow.videoDriveFile = files?.find(
           (file) => file.name === spreadsheetRow.filename,
         );
       }
 
-      if (spreadsheetRow.custom_thumbnail != null) {
+      if (spreadsheetRow.customThumbnail != null) {
         spreadsheetRow.customThumbnailDriveFile = files?.find(
-          (file) => file.name === spreadsheetRow.custom_thumbnail,
+          (file) => file.name === spreadsheetRow.customThumbnail,
         );
       }
 
-      if (spreadsheetRow.caption_file != null) {
+      if (spreadsheetRow.captionFile != null) {
         spreadsheetRow.captionDriveFile = files?.find(
-          (file) => file.name === spreadsheetRow.caption_file,
+          (file) => file.name === spreadsheetRow.captionFile,
         );
       }
 
-      if (spreadsheetRow.audio_track_file != null) {
+      if (spreadsheetRow.audioTrackFile != null) {
         spreadsheetRow.audioTrackDriveFile = files?.find(
-          (file) => file.name === spreadsheetRow.audio_track_file,
+          (file) => file.name === spreadsheetRow.audioTrackFile,
         );
       }
 
@@ -367,13 +338,13 @@ export class GoogleDriveService {
         }
       }
 
-      if (spreadsheetRow.video_id != null) {
-        console.log('video_id', spreadsheetRow.video_id);
+      if (spreadsheetRow.videoId != null) {
+        console.log('video_id', spreadsheetRow.videoId);
         templateType = SpreadsheetTemplateType.LOCALIZATION;
         const rowChannel = await this.prismaService.channel.findFirst({
           where: {
-            resourceYoutubeChannel: {
-              some: { youtubeId: spreadsheetRow.video_id },
+            resourceChannel: {
+              some: { youtubeId: spreadsheetRow.videoId },
             },
           },
           include: { youtube: true },

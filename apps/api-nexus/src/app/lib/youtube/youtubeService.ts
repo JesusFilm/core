@@ -5,7 +5,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { google, youtube_v3 } from 'googleapis';
 import { GaxiosPromise, OAuth2Client } from 'googleapis-common';
 
-import { ResourceLocalizationJobData } from '../../modules/bullMQ/bullMQ.service';
 import { GoogleOAuthService } from '../googleOAuth/googleOAuth';
 
 interface Credential {
@@ -158,62 +157,6 @@ export class YoutubeService {
         body: createReadStream(youtubeData.thumbnailPath),
       },
     });
-  }
-
-  async addLocalizedMetadataAndUpdateTags(
-    youtubeData: ResourceLocalizationJobData,
-  ): Promise<unknown> {
-    const token = await this.googleService.getNewAccessToken(
-      youtubeData.channel.refreshToken ?? '',
-    );
-    const auth = this.authorize(token);
-
-    console.log('YOUTUBE DATA: ', youtubeData.localizations);
-    const fetchResponse = await google.youtube('v3').videos.list({
-      auth,
-      part: ['snippet', 'localizations'],
-      id: [youtubeData.videoId],
-    });
-
-    if (
-      fetchResponse.data.items == null ||
-      fetchResponse.data.items.length === 0
-    ) {
-      throw new Error('Video not found');
-    }
-
-    const videoItem = fetchResponse.data.items[0];
-    console.log('VIDEO ITEM: ', videoItem);
-
-    const updatedLocalizations =
-      videoItem.localizations != null ? { ...videoItem.localizations } : {};
-
-    for (const localization of youtubeData.localizations) {
-      updatedLocalizations[localization.language] = {
-        title: localization.title,
-        description: localization.description,
-      };
-    }
-
-    console.log('UPDATED LOCALIZATIONS: ', updatedLocalizations);
-    console.log('YOUTUBEDATA: ', youtubeData);
-
-    const res = await google.youtube('v3').videos.update({
-      auth,
-      part: ['snippet', 'localizations'],
-      requestBody: {
-        id: youtubeData.videoId,
-        snippet: {
-          categoryId: videoItem.snippet?.categoryId,
-          defaultLanguage: videoItem.snippet?.defaultLanguage,
-          title: videoItem.snippet?.title,
-          description: videoItem.snippet?.description,
-        },
-        localizations: updatedLocalizations,
-      },
-    });
-    console.log('UPDATE LOCALIZATION RESPONSE: ', res);
-    return res;
   }
 
   async uploadCaption(youtubeData: {

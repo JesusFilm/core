@@ -10,11 +10,8 @@ import { GoogleDriveModule } from '../google-drive/googleDrive.module';
 import { GoogleDriveService } from '../google-drive/googleDriveService';
 
 import { BullMQService } from './bullMQ.service';
-import { UpdateCaption } from './consumers/updateCaption';
-import { UpdateLocalization } from './consumers/updateLocalization';
-import { UploadLocalization } from './consumers/upload.localization';
-import { UploadVideo } from './consumers/upload.video';
-import { UploadVideoListener } from './listener/upload.video.listener';
+import { BatchJobWorker } from './consumers/batch.job.worker';
+import { JobListener } from './listener/job.listener';
 
 @Global()
 @Module({
@@ -27,33 +24,21 @@ import { UploadVideoListener } from './listener/upload.video.listener';
     }),
     BullModule.registerQueue(
       {
-        name: 'nexus-batches',
-      },
-      {
-        name: 'nexus-upload-localization',
-      },
-      {
-        name: 'nexus-bucket',
-      },
-      {
-        name: 'nexus-localization',
-      },
+        name: 'nexus-batch-job',
+      }
     ),
     GoogleDriveModule,
   ],
   providers: [
+    BatchJobWorker,
+    PrismaService,
     BullMQService,
-    UpdateLocalization,
-    UpdateCaption,
-    UploadVideo,
-    UploadLocalization,
     GoogleDriveService,
     GoogleOAuthService,
     GoogleSheetsService,
     YoutubeService,
     BucketService,
-    PrismaService,
-    UploadVideoListener,
+    JobListener,
   ],
   exports: [BullMQService],
 })

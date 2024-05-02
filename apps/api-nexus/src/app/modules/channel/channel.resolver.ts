@@ -150,6 +150,7 @@ export class ChannelResolver {
     if (channel == null) {
       throw new GraphQLError('Channel not found.');
     }
+    console.log("youtubeChannels", youtubeChannels);
     const youtubeChannel = await this.prismaService.channelYoutube.create({
       data: {
         channelId: channel?.id,

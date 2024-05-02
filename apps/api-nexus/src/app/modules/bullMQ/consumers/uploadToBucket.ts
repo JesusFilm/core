@@ -5,7 +5,7 @@ import { BucketService } from '../../../lib/bucket/bucketService';
 import { GoogleOAuthService } from '../../../lib/googleOAuth/googleOAuth';
 import { YoutubeService } from '../../../lib/youtube/youtubeService';
 import { GoogleDriveService } from '../../google-drive/googleDriveService';
-import { UploadToBucketToYoutube } from '../bullMQ.service';
+import { UploadResourceJob } from '../bullMQ.service';
 
 @Processor('nexus-bucket')
 export class UploadToBucket {
@@ -18,8 +18,8 @@ export class UploadToBucket {
 
   @Process('video_upload')
   async process(
-    job: Job<UploadToBucketToYoutube>,
-  ): Promise<UploadToBucketToYoutube> {
+    job: Job<UploadResourceJob>,
+  ): Promise<UploadResourceJob> {
     console.log('BUCKET JOB DATA: ', job.data);
     const driveToken = await this.googleOAuthService.getNewAccessToken(
       job.data.resource.refreshToken,

@@ -8,6 +8,11 @@ datasource db {
     url      = env("PG_DATABASE_URL_NEXUS")
 }
 
+enum NexusStatus {
+    deleted
+    published
+}
+
 model Nexus {
     id          String      @id @default(uuid())
     name        String
@@ -19,11 +24,6 @@ model Nexus {
     channels    Channel[]
     resources   Resource[]
     batches     Batch[]
-}
-
-enum NexusStatus {
-    deleted
-    published
 }
 
 model UserNexus {
@@ -40,17 +40,17 @@ enum ChannelStatus {
 }
 
 model Channel {
-    id                     String                   @id @default(uuid())
-    nexusId                String
-    name                   String
-    platform               String
-    connected              Boolean                  @default(false)
-    nexus                  Nexus                    @relation(fields: [nexusId], references: [id])
-    youtube                ChannelYoutube?
-    status                 ChannelStatus            @default(published)
-    createdAt              DateTime                 @default(now())
-    deletedAt              DateTime?
-    resourceYoutubeChannel ResourceYoutubeChannel[]
+    id              String            @id @default(uuid())
+    nexusId         String
+    name            String
+    platform        String
+    connected       Boolean           @default(false)
+    nexus           Nexus             @relation(fields: [nexusId], references: [id])
+    youtube         ChannelYoutube?
+    status          ChannelStatus     @default(published)
+    createdAt       DateTime          @default(now())
+    deletedAt       DateTime?
+    resourceChannel ResourceChannel[]
 }
 
 model ChannelYoutube {
@@ -79,25 +79,25 @@ enum ResourceStatus {
 }
 
 model Resource {
-    id                     String                   @id @default(uuid())
-    nexusId                String
-    name                   String
-    category               String?
-    spokenLanguage         String?
-    customThumbnail        String?
-    playlistId             String?
-    isMadeForKids          String?
-    mediaComponentId       String?
-    notifySubscribers      String?
-    status                 ResourceStatus           @default(published)
-    privacy                PrivacyStatus            @default(private)
-    localizations          ResourceLocalization[]
-    resourceYoutubeChannel ResourceYoutubeChannel[]
-    nexus                  Nexus                    @relation(fields: [nexusId], references: [id])
-    createdAt              DateTime                 @default(now())
-    updatedAt              DateTime                 @updatedAt
-    deletedAt              DateTime?
-    ResourceSource         ResourceSource?
+    id                    String                 @id @default(uuid())
+    nexusId               String
+    name                  String
+    category              String?
+    spokenLanguage        String?
+    customThumbnail       String?
+    playlistId            String?
+    isMadeForKids         Boolean                @default(false)
+    mediaComponentId      String?
+    notifySubscribers     Boolean                @default(false)
+    status                ResourceStatus         @default(published)
+    privacy               PrivacyStatus          @default(private)
+    resourceLocalizations ResourceLocalization[]
+    resourceChannels      ResourceChannel[]
+    nexus                 Nexus                  @relation(fields: [nexusId], references: [id])
+    createdAt             DateTime               @default(now())
+    updatedAt             DateTime               @updatedAt
+    deletedAt             DateTime?
+    resourceSource        ResourceSource?
 }
 
 model ResourceSource {
@@ -116,7 +116,7 @@ model ResourceSource {
     resource                         Resource @relation(fields: [resourceId], references: [id])
 }
 
-model ResourceYoutubeChannel {
+model ResourceChannel {
     id         String   @id @default(uuid())
     resourceId String
     channelId  String
@@ -136,7 +136,7 @@ model ResourceLocalization {
     language                   String
     videoId                    String?
     resource                   Resource                    @relation(fields: [resourceId], references: [id])
-    ResourceLocalizationSource ResourceLocalizationSource?
+    resourceLocalizationSource ResourceLocalizationSource?
 }
 
 model ResourceLocalizationSource {
@@ -177,29 +177,29 @@ model Batch {
     failedTasks    Int         @default(0)
     progress       Float       @default(0)
     nexus          Nexus       @relation(fields: [nexusId], references: [id])
-    tasks          BatchTask[]
+    batchTasks     BatchTask[]
     createdAt      DateTime    @default(now())
     updatedAt      DateTime    @updatedAt
 }
 
-model BatchTask {
-    id        String     @id @default(uuid())
-    batchId   String
-    type      String
-    task      Json?
-    progress  Float      @default(0)
-    error     String?
-    status    TaskStatus
-    batch     Batch      @relation(fields: [batchId], references: [id])
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
-}
-
-enum TaskStatus {
+enum BatchTaskStatus {
     pending
     processing
     completed
     failed
+}
+
+model BatchTask {
+    id        String          @id @default(uuid())
+    batchId   String
+    type      String
+    task      Json?
+    progress  Float           @default(0)
+    error     String?
+    status    BatchTaskStatus @default(pending)
+    batch     Batch           @relation(fields: [batchId], references: [id])
+    createdAt DateTime        @default(now())
+    updatedAt DateTime        @updatedAt
 }
 
 model GoogleAccessToken {
