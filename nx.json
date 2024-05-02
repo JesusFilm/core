@@ -1,7 +1,4 @@
 {
-  "affected": {
-    "defaultBase": "main"
-  },
   "tasksRunnerOptions": {
     "default": {
       "options": {
@@ -94,5 +91,6 @@
       "!{projectRoot}/src/test-setup.[jt]s"
     ]
   },
-  "parallel": 1
+  "parallel": 1,
+  "defaultBase": "main"
 }
