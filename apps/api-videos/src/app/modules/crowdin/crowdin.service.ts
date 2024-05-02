@@ -6,7 +6,7 @@ import { xliff12ToJs } from 'xliff'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-//TODO: uncomment bible books when there is support for bible citations
+// TODO: uncomment bible books when there is support for bible citations
 
 type CrowdinFileName =
   | '/Arclight/collection_title.csv'
