@@ -8,7 +8,7 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import {
   GetAdminJourneys,
@@ -27,11 +27,18 @@ import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../src/components/Team/TeamSelect/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEYS } from '../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { useTeam } from '../src/components/Team/TeamProvider'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
+  const { query } = useTeam()
+
+  // MA - ensure team is refetched if user is not loaded before provider
+  useEffect(() => {
+    query.refetch()
+  }, [user.id])
 
   return (
     <>
