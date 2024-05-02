@@ -49,8 +49,8 @@ export class BucketService {
     return await bucketFile.done()
   }
 
-  async executeCallback(
-    progressCallback: ((arg0: number) => void) | null | undefined,
+  private async executeCallback(
+    progressCallback: ((arg0: number) => Promise<void>) | null | undefined,
     progress: number
   ): Promise<void> {
     if (progressCallback != null) {

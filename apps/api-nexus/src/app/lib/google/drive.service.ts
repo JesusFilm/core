@@ -79,10 +79,10 @@ export class GoogleDriveService {
       responseType: 'stream'
     })
 
-    const filename = response.headers['content-disposition']
+    const filename: string = response.headers['content-disposition']
       .split('filename=')[1]
       .split(';')[0]
-      .replace(/["']/g, '')
+      .replace(/["']/g, '') as string
 
     const downloadDirectory = path.join(__dirname, '..', 'downloads')
     const fileName = uuidv4() + path.extname(filename)

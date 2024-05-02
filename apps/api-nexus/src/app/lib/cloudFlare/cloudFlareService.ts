@@ -73,7 +73,7 @@ export class CloudFlareService {
         Authorization: `Bearer ${CLOUDFLARE_API_TOKEN}`
       }
     })
-    const fileUrl = res.data.result.default.url
+    const fileUrl: string = res?.data?.result?.default?.url ?? ''
     const fileName = resourceId + basename(fileUrl)
     const outputPath = join(this.downloadDirectory, fileName)
 
