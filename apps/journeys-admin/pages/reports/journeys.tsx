@@ -22,12 +22,16 @@ function ReportsJourneysPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Journeys Analytics')} />
-      <PageWrapper title={t('Journeys Analytics')} user={user}>
-        <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <ReportsNavigation
-            reportType={JourneysReportType.multipleFull}
-            selected="journeys"
-          />
+      <PageWrapper
+        title={t('Journeys Analytics')}
+        user={user}
+        mainHeaderChildren={<ReportsNavigation />}
+      >
+        <Box
+          sx={{
+            height: { xs: 'calc(100vh - 96px)', md: 'calc(100vh - 48px)' }
+          }}
+        >
           <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
         </Box>
       </PageWrapper>

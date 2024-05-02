@@ -53,6 +53,30 @@ const nextConfig = {
       }
     ]
   },
+  async rewrites() {
+    return [
+      {
+        source: '/share/:slug',
+        destination: 'http://plausible:8000/share/:slug'
+      },
+      {
+        source: '/js/:slug',
+        destination: 'http://plausible:8000/js/:slug'
+      },
+      {
+        source: '/css/:slug',
+        destination: 'http://plausible:8000/css/:slug'
+      },
+      {
+        source: '/api/stats/:path*',
+        destination: 'http://plausible:8000/api/stats/:path*'
+      },
+      {
+        source: '/favicon/sources/:slug',
+        destination: 'http://plausible:8000/favicon/sources/:slug'
+      }
+    ]
+  },
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
