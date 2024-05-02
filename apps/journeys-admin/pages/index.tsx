@@ -23,11 +23,11 @@ import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
+import { useTeam } from '../src/components/Team/TeamProvider'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../src/components/Team/TeamSelect/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEYS } from '../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { useTeam } from '../src/components/Team/TeamProvider'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -37,8 +37,8 @@ function IndexPage(): ReactElement {
 
   // MA - ensure team is refetched if user is not loaded before provider
   useEffect(() => {
-    query.refetch()
-  }, [user.id])
+    void query.refetch()
+  }, [user.id, query])
 
   return (
     <>
