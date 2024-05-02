@@ -73,6 +73,13 @@ export function ActionButton({ block, step }: ActionButtonProps): ReactElement {
           input: {
             nextBlockId: targetId
           }
+        },
+        optimisticResponse: {
+          stepBlockUpdate: {
+            id: sourceId,
+            __typename: 'StepBlock',
+            nextBlockId: targetId
+          }
         }
       })
     } else {

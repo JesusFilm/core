@@ -280,12 +280,12 @@ export function JourneyFlow(): ReactElement {
         y: clientY
       })
 
-      // void createStepAndCardBlock(
-      //   step,
-      //   block,
-      //   parseInt(x.toString()),
-      //   parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
-      // )
+      void createStepAndCardBlock(
+        step,
+        block,
+        parseInt(x.toString()),
+        parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
+      )
     },
     [reactFlowInstance, connectingParams, createStepAndCardBlock, steps]
   )

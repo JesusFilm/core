@@ -27,6 +27,7 @@ export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
       journeyId: $journeyId
       input: $input
     ) {
+      parentBlockId
       gtmEventName
       blockId
     }
@@ -72,13 +73,14 @@ export function useNavigateToBlockActionUpdateMutation(
         journeyId: journey.id,
         input: { blockId: targetBlockId }
       },
-      // optimisticResponse: {
-      //   blockUpdateNavigateToBlockAction: {
-      //     __typename: 'NavigateToBlockAction',
-      //     gtmEventName: null,
-      //     blockId: targetBlockId
-      //   }
-      // },
+      optimisticResponse: {
+        blockUpdateNavigateToBlockAction: {
+          __typename: 'NavigateToBlockAction',
+          parentBlockId: block.id,
+          gtmEventName: '',
+          blockId: targetBlockId
+        }
+      },
       update(cache, { data }) {
         if (data?.blockUpdateNavigateToBlockAction != null) {
           cache.modify({
