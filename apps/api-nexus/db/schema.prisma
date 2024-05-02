@@ -9,17 +9,17 @@ datasource db {
 }
 
 enum NexusStatus {
+    created
     deleted
-    published
 }
 
 model Nexus {
     id          String      @id @default(uuid())
     name        String
     description String?
+    status      NexusStatus @default(created)
     createdAt   DateTime    @default(now())
     deletedAt   DateTime?
-    status      NexusStatus @default(published)
     userNexuses UserNexus[]
     channels    Channel[]
     resources   Resource[]
@@ -35,6 +35,7 @@ model UserNexus {
 }
 
 enum ChannelStatus {
+    created
     published
     deleted
 }
@@ -47,7 +48,7 @@ model Channel {
     connected       Boolean           @default(false)
     nexus           Nexus             @relation(fields: [nexusId], references: [id])
     youtube         ChannelYoutube?
-    status          ChannelStatus     @default(published)
+    status          ChannelStatus     @default(created)
     createdAt       DateTime          @default(now())
     deletedAt       DateTime?
     resourceChannel ResourceChannel[]
@@ -56,12 +57,12 @@ model Channel {
 model ChannelYoutube {
     id           String  @id @default(uuid())
     channelId    String  @unique
-    channel      Channel @relation(fields: [channelId], references: [id])
     title        String
     description  String
     youtubeId    String
     imageUrl     String
     refreshToken String
+    channel      Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 }
 
 enum PrivacyStatus {
@@ -113,7 +114,7 @@ model ResourceSource {
     thumbnailGoogleDriveRefreshToken String?
     thumbnailCloudFlareId            String?
     thumbnailMimeType                String?
-    resource                         Resource @relation(fields: [resourceId], references: [id])
+    resource                         Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
 }
 
 model ResourceChannel {
@@ -121,8 +122,8 @@ model ResourceChannel {
     resourceId String
     channelId  String
     youtubeId  String
-    resource   Resource @relation(fields: [resourceId], references: [id])
-    channel    Channel  @relation(fields: [channelId], references: [id])
+    resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+    channel    Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
 }
 
 model ResourceLocalization {
@@ -135,7 +136,7 @@ model ResourceLocalization {
     audioTrackFile             String?
     language                   String
     videoId                    String?
-    resource                   Resource                    @relation(fields: [resourceId], references: [id])
+    resource                   Resource                    @relation(fields: [resourceId], references: [id], onDelete: Cascade)
     resourceLocalizationSource ResourceLocalizationSource?
 }
 
@@ -152,7 +153,7 @@ model ResourceLocalizationSource {
     audioTrackGoogleDriveRefreshToken String?
     audioTrackCloudFlareId            String?
     audioMimeType                     String?
-    resourceLocalization              ResourceLocalization @relation(fields: [reourceLocalizationId], references: [id])
+    resourceLocalization              ResourceLocalization @relation(fields: [reourceLocalizationId], references: [id], onDelete: Cascade)
 }
 
 enum BatchStatus {
@@ -176,10 +177,10 @@ model Batch {
     completedTasks Int         @default(0)
     failedTasks    Int         @default(0)
     progress       Float       @default(0)
-    nexus          Nexus       @relation(fields: [nexusId], references: [id])
-    batchTasks     BatchTask[]
     createdAt      DateTime    @default(now())
     updatedAt      DateTime    @updatedAt
+    nexus          Nexus       @relation(fields: [nexusId], references: [id], onDelete: Cascade)
+    batchTasks     BatchTask[]
 }
 
 enum BatchTaskStatus {
