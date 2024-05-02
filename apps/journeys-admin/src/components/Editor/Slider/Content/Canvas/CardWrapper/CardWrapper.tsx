@@ -97,7 +97,6 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
                   justifyContent="top"
                   height="24px"
                 >
-                  is a test of the typing thing that lets it type automatically
                   or add blocks using the
                   <Plus2Icon
                     fontSize="small"
