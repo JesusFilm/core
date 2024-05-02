@@ -5,8 +5,7 @@ import {
   BaseEdge,
   EdgeLabelRenderer,
   EdgeProps,
-  getBezierPath,
-  getSmoothStepPath
+  getBezierPath
 } from 'reactflow'
 
 export default function CustomEdge({
@@ -20,7 +19,7 @@ export default function CustomEdge({
   style = {},
   markerEnd
 }: EdgeProps): ReactElement {
-  const [edgePath, labelX, labelY] = getSmoothStepPath({
+  const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
     sourcePosition,

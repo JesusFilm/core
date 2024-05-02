@@ -89,10 +89,16 @@ export function ActionButton({ block, step }: ActionButtonProps): ReactElement {
     >
       <Box
         sx={{
-          // borderRadius: 20,
+          borderRadius: 0,
           // border: '1px solid grey',
-          borderTop: '1px solid grey'
-          // backgroundColor: '#eff2f5',
+          border: '1px solid #EFEFEF',
+          borderBottom: 'none',
+          backgroundColor: 'white',
+          '&:last-child': {
+            borderBottomLeftRadius: 2,
+            borderBottomRightRadius: 2,
+            borderBottom: '1px solid #EFEFEF'
+          }
           // width: 125,
           // height: 28,
           // px: 4,
