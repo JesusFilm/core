@@ -59,10 +59,11 @@ export class ImporterVideosService extends ImporterService<Video> {
   }
 
   protected async save(video: Video): Promise<void> {
+    const input = { ...video, slug: await this.slugify(video.id, video.slug) }
     await this.prismaService.video.upsert({
       where: { id: video.id },
-      update: { ...video, slug: await this.slugify(video.id, video.slug) },
-      create: { ...video, slug: await this.slugify(video.id, video.slug) }
+      update: input,
+      create: input
     })
   }
 }
