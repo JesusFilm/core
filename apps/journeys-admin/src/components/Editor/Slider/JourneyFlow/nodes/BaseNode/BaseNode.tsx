@@ -79,7 +79,6 @@ export function BaseNode({
               selected !== false ? '2px solid #c52d3aff' : '2px solid #aaacbb',
             outline: '1px solid white',
             outlineColor: 'white'
-            // cursor: 'pointer'
           }}
         />
       )}
@@ -102,7 +101,6 @@ export function BaseNode({
             outline: '1px solid',
             outlineColor: 'white',
             ...sourceHandleProps?.sx,
-            // cursor: 'copy',
 
             '&:after': {
               content: '""',
@@ -128,11 +126,10 @@ export function BaseNode({
               color: hoverSelected ? 'white' : 'black',
               fontSize: 'large',
               top: '50%',
-              backgroundColor: hoverSelected ? '#c52d3aff' : '#EFEFEF',
+              backgroundColor: hoverSelected ? '#c52d3aff' : 'white',
               left: '50%',
               transform: 'translate(-50%, -50%)',
               pointerEvents: 'none'
-              // cursor: 'copy'
             }}
           />
         </StyledHandle>

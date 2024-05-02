@@ -77,7 +77,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
         }}
       >
         {({ selected }) => (
-          <Stack alignItems="center" spacing={3}>
+          <Stack alignItems="center" spacing={3} sx={{ mb: '2px' }}>
             <Box
               sx={{
                 '.fab': {

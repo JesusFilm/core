@@ -50,7 +50,7 @@ export function ActionButton({ block, step }: ActionButtonProps): ReactElement {
       title = block.video?.title?.[0]?.value ?? block.title ?? t('Video')
       break
     case 'CustomBlock':
-      title = block.label
+      title = `${block.label} >>`
       break
   }
 
@@ -89,20 +89,11 @@ export function ActionButton({ block, step }: ActionButtonProps): ReactElement {
     >
       <Box
         sx={{
-          borderRadius: 0,
-          // border: '1px solid grey',
-          border: '1px solid #EFEFEF',
-          borderBottom: 'none',
-          backgroundColor: 'white',
-          '&:last-child': {
-            borderBottomLeftRadius: 2,
-            borderBottomRightRadius: 2,
-            borderBottom: '1px solid #EFEFEF'
-          }
-          // width: 125,
-          // height: 28,
-          // px: 4,
-          // position: 'relative'
+          backgroundColor: '#EFEFEF',
+          borderBottomLeftRadius: 4,
+          borderBottomRightRadius: 4,
+          border: '2px solid white',
+          borderTop: 'none'
         }}
       >
         <Typography
