@@ -43,7 +43,7 @@ import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBloc
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
-import { STEP_NODE_WIDTH, StepBlockNode } from './nodes/StepBlockNode'
+import { STEP_NODE_HEIGHT, StepBlockNode } from './nodes/StepBlockNode'
 
 import 'reactflow/dist/style.css'
 
@@ -268,8 +268,8 @@ export function JourneyFlow(): ReactElement {
       void createStepAndCardBlock(
         step,
         block,
-        parseInt(x.toString()) - STEP_NODE_WIDTH / 2,
-        parseInt(y.toString())
+        parseInt(x.toString()),
+        parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
       )
     },
     [reactFlowInstance, connectingParams, createStepAndCardBlock, steps]

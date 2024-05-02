@@ -1,8 +1,10 @@
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
-import { ComponentProps, ReactElement, ReactNode } from 'react'
+import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
 import { Handle, OnConnect, Position } from 'reactflow'
+
+import Plus1Icon from '@core/shared/ui/icons/Plus1'
 
 const StyledHandle = styled(Handle)(() => ({}))
 
@@ -29,17 +31,38 @@ export function BaseNode({
   sourceHandleProps,
   children
 }: BaseNodeProps): ReactElement {
+  const [hoverSelected, setHoverSelected] = useState(false)
+  const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches
+  const desktopStyle = {
+    '.arrow': {
+      visibility: 'hidden'
+    },
+    ':hover .arrow': {
+      visibility: 'visible'
+    }
+  }
+
+  const touchStyle = {
+    '.arrow': {
+      visibility:
+        typeof selected === 'boolean' && selected ? 'visible' : 'hidden'
+    }
+  }
+
+  const handleMouseEnter = (): void => {
+    setHoverSelected(true)
+  }
+  const handleMouseLeave = (): void => {
+    setHoverSelected(false)
+  }
+
   return (
     <Box
       data-testid="BaseNode"
       sx={{
         position: 'relative',
-        '.show-on-hover': {
-          visibility: 'hidden'
-        },
-        ':hover .show-on-hover': {
-          visibility: 'visible'
-        }
+        cursor: 'pointer',
+        ...(isTouchDevice ? touchStyle : desktopStyle)
       }}
     >
       {isFunction(children) ? children({ selected }) : children}
@@ -55,8 +78,8 @@ export function BaseNode({
             border:
               selected !== false ? '2px solid #c52d3aff' : '2px solid #aaacbb',
             outline: '1px solid white',
-            outlineColor: 'white',
-            cursor: 'pointer'
+            outlineColor: 'white'
+            // cursor: 'pointer'
           }}
         />
       )}
@@ -67,6 +90,8 @@ export function BaseNode({
           data-testid="BaseNodeBottomHandle"
           position={Position.Right}
           onConnect={onSourceConnect}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           {...sourceHandleProps}
           sx={{
             width: 7.5,
@@ -76,9 +101,41 @@ export function BaseNode({
               selected !== false ? '2px solid #c52d3aff' : '2px solid #aaacbb',
             outline: '1px solid',
             outlineColor: 'white',
-            ...sourceHandleProps?.sx
+            ...sourceHandleProps?.sx,
+            // cursor: 'copy',
+
+            '&:after': {
+              content: '""',
+              position: 'absolute',
+              transform: 'translate(-50%, -50%)',
+              top: '50%',
+              left: '50%',
+              width: 18,
+              height: 18,
+              backgroundColor: 'transparent',
+              borderRadius: '50%',
+              cursor: 'copy'
+            }
           }}
-        />
+        >
+          <Plus1Icon
+            data-testid="BaseNodeDownwardArrowIcon"
+            className="arrow"
+            sx={{
+              display: 'flex',
+              position: 'absolute',
+              borderRadius: '50%',
+              color: hoverSelected ? 'white' : 'black',
+              fontSize: 'large',
+              top: '50%',
+              backgroundColor: hoverSelected ? '#c52d3aff' : '#EFEFEF',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              pointerEvents: 'none'
+              // cursor: 'copy'
+            }}
+          />
+        </StyledHandle>
       )}
     </Box>
   )
