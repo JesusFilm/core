@@ -15,7 +15,7 @@ export function SignInTabs(): ReactElement {
     setTabValue(router.query.login === 'true' ? 1 : 0)
   }, [router])
 
-  function handleTabChange(_event, newValue): void {
+  function handleTabChange(_event, newValue: number): void {
     setTabValue(newValue)
   }
 
