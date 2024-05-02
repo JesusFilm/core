@@ -90,10 +90,12 @@ export function ActiveJourneyList({
         .map((journey) => journey.id)
       await archive({ variables: { ids: journeyIds } })
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
     handleClose()
   }
@@ -110,10 +112,12 @@ export function ActiveJourneyList({
         .map((journey) => journey.id)
       await trash({ variables: { ids: journeyIds } })
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
     handleClose()
   }
