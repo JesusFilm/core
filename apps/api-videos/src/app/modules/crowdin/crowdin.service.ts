@@ -67,7 +67,6 @@ export class CrowdinService {
     wessLanguageCode: string,
     data: CrowdinData
   ): Promise<void> {
-    console.log(data.resources)
     await Promise.all(
       map(data.resources, async (translations, fileName) => {
         await Promise.all(
