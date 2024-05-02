@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
   VideoBlockSource,
@@ -103,19 +105,25 @@ describe('Source', () => {
       }
     } as unknown as NextRouter)
 
-    const { getByRole, getByText } = render(
+    render(
       <MockedProvider mocks={[getVideosMock, { ...getVideoMock, result }]}>
-        <Source selectedBlock={null} onChange={onChange} />
+        <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
+          <Source selectedBlock={null} onChange={onChange} />
+        </EditorProvider>
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Select Video' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Select Video' })
+      ).toBeInTheDocument()
     )
-    fireEvent.click(getByRole('button', { name: 'Select Video' }))
-    await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
-    fireEvent.click(getByText('Brand Video'))
+    fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
+    await waitFor(() =>
+      expect(screen.getByText('Brand Video')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByText('Brand Video'))
     await waitFor(() => expect(result).toHaveBeenCalled())
-    fireEvent.click(getByRole('button', { name: 'Select' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() =>
       expect(onChange).toHaveBeenCalledWith({
         duration: 144,
@@ -139,7 +147,7 @@ describe('Source', () => {
 
   it('shows YouTube video', async () => {
     const onChange = jest.fn()
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <Source
           selectedBlock={{
@@ -172,13 +180,13 @@ describe('Source', () => {
     )
     await waitFor(() =>
       expect(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'What is the Bible? What is the Bible? YouTube'
         })
       ).toBeInTheDocument()
     )
     expect(
-      getByRole('img', {
+      screen.getByRole('img', {
         name: 'What is the Bible?'
       })
     ).toHaveAttribute('src', 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg')
@@ -186,7 +194,7 @@ describe('Source', () => {
 
   it('shows Cloudflare video', async () => {
     const onChange = jest.fn()
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <Source
           selectedBlock={{
@@ -219,15 +227,17 @@ describe('Source', () => {
     )
     await waitFor(() =>
       expect(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'What is the Bible? What is the Bible? Custom Video'
         })
       ).toBeInTheDocument()
     )
     expect(
-      getByRole('img', {
-        name: 'What is the Bible?'
-      }).getAttribute('src')
+      screen
+        .getByRole('img', {
+          name: 'What is the Bible?'
+        })
+        .getAttribute('src')
     ).toMatch(
       /https:\/\/customer-.*\.cloudflarestream\.com\/videoId\/thumbnails\/thumbnail.jpg\?time=2s&height=55&width=55/
     )
@@ -243,7 +253,7 @@ describe('Source', () => {
       }
     } as unknown as NextRouter)
 
-    const { getByRole, getByText } = render(
+    render(
       <MockedProvider>
         <Source
           selectedBlock={{
@@ -276,17 +286,19 @@ describe('Source', () => {
     )
     await waitFor(() =>
       expect(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'What is the Bible? What is the Bible? YouTube'
         })
       ).toBeInTheDocument()
     )
     fireEvent.click(
-      getByRole('button', {
+      screen.getByRole('button', {
         name: 'What is the Bible? What is the Bible? YouTube'
       })
     )
-    await waitFor(() => expect(getByText('Video Details')).toBeInTheDocument())
-    expect(getByText('What is the Bible?')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByText('Video Details')).toBeInTheDocument()
+    )
+    expect(screen.getByText('What is the Bible?')).toBeInTheDocument()
   })
 })
