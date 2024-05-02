@@ -99,10 +99,10 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
   }
 
   useEffect(() => {
-    if (selectedAttributeId === undefined) {
+    if (selectedAttributeId === undefined && open === true) {
       setOpen(false)
     }
-  }, [selectedAttributeId])
+  }, [selectedAttributeId, open])
 
   return (
     <>
