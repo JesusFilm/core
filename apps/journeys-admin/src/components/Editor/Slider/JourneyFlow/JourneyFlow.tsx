@@ -119,6 +119,14 @@ export function JourneyFlow(): ReactElement {
               journeyId: journey.id,
               x: position.x,
               y: position.y
+            },
+            optimisticResponse: {
+              stepBlockUpdate: {
+                id,
+                __typename: 'StepBlock',
+                x: position.x,
+                y: position.y
+              }
             }
           })
         })
@@ -205,6 +213,13 @@ export function JourneyFlow(): ReactElement {
             input: {
               nextBlockId: newStepId
             }
+          },
+          optimisticResponse: {
+            stepBlockUpdate: {
+              id: step.id,
+              __typename: 'StepBlock',
+              nextBlockId: newStepId
+            }
           }
         })
       } else {
@@ -265,12 +280,12 @@ export function JourneyFlow(): ReactElement {
         y: clientY
       })
 
-      void createStepAndCardBlock(
-        step,
-        block,
-        parseInt(x.toString()),
-        parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
-      )
+      // void createStepAndCardBlock(
+      //   step,
+      //   block,
+      //   parseInt(x.toString()),
+      //   parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
+      // )
     },
     [reactFlowInstance, connectingParams, createStepAndCardBlock, steps]
   )

@@ -79,9 +79,9 @@ export function transformSteps(
         }
       })
     }
-    if (block.action.__typename === 'NavigateAction') {
-      connectBlockToNextBlock({ block, step, steps })
-    }
+    // if (block.action.__typename === 'NavigateAction') {
+    //   connectBlockToNextBlock({ block, step, steps })
+    // }
   }
 
   steps.forEach((step) => {

@@ -72,6 +72,13 @@ export function useNavigateToBlockActionUpdateMutation(
         journeyId: journey.id,
         input: { blockId: targetBlockId }
       },
+      // optimisticResponse: {
+      //   blockUpdateNavigateToBlockAction: {
+      //     __typename: 'NavigateToBlockAction',
+      //     gtmEventName: null,
+      //     blockId: targetBlockId
+      //   }
+      // },
       update(cache, { data }) {
         if (data?.blockUpdateNavigateToBlockAction != null) {
           cache.modify({
