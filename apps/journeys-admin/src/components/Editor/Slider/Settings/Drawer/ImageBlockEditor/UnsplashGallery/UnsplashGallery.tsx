@@ -190,7 +190,7 @@ export function UnsplashGallery({
     setPage(newPage)
   }
 
-  function handleCollectionChange(id, query): void {
+  function handleCollectionChange(id: string, query: string): void {
     setCollectionId(id)
     setQuery(query)
   }
