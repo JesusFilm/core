@@ -111,7 +111,7 @@ export class Register {
   async clickNextBtn() {
     await this.page
       .locator('button[type="button"]', { hasText: 'Next' })
-      .click({ delay: 2000 })
+      .click()
   }
   async verifyPageNavigatedFewQuestionsPage() {
     await this.page.waitForSelector(
