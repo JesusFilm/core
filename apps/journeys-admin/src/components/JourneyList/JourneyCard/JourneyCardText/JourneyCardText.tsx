@@ -63,10 +63,12 @@ export function JourneyCardText({
         }}
         suppressHydrationWarning
       >
-        {intlFormat(parseISO(journey.createdAt), {
+        {intlFormat(parseISO(journey.createdAt as string), {
           day: 'numeric',
           month: 'long',
-          year: isThisYear(parseISO(journey.createdAt)) ? undefined : 'numeric'
+          year: isThisYear(parseISO(String(journey.createdAt)))
+            ? undefined
+            : 'numeric'
         })}
         {journey.description != null && ` - ${journey.description}`}
       </Typography>

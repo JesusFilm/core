@@ -87,7 +87,7 @@ export const New = {
     journey: defaultJourney,
     variant: JourneyCardVariant.new
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
     await waitFor(async () => {
       await userEvent.hover(canvas.getByTestId('CircleRoundedIcon'))

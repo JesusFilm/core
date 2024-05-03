@@ -47,7 +47,9 @@ export function ActionButton({ block, step }: ActionButtonProps): ReactElement {
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
   const { journey } = useJourney()
 
-  async function handleSourceConnect(params): Promise<void> {
+  async function handleSourceConnect(params: {
+    target: string
+  }): Promise<void> {
     if (journey == null) return
 
     await navigateToBlockActionUpdate(block, params.target)

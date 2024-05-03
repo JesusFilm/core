@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import pick from 'lodash/pick'
 import { useTranslation } from 'next-i18next'
+import { InferType } from 'prop-types'
 import { ReactElement } from 'react'
 
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
@@ -66,11 +67,14 @@ export function DetailsForm({ id }: DetailsFormProps): ReactElement {
     variables: { id }
   })
 
-  async function handleSubmit(values): Promise<void> {
-    const formattedValues = Object.keys(values).reduce((acc, key) => {
-      acc[key] = values[key] === '' ? null : values[key]
-      return acc
-    }, {})
+  async function handleSubmit(values: InferType<string>): Promise<void> {
+    const formattedValues = Object.keys(values as string[]).reduce(
+      (acc, key) => {
+        acc[key] = values[key] === '' ? null : values[key]
+        return acc
+      },
+      {}
+    )
     await visitorUpdate({
       variables: {
         id,

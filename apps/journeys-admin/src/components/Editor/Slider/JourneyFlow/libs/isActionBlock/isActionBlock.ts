@@ -17,4 +17,5 @@ export type ActionBlock =
   | TreeBlock<FormBlock>
   | TreeBlock<VideoBlock>
 
-export const isActionBlock = (block): block is ActionBlock => 'action' in block
+export const isActionBlock = (block): block is ActionBlock =>
+  block?.action !== undefined
