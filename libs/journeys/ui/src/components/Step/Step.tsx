@@ -10,8 +10,8 @@ import { StepViewEventCreateInput } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { JourneyPlausibleEvents } from '../../libs/JourneyPlausibleEvents'
 import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
+import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 
@@ -69,7 +69,7 @@ export function Step({
       if (journey != null)
         plausible('pageview', {
           u: `${journey.id}/${blockId}`,
-          props: { ...input, key: `pageview:${input.blockId}` }
+          props: { ...input, key: keyify('pageview', input) }
         })
       TagManager.dataLayer({
         dataLayer: {

@@ -12,11 +12,12 @@ import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/
 import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { JourneyPlausibleEvents } from '../../libs/JourneyPlausibleEvents'
 import { useJourney } from '../../libs/JourneyProvider'
+import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
+import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
 
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import {
@@ -91,11 +92,24 @@ export function RadioQuestion({
           input
         }
       })
-      if (journey != null)
+      const radioOptionBlock = children.find(
+        (child) =>
+          child.id === radioOptionBlockId &&
+          child.__typename === 'RadioOptionBlock'
+      ) as TreeBlock<RadioOptionFields> | undefined
+      if (journey != null && radioOptionBlock != null) {
         plausible('radioQuestionSubmit', {
           u: `${journey.id}/${blockId}`,
-          props: { ...input, key: `radioQuestionSubmit:${input.blockId}` }
+          props: {
+            ...input,
+            key: keyify(
+              'radioQuestionSubmit',
+              { blockId: radioOptionBlock.id },
+              radioOptionBlock.action
+            )
+          }
         })
+      }
       TagManager.dataLayer({
         dataLayer: {
           event: 'radio_question_submission',

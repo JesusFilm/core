@@ -18,8 +18,8 @@ import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { JourneyPlausibleEvents } from '../../libs/JourneyPlausibleEvents'
 import { useJourney } from '../../libs/JourneyProvider'
+import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { TextField } from '../TextField'
@@ -109,7 +109,10 @@ export const TextResponse = ({
           if (journey != null)
             plausible('textResponseSubmit', {
               u: `${journey.id}/${blockId}`,
-              props: { ...input, key: `textResponseSubmit:${input.blockId}` }
+              props: {
+                ...input,
+                key: keyify('textResponseSubmit', input, action)
+              }
             })
           TagManager.dataLayer({
             dataLayer: {

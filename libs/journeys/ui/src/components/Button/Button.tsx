@@ -18,8 +18,9 @@ import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { JourneyPlausibleEvents } from '../../libs/JourneyPlausibleEvents'
 import { useJourney } from '../../libs/JourneyProvider'
+import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
+import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 
@@ -119,11 +120,15 @@ export function Button({
           input
         }
       })
-      if (journey != null)
+      if (journey != null) {
         plausible('buttonClick', {
           u: `${journey.id}/${blockId}`,
-          props: { ...input, key: `buttonClick:${input.blockId}` }
+          props: {
+            ...input,
+            key: keyify('buttonClick', input, action)
+          }
         })
+      }
       addEventToDataLayer(id)
     }
   }
@@ -145,7 +150,7 @@ export function Button({
       if (journey != null)
         plausible('chatButtonClick', {
           u: `${journey.id}/${blockId}`,
-          props: { ...input, key: `chatButtonClick:${input.blockId}` }
+          props: { ...input, key: keyify('chatButtonClick', input) }
         })
       addEventToDataLayer(id)
     }

@@ -5,8 +5,11 @@ import { ReactElement, useState } from 'react'
 import ShareIcon from '@core/shared/ui/icons/Share'
 
 import { useBlocks } from '../../../../libs/block'
-import { JourneyPlausibleEvents } from '../../../../libs/JourneyPlausibleEvents'
 import { useJourney } from '../../../../libs/JourneyProvider'
+import {
+  JourneyPlausibleEvents,
+  keyify
+} from '../../../../libs/plausibleHelpers'
 import { StyledFooterButton } from '../StyledFooterButton'
 
 import { ShareDialog } from './ShareDialog'
@@ -29,11 +32,11 @@ export function ShareButton(): ReactElement {
 
     if (journey != null) {
       const input = {
-        blockId: activeBlock?.id
+        blockId: activeBlock.id
       }
       plausible('shareButtonClick', {
         u: journey.id,
-        props: { ...input, key: `shareButtonClick:${input.blockId}` }
+        props: { ...input, key: keyify('shareButtonClick', input) }
       })
     }
 

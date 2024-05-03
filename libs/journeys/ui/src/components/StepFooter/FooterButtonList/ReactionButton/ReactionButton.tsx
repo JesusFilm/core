@@ -5,8 +5,11 @@ import ThumbsDown from '@core/shared/ui/icons/ThumbsDown'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 
 import { useBlocks } from '../../../../libs/block'
-import { JourneyPlausibleEvents } from '../../../../libs/JourneyPlausibleEvents'
 import { useJourney } from '../../../../libs/JourneyProvider'
+import {
+  JourneyPlausibleEvents,
+  keyify
+} from '../../../../libs/plausibleHelpers'
 import { StyledFooterButton } from '../StyledFooterButton'
 
 interface ReactionButtonProps {
@@ -36,7 +39,7 @@ export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
         }ButtonClick` as const
         plausible(event, {
           u: journey.id,
-          props: { ...input, key: `${event}:${input.blockId}` }
+          props: { ...input, key: keyify(event, input) }
         })
       }
     }

@@ -1,1 +1,0 @@
-export { JourneyPlausibleEvents } from './JourneyPlausibleEvents'

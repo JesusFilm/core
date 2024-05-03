@@ -15,13 +15,14 @@ import {
   VideoProgressEventCreateInput,
   VideoStartEventCreateInput
 } from '../../../__generated__/globalTypes'
+import { ActionFields as Action } from '../action/__generated__/ActionFields'
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [K: string]: any
   blockId: string
   /**
-   * compound of event name and blockId.
+   * compound of event name, blockId, targetBlockId.
    * Required to run plausible /api/v1/stats/breakdown api call with
    * property=event:props:key param */
   key: string
@@ -53,4 +54,29 @@ export interface JourneyPlausibleEvents extends Events {
   videoProgress50: VideoProgressEventCreateInput & Props
   videoProgress75: VideoProgressEventCreateInput & Props
   videoComplete: VideoCompleteEventCreateInput & Props
+  videoTrigger: Props
+}
+
+export function keyify(
+  event: keyof JourneyPlausibleEvents,
+  input: { blockId: string },
+  target?: string | Action | null
+): string {
+  let targetId = ''
+  if (typeof target === 'string' || target == null) {
+    targetId = target ?? ''
+  } else {
+    switch (target.__typename) {
+      case 'NavigateToBlockAction':
+        targetId = target.blockId
+        break
+      case 'LinkAction':
+        targetId = `link:${target.url}`
+        break
+      case 'EmailAction':
+        targetId = `email:${target.email}`
+        break
+    }
+  }
+  return `${event}:${input.blockId}${targetId !== '' ? `:${targetId}` : ''}`
 }

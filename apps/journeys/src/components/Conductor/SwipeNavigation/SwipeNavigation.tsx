@@ -14,8 +14,11 @@ import {
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
-import { JourneyPlausibleEvents } from '@core/journeys/ui/JourneyPlausibleEvents'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import {
+  JourneyPlausibleEvents,
+  keyify
+} from '@core/journeys/ui/plausibleHelpers'
 
 import {
   StepNextEventCreateInput,
@@ -104,7 +107,10 @@ export function SwipeNavigation({
         if (journey != null)
           plausible('navigateNextStep', {
             u: `${journey.id}/${activeBlock.id}`,
-            props: { ...input, key: `navigateNextStep:${input.blockId}` }
+            props: {
+              ...input,
+              key: keyify('navigateNextStep', input, input.nextStepId)
+            }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -156,7 +162,10 @@ export function SwipeNavigation({
         if (journey != null)
           plausible('navigatePreviousStep', {
             u: `${journey.id}/${activeBlock.id}`,
-            props: { ...input, key: `navigatePreviousStep:${input.blockId}` }
+            props: {
+              ...input,
+              key: keyify('navigatePreviousStep', input, input.previousStepId)
+            }
           })
         TagManager.dataLayer({
           dataLayer: {

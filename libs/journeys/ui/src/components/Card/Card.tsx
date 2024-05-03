@@ -15,8 +15,9 @@ import {
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { JourneyPlausibleEvents } from '../../libs/JourneyPlausibleEvents'
 import { useJourney } from '../../libs/JourneyProvider'
+import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
+import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { getJourneyRTL } from '../../libs/rtl'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
@@ -171,7 +172,10 @@ export function Card({
     if (journey != null)
       plausible('navigateNextStep', {
         u: `${journey.id}/${activeBlock.id}`,
-        props: { ...input, key: `navigateNextStep:${input.blockId}` }
+        props: {
+          ...input,
+          key: keyify('navigateNextStep', input, input.nextStepId)
+        }
       })
     TagManager.dataLayer({
       dataLayer: {
@@ -223,7 +227,10 @@ export function Card({
     if (journey != null)
       plausible('navigatePreviousStep', {
         u: `${journey.id}/${activeBlock.id}`,
-        props: { ...input, key: `navigatePreviousStep:${input.blockId}` }
+        props: {
+          ...input,
+          key: keyify('navigatePreviousStep', input, input.previousStepId)
+        }
       })
     TagManager.dataLayer({
       dataLayer: {
