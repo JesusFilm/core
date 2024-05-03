@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
+import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 
 import { AppHeader } from './AppHeader'
@@ -12,13 +13,15 @@ interface PageWrapperProps {
   showAppHeader?: boolean
   title?: string
   hasBack?: boolean
-  children: ReactNode
+  children?: ReactNode
+  user: User
 }
 
 export function PageWrapper({
   showAppHeader = true,
   children,
   title,
+  user,
   hasBack = false
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
@@ -57,12 +60,12 @@ export function PageWrapper({
               xs: '100vw',
               md: `calc(100vw - ${navbar.width})`
             },
-            backgroundColor: '#F6F5F6',
+            backgroundColor: 'background.default',
             py: 2,
             px: 3
           }}
         >
-          <Header title={title} hasBack={hasBack} />
+          <Header user={user} title={title} hasBack={hasBack} />
           <Box>{children}</Box>
         </Stack>
       </Stack>

@@ -15,6 +15,12 @@ const storiesForProject = {
     '../libs/journeys/ui/src/**/**/*.stories.mdx',
     '../libs/journeys/ui/src/**/**/*.stories.@(js|jsx|ts|tsx)'
   ],
+  'nexus-admin': [
+    '../apps/nexus-admin/src/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/nexus-admin/src/components/**/*.stories.mdx',
+    '../apps/nexus-admin/src/components/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/nexus-admin/src/components/**/**/*.stories.@(js|jsx|ts|tsx)'
+  ],
   'shared-ui': [
     '../libs/shared/ui/src/**/*.stories.mdx',
     '../libs/shared/ui/src/**/*.stories.@(js|jsx|ts|tsx)'
@@ -41,6 +47,7 @@ const stories = [
   ...storiesForProject['journeys'],
   ...storiesForProject['journeys-admin'],
   ...storiesForProject['journeys-ui'],
+  ...storiesForProject['nexus-admin'],
   ...storiesForProject['watch'],
   ...storiesForProject['shared-ui'],
   ...storiesForProject['shared-ui-dynamic'],

@@ -1,11 +1,17 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import {
+  AuthAction,
+  useUser,
+  withUser,
+  withUserTokenSSR
+} from 'next-firebase-auth'
 import { ReactElement, useEffect } from 'react'
 
 import { Nexuses } from '../__generated__/Nexuses'
 import { NEXUS_CREATE } from '../src/components/CreateNexusModal'
 import { Loader } from '../src/components/Loader'
+import { PageWrapper } from '../src/components/PageWrapper'
 
 export const GET_NEXUSES = gql`
   query Nexuses($where: NexusFilter) {
@@ -16,8 +22,9 @@ export const GET_NEXUSES = gql`
   }
 `
 
-function Index(): ReactElement {
+function IndexPage(): ReactElement {
   const router = useRouter()
+  const user = useUser()
   const { data } = useQuery<Nexuses>(GET_NEXUSES, {
     variables: {
       where: {}
@@ -48,7 +55,7 @@ function Index(): ReactElement {
     }
   }, [data])
 
-  return <Loader />
+  return <PageWrapper user={user} />
 }
 
 export const getServerSideProps = withUserTokenSSR({
@@ -64,7 +71,7 @@ export const getServerSideProps = withUserTokenSSR({
 })
 
 export default withUser({
-  whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
+  // whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
   LoaderComponent: Loader
-})(Index)
+})(IndexPage)

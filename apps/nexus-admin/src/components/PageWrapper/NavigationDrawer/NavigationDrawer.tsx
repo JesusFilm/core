@@ -116,7 +116,7 @@ export function NavigationDrawer({
             <ChevronRightIcon />
           </ListItemIcon>
         </ListItemButton>
-        <ListGroup name="Youtube" icon={<Youtube />}>
+        <ListGroup name="Youtube" icon={<Youtube />} drawerOpen={open}>
           <Link href="/resources" legacyBehavior>
             <ListItemButton selected={selectedPage === 'resources'}>
               <ListItemIcon>
