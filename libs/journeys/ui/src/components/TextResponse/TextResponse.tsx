@@ -6,23 +6,29 @@ import { SxProps } from '@mui/system/styleFunctionSx'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import { TextResponseSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { getStepHeading } from '../../libs/getStepHeading'
+import { JourneyPlausibleEvents } from '../../libs/JourneyPlausibleEvents'
 import { useJourney } from '../../libs/JourneyProvider'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { TextField } from '../TextField'
 
 import { TextResponseFields } from './__generated__/TextResponseFields'
-import { TextResponseSubmissionEventCreate } from './__generated__/TextResponseSubmissionEventCreate'
+import {
+  TextResponseSubmissionEventCreate,
+  TextResponseSubmissionEventCreateVariables
+} from './__generated__/TextResponseSubmissionEventCreate'
 
 export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
   mutation TextResponseSubmissionEventCreate(
@@ -56,13 +62,14 @@ export const TextResponse = ({
   children,
   sx
 }: TextResponseProps): ReactElement => {
+  const plausible = usePlausible<JourneyPlausibleEvents>()
   const { t } = useTranslation('libs-journeys-ui')
 
   const submitIcon = children.find((block) => block.id === submitIconId) as
     | TreeBlock<IconFields>
     | undefined
 
-  const { variant } = useJourney()
+  const { variant, journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const { blockHistory, treeBlocks } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -73,10 +80,10 @@ export const TextResponse = ({
       : 'None'
 
   const router = useRouter()
-  const [textResponseSubmissionEventCreate, { loading }] =
-    useMutation<TextResponseSubmissionEventCreate>(
-      TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
-    )
+  const [textResponseSubmissionEventCreate, { loading }] = useMutation<
+    TextResponseSubmissionEventCreate,
+    TextResponseSubmissionEventCreateVariables
+  >(TEXT_RESPONSE_SUBMISSION_EVENT_CREATE)
 
   const initialValues: TextResponseFormValues = { response: '' }
 
@@ -87,17 +94,23 @@ export const TextResponse = ({
       const id = uuid()
       if (values.response.trim() !== '') {
         try {
+          const input: TextResponseSubmissionEventCreateInput = {
+            id,
+            blockId,
+            stepId: activeBlock?.id,
+            label: heading,
+            value: values.response
+          }
           await textResponseSubmissionEventCreate({
             variables: {
-              input: {
-                id,
-                blockId,
-                stepId: activeBlock?.id,
-                label: heading,
-                value: values.response
-              }
+              input
             }
           })
+          if (journey != null)
+            plausible('textResponseSubmit', {
+              u: `${journey.id}/${blockId}`,
+              props: input
+            })
           TagManager.dataLayer({
             dataLayer: {
               event: 'text_response_submission',

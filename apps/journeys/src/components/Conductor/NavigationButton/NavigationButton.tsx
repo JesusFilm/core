@@ -6,6 +6,7 @@ import { styled } from '@mui/material/styles'
 import capitalize from 'lodash/capitalize'
 import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
@@ -17,13 +18,21 @@ import {
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+import { JourneyPlausibleEvents } from '@core/journeys/ui/JourneyPlausibleEvents'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
+import {
+  StepNextEventCreateInput,
+  StepPreviousEventCreateInput
+} from '../../../../__generated__/globalTypes'
 import { StepFields } from '../../../../__generated__/StepFields'
 import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
-import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousEventCreate'
+import {
+  StepPreviousEventCreate,
+  StepPreviousEventCreateVariables
+} from '../../../../__generated__/StepPreviousEventCreate'
 
 const LeftNavigationContainer = styled(Box)`
   /* @noflip */
@@ -46,11 +55,13 @@ export function NavigationButton({
   const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
     STEP_NEXT_EVENT_CREATE
   )
-  const [stepPreviousEventCreate] = useMutation<StepPreviousEventCreate>(
-    STEP_PREVIOUS_EVENT_CREATE
-  )
+  const [stepPreviousEventCreate] = useMutation<
+    StepPreviousEventCreate,
+    StepPreviousEventCreateVariables
+  >(STEP_PREVIOUS_EVENT_CREATE)
   const { t } = useTranslation('apps-journeys')
-  const { variant: journeyVariant } = useJourney()
+  const plausible = usePlausible<JourneyPlausibleEvents>()
+  const { variant: journeyVariant, journey } = useJourney()
   const {
     setShowNavigation,
     getNextBlock,
@@ -104,29 +115,37 @@ export function NavigationButton({
       t
     )
     const targetBlock = getNextBlock({ id: undefined, activeBlock })
-    const targetStepName =
-      targetBlock != null &&
-      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
-
+    if (targetBlock == null) return
+    const targetStepName = getStepHeading(
+      targetBlock.id,
+      targetBlock.children,
+      treeBlocks,
+      t
+    )
+    const input: StepNextEventCreateInput = {
+      id,
+      blockId: activeBlock.id,
+      label: stepName,
+      value: targetStepName,
+      nextStepId: targetBlock.id
+    }
     void stepNextEventCreate({
       variables: {
-        input: {
-          id,
-          blockId: activeBlock.id,
-          label: stepName,
-          value: targetStepName,
-          nextStepId: targetBlock?.id
-        }
+        input
       }
     })
-
+    if (journey != null)
+      plausible('navigateNextStep', {
+        u: `${journey.id}/${activeBlock.id}`,
+        props: input
+      })
     TagManager.dataLayer({
       dataLayer: {
         event: 'step_next',
         eventId: id,
         blockId: activeBlock.id,
         stepName,
-        targetStepId: targetBlock?.id,
+        targetStepId: targetBlock.id,
         targetStepName
       }
     })
@@ -148,29 +167,37 @@ export function NavigationButton({
     const targetBlock = blockHistory[
       blockHistory.length - 2
     ] as TreeBlock<StepFields>
-    const targetStepName =
-      targetBlock != null &&
-      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
-
+    if (targetBlock == null) return
+    const targetStepName = getStepHeading(
+      targetBlock.id,
+      targetBlock.children,
+      treeBlocks,
+      t
+    )
+    const input: StepPreviousEventCreateInput = {
+      id,
+      blockId: activeBlock.id,
+      label: stepName,
+      value: targetStepName,
+      previousStepId: targetBlock.id
+    }
     void stepPreviousEventCreate({
       variables: {
-        input: {
-          id,
-          blockId: activeBlock.id,
-          label: stepName,
-          value: targetStepName,
-          previousStepId: targetBlock?.id
-        }
+        input
       }
     })
-
+    if (journey != null)
+      plausible('navigatePreviousStep', {
+        u: `${journey.id}/${activeBlock.id}`,
+        props: input
+      })
     TagManager.dataLayer({
       dataLayer: {
         event: 'step_prev',
         eventId: id,
         blockId: activeBlock.id,
         stepName,
-        targetStepId: targetBlock?.id,
+        targetStepId: targetBlock.id,
         targetStepName
       }
     })

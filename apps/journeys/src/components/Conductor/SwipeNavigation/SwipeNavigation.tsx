@@ -2,6 +2,7 @@ import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
 import { ReactElement, ReactNode, useCallback } from 'react'
 import TagManager from 'react-gtm-module'
 import { SwipeEventData, useSwipeable } from 'react-swipeable'
@@ -13,11 +14,22 @@ import {
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+import { JourneyPlausibleEvents } from '@core/journeys/ui/JourneyPlausibleEvents'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
+import {
+  StepNextEventCreateInput,
+  StepPreviousEventCreateInput
+} from '../../../../__generated__/globalTypes'
 import { StepFields } from '../../../../__generated__/StepFields'
-import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
-import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousEventCreate'
+import {
+  StepNextEventCreate,
+  StepNextEventCreateVariables
+} from '../../../../__generated__/StepNextEventCreate'
+import {
+  StepPreviousEventCreate,
+  StepPreviousEventCreateVariables
+} from '../../../../__generated__/StepPreviousEventCreate'
 
 interface SwipeNavigationProps {
   activeBlock: TreeBlock<StepFields>
@@ -30,13 +42,16 @@ export function SwipeNavigation({
   rtl,
   children
 }: SwipeNavigationProps): ReactElement {
-  const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
-    STEP_NEXT_EVENT_CREATE
-  )
-  const [stepPreviousEventCreate] = useMutation<StepPreviousEventCreate>(
-    STEP_PREVIOUS_EVENT_CREATE
-  )
-  const { variant } = useJourney()
+  const [stepNextEventCreate] = useMutation<
+    StepNextEventCreate,
+    StepNextEventCreateVariables
+  >(STEP_NEXT_EVENT_CREATE)
+  const [stepPreviousEventCreate] = useMutation<
+    StepPreviousEventCreate,
+    StepPreviousEventCreateVariables
+  >(STEP_PREVIOUS_EVENT_CREATE)
+  const plausible = usePlausible<JourneyPlausibleEvents>()
+  const { variant, journey } = useJourney()
   const {
     getNextBlock,
     treeBlocks,
@@ -67,29 +82,37 @@ export function SwipeNavigation({
           t
         )
         const targetBlock = getNextBlock({ id: undefined, activeBlock })
-        const targetStepName =
-          targetBlock != null &&
-          getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
-
+        if (targetBlock == null) return
+        const targetStepName = getStepHeading(
+          targetBlock.id,
+          targetBlock.children,
+          treeBlocks,
+          t
+        )
+        const input: StepNextEventCreateInput = {
+          id,
+          blockId: activeBlock.id,
+          label: stepName,
+          value: targetStepName,
+          nextStepId: targetBlock.id
+        }
         void stepNextEventCreate({
           variables: {
-            input: {
-              id,
-              blockId: activeBlock.id,
-              label: stepName,
-              value: targetStepName,
-              nextStepId: targetBlock?.id
-            }
+            input
           }
         })
-
+        if (journey != null)
+          plausible('navigateNextStep', {
+            u: `${journey.id}/${activeBlock.id}`,
+            props: input
+          })
         TagManager.dataLayer({
           dataLayer: {
             event: 'step_next',
             eventId: id,
             blockId: activeBlock.id,
             stepName,
-            targetStepId: targetBlock?.id,
+            targetStepId: targetBlock.id,
             targetStepName
           }
         })
@@ -111,22 +134,30 @@ export function SwipeNavigation({
         const targetBlock = blockHistory[
           blockHistory.length - 2
         ] as TreeBlock<StepFields>
-        const targetStepName =
-          targetBlock != null &&
-          getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
-
+        if (targetBlock == null) return
+        const targetStepName = getStepHeading(
+          targetBlock.id,
+          targetBlock.children,
+          treeBlocks,
+          t
+        )
+        const input: StepPreviousEventCreateInput = {
+          id,
+          blockId: activeBlock.id,
+          label: stepName,
+          value: targetStepName,
+          previousStepId: targetBlock?.id
+        }
         void stepPreviousEventCreate({
           variables: {
-            input: {
-              id,
-              blockId: activeBlock.id,
-              label: stepName,
-              value: targetStepName,
-              previousStepId: targetBlock?.id
-            }
+            input
           }
         })
-
+        if (journey != null)
+          plausible('navigatePreviousStep', {
+            u: `${journey.id}/${activeBlock.id}`,
+            props: input
+          })
         TagManager.dataLayer({
           dataLayer: {
             event: 'step_prev',
@@ -159,7 +190,9 @@ export function SwipeNavigation({
       treeBlocks,
       blockHistory,
       t,
-      getNextBlock
+      getNextBlock,
+      plausible,
+      journey
     ]
   )
 
