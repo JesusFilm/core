@@ -8,7 +8,11 @@ import { ReactElement } from 'react'
 import { NodeProps, OnConnect } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveFab,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
@@ -64,42 +68,83 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
     })
   }
 
+  const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches
+
   function handleClick(): void {
-    dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
+    if (selectedStep?.id === step?.id) {
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: selectedStep
+      })
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
+      })
+    } else {
+      dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
+    }
+  }
+  const isSelected =
+    activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
+
+  const desktopStyle = {
+    '.fab': {
+      opacity: 0,
+      transform: 'scale(0.5)',
+      transition: (theme) =>
+        theme.transitions.create(['opacity', 'transform'], {
+          duration: 250
+        })
+    },
+    '&:hover .fab': {
+      transform: 'scale(1)',
+      opacity: 1
+    },
+    position: 'relative'
+  }
+
+  const touchStyle = {
+    '.fab': {
+      opacity: isSelected ? 1 : 0,
+      transform: isSelected ? 'scale(1)' : 'scale(0.5)',
+      transition: (theme) =>
+        theme.transitions.create(['opacity', 'transform'], {
+          duration: 250
+        })
+    },
+    position: 'relative'
   }
 
   return step != null ? (
-    <>
-      <BaseNode
-        id={step.id}
-        isTargetConnectable
-        selected={
-          activeContent === ActiveContent.Canvas && selectedStep?.id === step.id
-        }
-        onSourceConnect={handleSourceConnect}
-        sourceHandleProps={{
-          sx: {
-            bottom: 35
-          }
-        }}
-      >
-        {({ selected }) => (
-          <Stack alignItems="center" spacing={3} sx={{ mb: '2px' }}>
+    <Box
+      sx={{
+        gap: 4,
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <BaseNode
+          id={step.id}
+          isTargetConnectable
+          selected={isSelected}
+          onSourceConnect={handleSourceConnect}
+        >
+          {({ selected }) => (
             <Box
               sx={{
-                '.fab': {
-                  opacity: 0,
-                  transform: 'scale(0.5)',
-                  transition: (theme) =>
-                    theme.transitions.create(['opacity', 'transform'], {
-                      duration: 250
-                    })
-                },
-                '&:hover .fab': {
-                  transform: 'scale(1)',
-                  opacity: 1
-                },
-                position: 'relative'
+                ...(isTouchDevice ? touchStyle : desktopStyle),
+                '&:after': {
+                  content: '""',
+                  position: 'absolute',
+                  transform: 'translate(-50%, -50%)',
+                  top: STEP_NODE_HEIGHT + 3,
+                  left: '50%',
+                  width: STEP_NODE_WIDTH - 5,
+                  height: 18,
+                  backgroundColor: 'transparent'
+                }
               }}
             >
               <StepBlockNodeMenu className="fab" step={step} />
@@ -231,7 +276,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
                         paddingBottom: '1px'
                       }}
                     >
-                      {title != null && title !== '' ? (
+                      {subtitle != null && subtitle !== '' ? (
                         subtitle
                       ) : (
                         <Skeleton
@@ -249,9 +294,9 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
                 </CardContent>
               </Card>
             </Box>
-          </Stack>
-        )}
-      </BaseNode>
+          )}
+        </BaseNode>
+      </Box>
       <Stack direction="column">
         <ActionButton
           block={{
@@ -265,7 +310,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
           <ActionButton key={block.id} block={block} step={step} />
         ))}
       </Stack>
-    </>
+    </Box>
   ) : (
     <></>
   )

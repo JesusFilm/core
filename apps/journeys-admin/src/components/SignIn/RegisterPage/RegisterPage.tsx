@@ -16,7 +16,7 @@ import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
-import { object, string } from 'yup'
+import { InferType, object, string } from 'yup'
 
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
@@ -72,7 +72,10 @@ export function RegisterPage({
     await signInWithEmailAndPassword(auth, email, password)
   }
 
-  async function handleCreateAccount(values, { setFieldError }): Promise<void> {
+  async function handleCreateAccount(
+    values: InferType<typeof validationSchema>,
+    { setFieldError }
+  ): Promise<void> {
     try {
       await createAccountAndSignIn(values.email, values.name, values.password)
     } catch (error) {

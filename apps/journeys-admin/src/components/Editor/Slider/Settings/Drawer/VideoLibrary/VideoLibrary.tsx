@@ -55,17 +55,15 @@ export function VideoLibrary({
   selectedBlock,
   onSelect: handleSelect
 }: VideoLibraryProps): ReactElement {
-  const [openVideoDetails, setOpenVideoDetails] = useState(false)
+  const [openVideoDetails, setOpenVideoDetails] = useState(
+    selectedBlock?.videoId != null && open
+  )
   const [activeTab, setActiveTab] = useState(0)
   const router = useRouter()
 
   useEffect(() => {
-    // opens video details if videoId is not null
-    // and video library is open
-    if (selectedBlock?.videoId != null && open) {
-      setOpenVideoDetails(true)
-    }
-  }, [selectedBlock, open])
+    setOpenVideoDetails(selectedBlock?.videoId != null && open)
+  }, [open, selectedBlock?.videoId])
 
   const TabParams = {
     0: 'video-library',
@@ -86,7 +84,8 @@ export function VideoLibrary({
     newValue: number
   ): void => {
     setActiveTab(newValue)
-    const route = TabParams[newValue]
+    const route: 'unsplash-image' | 'custom-image' | 'ai-image' =
+      TabParams[newValue]
     if (route != null) setRoute(route)
   }
 

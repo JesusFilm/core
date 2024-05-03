@@ -58,7 +58,9 @@ export function ActionButton({ block, step }: ActionButtonProps): ReactElement {
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const { journey } = useJourney()
 
-  async function handleSourceConnect(params): Promise<void> {
+  async function handleSourceConnect(params: {
+    target: string
+  }): Promise<void> {
     if (journey == null) return
 
     if (block.__typename === 'CustomBlock') {

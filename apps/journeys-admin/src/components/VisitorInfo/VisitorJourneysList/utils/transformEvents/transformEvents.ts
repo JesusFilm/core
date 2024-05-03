@@ -53,8 +53,8 @@ export function transformEvents(events: Event[]): TransformedEvents {
     eventsWithDuration.push({ event })
     if (i - 1 >= 0) {
       const duration = getDuration(
-        filteredEvents[i - 1].createdAt,
-        filteredEvents[i].createdAt
+        String(filteredEvents[i - 1].createdAt),
+        String(filteredEvents[i].createdAt)
       )
 
       eventsWithDuration[i - 1] = {
@@ -85,8 +85,8 @@ export function transformEvents(events: Event[]): TransformedEvents {
   return {
     timelineItems,
     totalDuration: getDuration(
-      filteredEvents[0].createdAt,
-      filteredEvents.slice(-1)[0].createdAt
+      String(filteredEvents[0].createdAt),
+      String(filteredEvents.slice(-1)[0].createdAt)
     )
   }
 }

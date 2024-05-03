@@ -115,11 +115,7 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "extends": [
-        "plugin:@nx/typescript",
-        "standard-with-typescript",
-        "prettier"
-      ],
+      "extends": ["plugin:@nx/typescript", "love", "prettier"],
       "rules": {
         "@typescript-eslint/consistent-type-imports": "off",
         "@typescript-eslint/await-thenable": "off",
@@ -128,7 +124,8 @@
         "@typescript-eslint/ban-tslint-comment": "off",
         "@typescript-eslint/consistent-indexed-object-style": "off",
         "@typescript-eslint/prefer-nullish-coalescing": "off",
-        "@typescript-eslint/prefer-optional-chain": "off"
+        "@typescript-eslint/prefer-optional-chain": "off",
+        "@typescript-eslint/non-nullable-type-assertion-style": "off"
       }
     },
     {
@@ -167,7 +164,8 @@
       "rules": {
         "jest/no-disabled-tests": "off",
         "jest/require-top-level-describe": "error",
-        "i18next/no-literal-string": "off"
+        "i18next/no-literal-string": "off",
+        "@typescript-eslint/unbound-method": "off"
       }
     },
     {

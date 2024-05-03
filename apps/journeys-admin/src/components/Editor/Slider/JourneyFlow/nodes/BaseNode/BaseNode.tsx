@@ -1,5 +1,6 @@
+import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
 import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
 import { Handle, OnConnect, Position } from 'reactflow'
@@ -33,6 +34,7 @@ export function BaseNode({
 }: BaseNodeProps): ReactElement {
   const [hoverSelected, setHoverSelected] = useState(false)
   const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches
+  const theme = useTheme()
   const desktopStyle = {
     '.arrow': {
       visibility: 'hidden'
@@ -44,10 +46,11 @@ export function BaseNode({
 
   const touchStyle = {
     '.arrow': {
-      visibility:
-        typeof selected === 'boolean' && selected ? 'visible' : 'hidden'
+      visibility: selected === true ? 'visible' : 'hidden'
     }
   }
+
+  const borderColor = selected === true ? theme.palette.primary.main : '#AAACBB'
 
   const handleMouseEnter = (): void => {
     setHoverSelected(true)
@@ -55,7 +58,6 @@ export function BaseNode({
   const handleMouseLeave = (): void => {
     setHoverSelected(false)
   }
-
   return (
     <Box
       data-testid="BaseNode"
