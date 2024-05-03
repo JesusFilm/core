@@ -10,7 +10,7 @@ const videoStudyQuestions = object({
   languageId: string().required(),
   primary: boolean().required(),
   order: number().required(),
-  crowdinId: string().required()
+  crowdInId: string().required()
 })
 
 type VideoStudyQuestions = InferType<typeof videoStudyQuestions>

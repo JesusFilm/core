@@ -36,7 +36,7 @@ describe('ImporterVideoStudyQuestionsService', () => {
         languageId: 529,
         primary: 1,
         order: 3,
-        crowdinId: 'mockCrowdinId'
+        crowdInId: 'mockCrowdinId'
       })
       expect(prismaService.videoStudyQuestion.upsert).toHaveBeenCalledWith({
         where: {
@@ -47,7 +47,7 @@ describe('ImporterVideoStudyQuestionsService', () => {
           }
         },
         create: {
-          crowdinId: 'mockCrowdinId',
+          crowdInId: 'mockCrowdinId',
           languageId: '529',
           order: 3,
           primary: true,
@@ -55,7 +55,7 @@ describe('ImporterVideoStudyQuestionsService', () => {
           videoId: 'mockVideoId'
         },
         update: {
-          crowdinId: 'mockCrowdinId',
+          crowdInId: 'mockCrowdinId',
           languageId: '529',
           order: 3,
           primary: true,
