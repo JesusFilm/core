@@ -32,7 +32,10 @@ export function SocialPreviewNode(): ReactElement {
   }
 
   return (
-    <BaseNode selected={activeContent === ActiveContent.Social}>
+    <BaseNode
+      selected={activeContent === ActiveContent.Social}
+      isSourceConnectable="arrow"
+    >
       {({ selected }) => (
         <Card
           data-testid="SocialPreviewNode"

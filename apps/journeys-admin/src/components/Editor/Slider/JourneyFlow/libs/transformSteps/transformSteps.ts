@@ -104,5 +104,16 @@ export function transformSteps(
     draggable: false
   })
 
+  edges.push({
+    id: `SocialPreview->${steps[0].id}`,
+    source: 'SocialPreview',
+    target: steps[0].id,
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 30,
+      width: 30
+    }
+  })
+
   return { nodes, edges }
 }

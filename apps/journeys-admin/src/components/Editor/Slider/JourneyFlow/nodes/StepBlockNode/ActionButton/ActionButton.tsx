@@ -60,6 +60,7 @@ export function ActionButton({ block, step }: ActionButtonProps): ReactElement {
 
   async function handleSourceConnect(params: {
     target: string
+    source: string
   }): Promise<void> {
     if (journey == null) return
 
