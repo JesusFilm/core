@@ -67,7 +67,7 @@ function JourneyReportsPage(): ReactElement {
       >
         <StyledIFrame
           plausible-embed
-          src="/share/api-journeys-journey-9a588461-6e32-4348-a01c-d8fb98898827?auth=j-FBLhKBUHcrsPCO2B85a&embed=true&theme=light&background=transparent"
+          src="/share/api-journeys-journey-dd41b725-7174-46c3-888a-f69a8b4f4ed4?auth=eoZsR-2A8k7oZlzHc2-Wd&embed=true&theme=light&background=transparent"
           loading="lazy"
           ref={ref}
           sx={{

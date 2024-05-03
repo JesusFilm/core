@@ -29,17 +29,15 @@ export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
 
       if (journey != null && activeBlock != null) {
         const input = {
-          stepId: activeBlock.id
+          blockId: activeBlock.id
         }
-        plausible(
-          `footer${
-            variant === 'thumbsup' ? 'ThumbsUp' : 'ThumbsDown'
-          }ButtonClick`,
-          {
-            u: journey.id,
-            props: input
-          }
-        )
+        const event = `footer${
+          variant === 'thumbsup' ? 'ThumbsUp' : 'ThumbsDown'
+        }ButtonClick` as const
+        plausible(event, {
+          u: journey.id,
+          props: { ...input, key: `${event}:${input.blockId}` }
+        })
       }
     }
   }

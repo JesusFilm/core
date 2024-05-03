@@ -115,7 +115,7 @@ export const SignUp = ({
         if (journey != null)
           plausible('signupSubmit', {
             u: `${journey.id}/${blockId}`,
-            props: input
+            props: { ...input, key: `signupSubmit:${input.blockId}` }
           })
         TagManager.dataLayer({
           dataLayer: {

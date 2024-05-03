@@ -104,7 +104,7 @@ export function SwipeNavigation({
         if (journey != null)
           plausible('navigateNextStep', {
             u: `${journey.id}/${activeBlock.id}`,
-            props: input
+            props: { ...input, key: `navigateNextStep:${input.blockId}` }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -156,7 +156,7 @@ export function SwipeNavigation({
         if (journey != null)
           plausible('navigatePreviousStep', {
             u: `${journey.id}/${activeBlock.id}`,
-            props: input
+            props: { ...input, key: `navigatePreviousStep:${input.blockId}` }
           })
         TagManager.dataLayer({
           dataLayer: {

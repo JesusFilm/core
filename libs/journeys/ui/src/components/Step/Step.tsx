@@ -69,7 +69,7 @@ export function Step({
       if (journey != null)
         plausible('pageview', {
           u: `${journey.id}/${blockId}`,
-          props: input
+          props: { ...input, key: `pageview:${input.blockId}` }
         })
       TagManager.dataLayer({
         dataLayer: {

@@ -92,7 +92,7 @@ export function ChatButtons(): ReactElement {
       if (journey != null)
         plausible('footerChatButtonClick', {
           u: journey.id,
-          props: input
+          props: { ...input, key: `footerChatButtonClick:${input.blockId}` }
         })
     }
   }

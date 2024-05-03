@@ -109,7 +109,7 @@ export const TextResponse = ({
           if (journey != null)
             plausible('textResponseSubmit', {
               u: `${journey.id}/${blockId}`,
-              props: input
+              props: { ...input, key: `textResponseSubmit:${input.blockId}` }
             })
           TagManager.dataLayer({
             dataLayer: {

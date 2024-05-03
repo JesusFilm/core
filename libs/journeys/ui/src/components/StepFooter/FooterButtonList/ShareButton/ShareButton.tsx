@@ -29,11 +29,11 @@ export function ShareButton(): ReactElement {
 
     if (journey != null) {
       const input = {
-        stepId: activeBlock?.id
+        blockId: activeBlock?.id
       }
       plausible('shareButtonClick', {
         u: journey.id,
-        props: input
+        props: { ...input, key: `shareButtonClick:${input.blockId}` }
       })
     }
 

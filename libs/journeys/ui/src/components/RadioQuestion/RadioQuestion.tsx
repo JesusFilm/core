@@ -94,7 +94,7 @@ export function RadioQuestion({
       if (journey != null)
         plausible('radioQuestionSubmit', {
           u: `${journey.id}/${blockId}`,
-          props: input
+          props: { ...input, key: `radioQuestionSubmit:${input.blockId}` }
         })
       TagManager.dataLayer({
         dataLayer: {

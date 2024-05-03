@@ -122,7 +122,7 @@ export function Button({
       if (journey != null)
         plausible('buttonClick', {
           u: `${journey.id}/${blockId}`,
-          props: input
+          props: { ...input, key: `buttonClick:${input.blockId}` }
         })
       addEventToDataLayer(id)
     }
@@ -145,7 +145,7 @@ export function Button({
       if (journey != null)
         plausible('chatButtonClick', {
           u: `${journey.id}/${blockId}`,
-          props: input
+          props: { ...input, key: `chatButtonClick:${input.blockId}` }
         })
       addEventToDataLayer(id)
     }

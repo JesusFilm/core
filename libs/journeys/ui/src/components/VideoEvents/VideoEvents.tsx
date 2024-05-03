@@ -186,7 +186,7 @@ export function VideoEvents({
         if (journey != null)
           plausible('videoPlay', {
             u: `${journey.id}/${blockId}`,
-            props: input
+            props: { ...input, key: `videoPlay:${input.blockId}` }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -236,7 +236,7 @@ export function VideoEvents({
       if (journey != null)
         plausible('videoPause', {
           u: `${journey.id}/${blockId}`,
-          props: input
+          props: { ...input, key: `videoPause:${input.blockId}` }
         })
       TagManager.dataLayer({
         dataLayer: {
@@ -286,7 +286,7 @@ export function VideoEvents({
         if (journey != null)
           plausible('videoExpand', {
             u: `${journey.id}/${blockId}`,
-            props: input
+            props: { ...input, key: `videoExpand:${input.blockId}` }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -336,7 +336,7 @@ export function VideoEvents({
         if (journey != null)
           plausible('videoCollapse', {
             u: `${journey.id}/${blockId}`,
-            props: input
+            props: { ...input, key: `videoCollapse:${input.blockId}` }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -386,7 +386,7 @@ export function VideoEvents({
         if (journey != null)
           plausible('videoStart', {
             u: `${journey.id}/${blockId}`,
-            props: input
+            props: { ...input, key: `videoStart:${input.blockId}` }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -437,9 +437,9 @@ export function VideoEvents({
           }
         })
         if (journey != null)
-          plausible('videoProgress', {
+          plausible('videoProgress25', {
             u: `${journey.id}/${blockId}`,
-            props: input
+            props: { ...input, key: `videoProgress25:${input.blockId}` }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -491,9 +491,9 @@ export function VideoEvents({
           }
         })
         if (journey != null)
-          plausible('videoProgress', {
+          plausible('videoProgress50', {
             u: `${journey.id}/${blockId}`,
-            props: input
+            props: { ...input, key: `videoProgress50:${input.blockId}` }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -545,9 +545,9 @@ export function VideoEvents({
           }
         })
         if (journey != null)
-          plausible('videoProgress', {
+          plausible('videoProgress75', {
             u: `${journey.id}/${blockId}`,
-            props: input
+            props: { ...input, key: `videoProgress75:${input.blockId}` }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -602,7 +602,7 @@ export function VideoEvents({
         if (journey != null)
           plausible('videoComplete', {
             u: `${journey.id}/${blockId}`,
-            props: input
+            props: { ...input, key: `videoComplete:${input.blockId}` }
           })
         TagManager.dataLayer({
           dataLayer: {
