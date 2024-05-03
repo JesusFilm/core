@@ -8,7 +8,7 @@ import {
   getBezierPath
 } from 'reactflow'
 
-export default function CustomEdge({
+export function CustomEdge({
   id,
   sourceX,
   sourceY,
@@ -35,7 +35,7 @@ export default function CustomEdge({
   return (
     <>
       <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
-      <EdgeLabelRenderer>
+      {/* <EdgeLabelRenderer>
         <Box
           style={{
             position: 'absolute',
@@ -73,7 +73,7 @@ export default function CustomEdge({
             />
           </button>
         </Box>
-      </EdgeLabelRenderer>
+      </EdgeLabelRenderer> */}
     </>
   )
 }

@@ -44,9 +44,9 @@ import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { STEP_NODE_HEIGHT, StepBlockNode } from './nodes/StepBlockNode'
+import { CustomEdge } from './edges/CustomEdge'
 
 import 'reactflow/dist/style.css'
-import { last } from 'lodash'
 
 export const GET_STEP_BLOCKS_WITH_POSITION = gql`
   query GetStepBlocksWithPosition($journeyIds: [ID!]) {
@@ -312,6 +312,13 @@ export function JourneyFlow(): ReactElement {
     () => ({
       StepBlock: StepBlockNode,
       SocialPreview: SocialPreviewNode
+    }),
+    []
+  )
+
+  const edgeTypes = useMemo(
+    () => ({
+      customEdge: CustomEdge
     }),
     []
   )
