@@ -46,6 +46,7 @@ import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { STEP_NODE_HEIGHT, StepBlockNode } from './nodes/StepBlockNode'
 
 import 'reactflow/dist/style.css'
+import { last } from 'lodash'
 
 export const GET_STEP_BLOCKS_WITH_POSITION = gql`
   query GetStepBlocksWithPosition($journeyIds: [ID!]) {
@@ -327,6 +328,7 @@ export function JourneyFlow(): ReactElement {
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
         fitView
+        fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
         nodeTypes={nodeTypes}
         proOptions={{ hideAttribution: true }}
         onInit={setReactFlowInstance}
