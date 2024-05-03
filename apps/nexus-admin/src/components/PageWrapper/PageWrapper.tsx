@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
@@ -10,15 +9,13 @@ import { NavigationDrawer } from './NavigationDrawer'
 import { usePageWrapperStyles } from './utils/usePageWrapperStyles'
 
 interface PageWrapperProps {
-  showAppHeader?: boolean
   title?: string
   hasBack?: boolean
   children?: ReactNode
-  user: User
+  user?: User
 }
 
 export function PageWrapper({
-  showAppHeader = true,
   children,
   title,
   user,
@@ -44,10 +41,10 @@ export function PageWrapper({
             xs: '100vw',
             md: `calc(100vw - ${navbar.width})`
           },
-          pt: { xs: showAppHeader ? toolbar.height : 0, md: 0 }
+          pt: { xs: toolbar.height, md: 0 }
         }}
       >
-        {showAppHeader && <AppHeader onClick={() => setOpen(!open)} />}
+        <AppHeader onClick={() => setOpen(!open)} />
         <NavigationDrawer
           open={open}
           onClose={setOpen}
@@ -66,7 +63,9 @@ export function PageWrapper({
           }}
         >
           <Header user={user} title={title} hasBack={hasBack} />
-          <Box>{children}</Box>
+          <Stack flexGrow={1} data-testid="main-body">
+            {children}
+          </Stack>
         </Stack>
       </Stack>
     </Stack>

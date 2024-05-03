@@ -17,7 +17,7 @@ import { FC, MouseEvent, useState } from 'react'
 interface HeaderProps {
   title?: string
   hasBack?: boolean
-  user: User
+  user?: User
 }
 
 export const Header: FC<HeaderProps> = ({ title, hasBack, user }) => {
@@ -35,11 +35,16 @@ export const Header: FC<HeaderProps> = ({ title, hasBack, user }) => {
   }
 
   const logout = async (): Promise<void> => {
-    await user.signOut()
+    await user?.signOut()
   }
 
   return (
-    <Stack direction="row" alignItems="center" justifyContent="space-between">
+    <Stack
+      direction="row"
+      alignItems="center"
+      justifyContent="space-between"
+      data-testid="main-header"
+    >
       <Stack direction="row" alignItems="center">
         {hasBack === true && (
           <IconButton onClick={() => router.back()}>
