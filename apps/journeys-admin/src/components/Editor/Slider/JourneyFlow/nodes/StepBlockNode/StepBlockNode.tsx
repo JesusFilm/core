@@ -119,7 +119,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
   return step != null ? (
     <Box
       sx={{
-        gap: 4,
+        gap: 0.5,
         display: 'flex',
         flexDirection: 'column'
       }}
