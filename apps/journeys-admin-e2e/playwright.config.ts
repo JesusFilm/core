@@ -23,6 +23,8 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
+    //https://gs.statcounter.com/screen-resolution-stats/desktop/worldwide
+    viewport: { width: 1920, height: 1080 },
     /* Use URL that has been set part of app-deploy.yml */
     baseURL: process.env.DEPLOYMENT_URL ?? 'http://localhost:4100',
 
