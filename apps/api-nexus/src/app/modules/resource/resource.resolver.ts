@@ -11,10 +11,8 @@ import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import {
-  Channel,
   GoogleAuthInput,
   GoogleAuthResponse,
-  PrivacyStatus,
   ResourceCreateInput,
   ResourceFilter,
   ResourceFromGoogleDriveInput,
@@ -26,6 +24,10 @@ import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
 import { GoogleDriveService } from '../../lib/google/drive.service'
 import { GoogleOAuthService } from '../../lib/google/oauth.service'
+import {
+  GoogleSheetsService,
+  SpreadsheetTemplateType
+} from '../../lib/google/sheets.service'
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Resource')
@@ -33,6 +35,7 @@ export class ResourceResolver {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly googleOAuthService: GoogleOAuthService,
+    private readonly googleSheetsService: GoogleSheetsService,
     private readonly googleDriveService: GoogleDriveService,
     private readonly cloudFlareService: CloudFlareService,
     private readonly bullMQService: BullMQService
@@ -224,7 +227,7 @@ export class ResourceResolver {
           name: driveFile.name,
           nexusId: nexus.id,
           status: 'published',
-          createdAt: new Date(),
+          createdAt: new Date()
         }
       })
 
@@ -265,84 +268,29 @@ export class ResourceResolver {
         extensions: { code: 'NOT_FOUND' }
       })
 
-    const googleAccessToken =
-      await this.prismaService.googleAccessToken.findUnique({
-        where: { id: tokenId }
-      })
-
-    if (googleAccessToken === null) {
-      throw new Error('Invalid tokenId')
-    }
-    console.log('Downloading Template . . .')
-    const rows = await this.googleDriveService.handleGoogleDriveOperations(
-      tokenId,
-      spreadsheetId,
-      drivefolderId
-    )
-    console.log('Total Data', rows.length)
-
-    const batchResources: Array<{ resource: Resource; channel?: Channel }> = []
-
-    for (const row of rows) {
-      const resource = await this.prismaService.resource.create({
-        data: {
-          id: uuidv4(),
-          name: row.filename ?? '',
-          nexusId: nexus.id,
-          status: row.channelData?.id !== null ? 'processing' : 'published',
-          createdAt: new Date(),
-          category: row.category,
-          privacy: row.privacy as PrivacyStatus,
-          resourceLocalizations: {
-            create: {
-              title: row.title ?? '',
-              description: row.description ?? '',
-              keywords: row.keywords ?? '',
-              language: row.spoken_language ?? ''
-            }
-          },
-          resourceSource: {
-            create: {
-              videoMimeType: row.driveFile?.mimeType ?? '',
-              videoGoogleDriveId: row.driveFile?.id ?? '',
-              videoGoogleDriveRefreshToken: googleAccessToken.refreshToken
-            }
-          }
-        }
-      })
-      if (row.channelData?.id !== undefined) {
-        batchResources.push({ resource, channel: row.channelData })
-      }
-    }
-
-    const channels = batchResources
-      .filter((item, index, self) => {
-        return (
-          index === self.findIndex((t) => t.channel?.id === item.channel?.id) &&
-          item.channel !== undefined
-        )
-      })
-      .map((item) => item.channel)
-
-    console.log('Batches', channels.length)
-
-    for (const channel of channels) {
-      if (channel === undefined) continue
-      const resources = batchResources
-        .filter((item) => {
-          return item.channel?.id === channel.id
-        })
-        .map((item) => item.resource)
-      console.log('Batche Count: ', resources.length)
-      await this.bullMQService.createBatch(
-        uuidv4(),
-        nexusId,
-        channel,
-        resources
+    const { templateType, spreadsheetData, googleAccessToken } =
+      await this.googleSheetsService.getSpreadSheetTemplateData(
+        tokenId,
+        spreadsheetId,
+        drivefolderId
+      )
+    // CHECK SPREADSHEET TEMPLATE TYPE
+    if (templateType === SpreadsheetTemplateType.UPLOAD) {
+      // PROCESS UPLOAD TEMPLATE
+      return await this.googleSheetsService.processUploadSpreadsheetTemplate(
+        nexus.id,
+        googleAccessToken,
+        spreadsheetData
+      )
+    } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
+      // PROCESS LOCALIZATION TEMPLATE
+      await this.googleSheetsService.processLocalizationTemplateBatches(
+        nexus.id,
+        googleAccessToken,
+        spreadsheetData
       )
     }
-
-    return batchResources.map((item) => item.resource)
+    return []
   }
 
   @Mutation()
