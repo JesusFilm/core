@@ -253,7 +253,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
                         paddingBottom: '1px'
                       }}
                     >
-                      {title != null && title !== '' ? (
+                      {subtitle != null && subtitle !== '' ? (
                         subtitle
                       ) : (
                         <Skeleton
