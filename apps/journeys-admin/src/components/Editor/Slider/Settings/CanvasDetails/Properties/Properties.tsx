@@ -125,8 +125,8 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
         title = t('Card Properties')
         component = (
           <>
-            <Step {...selectedBlock} />
-            {card != null && <Divider />}
+            {/* <Step {...selectedBlock} />
+            {card != null && <Divider />} */}
             {card != null && <Properties block={card} step={selectedStep} />}
           </>
         )
