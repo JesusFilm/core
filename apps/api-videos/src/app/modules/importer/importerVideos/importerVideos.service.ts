@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 
 import { InferType, mixed, object, string } from 'yup'
 
-import { VideoLabel } from '.prisma/api-videos-client'
+import { VideoLabel, Prisma } from '.prisma/api-videos-client'
 
 import { slugify } from '../../../../libs/slugify'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -26,7 +26,8 @@ const videoSchema = object({
     .oneOf(Object.values(VideoLabel))
     .required(),
   primaryLanguageId: string().required(),
-  slug: string().required()
+  slug: string().required(),
+  childIds: string().nullable()
 })
 
 type Video = InferType<typeof videoSchema>
@@ -58,8 +59,25 @@ export class ImporterVideosService extends ImporterService<Video> {
     return slug
   }
 
+  private async transform(video: Video): Promise<Prisma.VideoCreateInput> {
+    if (video.childIds == null) {
+      return {
+        ...video,
+        childIds: [],
+        slug: await this.slugify(video.id, video.slug)
+      }
+    }
+    const string = video.childIds
+    const stringArray = string.substring(1, string.length - 1).split(',')
+    return {
+      ...video,
+      childIds: stringArray,
+      slug: await this.slugify(video.id, video.slug)
+    }
+  }
+
   protected async save(video: Video): Promise<void> {
-    const input = { ...video, slug: await this.slugify(video.id, video.slug) }
+    const input = await this.transform(video)
     await this.prismaService.video.upsert({
       where: { id: video.id },
       update: input,

@@ -36,7 +36,8 @@ describe('ImporterVideosService', () => {
         label: 'short',
         primaryLanguageId: 529,
         slug: 'Some Title',
-        extraStuff: 'randomData'
+        extraStuff: 'randomData',
+        childIds: null
       })
       expect(prismaService.video.upsert).toHaveBeenCalledWith({
         where: { id: 'mockValue0' },
@@ -44,13 +45,44 @@ describe('ImporterVideosService', () => {
           id: 'mockValue0',
           label: 'shortFilm',
           primaryLanguageId: '529',
-          slug: 'some-title'
+          slug: 'some-title',
+          childIds: []
         },
         update: {
           id: 'mockValue0',
           label: 'shortFilm',
           primaryLanguageId: '529',
-          slug: 'some-title'
+          slug: 'some-title',
+          childIds: []
+        }
+      })
+    })
+
+    it('should transform childId string to array', async () => {
+      prismaService.video.findMany.mockResolvedValueOnce([])
+      await service.import({
+        id: 'mockValue0',
+        label: 'short',
+        primaryLanguageId: 529,
+        slug: 'Some Title',
+        extraStuff: 'randomData',
+        childIds: '{6_GOMattFrench5101,6_GOMattFrench5102}'
+      })
+      expect(prismaService.video.upsert).toHaveBeenCalledWith({
+        where: { id: 'mockValue0' },
+        create: {
+          id: 'mockValue0',
+          label: 'shortFilm',
+          primaryLanguageId: '529',
+          slug: 'some-title',
+          childIds: ['6_GOMattFrench5101', '6_GOMattFrench5102']
+        },
+        update: {
+          id: 'mockValue0',
+          label: 'shortFilm',
+          primaryLanguageId: '529',
+          slug: 'some-title',
+          childIds: ['6_GOMattFrench5101', '6_GOMattFrench5102']
         }
       })
     })
@@ -62,7 +94,8 @@ describe('ImporterVideosService', () => {
         label: 'feature',
         primaryLanguageId: 529,
         slug: 'Some Title',
-        extraStuff: 'randomData'
+        extraStuff: 'randomData',
+        childIds: null
       })
       expect(prismaService.video.upsert).toHaveBeenCalledWith({
         where: { id: 'mockValue0' },
@@ -70,13 +103,15 @@ describe('ImporterVideosService', () => {
           id: 'mockValue0',
           label: 'featureFilm',
           primaryLanguageId: '529',
-          slug: 'some-title'
+          slug: 'some-title',
+          childIds: []
         },
         update: {
           id: 'mockValue0',
           label: 'featureFilm',
           primaryLanguageId: '529',
-          slug: 'some-title'
+          slug: 'some-title',
+          childIds: []
         }
       })
     })
@@ -101,13 +136,15 @@ describe('ImporterVideosService', () => {
           id: 'mockValue0',
           label: 'behindTheScenes',
           primaryLanguageId: '529',
-          slug: 'some-title'
+          slug: 'some-title',
+          childIds: []
         },
         update: {
           id: 'mockValue0',
           label: 'behindTheScenes',
           primaryLanguageId: '529',
-          slug: 'some-title'
+          slug: 'some-title',
+          childIds: []
         }
       })
     })
