@@ -30,7 +30,7 @@ export const STEP_NODE_HEIGHT = 76
 export const STEP_NODE_WIDTH_GAP = 200
 export const STEP_NODE_HEIGHT_GAP = 150
 
-export function StepBlockNode({ id }: NodeProps): ReactElement {
+export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
   const {
     state: { steps, selectedStep, activeContent },
     dispatch
@@ -147,7 +147,12 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
                 }
               }}
             >
-              <StepBlockNodeMenu className="fab" step={step} />
+              <StepBlockNodeMenu
+                className="fab"
+                step={step}
+                xPos={xPos}
+                yPos={yPos}
+              />
               <Card
                 sx={{
                   borderRadiusTopLeft: 2,

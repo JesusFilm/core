@@ -23,4 +23,6 @@ export interface BlockDuplicateVariables {
   id: string;
   journeyId: string;
   parentOrder?: number | null;
+  x?: number | null;
+  y?: number | null;
 }

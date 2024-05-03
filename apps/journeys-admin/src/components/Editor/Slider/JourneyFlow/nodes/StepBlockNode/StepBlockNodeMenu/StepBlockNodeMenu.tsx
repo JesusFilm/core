@@ -11,11 +11,15 @@ import { DuplicateBlock } from '../../../../Content/Canvas/QuickControls/Duplica
 
 interface StepBlockNodeMenuProps {
   step: TreeBlock<StepBlock>
+  xPos?: number
+  yPos?: number
   className?: string
 }
 
 export function StepBlockNodeMenu({
   step,
+  xPos,
+  yPos,
   className
 }: StepBlockNodeMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -69,6 +73,8 @@ export function StepBlockNodeMenu({
           variant="list-item"
           block={step}
           handleClick={handleClose}
+          xPos={xPos}
+          yPos={yPos}
         />
         <DeleteBlock variant="list-item" block={step} closeMenu={handleClose} />
       </Menu>

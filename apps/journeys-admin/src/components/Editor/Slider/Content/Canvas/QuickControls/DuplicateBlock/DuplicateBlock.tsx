@@ -23,11 +23,25 @@ interface DuplicateBlockProps {
   handleClick?: () => void
   disabled?: boolean
   block?: TreeBlock
+  xPos?: number
+  yPos?: number
 }
 
 export const BLOCK_DUPLICATE = gql`
-  mutation BlockDuplicate($id: ID!, $journeyId: ID!, $parentOrder: Int) {
-    blockDuplicate(id: $id, journeyId: $journeyId, parentOrder: $parentOrder) {
+  mutation BlockDuplicate(
+    $id: ID!
+    $journeyId: ID!
+    $parentOrder: Int
+    $x: Int
+    $y: Int
+  ) {
+    blockDuplicate(
+      id: $id
+      journeyId: $journeyId
+      parentOrder: $parentOrder
+      x: $x
+      y: $y
+    ) {
       id
     }
   }
@@ -37,7 +51,9 @@ export function DuplicateBlock({
   variant,
   handleClick,
   disabled = false,
-  block
+  block,
+  xPos,
+  yPos
 }: DuplicateBlockProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
@@ -56,13 +72,23 @@ export function DuplicateBlock({
       const { id, parentOrder } = currentBlock
       if (parentOrder == null) return
 
+      const variables =
+        currentBlock.__typename === 'StepBlock'
+          ? {
+              id,
+              journeyId: journey.id,
+              parentOrder: null,
+              x: xPos != null ? xPos + 10 : null,
+              y: yPos != null ? yPos + 10 : null
+            }
+          : {
+              id,
+              journeyId: journey.id,
+              parentOrder: parentOrder + 1
+            }
+
       const { data } = await blockDuplicate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          parentOrder:
-            currentBlock.__typename === 'StepBlock' ? null : parentOrder + 1
-        },
+        variables,
         update(cache, { data }) {
           if (data?.blockDuplicate != null) {
             const nextBlock = data.blockDuplicate[parentOrder + 1]
