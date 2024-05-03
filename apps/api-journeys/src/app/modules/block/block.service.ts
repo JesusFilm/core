@@ -104,7 +104,9 @@ export class BlockService {
   @FromPostgresql()
   async duplicateBlock(
     block: BlockWithAction,
-    parentOrder?: number
+    parentOrder?: number,
+    x?: number,
+    y?: number
   ): Promise<BlockWithAction[]> {
     const blockAndChildrenData = await this.getDuplicateBlockAndChildren(
       block.id,
@@ -134,21 +136,33 @@ export class BlockService {
           newBlock.nextBlockId != null ||
           newBlock.action != null
         ) {
-          return await this.prismaService.block.update({
-            where: { id: newBlock.id },
-            include: { action: true },
-            data: {
-              parentBlockId: newBlock.parentBlockId ?? undefined,
-              posterBlockId: newBlock.posterBlockId ?? undefined,
-              coverBlockId: newBlock.coverBlockId ?? undefined,
-              nextBlockId: newBlock.nextBlockId ?? undefined,
-              action:
-                newBlock.action != null
-                  ? { create: newBlock.action }
-                  : undefined
-            }
-          })
+          const updateBlockData = {
+            parentBlockId: newBlock.parentBlockId ?? undefined,
+            posterBlockId: newBlock.posterBlockId ?? undefined,
+            coverBlockId: newBlock.coverBlockId ?? undefined,
+            nextBlockId: newBlock.nextBlockId ?? undefined,
+            action:
+              newBlock.action != null ? { create: newBlock.action } : undefined
+          }
+          if (newBlock.typename === 'StepBlock') {
+            return await this.prismaService.block.update({
+              where: { id: newBlock.id },
+              include: { action: true },
+              data: {
+                ...updateBlockData,
+                x: x ?? newBlock.x,
+                y: y ?? newBlock.y
+              }
+            })
+          } else {
+            return await this.prismaService.block.update({
+              where: { id: newBlock.id },
+              include: { action: true },
+              data: updateBlockData
+            })
+          }
         }
+
         return newBlock
       })
     )
