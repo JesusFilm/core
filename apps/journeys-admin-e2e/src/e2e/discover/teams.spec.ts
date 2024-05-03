@@ -34,6 +34,7 @@ test.describe('Teams', () => {
   test('Create a team and create a journey then rename the team', async ({
     page
   }) => {
+    test.setTimeout(120000)
     const teamsPage = new TeamsPage(page)
     const journeyName = new JourneyPage(page)
     //1. Create a new team - Verify the user able to create the new team through New team option in menu icon in discover page

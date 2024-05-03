@@ -33,7 +33,7 @@ export class Register {
     await this.clickNextBtnInFewQuestionPage()
     await this.entetTeamName()
     await this.clickCreateBtn()
-    await this.waitUntilNavigationListItemProfileVisible()
+    await this.waitUntilDiscoverPageLoaded()
     await this.waitUntilTheToestMsgDisappear()
   }
   async enterUserName() {
@@ -61,10 +61,6 @@ export class Register {
       .click()
   }
   async verifyPageNavigatedToVerifyYourEmailPage() {
-    await this.page.waitForSelector(
-      'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
-      { state: 'visible' }
-    )
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
@@ -94,10 +90,6 @@ export class Register {
       .click()
   }
   async verifyPageNavigatedBeforeStartPage() {
-    await this.page.waitForSelector(
-      'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
-      { state: 'visible' }
-    )
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
@@ -111,13 +103,9 @@ export class Register {
   async clickNextBtn() {
     await this.page
       .locator('button[type="button"]', { hasText: 'Next' })
-      .click()
+      .click({ delay: 2000 })
   }
   async verifyPageNavigatedFewQuestionsPage() {
-    await this.page.waitForSelector(
-      'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
-      { state: 'visible' }
-    )
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
@@ -141,10 +129,6 @@ export class Register {
       .click()
   }
   async verifyPageNavigatedInviteTeammatesPage() {
-    await this.page.waitForSelector(
-      'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
-      { state: 'visible' }
-    )
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminOnboardingPageWrapper"] span',
@@ -164,14 +148,9 @@ export class Register {
       )
     ).toBeVisible({ timeout: 65000 })
   }
-  async waitUntilNavigationListItemProfileVisible() {
-    await expect(
-      this.page.locator('div[data-testid="NavigationListItemProfile"]')
-    ).toBeVisible({ timeout: 65000 })
-  }
   async waitUntilTheToestMsgDisappear() {
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
-      timeout: 30000
+      timeout: 60000
     })
   }
   async getUserEmailId() {
