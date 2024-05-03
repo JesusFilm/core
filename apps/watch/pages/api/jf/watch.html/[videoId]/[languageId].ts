@@ -31,7 +31,7 @@ export default async function Handler(
   })
   if (data.video?.variant?.slug != null) {
     const [videoId, languageId] = data.video.variant.slug.split('/')
-    const encodedVideoId =  encodeURIComponent(videoId)
+    const encodedVideoId = encodeURIComponent(videoId)
     res.redirect(`/watch/${encodedVideoId}.html/${languageId}.html`)
   } else {
     res.status(404).send({ error: 'video could not be found' })
