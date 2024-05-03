@@ -12,11 +12,55 @@ interface Credential {
   redirect_uris: string[];
 }
 
+interface ChannelsRequest {
+  accessToken: string;
+}
+
+interface ChannelsResponse {
+  kind: string;
+  etag: string;
+  items: Array<{
+    kind: string;
+    etag: string;
+    id: string;
+    snippet: {
+      title: string;
+      description: string;
+      customUrl: string;
+      publishedAt: string;
+      thumbnails: {
+        default: {
+          url: string;
+          width: number;
+          height: number;
+        };
+        medium: {
+          url: string;
+          width: number;
+          height: number;
+        };
+        high: {
+          url: string;
+          width: number;
+          height: number;
+        };
+      };
+    };
+    localized: {
+      title: string;
+      description: string;
+    };
+  }>;
+}
+
 @Injectable()
 export class GoogleYoutubeService {
   private readonly credential: Credential;
 
+  private readonly rootUrl: string;
+
   constructor(private readonly googleService: GoogleOAuthService) {
+    this.rootUrl = 'https://www.googleapis.com/youtube/v3/channels';
     this.credential = {
       client_secret: process.env.CLIENT_SECRET ?? '',
       client_id: process.env.CLIENT_ID ?? '',
@@ -36,6 +80,26 @@ export class GoogleYoutubeService {
         'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload',
     });
     return oAuth2Client;
+  }
+
+  async getChannels(req: ChannelsRequest): Promise<ChannelsResponse> {
+    const channelsParam = {
+      part: ['snippet'],
+      mine: true,
+    };
+    const params = new URLSearchParams();
+    Object.entries(channelsParam).forEach(([key, value]) => {
+      params.append(key, value.toString());
+    });
+
+    const response = await fetch(`${this.rootUrl}?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${req.accessToken}`,
+      },
+    });
+
+    return await response.json();
   }
 
   async uploadVideo(

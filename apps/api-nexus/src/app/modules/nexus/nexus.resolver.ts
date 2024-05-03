@@ -73,7 +73,7 @@ export class NexusResolver {
         data: {
           ...input,
           id,
-          status: NexusStatus.published,
+          status: NexusStatus.created,
           userNexuses: {
             create: {
               userId,

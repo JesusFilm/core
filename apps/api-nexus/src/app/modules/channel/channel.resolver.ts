@@ -10,6 +10,7 @@ import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import {
   ChannelCreateInput,
   ChannelFilter,
+  ChannelStatus,
   ChannelUpdateInput,
   ConnectYoutubeChannelInput
 } from '../../__generated__/graphql'
@@ -78,7 +79,7 @@ export class ChannelResolver {
         data: {
           ...input,
           id,
-          status: NexusStatus.published
+          status: ChannelStatus.published
         }
       })
       const channel = await tx.channel.findUnique({

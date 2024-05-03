@@ -28,20 +28,20 @@ describe('BatchResolver', () => {
   describe('batches', () => {
     it('should return an array of batches with average percentages', async () => {
       const userId = 'someUserId'
-      const mockBatches = [
-        {
-          id: 'batch1',
-          nexusId: 'nexus1',
-          channelId: 'channel1',
-          name: 'Batch 1',
-          status: BatchStatus.completed,
-          createdAt: new Date(),
-          resources: [{ percent: 50 }, { percent: 100 }],
-          averagePercent: 75
-        }
-      ]
+      // const mockBatches = [
+      //   {
+      //     id: 'batch1',
+      //     nexusId: 'nexus1',
+      //     channelId: 'channel1',
+      //     name: 'Batch 1',
+      //     status: BatchStatus.completed,
+      //     createdAt: new Date(),
+      //     resources: [{ percent: 50 }, { percent: 100 }],
+      //     averagePercent: 75
+      //   }
+      // ]
 
-      prismaService.batch.findMany.mockResolvedValue(mockBatches)
+      // prismaService.batch.findMany.mockResolvedValue(mockBatches)
 
       const result = await resolver.batches(userId, {})
 
