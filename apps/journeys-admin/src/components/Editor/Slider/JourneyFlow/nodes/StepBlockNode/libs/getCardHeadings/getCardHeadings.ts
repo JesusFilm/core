@@ -16,14 +16,17 @@ export function getCardHeadings(
 ): [title?: string, heading?: string] {
   const orderedTypographyVariants =
     ORDERED_TYPOGRAPHY_VARIANTS.slice().reverse()
-  const [title, subtitle] = sortBy(
-    flatten(children).filter(
-      (block) => block.__typename === 'TypographyBlock'
-    ) as Array<TreeBlock<TypographyBlock>>,
-    (block) =>
-      block.variant != null
-        ? orderedTypographyVariants.indexOf(block.variant)
-        : orderedTypographyVariants.length
-  )
+
+  const flattenedChildren = flatten(children).filter(
+    (block) => block.__typename === 'TypographyBlock'
+  ) as Array<TreeBlock<TypographyBlock>>
+
+  function getTypographyOrder(block): number {
+    return block.variant != null
+      ? orderedTypographyVariants.indexOf(block.variant)
+      : orderedTypographyVariants.length
+  }
+
+  const [title, subtitle] = sortBy(flattenedChildren, getTypographyOrder)
   return [title?.content, subtitle?.content]
 }
