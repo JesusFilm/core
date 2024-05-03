@@ -72,13 +72,14 @@ export function BaseNode({
           data-testid="BaseNodeTopHandle"
           position={Position.Left}
           sx={{
-            width: 7.5,
-            height: 7.5,
-            background: 'white',
+            width: 8.5,
+            height: 8.5,
+            left: -12,
+            background: '#F1F2F5',
             border:
-              selected !== false ? '2px solid #c52d3aff' : '2px solid #aaacbb',
-            outline: '1px solid white',
-            outlineColor: 'white'
+              selected !== false ? '2px solid #c52d3aff' : '2px solid #aaacbb'
+            // outline: '1px solid white',
+            // outlineColor: 'white'
           }}
         />
       )}
@@ -93,13 +94,16 @@ export function BaseNode({
           onMouseLeave={handleMouseLeave}
           {...sourceHandleProps}
           sx={{
-            width: 7.5,
-            height: 7.5,
-            background: 'white',
-            border:
-              selected !== false ? '2px solid #c52d3aff' : '2px solid #aaacbb',
-            outline: '1px solid',
-            outlineColor: 'white',
+            width: 6,
+            height: 6,
+            // right: -10,
+            background: 'rgba(0,0,0,.25)',
+            // border: '2px solid rgba(0,0,0,.25)',
+            // opacity: selected !== false ? 1 : 0,
+            border: 'none',
+            // border: selected !== false ? '3px solid #000' : '3px solid #000',
+            // outline: '1px solid',
+            // outlineColor: 'white',
             ...sourceHandleProps?.sx,
 
             '&:after': {

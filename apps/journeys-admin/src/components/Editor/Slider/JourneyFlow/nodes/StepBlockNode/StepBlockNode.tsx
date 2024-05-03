@@ -88,17 +88,17 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
             <Box
               sx={{
                 '.fab': {
-                  opacity: 0,
-                  transform: 'scale(0.5)',
-                  transition: (theme) =>
-                    theme.transitions.create(['opacity', 'transform'], {
-                      duration: 250
-                    })
+                  opacity: selected === true ? 1 : 0
+                  // transform: 'scale(0.5)',
+                  // transition: (theme) =>
+                  //   theme.transitions.create(['opacity', 'transform'], {
+                  //     duration: 250
+                  //   })
                 },
-                '&:hover .fab': {
-                  transform: 'scale(1)',
-                  opacity: 1
-                },
+                // '&:hover .fab': {
+                //   transform: 'scale(1)',
+                //   opacity: 1
+                // },
                 position: 'relative'
               }}
             >
@@ -107,10 +107,10 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
                 sx={{
                   borderRadiusTopLeft: 2,
                   borderRadiusTopRight: 2,
-                  outline: (theme) =>
-                    `2px solid ${
-                      selected === true ? theme.palette.primary.main : 'white'
-                    }`,
+                  // outline: (theme) =>
+                  //   `2px solid ${
+                  //     selected === true ? theme.palette.primary.main : 'white'
+                  //   }`,
                   width: 190
                 }}
                 onClick={handleClick}
@@ -252,17 +252,55 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
           </Stack>
         )}
       </BaseNode>
-      <Stack direction="column">
+      <Stack
+        direction="column"
+        sx={{
+          marginTop: '-86px',
+          paddingTop: '90px',
+
+          marginRight: '-8px',
+          // paddingRight: '8px',
+
+          marginLeft: '-8px',
+          // paddingLeft: '8px',
+
+          // background: 'rgba(240, 242, 245, .5)',
+          background:
+            activeContent === ActiveContent.Canvas &&
+            selectedStep?.id === step.id
+              ? 'rgba(0, 0, 0, .05)'
+              : 'rgba(240, 242, 245, .5)',
+          border: '2px solid rgba(0,0,0, .05)',
+          // borderColor:
+          //   activeContent === ActiveContent.Canvas &&
+          //   selectedStep?.id === step.id
+          //     ? 'black'
+          //     : 'rgba(0,0,0, .05)',
+          borderRadius: 3
+        }}
+      >
         <ActionButton
           block={{
             __typename: 'CustomBlock',
             id: step.id,
-            label: 'Swipe'
+            label: 'Next Step →'
           }}
           step={step}
+          selected={
+            activeContent === ActiveContent.Canvas &&
+            selectedStep?.id === step.id
+          }
         />
         {actionBlocks.map((block) => (
-          <ActionButton key={block.id} block={block} step={step} />
+          <ActionButton
+            key={block.id}
+            block={block}
+            step={step}
+            selected={
+              activeContent === ActiveContent.Canvas &&
+              selectedStep?.id === step.id
+            }
+          />
         ))}
       </Stack>
     </>

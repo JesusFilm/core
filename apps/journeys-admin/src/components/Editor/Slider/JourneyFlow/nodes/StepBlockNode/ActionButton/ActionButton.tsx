@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { borderBottom } from '@mui/system'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -25,7 +26,11 @@ interface ActionButtonProps {
   step: TreeBlock<StepBlock>
 }
 
-export function ActionButton({ block, step }: ActionButtonProps): ReactElement {
+export function ActionButton({
+  block,
+  step,
+  selected
+}: ActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   let title = ''
   switch (block.__typename) {
@@ -50,7 +55,7 @@ export function ActionButton({ block, step }: ActionButtonProps): ReactElement {
       title = block.video?.title?.[0]?.value ?? block.title ?? t('Video')
       break
     case 'CustomBlock':
-      title = `${block.label} >>`
+      title = `${block.label}`
       break
   }
 
@@ -86,14 +91,23 @@ export function ActionButton({ block, step }: ActionButtonProps): ReactElement {
       isSourceConnectable="arrow"
       onSourceConnect={handleSourceConnect}
       isTargetConnectable={false}
+      selected={selected}
     >
       <Box
         sx={{
-          backgroundColor: '#EFEFEF',
-          borderBottomLeftRadius: 4,
-          borderBottomRightRadius: 4,
-          border: '2px solid white',
-          borderTop: 'none'
+          // opacity: block.__typename === 'CustomBlock' ? 0.5 : 1,
+          opacity: selected ? 1 : 0.5,
+
+          margin: '0',
+          // margin: block.__typename === 'CustomBlock' ? '4px 0' : '2px 0',
+          // backgroundColor: 'rgba(0,0,0,.25)',
+          // borderRadius: 3,
+          // borderBottomLeftRadius: 4,
+          // borderBottomRightRadius: 4,
+          border: '1px solid rgba(0,0,0,.1)',
+          borderBottom: 'none',
+          borderRight: 'none',
+          borderLeft: 'none'
         }}
       >
         <Typography
@@ -101,10 +115,13 @@ export function ActionButton({ block, step }: ActionButtonProps): ReactElement {
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
-            textAlign: 'center',
+            textAlign: 'left',
+            paddingLeft: 3,
+            paddingRight: 3,
             fontWeight: 'bold',
             fontSize: 10,
-            lineHeight: '26px'
+            lineHeight: '27px',
+            color: 'black'
           }}
           variant="body2"
         >

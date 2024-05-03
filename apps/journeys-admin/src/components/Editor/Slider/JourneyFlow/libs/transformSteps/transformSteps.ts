@@ -50,13 +50,15 @@ export function transformSteps(
         sourceHandle: block.id !== step.id ? block.id : undefined,
         target: step.nextBlockId,
         // type: 'buttonEdge'
-        // style: {
-        //   strokeDasharray: 4
-        // }
+        style: {
+          strokeWidth: 2,
+          stroke: 'rgba(0, 0, 0, 0.1)'
+        },
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          height: 20,
-          width: 20
+          height: 10,
+          width: 10,
+          color: 'lightGrey'
         }
       })
     }
@@ -72,10 +74,15 @@ export function transformSteps(
         sourceHandle: block.id,
         target: block.action.blockId,
         // type: 'buttonEdge'
+        style: {
+          strokeWidth: 2,
+          stroke: 'rgba(0, 0, 0, 0.1)'
+        },
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          height: 30,
-          width: 30
+          height: 10,
+          width: 10,
+          color: 'lightGrey'
         }
       })
     }
