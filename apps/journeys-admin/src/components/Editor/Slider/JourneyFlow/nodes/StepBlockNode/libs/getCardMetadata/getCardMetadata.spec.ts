@@ -109,17 +109,7 @@ describe('getCardMetadata', () => {
       title: 'title content',
       subtitle: 'subtitle content',
       bgImage: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
-      priorityBlock: {
-        __typename: 'TypographyBlock',
-        align: null,
-        children: [],
-        color: null,
-        content: 'title content',
-        id: 'typography1.id',
-        parentBlockId: 'card1.id',
-        parentOrder: 0,
-        variant: 'h1'
-      }
+      priorityBlock: typography1
     })
   })
 
@@ -130,44 +120,11 @@ describe('getCardMetadata', () => {
     }
     const cardMetadata = getCardMetadata(videoCard)
     expect(cardMetadata).toEqual({
+      title: 'FallingPlates',
+      subtitle: '0:00-3:20',
       bgImage:
         'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-      priorityBlock: {
-        __typename: 'VideoBlock',
-        action: null,
-        autoplay: true,
-        children: [],
-        description: null,
-        duration: null,
-        endAt: 200,
-        fullsize: true,
-        id: 'video1.id',
-        image: null,
-        muted: false,
-        objectFit: null,
-        parentBlockId: 'card1.id',
-        parentOrder: 0,
-        posterBlockId: null,
-        source: 'internal',
-        startAt: 0,
-        title: null,
-        video: {
-          __typename: 'Video',
-          id: '2_0-FallingPlates',
-          image:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-          title: [{ __typename: 'Translation', value: 'FallingPlates' }],
-          variant: {
-            __typename: 'VideoVariant',
-            hls: 'https://arc.gt/hls/2_0-FallingPlates/529',
-            id: '2_0-FallingPlates-529'
-          }
-        },
-        videoId: '2_0-FallingPlates',
-        videoVariantLanguageId: '529'
-      },
-      subtitle: '0:00-3:20',
-      title: 'FallingPlates'
+      priorityBlock: video
     })
   })
 })
