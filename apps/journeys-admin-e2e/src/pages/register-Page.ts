@@ -61,6 +61,10 @@ export class Register {
       .click()
   }
   async verifyPageNavigatedToVerifyYourEmailPage() {
+    await this.page.waitForSelector(
+      'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
+      { state: 'visible' }
+    )
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
@@ -90,6 +94,10 @@ export class Register {
       .click()
   }
   async verifyPageNavigatedBeforeStartPage() {
+    await this.page.waitForSelector(
+      'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
+      { state: 'visible' }
+    )
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
@@ -106,6 +114,10 @@ export class Register {
       .click({ delay: 2000 })
   }
   async verifyPageNavigatedFewQuestionsPage() {
+    await this.page.waitForSelector(
+      'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
+      { state: 'visible' }
+    )
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
@@ -129,6 +141,10 @@ export class Register {
       .click()
   }
   async verifyPageNavigatedInviteTeammatesPage() {
+    await this.page.waitForSelector(
+      'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
+      { state: 'visible' }
+    )
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminOnboardingPageWrapper"] span',
