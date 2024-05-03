@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { ChatPlatform } from '../../../../../../../../__generated__/globalTypes'
+import { MessagePlatform } from '../../../../../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
 
 import { Chat } from '.'
@@ -17,13 +17,13 @@ describe('Chat', () => {
           __typename: 'ChatButton',
           id: '1',
           link: 'test link 1',
-          platform: ChatPlatform.facebook
+          platform: MessagePlatform.facebook
         },
         {
           __typename: 'ChatButton',
           id: '2',
           link: 'test link 2',
-          platform: ChatPlatform.tikTok
+          platform: MessagePlatform.tikTok
         }
       ]
     } as unknown as Journey
