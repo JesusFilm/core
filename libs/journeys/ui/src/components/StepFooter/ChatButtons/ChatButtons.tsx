@@ -20,7 +20,7 @@ import WhatsApp from '@core/shared/ui/icons/WhatsApp'
 
 import {
   ChatOpenEventCreateInput,
-  ChatPlatform
+  MessagePlatform
 } from '../../../../__generated__/globalTypes'
 import { useBlocks } from '../../../libs/block'
 import { JourneyPlausibleEvents } from '../../../libs/JourneyPlausibleEvents'
@@ -42,7 +42,7 @@ export const CHAT_BUTTON_EVENT_CREATE = gql`
 `
 
 interface ChatIconProps {
-  platform: ChatPlatform
+  platform: MessagePlatform
   index: number
 }
 
@@ -136,7 +136,7 @@ export function ChatButtons(): ReactElement {
           }}
         >
           <ChatIcon
-            platform={chatButton.platform ?? ChatPlatform.custom}
+            platform={chatButton.platform ?? MessagePlatform.custom}
             index={index}
           />
         </IconButton>

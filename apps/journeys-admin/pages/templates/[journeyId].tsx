@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -14,6 +14,7 @@ import {
 } from '../../__generated__/GetJourneys'
 import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
+import { useTeam } from '../../src/components/Team/TeamProvider'
 import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import {
@@ -30,6 +31,11 @@ function TemplateDetailsPage(): ReactElement {
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string
   })
+  const { query } = useTeam()
+
+  useEffect(() => {
+    void query.refetch()
+  }, [user.id, query])
 
   return (
     <>
