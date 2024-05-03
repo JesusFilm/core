@@ -34,6 +34,7 @@ export function EmbeddedPreview({
     const elem = document.documentElement
 
     /* View in fullscreen */
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     if (isFunction(elem.requestFullscreen)) {
       await elem.requestFullscreen()
       setIsFullWindow(true)
@@ -50,6 +51,7 @@ export function EmbeddedPreview({
 
   async function exitFullscreen(): Promise<void> {
     /* View in fullscreen */
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     if (isFunction(document.exitFullscreen)) {
       await document.exitFullscreen()
       setIsFullWindow(false)

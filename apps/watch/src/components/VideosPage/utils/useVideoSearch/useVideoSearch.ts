@@ -86,7 +86,7 @@ export function useVideoSearch({
           hits: resultHits,
           page: pageNumber,
           nbPages: totalPages
-        } = await index.search(title, {
+        } = await index.search(typeof title === 'string' ? title : '', {
           page,
           filters: `languageId:${
             availableVariantLanguageIds ?? '529'

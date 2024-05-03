@@ -66,10 +66,12 @@ export function TeamCreateForm({
           return
         }
       }
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
   }
   const initialValues: TeamCreateInput = { title: '' }
