@@ -34,7 +34,7 @@ export function SocialPreviewNode(): ReactElement {
   return (
     <BaseNode
       selected={activeContent === ActiveContent.Social}
-      isSourceConnectable="arrow"
+      isSourceConnectable
     >
       {({ selected }) => (
         <Card

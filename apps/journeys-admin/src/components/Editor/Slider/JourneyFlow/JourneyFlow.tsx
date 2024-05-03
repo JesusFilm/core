@@ -337,6 +337,7 @@ export function JourneyFlow(): ReactElement {
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
         nodeTypes={nodeTypes}
+        // edgeTypes={edgeTypes}
         proOptions={{ hideAttribution: true }}
         onInit={setReactFlowInstance}
       >

@@ -13,7 +13,7 @@ const connectionNodeIdSelector = (state) => state.connectionNodeId
 interface BaseNodeProps {
   id?: string
   isTargetConnectable?: boolean
-  isSourceConnectable?: 'arrow' | boolean
+  isSourceConnectable?: boolean
   onSourceConnect?: (
     params: { target: string } | Parameters<OnConnect>[0]
   ) => void
@@ -37,7 +37,6 @@ export function BaseNode({
   const isConnecting = !!connectionNodeId
   const [hoverSelected, setHoverSelected] = useState(false)
   const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches
-  const theme = useTheme()
   const desktopStyle = {
     '.arrow': {
       visibility: 'hidden'
@@ -53,14 +52,13 @@ export function BaseNode({
     }
   }
 
-  const borderColor = selected === true ? theme.palette.primary.main : '#AAACBB'
-
   const handleMouseEnter = (): void => {
     setHoverSelected(true)
   }
   const handleMouseLeave = (): void => {
     setHoverSelected(false)
   }
+
   return (
     <Box
       data-testid="BaseNode"
@@ -77,20 +75,19 @@ export function BaseNode({
           data-testid="BaseNodeTopHandle"
           position={Position.Left}
           sx={{
+            ml: 0.5,
             width: 8.5,
             height: 8.5,
-            left: -12,
+            left: -7.5,
             background: '#F1F2F5',
             border:
               selected !== false || isConnecting
                 ? '2px solid #c52d3aff'
                 : '2px solid #aaacbb'
-            // outline: '1px solid white',
-            // outlineColor: 'white'
           }}
         />
       )}
-      {isSourceConnectable === 'arrow' && (
+      {isSourceConnectable && (
         <StyledHandle
           id={id}
           type="source"
@@ -103,14 +100,8 @@ export function BaseNode({
           sx={{
             width: 6,
             height: 6,
-            // right: -10,
             background: 'rgba(0,0,0,.25)',
-            // border: '2px solid rgba(0,0,0,.25)',
-            // opacity: selected !== false ? 1 : 0,
             border: 'none',
-            // border: selected !== false ? '3px solid #000' : '3px solid #000',
-            // outline: '1px solid',
-            // outlineColor: 'white',
             ...sourceHandleProps?.sx,
 
             '&:after': {

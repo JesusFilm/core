@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { borderBottom } from '@mui/system'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -23,13 +22,12 @@ interface CustomBlock {
 
 interface ActionButtonProps {
   block: TreeBlock<Block> | CustomBlock
-  step: TreeBlock<StepBlock>
+  selected?: boolean
 }
 
 export function ActionButton({
   block,
-  step,
-  selected
+  selected = false
 }: ActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   let title = ''
@@ -98,22 +96,15 @@ export function ActionButton({
   return (
     <BaseNode
       id={block.id}
-      isSourceConnectable="arrow"
+      isSourceConnectable
       onSourceConnect={handleSourceConnect}
-      isTargetConnectable={false}
       selected={selected}
     >
       <Box
         sx={{
-          // opacity: block.__typename === 'CustomBlock' ? 0.5 : 1,
           opacity: selected ? 1 : 0.5,
 
           margin: '0',
-          // margin: block.__typename === 'CustomBlock' ? '4px 0' : '2px 0',
-          // backgroundColor: 'rgba(0,0,0,.25)',
-          // borderRadius: 3,
-          // borderBottomLeftRadius: 4,
-          // borderBottomRightRadius: 4,
           border: '1px solid rgba(0,0,0,.1)',
           borderBottom: 'none',
           borderRight: 'none',
