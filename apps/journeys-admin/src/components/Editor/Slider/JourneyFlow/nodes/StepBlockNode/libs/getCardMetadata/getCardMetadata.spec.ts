@@ -116,7 +116,7 @@ describe('getCardMetadata', () => {
   it('should return card metadata from videoblock', () => {
     const videoCard = {
       ...card,
-      children: [video]
+      children: [video, image, typography1, typography2]
     }
     const cardMetadata = getCardMetadata(videoCard)
     expect(cardMetadata).toEqual({
