@@ -31,7 +31,9 @@ Element.prototype.scrollIntoView = jest.fn()
 // https://community.powerbi.com/t5/Developer/TypeError-cryptoObj-getRandomValues-is-not-a-function-unrelated/m-p/1963294
 Object.defineProperty(window.self, 'crypto', {
   value: {
-    getRandomValues: (arr) => crypto.randomBytes(arr.length)
+    getRandomValues: (arr: unknown[]) => {
+      crypto.randomBytes(arr.length)
+    }
   }
 })
 

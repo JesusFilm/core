@@ -3,9 +3,10 @@ import CardActionArea from '@mui/material/CardActionArea'
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
@@ -62,6 +63,9 @@ interface SourceProps {
 export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
   const router = useRouter()
   const [open, setOpen] = useState<boolean | undefined>()
+  const {
+    state: { selectedAttributeId }
+  } = useEditor()
 
   let SourceContent
 
@@ -93,6 +97,12 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
       setBeaconPageViewed('video-library')
     })
   }
+
+  useEffect(() => {
+    if (selectedAttributeId === undefined && open === true) {
+      setOpen(false)
+    }
+  }, [selectedAttributeId, open])
 
   return (
     <>

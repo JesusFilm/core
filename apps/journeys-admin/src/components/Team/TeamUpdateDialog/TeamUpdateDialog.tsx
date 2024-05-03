@@ -80,10 +80,12 @@ export function TeamUpdateDialog({
           return
         }
       }
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
   }
 

@@ -89,7 +89,7 @@ export function BackgroundColor(): ReactElement {
     cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
   )
 
-  const handleTabChange = (_event, newValue): void => {
+  const handleTabChange = (_event, newValue: number): void => {
     setTabValue(newValue)
   }
 
@@ -127,7 +127,7 @@ export function BackgroundColor(): ReactElement {
   }
 
   const debouncedColorChange = useRef(
-    debounce(async (color) => {
+    debounce(async (color: string) => {
       void changeCardColor(color)
       setSelectedColor(color)
     }, 100)
