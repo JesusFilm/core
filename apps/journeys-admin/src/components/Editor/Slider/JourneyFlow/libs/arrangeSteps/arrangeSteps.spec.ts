@@ -1,6 +1,48 @@
 import { TreeBlock } from '@core/journeys/ui/block'
 import { arrangeSteps } from '.'
-import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
+import {
+  BlockFields_StepBlock as StepBlock,
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_CardBlock as CardBlock
+} from '@core/journeys/ui/block/__generated__/BlockFields'
+import {
+  ButtonSize,
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
+
+const button: TreeBlock<ButtonBlock> = {
+  __typename: 'ButtonBlock',
+  id: 'id',
+  parentBlockId: 'parentBlockId',
+  parentOrder: 0,
+  label: 'test button',
+  buttonVariant: null,
+  buttonColor: null,
+  size: ButtonSize.medium,
+  startIconId: null,
+  endIconId: null,
+  action: {
+    __typename: 'NavigateToBlockAction',
+    parentBlockId: 'responseAction.id',
+    gtmEventName: 'responseAction',
+    blockId: 'step1.id'
+  },
+  children: []
+}
+
+const card: TreeBlock<CardBlock> = {
+  id: 'card1.id',
+  __typename: 'CardBlock',
+  parentBlockId: 'step1.id',
+  coverBlockId: null,
+  parentOrder: 0,
+  backgroundColor: null,
+  themeMode: ThemeMode.light,
+  themeName: ThemeName.base,
+  fullscreen: false,
+  children: [button]
+}
 
 const steps: Array<TreeBlock<StepBlock>> = [
   {
@@ -49,6 +91,30 @@ describe('arrangeSteps', () => {
       'step1.id': { x: -200, y: 226 },
       'step2.id': { x: -200, y: 452 },
       'step3.id': { x: -200, y: 678 }
+    })
+  })
+
+  it('should handle a single step', () => {
+    const positions = arrangeSteps([steps[0]])
+    expect(positions).toEqual({ 'step0.id': { x: -200, y: 0 } })
+  })
+
+  it('should return positions if there are action within a step', () => {
+    const positions = arrangeSteps([
+      {
+        id: 'step0.id',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        children: [card]
+      },
+      { ...steps[1] }
+    ])
+    expect(positions).toEqual({
+      'step0.id': { x: -200, y: 0 },
+      'step1.id': { x: -200, y: 226 }
     })
   })
 })
