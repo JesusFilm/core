@@ -101,22 +101,16 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
         flexDirection: 'column'
       }}
     >
-      <BaseNode
-        id={step.id}
-        isTargetConnectable
-        isSourceConnectable="arrow"
-        selected={isSelected}
-        onSourceConnect={handleSourceConnect}
-        sourceHandleProps={{
-          sx: {
-            //  bottom: actionBlocks.length > 0 ? 35 : 0
-          }
-        }}
-      >
-        {({ selected }) => (
-          <Stack data-testid="spacingStack" alignItems="center">
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <BaseNode
+          id={step.id}
+          isTargetConnectable
+          isSourceConnectable="arrow"
+          selected={isSelected}
+          onSourceConnect={handleSourceConnect}
+        >
+          {({ selected }) => (
             <Box
-              onTouchStart={() => console.log('touch')}
               sx={{
                 ...(isTouchDevice ? touchStyle : desktopStyle),
                 '&:after': {
@@ -277,9 +271,9 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
                 </CardContent>
               </Card>
             </Box>
-          </Stack>
-        )}
-      </BaseNode>
+          )}
+        </BaseNode>
+      </Box>
 
       <Stack
         data-testid="ActionsStack"

@@ -1,6 +1,6 @@
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
 import { ComponentProps, ReactElement, ReactNode } from 'react'
 import { Handle, OnConnect, Position } from 'reactflow'
@@ -30,6 +30,7 @@ export function BaseNode({
   sourceHandleProps,
   children
 }: BaseNodeProps): ReactElement {
+  const theme = useTheme()
   const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches
 
   const desktopStyle = {
@@ -43,10 +44,11 @@ export function BaseNode({
 
   const touchStyle = {
     '.arrow': {
-      visibility:
-        typeof selected === 'boolean' && selected ? 'visible' : 'hidden'
+      visibility: selected === true ? 'visible' : 'hidden'
     }
   }
+
+  const borderColor = selected === true ? theme.palette.primary.main : '#AAACBB'
 
   return (
     <Box
@@ -65,11 +67,10 @@ export function BaseNode({
           sx={{
             width: 7.5,
             height: 7.5,
-            background: 'white',
-            border:
-              selected !== false ? '2px solid #c52d3aff' : '2px solid #aaacbb',
-            outline: '1px solid white',
-            outlineColor: 'white',
+            background: theme.palette.background.paper,
+            border: `2px solid ${borderColor}`,
+            outline: `1px solid ${theme.palette.background.paper}`,
+            outlineColor: theme.palette.background.paper,
             cursor: 'pointer'
           }}
         />
@@ -86,15 +87,11 @@ export function BaseNode({
             sx={{
               width: 7.5,
               height: 7.5,
-              background: 'white',
-              border:
-                selected !== false
-                  ? '2px solid #c52d3aff'
-                  : '2px solid #aaacbb',
-              outline: '1px solid',
-              outlineColor: 'white',
+              background: theme.palette.background.paper,
+              border: `2px solid ${borderColor}`,
+              outline: `1px solid ${theme.palette.background.paper}`,
+              outlineColor: theme.palette.background.paper,
               ...sourceHandleProps?.sx,
-
               '&:after': {
                 content: '""',
                 position: 'absolute',
@@ -112,20 +109,20 @@ export function BaseNode({
               <ArrowDownwardRoundedIcon
                 data-testid="BaseNodeDownwardArrowIcon"
                 className="arrow"
-                style={{
+                sx={{
                   display: 'flex',
                   position: 'absolute',
                   borderRadius: '50%',
-                  color: 'white',
+                  color: theme.palette.background.paper,
                   fontSize: 'large',
                   top: '50%',
-                  backgroundColor: '#c52d3aff',
+                  backgroundColor: 'primary.main',
                   left: '50%',
                   transform: 'translate(-50%, -50%)',
                   pointerEvents: 'none'
                 }}
               />
-            )}{' '}
+            )}
           </StyledHandle>
         </>
       )}
