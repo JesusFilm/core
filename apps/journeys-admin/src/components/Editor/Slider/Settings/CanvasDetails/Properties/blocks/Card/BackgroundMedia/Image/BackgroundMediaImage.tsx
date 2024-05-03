@@ -102,11 +102,13 @@ export function BackgroundMediaImage({
   const handleImageDelete = async (): Promise<void> => {
     try {
       await deleteCoverBlock()
-    } catch (e) {
-      enqueueSnackbar(e.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+    } catch (error) {
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
   }
 
@@ -202,11 +204,13 @@ export function BackgroundMediaImage({
       } else {
         await updateImageBlock(block)
       }
-    } catch (e) {
-      enqueueSnackbar(e.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+    } catch (error) {
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
   }
 

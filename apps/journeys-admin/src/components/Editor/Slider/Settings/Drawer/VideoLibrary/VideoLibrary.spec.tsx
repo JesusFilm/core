@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
 import {
@@ -34,26 +34,28 @@ describe('VideoLibrary', () => {
     )
 
     it('should render the Video Library on the right', () => {
-      const { getByText, getByTestId } = render(
+      render(
         <MockedProvider>
           <VideoLibrary open />
         </MockedProvider>
       )
-      expect(getByText('Video Library')).toBeInTheDocument()
+      expect(screen.getByText('Video Library')).toBeInTheDocument()
       expect(
-        getByTestId('VideoLibrary').parentElement?.parentElement
+        screen.getByTestId('VideoLibrary').parentElement?.parentElement
       ).toHaveClass('MuiDrawer-paperAnchorRight')
     })
 
     it('should close VideoLibrary on close Icon click', () => {
       const onClose = jest.fn()
-      const { getAllByRole, getByTestId } = render(
+      render(
         <MockedProvider>
           <VideoLibrary open onClose={onClose} />
         </MockedProvider>
       )
-      expect(getAllByRole('button')[0]).toContainElement(getByTestId('X2Icon'))
-      fireEvent.click(getAllByRole('button')[0])
+      expect(screen.getAllByRole('button')[0]).toContainElement(
+        screen.getByTestId('X2Icon')
+      )
+      fireEvent.click(screen.getAllByRole('button')[0])
       expect(onClose).toHaveBeenCalled()
     })
   })
@@ -64,14 +66,14 @@ describe('VideoLibrary', () => {
     )
 
     it('should render the VideoLibrary from the bottom', () => {
-      const { getByText, getByTestId } = render(
+      render(
         <MockedProvider>
           <VideoLibrary open />
         </MockedProvider>
       )
-      expect(getByText('Video Library')).toBeInTheDocument()
+      expect(screen.getByText('Video Library')).toBeInTheDocument()
       expect(
-        getByTestId('VideoLibrary').parentElement?.parentElement
+        screen.getByTestId('VideoLibrary').parentElement?.parentElement
       ).toHaveClass('MuiDrawer-paperAnchorBottom')
     })
   })
@@ -82,7 +84,7 @@ describe('VideoLibrary', () => {
     )
 
     it('displays searched video', async () => {
-      const { getByRole, getByText } = render(
+      render(
         <MockedProvider
           mocks={[
             {
@@ -137,32 +139,32 @@ describe('VideoLibrary', () => {
           <VideoLibrary open />
         </MockedProvider>
       )
-      const textBox = getByRole('textbox')
+      const textBox = screen.getByRole('textbox')
       fireEvent.change(textBox, {
         target: { value: 'Andreas' }
       })
       await waitFor(() =>
-        expect(getByText("Andreas' Story")).toBeInTheDocument()
+        expect(screen.getByText("Andreas' Story")).toBeInTheDocument()
       )
     })
   })
 
   it('should render the Video Library on the right', () => {
-    const { getByText, getByTestId } = render(
+    render(
       <MockedProvider>
         <VideoLibrary open />
       </MockedProvider>
     )
-    expect(getByText('Video Library')).toBeInTheDocument()
+    expect(screen.getByText('Video Library')).toBeInTheDocument()
     expect(
-      getByTestId('VideoLibrary').parentElement?.parentElement
+      screen.getByTestId('VideoLibrary').parentElement?.parentElement
     ).toHaveClass('MuiDrawer-paperAnchorRight')
   })
 
   it('when video selected calls onSelect', async () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
-    const { getByRole, getByText } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -217,15 +219,17 @@ describe('VideoLibrary', () => {
         <VideoLibrary open onSelect={onSelect} onClose={onClose} />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByText("Andreas' Story")).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText("Andreas' Story")).toBeInTheDocument()
+    )
     await waitFor(() =>
       fireEvent.click(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: "Andreas' Story After living a life full of fighter planes and porsches, Andreas realizes something is missing. 03:06"
         })
       )
     )
-    fireEvent.click(getByRole('button', { name: 'Select' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     expect(onSelect).toHaveBeenCalledWith({
       duration: 0,
       endAt: 0,
@@ -241,7 +245,7 @@ describe('VideoLibrary', () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
 
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <VideoLibrary
           open
@@ -274,7 +278,8 @@ describe('VideoLibrary', () => {
         />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByText('Video Details')).toBeInTheDocument())
+
+    await waitFor(() => expect(screen.getByText('Video Details')).toBeVisible())
   })
 
   it('should render YouTube', async () => {
@@ -286,14 +291,14 @@ describe('VideoLibrary', () => {
       }
     } as unknown as NextRouter)
 
-    const { getByText, getByRole } = render(
+    render(
       <MockedProvider>
         <VideoLibrary open />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('tab', { name: 'YouTube' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'YouTube' }))
     await waitFor(() =>
-      expect(getByText('Paste any YouTube Link')).toBeInTheDocument()
+      expect(screen.getByText('Paste any YouTube Link')).toBeInTheDocument()
     )
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -350,13 +355,13 @@ describe('VideoLibrary', () => {
       }
     } as unknown as NextRouter)
 
-    const { getByText, getByRole } = render(
+    render(
       <MockedProvider>
         <VideoLibrary open />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('tab', { name: 'Upload' }))
-    expect(getByText('Drop a video here')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
+    expect(screen.getByText('Drop a video here')).toBeInTheDocument()
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {

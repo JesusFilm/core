@@ -251,24 +251,24 @@ describe('transformEvents', () => {
   describe('getDuration', () => {
     it('should return duration', () => {
       const result = getDuration(
-        journeyViewEvent.createdAt,
-        chatOpenEvent.createdAt
+        String(journeyViewEvent.createdAt),
+        String(chatOpenEvent.createdAt)
       )
       expect(result).toBe('0:10')
     })
 
     it('should return duration with 2 digit seconds if singular', () => {
       const result = getDuration(
-        radioQuestionResponseEvent.createdAt,
-        signUpSubmissionEvent.createdAt
+        String(radioQuestionResponseEvent.createdAt),
+        String(signUpSubmissionEvent.createdAt)
       )
       expect(result).toBe('0:01')
     })
 
     it('should return < 0.01 if if duration is less than a second', () => {
       const result = getDuration(
-        videoCollapseEvent.createdAt,
-        videoCompleteEvent.createdAt
+        String(videoCollapseEvent.createdAt),
+        String(videoCompleteEvent.createdAt)
       )
       expect(result).toBe('< 0:01')
     })

@@ -47,6 +47,11 @@ export function VideoListItem({
     setOpen(false)
   }
 
+  const onSelect = (block: VideoBlockUpdateInput): void => {
+    if (handleSelect != null) handleSelect(block)
+    handleClose()
+  }
+
   const duration =
     time != null
       ? new Date(time * 1000).toISOString().substring(time < 3600 ? 14 : 11, 19)
@@ -112,7 +117,7 @@ export function VideoListItem({
           open={open}
           source={source}
           onClose={handleClose}
-          onSelect={handleSelect}
+          onSelect={onSelect}
         />
       )}
     </>

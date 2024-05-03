@@ -73,10 +73,12 @@ export function TrashedTemplateList({
         }
       })
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
     handleClose()
   }
@@ -89,10 +91,12 @@ export function TrashedTemplateList({
         }
       })
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
     handleClose()
   }
@@ -124,7 +128,7 @@ export function TrashedTemplateList({
     data?.journeys != null
       ? sortJourneys(
           data.journeys.filter(
-            (journey) => new Date(journey.trashedAt) > daysAgo
+            (journey) => new Date(journey.trashedAt as string) > daysAgo
           ),
           sortOrder
         )
