@@ -9,6 +9,7 @@ import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  ButtonAction,
   ButtonClickEventCreateInput,
   ButtonVariant,
   ChatOpenEventCreateInput
@@ -110,7 +111,7 @@ export function Button({
         stepId: activeBlock?.id,
         label: heading,
         value: label,
-        action: action?.__typename,
+        action: action?.__typename as ButtonAction | undefined,
         actionValue
       }
       void buttonClickEventCreate({

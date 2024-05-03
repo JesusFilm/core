@@ -28,7 +28,10 @@ import {
   StepPreviousEventCreateInput
 } from '../../../../__generated__/globalTypes'
 import { StepFields } from '../../../../__generated__/StepFields'
-import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
+import {
+  StepNextEventCreate,
+  StepNextEventCreateVariables
+} from '../../../../__generated__/StepNextEventCreate'
 import {
   StepPreviousEventCreate,
   StepPreviousEventCreateVariables
@@ -52,9 +55,10 @@ export function NavigationButton({
   variant,
   alignment
 }: NavigationButtonProps): ReactElement {
-  const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
-    STEP_NEXT_EVENT_CREATE
-  )
+  const [stepNextEventCreate] = useMutation<
+    StepNextEventCreate,
+    StepNextEventCreateVariables
+  >(STEP_NEXT_EVENT_CREATE)
   const [stepPreviousEventCreate] = useMutation<
     StepPreviousEventCreate,
     StepPreviousEventCreateVariables

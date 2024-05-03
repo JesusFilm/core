@@ -6,7 +6,14 @@ import {
   StepNextEventCreateInput,
   StepPreviousEventCreateInput,
   StepViewEventCreateInput,
-  TextResponseSubmissionEventCreateInput
+  TextResponseSubmissionEventCreateInput,
+  VideoCollapseEventCreateInput,
+  VideoCompleteEventCreateInput,
+  VideoExpandEventCreateInput,
+  VideoPauseEventCreateInput,
+  VideoPlayEventCreateInput,
+  VideoProgressEventCreateInput,
+  VideoStartEventCreateInput
 } from '../../../__generated__/globalTypes'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,14 +24,6 @@ interface Events {
 }
 
 export interface JourneyPlausibleEvents extends Events {
-  pageview: StepViewEventCreateInput
-  navigatePreviousStep: StepPreviousEventCreateInput
-  navigateNextStep: StepNextEventCreateInput
-  buttonClick: ButtonClickEventCreateInput
-  chatButtonClick: ChatOpenEventCreateInput
-  footerChatButtonClick: ChatOpenEventCreateInput
-  radioQuestionSubmit: RadioQuestionSubmissionEventCreateInput
-  signUpSubmit: SignUpSubmissionEventCreateInput
   footerThumbsUpButtonClick: {
     stepId: string
   }
@@ -34,5 +33,20 @@ export interface JourneyPlausibleEvents extends Events {
   shareButtonClick: {
     stepId: string
   }
+  pageview: StepViewEventCreateInput
+  navigatePreviousStep: StepPreviousEventCreateInput
+  navigateNextStep: StepNextEventCreateInput
+  buttonClick: ButtonClickEventCreateInput
+  chatButtonClick: ChatOpenEventCreateInput
+  footerChatButtonClick: ChatOpenEventCreateInput
+  radioQuestionSubmit: RadioQuestionSubmissionEventCreateInput
+  signUpSubmit: SignUpSubmissionEventCreateInput
   textResponseSubmit: TextResponseSubmissionEventCreateInput
+  videoPlay: VideoPlayEventCreateInput
+  videoPause: VideoPauseEventCreateInput
+  videoExpand: VideoExpandEventCreateInput
+  videoCollapse: VideoCollapseEventCreateInput
+  videoStart: VideoStartEventCreateInput
+  videoProgress: VideoProgressEventCreateInput
+  videoComplete: VideoCompleteEventCreateInput
 }
