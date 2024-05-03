@@ -1,0 +1,1 @@
+export { hasTouchScreen } from './deviceUtils'

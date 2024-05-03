@@ -8,6 +8,7 @@ import { Typography } from '@core/journeys/ui/Typography'
 
 import { TypographyBlockUpdateContent } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
+import { hasTouchScreen } from '../../../../../../../libs/deviceUtils/deviceUtils'
 import { InlineEditInput } from '../InlineEditInput'
 import { useOnClickOutside } from '../useOnClickOutside'
 
@@ -81,7 +82,7 @@ export function TypographyEdit({
       ref={inputRef}
       multiline
       fullWidth
-      autoFocus
+      autoFocus={!hasTouchScreen()}
       value={value}
       placeholder={t('Add your text here...')}
       onSelect={(e) => {
