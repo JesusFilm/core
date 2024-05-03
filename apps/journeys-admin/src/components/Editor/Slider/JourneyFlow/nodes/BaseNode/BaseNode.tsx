@@ -3,11 +3,12 @@ import Box from '@mui/material/Box'
 import { styled, useTheme } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
 import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
-import { Handle, OnConnect, Position } from 'reactflow'
+import { Handle, OnConnect, Position, useStore } from 'reactflow'
 
 import Plus1Icon from '@core/shared/ui/icons/Plus1'
 
 const StyledHandle = styled(Handle)(() => ({}))
+const connectionNodeIdSelector = (state) => state.connectionNodeId
 
 interface BaseNodeProps {
   id?: string
@@ -32,6 +33,8 @@ export function BaseNode({
   sourceHandleProps,
   children
 }: BaseNodeProps): ReactElement {
+  const connectionNodeId = useStore(connectionNodeIdSelector)
+  const isConnecting = !!connectionNodeId
   const [hoverSelected, setHoverSelected] = useState(false)
   const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches
   const theme = useTheme()
@@ -78,7 +81,9 @@ export function BaseNode({
             height: 7.5,
             background: 'white',
             border:
-              selected !== false ? '2px solid #c52d3aff' : '2px solid #aaacbb',
+              selected !== false || isConnecting
+                ? '2px solid #c52d3aff'
+                : '2px solid #aaacbb',
             outline: '1px solid white',
             outlineColor: 'white'
           }}
