@@ -63,6 +63,6 @@ module.exports = composePlugins(
   withNx,
   withPlausibleProxy({
     subdirectory: 'plausible',
-    customDomain: 'http://plausible:8000'
+    customDomain: process.env.PLAUSIBLE_URL
   })
 )(nextConfig)

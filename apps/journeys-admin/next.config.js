@@ -57,23 +57,23 @@ const nextConfig = {
     return [
       {
         source: '/share/:slug',
-        destination: 'http://plausible:8000/share/:slug'
+        destination: `${process.env.PLAUSIBLE_URL}/share/:slug`
       },
       {
         source: '/js/:slug',
-        destination: 'http://plausible:8000/js/:slug'
+        destination: `${process.env.PLAUSIBLE_URL}/js/:slug`
       },
       {
         source: '/css/:slug',
-        destination: 'http://plausible:8000/css/:slug'
+        destination: `${process.env.PLAUSIBLE_URL}/css/:slug`
       },
       {
         source: '/api/stats/:path*',
-        destination: 'http://plausible:8000/api/stats/:path*'
+        destination: `${process.env.PLAUSIBLE_URL}/api/stats/:path*`
       },
       {
         source: '/favicon/sources/:slug',
-        destination: 'http://plausible:8000/favicon/sources/:slug'
+        destination: `${process.env.PLAUSIBLE_URL}/favicon/sources/:slug`
       }
     ]
   },
