@@ -9,7 +9,7 @@ import {
   STEP_NODE_HEIGHT_GAP,
   STEP_NODE_WIDTH,
   STEP_NODE_WIDTH_GAP
-} from '../../nodes/StepBlockNode'
+} from '../../nodes/StepBlockNode/libs/sizes'
 import { filterActionBlocks } from '../filterActionBlocks'
 
 export interface PositionMap {
