@@ -5,7 +5,6 @@ export class ImporterService<T extends AnyObject = AnyObject> {
   schema: ObjectSchema<T>
 
   async import(row: unknown): Promise<void> {
-    console.log(row)
     if (await this.schema.isValid(row)) {
       const data = this.schema.noUnknown().cast(row)
       await this.save(data as T)
