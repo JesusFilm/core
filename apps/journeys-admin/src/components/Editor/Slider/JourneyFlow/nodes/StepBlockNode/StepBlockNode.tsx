@@ -2,10 +2,7 @@ import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 import { NodeProps, OnConnect } from 'reactflow'
 
-import {
-  ActiveContent,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
@@ -87,9 +84,7 @@ export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
           selected={isSelected}
           onSourceConnect={handleSourceConnect}
         >
-          {({ selected }) => (
-            <StepBlockNodeCard step={step} selected={isSelected} />
-          )}
+          {() => <StepBlockNodeCard step={step} selected={isSelected} />}
         </BaseNode>
         <Stack direction="column">
           <ActionButton
