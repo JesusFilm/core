@@ -70,11 +70,11 @@ export function arrangeSteps(steps: TreeStepBlock[]): PositionMap {
   }
 
   blocks.forEach((row, index) => {
-    const stepY = index * (STEP_NODE_HEIGHT + STEP_NODE_HEIGHT_GAP)
+    const stepX = index * (STEP_NODE_WIDTH + STEP_NODE_WIDTH_GAP)
     row.forEach((step, index) => {
-      const stepX =
-        index * (STEP_NODE_WIDTH + STEP_NODE_WIDTH_GAP) -
-        (row.length / 2) * (STEP_NODE_WIDTH + STEP_NODE_WIDTH_GAP)
+      const stepY =
+        index * (STEP_NODE_HEIGHT + STEP_NODE_HEIGHT_GAP) -
+        (row.length / 2) * (STEP_NODE_HEIGHT + STEP_NODE_HEIGHT_GAP)
       positions[step.id] = {
         x: stepX,
         y: stepY

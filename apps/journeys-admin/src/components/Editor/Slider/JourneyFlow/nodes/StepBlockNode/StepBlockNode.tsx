@@ -2,7 +2,11 @@ import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 import { NodeProps, OnConnect } from 'reactflow'
 
-import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveFab,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
@@ -20,7 +24,8 @@ export const STEP_NODE_HEIGHT_GAP = 150
 
 export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent }
+    state: { steps, selectedStep, activeContent },
+    dispatch
   } = useEditor()
   const step = steps?.find((step) => step.id === id)
   const actionBlocks = filterActionBlocks(step)
@@ -52,6 +57,22 @@ export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
     })
   }
 
+  function handleClick(): void {
+    if (selectedStep?.id === step?.id) {
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: selectedStep
+      })
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
+      })
+    } else {
+      dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
+    }
+  }
+
   const selected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
@@ -59,6 +80,7 @@ export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
     <Stack
       gap={0.5}
       direction="column"
+      onClick={handleClick}
       sx={{
         background:
           activeContent === ActiveContent.Canvas && selectedStep?.id === step.id

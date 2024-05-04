@@ -48,6 +48,7 @@ import { STEP_NODE_HEIGHT, StepBlockNode } from './nodes/StepBlockNode'
 import { CustomEdge } from './edges/CustomEdge'
 
 import 'reactflow/dist/style.css'
+import Button from '@mui/material/Button'
 
 export const GET_STEP_BLOCKS_WITH_POSITION = gql`
   query GetStepBlocksWithPosition($journeyIds: [ID!]) {
@@ -97,6 +98,30 @@ export function JourneyFlow(): ReactElement {
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
+
+  async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
+    if (steps == null || journey == null) return
+    positions = arrangeSteps(steps)
+    Object.entries(positions).forEach(([id, position]) => {
+      void stepBlockPositionUpdate({
+        variables: {
+          id,
+          journeyId: journey.id,
+          x: position.x,
+          y: position.y
+        },
+        optimisticResponse: {
+          stepBlockUpdate: {
+            id,
+            __typename: 'StepBlock',
+            x: position.x,
+            y: position.y
+          }
+        }
+      })
+    })
+  }
+
   const { data, refetch } = useQuery<
     GetStepBlocksWithPosition,
     GetStepBlocksWithPositionVariables
@@ -114,25 +139,7 @@ export function JourneyFlow(): ReactElement {
         )
       ) {
         // some steps have no x or y coordinates
-        positions = arrangeSteps(steps)
-        Object.entries(positions).forEach(([id, position]) => {
-          void stepBlockPositionUpdate({
-            variables: {
-              id,
-              journeyId: journey.id,
-              x: position.x,
-              y: position.y
-            },
-            optimisticResponse: {
-              stepBlockUpdate: {
-                id,
-                __typename: 'StepBlock',
-                x: position.x,
-                y: position.y
-              }
-            }
-          })
-        })
+        void blockPositionsUpdate(positions)
       } else {
         data.blocks.forEach((block) => {
           if (
@@ -327,6 +334,7 @@ export function JourneyFlow(): ReactElement {
 
   return (
     <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">
+      <Button onClick={() => blockPositionsUpdate({})}>Reset Graph</Button>
       <ReactFlow
         nodes={nodes}
         edges={edges}
