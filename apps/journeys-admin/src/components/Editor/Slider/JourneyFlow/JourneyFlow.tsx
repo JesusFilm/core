@@ -1,6 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import { useTheme } from '@mui/material/styles'
 import {
   MouseEvent,
@@ -13,6 +12,7 @@ import {
 } from 'react'
 import {
   Background,
+  ControlButton,
   Controls,
   NodeDragHandler,
   OnConnect,
@@ -30,6 +30,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
+import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import {
   GetStepBlocksWithPosition,
@@ -331,12 +332,6 @@ export function JourneyFlow(): ReactElement {
 
   return (
     <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">
-      <Button
-        onClick={async () => await blockPositionsUpdate({})}
-        sx={{ position: 'absolute' }}
-      >
-        Reset Graph
-      </Button>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -357,7 +352,11 @@ export function JourneyFlow(): ReactElement {
           strokeWidth: 2
         }}
       >
-        <Controls showInteractive={false} />
+        <Controls showInteractive={false}>
+          <ControlButton onClick={async () => await blockPositionsUpdate({})}>
+            <ArrowRefresh6Icon />
+          </ControlButton>
+        </Controls>
         <Background color="#aaa" gap={16} />
       </ReactFlow>
     </Box>
