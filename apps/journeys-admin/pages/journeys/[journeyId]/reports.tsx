@@ -1,3 +1,4 @@
+import { gql, useQuery } from '@apollo/client'
 import { styled } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import {
@@ -10,19 +11,30 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useCallback, useRef } from 'react'
 
-import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
+import {
+  GetAdminJourneyWithPlausibleToken,
+  GetAdminJourneyWithPlausibleTokenVariables
+} from '../../../__generated__/GetAdminJourneyWithPlausibleToken'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
-import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
+import { USER_JOURNEY_OPEN } from '../[journeyId]'
+
+export const GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN = gql`
+  query GetAdminJourneyWithPlausibleToken($id: ID!) {
+    journey: adminJourney(id: $id, idType: databaseId) {
+      plausibleToken
+    }
+  }
+`
 
 const StyledIFrame = styled('iframe')({
   border: 0
 })
 
 function useHookWithRefCallback(): (node: HTMLIFrameElement | null) => void {
-  const ref = useRef<HTMLIFrameElement>(null)
+  const ref = useRef<HTMLIFrameElement | null>(null)
   const setRef = useCallback((node: HTMLIFrameElement | null) => {
     if (ref.current != null) {
       // Make sure to cleanup any events/references added to the last instance
@@ -52,6 +64,12 @@ function JourneyReportsPage(): ReactElement {
   const user = useUser()
   const router = useRouter()
 
+  const { data, loading } = useQuery<
+    GetAdminJourneyWithPlausibleToken,
+    GetAdminJourneyWithPlausibleTokenVariables
+  >(GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN, {
+    variables: { id: router.query.journeyId as string }
+  })
   const journeyId = router.query.journeyId as string
   const ref = useHookWithRefCallback()
 
@@ -65,16 +83,21 @@ function JourneyReportsPage(): ReactElement {
         mainBodyPadding={false}
         mainHeaderChildren={<ReportsNavigation journeyId={journeyId} />}
       >
-        <StyledIFrame
-          plausible-embed
-          src="/share/api-journeys-journey-dd41b725-7174-46c3-888a-f69a8b4f4ed4?auth=eoZsR-2A8k7oZlzHc2-Wd&embed=true&theme=light&background=transparent"
-          loading="lazy"
-          ref={ref}
-          sx={{
-            height: { xs: 'calc(100vh - 96px)', md: 'calc(100vh - 48px)' }
-          }}
-        />
-        <script async src="/js/embed.host.js" />
+        {loading && <p>{t('Loading')}...</p>}
+        {!loading && data?.journey.plausibleToken != null && (
+          <>
+            <StyledIFrame
+              plausible-embed
+              src={`/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
+              loading="lazy"
+              ref={ref}
+              sx={{
+                height: { xs: 'calc(100vh - 96px)', md: 'calc(100vh - 48px)' }
+              }}
+            />
+            <script async src="/js/embed.host.js" />
+          </>
+        )}
       </PageWrapper>
     </>
   )
@@ -95,10 +118,13 @@ export const getServerSideProps = withUserTokenSSR({
   if (redirect != null) return { redirect }
 
   try {
-    await apolloClient.query<GetAdminJourney>({
-      query: GET_ADMIN_JOURNEY,
+    await apolloClient.query<
+      GetAdminJourneyWithPlausibleToken,
+      GetAdminJourneyWithPlausibleTokenVariables
+    >({
+      query: GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN,
       variables: {
-        id: query?.journeyId
+        id: query?.journeyId as string
       }
     })
   } catch (error) {

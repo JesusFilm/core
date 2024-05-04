@@ -820,6 +820,7 @@ export class Journey {
     strategySlug?: Nullable<string>;
     tags: Tag[];
     journeyCollections: JourneyCollection[];
+    plausibleToken?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
