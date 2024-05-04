@@ -272,30 +272,35 @@ export function JourneyFlow(): ReactElement {
 
       if (step == null || block == null) return
 
-      let clientX = 0
-      let clientY = 0
-      if (event.type === 'touchend') {
-        const touchEvent = event as unknown as TouchEvent
-        touchEvent.preventDefault()
-        clientX = touchEvent.changedTouches[0].clientX
-        clientY = touchEvent.changedTouches[0].clientY
-      } else if (event.type === 'mouseup') {
-        const mouseEvent = event as unknown as MouseEvent
-        clientX = mouseEvent.clientX
-        clientY = mouseEvent.clientY
-      }
+      // let clientX = 0
+      // let clientY = 0
+      // if (event.type === 'touchend') {
+      //   const touchEvent = event as unknown as TouchEvent
+      //   touchEvent.preventDefault()
+      //   clientX = touchEvent.changedTouches[0].clientX
+      //   clientY = touchEvent.changedTouches[0].clientY
+      // } else if (event.type === 'mouseup') {
+      //   const mouseEvent = event as unknown as MouseEvent
+      //   clientX = mouseEvent.clientX
+      //   clientY = mouseEvent.clientY
+      // }
 
-      const { x, y } = reactFlowInstance.screenToFlowPosition({
-        x: clientX,
-        y: clientY
-      })
-
-      void createStepAndCardBlock(
-        step,
-        block,
-        parseInt(x.toString()),
-        parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
+      const targetIsPane = (event.target as Element)?.classList.contains(
+        'react-flow__pane'
       )
+      if (targetIsPane) {
+        const { x, y } = reactFlowInstance.screenToFlowPosition({
+          x: (event as unknown as MouseEvent).clientX,
+          y: (event as unknown as MouseEvent).clientY
+        })
+
+        void createStepAndCardBlock(
+          step,
+          block,
+          parseInt(x.toString()),
+          parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
+        )
+      }
     },
     [reactFlowInstance, connectingParams, createStepAndCardBlock, steps]
   )
@@ -334,7 +339,12 @@ export function JourneyFlow(): ReactElement {
 
   return (
     <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">
-      <Button onClick={() => blockPositionsUpdate({})}>Reset Graph</Button>
+      <Button
+        onClick={() => blockPositionsUpdate({})}
+        sx={{ position: 'absolute' }}
+      >
+        Reset Graph
+      </Button>
       <ReactFlow
         nodes={nodes}
         edges={edges}

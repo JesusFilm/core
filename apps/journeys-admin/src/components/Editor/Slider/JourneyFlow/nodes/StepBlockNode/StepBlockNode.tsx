@@ -2,11 +2,7 @@ import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 import { NodeProps, OnConnect } from 'reactflow'
 
-import {
-  ActiveContent,
-  ActiveFab,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
@@ -24,8 +20,7 @@ export const STEP_NODE_HEIGHT_GAP = 150
 
 export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent },
-    dispatch
+    state: { steps, selectedStep, activeContent }
   } = useEditor()
   const step = steps?.find((step) => step.id === id)
   const actionBlocks = filterActionBlocks(step)
@@ -57,73 +52,55 @@ export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
     })
   }
 
-  function handleClick(): void {
-    if (selectedStep?.id === step?.id) {
-      dispatch({
-        type: 'SetSelectedBlockAction',
-        selectedBlock: selectedStep
-      })
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
-      })
-    } else {
-      dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
-    }
-  }
-
-  const selected =
+  const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
   return step != null ? (
-    <Stack
-      gap={0.5}
-      direction="column"
-      onClick={handleClick}
-      sx={{
-        background:
-          activeContent === ActiveContent.Canvas && selectedStep?.id === step.id
-            ? 'rgba(0, 0, 0, .05)'
-            : 'rgba(240, 242, 245, .5)',
-        border: '2px solid rgba(0,0,0, .05)',
-        borderRadius: 3
-      }}
-    >
-      <BaseNode
-        id={step.id}
-        isTargetConnectable
-        selected={selected}
-        onSourceConnect={handleSourceConnect}
-      >
-        {({ selected }) => (
-          <>
-            {selected && (
-              <StepBlockNodeMenu
-                className="fab"
-                step={step}
-                xPos={xPos}
-                yPos={yPos}
-              />
-            )}
-            <StepBlockNodeCard step={step} selected={selected} />
-          </>
-        )}
-      </BaseNode>
-      <Stack direction="column">
-        <ActionButton
-          block={{
-            __typename: 'CustomBlock',
-            id: step.id,
-            label: 'Next Step →'
-          }}
-          selected={selected}
+    <>
+      {isSelected && (
+        <StepBlockNodeMenu
+          className="fab"
+          step={step}
+          xPos={xPos}
+          yPos={yPos}
         />
-        {actionBlocks.map((block) => (
-          <ActionButton key={block.id} block={block} selected={selected} />
-        ))}
+      )}
+      <Stack
+        gap={0.5}
+        direction="column"
+        sx={{
+          background:
+            activeContent === ActiveContent.Canvas &&
+            selectedStep?.id === step.id
+              ? 'rgba(0, 0, 0, .05)'
+              : 'rgba(240, 242, 245, .5)',
+          border: '2px solid rgba(0,0,0, .05)',
+          borderRadius: 3
+        }}
+      >
+        <BaseNode
+          id={step.id}
+          isTargetConnectable
+          selected={isSelected}
+          onSourceConnect={handleSourceConnect}
+        >
+          {() => <StepBlockNodeCard step={step} selected={isSelected} />}
+        </BaseNode>
+        <Stack direction="column">
+          <ActionButton
+            block={{
+              __typename: 'CustomBlock',
+              id: step.id,
+              label: 'Next Step →'
+            }}
+            selected={isSelected}
+          />
+          {actionBlocks.map((block) => (
+            <ActionButton key={block.id} block={block} selected={isSelected} />
+          ))}
+        </Stack>
       </Stack>
-    </Stack>
+    </>
   ) : (
     <></>
   )

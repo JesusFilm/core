@@ -78,8 +78,8 @@ export function DuplicateBlock({
               id,
               journeyId: journey.id,
               parentOrder: null,
-              x: xPos != null ? xPos + 10 : null,
-              y: yPos != null ? yPos + 10 : null
+              x: xPos != null ? xPos + 40 : null,
+              y: yPos != null ? yPos + 40 : null
             }
           : {
               id,
