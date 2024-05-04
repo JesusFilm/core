@@ -26,6 +26,16 @@ export interface StepAndCardBlockCreate_stepBlockCreate {
    * step in the journey based on parentOrder.
    */
   nextBlockId: string | null;
+  /**
+   * x is used to position the block horizontally in the journey flow diagram on
+   * the editor.
+   */
+  x: number | null;
+  /**
+   * y is used to position the block vertically in the journey flow diagram on
+   * the editor.
+   */
+  y: number | null;
 }
 
 export interface StepAndCardBlockCreate_cardBlockCreate {

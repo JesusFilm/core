@@ -11,22 +11,6 @@ import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__genera
 import { HostAvatars } from './HostAvatars'
 
 describe('HostAvatars', () => {
-  const hostData = {
-    id: 'hostId',
-    __typename: 'Host' as const,
-    teamId: 'teamId',
-    title: 'Cru International',
-    location: 'Florida, USA',
-    src1: null,
-    src2: null
-  }
-
-  const twoAvatarHost = {
-    ...hostData,
-    src1: 'avatar1.jpg',
-    src2: 'avatar2.jpg'
-  }
-
   const journey: Journey = {
     __typename: 'Journey',
     id: 'journeyId',
@@ -62,15 +46,23 @@ describe('HostAvatars', () => {
     seoTitle: 'My awesome journey',
     seoDescription: null,
     chatButtons: [],
-    host: hostData,
+    host: {
+      id: 'hostId',
+      __typename: 'Host' as const,
+      teamId: 'teamId',
+      title: 'Cru International',
+      location: 'Florida, USA',
+      src1: null,
+      src2: null
+    },
     team: null,
     tags: []
   }
 
   it('renders both avatars if both images are set', () => {
     const { getByTestId, getAllByRole } = render(
-      <JourneyProvider value={{ journey: { ...journey, host: twoAvatarHost } }}>
-        <HostAvatars />
+      <JourneyProvider value={{ journey }}>
+        <HostAvatars avatarSrc1="avatar1.jpg" avatarSrc2="avatar2.jpg" />
       </JourneyProvider>
     )
 
@@ -82,9 +74,7 @@ describe('HostAvatars', () => {
 
   it('renders nothing if no images are set', () => {
     const { queryAllByRole } = render(
-      <JourneyProvider
-        value={{ journey: { ...journey, host: { ...hostData } } }}
-      >
+      <JourneyProvider value={{ journey }}>
         <HostAvatars />
       </JourneyProvider>
     )
@@ -95,12 +85,8 @@ describe('HostAvatars', () => {
 
   it('renders with avatar if one image is set', () => {
     const { queryAllByRole } = render(
-      <JourneyProvider
-        value={{
-          journey: { ...journey, host: { ...hostData, src1: 'avatar1.jpg' } }
-        }}
-      >
-        <HostAvatars />
+      <JourneyProvider value={{ journey }}>
+        <HostAvatars avatarSrc1="avatar1.jpg" />
       </JourneyProvider>
     )
 
@@ -111,7 +97,7 @@ describe('HostAvatars', () => {
   describe('hasPlaceholder', () => {
     it('renders placeholder if no images are set', () => {
       const { getByTestId } = render(
-        <JourneyProvider value={{ journey: { ...journey }, variant: 'admin' }}>
+        <JourneyProvider value={{ journey }}>
           <HostAvatars hasPlaceholder />
         </JourneyProvider>
       )
@@ -121,19 +107,9 @@ describe('HostAvatars', () => {
     })
 
     it('renders with avatar and placeholder if one image is set', () => {
-      const oneAvatarHost = {
-        ...hostData,
-        src1: 'avatar1.jpg'
-      }
-
       const { getByTestId, getByRole } = render(
-        <JourneyProvider
-          value={{
-            journey: { ...journey, host: oneAvatarHost },
-            variant: 'admin'
-          }}
-        >
-          <HostAvatars hasPlaceholder />
+        <JourneyProvider value={{ journey }}>
+          <HostAvatars hasPlaceholder avatarSrc1="avatar1.jpg" />
         </JourneyProvider>
       )
 

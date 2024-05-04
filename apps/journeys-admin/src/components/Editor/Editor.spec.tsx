@@ -1,19 +1,20 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { mockReactFlow } from '../../../test/mockReactFlow'
 import { ThemeProvider } from '../ThemeProvider'
 
-import { ControlPanel } from './ControlPanel'
-import { Drawer } from './Drawer'
+import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
 
 import { Editor } from '.'
 
@@ -75,69 +76,119 @@ describe('Editor', () => {
     tags: []
   }
 
-  it('should render the element', () => {
-    const { getByText, getByTestId } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor
-              journey={journey}
-              PageWrapperProps={{
-                bottomPanelChildren: <ControlPanel />,
-                customSidePanel: <Drawer />
-              }}
-            />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    expect(getByText('Journey')).toBeInTheDocument()
-    expect(getByTestId('side-header')).toHaveTextContent('Properties')
+  beforeEach(() => {
+    mockReactFlow()
   })
 
-  it('should display Next Card property', async () => {
-    const { getByText, getByTestId } = render(
+  it('should render the Toolbar', () => {
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
-            <Editor
-              journey={journey}
-              PageWrapperProps={{
-                bottomPanelChildren: <ControlPanel />,
-                customSidePanel: <Drawer />
-              }}
-            />
+            <Editor journey={journey} />
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('EditorCanvas'))
-    await waitFor(() => expect(getByText('Next Card')).toBeInTheDocument())
-    expect(getByText('Unlocked Card')).toBeInTheDocument()
+    expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
   })
 
-  it('should display Social Preview', async () => {
-    const { getByTestId } = render(
+  it('should render the Slider', async () => {
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
-            <Editor
-              journey={journey}
-              PageWrapperProps={{
-                bottomPanelChildren: <ControlPanel />,
-                customSidePanel: <Drawer />
-              }}
-            />
+            <Editor journey={journey} />
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('NavigationCardSocial'))
+    expect(screen.getByTestId('Slider')).toBeInTheDocument()
+  })
+
+  it('should render the Fab', async () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <Editor journey={journey} />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('Fab')).toBeInTheDocument()
+  })
+
+  it('should set the selected step', async () => {
+    const withTypographyBlock: Journey = {
+      ...journey,
+      blocks: [
+        {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: 'step1.id'
+        },
+        {
+          __typename: 'CardBlock',
+          id: 'card0.id',
+          parentBlockId: 'step0.id',
+          parentOrder: 0,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: ThemeMode.light,
+          themeName: ThemeName.base,
+          fullscreen: false
+        },
+        {
+          __typename: 'TypographyBlock',
+          id: 'heading3',
+          parentBlockId: 'card0.id',
+          parentOrder: 0,
+          content: 'Test selected step',
+          variant: null,
+          color: null,
+          align: null
+        }
+      ]
+    }
+
+    const mockGetStepBlocksWithPosition: MockedResponse<GetStepBlocksWithPosition> =
+      {
+        request: {
+          query: GET_STEP_BLOCKS_WITH_POSITION,
+          variables: {
+            journeyIds: [journey.id]
+          }
+        },
+        result: {
+          data: {
+            blocks: [
+              {
+                __typename: 'StepBlock',
+                id: 'step0.id',
+                x: 0,
+                y: 0
+              }
+            ]
+          }
+        }
+      }
+    render(
+      <MockedProvider mocks={[mockGetStepBlocksWithPosition]}>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <Editor journey={withTypographyBlock} selectedStepId="step0.id" />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
     await waitFor(() =>
-      expect(getByTestId('SocialPreview')).toBeInTheDocument()
+      expect(screen.getByText('Test selected step')).toBeInTheDocument()
     )
-    expect(getByTestId('journey-edit-content')).toHaveStyle({
-      backgroundColor: 'none'
-    })
   })
 })

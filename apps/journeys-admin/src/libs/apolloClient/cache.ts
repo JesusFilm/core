@@ -61,6 +61,7 @@ export const cache = (): InMemoryCache =>
       },
       Translation: {
         keyFields: ['value']
-      }
+      },
+      NavigateToBlockAction: { keyFields: ['parentBlockId'] }
     }
   })

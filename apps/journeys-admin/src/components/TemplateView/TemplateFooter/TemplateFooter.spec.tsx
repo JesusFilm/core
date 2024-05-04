@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { journey } from '../../Editor/ActionDetails/data'
+import { journey } from '../../Editor/Slider/Settings/GoalDetails/data'
 
 import { TemplateFooter } from './TemplateFooter'
 

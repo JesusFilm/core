@@ -23,7 +23,7 @@ import {
 } from '../../../../../__generated__/GetJourney'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { CardWrapper } from '../../../CardPreview/CardList/CardWrapper'
-import { VideoWrapper } from '../../../Editor/Canvas/VideoWrapper'
+import { VideoWrapper } from '../../../Editor/Slider/Content/Canvas/VideoWrapper'
 import { FramePortal } from '../../../FramePortal'
 import { CreateJourneyButton } from '../../CreateJourneyButton'
 
