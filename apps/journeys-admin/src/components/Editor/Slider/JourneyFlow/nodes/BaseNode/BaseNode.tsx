@@ -4,7 +4,7 @@ import isFunction from 'lodash/isFunction'
 import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
 import { Handle, OnConnect, Position, useStore } from 'reactflow'
 
-import Plus1Icon from '@core/shared/ui/icons/Plus1'
+import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 const StyledHandle = styled(Handle)(() => ({}))
 
@@ -21,6 +21,7 @@ interface BaseNodeProps {
     | ((context: { selected: 'descendant' | boolean }) => ReactNode)
     | ReactNode
 }
+x
 
 export function BaseNode({
   id,
@@ -33,14 +34,20 @@ export function BaseNode({
 }: BaseNodeProps): ReactElement {
   const state = useStore((state) => state)
   const isConnecting = !!state.connectionHandleId
+  const theme = useTheme()
   const [hoverSelected, setHoverSelected] = useState(false)
   const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches
   const desktopStyle = {
     '.arrow': {
-      visibility: 'hidden'
+      // visibility: 'hidden',
+      opacity: 0,
+      right: -20,
+      transition: 'right 0.5s, opacity 0.4s'
     },
     ':hover .arrow': {
-      visibility: 'visible'
+      // visibility: 'visible',
+      opacity: 1,
+      right: -30
     }
   }
 
@@ -81,7 +88,18 @@ export function BaseNode({
             border:
               selected !== false || isConnecting
                 ? '2px solid #c52d3aff'
-                : '2px solid #aaacbb'
+                : '2px solid #aaacbb',
+
+            '&:after': {
+              display: isConnecting ? 'block' : 'none',
+              content: '""',
+              position: 'absolute',
+              width: 218, // STEP_NODE_WIDTH + 4
+              height: 98, // // STEP_NODE_HEIGHT
+              top: -48,
+              left: -4,
+              backgroundColor: 'transparent'
+            }
           }}
         />
       )}
@@ -99,36 +117,34 @@ export function BaseNode({
             width: 6,
             height: 6,
             background:
-              state.connectionHandleId === id ? '#c52d3aff' : 'rgba(0,0,0,.25)',
+              state.connectionHandleId === id
+                ? theme.palette.primary.main
+                : 'rgba(0,0,0,.25)',
             border: 'none',
             ...sourceHandleProps?.sx,
 
             '&:after': {
               content: '""',
               position: 'absolute',
-              transform: 'translate(-50%, -50%)',
+              transform: 'translate(0, -50%)',
               top: '50%',
-              left: '50%',
-              width: 18,
-              height: 18,
-              backgroundColor: 'transparent',
-              borderRadius: '50%',
-              cursor: 'copy'
+              width: 235,
+              height: 28,
+              right: -30,
+              backgroundColor: 'transparent'
             }
           }}
         >
-          <Plus1Icon
+          <ArrowRightIcon
             data-testid="BaseNodeDownwardArrowIcon"
             className="arrow"
             sx={{
-              display: 'flex',
               position: 'absolute',
               borderRadius: '50%',
-              color: hoverSelected ? 'white' : 'black',
+              color: 'white',
               fontSize: 'large',
               top: '50%',
-              backgroundColor: hoverSelected ? '#c52d3aff' : 'white',
-              left: '50%',
+              backgroundColor: '#c52d3aff', // theme.palette.primary.main,
               transform: 'translate(-50%, -50%)',
               pointerEvents: 'none'
             }}

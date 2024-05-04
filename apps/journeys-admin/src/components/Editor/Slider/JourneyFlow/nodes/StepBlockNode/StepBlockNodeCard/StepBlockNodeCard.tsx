@@ -17,10 +17,12 @@ import { TreeBlock } from '@core/journeys/ui/block'
 
 interface StepBlockNodeCardProps {
   step: TreeBlock<StepBlock>
+  selected: boolean
 }
 
 export function StepBlockNodeCard({
-  step
+  step,
+  selected
 }: StepBlockNodeCardProps): ReactElement {
   const {
     state: { selectedStep },
@@ -55,6 +57,7 @@ export function StepBlockNodeCard({
         m: 1.5
       }}
       onClick={handleClick}
+      elevation={selected ? 6 : 1}
     >
       <CardContent
         data-testid="Step block"

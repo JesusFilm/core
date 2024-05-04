@@ -29,6 +29,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
+import { useTheme } from '@mui/material/styles'
 
 import {
   GetStepBlocksWithPosition,
@@ -68,6 +69,7 @@ export function JourneyFlow(): ReactElement {
   const connectingParams = useRef<OnConnectStartParams | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const theme = useTheme()
 
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -340,6 +342,10 @@ export function JourneyFlow(): ReactElement {
         // edgeTypes={edgeTypes}
         proOptions={{ hideAttribution: true }}
         onInit={setReactFlowInstance}
+        connectionLineStyle={{
+          stroke: theme.palette.primary.main,
+          strokeWidth: 2
+        }}
       >
         <Controls showInteractive={false} />
         <Background color="#aaa" gap={16} />

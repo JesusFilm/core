@@ -84,7 +84,7 @@ export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
                 yPos={yPos}
               />
             )}
-            <StepBlockNodeCard step={step} />
+            <StepBlockNodeCard step={step} selected={selected} />
           </>
         )}
       </BaseNode>
