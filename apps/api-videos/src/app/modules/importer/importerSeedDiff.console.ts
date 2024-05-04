@@ -58,60 +58,6 @@ seed().then((res) => console.log(res))
 
 // TODO write diff check
 
-// async function handleArclightMediaComponent(
-//   mediaComponent: ArclightMediaComponent,
-//   importedVideos: string[],
-//   resumed: boolean,
-//   languages: Language[],
-//   usedVideoSlugs: Record<string, string>,
-//   errors: Record<string, Error>,
-//   replace: boolean,
-//   existingVideoIds: string[],
-//   lastId?: string
-// ): Promise<{ resumed: boolean; errors: Record<string, Error> }> {
-//   if (mediaComponent.mediaComponentId === lastId) resumed = true
-
-//   try {
-//     if (!existingVideoIds?.includes(mediaComponent.mediaComponentId)) {
-//       if (
-//         !importedVideos.includes(mediaComponent.mediaComponentId) &&
-//         resumed
-//       ) {
-//       } else {
-//         console.log(`${mediaComponent.mediaComponentId} already imported`)
-//       }
-//     }
-
-//     const childIds = await getArclightMediaComponentLinks(
-//       mediaComponent.mediaComponentId
-//     )
-
-//     for (let i = 0; i < childIds.length; i++) {
-//       const child = await getArclightMediaComponent(childIds[i])
-//       if (child == null) continue
-//       ;({ resumed, errors } = await handleArclightMediaComponent(
-//         child,
-//         importedVideos,
-//         resumed,
-//         languages,
-//         usedVideoSlugs,
-//         errors,
-//         replace,
-//         existingVideoIds,
-//         lastId
-//       ))
-//       await updateParentChild(
-//         mediaComponent.mediaComponentId,
-//         child.mediaComponentId
-//       )
-//     }
-//   } catch (e) {
-//     console.error(e)
-//     errors[mediaComponent.mediaComponentId] = e
-//   }
-//   return { resumed, errors }
-// }
-
 // describe('importerSeedDiff', () => {
 //   it('should have no video diff', async () => {
 //     const seedRes = await seed()
