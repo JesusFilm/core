@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
 import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
 import { Handle, OnConnect, Position, useStore } from 'reactflow'
@@ -21,7 +21,6 @@ interface BaseNodeProps {
     | ((context: { selected: 'descendant' | boolean }) => ReactNode)
     | ReactNode
 }
-x
 
 export function BaseNode({
   id,
@@ -39,13 +38,11 @@ export function BaseNode({
   const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches
   const desktopStyle = {
     '.arrow': {
-      // visibility: 'hidden',
       opacity: 0,
       right: -20,
       transition: 'right 0.5s, opacity 0.4s'
     },
     ':hover .arrow': {
-      // visibility: 'visible',
       opacity: 1,
       right: -30
     }
