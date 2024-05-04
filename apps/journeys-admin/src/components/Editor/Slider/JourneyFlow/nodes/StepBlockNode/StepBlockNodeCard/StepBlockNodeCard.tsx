@@ -28,20 +28,11 @@ export function StepBlockNodeCard({
     getCardMetadata(card)
 
   return (
-<<<<<<< Updated upstream
     <Card
-      sx={{
-        // borderRadiusTopLeft: 2,
-        // borderRadiusTopRight: 2,
-        width: 190,
-        m: 1.5
-      }}
-      onClick={handleClick}
+      sx={{ width: 190, m: 1.5 }}
       elevation={selected ? 6 : 1}
+      title="Click to edit or drag"
     >
-=======
-    <Card sx={{ width: 190, m: 1.5 }}>
->>>>>>> Stashed changes
       <CardContent
         data-testid="Step block"
         sx={{

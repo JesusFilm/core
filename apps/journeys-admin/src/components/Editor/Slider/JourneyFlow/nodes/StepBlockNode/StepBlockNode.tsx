@@ -73,57 +73,58 @@ export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
     }
   }
 
-  const selected =
+  const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
   return step != null ? (
-    <Stack
-      gap={0.5}
-      direction="column"
-      onClick={handleClick}
-      sx={{
-        background:
-          activeContent === ActiveContent.Canvas && selectedStep?.id === step.id
-            ? 'rgba(0, 0, 0, .05)'
-            : 'rgba(240, 242, 245, .5)',
-        border: '2px solid rgba(0,0,0, .05)',
-        borderRadius: 3
-      }}
-    >
-      <BaseNode
-        id={step.id}
-        isTargetConnectable
-        selected={selected}
-        onSourceConnect={handleSourceConnect}
-      >
-        {({ selected }) => (
-          <>
-            {selected && (
-              <StepBlockNodeMenu
-                className="fab"
-                step={step}
-                xPos={xPos}
-                yPos={yPos}
-              />
-            )}
-            <StepBlockNodeCard step={step} selected={selected} />
-          </>
-        )}
-      </BaseNode>
-      <Stack direction="column">
-        <ActionButton
-          block={{
-            __typename: 'CustomBlock',
-            id: step.id,
-            label: 'Next Step →'
-          }}
-          selected={selected}
+    <>
+      {isSelected && (
+        <StepBlockNodeMenu
+          className="fab"
+          step={step}
+          xPos={xPos}
+          yPos={yPos}
         />
-        {actionBlocks.map((block) => (
-          <ActionButton key={block.id} block={block} selected={selected} />
-        ))}
+      )}
+      <Stack
+        gap={0.5}
+        direction="column"
+        onClick={handleClick}
+        sx={{
+          background:
+            activeContent === ActiveContent.Canvas &&
+            selectedStep?.id === step.id
+              ? 'rgba(0, 0, 0, .05)'
+              : 'rgba(240, 242, 245, .5)',
+          border: '2px solid rgba(0,0,0, .05)',
+          borderRadius: 3
+        }}
+      >
+        <BaseNode
+          id={step.id}
+          isTargetConnectable
+          selected={isSelected}
+          onSourceConnect={handleSourceConnect}
+        >
+          {({ selected }) => (
+            <StepBlockNodeCard step={step} selected={isSelected} />
+          )}
+        </BaseNode>
+        <Stack direction="column">
+          <ActionButton
+            block={{
+              __typename: 'CustomBlock',
+              id: step.id,
+              label: 'Next Step →'
+            }}
+            selected={isSelected}
+          />
+          {actionBlocks.map((block) => (
+            <ActionButton key={block.id} block={block} selected={isSelected} />
+          ))}
+        </Stack>
       </Stack>
-    </Stack>
+    </>
   ) : (
     <></>
   )

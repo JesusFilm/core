@@ -103,7 +103,6 @@ export function ActionButton({
       <Box
         sx={{
           opacity: selected ? 1 : 0.5,
-
           margin: '0',
           border: '1px solid rgba(0,0,0,.1)',
           borderBottom: 'none',

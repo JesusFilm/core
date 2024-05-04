@@ -334,7 +334,12 @@ export function JourneyFlow(): ReactElement {
 
   return (
     <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">
-      <Button onClick={() => blockPositionsUpdate({})}>Reset Graph</Button>
+      <Button
+        onClick={() => blockPositionsUpdate({})}
+        sx={{ position: 'absolute' }}
+      >
+        Reset Graph
+      </Button>
       <ReactFlow
         nodes={nodes}
         edges={edges}

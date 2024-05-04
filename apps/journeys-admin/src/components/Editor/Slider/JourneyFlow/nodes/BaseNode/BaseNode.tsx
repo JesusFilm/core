@@ -104,6 +104,7 @@ export function BaseNode({
         <StyledHandle
           id={id}
           type="source"
+          title="Drag to connect"
           data-testid="BaseNodeBottomHandle"
           position={Position.Right}
           onConnect={onSourceConnect}
