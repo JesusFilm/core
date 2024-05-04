@@ -13,6 +13,7 @@ import { getCardMetadata } from '../libs/getCardMetadata'
 import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
 import { STEP_NODE_HEIGHT, STEP_NODE_WIDTH } from '../StepBlockNode'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 
 interface StepBlockNodeCardProps {
   step: TreeBlock<StepBlock>
@@ -23,15 +24,36 @@ export function StepBlockNodeCard({
   step,
   selected
 }: StepBlockNodeCardProps): ReactElement {
+  const {
+    state: { selectedStep },
+    dispatch
+  } = useEditor()
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const { title, subtitle, description, priorityBlock, bgImage } =
     getCardMetadata(card)
+
+  function handleClick(): void {
+    if (selectedStep?.id === step?.id) {
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: selectedStep
+      })
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
+      })
+    } else {
+      dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
+    }
+  }
 
   return (
     <Card
       sx={{ width: 190, m: 1.5 }}
       elevation={selected ? 6 : 1}
       title="Click to edit or drag"
+      onClick={handleClick}
     >
       <CardContent
         data-testid="Step block"
