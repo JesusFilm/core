@@ -1,7 +1,8 @@
-import { ReactElement } from 'react'
 import { keyframes } from '@emotion/react'
 import Box from '@mui/material/Box'
-import { STEP_NODE_HEIGHT } from '../../StepBlockNode'
+import { ReactElement } from 'react'
+
+import { STEP_NODE_HEIGHT } from '../../StepBlockNode/libs/sizes'
 
 const pulse = keyframes`
   0%,10% {

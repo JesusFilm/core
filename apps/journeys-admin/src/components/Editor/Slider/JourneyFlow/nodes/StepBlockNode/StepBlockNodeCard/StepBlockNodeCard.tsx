@@ -1,19 +1,20 @@
-import Card from '@mui/material/Card'
 import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
 import Skeleton from '@mui/material/Skeleton'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+
+import { TreeBlock } from '@core/journeys/ui/block'
+import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/BlockFields'
-
 import { getCardMetadata } from '../libs/getCardMetadata'
+import { STEP_NODE_HEIGHT, STEP_NODE_WIDTH } from '../libs/sizes'
 import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
-import { STEP_NODE_HEIGHT, STEP_NODE_WIDTH } from '../StepBlockNode'
-import { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 
 interface StepBlockNodeCardProps {
   step: TreeBlock<StepBlock>

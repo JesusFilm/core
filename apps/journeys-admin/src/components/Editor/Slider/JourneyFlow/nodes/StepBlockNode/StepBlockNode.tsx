@@ -10,13 +10,8 @@ import { filterActionBlocks } from '../../libs/filterActionBlocks'
 import { BaseNode } from '../BaseNode'
 
 import { ActionButton } from './ActionButton'
-import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 import { StepBlockNodeCard } from './StepBlockNodeCard'
-
-export const STEP_NODE_WIDTH = 200
-export const STEP_NODE_HEIGHT = 76
-export const STEP_NODE_WIDTH_GAP = 200
-export const STEP_NODE_HEIGHT_GAP = 150
+import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
 export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
   const {

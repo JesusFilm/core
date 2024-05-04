@@ -44,16 +44,4 @@ describe('BaseNode', () => {
 
     expect(screen.getByTestId('BaseNodeBottomHandle')).toBeInTheDocument()
   })
-
-  it.skip('should render arrow icon', () => {
-    render(
-      <ReactFlowProvider>
-        <MockedProvider>
-          <BaseNode isSourceConnectable="arrow" />
-        </MockedProvider>
-      </ReactFlowProvider>
-    )
-
-    expect(screen.getByTestId('BaseNodeDownwardArrowIcon')).toBeInTheDocument()
-  })
 })

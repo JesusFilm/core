@@ -1,17 +1,11 @@
 import Box from '@mui/material/Box'
 import { styled, useTheme } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
-import {
-  ComponentProps,
-  ReactElement,
-  ReactNode,
-  useEffect,
-  useState,
-  useRef
-} from 'react'
+import { ComponentProps, ReactElement, ReactNode } from 'react'
 import { Handle, OnConnect, Position, useStore } from 'reactflow'
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
+
 import { PulseWrapper } from './PulseWrapper'
 
 const StyledHandle = styled(Handle)(() => ({}))
@@ -39,8 +33,8 @@ export function BaseNode({
   sourceHandleProps,
   children
 }: BaseNodeProps): ReactElement {
-  const state = useStore((state) => state)
-  const isConnecting = !!state.connectionHandleId
+  const { connectionHandleId } = useStore((state) => state)
+  const isConnecting = connectionHandleId != null
   const theme = useTheme()
 
   return (
@@ -107,7 +101,7 @@ export function BaseNode({
             width: 6,
             height: 6,
             background:
-              state.connectionHandleId === id
+              connectionHandleId === id
                 ? theme.palette.primary.main
                 : 'rgba(0,0,0,.25)',
             border: 'none',

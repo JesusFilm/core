@@ -6,10 +6,7 @@ import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  BlockFields as Block,
-  BlockFields_StepBlock as StepBlock
-} from '../../../../../../../../__generated__/BlockFields'
+import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { BaseNode } from '../../BaseNode'

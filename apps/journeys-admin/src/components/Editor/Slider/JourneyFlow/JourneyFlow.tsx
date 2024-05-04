@@ -1,9 +1,10 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import { useTheme } from '@mui/material/styles'
 import {
   MouseEvent,
   ReactElement,
-  TouchEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -29,7 +30,6 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
-import { useTheme } from '@mui/material/styles'
 
 import {
   GetStepBlocksWithPosition,
@@ -44,11 +44,10 @@ import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBloc
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
-import { STEP_NODE_HEIGHT, StepBlockNode } from './nodes/StepBlockNode'
-import { CustomEdge } from './edges/CustomEdge'
+import { StepBlockNode } from './nodes/StepBlockNode'
+import { STEP_NODE_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
-import Button from '@mui/material/Button'
 
 export const GET_STEP_BLOCKS_WITH_POSITION = gql`
   query GetStepBlocksWithPosition($journeyIds: [ID!]) {
@@ -130,7 +129,7 @@ export function JourneyFlow(): ReactElement {
     variables: { journeyIds: journey?.id != null ? [journey.id] : undefined },
     onCompleted: (data) => {
       if (steps == null || journey == null) return
-      let positions: PositionMap = {}
+      const positions: PositionMap = {}
       if (
         data.blocks.some(
           (block) =>
@@ -330,17 +329,10 @@ export function JourneyFlow(): ReactElement {
     []
   )
 
-  const edgeTypes = useMemo(
-    () => ({
-      customEdge: CustomEdge
-    }),
-    []
-  )
-
   return (
     <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">
       <Button
-        onClick={() => blockPositionsUpdate({})}
+        onClick={async () => await blockPositionsUpdate({})}
         sx={{ position: 'absolute' }}
       >
         Reset Graph
