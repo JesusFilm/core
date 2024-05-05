@@ -9,11 +9,23 @@ const pulse = keyframes`
     opacity: 0;
     transform: scale(1);
   }
-  80% {
+  70% {
     opacity: 0.3;
     transform: scale(2);
   }
-  81%,100% {
+  80% {
+    opacity: 0.2;
+    transform: scale(2);
+  }
+  90 {
+    opacity: 0.15;
+    transform: scale(1.5);
+  }
+  95 {
+    opacity: 0.1;
+    transform: scale(1.2);
+  }
+  100% {
     opacity: 0;
     transform: scale(1);
   }
