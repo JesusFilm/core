@@ -67,10 +67,9 @@ export function BaseNode({
               height: 8.5,
               left: -7.5,
               background: '#F1F2F5',
-              border:
-                selected !== false || isConnecting
-                  ? '2px solid #c52d3aff'
-                  : '2px solid #aaacbb',
+              border: isConnecting
+                ? '2px solid #c52d3aff'
+                : '2px solid #aaacbb',
 
               '&:after': {
                 display: isConnecting ? 'block' : 'none',
