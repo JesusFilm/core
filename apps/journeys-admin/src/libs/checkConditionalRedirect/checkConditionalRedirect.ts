@@ -71,7 +71,7 @@ export async function checkConditionalRedirect({
   } else if (
     data.getJourneyProfile?.onboardingFormCompletedAt == null &&
     isAfter(
-      parseISO(data.getJourneyProfile?.acceptedTermsAt),
+      parseISO(String(data.getJourneyProfile?.acceptedTermsAt)),
       new Date(2023, 9, 5)
     )
   ) {

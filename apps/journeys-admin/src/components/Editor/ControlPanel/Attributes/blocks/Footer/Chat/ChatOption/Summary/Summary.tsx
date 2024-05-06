@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { Reference, gql, useMutation } from '@apollo/client'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Checkbox from '@mui/material/Checkbox'
 import Typography from '@mui/material/Typography'
@@ -8,7 +8,7 @@ import { ChangeEvent, ReactElement } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
+import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonCreate } from '../../../../../../../../../../__generated__/JourneyChatButtonCreate'
 import { JourneyChatButtonRemove } from '../../../../../../../../../../__generated__/JourneyChatButtonRemove'
 
@@ -39,7 +39,7 @@ interface SummaryProps {
   disableSelection: boolean
   journeyId?: string
   currentLink: string
-  currentPlatform: ChatPlatform
+  currentPlatform: MessagePlatform
   chatButtonId?: string
   openAccordion: () => void
 }
@@ -119,7 +119,8 @@ export function Summary({
                   fields: {
                     chatButtons(refs, { readField }) {
                       return refs.filter(
-                        (ref) => chatButtonId !== readField('id', ref)
+                        (ref: Reference) =>
+                          chatButtonId !== readField('id', ref)
                       )
                     }
                   }

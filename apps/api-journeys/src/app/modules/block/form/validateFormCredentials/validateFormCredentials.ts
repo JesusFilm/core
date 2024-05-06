@@ -109,7 +109,9 @@ async function validateApiToken(apiToken: string): Promise<void> {
       apiToken
     }).getMyProjects()
   } catch (error) {
-    throw getError(error)
+    if (error instanceof Error) {
+      throw getError(error)
+    }
   }
 }
 
@@ -122,7 +124,9 @@ async function validateApiTokenProjectId(
       apiToken
     }).findForms()
   } catch (error) {
-    throw getError(error)
+    if (error instanceof Error) {
+      throw getError(error)
+    }
   }
 }
 
@@ -137,7 +141,9 @@ async function validateApiTokenProjectIdFormSlug(
       apiToken
     }).getFormBySlug(formSlug)
   } catch (error) {
-    throw getError(error)
+    if (error instanceof Error) {
+      throw getError(error)
+    }
   }
   if (!('name' in form))
     throw getError({ message: 'Response Error (401)' } as unknown as Error)

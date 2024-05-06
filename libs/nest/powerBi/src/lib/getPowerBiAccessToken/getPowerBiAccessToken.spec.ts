@@ -58,7 +58,7 @@ describe('getPowerBiAccessToken', () => {
             _clientSecret,
             callback
           ) => {
-            callback(new Error('error'), undefined)
+            callback(new Error('error'))
           }
         } as unknown as AuthenticationContext
       })
@@ -70,7 +70,7 @@ describe('getPowerBiAccessToken', () => {
           'https://analysis.windows.net/powerbi/api',
           'tenantId'
         )
-      ).rejects.toThrow('error')
+      ).rejects.toThrowError('error')
     })
 
     it('should return error response', async () => {
@@ -82,7 +82,7 @@ describe('getPowerBiAccessToken', () => {
             _clientSecret,
             callback
           ) => {
-            callback(new Error('error'), new Error('tokenResponse error'))
+            callback(new Error('tokenResponse error'))
           }
         } as unknown as AuthenticationContext
       })
@@ -94,7 +94,7 @@ describe('getPowerBiAccessToken', () => {
           'https://analysis.windows.net/powerbi/api',
           'tenantId'
         )
-      ).rejects.toThrow('tokenResponse error')
+      ).rejects.toThrowError('tokenResponse error')
     })
   })
 })
