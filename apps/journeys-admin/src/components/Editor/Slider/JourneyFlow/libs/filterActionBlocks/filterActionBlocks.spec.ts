@@ -91,12 +91,11 @@ const step: TreeBlock<StepBlock> = {
 describe('filterActionBlocks', () => {
   it('should filter action blocks', () => {
     const filteredActionBlocks = filterActionBlocks(step)
-    expect(filteredActionBlocks).toHaveLength(3)
-    expect(filteredActionBlocks).toContain(button)
-    expect(filteredActionBlocks).toContain(RadioOption1)
-    expect(filteredActionBlocks).toContain(RadioOption2)
+    expect(filteredActionBlocks).toEqual([button, RadioOption1, RadioOption2])
+  })
 
-    // should not contain RadioQuestionBlock or image
+  it('should filter out radioQuestionBlock and image block', () => {
+    const filteredActionBlocks = filterActionBlocks(step)
     expect(filteredActionBlocks).not.toContain(radioQuestionBlock)
     expect(filteredActionBlocks).not.toContain(image)
   })
