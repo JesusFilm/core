@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import { useTheme } from '@mui/material/styles'
 import {
   MouseEvent,
@@ -24,6 +25,7 @@ import {
   useEdgesState,
   useNodesState
 } from 'reactflow'
+import { __await } from 'tslib'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -31,6 +33,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
+import Plus3Icon from '@core/shared/ui/icons/Plus3'
 
 import {
   GetStepBlocksWithPosition,
@@ -48,9 +51,13 @@ import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
-import { STEP_NODE_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
+import {
+  STEP_NODE_HEIGHT,
+  STEP_NODE_WIDTH
+} from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { Item } from '../../Toolbar/Items/Item'
 
 export const GET_STEP_BLOCKS_WITH_POSITION = gql`
   query GetStepBlocksWithPosition($journeyIds: [ID!]) {
@@ -67,7 +74,8 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
   const {
-    state: { steps }
+    state: { steps },
+    dispatch
   } = useEditor()
   const connectingParams = useRef<OnConnectStartParams | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
@@ -190,10 +198,10 @@ export function JourneyFlow(): ReactElement {
 
   const createStepAndCardBlock = useCallback(
     async function createStepAndCardBlock(
-      step: TreeBlock,
-      block: TreeBlock,
       x: number,
-      y: number
+      y: number,
+      step?: TreeBlock,
+      block?: TreeBlock
     ): Promise<void> {
       if (journey == null) return
       const newStepId = uuidv4()
@@ -216,8 +224,9 @@ export function JourneyFlow(): ReactElement {
           }
         }
       })
-      if (step.id === block.id) {
+      if (step?.id === block?.id) {
         // step
+        if (step == null) return
         await stepBlockNextBlockUpdate({
           variables: {
             id: step.id,
@@ -236,6 +245,7 @@ export function JourneyFlow(): ReactElement {
         })
       } else {
         // action
+        if (block == null) return
         await navigateToBlockActionUpdate(block, newStepId)
       }
     },
@@ -246,6 +256,20 @@ export function JourneyFlow(): ReactElement {
       stepBlockNextBlockUpdate
     ]
   )
+  async function handleAddStepAndCardBlock(event): Promise<void> {
+    if (reactFlowInstance == null) return
+    const { x, y } = reactFlowInstance.screenToFlowPosition({
+      x: (event as unknown as MouseEvent).clientX,
+      y: (event as unknown as MouseEvent).clientY
+    })
+
+    await createStepAndCardBlock(
+      parseInt(x.toString()) - STEP_NODE_WIDTH,
+      parseInt(y.toString()) + STEP_NODE_HEIGHT / 2
+    )
+
+    // dispatch
+  }
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections
     connectingParams.current = null
@@ -297,10 +321,10 @@ export function JourneyFlow(): ReactElement {
         })
 
         void createStepAndCardBlock(
-          step,
-          block,
           parseInt(x.toString()),
-          parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
+          parseInt(y.toString()) - STEP_NODE_HEIGHT / 2,
+          step,
+          block
         )
       }
     },
@@ -339,6 +363,21 @@ export function JourneyFlow(): ReactElement {
 
   return (
     <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">
+      <Box
+        sx={{
+          position: 'absolute',
+          right: 30,
+          top: 30,
+          zIndex: 3
+        }}
+      >
+        <Item
+          variant="button"
+          label="Add Step"
+          icon={<Plus3Icon />}
+          onClick={handleAddStepAndCardBlock}
+        />
+      </Box>
       <ReactFlow
         nodes={nodes}
         edges={edges}

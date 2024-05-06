@@ -60,7 +60,7 @@ export function SocialPreviewNode(): ReactElement {
       id="SocialPreview"
       selected={activeContent === ActiveContent.Social}
       isSourceConnectable
-      onSourceConnect={handleSourceConnect}
+      // onSourceConnect={handleSourceConnect}
     >
       {({ selected }) => (
         <Card

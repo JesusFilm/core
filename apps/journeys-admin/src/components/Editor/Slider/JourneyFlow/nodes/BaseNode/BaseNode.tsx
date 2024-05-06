@@ -12,6 +12,8 @@ import {
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
+import { STEP_NODE_HEIGHT } from '../StepBlockNode/libs/sizes'
+
 import { PulseWrapper } from './PulseWrapper'
 
 const StyledHandle = styled(Handle)(() => ({}))
@@ -70,7 +72,7 @@ export function BaseNode({
           right: -20,
           transition: 'right 0.5s, opacity 0.4s'
         },
-        ':hover .arrow': {
+        ':hover .arrow, .hover-state': {
           opacity: 1,
           right: -30
         }
@@ -89,6 +91,7 @@ export function BaseNode({
               width: 8.5,
               height: 8.5,
               left: -7.5,
+              top: STEP_NODE_HEIGHT / 2 + 6,
               background: '#F1F2F5',
               border:
                 isConnecting || targetSelected

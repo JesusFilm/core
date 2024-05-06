@@ -79,17 +79,21 @@ export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
           selected={isSelected}
           onSourceConnect={handleSourceConnect}
         >
-          {() => <StepBlockNodeCard step={step} selected={isSelected} />}
+          {() => (
+            <>
+              <StepBlockNodeCard step={step} selected={isSelected} />
+              <ActionButton
+                block={{
+                  __typename: 'CustomBlock',
+                  id: step.id,
+                  label: 'Next Step →'
+                }}
+                selected={isSelected}
+              />
+            </>
+          )}
         </BaseNode>
         <Stack direction="column">
-          <ActionButton
-            block={{
-              __typename: 'CustomBlock',
-              id: step.id,
-              label: 'Next Step →'
-            }}
-            selected={isSelected}
-          />
           {actionBlocks.map((block) => (
             <ActionButton key={block.id} block={block} selected={isSelected} />
           ))}
