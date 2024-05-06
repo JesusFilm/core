@@ -202,7 +202,7 @@ describe('ResourceResolver', () => {
           id: 'resourceId',
           name: 'New Resource',
           nexusId: 'nexusId',
-          status: 'published',
+          status: 'published'
         }
       })
     })
