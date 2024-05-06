@@ -1,11 +1,12 @@
-import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import Box from '@mui/material/Box'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import {
   BaseEdge,
   EdgeLabelRenderer,
   EdgeProps,
-  getBezierPath
+  getBezierPath,
+  useOnSelectionChange,
+  useStore
 } from 'reactflow'
 
 export function CustomEdge({
@@ -19,6 +20,11 @@ export function CustomEdge({
   style = {},
   markerEnd
 }: EdgeProps): ReactElement {
+  const [edgeColor, setEdgeColor] = useState('#0000001A')
+  const [markerEndColor, setMarkerEndColor] = useState('lightGrey')
+  // const s = useStore((state) => state)
+  // console.log('STATE: ', s)
+  // console.log('ID: ', id)
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -28,51 +34,45 @@ export function CustomEdge({
     targetPosition
   })
 
+  useOnSelectionChange({
+    onChange: (selected) => {
+      if (selected.edges.find((edge) => edge.id === id) != null) {
+        setEdgeColor('#C52D3A')
+        setMarkerEndColor('#C52D3A')
+      } else {
+        setEdgeColor('#0000001A')
+        setMarkerEndColor('lightGrey')
+      }
+    }
+  })
+
   const onEdgeClick = (params): void => {
     console.log('button clicked! ' + params)
   }
 
   return (
     <>
-      <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
+      <BaseEdge
+        path={edgePath}
+        markerEnd={`url(#1__color=${markerEndColor}&height=10&type=arrowclosed&width=10)`}
+        style={{ strokeWidth: 2, stroke: edgeColor, ...style }}
+      />
       {/* <EdgeLabelRenderer>
-        <Box
+        <div
           style={{
             position: 'absolute',
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-            pointerEvents: 'all',
-            padding: 0,
-            margin: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
+            fontSize: 12,
+            // everything inside EdgeLabelRenderer has no pointer events by default
+            // if you have an interactive element, set pointer-events: all
+            pointerEvents: 'all'
           }}
           className="nodrag nopan"
         >
-          <button
-            className="edgebutton"
-            onClick={onEdgeClick}
-            style={{
-              borderRadius: '50%',
-              background: 'white',
-              borderColor: 'transparent',
-              cursor: 'pointer',
-              margin: 0,
-              padding: 0,
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            <AddCircleRoundedIcon
-              sx={{
-                color: '#3aa74a',
-                fontSize: 'large',
-                padding: 0,
-                margin: 0
-              }}
-            />
+          <button className="edgebutton" onClick={onEdgeClick}>
+            ×
           </button>
-        </Box>
+        </div>
       </EdgeLabelRenderer> */}
     </>
   )

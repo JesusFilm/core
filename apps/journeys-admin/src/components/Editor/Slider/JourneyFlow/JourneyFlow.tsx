@@ -42,12 +42,12 @@ import { useStepAndCardBlockCreateMutation } from '../../../../libs/useStepAndCa
 import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
+import { CustomEdge } from './edges/CustomEdge'
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
-
 import 'reactflow/dist/style.css'
 
 export const GET_STEP_BLOCKS_WITH_POSITION = gql`
@@ -330,6 +330,10 @@ export function JourneyFlow(): ReactElement {
     []
   )
 
+  const edgeTypes = {
+    Custom: CustomEdge
+  }
+
   return (
     <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">
       <ReactFlow
@@ -344,7 +348,7 @@ export function JourneyFlow(): ReactElement {
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
         nodeTypes={nodeTypes}
-        // edgeTypes={edgeTypes}
+        edgeTypes={edgeTypes}
         proOptions={{ hideAttribution: true }}
         onInit={setReactFlowInstance}
         connectionLineStyle={{

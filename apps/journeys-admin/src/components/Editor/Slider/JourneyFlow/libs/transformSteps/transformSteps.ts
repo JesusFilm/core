@@ -27,6 +27,15 @@ export function transformSteps(
 } {
   const nodes: Node[] = []
   const edges: Edge[] = []
+  const defaultEdgeProps = {
+    type: 'Custom',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: 'lightGrey'
+    }
+  }
 
   function connectBlockToNextBlock({ block, step, steps }: Connection): void {
     const index = findIndex(steps, (child) => child.id === step.id)
@@ -49,17 +58,7 @@ export function transformSteps(
         source: step.id,
         sourceHandle: block.id !== step.id ? block.id : undefined,
         target: step.nextBlockId,
-        // type: 'buttonEdge'
-        style: {
-          strokeWidth: 2,
-          stroke: 'rgba(0, 0, 0, 0.1)'
-        },
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          height: 10,
-          width: 10,
-          color: 'lightGrey'
-        }
+        ...defaultEdgeProps
       })
     }
   }
@@ -73,17 +72,7 @@ export function transformSteps(
         source: step.id,
         sourceHandle: block.id,
         target: block.action.blockId,
-        // type: 'buttonEdge'
-        style: {
-          strokeWidth: 2,
-          stroke: 'rgba(0, 0, 0, 0.1)'
-        },
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          height: 10,
-          width: 10,
-          color: 'lightGrey'
-        }
+        ...defaultEdgeProps
       })
     }
     // if (block.action.__typename === 'NavigateAction') {
@@ -115,10 +104,35 @@ export function transformSteps(
     id: `SocialPreview->${steps[0].id}`,
     source: 'SocialPreview',
     target: steps[0].id,
+    ...defaultEdgeProps
+  })
+  edges.push({
+    id: `SocialPreview->${steps[0].id}`,
+    source: 'SocialPreview',
+    target: steps[0].id,
+    ...defaultEdgeProps
+  })
+
+  // hidden edge so the markerEnd style can be used
+  nodes.push({
+    id: 'hidden',
+    data: {},
+    position: { x: -165, y: -46 },
+    draggable: false,
+    hidden: true
+  })
+  edges.push({
+    id: 'SocialPreview->hidden',
+    source: 'SocialPreview',
+    target: 'hidden',
     markerEnd: {
       type: MarkerType.ArrowClosed,
-      height: 30,
-      width: 30
+      height: 10,
+      width: 10,
+      color: '#C52D3A'
+    },
+    style: {
+      opacity: 0
     }
   })
 
