@@ -43,7 +43,6 @@ export function CustomEdge({
   useOnSelectionChange({
     onChange: (selected) => {
       const selectedEdge = selected.edges.find((edge) => edge.id === id)
-      console.log(selected)
       if (selectedEdge != null) {
         setSourceNodeId(selectedEdge.source)
       } else {

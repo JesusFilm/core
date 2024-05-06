@@ -106,35 +106,31 @@ export function transformSteps(
     target: steps[0].id,
     ...defaultEdgeProps
   })
-  edges.push({
-    id: `SocialPreview->${steps[0].id}`,
-    source: 'SocialPreview',
-    target: steps[0].id,
-    ...defaultEdgeProps
-  })
 
   // hidden edge so the markerEnd style can be used
-  nodes.push({
-    id: 'hidden',
-    data: {},
-    position: { x: -165, y: -46 },
-    draggable: false,
-    hidden: true
-  })
-  edges.push({
-    id: 'SocialPreview->hidden',
-    source: 'SocialPreview',
-    target: 'hidden',
-    markerEnd: {
-      type: MarkerType.ArrowClosed,
-      height: 10,
-      width: 10,
-      color: '#C52D3A'
-    },
-    style: {
-      opacity: 0
-    }
-  })
+  if (nodes.find((node) => node.id === 'hidden') != null) {
+    nodes.push({
+      id: 'hidden',
+      data: {},
+      position: { x: -165, y: -46 },
+      draggable: false,
+      hidden: true
+    })
+    edges.push({
+      id: 'SocialPreview->hidden',
+      source: 'SocialPreview',
+      target: 'hidden',
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        height: 10,
+        width: 10,
+        color: '#C52D3A'
+      },
+      style: {
+        opacity: 0
+      }
+    })
+  }
 
   return { nodes, edges }
 }
