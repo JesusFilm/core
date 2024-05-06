@@ -3,15 +3,18 @@ import IconButton from '@mui/material/IconButton'
 import { ReactElement, useState } from 'react'
 import {
   BaseEdge,
+  Edge,
   EdgeLabelRenderer,
   EdgeProps,
   getBezierPath,
   useOnSelectionChange
 } from 'reactflow'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import X3Icon from '@core/shared/ui/icons/X3'
 
+import { useBlockActionDeleteMutation } from '../../../../../../libs/useBlockActionDeleteMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
 
 export function CustomEdge({
@@ -25,12 +28,15 @@ export function CustomEdge({
   style = {}
 }: EdgeProps): ReactElement {
   const { journey } = useJourney()
-  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
+  const {
+    state: { steps }
+  } = useEditor()
 
-  const [sourceNodeId, setSourceNodeId] = useState<string | undefined>(
-    undefined
-  )
-  // const [edgeSelected, setEdgeSelected] = useState(false)
+  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
+  const [blockActionDeleteMutation] = useBlockActionDeleteMutation()
+
+  const [edgeSelected, setEdgeSelected] = useState(false)
+  const [selectedEdge, setSelectedEdge] = useState<Edge | undefined>(undefined)
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -44,31 +50,46 @@ export function CustomEdge({
     onChange: (selected) => {
       const selectedEdge = selected.edges.find((edge) => edge.id === id)
       if (selectedEdge != null) {
-        setSourceNodeId(selectedEdge.source)
+        setSelectedEdge(selectedEdge)
+        setEdgeSelected(true)
       } else {
-        setSourceNodeId(undefined)
+        setEdgeSelected(false)
       }
     }
   })
 
   const onEdgeClick = (): void => {
-    if (journey == null || sourceNodeId == null) return
-    void stepBlockNextBlockUpdate({
-      variables: {
-        id: sourceNodeId,
-        journeyId: journey.id,
-        input: {
-          nextBlockId: null
-        }
-      },
-      optimisticResponse: {
-        stepBlockUpdate: {
-          id: sourceNodeId,
-          __typename: 'StepBlock',
-          nextBlockId: null
-        }
+    if (journey == null || selectedEdge == null) return
+    const step = steps?.find((step) => step.id === selectedEdge.source)
+    if (step == null) return
+
+    if (selectedEdge.sourceHandle != null) {
+      // action
+      const block = step.children[0].children.find(
+        (childBlock) => childBlock.id === selectedEdge.sourceHandle
+      )
+      if (block != null) {
+        void blockActionDeleteMutation(block)
       }
-    })
+    } else {
+      // step block
+      void stepBlockNextBlockUpdate({
+        variables: {
+          id: step.id,
+          journeyId: journey.id,
+          input: {
+            nextBlockId: null
+          }
+        },
+        optimisticResponse: {
+          stepBlockUpdate: {
+            id: step.id,
+            __typename: 'StepBlock',
+            nextBlockId: null
+          }
+        }
+      })
+    }
   }
 
   return (
@@ -76,15 +97,15 @@ export function CustomEdge({
       <BaseEdge
         path={edgePath}
         markerEnd={`url(#1__color=${
-          sourceNodeId != null ? '#C52D3A' : 'lightGrey'
+          edgeSelected ? '#C52D3A' : 'lightGrey'
         }&height=10&type=arrowclosed&width=10)`}
         style={{
           strokeWidth: 2,
-          stroke: sourceNodeId != null ? '#C52D3A' : '#0000001A',
+          stroke: edgeSelected ? '#C52D3A' : '#0000001A',
           ...style
         }}
       />
-      {sourceNodeId != null && (
+      {edgeSelected && (
         <EdgeLabelRenderer>
           <Box
             style={{
