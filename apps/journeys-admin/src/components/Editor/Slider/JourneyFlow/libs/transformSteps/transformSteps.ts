@@ -104,7 +104,8 @@ export function transformSteps(
     id: `SocialPreview->${steps[0].id}`,
     source: 'SocialPreview',
     target: steps[0].id,
-    ...defaultEdgeProps
+    ...defaultEdgeProps,
+    type: 'Start'
   })
 
   // hidden edge so the markerEnd style can be used

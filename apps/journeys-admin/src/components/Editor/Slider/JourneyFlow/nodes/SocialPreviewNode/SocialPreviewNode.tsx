@@ -8,7 +8,11 @@ import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 import Share from '@core/shared/ui/icons/Share'
@@ -25,10 +29,30 @@ export function SocialPreviewNode(): ReactElement {
   } = useEditor()
 
   function handleClick(): void {
-    dispatch({
-      type: 'SetActiveContentAction',
-      activeContent: ActiveContent.Social
-    })
+    if (activeContent !== ActiveContent.Social) {
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: undefined
+      })
+      dispatch({ type: 'SetSelectedStepAction', selectedStep: undefined })
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.JourneyFlow
+      })
+      dispatch({
+        type: 'SetActiveContentAction',
+        activeContent: ActiveContent.Social
+      })
+    } else {
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.Content
+      })
+    }
+  }
+
+  function handleSourceConnect(): void {
+    console.log('HELLO')
   }
 
   return (
@@ -36,6 +60,7 @@ export function SocialPreviewNode(): ReactElement {
       id="SocialPreview"
       selected={activeContent === ActiveContent.Social}
       isSourceConnectable
+      onSourceConnect={handleSourceConnect}
     >
       {({ selected }) => (
         <Card
