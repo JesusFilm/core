@@ -55,7 +55,7 @@ export function transformSteps(
     }
   }
 
-  function processBlock(block, step, steps): void {
+  function processActionBlock(block, step, steps): void {
     if (block.action == null) return
 
     if (block.action.__typename === 'NavigateToBlockAction') {
@@ -74,7 +74,7 @@ export function transformSteps(
   steps.forEach((step) => {
     connectBlockToNextBlock({ block: step, step, steps })
     const actionBlocks = filterActionBlocks(step)
-    actionBlocks.forEach((block) => processBlock(block, step, steps))
+    actionBlocks.forEach((block) => processActionBlock(block, step, steps))
     nodes.push({
       id: step.id,
       type: 'StepBlock',
