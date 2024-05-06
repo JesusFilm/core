@@ -40,28 +40,25 @@ export class NexusJobListener implements OnModuleInit {
   }
 
   private listenToCompletedEvents(): void {
-    this.uploadQueue.on(
-      'completed',
-      async (job: Job<UploadResourceJob>) => {
-        console.log('Job completed: ', job.id)
-        void Promise.all([
-          // await this.prismaService.batchResource.updateMany({
-          //   data: {
-          //     isCompleted: true,
-          //     percent: 100
-          //   },
-          //   where: {
-          //     batchId: job.data.batchId,
-          //     resourceId: job.data.resource.id
-          //   }
-          // }),
-          // await this.prismaService.resource.update({
-          //   data: { status: 'published' },
-          //   where: { id: job.data.resource.id }
-          // })
-        ])
-      }
-    )
+    this.uploadQueue.on('completed', async (job: Job<UploadResourceJob>) => {
+      console.log('Job completed: ', job.id)
+      void Promise.all([
+        // await this.prismaService.batchResource.updateMany({
+        //   data: {
+        //     isCompleted: true,
+        //     percent: 100
+        //   },
+        //   where: {
+        //     batchId: job.data.batchId,
+        //     resourceId: job.data.resource.id
+        //   }
+        // }),
+        // await this.prismaService.resource.update({
+        //   data: { status: 'published' },
+        //   where: { id: job.data.resource.id }
+        // })
+      ])
+    })
   }
 
   private listenToFailedEvents(): void {

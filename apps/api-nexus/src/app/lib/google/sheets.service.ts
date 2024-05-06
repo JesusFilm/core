@@ -1,65 +1,62 @@
-import { drive_v3 } from '@googleapis/drive';
+import { drive_v3 } from '@googleapis/drive'
 import { sheets } from '@googleapis/sheets'
 import { Injectable } from '@nestjs/common'
-import { google, sheets_v4 } from 'googleapis';
-import { v4 as uuidv4 } from 'uuid';
+import { google, sheets_v4 } from 'googleapis'
+import { v4 as uuidv4 } from 'uuid'
 
+import { Channel, Resource } from '.prisma/api-nexus-client'
 
-import { Channel, Resource } from '.prisma/api-nexus-client';
+import { PrivacyStatus } from '../../__generated__/graphql'
+import { BatchService } from '../../modules/batch/batch.service'
+import { BullMQService } from '../bullMQ/bullMQ.service'
+import { PrismaService } from '../prisma.service'
 
-import { PrivacyStatus } from '../../__generated__/graphql';
-import { BatchService } from '../../modules/batch/batch.service';
-import { BullMQService } from '../bullMQ/bullMQ.service';
-import { PrismaService } from '../prisma.service';
-
-import { GoogleDriveService } from './drive.service';
-import { GoogleOAuthService } from './oauth.service';
-
+import { GoogleDriveService } from './drive.service'
+import { GoogleOAuthService } from './oauth.service'
 
 export interface SpreadsheetRow {
-  videoDriveFile?: drive_v3.Schema$File;
-  channel?: string;
-  channelData?: Channel;
-  resourceData?: Resource;
-  filename?: string;
-  title?: string;
-  description?: string;
-  customThumbnail?: string;
-  keywords?: string;
-  category?: string;
-  privacy?: string;
-  spokenLanguage?: string;
-  videoId?: string;
-  captionFile?: string;
-  captionDriveFile?: drive_v3.Schema$File;
-  audioTrackFile?: string;
-  audioTrackDriveFile?: drive_v3.Schema$File;
-  language?: string;
-  customThumbnailDriveFile?: drive_v3.Schema$File;
-  captionLanguage?: string;
-  notifySubscribers?: string;
-  notifySubscriber?: boolean;
-  playlistId?: string;
-  isMadeForKids?: boolean;
-  mediaComponentId?: string;
-  textLanguage?: string;
+  videoDriveFile?: drive_v3.Schema$File
+  channel?: string
+  channelData?: Channel
+  resourceData?: Resource
+  filename?: string
+  title?: string
+  description?: string
+  customThumbnail?: string
+  keywords?: string
+  category?: string
+  privacy?: string
+  spokenLanguage?: string
+  videoId?: string
+  captionFile?: string
+  captionDriveFile?: drive_v3.Schema$File
+  audioTrackFile?: string
+  audioTrackDriveFile?: drive_v3.Schema$File
+  language?: string
+  customThumbnailDriveFile?: drive_v3.Schema$File
+  captionLanguage?: string
+  notifySubscribers?: string
+  notifySubscriber?: boolean
+  playlistId?: string
+  isMadeForKids?: boolean
+  mediaComponentId?: string
+  textLanguage?: string
 }
 
 export enum SpreadsheetTemplateType {
   UPLOAD = 'upload',
-  LOCALIZATION = 'localization',
+  LOCALIZATION = 'localization'
 }
 @Injectable()
 export class GoogleSheetsService {
-
   constructor(
-    private readonly prismaService: PrismaService, 
+    private readonly prismaService: PrismaService,
     private readonly googleOAuthService: GoogleOAuthService,
     private readonly googleDriveService: GoogleDriveService,
     private readonly batchService: BatchService,
     private readonly bullMQService: BullMQService
   ) {}
-  
+
   async getFirstSheetName(
     spreadsheetId: string,
     accessToken: string
@@ -72,21 +69,21 @@ export class GoogleSheetsService {
   private async getGoogleSheetData(
     auth,
     spreadsheetId: string,
-    range?: string,
+    range?: string
   ): Promise<string[][]> {
-    const sheets = google.sheets({ version: 'v4', auth });
+    const sheets = google.sheets({ version: 'v4', auth })
     const sheetsResponse = await sheets.spreadsheets.get({
       spreadsheetId,
-      includeGridData: false,
-    });
-    const sheetsInfo = sheetsResponse.data.sheets as sheets_v4.Schema$Sheet[];
+      includeGridData: false
+    })
+    const sheetsInfo = sheetsResponse.data.sheets as sheets_v4.Schema$Sheet[]
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: range ?? sheetsInfo[0]?.properties?.title ?? '',
-    });
-    return response.data.values ?? [];
+      range: range ?? sheetsInfo[0]?.properties?.title ?? ''
+    })
+    return response.data.values ?? []
   }
-  
+
   async downloadSpreadsheet(
     spreadsheetId: string,
     sheetName: string,
@@ -103,94 +100,95 @@ export class GoogleSheetsService {
   async getSpreadSheetTemplateData(
     tokenId: string,
     spreadsheetId: string,
-    drivefolderId: string,
+    drivefolderId: string
   ): Promise<{
-    templateType: SpreadsheetTemplateType;
-    spreadsheetData: SpreadsheetRow[];
-    googleAccessToken: { id: string; refreshToken: string };
+    templateType: SpreadsheetTemplateType
+    spreadsheetData: SpreadsheetRow[]
+    googleAccessToken: { id: string; refreshToken: string }
   }> {
     const googleAccessToken =
       await this.prismaService.googleAccessToken.findUnique({
-        where: { id: tokenId },
-      });
+        where: { id: tokenId }
+      })
     if (googleAccessToken === null) {
-      throw new Error('Invalid tokenId');
+      throw new Error('Invalid tokenId')
     }
 
     const accessToken = await this.googleOAuthService.getNewAccessToken(
-      googleAccessToken.refreshToken,
-    );
+      googleAccessToken.refreshToken
+    )
 
     const files = await this.googleDriveService.findFiles(
       this.googleOAuthService.authorize(
         accessToken,
-        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive'
       ),
-      drivefolderId,
-    );
+      drivefolderId
+    )
 
-    const spreadsheetRowData =
-      await this.getGoogleSheetRowsData({
-        auth: this.googleOAuthService.authorize(
-          accessToken,
-          'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets',
-        ),
-        spreadsheetId,
-        files: files ?? [],
-      });
+    const spreadsheetRowData = await this.getGoogleSheetRowsData({
+      auth: this.googleOAuthService.authorize(
+        accessToken,
+        'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets'
+      ),
+      spreadsheetId,
+      files: files ?? []
+    })
 
     return {
       spreadsheetData: spreadsheetRowData?.spreadsheetRows ?? [],
       templateType:
-      spreadsheetRowData?.spreadsheetTemplateType ??
+        spreadsheetRowData?.spreadsheetTemplateType ??
         SpreadsheetTemplateType.UPLOAD,
-      googleAccessToken,
-    };
+      googleAccessToken
+    }
   }
 
   async processUploadSpreadsheetTemplate(
     nexusId: string,
     googleAccessToken: { id: string; refreshToken: string },
-    spreadsheetRows: SpreadsheetRow[],
+    spreadsheetRows: SpreadsheetRow[]
   ): Promise<Resource[]> {
     // UPLOADING TEMPLATE DATA
-    console.log('PREPARING UPLOAD-TEMPLATE DATA', spreadsheetRows);
-    const allResources: Resource[] = [];
+    console.log('PREPARING UPLOAD-TEMPLATE DATA', spreadsheetRows)
+    const allResources: Resource[] = []
 
     // Find Unique Channels
     const channels = Array.from(
       new Set(
         spreadsheetRows
           .filter((spreadsheetRow) => spreadsheetRow.channelData != null)
-          .map((spreadsheetRow) => spreadsheetRow.channelData?.id),
-      ),
-    );
+          .map((spreadsheetRow) => spreadsheetRow.channelData?.id)
+      )
+    )
     for (const channel of channels) {
       const resources = await this.createResourceFromSpreadsheet(
         nexusId,
         googleAccessToken.refreshToken,
         spreadsheetRows.filter(
-          (spreadsheetRow) => spreadsheetRow.channelData?.id === channel,
-        ),
-      );
+          (spreadsheetRow) => spreadsheetRow.channelData?.id === channel
+        )
+      )
       await this.bullMQService.createUploadResourceBatch(
         uuidv4(),
         nexusId,
-        spreadsheetRows.find((item) => item.channelData?.id === channel) as Channel,
-        resources,
-      );
+        spreadsheetRows.find(
+          (item) => item.channelData?.id === channel
+        ) as Channel,
+        resources
+      )
 
-      allResources.concat(resources);
+      allResources.concat(resources)
     }
-    return allResources;
+    return allResources
   }
 
   async createResourceFromSpreadsheet(
     nexusId: string,
     refreshToken: string,
-    data: SpreadsheetRow[],
+    data: SpreadsheetRow[]
   ): Promise<Resource[]> {
-    const resources: Resource[] = [];
+    const resources: Resource[] = []
     for (const row of data) {
       const resource = await this.prismaService.resource.create({
         data: {
@@ -218,10 +216,10 @@ export class GoogleSheetsService {
                   captionGoogleDriveId: row.captionDriveFile?.id ?? '',
                   captionGoogleDriveRefreshToken: refreshToken,
                   audioTrackGoogleDriveId: row.audioTrackDriveFile?.id,
-                  audioTrackGoogleDriveRefreshToken: refreshToken,
-                },
-              },
-            },
+                  audioTrackGoogleDriveRefreshToken: refreshToken
+                }
+              }
+            }
           },
           resourceSource: {
             create: {
@@ -229,34 +227,34 @@ export class GoogleSheetsService {
               videoGoogleDriveId: row.videoDriveFile?.id ?? '',
               videoGoogleDriveRefreshToken: refreshToken,
               thumbnailGoogleDriveId: row.customThumbnailDriveFile?.id ?? '',
-              thumbnailMimeType: row.customThumbnailDriveFile?.mimeType ?? '',
-            },
-          },
-        },
-      });
+              thumbnailMimeType: row.customThumbnailDriveFile?.mimeType ?? ''
+            }
+          }
+        }
+      })
       if (row.channelData !== undefined && resource !== null) {
-        resources.push(resource);
+        resources.push(resource)
       }
     }
-    return resources;
+    return resources
   }
 
   async getGoogleSheetRowsData(props: {
-    auth;
-    spreadsheetId: string;
-    range?: string;
-    files?: drive_v3.Schema$File[];
+    auth
+    spreadsheetId: string
+    range?: string
+    files?: drive_v3.Schema$File[]
   }): Promise<{
-    spreadsheetRows: SpreadsheetRow[];
-    spreadsheetTemplateType: SpreadsheetTemplateType;
+    spreadsheetRows: SpreadsheetRow[]
+    spreadsheetTemplateType: SpreadsheetTemplateType
   } | null> {
     const rows = await this.getGoogleSheetData(
       props.auth,
       props.spreadsheetId,
-      props.range,
-    );
+      props.range
+    )
     if (rows.length > 1) {
-      let spreadsheetTemplateType = SpreadsheetTemplateType.UPLOAD;
+      let spreadsheetTemplateType = SpreadsheetTemplateType.UPLOAD
       const headers = rows.shift()?.map((header) =>
         header
           .toString()
@@ -264,94 +262,95 @@ export class GoogleSheetsService {
           .replace(/[-_]+/g, ' ')
           .replace(/ (.)/g, ($txt) => $txt.toUpperCase())
           .replace(/ /g, '')
-          .replace(/^./, ($txt) => $txt.toLowerCase()),
-      );
-      const spreadsheetRows: SpreadsheetRow[] = [];
+          .replace(/^./, ($txt) => $txt.toLowerCase())
+      )
+      const spreadsheetRows: SpreadsheetRow[] = []
       for (const row of rows) {
-        const obj = {};
+        const obj = {}
         headers?.forEach((header, index) => {
-          obj[header] = row[index];
-        });
-        const item = await this.populateSpreadSheetRow(obj as SpreadsheetRow, props.files);
+          obj[header] = row[index]
+        })
+        const item = await this.populateSpreadSheetRow(
+          obj as SpreadsheetRow,
+          props.files
+        )
         spreadsheetTemplateType =
           item.videoId != null
             ? SpreadsheetTemplateType.LOCALIZATION
-            : SpreadsheetTemplateType.UPLOAD;
-        spreadsheetRows.push(item);
+            : SpreadsheetTemplateType.UPLOAD
+        spreadsheetRows.push(item)
       }
-      return { spreadsheetRows, spreadsheetTemplateType };
+      return { spreadsheetRows, spreadsheetTemplateType }
     } else {
-      return null;
+      return null
     }
   }
 
   private async populateSpreadSheetRow(
     row: SpreadsheetRow,
-    files?: drive_v3.Schema$File[],
+    files?: drive_v3.Schema$File[]
   ): Promise<SpreadsheetRow> {
-
     if (row.filename != null) {
-      row.videoDriveFile = files?.find((file) => file.name === row.filename);
+      row.videoDriveFile = files?.find((file) => file.name === row.filename)
     }
 
     if (row.customThumbnail != null) {
       row.customThumbnailDriveFile = files?.find(
-        (file) => file.name === row.customThumbnail,
-      );
+        (file) => file.name === row.customThumbnail
+      )
     }
 
     if (row.audioTrackFile != null) {
       row.audioTrackDriveFile = files?.find(
-        (file) => file.name === row.audioTrackFile,
-      );
+        (file) => file.name === row.audioTrackFile
+      )
     }
 
     if (row.channel != null) {
       row.channelData = (await this.prismaService.channel.findFirst({
-        where: { youtube: { youtubeId: row.channel } },
-      })) as Channel;
+        where: { youtube: { youtubeId: row.channel } }
+      })) as Channel
     }
 
     if (row.videoId != null) {
       row.resourceData = (await this.prismaService.resource.findFirst({
-        where: {},
-      })) as Resource;
+        where: {}
+      })) as Resource
     }
 
     if (row.notifySubscribers != null) {
       row.notifySubscriber =
         row.notifySubscribers.toLowerCase() === 'true' ||
         row.notifySubscribers.toLowerCase() === '1' ||
-        row.notifySubscribers.toLowerCase() === 'yes';
+        row.notifySubscribers.toLowerCase() === 'yes'
     }
-    return row;
+    return row
   }
 
   async processLocalizationTemplateBatches(
     nexusId: string,
     googleAccessToken: { id: string; refreshToken: string },
-    spreadsheetData: SpreadsheetRow[],
+    spreadsheetData: SpreadsheetRow[]
   ): Promise<void> {
     const batchLocalizations =
       await this.batchService.createResourcesLocalization(
         googleAccessToken.refreshToken,
-        spreadsheetData,
-      );
-    console.log('batchLocalizations', batchLocalizations);
+        spreadsheetData
+      )
+    console.log('batchLocalizations', batchLocalizations)
     const preparedBatchJobs =
       this.batchService.prepareBatchResourceLocalizationsForBatchJob(
-        batchLocalizations,
-      );
-    console.log('preparedBatchJobs', preparedBatchJobs);
+        batchLocalizations
+      )
+    console.log('preparedBatchJobs', preparedBatchJobs)
     for (const preparedBatchJob of preparedBatchJobs) {
       await this.bullMQService.createLocalizationBatch(
         uuidv4(),
         nexusId,
         preparedBatchJob.videoId,
         preparedBatchJob.channel,
-        preparedBatchJob.localizations,
-      );
+        preparedBatchJob.localizations
+      )
     }
   }
-  
 }

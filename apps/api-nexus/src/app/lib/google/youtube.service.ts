@@ -1,123 +1,123 @@
-import { createReadStream, statSync } from 'fs';
+import { createReadStream, statSync } from 'fs'
 
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { google, youtube_v3 } from 'googleapis';
-import { GaxiosPromise, OAuth2Client } from 'googleapis-common';
+import { BadRequestException, Injectable } from '@nestjs/common'
+import { google, youtube_v3 } from 'googleapis'
+import { GaxiosPromise, OAuth2Client } from 'googleapis-common'
 
-import { GoogleOAuthService } from './oauth.service';
+import { GoogleOAuthService } from './oauth.service'
 
 interface Credential {
-  client_secret: string;
-  client_id: string;
-  redirect_uris: string[];
+  client_secret: string
+  client_id: string
+  redirect_uris: string[]
 }
 
 interface ChannelsRequest {
-  accessToken: string;
+  accessToken: string
 }
 
 interface ChannelsResponse {
-  kind: string;
-  etag: string;
+  kind: string
+  etag: string
   items: Array<{
-    kind: string;
-    etag: string;
-    id: string;
+    kind: string
+    etag: string
+    id: string
     snippet: {
-      title: string;
-      description: string;
-      customUrl: string;
-      publishedAt: string;
+      title: string
+      description: string
+      customUrl: string
+      publishedAt: string
       thumbnails: {
         default: {
-          url: string;
-          width: number;
-          height: number;
-        };
+          url: string
+          width: number
+          height: number
+        }
         medium: {
-          url: string;
-          width: number;
-          height: number;
-        };
+          url: string
+          width: number
+          height: number
+        }
         high: {
-          url: string;
-          width: number;
-          height: number;
-        };
-      };
-    };
+          url: string
+          width: number
+          height: number
+        }
+      }
+    }
     localized: {
-      title: string;
-      description: string;
-    };
-  }>;
+      title: string
+      description: string
+    }
+  }>
 }
 
 @Injectable()
 export class GoogleYoutubeService {
-  private readonly credential: Credential;
+  private readonly credential: Credential
 
-  private readonly rootUrl: string;
+  private readonly rootUrl: string
 
   constructor(private readonly googleService: GoogleOAuthService) {
-    this.rootUrl = 'https://www.googleapis.com/youtube/v3/channels';
+    this.rootUrl = 'https://www.googleapis.com/youtube/v3/channels'
     this.credential = {
       client_secret: process.env.CLIENT_SECRET ?? '',
       client_id: process.env.CLIENT_ID ?? '',
-      redirect_uris: ['https://localhost:4200'],
-    };
+      redirect_uris: ['https://localhost:4200']
+    }
   }
 
   authorize(token: string): OAuth2Client {
     const oAuth2Client = new google.auth.OAuth2(
       this.credential.client_id,
       this.credential.client_secret,
-      this.credential.redirect_uris[0],
-    );
+      this.credential.redirect_uris[0]
+    )
     oAuth2Client.setCredentials({
       access_token: token,
       scope:
-        'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload',
-    });
-    return oAuth2Client;
+        'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload'
+    })
+    return oAuth2Client
   }
 
   async getChannels(req: ChannelsRequest): Promise<ChannelsResponse> {
     const channelsParam = {
       part: ['snippet'],
-      mine: true,
-    };
-    const params = new URLSearchParams();
+      mine: true
+    }
+    const params = new URLSearchParams()
     Object.entries(channelsParam).forEach(([key, value]) => {
-      params.append(key, value.toString());
-    });
+      params.append(key, value.toString())
+    })
 
     const response = await fetch(`${this.rootUrl}?${params.toString()}`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${req.accessToken}`,
-      },
-    });
+        Authorization: `Bearer ${req.accessToken}`
+      }
+    })
 
-    return await response.json();
+    return await response.json()
   }
 
   async uploadVideo(
     youtubeData: {
-      token: string;
-      filePath: string;
-      channelId: string;
-      title: string;
-      description: string;
-      defaultLanguage: string;
-      privacyStatus?: string;
+      token: string
+      filePath: string
+      channelId: string
+      title: string
+      description: string
+      defaultLanguage: string
+      privacyStatus?: string
     },
-    progressCallback?: (progress: number) => Promise<void>,
+    progressCallback?: (progress: number) => Promise<void>
   ): GaxiosPromise<youtube_v3.Schema$Video> {
-    const service = google.youtube('v3');
-    const fileSize = statSync(youtubeData.filePath).size;
+    const service = google.youtube('v3')
+    const fileSize = statSync(youtubeData.filePath).size
     try {
-       return await service.videos.insert(
+      return await service.videos.insert(
         {
           auth: this.authorize(youtubeData.token),
           part: ['id', 'snippet', 'status'],
@@ -128,25 +128,25 @@ export class GoogleYoutubeService {
               description: youtubeData.description,
               channelId: youtubeData.channelId,
               defaultLanguage: youtubeData.defaultLanguage ?? 'en',
-              categoryId: '22',
+              categoryId: '22'
             },
             status: {
-              privacyStatus: youtubeData.privacyStatus ?? 'private',
-            },
+              privacyStatus: youtubeData.privacyStatus ?? 'private'
+            }
           },
           media: {
-            body: createReadStream(youtubeData.filePath),
-          },
+            body: createReadStream(youtubeData.filePath)
+          }
         },
         {
           onUploadProgress: (evt) => {
-            const progress = (evt.bytesRead / fileSize) * 100;
-            void Promise.all([this.executeCallback(progressCallback, progress)]);
-          },
-        },
-      );
+            const progress = (evt.bytesRead / fileSize) * 100
+            void Promise.all([this.executeCallback(progressCallback, progress)])
+          }
+        }
+      )
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error.message)
     }
   }
 
@@ -160,31 +160,31 @@ export class GoogleYoutubeService {
   }
 
   async updateVideo(youtubeData: {
-    token: string;
-    videoId: string;
-    title?: string;
-    description?: string;
-    defaultLanguage?: string;
-    privacyStatus?: string;
+    token: string
+    videoId: string
+    title?: string
+    description?: string
+    defaultLanguage?: string
+    privacyStatus?: string
     localizations: Array<{
-      resourceId?: string;
-      title?: string;
-      description?: string;
-      tags?: string[];
-      language: string;
-      captionDriveId?: string;
+      resourceId?: string
+      title?: string
+      description?: string
+      tags?: string[]
+      language: string
+      captionDriveId?: string
     }>
   }): GaxiosPromise<youtube_v3.Schema$Video> {
-    const service = google.youtube('v3');
-    let uploadedYoutubeResponse;
+    const service = google.youtube('v3')
+    let uploadedYoutubeResponse
     try {
-      const convertedLocalizations = {};
+      const convertedLocalizations = {}
       youtubeData.localizations?.forEach((item) => {
         convertedLocalizations[item.language] = {
           title: item.title,
-          description: item.description,
-        };
-      });
+          description: item.description
+        }
+      })
       uploadedYoutubeResponse = await service.videos.update({
         auth: this.authorize(youtubeData.token),
         part: ['snippet', 'localizations'],
@@ -192,50 +192,50 @@ export class GoogleYoutubeService {
           id: youtubeData.videoId,
           snippet: {
             title: youtubeData.title,
-            description: youtubeData.description,
+            description: youtubeData.description
           },
           status: {
-            privacyStatus: youtubeData.privacyStatus,
+            privacyStatus: youtubeData.privacyStatus
           },
-          localizations: convertedLocalizations,
-        },
-      });
+          localizations: convertedLocalizations
+        }
+      })
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error.message)
     }
 
-    return uploadedYoutubeResponse;
+    return uploadedYoutubeResponse
   }
 
   async updateVideoThumbnail(youtubeData: {
-    token: string;
-    videoId: string;
-    thumbnailPath: string;
-    mimeType: string;
+    token: string
+    videoId: string
+    thumbnailPath: string
+    mimeType: string
   }): Promise<unknown> {
-    const service = google.youtube('v3');
+    const service = google.youtube('v3')
 
     return await service.thumbnails.set({
       auth: this.authorize(youtubeData.token),
       videoId: youtubeData.videoId,
       media: {
         mimeType: youtubeData.mimeType,
-        body: createReadStream(youtubeData.thumbnailPath),
-      },
-    });
+        body: createReadStream(youtubeData.thumbnailPath)
+      }
+    })
   }
 
   async uploadCaption(youtubeData: {
-    token: string;
-    videoId: string;
-    language: string;
-    name: string;
-    captionFile: string;
-    isDraft: boolean;
-    mimeType: string;
+    token: string
+    videoId: string
+    language: string
+    name: string
+    captionFile: string
+    isDraft: boolean
+    mimeType: string
   }): Promise<unknown> {
-    const service = google.youtube('v3');
-    const auth = this.authorize(youtubeData.token);
+    const service = google.youtube('v3')
+    const auth = this.authorize(youtubeData.token)
 
     const captionData = {
       auth,
@@ -245,15 +245,15 @@ export class GoogleYoutubeService {
           videoId: youtubeData.videoId,
           language: youtubeData.language,
           name: youtubeData.name,
-          isDraft: youtubeData.isDraft,
-        },
+          isDraft: youtubeData.isDraft
+        }
       },
       media: {
         mimeType: youtubeData.mimeType,
-        body: createReadStream(youtubeData.captionFile),
-      },
-    };
+        body: createReadStream(youtubeData.captionFile)
+      }
+    }
 
-    return await service.captions.insert(captionData);
+    return await service.captions.insert(captionData)
   }
 }

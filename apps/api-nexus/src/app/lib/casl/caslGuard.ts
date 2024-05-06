@@ -30,6 +30,6 @@ export class AppCaslGuard extends CaslGuard {
     //   }
     // }
     // return await this.loadRoles(userId)
-    return [];
+    return []
   }
 }

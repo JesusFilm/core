@@ -21,9 +21,7 @@ import { NexusJobListener } from './listener/jobListener'
         port: 6379
       }
     }),
-    BullModule.registerQueue(
-      { name: 'nexus-batch-worker' },
-    )
+    BullModule.registerQueue({ name: 'nexus-batch-worker' })
   ],
   providers: [
     BullMQService,

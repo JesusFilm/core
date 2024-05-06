@@ -1,11 +1,11 @@
-import { Process, Processor } from '@nestjs/bull';
-import { Job } from 'bull';
+import { Process, Processor } from '@nestjs/bull'
+import { Job } from 'bull'
 
-import { BucketService } from '../../bucket/bucket.service';
-import { GoogleDriveService } from '../../google/drive.service';
-import { GoogleOAuthService } from '../../google/oauth.service';
-import { GoogleYoutubeService } from '../../google/youtube.service';
-import { UploadResourceJob } from '../bullMQ.service';
+import { BucketService } from '../../bucket/bucket.service'
+import { GoogleDriveService } from '../../google/drive.service'
+import { GoogleOAuthService } from '../../google/oauth.service'
+import { GoogleYoutubeService } from '../../google/youtube.service'
+import { UploadResourceJob } from '../bullMQ.service'
 
 @Processor('nexus-batch-worker')
 export class BatchJobWorker {
@@ -13,41 +13,39 @@ export class BatchJobWorker {
     private readonly googleDriveService: GoogleDriveService,
     private readonly googleOAuthService: GoogleOAuthService,
     private readonly bucketService: BucketService,
-    private readonly googleYoutubeService: GoogleYoutubeService,
+    private readonly googleYoutubeService: GoogleYoutubeService
   ) {}
 
   @Process('process')
-  async process(
-    job: Job<UploadResourceJob>,
-  ): Promise<UploadResourceJob> {
+  async process(job: Job<UploadResourceJob>): Promise<UploadResourceJob> {
     // GET VIDEO DRIVE TOKEN
     const videoDriveToken = await this.googleOAuthService.getNewAccessToken(
-      job.data.resource.refreshToken,
-    );
+      job.data.resource.refreshToken
+    )
 
     // DOWNLOAD VIDEO FROM DRIVE
-    console.log('DOWNLOAD FROM DRIVE: ', job.data.resource.driveId);
+    console.log('DOWNLOAD FROM DRIVE: ', job.data.resource.driveId)
     const videoFilePath = await this.googleDriveService.downloadDriveFile(
       { fileId: job.data.resource.driveId, accessToken: videoDriveToken },
       async (downloadProgress) => {
-        await job.progress(0 + downloadProgress / 3);
-        return await Promise.resolve();
-      },
-    );
+        await job.progress(0 + downloadProgress / 3)
+        return await Promise.resolve()
+      }
+    )
 
     // DOWNLOAD FROM DRIVE
-    console.log('UPLOADING FILE TO BUCKET: ', videoFilePath);
+    console.log('UPLOADING FILE TO BUCKET: ', videoFilePath)
     const bucketFile = await this.bucketService.uploadFile(
       videoFilePath,
       process.env.BUCKET_NAME ?? 'bucket-name',
       async (progress) => {
-        progress = 30 + progress / 4;
-        await job.progress(progress);
-        return await Promise.resolve();
-      },
-    );
+        progress = 30 + progress / 4
+        await job.progress(progress)
+        return await Promise.resolve()
+      }
+    )
 
-    console.log("resource", job?.data?.resource);
+    console.log('resource', job?.data?.resource)
 
     // UPLOAD VIDEO
     // console.log('UPLOAD TO YOUTUBE NOW', videoFilePath);
@@ -153,8 +151,8 @@ export class BatchJobWorker {
     //   }
     // }
 
-    await job.progress(100);
-    return { ...job.returnvalue, bucketFileId: bucketFile.Key };
+    await job.progress(100)
+    return { ...job.returnvalue, bucketFileId: bucketFile.Key }
     // return { ...job.returnvalue, youtubeId: youtubeData?.data?.id, bucketFileId: bucketFile.Key };
   }
 }

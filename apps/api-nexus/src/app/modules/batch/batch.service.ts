@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common'
 
-import { Channel, ResourceLocalization } from '.prisma/api-nexus-client';
+import { Channel, ResourceLocalization } from '.prisma/api-nexus-client'
 
-import { SpreadsheetRow } from '../../lib/google/sheets.service';
-import { PrismaService } from '../../lib/prisma.service';
+import { SpreadsheetRow } from '../../lib/google/sheets.service'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Injectable()
 export class BatchService {
@@ -11,28 +11,28 @@ export class BatchService {
 
   async createResourcesLocalization(
     refreshToken: string,
-    data: SpreadsheetRow[],
+    data: SpreadsheetRow[]
   ): Promise<
     Array<{ resourceLocalization: ResourceLocalization; channel: Channel }>
   > {
     const localizationBatch: Array<{
-      resourceLocalization: ResourceLocalization;
-      channel: Channel;
-    }> = [];
+      resourceLocalization: ResourceLocalization
+      channel: Channel
+    }> = []
     for (const row of data) {
       const resourceYoutubeChannel =
         await this.prismaService.resourceChannel.findFirst({
           where: { youtubeId: row.videoId },
-          include: { resource: true },
-        });
+          include: { resource: true }
+        })
       if (resourceYoutubeChannel != null) {
         const existingLocalization =
           await this.prismaService.resourceLocalization.findFirst({
             where: {
               resourceId: resourceYoutubeChannel.resourceId,
-              language: row.language,
-            },
-          });
+              language: row.language
+            }
+          })
         if (existingLocalization != null) {
           const localization =
             await this.prismaService.resourceLocalization.update({
@@ -46,15 +46,15 @@ export class BatchService {
                   row.captionFile ?? existingLocalization.captionFile,
                 audioTrackFile:
                   row.audioTrackFile ?? existingLocalization.audioTrackFile,
-                videoId: row.videoId ?? existingLocalization.videoId,
+                videoId: row.videoId ?? existingLocalization.videoId
               },
-              include: { resource: true, resourceLocalizationSource: true },
-            });
+              include: { resource: true, resourceLocalizationSource: true }
+            })
           if (row.channelData !== undefined) {
             localizationBatch.push({
               resourceLocalization: localization,
-              channel: row.channelData,
-            });
+              channel: row.channelData
+            })
           }
         } else {
           const localization =
@@ -75,62 +75,62 @@ export class BatchService {
                     captionGoogleDriveRefreshToken: refreshToken,
                     audioTrackGoogleDriveId: row.audioTrackDriveFile?.id ?? '',
                     audioMimeType: row.audioTrackDriveFile?.mimeType ?? '',
-                    audioTrackGoogleDriveRefreshToken: refreshToken,
-                  },
-                },
+                    audioTrackGoogleDriveRefreshToken: refreshToken
+                  }
+                }
               },
-              include: { resource: true, resourceLocalizationSource: true },
-            });
+              include: { resource: true, resourceLocalizationSource: true }
+            })
           if (row.channelData !== undefined) {
             localizationBatch.push({
               resourceLocalization: localization,
-              channel: row.channelData,
-            });
+              channel: row.channelData
+            })
           }
         }
       }
     }
-    return localizationBatch;
+    return localizationBatch
   }
 
   prepareBatchResourceLocalizationsForBatchJob(
     batchResourceLocalizations: Array<{
-      resourceLocalization: ResourceLocalization;
-      channel: Channel;
-    }>,
+      resourceLocalization: ResourceLocalization
+      channel: Channel
+    }>
   ): Array<{
-    videoId: string;
-    channel: Channel;
-    localizations: ResourceLocalization[];
+    videoId: string
+    channel: Channel
+    localizations: ResourceLocalization[]
   }> {
     const batches: Array<{
-      videoId: string;
-      channel: Channel;
-      localizations: ResourceLocalization[];
-    }> = [];
+      videoId: string
+      channel: Channel
+      localizations: ResourceLocalization[]
+    }> = []
 
     // Extract unique videoIds, ignoring null values
     const uniqueVideoIds = batchResourceLocalizations
       .map((item) => item.resourceLocalization.videoId)
       .filter((videoId): videoId is string => videoId !== null) // Filter out null values and ensure videoId is treated as string
-      .filter((value, index, self) => self.indexOf(value) === index); // Remove duplicates
+      .filter((value, index, self) => self.indexOf(value) === index) // Remove duplicates
 
     for (const videoId of uniqueVideoIds) {
       const localizationsAndChannels = batchResourceLocalizations.filter(
-        (item) => item.resourceLocalization.videoId === videoId,
-      );
+        (item) => item.resourceLocalization.videoId === videoId
+      )
 
       const localizations = localizationsAndChannels.map(
-        (item) => item.resourceLocalization,
-      );
-      const channel = localizationsAndChannels[0]?.channel; // Choose the first channel as the representative
+        (item) => item.resourceLocalization
+      )
+      const channel = localizationsAndChannels[0]?.channel // Choose the first channel as the representative
 
       if (channel !== null) {
         // Ensure channel is not undefined
-        batches.push({ videoId, localizations, channel });
+        batches.push({ videoId, localizations, channel })
       }
     }
 
-    return batches;
+    return batches
   }
 }
