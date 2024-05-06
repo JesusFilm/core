@@ -22,9 +22,6 @@ export function CustomEdge({
 }: EdgeProps): ReactElement {
   const [edgeColor, setEdgeColor] = useState('#0000001A')
   const [markerEndColor, setMarkerEndColor] = useState('lightGrey')
-  // const s = useStore((state) => state)
-  // console.log('STATE: ', s)
-  // console.log('ID: ', id)
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
