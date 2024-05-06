@@ -1,4 +1,4 @@
-import { chatPlatforms } from '../findChatPlatform'
+import { messagePlatforms } from '../findMessagePlatform'
 
 const biblePlatforms = [
   'bible.com',
@@ -26,7 +26,7 @@ export enum GoalType {
 }
 
 export function getLinkActionGoal(url: string): GoalType {
-  if (chatPlatforms.find((platform) => url.includes(platform.url)) != null) {
+  if (messagePlatforms.find((platform) => url.includes(platform.url)) != null) {
     return GoalType.Chat
   } else if (
     biblePlatforms.find((platform) => url.includes(platform)) != null

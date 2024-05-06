@@ -4,7 +4,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
-import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
+import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 
 import {
   JOURNEY_CHAT_BUTTON_CREATE,
@@ -21,7 +21,7 @@ describe('Summary', () => {
       disableSelection: true,
       journeyId: 'journeyId',
       currentLink: 'https://example.com',
-      currentPlatform: ChatPlatform.facebook,
+      currentPlatform: MessagePlatform.facebook,
       chatButtonId: 'chat.id',
       openAccordion: noop
     }
@@ -44,7 +44,7 @@ describe('Summary', () => {
       disableSelection: false,
       journeyId: 'journeyId',
       currentLink: 'https://example.com',
-      currentPlatform: ChatPlatform.facebook,
+      currentPlatform: MessagePlatform.facebook,
       chatButtonId: 'chat.id',
       openAccordion: jest.fn()
     }
@@ -66,7 +66,7 @@ describe('Summary', () => {
       disableSelection: true,
       journeyId: 'journeyId',
       currentLink: 'https://example.com',
-      currentPlatform: ChatPlatform.facebook,
+      currentPlatform: MessagePlatform.facebook,
       chatButtonId: 'chat.id',
       openAccordion: noop
     }
@@ -97,7 +97,7 @@ describe('Summary', () => {
           __typename: 'ChatButton',
           id: 'chat.id',
           link: '',
-          platform: ChatPlatform.facebook
+          platform: MessagePlatform.facebook
         }
       }
     }))
@@ -108,7 +108,7 @@ describe('Summary', () => {
       disableSelection: false,
       journeyId: 'journeyId',
       currentLink: '',
-      currentPlatform: ChatPlatform.facebook,
+      currentPlatform: MessagePlatform.facebook,
       chatButtonId: 'chat.id',
       openAccordion: noop
     }
@@ -124,7 +124,7 @@ describe('Summary', () => {
                 journeyId: 'journeyId',
                 input: {
                   link: '',
-                  platform: ChatPlatform.facebook
+                  platform: MessagePlatform.facebook
                 }
               }
             },
@@ -162,7 +162,7 @@ describe('Summary', () => {
         __typename: 'ChatButton',
         id: 'chat.id',
         link: 'https://example.com',
-        platform: ChatPlatform.facebook
+        platform: MessagePlatform.facebook
       }
     })
 
@@ -181,7 +181,7 @@ describe('Summary', () => {
       disableSelection: true,
       journeyId: 'journeyId',
       currentLink: 'https://example.com',
-      currentPlatform: ChatPlatform.facebook,
+      currentPlatform: MessagePlatform.facebook,
       chatButtonId: 'chat.id',
       openAccordion: noop
     }

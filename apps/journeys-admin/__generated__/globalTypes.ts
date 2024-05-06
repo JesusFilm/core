@@ -33,20 +33,6 @@ export enum ButtonVariant {
   text = "text",
 }
 
-export enum ChatPlatform {
-  custom = "custom",
-  facebook = "facebook",
-  instagram = "instagram",
-  line = "line",
-  skype = "skype",
-  snapchat = "snapchat",
-  telegram = "telegram",
-  tikTok = "tikTok",
-  viber = "viber",
-  vk = "vk",
-  whatsApp = "whatsApp",
-}
-
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -280,12 +266,12 @@ export interface CardBlockUpdateInput {
 
 export interface ChatButtonCreateInput {
   link?: string | null;
-  platform?: ChatPlatform | null;
+  platform?: MessagePlatform | null;
 }
 
 export interface ChatButtonUpdateInput {
   link?: string | null;
-  platform?: ChatPlatform | null;
+  platform?: MessagePlatform | null;
 }
 
 export interface ChatOpenEventCreateInput {
