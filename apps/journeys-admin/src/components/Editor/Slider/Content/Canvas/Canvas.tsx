@@ -94,7 +94,7 @@ export function Canvas(): ReactElement {
   // frameRef.current?.contentWindow?.document
 
   let startY
-  console.log(iframe)
+  // console.log(iframe)
 
   // iframe?.addEventListener('touchstart', function (event) {
   //   startY = event.touches[0].clientY
@@ -125,6 +125,13 @@ export function Canvas(): ReactElement {
   //   },
   //   { passive: false }
   // )
+  iframe?.addEventListener('touchstart', () => {
+    console.log('Start')
+  })
+
+  iframe?.addEventListener('touchend', () => {
+    console.log('End')
+  })
 
   iframe?.addEventListener(
     'touchmove',
@@ -144,10 +151,12 @@ export function Canvas(): ReactElement {
         currentElement = currentElement.parentElement
       }
       if (isTouchInScrollableElement) {
-        console.log('Scrollable!')
+        // console.log(currentElement)
         return
+      } else {
+        console.log('blocking scroll')
+        e.preventDefault()
       }
-      e.preventDefault()
     },
     { passive: false }
   )
