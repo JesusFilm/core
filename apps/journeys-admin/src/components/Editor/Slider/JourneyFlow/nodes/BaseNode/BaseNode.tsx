@@ -79,6 +79,7 @@ export function BaseNode({
             type="target"
             data-testid="BaseNodeTopHandle"
             position={Position.Left}
+            isConnectableStart={false}
             sx={{
               ml: 0.5,
               width: 8.5,
@@ -112,8 +113,6 @@ export function BaseNode({
           data-testid="BaseNodeBottomHandle"
           position={Position.Right}
           onConnect={onSourceConnect}
-          // onMouseEnter={handleMouseEnter}
-          // onMouseLeave={handleMouseLeave}
           {...sourceHandleProps}
           sx={{
             width: 6,
