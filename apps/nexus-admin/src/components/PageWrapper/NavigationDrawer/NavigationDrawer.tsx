@@ -117,32 +117,44 @@ export function NavigationDrawer({
           </ListItemIcon>
         </ListItemButton>
         <ListGroup name="Youtube" icon={<Youtube />} drawerOpen={open}>
-          <Link href="/resources" legacyBehavior>
-            <ListItemButton selected={selectedPage === 'resources'}>
+          <Link href="/resources" passHref legacyBehavior>
+            <ListItemButton
+              data-testid="NavigationListItemResources"
+              selected={selectedPage === 'resources'}
+            >
               <ListItemIcon>
                 <LibraryBooksIcon />
               </ListItemIcon>
               <ListItemText primary="Resources" />
             </ListItemButton>
           </Link>
-          <Link href="/channels" legacyBehavior>
-            <ListItemButton selected={selectedPage === 'channels'}>
+          <Link href="/channels" passHref legacyBehavior>
+            <ListItemButton
+              data-testid="NavigationListItemChannels"
+              selected={selectedPage === 'channels'}
+            >
               <ListItemIcon>
                 <CampaignIcon />
               </ListItemIcon>
               <ListItemText primary="Channels" />
             </ListItemButton>
           </Link>
-          <Link href="/batches" legacyBehavior>
-            <ListItemButton selected={selectedPage === 'batches'}>
+          <Link href="/batches" passHref legacyBehavior>
+            <ListItemButton
+              data-testid="NavigationListItemBatches"
+              selected={selectedPage === 'batches'}
+            >
               <ListItemIcon>
                 <ListIcon />
               </ListItemIcon>
               <ListItemText primary="Batch Jobs" />
             </ListItemButton>
           </Link>
-          <Link href="/short-links" legacyBehavior>
-            <ListItemButton selected={selectedPage === 'short-links'}>
+          <Link href="/short-links" passHref legacyBehavior>
+            <ListItemButton
+              data-testid="NavigationListItemShortLinks"
+              selected={selectedPage === 'short-links'}
+            >
               <ListItemIcon>
                 <LinkIcon />
               </ListItemIcon>
@@ -150,8 +162,11 @@ export function NavigationDrawer({
             </ListItemButton>
           </Link>
         </ListGroup>
-        <Link href="/videos" legacyBehavior>
-          <ListItemButton selected={selectedPage === 'videos'}>
+        <Link href="/videos" passHref legacyBehavior>
+          <ListItemButton
+            data-testid="NavigationListItemVideos"
+            selected={selectedPage === 'videos'}
+          >
             <ListItemIcon>
               <VideoOnIcon />
             </ListItemIcon>
