@@ -1,15 +1,17 @@
 import { TreeBlock } from '@core/journeys/ui/block'
-import { arrangeSteps } from '.'
 import {
-  BlockFields_StepBlock as StepBlock,
   BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_CardBlock as CardBlock
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_StepBlock as StepBlock
 } from '@core/journeys/ui/block/__generated__/BlockFields'
+
 import {
   ButtonSize,
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+
+import { arrangeSteps } from '.'
 
 const button: TreeBlock<ButtonBlock> = {
   __typename: 'ButtonBlock',
