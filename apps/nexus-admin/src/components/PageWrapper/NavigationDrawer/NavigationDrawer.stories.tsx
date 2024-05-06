@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 import { ComponentProps, ReactElement, useState } from 'react'
 
 import { nexusAdminConfig } from '../../../libs/storybook'
@@ -28,5 +29,23 @@ const Template: StoryObj<typeof NavigationDrawer> = {
 }
 
 export const Default = { ...Template, args: { selectedPage: '' } }
+
+export const ClosedListGroup = {
+  ...Template,
+  args: { selectedPage: '' },
+  play: async () => {
+    const listGroup = screen.getByRole('button', { name: 'Youtube' })
+    await userEvent.click(listGroup)
+  }
+}
+
+export const ClosedDrawer = {
+  ...Template,
+  args: { selectedPage: '' },
+  play: async () => {
+    const toggleDrawerButton = screen.getByTestId('NavigationListItemToggle')
+    await userEvent.click(toggleDrawerButton)
+  }
+}
 
 export default NavigationDrawerStory
