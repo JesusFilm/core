@@ -311,6 +311,33 @@ describe('BlockService', () => {
       ])
     })
 
+    it('should duplicate step block with new x and y', async () => {
+      const newStepBlock = {
+        ...stepBlock,
+        action: null,
+        x: 0,
+        y: 0
+      }
+      service.getDuplicateBlockAndChildren = jest
+        .fn()
+        .mockReturnValue([newStepBlock])
+
+      await service.duplicateBlock(newStepBlock, 1, 2, 3)
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        where: { id: newStepBlock.id },
+        include: { action: true },
+        data: {
+          action: undefined,
+          coverBlockId: newStepBlock.coverBlockId,
+          nextBlockId: newStepBlock.nextBlockId,
+          parentBlockId: undefined,
+          posterBlockId: newStepBlock.posterBlockId,
+          x: 2,
+          y: 3
+        }
+      })
+    })
+
     it('should add duplicated block at end by default', async () => {
       await service.duplicateBlock(block)
 
