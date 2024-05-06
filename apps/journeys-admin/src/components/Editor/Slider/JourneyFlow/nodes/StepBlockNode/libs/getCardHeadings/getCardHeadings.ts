@@ -21,7 +21,7 @@ export function getCardHeadings(
     (block) => block.__typename === 'TypographyBlock'
   ) as Array<TreeBlock<TypographyBlock>>
 
-  function getTypographyOrder(block): number {
+  function getTypographyOrder(block: TreeBlock<TypographyBlock>): number {
     return block.variant != null
       ? orderedTypographyVariants.indexOf(block.variant)
       : orderedTypographyVariants.length

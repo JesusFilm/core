@@ -1,5 +1,4 @@
 import { TreeBlock } from '@core/journeys/ui/block'
-import { getCardMetadata } from '.'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -11,6 +10,8 @@ import {
   TypographyVariant,
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
+
+import { getCardMetadata } from '.'
 
 const typography1: TreeBlock<TypographyBlock> = {
   __typename: 'TypographyBlock',
