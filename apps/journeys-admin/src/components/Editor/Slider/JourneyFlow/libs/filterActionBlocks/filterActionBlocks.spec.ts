@@ -2,12 +2,20 @@ import { filterActionBlocks } from './filterActionBlocks'
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_ImageBlock as ImageBlock,
+  BlockFields_ButtonBlock_action as ButtonBlockAction,
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
 import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQuestionFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
+
+const buttonAction: ButtonBlockAction = {
+  __typename: 'LinkAction',
+  parentBlockId: 'button',
+  gtmEventName: 'click',
+  url: 'https://m.me/some-user'
+}
 
 const button: TreeBlock<ButtonBlock> = {
   __typename: 'ButtonBlock',
@@ -20,7 +28,7 @@ const button: TreeBlock<ButtonBlock> = {
   size: null,
   startIconId: null,
   endIconId: null,
-  action: null,
+  action: buttonAction,
   children: []
 }
 
@@ -94,9 +102,8 @@ describe('filterActionBlocks', () => {
     expect(filteredActionBlocks).toEqual([button, RadioOption1, RadioOption2])
   })
 
-  it('should filter out radioQuestionBlock and image block', () => {
+  it('should filter out certain blocks', () => {
     const filteredActionBlocks = filterActionBlocks(step)
-    expect(filteredActionBlocks).not.toContain(radioQuestionBlock)
-    expect(filteredActionBlocks).not.toContain(image)
+    expect(filteredActionBlocks).not.toContain([radioQuestionBlock, image])
   })
 })
