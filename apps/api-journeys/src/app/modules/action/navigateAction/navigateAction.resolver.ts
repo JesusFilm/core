@@ -38,6 +38,7 @@ export class NavigateActionResolver {
         }
       }
     })
+    console.log('navigate action', block)
     if (block == null)
       throw new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
