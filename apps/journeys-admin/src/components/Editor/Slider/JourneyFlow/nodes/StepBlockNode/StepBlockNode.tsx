@@ -8,7 +8,11 @@ import { ReactElement } from 'react'
 import { NodeProps, OnConnect } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveFab,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
@@ -60,7 +64,19 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
   const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches
 
   function handleClick(): void {
-    dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
+    if (selectedStep?.id === step?.id) {
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: selectedStep
+      })
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
+      })
+    } else {
+      dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
+    }
   }
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
