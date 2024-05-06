@@ -24,7 +24,7 @@ describe('AppCaslFactory', () => {
           Action.Create,
           subject('Nexus', {
             id: 'nexusId',
-            status: NexusStatus.published,
+            status: NexusStatus.created,
             userNexuses: [{ userId: user.id, role: 'owner' }]
           } as unknown as Nexus)
         )
@@ -37,7 +37,7 @@ describe('AppCaslFactory', () => {
           Action.Manage,
           subject('Nexus', {
             id: 'nexusId',
-            status: NexusStatus.published,
+            status: NexusStatus.created,
             userNexuses: [{ userId: user.id, role: 'owner' }]
           } as unknown as Nexus)
         )
@@ -52,10 +52,10 @@ describe('AppCaslFactory', () => {
           Action.Create,
           subject('Channel', {
             id: 'channelId',
-            status: NexusStatus.published,
+            status: NexusStatus.created,
             nexus: {
               userNexuses: [{ userId: user.id, role: 'owner' }],
-              status: NexusStatus.published
+              status: NexusStatus.created
             }
           } as unknown as Channel)
         )
@@ -68,10 +68,10 @@ describe('AppCaslFactory', () => {
           Action.Manage,
           subject('Channel', {
             id: 'channelId',
-            status: NexusStatus.published,
+            status: NexusStatus.created,
             nexus: {
               userNexuses: [{ userId: user.id, role: 'owner' }],
-              status: NexusStatus.published
+              status: NexusStatus.created
             }
           } as unknown as Channel)
         )
@@ -86,10 +86,10 @@ describe('AppCaslFactory', () => {
           Action.Create,
           subject('Resource', {
             id: 'resourceId',
-            status: NexusStatus.published,
+            status: NexusStatus.created,
             nexus: {
               userNexuses: [{ userId: user.id, role: 'owner' }],
-              status: NexusStatus.published
+              status: NexusStatus.created
             }
           } as unknown as Resource)
         )
@@ -102,10 +102,10 @@ describe('AppCaslFactory', () => {
           Action.Manage,
           subject('Resource', {
             id: 'resourceId',
-            status: NexusStatus.published,
+            status: NexusStatus.created,
             nexus: {
               userNexuses: [{ userId: user.id, role: 'owner' }],
-              status: NexusStatus.published
+              status: NexusStatus.created
             }
           } as unknown as Resource)
         )

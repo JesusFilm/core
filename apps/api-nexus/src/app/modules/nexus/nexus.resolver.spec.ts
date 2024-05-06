@@ -26,7 +26,7 @@ describe('NexusResolver', () => {
     id: 'nexusId',
     name: 'Nexus Name',
     description: 'Nexus Description',
-    status: 'published',
+    status: NexusStatus.created,
     createdAt: new Date(),
     deletedAt: null
   }
@@ -158,7 +158,7 @@ describe('NexusResolver', () => {
           description: 'A new nexus description',
           id: 'nexusId',
           name: 'New Nexus',
-          status: 'published',
+          status: 'created',
           userNexuses: {
             create: {
               role: 'owner',

@@ -29,7 +29,7 @@ describe('ChannelResolver', () => {
   const channel: Channel = {
     id: 'channelId',
     name: 'Channel Name',
-    status: NexusStatus.published,
+    status: NexusStatus.created,
     nexusId: 'nexusId',
     connected: true,
     platform: 'youtube',
@@ -40,7 +40,7 @@ describe('ChannelResolver', () => {
     ...channel,
     nexus: {
       userNexuses: [{ userId: 'userId', role: 'owner' }],
-      status: NexusStatus.published
+      status: NexusStatus.created
     }
   }
 

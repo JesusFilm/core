@@ -6,11 +6,11 @@ import {
   NexusStatus,
   Prisma,
   Resource,
-  ResourceStatus,
-  SourceType
+  ResourceStatus
 } from '.prisma/api-nexus-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
+import { PrivacyStatus } from '../../__generated__/graphql'
 import { BullMQService } from '../../lib/bullMQ/bullMQ.service'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
@@ -43,14 +43,19 @@ describe('ResourceResolver', () => {
     updatedAt: new Date(),
     deletedAt: null,
     category: 'Example Category',
-    privacy: null,
-    sourceType: SourceType.other
+    privacy: PrivacyStatus.private,
+    spokenLanguage: null,
+    customThumbnail: null,
+    isMadeForKids: false,
+    playlistId: null,
+    mediaComponentId: null,
+    notifySubscribers: false
   }
   const resourceWithNexusUserNexus = {
     ...resource,
     nexus: {
       userNexuses: [{ userId: 'userId', role: 'owner' }],
-      status: NexusStatus.published
+      status: NexusStatus.created
     }
   }
 
@@ -102,7 +107,7 @@ describe('ResourceResolver', () => {
           AND: [accessibleResources, {}]
         },
         orderBy: { createdAt: 'desc' },
-        include: { localizations: true }
+        include: { resourceLocalizations: true }
       })
     })
 
@@ -119,7 +124,7 @@ describe('ResourceResolver', () => {
           ]
         },
         orderBy: { createdAt: 'desc' },
-        include: { localizations: true }
+        include: { resourceLocalizations: true }
       })
     })
 
@@ -134,7 +139,7 @@ describe('ResourceResolver', () => {
         },
         take: 1,
         orderBy: { createdAt: 'desc' },
-        include: { localizations: true }
+        include: { resourceLocalizations: true }
       })
     })
   })
@@ -152,7 +157,7 @@ describe('ResourceResolver', () => {
           id: 'resourceId'
         },
         include: {
-          localizations: true,
+          resourceLocalizations: true,
           nexus: { include: { userNexuses: true } }
         }
       })
@@ -198,7 +203,6 @@ describe('ResourceResolver', () => {
           name: 'New Resource',
           nexusId: 'nexusId',
           status: 'published',
-          sourceType: 'other'
         }
       })
     })
@@ -241,7 +245,7 @@ describe('ResourceResolver', () => {
       expect(prismaService.resource.update).toHaveBeenCalledWith({
         where: { id: 'resourceId' },
         data: input,
-        include: { localizations: true }
+        include: { resourceLocalizations: true }
       })
     })
 
@@ -257,7 +261,7 @@ describe('ResourceResolver', () => {
         data: {
           name: undefined
         },
-        include: { localizations: true }
+        include: { resourceLocalizations: true }
       })
     })
 
@@ -289,7 +293,7 @@ describe('ResourceResolver', () => {
         where: { id: 'resourceId' },
         data: { status: ResourceStatus.deleted },
         include: {
-          localizations: true
+          resourceLocalizations: true
         }
       })
     })

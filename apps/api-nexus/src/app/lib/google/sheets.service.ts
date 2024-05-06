@@ -156,30 +156,31 @@ export class GoogleSheetsService {
     // UPLOADING TEMPLATE DATA
     console.log('PREPARING UPLOAD-TEMPLATE DATA', spreadsheetRows);
     const allResources: Resource[] = [];
+
     // Find Unique Channels
     const channels = Array.from(
       new Set(
         spreadsheetRows
           .filter((spreadsheetRow) => spreadsheetRow.channelData != null)
-          .map((spreadsheetRow) => spreadsheetRow.channelData),
+          .map((spreadsheetRow) => spreadsheetRow.channelData?.id),
       ),
     );
-    console.log("channels", channels);
     for (const channel of channels) {
       const resources = await this.createResourceFromSpreadsheet(
         nexusId,
         googleAccessToken.refreshToken,
         spreadsheetRows.filter(
-          (spreadsheetRow) => spreadsheetRow.channelData?.id === channel?.id,
+          (spreadsheetRow) => spreadsheetRow.channelData?.id === channel,
         ),
       );
-      allResources.concat(resources);
       await this.bullMQService.createUploadResourceBatch(
         uuidv4(),
         nexusId,
-        channel as Channel,
+        spreadsheetRows.find((item) => item.channelData?.id === channel) as Channel,
         resources,
       );
+
+      allResources.concat(resources);
     }
     return allResources;
   }
@@ -271,7 +272,7 @@ export class GoogleSheetsService {
         headers?.forEach((header, index) => {
           obj[header] = row[index];
         });
-        const item = await this.getSpreadSheetRow(obj as SpreadsheetRow, props.files);
+        const item = await this.populateSpreadSheetRow(obj as SpreadsheetRow, props.files);
         spreadsheetTemplateType =
           item.videoId != null
             ? SpreadsheetTemplateType.LOCALIZATION
@@ -284,7 +285,7 @@ export class GoogleSheetsService {
     }
   }
 
-  private async getSpreadSheetRow(
+  private async populateSpreadSheetRow(
     row: SpreadsheetRow,
     files?: drive_v3.Schema$File[],
   ): Promise<SpreadsheetRow> {
