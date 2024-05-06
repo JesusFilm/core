@@ -30,7 +30,7 @@ export class TestHttpStack implements HttpStack {
   }
 
   createRequest(method: string, url: string): HttpRequest {
-    return new TestRequest(method, url, (req) => {
+    return new TestRequest(method, url, (req: TestRequest) => {
       if (this._pendingWaits.length >= 1) {
         const handler = this._pendingWaits.shift()
         handler?.(req)
@@ -115,9 +115,11 @@ class TestRequest implements HttpRequest {
 
     return await new Promise((resolve) => {
       this.body?.on('readable', () => {
-        let chunk
+        let chunk: string | null | undefined
         while ((chunk = this.body?.read()) !== null) {
-          resolve(chunk.length)
+          if (chunk != null) {
+            resolve(chunk.length)
+          }
         }
       })
     })

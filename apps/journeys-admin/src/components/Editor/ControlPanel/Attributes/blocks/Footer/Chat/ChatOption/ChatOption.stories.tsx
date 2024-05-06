@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
-import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
+import { MessagePlatform } from '../../../../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
 
 import { ChatOption } from '.'
@@ -29,9 +29,9 @@ export const Default = {
       __typename: 'ChatButton',
       id: 'chatButton1.id',
       link: 'https://example.com',
-      platform: ChatPlatform.facebook
+      platform: MessagePlatform.facebook
     },
-    platform: ChatPlatform.facebook,
+    platform: MessagePlatform.facebook,
     active: false,
     journeyId: '1',
     disableSelection: false
@@ -46,7 +46,7 @@ export const Complete = {
       __typename: 'ChatButton',
       id: 'chatButton1.id',
       link: 'https://example.com',
-      platform: ChatPlatform.tikTok
+      platform: MessagePlatform.tikTok
     },
     active: true,
     helperInfo: 'This is a helper message',
@@ -68,7 +68,7 @@ export const Icons = {
       __typename: 'ChatButton',
       id: 'chatButton1.id',
       link: 'https://example.com',
-      platform: ChatPlatform.tikTok
+      platform: MessagePlatform.tikTok
     },
     active: true,
     journeyId: '1',

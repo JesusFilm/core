@@ -157,7 +157,10 @@ export function UnsplashGallery({
     setPage(page + 1)
   }
 
-  const handleCollectionChange = (id, query): void => {
+  const handleCollectionChange = (
+    id: string,
+    query: string | undefined
+  ): void => {
     setCollectionId(id)
     setQuery(query)
   }

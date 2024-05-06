@@ -6,7 +6,7 @@ import { initAuth } from '../../src/libs/firebaseClient/initAuth'
 
 initAuth()
 
-async function sleep(ms): Promise<void> {
+async function sleep(ms: number | undefined): Promise<void> {
   return await new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
