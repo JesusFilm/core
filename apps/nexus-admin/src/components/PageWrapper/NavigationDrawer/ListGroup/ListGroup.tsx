@@ -11,7 +11,7 @@ import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
 interface ListGroupProps {
   name: string
-  icon: ReactNode
+  icon?: ReactNode
   children: ReactNode
   drawerOpen?: boolean
 }
@@ -24,14 +24,15 @@ export function ListGroup({
 }: ListGroupProps): ReactElement {
   const [open, setOpen] = useState(true)
 
-  const handleClick = (): void => {
+  const handleClose = (): void => {
     setOpen(!open)
   }
 
   return (
     <List>
       <ListItemButton
-        onClick={handleClick}
+        onClick={handleClose}
+        data-testid="ListGroupToggle"
         sx={{
           '&:hover .MuiStack-root': {
             color: 'background.paper',
@@ -44,7 +45,9 @@ export function ListGroup({
         <Stack>{open ? <ChevronUpIcon /> : <ChevronDownIcon />}</Stack>
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
-        <List sx={{ pl: drawerOpen === true ? 2 : 0 }}>{children}</List>
+        <List data-testid="ListGroup" sx={{ pl: drawerOpen === true ? 2 : 0 }}>
+          {children}
+        </List>
       </Collapse>
     </List>
   )
