@@ -33,6 +33,7 @@ export function SocialPreviewNode(): ReactElement {
 
   return (
     <BaseNode
+      id="SocialPreview"
       selected={activeContent === ActiveContent.Social}
       isSourceConnectable
     >

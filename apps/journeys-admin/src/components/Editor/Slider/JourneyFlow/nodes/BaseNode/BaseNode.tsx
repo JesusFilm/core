@@ -51,7 +51,11 @@ export function BaseNode({
     onChange: (selected) => {
       const selectedEdge = selected.edges[0]
       setTargetSelected(selectedEdge?.target === id)
-      setSourceSelected(selectedEdge?.source === id)
+      setSourceSelected(
+        selectedEdge?.sourceHandle != null
+          ? selectedEdge.sourceHandle === id
+          : selectedEdge?.source === id
+      )
     }
   })
 
@@ -117,10 +121,9 @@ export function BaseNode({
           sx={{
             width: 6,
             height: 6,
-            background:
-              connectionHandleId === id
-                ? theme.palette.primary.main
-                : 'rgba(0,0,0,.25)',
+            background: sourceSelected
+              ? theme.palette.primary.main
+              : 'rgba(0,0,0,.25)',
             // border: 'none',
             border: sourceSelected ? '2px solid #c52d3aff' : 'none',
             ...sourceHandleProps?.sx,
