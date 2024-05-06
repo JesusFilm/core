@@ -5,10 +5,10 @@ import { ReactElement, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Typography } from '@core/journeys/ui/Typography'
+import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import { TypographyBlockUpdateContent } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
-import { hasTouchScreen } from '../../../../../../../libs/deviceUtils/deviceUtils'
 import { InlineEditInput } from '../InlineEditInput'
 import { useOnClickOutside } from '../useOnClickOutside'
 
