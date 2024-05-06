@@ -83,7 +83,7 @@ export function BaseNode({
             type="target"
             data-testid="BaseNodeTopHandle"
             position={Position.Left}
-            isConnectableStart={false}
+            isConnectableStart={isConnecting}
             sx={{
               ml: 0.5,
               width: 8.5,
