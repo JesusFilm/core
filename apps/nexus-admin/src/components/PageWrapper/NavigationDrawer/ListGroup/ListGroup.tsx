@@ -1,5 +1,4 @@
 import Collapse from '@mui/material/Collapse'
-import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
@@ -29,7 +28,7 @@ export function ListGroup({
   }
 
   return (
-    <List>
+    <>
       <ListItemButton
         onClick={handleClose}
         data-testid="ListGroupToggle"
@@ -41,14 +40,18 @@ export function ListGroup({
         }}
       >
         <ListItemIcon sx={{ color: 'background.default' }}>{icon}</ListItemIcon>
-        {drawerOpen === true ? <ListItemText primary={name} /> : null}
+        <ListItemText primary={name} />
         <Stack>{open ? <ChevronUpIcon /> : <ChevronDownIcon />}</Stack>
       </ListItemButton>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <List data-testid="ListGroup" sx={{ pl: drawerOpen === true ? 2 : 0 }}>
-          {children}
-        </List>
+      <Collapse
+        in={open}
+        data-testid="Collapse"
+        timeout="auto"
+        unmountOnExit
+        sx={{ pl: drawerOpen === true ? 2 : 0 }}
+      >
+        {children}
       </Collapse>
-    </List>
+    </>
   )
 }

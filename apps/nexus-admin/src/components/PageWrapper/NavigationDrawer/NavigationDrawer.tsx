@@ -10,7 +10,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
@@ -49,9 +49,9 @@ export function NavigationDrawer({
           border: 0,
           backgroundColor: 'secondary.dark',
           overflowX: 'hidden',
-          textWrap: 'nowrap',
           transition: (theme) => theme.transitions.create('width'),
-          width: open === true ? DRAWER_WIDTH : { xs: 0, md: 72 }
+          width: open === true ? DRAWER_WIDTH : { xs: 0, md: 72 },
+          zIndex: (theme) => theme.zIndex.drawer + 1
         }
       }}
     >
@@ -117,7 +117,7 @@ export function NavigationDrawer({
           </ListItemIcon>
         </ListItemButton>
         <ListGroup name="Youtube" icon={<Youtube />} drawerOpen={open}>
-          <Link href="/resources" passHref legacyBehavior>
+          <NextLink href="/resources" passHref legacyBehavior>
             <ListItemButton
               data-testid="NavigationListItemResources"
               selected={selectedPage === 'resources'}
@@ -127,8 +127,8 @@ export function NavigationDrawer({
               </ListItemIcon>
               <ListItemText primary="Resources" />
             </ListItemButton>
-          </Link>
-          <Link href="/channels" passHref legacyBehavior>
+          </NextLink>
+          <NextLink href="/channels" passHref legacyBehavior>
             <ListItemButton
               data-testid="NavigationListItemChannels"
               selected={selectedPage === 'channels'}
@@ -138,8 +138,8 @@ export function NavigationDrawer({
               </ListItemIcon>
               <ListItemText primary="Channels" />
             </ListItemButton>
-          </Link>
-          <Link href="/batches" passHref legacyBehavior>
+          </NextLink>
+          <NextLink href="/batches" passHref legacyBehavior>
             <ListItemButton
               data-testid="NavigationListItemBatches"
               selected={selectedPage === 'batches'}
@@ -147,10 +147,13 @@ export function NavigationDrawer({
               <ListItemIcon>
                 <ListIcon />
               </ListItemIcon>
-              <ListItemText primary="Batch Jobs" />
+              <ListItemText
+                primary="Batch Jobs"
+                primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+              />
             </ListItemButton>
-          </Link>
-          <Link href="/short-links" passHref legacyBehavior>
+          </NextLink>
+          <NextLink href="/short-links" passHref legacyBehavior>
             <ListItemButton
               data-testid="NavigationListItemShortLinks"
               selected={selectedPage === 'short-links'}
@@ -158,11 +161,14 @@ export function NavigationDrawer({
               <ListItemIcon>
                 <LinkIcon />
               </ListItemIcon>
-              <ListItemText primary="Short Links" />
+              <ListItemText
+                primary="Short Links"
+                primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+              />
             </ListItemButton>
-          </Link>
+          </NextLink>
         </ListGroup>
-        <Link href="/videos" passHref legacyBehavior>
+        <NextLink href="/videos" passHref legacyBehavior>
           <ListItemButton
             data-testid="NavigationListItemVideos"
             selected={selectedPage === 'videos'}
@@ -172,7 +178,7 @@ export function NavigationDrawer({
             </ListItemIcon>
             <ListItemText primary="Videos" />
           </ListItemButton>
-        </Link>
+        </NextLink>
         <ListItem component="div" sx={{ flexGrow: '1 !important' }} />
         <Typography
           variant="h6"

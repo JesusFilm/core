@@ -10,6 +10,6 @@ describe('ListGroup', () => {
       </ListGroup>
     )
     fireEvent.click(getByTestId('ListGroupToggle'))
-    expect(getByTestId('ListGroup')).toHaveTextContent('Child')
+    expect(getByTestId('Collapse')).toHaveTextContent('Child')
   })
 })
