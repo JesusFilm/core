@@ -1,8 +1,9 @@
 locals {
-  port = 4000
+  port         = 4000
+  docker_image = "plausible/analytics@v2"
   environment_variables = [
-    "APOLLO_GRAPH_REF",
-    "APOLLO_KEY",
+    "BASE_URL",
+    "SECRET_KEY_BASE",
     "GOOGLE_APPLICATION_JSON",
   ]
   service_config = {

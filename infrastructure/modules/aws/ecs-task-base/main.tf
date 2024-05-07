@@ -28,7 +28,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     # app container
     {
       name      = "${local.ecs_task_definition_family}-app"
-      image     = "${aws_ecr_repository.ecr_repository.repository_url}:latest"
+      image     = "${var.docker_image}:latest"
       essential = true
       cpu       = var.service_config.cpu
       memory    = var.service_config.memory

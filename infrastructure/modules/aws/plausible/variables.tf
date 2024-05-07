@@ -1,4 +1,18 @@
-variable "ecs_config" {
+variable "internal_ecs_config" {
+  type = object({
+    vpc_id                  = string
+    is_public               = bool
+    subnets                 = list(string)
+    security_group_id       = string
+    task_execution_role_arn = string
+    cluster = object({
+      id   = string
+      name = string
+    })
+  })
+}
+
+variable "external_ecs_config" {
   type = object({
     vpc_id                  = string
     is_public               = bool
@@ -114,4 +128,8 @@ variable "doppler_token" {
 # We are unable to for_each sensitive values, so we must provide a list of secret env vars
 variable "environment_variables" {
   type = list(string)
+}
+
+variable "dns_name" {
+  type = string
 }

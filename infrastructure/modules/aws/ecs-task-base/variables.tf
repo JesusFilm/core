@@ -73,3 +73,7 @@ variable "doppler_token" {
 variable "environment_variables" {
   type = list(string)
 }
+
+variable "docker_image" {
+  type = string
+}
