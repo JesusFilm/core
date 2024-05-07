@@ -15,6 +15,7 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Items } from './Items'
 import { Menu } from './Menu'
+import { Tooltip } from '@mui/material'
 
 export function Toolbar(): ReactElement {
   const { journey } = useJourney()
@@ -42,9 +43,11 @@ export function Toolbar(): ReactElement {
         }}
       />
       <NextLink href="/" passHref legacyBehavior>
-        <IconButton data-testid="ToolbarBackButton">
-          <ChevronLeftIcon />
-        </IconButton>
+        <Tooltip title="See all journeys" placement="right" arrow>
+          <IconButton data-testid="ToolbarBackButton">
+            <ChevronLeftIcon />
+          </IconButton>
+        </Tooltip>
       </NextLink>
       {journey != null && (
         <>
