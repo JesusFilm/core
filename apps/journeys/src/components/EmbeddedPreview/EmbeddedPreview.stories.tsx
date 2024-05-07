@@ -9,8 +9,8 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import {
-  ChatPlatform,
   JourneyStatus,
+  MessagePlatform,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
@@ -74,7 +74,7 @@ const journey: Journey = {
       __typename: 'ChatButton',
       id: 'chatButtonId',
       link: 'http://me.com',
-      platform: ChatPlatform.facebook
+      platform: MessagePlatform.facebook
     }
   ],
   host: {
