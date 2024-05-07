@@ -1,0 +1,71 @@
+{
+  "name": "journeys-admin-ui",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/journeys-admin/ui/src",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": ["locales"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b libs/journeys-admin/ui/tsconfig.json"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/journeys-admin/ui"],
+      "options": {
+        "jestConfig": "libs/journeys-admin/ui/jest.config.ts"
+      }
+    },
+    "demo": {
+      "executor": "@nx/storybook:storybook",
+      "options": {
+        "port": 4400,
+        "configDir": ".storybook"
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+          },
+          {
+            "command": "rm -rf libs/journeys-admin/ui/__generated__"
+          },
+          {
+            "command": "npx apollo client:codegen --config libs/journeys-admin/ui/apollo.config.js --target typescript  --globalTypesFile=libs/journeys-admin/ui/__generated__/globalTypes.ts"
+          }
+        ]
+      }
+    },
+    "extract-translations": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx i18next --config libs/journeys-admin/ui/i18next-parser.config.js"
+          }
+        ]
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/libs/journeys-admin/ui/cobertura-coverage.xml -F libs.journeys-admin.ui"
+      }
+    }
+  }
+}
