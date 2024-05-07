@@ -1,6 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import { useTheme } from '@mui/material/styles'
 import {
   MouseEvent,
@@ -25,11 +24,14 @@ import {
   useEdgesState,
   useNodesState
 } from 'reactflow'
-import { __await } from 'tslib'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveFab,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
@@ -44,6 +46,7 @@ import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavi
 import { useStepAndCardBlockCreateMutation } from '../../../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
+import { Item } from '../../Toolbar/Items/Item'
 
 import { CustomEdge } from './edges/CustomEdge'
 import { StartEdge } from './edges/StartEdge'
@@ -57,7 +60,6 @@ import {
 } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
-import { Item } from '../../Toolbar/Items/Item'
 
 export const GET_STEP_BLOCKS_WITH_POSITION = gql`
   query GetStepBlocksWithPosition($journeyIds: [ID!]) {
@@ -198,10 +200,10 @@ export function JourneyFlow(): ReactElement {
 
   const createStepAndCardBlock = useCallback(
     async function createStepAndCardBlock(
+      step: TreeBlock,
+      block: TreeBlock,
       x: number,
-      y: number,
-      step?: TreeBlock,
-      block?: TreeBlock
+      y: number
     ): Promise<void> {
       if (journey == null) return
       const newStepId = uuidv4()
@@ -257,18 +259,45 @@ export function JourneyFlow(): ReactElement {
     ]
   )
   async function handleAddStepAndCardBlock(event): Promise<void> {
-    if (reactFlowInstance == null) return
+    if (reactFlowInstance == null || journey == null) return
     const { x, y } = reactFlowInstance.screenToFlowPosition({
       x: (event as unknown as MouseEvent).clientX,
       y: (event as unknown as MouseEvent).clientY
     })
 
-    await createStepAndCardBlock(
-      parseInt(x.toString()) - STEP_NODE_WIDTH,
-      parseInt(y.toString()) + STEP_NODE_HEIGHT / 2
-    )
-
-    // dispatch
+    const newStepId = uuidv4()
+    const newCardId = uuidv4()
+    const { data } = await stepAndCardBlockCreate({
+      variables: {
+        stepBlockCreateInput: {
+          id: newStepId,
+          journeyId: journey.id,
+          x: parseInt(x.toString()) - STEP_NODE_WIDTH,
+          y: parseInt(y.toString()) + STEP_NODE_HEIGHT / 2
+        },
+        cardBlockCreateInput: {
+          id: newCardId,
+          journeyId: journey.id,
+          parentBlockId: newStepId,
+          themeMode: ThemeMode.dark,
+          themeName: ThemeName.base
+        }
+      }
+    })
+    if (data != null) {
+      dispatch({
+        type: 'SetSelectedStepAction',
+        selectedStep: {
+          ...data.stepBlockCreate,
+          children: [{ ...data.cardBlockCreate, children: [] }]
+        }
+      })
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.Content
+      })
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    }
   }
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections
@@ -321,10 +350,10 @@ export function JourneyFlow(): ReactElement {
         })
 
         void createStepAndCardBlock(
-          parseInt(x.toString()),
-          parseInt(y.toString()) - STEP_NODE_HEIGHT / 2,
           step,
-          block
+          block,
+          parseInt(x.toString()),
+          parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
         )
       }
     },
