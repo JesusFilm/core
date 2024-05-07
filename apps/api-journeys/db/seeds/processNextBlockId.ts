@@ -23,8 +23,10 @@ function flatten(blocks, flattenedBlocks) {
   return flattenedBlocks
 }
 
-async function getAllJourneys() {
+async function getAllJourneys(offset: number) {
   return await prisma.journey.findMany({
+    take: 100,
+    skip: offset,
     include: { blocks: { include: { action: true } } }
   })
 }
@@ -42,44 +44,41 @@ function updateNavigateActions(stepBlock, navigateAction) {
   return console.log('stepblocks nextblockid')
 }
 
-async function updateJourney(journey: Journey): Promise<void> {
-  console.log('journey', journey)
-  // await prisma.journey.upsert({
-  //   where: { id },
-  //   update: data,
-  //   create: data
-  // })
-}
+async function updateJourneyBlocks(id, blocks): Promise<void> {}
 
 export async function processNextBlockId(): Promise<void> {
-  const journeys = await getAllJourneys()
+  let offset = 0
 
-  journeys.forEach((journey) => {
-    const blocks = flatten(journey.blocks, [])
-    const stepBlocks = getStepBlocks(blocks)
-    const navigateActionBlocks = getNavigateActions(blocks)
+  while (true) {
+    const journeys = await getAllJourneys(offset)
 
-    // console.log('stepBlocks', stepBlocks)
-    console.log('navigateActionBlocks', navigateActionBlocks)
+    if (journeys.length === 0) break
+    await Promise.all(
+      journeys.map(async (journey) => {
+        const blocks = flatten(journey.blocks, [])
+        const stepBlocks = getStepBlocks(blocks)
+        const navigateActionBlocks = getNavigateActions(blocks)
 
-    stepBlocks.forEach((stepBlock, index, blocks) => {
-      const nextIndex = index + 1
-      const hasNextStep = nextIndex < blocks.length
-
-      if (hasNextStep) {
-        const nextStepBlock = blocks[nextIndex]
-        // stepBlock.nextBlockId = nextStepBlock.id
-        console.log('nextBlockId', stepBlock.nextBlockId)
-
-        // fix up logic for getting all the navigate actions
-        // return data doesn't have typename
-        const navigateActions = getNavigateActions(blocks)
-        updateNavigateActions(stepBlock, navigateActions)
-      } else {
-        stepBlock.nextBlockId = null
-      }
-
-      // await updateJourney(journey)
-    })
-  })
+        await Promise.all(
+          stepBlocks.map(async (stepBlock, index) => {
+            const nextIndex = index + 1
+            const hasNextStep = nextIndex < stepBlocks.length
+            if (hasNextStep) {
+              const nextStepBlock = stepBlocks[nextIndex]
+              await prisma.block.update({
+                where: { id: stepBlock.id },
+                data: {
+                  nextBlockId: nextStepBlock.id
+                }
+              })
+            } else {
+              stepBlock.nextBlockId = null
+            }
+          })
+        )
+        // await updateJourney(journey)
+      })
+    )
+    offset += 100
+  }
 }
