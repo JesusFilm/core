@@ -37,6 +37,7 @@
     "journeys",
     "journeys-admin",
     "api-journeys",
-    "api-users"
+    "api-users",
+    "nexus-admin"
   ]
 }
