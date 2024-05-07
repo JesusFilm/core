@@ -31,6 +31,7 @@ export function isIPhone(): boolean {
   return userAgent.includes('iPhone')
 }
 
+// TODO: should only resort to user agent sniffing as a last resport
 export function isIOS(): boolean {
   if (
     typeof navigator === 'undefined' ||
@@ -42,6 +43,7 @@ export function isIOS(): boolean {
   return /iPad|iPhone|Macintosh|iPod/.test(userAgent)
 }
 
+// TODO: should only resort to user agent sniffing as a last resport
 export function isMobile(): boolean {
   if (
     typeof navigator === 'undefined' ||
