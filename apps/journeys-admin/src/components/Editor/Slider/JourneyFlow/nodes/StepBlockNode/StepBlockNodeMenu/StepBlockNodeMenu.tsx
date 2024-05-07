@@ -41,6 +41,10 @@ export function StepBlockNodeMenu({
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
         sx={{
+          backgroundColor: 'background.paper',
+          '&:hover': {
+            backgroundColor: 'background.default'
+          },
           position: 'absolute',
           top: -20,
           right: -20
