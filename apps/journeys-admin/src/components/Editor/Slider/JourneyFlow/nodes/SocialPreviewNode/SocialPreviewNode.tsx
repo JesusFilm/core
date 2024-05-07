@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement } from 'react'
+import { OnConnect } from 'reactflow'
 
 import {
   ActiveContent,
@@ -19,13 +20,16 @@ import Share from '@core/shared/ui/icons/Share'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
+import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
 import { BaseNode } from '../BaseNode'
 
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
+  const [blockOrderUpdate] = useBlockOrderUpdateMutation()
+
   const {
     dispatch,
-    state: { activeContent }
+    state: { steps, activeContent }
   } = useEditor()
 
   function handleClick(): void {
@@ -51,8 +55,33 @@ export function SocialPreviewNode(): ReactElement {
     }
   }
 
-  function handleSourceConnect(): void {
-    console.log('HELLO')
+  async function handleSourceConnect(
+    params: { target: string } | Parameters<OnConnect>[0]
+  ): Promise<void> {
+    if (params.target == null || journey == null) return
+    const { data } = await blockOrderUpdate({
+      variables: {
+        id: params.target,
+        journeyId: journey.id,
+        parentOrder: 0
+      },
+      optimisticResponse: {
+        blockOrderUpdate: [
+          {
+            id: params.target,
+            __typename: 'StepBlock',
+            parentOrder: 0
+          }
+        ]
+      }
+    })
+    if (data != null) {
+      const stepId = data.blockOrderUpdate[0].id
+      const selectedStep = steps?.find((step) => step.id === stepId)
+      if (selectedStep != null) {
+        dispatch({ type: 'SetSelectedStepAction', selectedStep })
+      }
+    }
   }
 
   return (
@@ -60,7 +89,7 @@ export function SocialPreviewNode(): ReactElement {
       id="SocialPreview"
       selected={activeContent === ActiveContent.Social}
       isSourceConnectable
-      // onSourceConnect={handleSourceConnect}
+      onSourceConnect={handleSourceConnect}
     >
       {({ selected }) => (
         <Card

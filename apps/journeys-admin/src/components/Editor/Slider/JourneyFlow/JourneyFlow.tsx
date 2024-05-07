@@ -26,7 +26,6 @@ import {
 } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
@@ -37,6 +36,7 @@ import {
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
+import { useBlockOrderUpdateMutation } from '../../../../libs/useBlockOrderUpdateMutation'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
@@ -102,6 +102,7 @@ export function JourneyFlow(): ReactElement {
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
+  const [blockOrderUpdate] = useBlockOrderUpdateMutation()
 
   async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
     if (steps == null || journey == null) return
@@ -192,11 +193,15 @@ export function JourneyFlow(): ReactElement {
 
   const createStepAndCardBlock = useCallback(
     async function createStepAndCardBlock(
-      step: TreeBlock,
-      block: TreeBlock,
+      nodeId: string,
+      handleId: string,
       x: number,
       y: number
     ): Promise<void> {
+      const step = steps?.find((step) => step.id === nodeId)
+      const block = searchBlocks(step != null ? [step] : [], handleId)
+
+      if (nodeId !== 'SocialPreview' && (step == null || block == null)) return
       if (journey == null) return
       const newStepId = uuidv4()
       const newCardId = uuidv4()
@@ -228,9 +233,27 @@ export function JourneyFlow(): ReactElement {
           }
         })
       }
-      if (step?.id === block?.id) {
+
+      if (nodeId === 'SocialPreview') {
+        // social preview
+        await blockOrderUpdate({
+          variables: {
+            id: newStepId,
+            journeyId: journey.id,
+            parentOrder: 0
+          },
+          optimisticResponse: {
+            blockOrderUpdate: [
+              {
+                id: newStepId,
+                __typename: 'StepBlock',
+                parentOrder: 0
+              }
+            ]
+          }
+        })
+      } else if (step != null && step.id === block?.id) {
         // step
-        if (step == null) return
         await stepBlockNextBlockUpdate({
           variables: {
             id: step.id,
@@ -247,17 +270,18 @@ export function JourneyFlow(): ReactElement {
             }
           }
         })
-      } else {
+      } else if (block != null) {
         // action
-        if (block == null) return
         await navigateToBlockActionUpdate(block, newStepId)
       }
     },
     [
       journey,
+      steps,
       navigateToBlockActionUpdate,
       stepAndCardBlockCreate,
       stepBlockNextBlockUpdate,
+      blockOrderUpdate,
       dispatch
     ]
   )
@@ -278,16 +302,6 @@ export function JourneyFlow(): ReactElement {
         connectingParams.current.handleType === 'target'
       )
         return
-
-      const step = steps?.find(
-        (step) => step.id === connectingParams.current?.nodeId
-      )
-      const block = searchBlocks(
-        step != null ? [step] : [],
-        connectingParams.current.handleId
-      )
-
-      if (step == null || block == null) return
 
       // let clientX = 0
       // let clientY = 0
@@ -312,14 +326,14 @@ export function JourneyFlow(): ReactElement {
         })
 
         void createStepAndCardBlock(
-          step,
-          block,
+          connectingParams.current.nodeId,
+          connectingParams.current.handleId,
           parseInt(x.toString()),
           parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
         )
       }
     },
-    [reactFlowInstance, connectingParams, createStepAndCardBlock, steps]
+    [reactFlowInstance, connectingParams, createStepAndCardBlock]
   )
   const onNodeDragStop: NodeDragHandler = async (
     _event,
