@@ -16,9 +16,9 @@ import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
-  ChatPlatform,
   IconName,
   IconSize,
+  MessagePlatform,
   ThemeMode,
   ThemeName,
   TypographyVariant,
@@ -712,13 +712,13 @@ export const FooterEdit = {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: ChatPlatform.tikTok
+          platform: MessagePlatform.tikTok
         },
         {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: ChatPlatform.snapchat
+          platform: MessagePlatform.snapchat
         }
       ]
     }
