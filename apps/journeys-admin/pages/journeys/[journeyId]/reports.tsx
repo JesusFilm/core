@@ -11,19 +11,25 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useCallback, useRef } from 'react'
 
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+
 import {
   GetAdminJourneyWithPlausibleToken,
   GetAdminJourneyWithPlausibleTokenVariables
 } from '../../../__generated__/GetAdminJourneyWithPlausibleToken'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { PageWrapper } from '../../../src/components/PageWrapper'
+import { PlausibleDashboard } from '../../../src/components/PlausibleDashboard'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { USER_JOURNEY_OPEN } from '../[journeyId]'
 
 export const GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN = gql`
+  ${JOURNEY_FIELDS}
   query GetAdminJourneyWithPlausibleToken($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
+      ...JourneyFields
       plausibleToken
     }
   }
@@ -83,21 +89,28 @@ function JourneyReportsPage(): ReactElement {
         mainBodyPadding={false}
         mainHeaderChildren={<ReportsNavigation journeyId={journeyId} />}
       >
-        {loading && <p>{t('Loading')}...</p>}
-        {!loading && data?.journey.plausibleToken != null && (
-          <>
-            <StyledIFrame
-              plausible-embed
-              src={`/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
-              loading="lazy"
-              ref={ref}
-              sx={{
-                height: { xs: 'calc(100vh - 96px)', md: 'calc(100vh - 48px)' }
-              }}
-            />
-            <script async src="/js/embed.host.js" />
-          </>
-        )}
+        <JourneyProvider value={{ journey: data?.journey, variant: 'admin' }}>
+          <PlausibleDashboard>
+            {loading && <p>{t('Loading')}</p>}
+            {!loading && data?.journey.plausibleToken != null && (
+              <>
+                <StyledIFrame
+                  plausible-embed
+                  src={`/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
+                  loading="lazy"
+                  ref={ref}
+                  sx={{
+                    height: {
+                      xs: 'calc(100vh - 96px)',
+                      md: 'calc(100vh - 48px)'
+                    }
+                  }}
+                />
+                <script async src="/js/embed.host.js" />
+              </>
+            )}
+          </PlausibleDashboard>
+        </JourneyProvider>
       </PageWrapper>
     </>
   )

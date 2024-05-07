@@ -456,6 +456,15 @@ export interface NavigateToJourneyActionInput {
   journeyId: string;
 }
 
+export interface PlausibleStatsBreakdownFilter {
+  property: string;
+  period?: string | null;
+  date?: string | null;
+  limit?: number | null;
+  page?: number | null;
+  filters?: string | null;
+}
+
 export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;

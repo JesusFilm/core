@@ -37,3 +37,11 @@
 .active-prop-heading {
   text-decoration-color: #c52d3a;
 }
+
+body > main > div > div.pt-6 {
+  padding-top: 0 !important;
+}
+
+body > main > div {
+  padding: 0 !important;
+}
