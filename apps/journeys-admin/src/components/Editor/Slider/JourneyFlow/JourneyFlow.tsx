@@ -14,11 +14,13 @@ import {
   Background,
   ControlButton,
   Controls,
+  Edge,
   NodeDragHandler,
   OnConnect,
   OnConnectEnd,
   OnConnectStart,
   OnConnectStartParams,
+  OnEdgeUpdateFunc,
   ReactFlow,
   ReactFlowInstance,
   useEdgesState,
@@ -27,12 +29,16 @@ import {
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import {
   GetStepBlocksWithPosition,
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
+import { useBlockOrderUpdateMutation } from '../../../../libs/useBlockOrderUpdateMutation'
+import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
+import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { CustomEdge } from './edges/CustomEdge'
@@ -62,18 +68,22 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
   const {
-    state: { steps }
+    state: { steps },
+    dispatch
   } = useEditor()
   const connectingParams = useRef<OnConnectStartParams | null>(null)
+  const edgeUpdateSuccessful = useRef(true)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const theme = useTheme()
 
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
+  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const createStepAndCard = useCreateStepAndCard()
-
+  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
+  const [blockOrderUpdate] = useBlockOrderUpdateMutation()
   async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
     if (steps == null || journey == null) return
     positions = arrangeSteps(steps)
@@ -161,100 +171,6 @@ export function JourneyFlow(): ReactElement {
     setNodes(nodes)
   }, [steps, data, setEdges, setNodes, refetch])
 
-  // const createStepAndCardBlock = useCallback(
-  //   async function createStepAndCardBlock(
-  //     nodeId: string,
-  //     handleId: string,
-  //     x: number,
-  //     y: number
-  //   ): Promise<void> {
-  //     const step = steps?.find((step) => step.id === nodeId)
-  //     const block = searchBlocks(step != null ? [step] : [], handleId)
-
-  //     if (nodeId !== 'SocialPreview' && (step == null || block == null)) return
-  //     if (journey == null) return
-  //     const newStepId = uuidv4()
-  //     const newCardId = uuidv4()
-
-  //     const { data } = await stepAndCardBlockCreate({
-  //       variables: {
-  //         stepBlockCreateInput: {
-  //           id: newStepId,
-  //           journeyId: journey.id,
-  //           x,
-  //           y
-  //         },
-  //         cardBlockCreateInput: {
-  //           id: newCardId,
-  //           journeyId: journey.id,
-  //           parentBlockId: newStepId,
-  //           themeMode: ThemeMode.dark,
-  //           themeName: ThemeName.base
-  //         }
-  //       }
-  //     })
-
-  //     if (data != null) {
-  //       dispatch({
-  //         type: 'SetSelectedStepAction',
-  //         selectedStep: {
-  //           ...data.stepBlockCreate,
-  //           children: [{ ...data.cardBlockCreate, children: [] }]
-  //         }
-  //       })
-  //     }
-
-  //     if (nodeId === 'SocialPreview') {
-  //       // social preview
-  //       await blockOrderUpdate({
-  //         variables: {
-  //           id: newStepId,
-  //           journeyId: journey.id,
-  //           parentOrder: 0
-  //         },
-  //         optimisticResponse: {
-  //           blockOrderUpdate: [
-  //             {
-  //               id: newStepId,
-  //               __typename: 'StepBlock',
-  //               parentOrder: 0
-  //             }
-  //           ]
-  //         }
-  //       })
-  //     } else if (step != null && step.id === block?.id) {
-  //       // step
-  //       await stepBlockNextBlockUpdate({
-  //         variables: {
-  //           id: step.id,
-  //           journeyId: journey.id,
-  //           input: {
-  //             nextBlockId: newStepId
-  //           }
-  //         },
-  //         optimisticResponse: {
-  //           stepBlockUpdate: {
-  //             id: step.id,
-  //             __typename: 'StepBlock',
-  //             nextBlockId: newStepId
-  //           }
-  //         }
-  //       })
-  //     } else if (block != null) {
-  //       // action
-  //       await navigateToBlockActionUpdate(block, newStepId)
-  //     }
-  //   },
-  //   [
-  //     journey,
-  //     steps,
-  //     navigateToBlockActionUpdate,
-  //     stepAndCardBlockCreate,
-  //     stepBlockNextBlockUpdate,
-  //     blockOrderUpdate,
-  //     dispatch
-  //   ]
-  // )
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections
     connectingParams.current = null
@@ -269,22 +185,10 @@ export function JourneyFlow(): ReactElement {
         connectingParams.current == null ||
         connectingParams.current.nodeId == null ||
         connectingParams.current.handleId == null ||
-        connectingParams.current.handleType === 'target'
+        connectingParams.current.handleType === 'target' ||
+        !edgeUpdateSuccessful.current
       )
         return
-
-      // let clientX = 0
-      // let clientY = 0
-      // if (event.type === 'touchend') {
-      //   const touchEvent = event as unknown as TouchEvent
-      //   touchEvent.preventDefault()
-      //   clientX = touchEvent.changedTouches[0].clientX
-      //   clientY = touchEvent.changedTouches[0].clientY
-      // } else if (event.type === 'mouseup') {
-      //   const mouseEvent = event as unknown as MouseEvent
-      //   clientX = mouseEvent.clientX
-      //   clientY = mouseEvent.clientY
-      // }
 
       const targetIsPane = (event.target as Element)?.classList.contains(
         'react-flow__pane'
@@ -322,6 +226,101 @@ export function JourneyFlow(): ReactElement {
       }
     })
   }
+  const onEdgeUpdateStart = useCallback(() => {
+    edgeUpdateSuccessful.current = false
+  }, [])
+
+  const onEdgeUpdate: OnEdgeUpdateFunc = useCallback(
+    (_, { target, source, sourceHandle }) => {
+      edgeUpdateSuccessful.current = true
+      if (journey == null || target == null) return
+
+      if (source === 'SocialPreview') {
+        // social preview
+        void blockOrderUpdate({
+          variables: {
+            id: target,
+            journeyId: journey.id,
+            parentOrder: 0
+          },
+          optimisticResponse: {
+            blockOrderUpdate: [
+              {
+                id: target,
+                __typename: 'StepBlock',
+                parentOrder: 0
+              }
+            ]
+          }
+        })
+      } else if (sourceHandle != null) {
+        const step = steps?.find((step) => step.id === source)
+        const block = searchBlocks(step != null ? [step] : [], sourceHandle)
+        // action
+        if (block != null) {
+          void navigateToBlockActionUpdate(block, target)
+        }
+      } else {
+        // step
+        if (source != null) {
+          void stepBlockNextBlockUpdate({
+            variables: {
+              id: source,
+              journeyId: journey.id,
+              input: {
+                nextBlockId: target
+              }
+            },
+            optimisticResponse: {
+              stepBlockUpdate: {
+                id: source,
+                __typename: 'StepBlock',
+                nextBlockId: target
+              }
+            }
+          })
+        }
+      }
+      dispatch({
+        type: 'SetSelectedStepAction',
+        selectedStep: steps?.find((step) => step.id === target)
+      })
+    },
+    [
+      journey,
+      steps,
+      dispatch,
+      stepBlockNextBlockUpdate,
+      navigateToBlockActionUpdate,
+      blockOrderUpdate
+    ]
+  )
+
+  const onEdgeUpdateEnd = useCallback(
+    (event, edge: Edge) => {
+      edgeUpdateSuccessful.current = true
+      const { source, sourceHandle } = edge
+      if (reactFlowInstance == null || journey == null || source == null) return
+
+      const targetIsPane = (event.target as Element)?.classList.contains(
+        'react-flow__pane'
+      )
+      if (targetIsPane) {
+        const { x, y } = reactFlowInstance.screenToFlowPosition({
+          x: (event as unknown as MouseEvent).clientX,
+          y: (event as unknown as MouseEvent).clientY
+        })
+
+        void createStepAndCard(
+          source,
+          sourceHandle ?? source,
+          parseInt(x.toString()),
+          parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
+        )
+      }
+    },
+    [journey, reactFlowInstance, createStepAndCard]
+  )
 
   const nodeTypes = useMemo(
     () => ({
@@ -348,6 +347,9 @@ export function JourneyFlow(): ReactElement {
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
+        onEdgeUpdate={onEdgeUpdate}
+        onEdgeUpdateStart={onEdgeUpdateStart}
+        onEdgeUpdateEnd={onEdgeUpdateEnd}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
         nodeTypes={nodeTypes}

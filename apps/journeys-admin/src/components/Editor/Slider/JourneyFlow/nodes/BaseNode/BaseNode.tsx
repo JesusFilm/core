@@ -19,6 +19,8 @@ import { PulseWrapper } from './PulseWrapper'
 const StyledHandle = styled(Handle)(() => ({}))
 const connectionHandleIdSelector = (state): string | null =>
   state.connectionHandleId
+const connectionNodeIdSelector = (state): string | null =>
+  state.connectionNodeId
 
 interface BaseNodeProps {
   id?: string
@@ -44,7 +46,8 @@ export function BaseNode({
   children
 }: BaseNodeProps): ReactElement {
   const connectionHandleId = useStore(connectionHandleIdSelector)
-  const isConnecting = connectionHandleId != null
+  const connectionNodeId = useStore(connectionNodeIdSelector)
+  const isConnecting = connectionHandleId != null || connectionNodeId != null
   const [targetSelected, setTargetSelected] = useState(false)
   const [sourceSelected, setSourceSelected] = useState(false)
   const theme = useTheme()
