@@ -27,15 +27,10 @@ import {
 import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import {
-  ActiveFab,
-  ActiveSlide,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
-import Plus3Icon from '@core/shared/ui/icons/Plus3'
 
 import {
   GetStepBlocksWithPosition,
@@ -46,18 +41,15 @@ import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavi
 import { useStepAndCardBlockCreateMutation } from '../../../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
-import { Item } from '../../Toolbar/Items/Item'
 
 import { CustomEdge } from './edges/CustomEdge'
 import { StartEdge } from './edges/StartEdge'
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
+import { NewStepButton } from './NewStepButton'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
-import {
-  STEP_NODE_HEIGHT,
-  STEP_NODE_WIDTH
-} from './nodes/StepBlockNode/libs/sizes'
+import { STEP_NODE_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
 
@@ -269,47 +261,6 @@ export function JourneyFlow(): ReactElement {
       dispatch
     ]
   )
-  async function handleAddStepAndCardBlock(event): Promise<void> {
-    if (reactFlowInstance == null || journey == null) return
-    const { x, y } = reactFlowInstance.screenToFlowPosition({
-      x: (event as unknown as MouseEvent).clientX,
-      y: (event as unknown as MouseEvent).clientY
-    })
-
-    const newStepId = uuidv4()
-    const newCardId = uuidv4()
-    const { data } = await stepAndCardBlockCreate({
-      variables: {
-        stepBlockCreateInput: {
-          id: newStepId,
-          journeyId: journey.id,
-          x: parseInt(x.toString()) - STEP_NODE_WIDTH,
-          y: parseInt(y.toString()) + STEP_NODE_HEIGHT / 2
-        },
-        cardBlockCreateInput: {
-          id: newCardId,
-          journeyId: journey.id,
-          parentBlockId: newStepId,
-          themeMode: ThemeMode.dark,
-          themeName: ThemeName.base
-        }
-      }
-    })
-    if (data != null) {
-      dispatch({
-        type: 'SetSelectedStepAction',
-        selectedStep: {
-          ...data.stepBlockCreate,
-          children: [{ ...data.cardBlockCreate, children: [] }]
-        }
-      })
-      dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.Content
-      })
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-    }
-  }
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections
     connectingParams.current = null
@@ -403,21 +354,7 @@ export function JourneyFlow(): ReactElement {
 
   return (
     <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">
-      <Box
-        sx={{
-          position: 'absolute',
-          right: 30,
-          top: 30,
-          zIndex: 3
-        }}
-      >
-        <Item
-          variant="button"
-          label="Add Step"
-          icon={<Plus3Icon />}
-          onClick={handleAddStepAndCardBlock}
-        />
-      </Box>
+      <NewStepButton reactFlowInstance={reactFlowInstance} />
       <ReactFlow
         nodes={nodes}
         edges={edges}
