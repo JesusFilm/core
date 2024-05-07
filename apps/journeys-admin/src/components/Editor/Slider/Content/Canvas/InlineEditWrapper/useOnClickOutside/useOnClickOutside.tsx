@@ -18,6 +18,7 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
       if (elementRef.current != null && inputSelected && canvasClicked)
         void callback()
     }
+    
     // Need to set capture to true
     // https://github.com/facebook/react/issues/20325
     window.addEventListener('click', handleClick, { capture: true })
