@@ -151,6 +151,7 @@ export function CardQuote(): ReactElement {
           height={195}
           src={cardQuoteImage}
           alt="Card Quote Template"
+          draggable={false}
         />
       </ButtonBase>
     </Box>
