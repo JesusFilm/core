@@ -71,7 +71,7 @@ export class BlockService {
       ...block,
       parentOrder: index
     }))
-    const result = await Promise.all(
+    return await Promise.all(
       updatedSiblings.map(
         async (block) =>
           await tx.block.update({
@@ -81,8 +81,6 @@ export class BlockService {
           })
       )
     )
-    console.log('result', result)
-    return result
   }
 
   @FromPostgresql()
@@ -129,7 +127,6 @@ export class BlockService {
         }
       }))
     )
-
     const duplicateBlockAndChildren = await Promise.all(
       blockAndChildrenData.map(async (newBlock) => {
         if (

@@ -5,7 +5,6 @@ import { discoveryAdminCenter } from './seeds/discoveryAdminCenter'
 import { discoveryAdminLeft } from './seeds/discoveryAdminLeft'
 import { discoveryAdminRight } from './seeds/discoveryAdminRight'
 import { jfpTeam } from './seeds/jfpTeam'
-import { nextBlockId } from './seeds/nextBlockId'
 import { nua1 } from './seeds/nua1'
 import { nua2 } from './seeds/nua2'
 import { nua8 } from './seeds/nua8'
@@ -13,6 +12,7 @@ import { nua9 } from './seeds/nua9'
 import { onboarding } from './seeds/onboarding'
 import { onboardingTemplates } from './seeds/onboardingTemplates'
 import { playwrightUserAccess } from './seeds/playwrightUserAccess'
+import { processNextBlockId } from './seeds/processNextBlockId'
 
 async function main(): Promise<void> {
   // this should be removed when the UI can support team management
@@ -27,7 +27,7 @@ async function main(): Promise<void> {
   // await discoveryAdminCenter()
   // await discoveryAdminRight()
   // await playwrightUserAccess()
-  await nextBlockId()
+  await processNextBlockId()
 }
 main().catch((e) => {
   console.error(e)

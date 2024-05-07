@@ -29,11 +29,8 @@ export class StepBlockResolver {
     @CaslAbility() ability: AppAbility,
     @Args('input') input: StepBlockCreateInput
   ): Promise<Block> {
-    const siblings = await this.blockService.getSiblings(input.journeyId)
-    const parentOrder = siblings.length
-
-    console.log('siblings', siblings)
-    console.log('input', input)
+    const parentOrder = (await this.blockService.getSiblings(input.journeyId))
+      .length
     return await this.prismaService.$transaction(async (tx) => {
       const block = await tx.block.create({
         data: {
@@ -57,7 +54,6 @@ export class StepBlockResolver {
           }
         }
       })
-      console.log('block', block)
       if (!ability.can(Action.Update, subject('Journey', block.journey)))
         throw new GraphQLError('user is not allowed to create block', {
           extensions: { code: 'FORBIDDEN' }
