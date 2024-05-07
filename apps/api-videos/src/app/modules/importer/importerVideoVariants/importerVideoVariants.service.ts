@@ -56,7 +56,5 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
       update: transformedVideoVariant,
       create: transformedVideoVariant
     })
-
-    console.log('finished uploading: ', videoVariant.id)
   }
 }

@@ -4,6 +4,7 @@ import get from 'lodash/get'
 
 import { ImporterService } from '../importer/importer.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
+import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
@@ -13,7 +14,6 @@ import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/
 import { ImporterVideoVariantSubtitlesService } from '../importer/importerVideoVariantSubtitle/importerVideovariantSubtitile.service'
 
 import { BigQueryService } from './bigQuery.service'
-import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 
 interface BigQueryRowError {
   bigQueryTableName: string
@@ -70,7 +70,7 @@ export class BigQueryConsumer extends WorkerHost {
         } catch (error) {
           errors.push({
             bigQueryTableName,
-            id: get(row, 'id') ?? 'unknownId',
+            id: get(row, 'id') ?? get(row, 'videoId'),
             message: error.message
           })
         }

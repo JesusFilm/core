@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { InferType, boolean, number, object, string } from 'yup'
+import { InferType, boolean, object, string } from 'yup'
 
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'

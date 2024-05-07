@@ -29,3 +29,19 @@ RUN su node -c "npm install -g npm@latest"
 
 RUN mkdir /home/node/.doppler \
     && chown -R node /home/node/.doppler
+
+# [Optional] Uncomment if you want to install Java + Download and extract SQL Workbench/J
+#install Java 
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk ca-certificates-java && \
+    apt-get clean && \
+    update-ca-certificates -f
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-arm64
+RUN export JAVA_HOME
+# Download and extract SQL Workbench/J
+RUN wget -O /tmp/sqlworkbench.tar.gz https://www.sql-workbench.eu/Workbench-Build131-with-optional-libs.zip && \
+    unzip /tmp/sqlworkbench.tar.gz -d /opt/ && \
+    rm /tmp/sqlworkbench.tar.gz
+
+
+

@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common'
-
 import { InferType, mixed, object, string } from 'yup'
 
-import { VideoLabel, Prisma } from '.prisma/api-videos-client'
+import { Prisma, VideoLabel } from '.prisma/api-videos-client'
 
 import { slugify } from '../../../../libs/slugify'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -72,7 +71,8 @@ export class ImporterVideosService extends ImporterService<Video> {
     return {
       ...video,
       childIds: stringArray,
-      slug: await this.slugify(video.id, video.slug)
+      slug: await this.slugify(video.id, video.slug),
+      noIndex: false
     }
   }
 
