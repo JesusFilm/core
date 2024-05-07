@@ -25,6 +25,7 @@ export function CustomEdge({
   targetY,
   sourcePosition,
   targetPosition,
+  interactionWidth,
   style = {}
 }: EdgeProps): ReactElement {
   const { journey } = useJourney()
@@ -91,7 +92,7 @@ export function CustomEdge({
       })
     }
   }
-
+  console.log(edgePath)
   return (
     <>
       <BaseEdge
@@ -136,3 +137,4 @@ export function CustomEdge({
     </>
   )
 }
+// <circle class="react-flow__edgeupdater react-flow__edgeupdater-target" cx="346.5" cy="-236.75" r="10" stroke="blue" fill="transparent"></circle>
