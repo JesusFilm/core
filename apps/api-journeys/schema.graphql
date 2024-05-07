@@ -1200,31 +1200,17 @@ type VideoTriggerBlock implements Block {
 type ChatButton {
   id: ID!
   link: String
-  platform: ChatPlatform
-}
-
-enum ChatPlatform {
-  facebook
-  telegram
-  whatsApp
-  instagram
-  viber
-  vk
-  snapchat
-  skype
-  line
-  tikTok
-  custom
+  platform: MessagePlatform
 }
 
 input ChatButtonCreateInput {
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 input ChatButtonUpdateInput {
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 type CustomDomain {
