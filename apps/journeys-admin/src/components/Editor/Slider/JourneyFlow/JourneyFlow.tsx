@@ -209,7 +209,7 @@ export function JourneyFlow(): ReactElement {
       const newStepId = uuidv4()
       const newCardId = uuidv4()
 
-      await stepAndCardBlockCreate({
+      const { data } = await stepAndCardBlockCreate({
         variables: {
           stepBlockCreateInput: {
             id: newStepId,
@@ -226,6 +226,16 @@ export function JourneyFlow(): ReactElement {
           }
         }
       })
+
+      if (data != null) {
+        dispatch({
+          type: 'SetSelectedStepAction',
+          selectedStep: {
+            ...data.stepBlockCreate,
+            children: [{ ...data.cardBlockCreate, children: [] }]
+          }
+        })
+      }
       if (step?.id === block?.id) {
         // step
         if (step == null) return
@@ -255,7 +265,8 @@ export function JourneyFlow(): ReactElement {
       journey,
       navigateToBlockActionUpdate,
       stepAndCardBlockCreate,
-      stepBlockNextBlockUpdate
+      stepBlockNextBlockUpdate,
+      dispatch
     ]
   )
   async function handleAddStepAndCardBlock(event): Promise<void> {
