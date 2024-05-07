@@ -3,7 +3,7 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -33,19 +33,6 @@ export function StepBlockNodeCard({
   const { title, subtitle, description, priorityBlock, bgImage } =
     getCardMetadata(card)
 
-  const [cardElevation, setCardElevation] = useState(selected ? 6 : 1)
-
-  function handleMouseEnter(): void {
-    if (!selected) setCardElevation(3)
-  }
-  function handleMouseLeave(): void {
-    if (!selected) setCardElevation(1)
-  }
-
-  useEffect(() => {
-    if (!selected) setCardElevation(1)
-  }, [selected])
-
   function handleClick(): void {
     if (selectedStep?.id === step?.id) {
       dispatch({
@@ -58,19 +45,22 @@ export function StepBlockNodeCard({
         selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
       })
     } else {
-      setCardElevation(6)
       dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
     }
   }
 
   return (
     <Card
-      sx={{ width: 190, m: 1.5 }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      elevation={cardElevation}
+      elevation={selected ? 6 : 1}
       title="Click to edit or drag"
       onClick={handleClick}
+      sx={{
+        width: 190,
+        m: 1.5,
+        '&:hover': {
+          boxShadow: selected ? 6 : 3
+        }
+      }}
     >
       <CardContent
         data-testid="Step block"
