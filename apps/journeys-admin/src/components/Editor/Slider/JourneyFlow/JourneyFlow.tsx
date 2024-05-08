@@ -336,7 +336,14 @@ export function JourneyFlow(): ReactElement {
   }
 
   return (
-    <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">
+    <Box
+      sx={{
+        width: '100%',
+        height: '100%',
+        '.react-flow__edgeupdater.react-flow__edgeupdater-target': { r: 15 }
+      }}
+      data-testid="JourneyFlow"
+    >
       <NewStepButton reactFlowInstance={reactFlowInstance} />
       <ReactFlow
         nodes={nodes}
