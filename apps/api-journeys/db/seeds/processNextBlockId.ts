@@ -2,7 +2,7 @@ import sortBy from 'lodash/sortBy'
 
 import { PrismaClient } from '.prisma/api-journeys-client'
 
-import { StepBlock } from '../../src/app/__generated__/graphql'
+import { Block, StepBlock } from '../../src/app/__generated__/graphql'
 
 const prisma = new PrismaClient()
 
@@ -12,24 +12,24 @@ function getStepBlocks(blocks): StepBlock[] {
   )
 }
 
-function getNavigateActionBlocks(blocks) {
+function getNavigateActionBlocks(blocks): Block[] {
   return blocks.filter(
     (block): boolean =>
       block.action != null && block.action.gtmEventName === 'NavigateAction'
   )
 }
 
-function findParentStepBlock(blocks, actionBlock) {
-  const block = blocks.find((block) => block.id === actionBlock.parentBlockId)
+function findParentStepBlock(blocks, parentBlockId): string {
+  const block = blocks.find((block) => block.id === parentBlockId)
 
   if (block != null && block.typename === 'StepBlock') {
     return block.id
   } else {
-    return findParentStepBlock(blocks, block)
+    return findParentStepBlock(blocks, block.parentBlockId)
   }
 }
 
-async function updateBlockAndActions(journey) {
+async function updateBlockAndActions(journey): Promise<void> {
   const blocks = journey.blocks
   const stepBlocks = sortBy(getStepBlocks(blocks), 'parentOrder')
   const navigateActionBlocks = getNavigateActionBlocks(blocks)
@@ -46,18 +46,25 @@ async function updateBlockAndActions(journey) {
           data: { nextBlockId: nextStepBlock.id }
         })
 
+        const currentStepBlockActions = navigateActionBlocks.filter(
+          (actionBlock) =>
+            findParentStepBlock(blocks, actionBlock.parentBlockId) ===
+            stepBlock.id
+        )
+
         await Promise.all(
-          navigateActionBlocks
-            .filter(
-              (actionBlock) =>
-                findParentStepBlock(blocks, actionBlock) === stepBlock.id
-            )
-            .map(async (actionBlock) => {
-              await prisma.action.update({
-                where: { parentBlockId: actionBlock.parentBlockId },
-                data: { blockId: nextStepBlock.id }
+          currentStepBlockActions.map(async (block) => {
+            if (block != null) {
+              await prisma.block.update({
+                where: { id: block.id },
+                data: {
+                  action: {
+                    update: { blockId: nextStepBlock.id }
+                  }
+                }
               })
-            })
+            }
+          })
         )
       }
     })
