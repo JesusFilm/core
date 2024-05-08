@@ -52,12 +52,12 @@ export function BaseNode({
 }: BaseNodeProps): ReactElement {
   const connectionHandleId = useStore(connectionHandleIdSelector)
   const connectionNodeId = useStore(connectionNodeIdSelector)
-  const isConnecting = connectionHandleId != null || connectionNodeId != null
+  const isConnecting =
+    (connectionHandleId != null || connectionNodeId != null) &&
+    id !== connectionNodeId
   const [targetSelected, setTargetSelected] = useState(false)
   const [sourceSelected, setSourceSelected] = useState(false)
   const theme = useTheme()
-
-  console.log(id)
 
   useOnSelectionChange({
     onChange: (selected) => {
@@ -96,6 +96,7 @@ export function BaseNode({
             data-testid="BaseNodeTopHandle"
             position={Position.Left}
             isConnectableStart={isConnecting}
+            isConnectable={id !== connectionNodeId}
             sx={{
               ml: 0.5,
               width: 8.5,
