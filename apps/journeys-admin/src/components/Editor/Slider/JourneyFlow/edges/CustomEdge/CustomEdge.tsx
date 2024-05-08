@@ -12,6 +12,7 @@ import {
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import X3Icon from '@core/shared/ui/icons/X3'
 
 import { useBlockActionDeleteMutation } from '../../../../../../libs/useBlockActionDeleteMutation'
@@ -65,8 +66,9 @@ export function CustomEdge({
 
     if (selectedEdge.sourceHandle != null) {
       // action
-      const block = step.children[0].children.find(
-        (childBlock) => childBlock.id === selectedEdge.sourceHandle
+      const block = searchBlocks(
+        step != null ? [step] : [],
+        selectedEdge.sourceHandle
       )
       if (block != null) {
         void blockActionDelete(block)

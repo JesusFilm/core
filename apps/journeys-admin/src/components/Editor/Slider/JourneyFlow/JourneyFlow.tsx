@@ -73,7 +73,7 @@ export function JourneyFlow(): ReactElement {
     dispatch
   } = useEditor()
   const connectingParams = useRef<OnConnectStartParams | null>(null)
-  const edgeUpdateSuccessful = useRef(true)
+  const edgeUpdateSuccessful = useRef<boolean | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const theme = useTheme()
@@ -188,7 +188,7 @@ export function JourneyFlow(): ReactElement {
         connectingParams.current.nodeId == null ||
         connectingParams.current.handleId == null ||
         connectingParams.current.handleType === 'target' ||
-        !edgeUpdateSuccessful.current
+        edgeUpdateSuccessful.current === false
       )
         return
 
@@ -300,15 +300,13 @@ export function JourneyFlow(): ReactElement {
 
   const onEdgeUpdateEnd = useCallback(
     (_, edge: Edge) => {
-      if (!edgeUpdateSuccessful.current) {
+      if (edgeUpdateSuccessful.current === false) {
         const { source, sourceHandle } = edge
         if (journey == null || source === 'SocialPreview') return
         if (sourceHandle != null) {
           // action
           const step = steps?.find((step) => step.id === source)
-          const block = step?.children[0].children.find(
-            (childBlock) => childBlock.id === sourceHandle
-          )
+          const block = searchBlocks(step != null ? [step] : [], sourceHandle)
           if (block != null) {
             void blockActionDelete(block)
           }
