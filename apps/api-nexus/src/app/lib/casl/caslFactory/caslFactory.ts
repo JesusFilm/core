@@ -1,7 +1,7 @@
 import { AbilityBuilder, PureAbility } from '@casl/ability'
 import { Injectable } from '@nestjs/common'
 
-import { Role } from '.prisma/api-journeys-client'
+import { Role } from '.prisma/api-nexus-client'
 import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 
 import { channelAcl } from '../../../modules/channel/channel.acl'
