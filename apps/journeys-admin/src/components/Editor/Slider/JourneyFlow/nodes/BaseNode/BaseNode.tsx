@@ -37,6 +37,7 @@ interface BaseNodeProps {
   selected?: 'descendant' | boolean
   isSourceConnected?: boolean
   sourceHandleProps?: Partial<ComponentProps<typeof StyledHandle>>
+  dragging?: boolean
   children?:
     | ((context: { selected: 'descendant' | boolean }) => ReactNode)
     | ReactNode
@@ -50,6 +51,7 @@ export function BaseNode({
   selected = false,
   isSourceConnected = false,
   sourceHandleProps,
+  dragging,
   children
 }: BaseNodeProps): ReactElement {
   const connectionHandleId = useStore(connectionHandleIdSelector)
@@ -78,7 +80,7 @@ export function BaseNode({
       data-testid="BaseNode"
       sx={{
         position: 'relative',
-        cursor: 'pointer',
+        cursor: dragging === true ? 'grabbing' : 'pointer',
         '.arrow': {
           opacity: 0,
           right: -20,

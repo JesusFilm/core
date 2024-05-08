@@ -14,7 +14,12 @@ import { STEP_NODE_WIDTH } from './libs/sizes'
 import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
-export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
+export function StepBlockNode({
+  id,
+  xPos,
+  yPos,
+  dragging
+}: NodeProps): ReactElement {
   const {
     state: { steps, selectedStep, activeContent }
   } = useEditor()
@@ -81,6 +86,7 @@ export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
           selected={isSelected}
           onSourceConnect={handleSourceConnect}
           isSourceConnected={step.nextBlockId != null}
+          dragging={dragging}
         >
           {() => (
             <>
