@@ -25,7 +25,7 @@ function findParentStepBlock(blocks, parentBlockId): string {
   return findParentStepBlock(blocks, block.parentBlockId)
 }
 
-async function updateStepBlockAndActions(journey): Promise<void> {
+async function updateStepBlocksAndActions(journey): Promise<void> {
   const blocks = journey.blocks
   const stepBlocks = sortBy(getStepBlocks(blocks), 'parentOrder')
   const blocksWithNavigateActions = getBlocksWithNavigateActions(blocks)
@@ -55,7 +55,10 @@ async function updateStepBlockAndActions(journey): Promise<void> {
                 where: { id: block.id },
                 data: {
                   action: {
-                    update: { blockId: nextStepBlock.id }
+                    update: {
+                      gtmEventName: 'NavigateToBlockAction',
+                      blockId: nextStepBlock.id
+                    }
                   }
                 }
               })
@@ -78,7 +81,7 @@ export async function processNextBlockId(): Promise<void> {
 
     if (journeys.length === 0) break
 
-    await Promise.all(journeys.map(updateStepBlockAndActions))
+    await Promise.all(journeys.map(updateStepBlocksAndActions))
 
     offset += 100
   }
