@@ -4,6 +4,7 @@ import { InferType, number, object, string } from 'yup'
 
 import { Prisma } from '.prisma/api-videos-client'
 
+import { convertToSlug } from '../../../../libs/slugify/slugify'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 
@@ -38,7 +39,9 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
           videoVariant.id
         } - does not exist! \n${JSON.stringify(videoVariant, null, 2)}`
       )
-    const slug = `${video.slug}/${videoVariant.languageName}`
+
+    const transformedLanguageName = convertToSlug(videoVariant.languageName)
+    const slug = `${video.slug}/${transformedLanguageName}`
     const transformedVideoVariant = {
       ...videoVariant,
       slug,

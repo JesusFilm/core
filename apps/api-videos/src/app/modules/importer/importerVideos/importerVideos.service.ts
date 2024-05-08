@@ -26,7 +26,8 @@ const videoSchema = object({
     .required(),
   primaryLanguageId: string().required(),
   slug: string().required(),
-  childIds: string().nullable()
+  childIds: string().nullable(),
+  image: string().nullable()
 })
 
 type Video = InferType<typeof videoSchema>
@@ -63,7 +64,8 @@ export class ImporterVideosService extends ImporterService<Video> {
       return {
         ...video,
         childIds: [],
-        slug: await this.slugify(video.id, video.slug)
+        slug: await this.slugify(video.id, video.slug),
+        noIndex: false
       }
     }
     const string = video.childIds
