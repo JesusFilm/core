@@ -10,6 +10,7 @@ import { filterActionBlocks } from '../../libs/filterActionBlocks'
 import { BaseNode } from '../BaseNode'
 
 import { ActionButton } from './ActionButton'
+import { STEP_NODE_WIDTH } from './libs/sizes'
 import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
@@ -70,7 +71,8 @@ export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
               ? 'rgba(0, 0, 0, .05)'
               : 'rgba(240, 242, 245, .5)',
           border: '2px solid rgba(0,0,0, .05)',
-          borderRadius: 3
+          borderRadius: 3,
+          maxWidth: STEP_NODE_WIDTH + 16
         }}
       >
         <BaseNode

@@ -55,7 +55,7 @@ export function StepBlockNodeCard({
       title="Click to edit or drag"
       onClick={handleClick}
       sx={{
-        width: 190,
+        width: STEP_NODE_WIDTH,
         m: 1.5,
         '&:hover': {
           boxShadow: selected ? 6 : 3
@@ -71,7 +71,6 @@ export function StepBlockNodeCard({
           justifyItems: 'center',
           width: STEP_NODE_WIDTH,
           height: STEP_NODE_HEIGHT,
-          gap: 2,
           margin: 0,
           padding: 0,
           borderRadius: 1,

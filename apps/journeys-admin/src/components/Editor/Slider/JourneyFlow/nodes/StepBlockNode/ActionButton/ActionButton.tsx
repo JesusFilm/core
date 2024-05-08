@@ -122,7 +122,8 @@ export function ActionButton({
           borderBottom: 'none',
           borderRight: 'none',
           borderLeft: 'none',
-          height: ACTION_BUTTON_HEIGHT
+          height: ACTION_BUTTON_HEIGHT,
+          width: '100%'
         }}
       >
         <Typography
