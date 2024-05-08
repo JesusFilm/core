@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { ReactElement, useState } from 'react'
 import {
-  BaseEdge,
   Edge,
   EdgeLabelRenderer,
   EdgeProps,
@@ -17,6 +16,7 @@ import X3Icon from '@core/shared/ui/icons/X3'
 
 import { useBlockActionDeleteMutation } from '../../../../../../libs/useBlockActionDeleteMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
+import { BaseEdge } from '../BaseEdge'
 
 export function CustomEdge({
   id,
@@ -95,18 +95,7 @@ export function CustomEdge({
   }
 
   return (
-    <>
-      <BaseEdge
-        path={edgePath}
-        markerEnd={`url(#1__color=${
-          edgeSelected ? '#C52D3A' : 'lightGrey'
-        }&height=10&type=arrowclosed&width=10)`}
-        style={{
-          strokeWidth: 2,
-          stroke: edgeSelected ? '#C52D3A' : '#0000001A',
-          ...style
-        }}
-      />
+    <BaseEdge id={id} style={style} edgePath={edgePath}>
       {edgeSelected && (
         <EdgeLabelRenderer>
           <Box
@@ -135,6 +124,6 @@ export function CustomEdge({
           </Box>
         </EdgeLabelRenderer>
       )}
-    </>
+    </BaseEdge>
   )
 }
