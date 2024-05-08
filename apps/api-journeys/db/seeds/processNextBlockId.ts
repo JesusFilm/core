@@ -12,7 +12,7 @@ function getStepBlocks(blocks): StepBlock[] {
   )
 }
 
-function getNavigateActionBlocks(blocks): Block[] {
+function getBlocksWithNavigateActions(blocks): Block[] {
   return blocks.filter(
     (block): boolean =>
       block.action != null && block.action.gtmEventName === 'NavigateAction'
@@ -29,10 +29,10 @@ function findParentStepBlock(blocks, parentBlockId): string {
   }
 }
 
-async function updateBlockAndActions(journey): Promise<void> {
+async function updateStepBlockAndActions(journey): Promise<void> {
   const blocks = journey.blocks
   const stepBlocks = sortBy(getStepBlocks(blocks), 'parentOrder')
-  const navigateActionBlocks = getNavigateActionBlocks(blocks)
+  const blocksWithNavigateActions = getBlocksWithNavigateActions(blocks)
 
   await Promise.all(
     stepBlocks.map(async (stepBlock, index) => {
@@ -46,7 +46,7 @@ async function updateBlockAndActions(journey): Promise<void> {
           data: { nextBlockId: nextStepBlock.id }
         })
 
-        const currentStepBlockActions = navigateActionBlocks.filter(
+        const currentStepBlockActions = blocksWithNavigateActions.filter(
           (actionBlock) =>
             findParentStepBlock(blocks, actionBlock.parentBlockId) ===
             stepBlock.id
@@ -82,7 +82,7 @@ export async function processNextBlockId(): Promise<void> {
 
     if (journeys.length === 0) break
 
-    await Promise.all(journeys.map(updateBlockAndActions))
+    await Promise.all(journeys.map(updateStepBlockAndActions))
 
     offset += 100
   }
