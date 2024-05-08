@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
@@ -17,7 +18,6 @@ import { Drawer } from '../../../Drawer'
 
 import { Action, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
-import { gql } from '@apollo/client'
 
 export const GET_JOURNEY_NAMES = gql`
   query GetJourneyNames {
