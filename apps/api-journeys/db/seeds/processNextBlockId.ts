@@ -1,84 +1,82 @@
+import sortBy from 'lodash/sortBy'
+
 import { PrismaClient } from '.prisma/api-journeys-client'
 
-import { Block, Journey, StepBlock } from '../../src/app/__generated__/graphql'
+import { StepBlock } from '../../src/app/__generated__/graphql'
 
 const prisma = new PrismaClient()
 
-// TODO:
-// Step 1 - get all the journeys with blocks and actions
-// Step 2 - flatten the blocks from journeys
-// Step 3 - find all the StepBlock within a journey save into Steps variable
-// Step 4 - check if current StepBlock is null and check steps if have a step after current block
-// Step 5 - find all actions that are navigateAction
-// Step 6 - copy the current nextBlockId of stepblock to all the navigate actions
-// Step 7 - upsert or udpate the current journey that you're in with the updated information
-
-function flatten(blocks, flattenedBlocks) {
-  for (const block of blocks) {
-    flattenedBlocks.push(block)
-    if (block.children != null) {
-      flatten(block.children, flattenedBlocks)
-    }
-  }
-  return flattenedBlocks
-}
-
-async function getAllJourneys(offset: number) {
-  return await prisma.journey.findMany({
-    take: 100,
-    skip: offset,
-    include: { blocks: { include: { action: true } } }
-  })
-}
-
 function getStepBlocks(blocks): StepBlock[] {
-  return blocks.filter((block) => block.typename === 'StepBlock')
+  return blocks.filter(
+    (block): block is StepBlock => block.typename === 'StepBlock'
+  )
 }
 
-// action doesn't have a type
-function getNavigateActions(blocks) {
-  return blocks.map((block) => block.action)
+function getNavigateActionBlocks(blocks) {
+  return blocks.filter(
+    (block): boolean =>
+      block.action != null && block.action.gtmEventName === 'NavigateAction'
+  )
 }
 
-function updateNavigateActions(stepBlock, navigateAction) {
-  return console.log('stepblocks nextblockid')
+function findParentStepBlock(blocks, actionBlock) {
+  const block = blocks.find((block) => block.id === actionBlock.parentBlockId)
+
+  if (block != null && block.typename === 'StepBlock') {
+    return block.id
+  } else {
+    return findParentStepBlock(blocks, block)
+  }
 }
 
-async function updateJourneyBlocks(id, blocks): Promise<void> {}
+async function updateBlockAndActions(journey) {
+  const blocks = journey.blocks
+  const stepBlocks = sortBy(getStepBlocks(blocks), 'parentOrder')
+  const navigateActionBlocks = getNavigateActionBlocks(blocks)
+
+  await Promise.all(
+    stepBlocks.map(async (stepBlock, index) => {
+      const nextIndex = index + 1
+      const hasNextStep = nextIndex < stepBlocks.length
+      const nextStepBlock = stepBlocks[nextIndex]
+
+      if (hasNextStep) {
+        await prisma.block.update({
+          where: { id: stepBlock.id },
+          data: { nextBlockId: nextStepBlock.id }
+        })
+
+        await Promise.all(
+          navigateActionBlocks
+            .filter(
+              (actionBlock) =>
+                findParentStepBlock(blocks, actionBlock) === stepBlock.id
+            )
+            .map(async (actionBlock) => {
+              await prisma.action.update({
+                where: { parentBlockId: actionBlock.parentBlockId },
+                data: { blockId: nextStepBlock.id }
+              })
+            })
+        )
+      }
+    })
+  )
+}
 
 export async function processNextBlockId(): Promise<void> {
   let offset = 0
-
   while (true) {
-    const journeys = await getAllJourneys(offset)
+    const journeys = await prisma.journey.findMany({
+      take: 100,
+      skip: offset,
+      include: { blocks: { include: { action: true } } }
+    })
 
     if (journeys.length === 0) break
-    await Promise.all(
-      journeys.map(async (journey) => {
-        const blocks = flatten(journey.blocks, [])
-        const stepBlocks = getStepBlocks(blocks)
-        const navigateActionBlocks = getNavigateActions(blocks)
 
-        await Promise.all(
-          stepBlocks.map(async (stepBlock, index) => {
-            const nextIndex = index + 1
-            const hasNextStep = nextIndex < stepBlocks.length
-            if (hasNextStep) {
-              const nextStepBlock = stepBlocks[nextIndex]
-              await prisma.block.update({
-                where: { id: stepBlock.id },
-                data: {
-                  nextBlockId: nextStepBlock.id
-                }
-              })
-            } else {
-              stepBlock.nextBlockId = null
-            }
-          })
-        )
-        // await updateJourney(journey)
-      })
-    )
+    await Promise.all(journeys.map(updateBlockAndActions))
+
     offset += 100
   }
 }
