@@ -29,9 +29,7 @@ async function main(): Promise<void> {
   await discoveryAdminRight()
   await playwrightUserAccess()
 
-  // this needs to be run manually twice
-  // one before merging of branching changes
-  // one after the merge of branching changes
+  // this will be run manually in way for branching changes
   // await processNextBlockId()
 }
 main().catch((e) => {
