@@ -1,3 +1,4 @@
+import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -21,6 +22,8 @@ const Demo: Meta<typeof Card> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card'
 }
 
+const onClose = jest.fn()
+
 const block: TreeBlock<CardBlock> = {
   id: 'card1.id',
   __typename: 'CardBlock',
@@ -38,7 +41,7 @@ const Template: StoryObj<ComponentProps<typeof Card>> = {
   render: (args) => {
     return (
       <EditorProvider initialState={{ selectedBlock: args }}>
-        <Drawer title="Card Properties">
+        <Drawer title="Card Properties" onClose={onClose}>
           <Card {...args} />
         </Drawer>
       </EditorProvider>
@@ -83,7 +86,7 @@ export const Filled: StoryObj<typeof Card> = {
 
     return (
       <EditorProvider initialState={{ selectedBlock: block }}>
-        <Drawer title="Card Properties">
+        <Drawer title="Card Properties" onClose={onClose}>
           <Card {...block} />
         </Drawer>
       </EditorProvider>
