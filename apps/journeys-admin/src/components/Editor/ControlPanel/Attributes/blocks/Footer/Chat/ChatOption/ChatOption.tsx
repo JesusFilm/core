@@ -1,7 +1,7 @@
 import Accordion from '@mui/material/Accordion'
 import { ReactElement, useState } from 'react'
 
-import { ChatPlatform } from '../../../../../../../../../__generated__/globalTypes'
+import { MessagePlatform } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
 
 import { Details } from './Details'
@@ -10,7 +10,7 @@ import { Summary } from './Summary'
 interface ChatOptionProps {
   title: string
   chatButton?: ChatButton
-  platform?: ChatPlatform
+  platform?: MessagePlatform
   active: boolean
   helperInfo?: string
   journeyId?: string
@@ -29,7 +29,7 @@ export function ChatOption({
 }: ChatOptionProps): ReactElement {
   const [currentLink, setCurrentLink] = useState(chatButton?.link ?? '')
   const [currentPlatform, setCurrentPlatform] = useState(
-    platform ?? chatButton?.platform ?? ChatPlatform.custom
+    platform ?? chatButton?.platform ?? MessagePlatform.custom
   )
   const [expanded, setExpanded] = useState(false)
   function handleChange(): void {
