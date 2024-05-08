@@ -207,3 +207,15 @@ model GoogleAccessToken {
     id           String @id @default(uuid())
     refreshToken String
 }
+
+enum Role {
+    publisher
+}
+
+model UserRole {
+    id     String @id @default(uuid())
+    userId String @unique
+    roles  Role[]
+
+    @@index(userId)
+}
