@@ -3,14 +3,14 @@ import { InjectQueue } from '@nestjs/bull'
 import { Injectable, OnModuleInit } from '@nestjs/common'
 import { Job, Queue } from 'bull'
 
-import { PrismaService } from '../../prisma.service'
+// import { PrismaService } from '../../prisma.service'
 import { UploadResourceJob } from '../bullMQ.service'
 
 @Injectable()
 export class NexusJobListener implements OnModuleInit {
   constructor(
-    @InjectQueue('nexus-bucket') private readonly uploadQueue: Queue,
-    private readonly prismaService: PrismaService
+    @InjectQueue('nexus-batch-worker') private readonly uploadQueue: Queue,
+    // private readonly prismaService: PrismaService
   ) {}
 
   onModuleInit(): void {

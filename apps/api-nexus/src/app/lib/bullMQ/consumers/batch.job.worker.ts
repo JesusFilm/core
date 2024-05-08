@@ -4,7 +4,6 @@ import { Job } from 'bull'
 import { BucketService } from '../../bucket/bucket.service'
 import { GoogleDriveService } from '../../google/drive.service'
 import { GoogleOAuthService } from '../../google/oauth.service'
-import { GoogleYoutubeService } from '../../google/youtube.service'
 import { UploadResourceJob } from '../bullMQ.service'
 
 @Processor('nexus-batch-worker')
@@ -12,8 +11,7 @@ export class BatchJobWorker {
   constructor(
     private readonly googleDriveService: GoogleDriveService,
     private readonly googleOAuthService: GoogleOAuthService,
-    private readonly bucketService: BucketService,
-    private readonly googleYoutubeService: GoogleYoutubeService
+    private readonly bucketService: BucketService
   ) {}
 
   @Process('process')

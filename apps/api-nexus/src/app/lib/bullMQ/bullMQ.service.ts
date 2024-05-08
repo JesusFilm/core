@@ -78,8 +78,7 @@ export interface UpdateVideoCaption {
 export class BullMQService {
   constructor(
     private readonly prismaService: PrismaService,
-    @InjectQueue('nexus-batch-job')
-    private readonly batchJobQueue: Queue
+    @InjectQueue('nexus-batch-worker') private readonly batchJobQueue: Queue
   ) {}
 
   private async createUploadResourceBatchJob(

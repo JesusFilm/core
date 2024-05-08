@@ -7,12 +7,6 @@ import axios from 'axios'
 import { OAuth2Client } from 'googleapis-common'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Channel } from '../../__generated__/graphql'
-import { PrismaService } from '../prisma.service'
-
-import { GoogleOAuthService } from './oauth.service'
-import { GoogleSheetsService } from './sheets.service'
-
 interface FileRequest {
   fileId: string
   accessToken: string
@@ -23,27 +17,8 @@ type FileResponse = Pick<
   'id' | 'name' | 'mimeType' | 'thumbnailLink' | 'kind'
 >
 
-interface SpreadsheetRow {
-  driveFile?: drive_v3.Schema$File
-  channel?: string
-  channelData?: Channel
-  filename?: string
-  title?: string
-  description?: string
-  keywords?: string
-  category?: string
-  privacy?: string
-  spoken_language?: string
-}
-
 @Injectable()
 export class GoogleDriveService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly googleOAuthService: GoogleOAuthService,
-    private readonly googleSheetsService: GoogleSheetsService
-  ) {}
-
   async getFile({ fileId, accessToken }: FileRequest): Promise<FileResponse> {
     const client = drive({ version: 'v3', auth: accessToken })
     const res = await client.files.get({
@@ -134,77 +109,5 @@ export class GoogleDriveService {
     })
 
     return driveResponse.data.files
-  }
-
-  async handleGoogleDriveOperations(
-    tokenId: string,
-    spreadsheetId: string,
-    drivefolderId: string
-  ): Promise<SpreadsheetRow[]> {
-    const googleAccessToken =
-      await this.prismaService.googleAccessToken.findUnique({
-        where: { id: tokenId }
-      })
-
-    if (googleAccessToken === null) {
-      throw new Error('Invalid tokenId')
-    }
-
-    console.log('googleAccessToken')
-    const accessToken = await this.googleOAuthService.getNewAccessToken(
-      googleAccessToken.refreshToken
-    )
-
-    console.log('getFirstSheetName')
-    const firstSheetName = await this.googleSheetsService.getFirstSheetName(
-      spreadsheetId,
-      accessToken
-    )
-
-    if (firstSheetName == null)
-      throw new Error('Spreadsheet does not contain first sheet')
-
-    console.log('downloadSpreadsheet')
-    const spreadsheetData = await this.googleSheetsService.downloadSpreadsheet(
-      spreadsheetId,
-      firstSheetName,
-      accessToken
-    )
-
-    console.log('Prepare spreadsheetRows')
-    let spreadsheetRows: SpreadsheetRow[] = []
-
-    if (spreadsheetData != null && spreadsheetData.length > 0) {
-      const header = spreadsheetData[0] as string[]
-      spreadsheetRows = spreadsheetData.slice(1).map((row) => {
-        const rowObject = {}
-
-        row.forEach((value, index) => {
-          rowObject[header[index]] = value
-        })
-
-        return rowObject as SpreadsheetRow
-      })
-    }
-
-    console.log('Authorize')
-    // const authClient = this.youtubeService.authorize(accessToken);
-
-    console.log('Find Files')
-    // const files = await this.findFiles(authClient, drivefolderId);
-
-    console.log('Authorize spreadsheetRows')
-    // for (const spreadsheetRow of spreadsheetRows) {
-    //   spreadsheetRow.driveFile = files?.find((file) => {
-    //     return file.name === spreadsheetRow.filename;
-    //   });
-    //   console.log('spreadsheetRow.driveFile', spreadsheetRow.driveFile);
-    //   spreadsheetRow.channelData = (await this.prismaService.channel.findFirst({
-    //     where: { youtube: { youtubeId: spreadsheetRow.channel as string } },
-    //     include: { youtube: true },
-    //   })) as Channel | undefined;
-    // }
-
-    return spreadsheetRows
   }
 }
