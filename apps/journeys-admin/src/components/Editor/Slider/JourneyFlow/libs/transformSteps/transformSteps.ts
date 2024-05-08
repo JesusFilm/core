@@ -40,18 +40,6 @@ export function transformSteps(
   function connectBlockToNextBlock({ block, step, steps }: Connection): void {
     const index = findIndex(steps, (child) => child.id === step.id)
     if (index < 0) return
-    // if (step.nextBlockId == null && steps[index + 1] != null) {
-    //   edges.push({
-    //     id: `${block.id}->${steps[index + 1].id}`,
-    //     source: step.id,
-    //     sourceHandle: block.id,
-    //     target: steps[index + 1].id,
-    //     // type: 'smoothstep',
-    //     style: {
-    //       strokeDasharray: 4
-    //     }
-    //   })
-    // }
     if (step.nextBlockId != null && step.nextBlockId !== step.id) {
       edges.push({
         id: `${block.id}->${step.nextBlockId}`,
@@ -75,9 +63,6 @@ export function transformSteps(
         ...defaultEdgeProps
       })
     }
-    // if (block.action.__typename === 'NavigateAction') {
-    //   connectBlockToNextBlock({ block, step, steps })
-    // }
   }
 
   steps.forEach((step) => {
@@ -109,27 +94,29 @@ export function transformSteps(
   })
 
   // hidden edge so the markerEnd style can be used
-  nodes.push({
-    id: 'hidden',
-    data: {},
-    position: { x: -165, y: -46 },
-    draggable: false,
-    hidden: true
-  })
-  edges.push({
-    id: 'SocialPreview->hidden',
-    source: 'SocialPreview',
-    target: 'hidden',
-    markerEnd: {
-      type: MarkerType.ArrowClosed,
-      height: 10,
-      width: 10,
-      color: '#C52D3A'
-    },
-    style: {
-      opacity: 0
-    }
-  })
+  if (nodes.find((node) => node.id === 'hidden') == null) {
+    nodes.push({
+      id: 'hidden',
+      data: {},
+      position: { x: -165, y: -46 },
+      draggable: false,
+      hidden: true
+    })
+    edges.push({
+      id: 'SocialPreview->hidden',
+      source: 'SocialPreview',
+      target: 'hidden',
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        height: 10,
+        width: 10,
+        color: '#C52D3A'
+      },
+      style: {
+        opacity: 0
+      }
+    })
+  }
 
   return { nodes, edges }
 }

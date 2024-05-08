@@ -65,7 +65,7 @@ export function ActionButton({
         block.action?.blockId != null
       break
     case 'StepBlock':
-      title = 'Next Step →'
+      title = t('Next Step →')
       isSourceConnected = block.nextBlockId != null
       break
   }

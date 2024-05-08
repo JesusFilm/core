@@ -3,6 +3,7 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -29,6 +30,8 @@ export function StepBlockNodeCard({
     state: { selectedStep },
     dispatch
   } = useEditor()
+  const { t } = useTranslation('apps-journeys-admin')
+
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const { title, subtitle, description, priorityBlock, bgImage } =
     getCardMetadata(card)
@@ -52,7 +55,7 @@ export function StepBlockNodeCard({
   return (
     <Card
       elevation={selected ? 6 : 1}
-      title="Click to edit or drag"
+      title={t('Click to edit or drag')}
       onClick={handleClick}
       sx={{
         width: STEP_NODE_WIDTH,

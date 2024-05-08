@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import { styled, useTheme } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
 import {
   Handle,
@@ -54,6 +55,7 @@ export function BaseNode({
   dragging,
   children
 }: BaseNodeProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const connectionHandleId = useStore(connectionHandleIdSelector)
   const connectionNodeId = useStore(connectionNodeIdSelector)
   const isConnecting =
@@ -131,7 +133,7 @@ export function BaseNode({
         <StyledHandle
           id={id}
           type="source"
-          title="Drag to connect"
+          title={t('Drag to connect')}
           data-testid="BaseNodeBottomHandle"
           position={Position.Right}
           onConnect={onSourceConnect}
