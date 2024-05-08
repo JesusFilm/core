@@ -17,7 +17,7 @@ import Viber from '@core/shared/ui/icons/Viber'
 import Vk from '@core/shared/ui/icons/Vk'
 import WhatsApp from '@core/shared/ui/icons/WhatsApp'
 
-import { ChatPlatform } from '../../../../__generated__/globalTypes'
+import { MessagePlatform } from '../../../../__generated__/globalTypes'
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
@@ -34,7 +34,7 @@ export const CHAT_BUTTON_EVENT_CREATE = gql`
 `
 
 interface ChatIconProps {
-  platform: ChatPlatform
+  platform: MessagePlatform
   index: number
 }
 
@@ -120,7 +120,7 @@ export function ChatButtons(): ReactElement {
           }}
         >
           <ChatIcon
-            platform={chatButton.platform ?? ChatPlatform.custom}
+            platform={chatButton.platform ?? MessagePlatform.custom}
             index={index}
           />
         </IconButton>

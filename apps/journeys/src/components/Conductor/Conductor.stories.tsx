@@ -12,8 +12,8 @@ import {
 } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import {
-  ChatPlatform,
   JourneyStatus,
+  MessagePlatform,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
@@ -122,13 +122,13 @@ export const WithContent = {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: ChatPlatform.tikTok
+          platform: MessagePlatform.tikTok
         },
         {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: ChatPlatform.snapchat
+          platform: MessagePlatform.snapchat
         }
       ]
     },
