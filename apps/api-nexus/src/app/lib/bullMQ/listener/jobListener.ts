@@ -9,8 +9,7 @@ import { UploadResourceJob } from '../bullMQ.service'
 @Injectable()
 export class NexusJobListener implements OnModuleInit {
   constructor(
-    @InjectQueue('nexus-batch-worker') private readonly uploadQueue: Queue,
-    // private readonly prismaService: PrismaService
+    @InjectQueue('nexus-batch-worker') private readonly uploadQueue: Queue // private readonly prismaService: PrismaService
   ) {}
 
   onModuleInit(): void {
