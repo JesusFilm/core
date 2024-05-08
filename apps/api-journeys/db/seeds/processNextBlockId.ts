@@ -21,12 +21,8 @@ function getBlocksWithNavigateActions(blocks): Block[] {
 
 function findParentStepBlock(blocks, parentBlockId): string {
   const block = blocks.find((block) => block.id === parentBlockId)
-
-  if (block != null && block.typename === 'StepBlock') {
-    return block.id
-  } else {
-    return findParentStepBlock(blocks, block.parentBlockId)
-  }
+  if (block != null && block.typename === 'StepBlock') return block.id
+  return findParentStepBlock(blocks, block.parentBlockId)
 }
 
 async function updateStepBlockAndActions(journey): Promise<void> {
