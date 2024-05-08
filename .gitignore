@@ -78,3 +78,9 @@ terraform.tfstate.backup
 
 # react-email
 .react-email
+
+#seed diff results
+apps/api-videos/src/app/modules/importer/importerSeedDiff/diff/*
+#seed diff sql files
+apps/api-videos/src/app/modules/importer/importerSeedDiff/videos-bqimport-fc.sql
+apps/api-videos/src/app/modules/importer/importerSeedDiff/videos-seed-fc.sql
