@@ -105,10 +105,10 @@ export function BaseNode({
                 display: isConnecting ? 'block' : 'none',
                 content: '""',
                 position: 'absolute',
-                width: 218, // STEP_NODE_WIDTH + 4
+                width: 229, // STEP_NODE_WIDTH + 15
                 height: 98, // // STEP_NODE_HEIGHT
                 top: -48,
-                left: -4,
+                left: -15,
                 backgroundColor: 'transparent'
               }
             }}

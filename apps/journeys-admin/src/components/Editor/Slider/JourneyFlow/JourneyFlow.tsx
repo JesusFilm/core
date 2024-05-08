@@ -300,37 +300,39 @@ export function JourneyFlow(): ReactElement {
 
   const onEdgeUpdateEnd = useCallback(
     (_, edge: Edge) => {
-      edgeUpdateSuccessful.current = true
-      const { source, sourceHandle } = edge
-      if (journey == null || source === 'SocialPreview') return
-      if (sourceHandle != null) {
-        // action
-        const step = steps?.find((step) => step.id === source)
-        const block = step?.children[0].children.find(
-          (childBlock) => childBlock.id === sourceHandle
-        )
-        if (block != null) {
-          void blockActionDelete(block)
-        }
-      } else if (source != null) {
-        // step
-        void stepBlockNextBlockUpdate({
-          variables: {
-            id: source,
-            journeyId: journey.id,
-            input: {
-              nextBlockId: null
-            }
-          },
-          optimisticResponse: {
-            stepBlockUpdate: {
-              id: source,
-              __typename: 'StepBlock',
-              nextBlockId: null
-            }
+      if (!edgeUpdateSuccessful.current) {
+        const { source, sourceHandle } = edge
+        if (journey == null || source === 'SocialPreview') return
+        if (sourceHandle != null) {
+          // action
+          const step = steps?.find((step) => step.id === source)
+          const block = step?.children[0].children.find(
+            (childBlock) => childBlock.id === sourceHandle
+          )
+          if (block != null) {
+            void blockActionDelete(block)
           }
-        })
+        } else if (source != null) {
+          // step
+          void stepBlockNextBlockUpdate({
+            variables: {
+              id: source,
+              journeyId: journey.id,
+              input: {
+                nextBlockId: null
+              }
+            },
+            optimisticResponse: {
+              stepBlockUpdate: {
+                id: source,
+                __typename: 'StepBlock',
+                nextBlockId: null
+              }
+            }
+          })
+        }
       }
+      edgeUpdateSuccessful.current = true
     },
     [journey, steps, blockActionDelete, stepBlockNextBlockUpdate]
   )
