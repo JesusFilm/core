@@ -16,7 +16,16 @@ import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 
 import { Action, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
-import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction/NavigateToJourneyAction'
+import { gql } from '@apollo/client'
+
+export const GET_JOURNEY_NAMES = gql`
+  query GetJourneyNames {
+    journeys: adminJourneys {
+      id
+      title
+    }
+  }
+`
 
 const ActionStory: Meta<typeof Action> = {
   ...journeysAdminConfig,
