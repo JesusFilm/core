@@ -12,7 +12,12 @@ import {
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
-import { STEP_NODE_HEIGHT } from '../StepBlockNode/libs/sizes'
+import {
+  ACTION_BUTTON_HEIGHT,
+  NODE_EXTRA_DETECTION_WIDTH,
+  STEP_NODE_HEIGHT,
+  STEP_NODE_WIDTH
+} from '../StepBlockNode/libs/sizes'
 
 import { PulseWrapper } from './PulseWrapper'
 
@@ -51,6 +56,8 @@ export function BaseNode({
   const [targetSelected, setTargetSelected] = useState(false)
   const [sourceSelected, setSourceSelected] = useState(false)
   const theme = useTheme()
+
+  console.log(id)
 
   useOnSelectionChange({
     onChange: (selected) => {
@@ -105,10 +112,10 @@ export function BaseNode({
                 display: isConnecting ? 'block' : 'none',
                 content: '""',
                 position: 'absolute',
-                width: 229, // STEP_NODE_WIDTH + 15
-                height: 98, // // STEP_NODE_HEIGHT
-                top: -48,
-                left: -15,
+                width: STEP_NODE_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
+                height: STEP_NODE_HEIGHT,
+                top: -STEP_NODE_HEIGHT / 2,
+                left: -NODE_EXTRA_DETECTION_WIDTH,
                 backgroundColor: 'transparent'
               }
             }}
@@ -130,18 +137,19 @@ export function BaseNode({
             background: sourceSelected
               ? theme.palette.primary.main
               : 'rgba(0,0,0,.25)',
-            // border: 'none',
             border: sourceSelected ? '2px solid #c52d3aff' : 'none',
             ...sourceHandleProps?.sx,
 
             '&:after': {
               content: '""',
               position: 'absolute',
-              transform: 'translate(0, -50%)',
-              top: '50%',
-              width: 235,
-              height: 28,
-              right: -30,
+              top: '-10px',
+              width:
+                id === 'SocialPreview'
+                  ? 60
+                  : STEP_NODE_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
+              height: ACTION_BUTTON_HEIGHT,
+              right: -NODE_EXTRA_DETECTION_WIDTH,
               backgroundColor: 'transparent'
             }
           }}

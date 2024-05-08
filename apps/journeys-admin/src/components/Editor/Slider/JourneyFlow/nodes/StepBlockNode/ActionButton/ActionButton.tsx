@@ -10,6 +10,7 @@ import { BlockFields as Block } from '../../../../../../../../__generated__/Bloc
 import { useNavigateToBlockActionUpdateMutation } from '../../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { BaseNode } from '../../BaseNode'
+import { ACTION_BUTTON_HEIGHT } from '../libs/sizes'
 
 interface CustomBlock {
   __typename: 'CustomBlock'
@@ -104,7 +105,8 @@ export function ActionButton({
           border: '1px solid rgba(0,0,0,.1)',
           borderBottom: 'none',
           borderRight: 'none',
-          borderLeft: 'none'
+          borderLeft: 'none',
+          height: ACTION_BUTTON_HEIGHT
         }}
       >
         <Typography
