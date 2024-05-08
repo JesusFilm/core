@@ -14,7 +14,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import {
-  ChatPlatform,
+  MessagePlatform,
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
@@ -53,12 +53,12 @@ describe('Footer', () => {
               {
                 id: '1',
                 link: 'https://m.me/user',
-                platform: ChatPlatform.facebook
+                platform: MessagePlatform.facebook
               },
               {
                 id: '2',
                 link: 'viber://',
-                platform: ChatPlatform.viber
+                platform: MessagePlatform.viber
               }
             ]
           } as unknown as Journey,
@@ -84,7 +84,7 @@ describe('Footer', () => {
               {
                 id: '1',
                 link: 'https://m.me/user',
-                platform: ChatPlatform.facebook
+                platform: MessagePlatform.facebook
               }
             ]
           } as unknown as Journey,
