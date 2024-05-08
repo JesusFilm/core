@@ -451,11 +451,6 @@ export interface NavigateToBlockActionInput {
   blockId: string;
 }
 
-export interface NavigateToJourneyActionInput {
-  gtmEventName?: string | null;
-  journeyId: string;
-}
-
 export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
