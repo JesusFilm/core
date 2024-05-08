@@ -28,16 +28,13 @@ export function StepBlockNodeIcon({
       Icon = TextInput1Icon
       break
     case 'ButtonBlock':
+    case 'RadioQuestionBlock':
       background = 'linear-gradient(to bottom, #4c9bf8, #1873de)'
       Icon = GitBranchIcon
       break
     case 'TypographyBlock':
       background = 'linear-gradient(to bottom, #00C3C3, #03a3a3)'
       Icon = AlignCenterIcon
-      break
-    case 'RadioQuestionBlock':
-      background = 'linear-gradient(to bottom, #4c9bf8, #1873de)'
-      Icon = GitBranchIcon
       break
     default:
       Icon = FlexAlignBottom1Icon

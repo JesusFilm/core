@@ -44,35 +44,33 @@ export function StartEdge({
 
   return (
     <>
-      <>
-        <BaseEdge
-          path={edgePath}
-          markerEnd={`url(#1__color=${
-            edgeSelected ? '#C52D3A' : 'lightGrey'
-          }&height=10&type=arrowclosed&width=10)`}
+      <BaseEdge
+        path={edgePath}
+        markerEnd={`url(#1__color=${
+          edgeSelected ? '#C52D3A' : 'lightGrey'
+        }&height=10&type=arrowclosed&width=10)`}
+        style={{
+          strokeWidth: 2,
+          stroke: edgeSelected ? '#C52D3A' : '#0000001A',
+          ...style
+        }}
+      />
+      <EdgeLabelRenderer>
+        <Box
           style={{
-            strokeWidth: 2,
-            stroke: edgeSelected ? '#C52D3A' : '#0000001A',
-            ...style
+            position: 'absolute',
+            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+            pointerEvents: 'all',
+            backgroundColor: 'white',
+            borderRadius: 10,
+            border: '1px solid lightGrey'
           }}
-        />
-        <EdgeLabelRenderer>
-          <Box
-            style={{
-              position: 'absolute',
-              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-              pointerEvents: 'all',
-              backgroundColor: 'white',
-              borderRadius: 10,
-              border: '1px solid lightGrey'
-            }}
-          >
-            <Typography variant="body2" sx={{ px: 2 }}>
-              {t('Start')}
-            </Typography>
-          </Box>
-        </EdgeLabelRenderer>
-      </>
+        >
+          <Typography variant="body2" sx={{ px: 2 }}>
+            {t('Start')}
+          </Typography>
+        </Box>
+      </EdgeLabelRenderer>
     </>
   )
 }
