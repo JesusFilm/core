@@ -29,15 +29,3 @@ RUN su node -c "npm install -g npm@latest"
 
 RUN mkdir /home/node/.doppler \
     && chown -R node /home/node/.doppler
-
-# [Optional] Uncomment if you want to install Java
-RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk ca-certificates-java && \
-    apt-get clean && \
-    update-ca-certificates -f
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-arm64
-RUN export JAVA_HOME
-
-
-
-
