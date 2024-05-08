@@ -28,7 +28,6 @@ import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateAction } from './NavigateAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
-import { NavigateToJourneyAction } from './NavigateToJourneyAction'
 import { getNextStep } from './utils/getNextStep'
 
 export const NAVIGATE_ACTION_UPDATE = gql`
@@ -208,7 +207,6 @@ export function Action(): ReactElement {
         </Typography>
         {action === 'NavigateAction' && <NavigateAction />}
         {action === 'LinkAction' && <LinkAction />}
-        {action === 'NavigateToJourneyAction' && <NavigateToJourneyAction />}
         {action === 'EmailAction' && <EmailAction />}
       </Stack>
       {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
