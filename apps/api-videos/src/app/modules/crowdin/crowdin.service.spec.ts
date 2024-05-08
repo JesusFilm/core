@@ -49,10 +49,10 @@ describe('CrowdinService', () => {
     jest.clearAllMocks()
   })
 
-  describe('getCrowdinTranslations', () => {
+  describe('pullTranslations', () => {
     it('should throw if no distribution hash', async () => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises, jest/valid-expect
-      expect(service.getCrowdinTranslations()).rejects.toThrow(
+      expect(service.pullTranslations()).rejects.toThrow(
         'crowdin distribution hash not set'
       )
     })
@@ -103,7 +103,7 @@ describe('CrowdinService', () => {
         ]
       })
 
-      await service.getCrowdinTranslations()
+      await service.pullTranslations()
       expect(mockOtaClient).toHaveBeenCalledWith('hash', {
         disableManifestCache: true,
         disableStringsCache: true
@@ -172,7 +172,7 @@ describe('CrowdinService', () => {
         ]
       })
 
-      await service.getCrowdinTranslations()
+      await service.pullTranslations()
       expect(mockOtaClient).toHaveBeenCalledWith('hash', {
         disableManifestCache: true,
         disableStringsCache: true
@@ -238,7 +238,7 @@ describe('CrowdinService', () => {
         ]
       })
 
-      await service.getCrowdinTranslations()
+      await service.pullTranslations()
       expect(mockOtaClient).toHaveBeenCalledWith('hash', {
         disableManifestCache: true,
         disableStringsCache: true
@@ -311,7 +311,7 @@ describe('CrowdinService', () => {
         ]
       })
 
-      await expect(service.getCrowdinTranslations()).rejects.toThrow(
+      await expect(service.pullTranslations()).rejects.toThrow(
         'no matching videoId found for cl13-0-0'
       )
     })
@@ -339,7 +339,7 @@ describe('CrowdinService', () => {
         ]
       })
 
-      await expect(service.getCrowdinTranslations()).rejects.toThrow(
+      await expect(service.pullTranslations()).rejects.toThrow(
         'no matching videoId found for cl13-0-0'
       )
     })
@@ -377,7 +377,7 @@ describe('CrowdinService', () => {
         ]
       })
 
-      await expect(service.getCrowdinTranslations()).rejects.toThrow(
+      await expect(service.pullTranslations()).rejects.toThrow(
         'no matching videoId found for 1'
       )
     })
@@ -405,7 +405,7 @@ describe('CrowdinService', () => {
         ]
       })
 
-      await expect(service.getCrowdinTranslations()).rejects.toThrow(
+      await expect(service.pullTranslations()).rejects.toThrow(
         'no matching crowdInId found for 1'
       )
     })

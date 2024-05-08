@@ -55,6 +55,12 @@
         "command": "npm run ts-node apps/api-videos/src/app/modules/bigQuery/bigQuery.console.ts"
       }
     },
+    "crowdin": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-videos/src/app/modules/crowdin/console.ts"
+      }
+    },
     "serve": {
       "executor": "@nx/js:node",
       "options": {

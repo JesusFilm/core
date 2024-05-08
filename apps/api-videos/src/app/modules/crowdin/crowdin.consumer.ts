@@ -11,6 +11,6 @@ export class CrowdinConsumer extends WorkerHost {
 
   async process(job: Job): Promise<void> {
     console.log(job.name)
-    await this.crowdinService.getCrowdinTranslations()
+    await this.crowdinService.pullTranslations()
   }
 }

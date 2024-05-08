@@ -154,7 +154,8 @@
     "video.js": "^8.6.1",
     "videojs-youtube": "^3.0.1",
     "xliff": "^6.2.1",
-    "yup": "^1.0.0"
+    "yup": "^1.0.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.10.1",
