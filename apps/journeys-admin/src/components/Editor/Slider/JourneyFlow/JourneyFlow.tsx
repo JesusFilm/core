@@ -36,6 +36,7 @@ import {
   GetStepBlocksWithPosition,
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
+import { useBlockActionDeleteMutation } from '../../../../libs/useBlockActionDeleteMutation'
 import { useBlockOrderUpdateMutation } from '../../../../libs/useBlockOrderUpdateMutation'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
@@ -84,6 +85,7 @@ export function JourneyFlow(): ReactElement {
   const createStepAndCard = useCreateStepAndCard()
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
+  const [blockActionDelete] = useBlockActionDeleteMutation()
   async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
     if (steps == null || journey == null) return
     positions = arrangeSteps(steps)
@@ -297,29 +299,40 @@ export function JourneyFlow(): ReactElement {
   )
 
   const onEdgeUpdateEnd = useCallback(
-    (event, edge: Edge) => {
+    (_, edge: Edge) => {
       edgeUpdateSuccessful.current = true
       const { source, sourceHandle } = edge
-      if (reactFlowInstance == null || journey == null || source == null) return
-
-      const targetIsPane = (event.target as Element)?.classList.contains(
-        'react-flow__pane'
-      )
-      if (targetIsPane) {
-        const { x, y } = reactFlowInstance.screenToFlowPosition({
-          x: (event as unknown as MouseEvent).clientX,
-          y: (event as unknown as MouseEvent).clientY
-        })
-
-        void createStepAndCard(
-          source,
-          sourceHandle ?? source,
-          parseInt(x.toString()),
-          parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
+      if (journey == null || source === 'SocialPreview') return
+      if (sourceHandle != null) {
+        // action
+        const step = steps?.find((step) => step.id === source)
+        const block = step?.children[0].children.find(
+          (childBlock) => childBlock.id === sourceHandle
         )
+        if (block != null) {
+          void blockActionDelete(block)
+        }
+      } else if (source != null) {
+        // step
+        void stepBlockNextBlockUpdate({
+          variables: {
+            id: source,
+            journeyId: journey.id,
+            input: {
+              nextBlockId: null
+            }
+          },
+          optimisticResponse: {
+            stepBlockUpdate: {
+              id: source,
+              __typename: 'StepBlock',
+              nextBlockId: null
+            }
+          }
+        })
       }
     },
-    [journey, reactFlowInstance, createStepAndCard]
+    [journey, steps, blockActionDelete, stepBlockNextBlockUpdate]
   )
 
   const nodeTypes = useMemo(

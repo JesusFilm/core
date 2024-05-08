@@ -25,7 +25,6 @@ export function CustomEdge({
   targetY,
   sourcePosition,
   targetPosition,
-  interactionWidth,
   style = {}
 }: EdgeProps): ReactElement {
   const { journey } = useJourney()
@@ -34,7 +33,7 @@ export function CustomEdge({
   } = useEditor()
 
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
-  const [blockActionDeleteMutation] = useBlockActionDeleteMutation()
+  const [blockActionDelete] = useBlockActionDeleteMutation()
 
   const [edgeSelected, setEdgeSelected] = useState(false)
   const [selectedEdge, setSelectedEdge] = useState<Edge | undefined>(undefined)
@@ -70,7 +69,7 @@ export function CustomEdge({
         (childBlock) => childBlock.id === selectedEdge.sourceHandle
       )
       if (block != null) {
-        void blockActionDeleteMutation(block)
+        void blockActionDelete(block)
       }
     } else {
       // step block
@@ -92,7 +91,7 @@ export function CustomEdge({
       })
     }
   }
-  console.log(edgePath)
+
   return (
     <>
       <BaseEdge
