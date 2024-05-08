@@ -26,5 +26,5 @@ module "postgres" {
   doppler_project         = local.service_config.name
   subnet_group_name       = var.subnet_group_name
   vpc_security_group_id   = var.vpc_security_group_id
-  PG_DATABASE_URL_ENV_VAR = "PG_DATABASE_URL"
+  PG_DATABASE_URL_ENV_VAR = "PG_DATABASE_URL_PLAUSIBLE"
 }
