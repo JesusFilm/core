@@ -35,6 +35,7 @@ interface BaseNodeProps {
     params: { target: string } | Parameters<OnConnect>[0]
   ) => void
   selected?: 'descendant' | boolean
+  isSourceConnected?: boolean
   sourceHandleProps?: Partial<ComponentProps<typeof StyledHandle>>
   children?:
     | ((context: { selected: 'descendant' | boolean }) => ReactNode)
@@ -47,6 +48,7 @@ export function BaseNode({
   isSourceConnectable = false,
   onSourceConnect,
   selected = false,
+  isSourceConnected = false,
   sourceHandleProps,
   children
 }: BaseNodeProps): ReactElement {
@@ -82,9 +84,9 @@ export function BaseNode({
           right: -20,
           transition: 'right 0.5s, opacity 0.4s'
         },
-        ':hover .arrow, .hover-state': {
-          opacity: 1,
-          right: -30
+        ':hover .arrow': {
+          opacity: isSourceConnected ? 0 : 1,
+          right: isSourceConnected ? -20 : -30
         }
       }}
     >

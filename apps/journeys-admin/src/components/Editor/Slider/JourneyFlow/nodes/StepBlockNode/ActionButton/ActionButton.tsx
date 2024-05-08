@@ -12,14 +12,8 @@ import { useStepBlockNextBlockUpdateMutation } from '../../../../../../../libs/u
 import { BaseNode } from '../../BaseNode'
 import { ACTION_BUTTON_HEIGHT } from '../libs/sizes'
 
-interface CustomBlock {
-  __typename: 'CustomBlock'
-  id: string
-  label: string
-}
-
 interface ActionButtonProps {
-  block: TreeBlock<Block> | CustomBlock
+  block: TreeBlock<Block>
   selected?: boolean
 }
 
@@ -28,30 +22,51 @@ export function ActionButton({
   selected = false
 }: ActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+
   let title = ''
+  let isSourceConnected = false
   switch (block.__typename) {
     case 'ButtonBlock':
       title =
         block.label != null && block.label !== '' ? block.label : t('Button')
+      isSourceConnected =
+        block.action?.__typename === 'NavigateToBlockAction' &&
+        block.action?.blockId != null
       break
     case 'FormBlock':
       title = t('Form')
+      isSourceConnected =
+        block.action?.__typename === 'NavigateToBlockAction' &&
+        block.action?.blockId != null
       break
     case 'RadioOptionBlock':
       title =
         block.label != null && block.label !== '' ? block.label : t('Option')
+      isSourceConnected =
+        block.action?.__typename === 'NavigateToBlockAction' &&
+        block.action?.blockId != null
       break
     case 'SignUpBlock':
       title = t('Subscribe')
+      isSourceConnected =
+        block.action?.__typename === 'NavigateToBlockAction' &&
+        block.action?.blockId != null
       break
     case 'TextResponseBlock':
       title = t('Feedback')
+      isSourceConnected =
+        block.action?.__typename === 'NavigateToBlockAction' &&
+        block.action?.blockId != null
       break
     case 'VideoBlock':
       title = block.video?.title?.[0]?.value ?? block.title ?? t('Video')
+      isSourceConnected =
+        block.action?.__typename === 'NavigateToBlockAction' &&
+        block.action?.blockId != null
       break
-    case 'CustomBlock':
-      title = `${block.label}`
+    case 'StepBlock':
+      title = 'Next Step →'
+      isSourceConnected = block.nextBlockId != null
       break
   }
 
@@ -65,7 +80,7 @@ export function ActionButton({
   }): Promise<void> {
     if (journey == null) return
 
-    if (block.__typename === 'CustomBlock') {
+    if (block.__typename === 'StepBlock') {
       const targetId = params.target
       const sourceId = params.source
       if (journey == null || targetId == null || sourceId == null) return
@@ -97,6 +112,7 @@ export function ActionButton({
       isSourceConnectable
       onSourceConnect={handleSourceConnect}
       selected={selected}
+      isSourceConnected={isSourceConnected}
     >
       <Box
         sx={{

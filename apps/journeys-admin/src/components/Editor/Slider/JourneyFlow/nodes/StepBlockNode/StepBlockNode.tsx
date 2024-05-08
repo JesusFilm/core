@@ -78,18 +78,12 @@ export function StepBlockNode({ id, xPos, yPos }: NodeProps): ReactElement {
           isTargetConnectable
           selected={isSelected}
           onSourceConnect={handleSourceConnect}
+          isSourceConnected={step.nextBlockId != null}
         >
           {() => (
             <>
               <StepBlockNodeCard step={step} selected={isSelected} />
-              <ActionButton
-                block={{
-                  __typename: 'CustomBlock',
-                  id: step.id,
-                  label: 'Next Step →'
-                }}
-                selected={isSelected}
-              />
+              <ActionButton block={step} selected={isSelected} />
             </>
           )}
         </BaseNode>
