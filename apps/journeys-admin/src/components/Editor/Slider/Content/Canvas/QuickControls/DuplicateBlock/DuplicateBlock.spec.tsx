@@ -1,3 +1,4 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -77,7 +78,7 @@ describe('DuplicateBlock', () => {
       data: {
         blockDuplicate: [
           {
-            __typename: 'ButtonBlock',
+            __typename: 'TypographyBlock',
             id: 'duplicatedId'
           }
         ]
@@ -354,5 +355,113 @@ describe('DuplicateBlock', () => {
     await waitFor(() =>
       expect(selectedStepDuplicateResultMock).not.toHaveBeenCalled()
     )
+  })
+
+  it('should update cache on block duplication', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: `TypographyBlock:${block.id}` }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+
+    const duplicateBlockResultMock = jest.fn(() => ({
+      data: {
+        blockDuplicate: [
+          { __typename: 'TypographyBlock', id: block.id },
+          {
+            __typename: 'TypographyBlock',
+            id: 'duplicatedId'
+          }
+        ]
+      }
+    }))
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[{ ...duplicateBlockMock, result: duplicateBlockResultMock }]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock: block }}>
+              <DuplicateBlock variant="button" />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button')
+    expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
+    await userEvent.click(button)
+    await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
+    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+      { __ref: `TypographyBlock:${block.id}` },
+      { __ref: 'TypographyBlock:duplicatedId' }
+    ])
+  })
+
+  it('should update cache on card duplication', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [
+          { __ref: `StepBlock:${step.id}` },
+          { __ref: `CardBlock:${step.children[0].id}` },
+          { __ref: `TypographyBlock:${block.id}` }
+        ],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+
+    const duplicateCardResultMock = jest.fn(() => ({
+      data: {
+        blockDuplicate: [
+          { __typename: 'StepBlock', id: step.id },
+          {
+            __typename: 'StepBlock',
+            id: 'duplicatedId'
+          },
+          { __typename: 'CardBlock', id: step.children[0].id },
+          { __typename: 'TypographyBlock', id: block.id }
+        ]
+      }
+    }))
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[{ ...duplicateCardMock, result: duplicateCardResultMock }]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock: step }}>
+              <DuplicateBlock variant="button" />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button')
+    expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
+    await userEvent.click(button)
+    await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
+    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'StepBlock:stepId' },
+      { __ref: `CardBlock:card1.id` },
+      { __ref: `TypographyBlock:typography0.id` },
+      { __ref: 'StepBlock:duplicatedId' }
+    ])
   })
 })
