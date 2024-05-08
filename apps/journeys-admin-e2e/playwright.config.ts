@@ -10,9 +10,10 @@ import { defineConfig, devices } from '@playwright/test'
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  timeout: 5 * 60 * 10000,
   testDir: './src/e2e',
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  //fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -23,16 +24,14 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    //https://gs.statcounter.com/screen-resolution-stats/desktop/worldwide
-    // viewport: { width: 1920, height: 1080 },
-    /* Use URL that has been set part of app-deploy.yml */
-    baseURL: process.env.DEPLOYMENT_URL ?? 'http://localhost:4100',
-
+    permissions: ['clipboard-read', 'clipboard-write'],
+    /* Base URL to use in actions like `await page.goto('/')`. */
+    actionTimeout: 20000,
+    navigationTimeout: 60000,
+    screenshot: 'only-on-failure',
+    video: 'on',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure'
-    //video: 'retain-on-failure'
-    // video: 'on',
+    trace: 'on-first-retry'
   },
 
   /* Configure projects for major browsers */
@@ -63,7 +62,6 @@ export default defineConfig({
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },
     // },
-
     // {
     //   name: 'webkit',
     //   use: { ...devices['Desktop Safari'] },

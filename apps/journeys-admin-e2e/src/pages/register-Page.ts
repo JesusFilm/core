@@ -150,7 +150,7 @@ export class Register {
   }
   async waitUntilTheToestMsgDisappear() {
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
-      timeout: 180000
+      timeout: 30000
     })
   }
   async getUserEmailId() {
