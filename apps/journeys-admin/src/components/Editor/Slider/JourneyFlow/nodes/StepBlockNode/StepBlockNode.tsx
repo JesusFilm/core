@@ -1,11 +1,9 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
-import { NodeProps, OnConnect } from 'reactflow'
+import { NodeProps } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { filterActionBlocks } from '../../libs/filterActionBlocks'
 import { BaseNode } from '../BaseNode'
 
@@ -25,33 +23,6 @@ export function StepBlockNode({
   } = useEditor()
   const step = steps?.find((step) => step.id === id)
   const actionBlocks = filterActionBlocks(step)
-  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
-  const { journey } = useJourney()
-
-  async function handleSourceConnect(
-    params: { target: string; source: string } | Parameters<OnConnect>[0]
-  ): Promise<void> {
-    const targetId = params.target
-    const sourceId = params.source
-    if (journey == null || targetId == null || sourceId == null) return
-
-    await stepBlockNextBlockUpdate({
-      variables: {
-        id: sourceId,
-        journeyId: journey.id,
-        input: {
-          nextBlockId: targetId
-        }
-      },
-      optimisticResponse: {
-        stepBlockUpdate: {
-          id,
-          __typename: 'StepBlock',
-          nextBlockId: targetId
-        }
-      }
-    })
-  }
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
@@ -83,7 +54,6 @@ export function StepBlockNode({
           id={step.id}
           isTargetConnectable
           selected={isSelected}
-          onSourceConnect={handleSourceConnect}
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}
         >
