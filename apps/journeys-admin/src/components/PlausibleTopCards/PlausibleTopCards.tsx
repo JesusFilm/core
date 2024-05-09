@@ -4,6 +4,7 @@ import MuiCard from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import formatISO from 'date-fns/formatISO'
+import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -49,53 +50,44 @@ export function PlausibleTopCards(): ReactElement {
     GetPlausibleTopCardsVariables
   >(GET_PLAUSIBLE_TOP_CARDS, {
     variables: {
-      id: journey?.id,
+      id: journey?.id as string,
       where: {
         property: 'event:page',
         period,
         date: formatISO(date, { representation: 'date' })
       }
-    }
+    },
+    skip: journey == null
   })
+
+  const results =
+    data?.journeysPlausibleStatsBreakdown.filter(
+      ({ property }) => property.split('/')[1] != null
+    ) ?? []
 
   return (
     <MuiCard variant="outlined">
       <Stack spacing={2} direction="row" sx={{ p: 4, overflow: 'auto' }}>
-        {data?.journeysPlausibleStatsBreakdown.map((result) => {
-          const stepId = result.property.split('/')[1]
-          const step = steps?.find((step) => step.id === stepId)
-          return (
-            <Stack spacing={2} key={stepId}>
-              {step != null ? (
+        {compact(
+          results.map((result) => {
+            const stepId = result.property.split('/')[1]
+            const step = steps?.find((step) => step.id === stepId)
+
+            if (step == null) return null
+
+            return (
+              <Stack spacing={2} key={stepId}>
                 <Card step={step} width={194} height={295} />
-              ) : (
-                <Box
-                  width={194}
-                  height={295}
-                  sx={{
-                    borderWidth: 5,
-                    borderColor: 'divider',
-                    borderStyle: 'dashed',
-                    borderRadius: 3,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    display: 'flex'
-                  }}
-                >
-                  <Typography variant="body2" color="text.secondary">
-                    {t('Deleted Card')}
-                  </Typography>
-                </Box>
-              )}
-              <Typography variant="body2">
-                {t('{{count}} visitors', { count: result.visitors ?? 0 })}
-              </Typography>
-              <Typography variant="body2">
-                {t('{{count}} views', { count: result.pageviews ?? 0 })}
-              </Typography>
-            </Stack>
-          )
-        })}
+                <Typography variant="body2">
+                  {t('{{count}} visitors', { count: result.visitors ?? 0 })}
+                </Typography>
+                <Typography variant="body2">
+                  {t('{{count}} views', { count: result.pageviews ?? 0 })}
+                </Typography>
+              </Stack>
+            )
+          })
+        )}
       </Stack>
     </MuiCard>
   )

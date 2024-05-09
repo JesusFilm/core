@@ -24,11 +24,6 @@ export interface GetPlausibleTopCards_journeysPlausibleStatsBreakdown {
    * The number of pageview events.
    */
   pageviews: number | null;
-  /**
-   * The average time users spend on viewing a single page. Requires an
-   * `event:page` filter or `event:page` property in the breakdown endpoint.
-   */
-  timeOnPage: number | null;
 }
 
 export interface GetPlausibleTopCards {

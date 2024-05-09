@@ -12,8 +12,12 @@ import { DateRange } from 'react-day-picker'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import {
+  formatDateRange,
+  formatDay,
+  formatMonth
+} from '../../../libs/plausible/formatters'
 import { usePlausibleLocal } from '../../PlausibleLocalProvider'
-import { formatDateRange, formatDay, formatMonth } from '../libs/date'
 import { RangePicker } from '../RangePicker'
 
 import { MenuItem } from './MenuItem'

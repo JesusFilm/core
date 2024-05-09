@@ -8,8 +8,8 @@ import { DateRange } from 'react-day-picker'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { formatDateRange } from '../../../libs/plausible/formatters'
 import { usePlausibleLocal } from '../../PlausibleLocalProvider'
-import { formatDateRange } from '../libs/date'
 import { RangePicker } from '../RangePicker'
 
 import 'react-day-picker/dist/style.css'

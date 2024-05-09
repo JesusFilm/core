@@ -239,7 +239,7 @@ export class PlausibleService implements OnModuleInit {
         return reduce(
           result,
           (acc, value, key) => {
-            if (key !== 'date') acc[camelCase(key)] = value
+            if (key !== 'date') acc[camelCase(key)] = value ?? 0
             return acc
           },
           accumulator
