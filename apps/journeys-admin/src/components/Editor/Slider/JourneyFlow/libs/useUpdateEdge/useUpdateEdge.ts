@@ -32,7 +32,7 @@ export function useUpdateEdge(): (
     const actionEdge = sourceHandle != null
     const stepEdge = source != null && !actionEdge
     if (journey == null || target == null) return
-    let step: TreeBlock<StepBlock> | undefined
+    let selectedStep: TreeBlock<StepBlock> | undefined
 
     if (socialEdge) {
       const { data } = await blockOrderUpdate({
@@ -53,7 +53,7 @@ export function useUpdateEdge(): (
       })
       if (data != null) {
         const stepId = data.blockOrderUpdate[0].id
-        step = steps?.find((step) => step.id === stepId)
+        selectedStep = steps?.find((step) => step.id === stepId)
       }
     } else if (stepEdge) {
       const { data } = await stepBlockNextBlockUpdate({
@@ -73,26 +73,23 @@ export function useUpdateEdge(): (
         }
       })
       if (data != null) {
-        step = steps?.find((step) => step.id === target)
+        selectedStep = steps?.find((step) => step.id === target)
       }
     } else if (actionEdge) {
-      const selectedStep = steps?.find((step) => step.id === source)
-      const block = searchBlocks(
-        selectedStep != null ? [selectedStep] : [],
-        sourceHandle
-      )
+      const step = steps?.find((step) => step.id === source)
+      const block = searchBlocks(step != null ? [step] : [], sourceHandle)
       if (block != null) {
         const data = await navigateToBlockActionUpdate(block, target)
         if (data != null) {
-          step = selectedStep
+          selectedStep = steps?.find((step) => step.id === target)
         }
       }
     }
 
-    if (step != null) {
+    if (selectedStep != null) {
       dispatch({
         type: 'SetSelectedStepAction',
-        selectedStep: step
+        selectedStep
       })
     }
   }

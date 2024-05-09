@@ -4,11 +4,9 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
-import { useNavigateToBlockActionUpdateMutation } from '../../../../../../../libs/useNavigateToBlockActionUpdateMutation'
-import { useStepBlockNextBlockUpdateMutation } from '../../../../../../../libs/useStepBlockNextBlockUpdateMutation'
+import { useUpdateEdge } from '../../../libs/useUpdateEdge'
 import { BaseNode } from '../../BaseNode'
 import { ACTION_BUTTON_HEIGHT } from '../libs/sizes'
 
@@ -22,6 +20,7 @@ export function ActionButton({
   selected = false
 }: ActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const updateEdge = useUpdateEdge()
 
   let title = ''
   let isSourceConnected = false
@@ -70,40 +69,13 @@ export function ActionButton({
       break
   }
 
-  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
-  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
-  const { journey } = useJourney()
-
   async function handleSourceConnect(params: {
-    target: string
     source: string
+    sourceHandle: string
+    target: string
   }): Promise<void> {
-    if (journey == null) return
-
-    if (block.__typename === 'StepBlock') {
-      const targetId = params.target
-      const sourceId = params.source
-      if (journey == null || targetId == null || sourceId == null) return
-
-      await stepBlockNextBlockUpdate({
-        variables: {
-          id: sourceId,
-          journeyId: journey.id,
-          input: {
-            nextBlockId: targetId
-          }
-        },
-        optimisticResponse: {
-          stepBlockUpdate: {
-            id: sourceId,
-            __typename: 'StepBlock',
-            nextBlockId: targetId
-          }
-        }
-      })
-    } else {
-      await navigateToBlockActionUpdate(block, params.target)
-    }
+    const { source, sourceHandle, target } = params
+    void updateEdge(source, sourceHandle, target)
   }
 
   return (

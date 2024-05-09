@@ -65,6 +65,7 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 
 export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
+  const theme = useTheme()
   const {
     state: { steps }
   } = useEditor()
@@ -74,12 +75,12 @@ export function JourneyFlow(): ReactElement {
   const edgeUpdateSuccessful = useRef<boolean | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
-  const theme = useTheme()
 
-  const deleteEdge = useDeleteEdge()
-  const updateEdge = useUpdateEdge()
-  const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const createNodeAndEdge = useCreateNodeAndEdge()
+  const updateEdge = useUpdateEdge()
+  const deleteEdge = useDeleteEdge()
+  const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
+
   async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
     if (steps == null || journey == null) return
     positions = arrangeSteps(steps)
@@ -252,10 +253,13 @@ export function JourneyFlow(): ReactElement {
     []
   )
 
-  const edgeTypes = {
-    Custom: CustomEdge,
-    Start: StartEdge
-  }
+  const edgeTypes = useMemo(
+    () => ({
+      Custom: CustomEdge,
+      Start: StartEdge
+    }),
+    []
+  )
 
   return (
     <Box
