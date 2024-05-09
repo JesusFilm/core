@@ -22,7 +22,6 @@ describe('CrowdinConsumer', () => {
   describe('process', () => {
     it('should call getCrowdinTranslations', async () => {
       crowdinService.pullTranslations = jest.fn()
-
       await consumer.process({} as unknown as Job)
 
       expect(crowdinService.pullTranslations).toHaveBeenCalled()

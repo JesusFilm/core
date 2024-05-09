@@ -25,17 +25,15 @@ export class CrowdinQueue implements OnModuleInit {
       }
     }
 
-    await this.crowdinQueue.add(name, {})
-
     // Schedule a new instance
-    // await this.crowdinQueue.add(
-    //   name,
-    //   {},
-    //   {
-    //     repeat: {
-    //       pattern: '0 */12 * * *' // Run every 12 hours
-    //     }
-    //   }
-    // )
+    await this.crowdinQueue.add(
+      name,
+      {},
+      {
+        repeat: {
+          pattern: '0 */12 * * *' // Run every 12 hours
+        }
+      }
+    )
   }
 }
