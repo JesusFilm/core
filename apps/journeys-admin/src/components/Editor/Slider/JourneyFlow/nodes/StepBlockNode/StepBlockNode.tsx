@@ -202,26 +202,28 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
                       padding: 2
                     }}
                   >
-                    <Typography
-                      sx={{
-                        display: '-webkit-box',
-                        '-webkit-box-orient': 'vertical',
-                        '-webkit-line-clamp': '1',
-                        overflow: 'hidden',
-                        padding: 0,
-                        fontSize: 9,
-                        height: 'auto',
-                        flexDirection: 'column',
-                        justifyContent: 'flex-end',
-                        alignSelf: 'flex-start',
-                        marginBottom: 1,
-                        lineHeight: 1.3,
-                        alignItems: 'flex-end',
-                        color: '#444451'
-                      }}
-                    >
-                      {description !== '' ? description : ''}
-                    </Typography>
+                    {Boolean(description) && (
+                      <Typography
+                        sx={{
+                          display: '-webkit-box',
+                          '-webkit-box-orient': 'vertical',
+                          '-webkit-line-clamp': '1',
+                          overflow: 'ellipsis',
+                          padding: 0,
+                          fontSize: 9,
+                          height: 'auto',
+                          flexDirection: 'column',
+                          justifyContent: 'flex-end',
+                          alignSelf: 'flex-start',
+                          marginBottom: 1,
+                          lineHeight: 1.3,
+                          alignItems: 'flex-end',
+                          color: 'text.primary'
+                        }}
+                      >
+                        {description}
+                      </Typography>
+                    )}
                     <Typography
                       sx={{
                         display: '-webkit-box',
@@ -264,7 +266,7 @@ export function StepBlockNode({ id }: NodeProps): ReactElement {
                         fontSize: 10,
                         lineHeight: '1.2',
                         justifyContent: 'top',
-                        color: '#444451',
+                        color: 'text.primary',
                         overflow: 'hidden',
                         paddingBottom: '1px'
                       }}
