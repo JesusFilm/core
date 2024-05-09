@@ -29,16 +29,12 @@ import {
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import {
   GetStepBlocksWithPosition,
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
-import { useBlockOrderUpdateMutation } from '../../../../libs/useBlockOrderUpdateMutation'
-import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
-import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { CustomEdge } from './edges/CustomEdge'
@@ -47,6 +43,7 @@ import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
 import { useCreateNodeAndConnect } from './libs/useCreateNodeAndConnect'
 import { useDeleteEdge } from './libs/useDeleteEdge'
+import { useUpdateEdge } from './libs/useUpdateEdge'
 import { NewStepButton } from './NewStepButton'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
@@ -69,8 +66,7 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
   const {
-    state: { steps },
-    dispatch
+    state: { steps }
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -81,11 +77,9 @@ export function JourneyFlow(): ReactElement {
   const theme = useTheme()
 
   const deleteEdge = useDeleteEdge()
-  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
+  const updateEdge = useUpdateEdge()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const createNodeAndConnect = useCreateNodeAndConnect()
-  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
-  const [blockOrderUpdate] = useBlockOrderUpdateMutation()
   async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
     if (steps == null || journey == null) return
     positions = arrangeSteps(steps)
@@ -234,70 +228,12 @@ export function JourneyFlow(): ReactElement {
   }, [])
 
   const onEdgeUpdate: OnEdgeUpdateFunc = useCallback(
-    (_, { target, source, sourceHandle }) => {
+    (_, { source, sourceHandle, target }) => {
       // TODO HOOKS: update edge - step / action / social
       edgeUpdateSuccessful.current = true
-      if (journey == null || target == null) return
-
-      if (source === 'SocialPreview') {
-        // social preview
-        void blockOrderUpdate({
-          variables: {
-            id: target,
-            journeyId: journey.id,
-            parentOrder: 0
-          },
-          optimisticResponse: {
-            blockOrderUpdate: [
-              {
-                id: target,
-                __typename: 'StepBlock',
-                parentOrder: 0
-              }
-            ]
-          }
-        })
-      } else if (sourceHandle != null) {
-        const step = steps?.find((step) => step.id === source)
-        const block = searchBlocks(step != null ? [step] : [], sourceHandle)
-        // action
-        if (block != null) {
-          void navigateToBlockActionUpdate(block, target)
-        }
-      } else {
-        // step
-        if (source != null) {
-          void stepBlockNextBlockUpdate({
-            variables: {
-              id: source,
-              journeyId: journey.id,
-              input: {
-                nextBlockId: target
-              }
-            },
-            optimisticResponse: {
-              stepBlockUpdate: {
-                id: source,
-                __typename: 'StepBlock',
-                nextBlockId: target
-              }
-            }
-          })
-        }
-      }
-      dispatch({
-        type: 'SetSelectedStepAction',
-        selectedStep: steps?.find((step) => step.id === target)
-      })
+      void updateEdge(source, sourceHandle, target)
     },
-    [
-      journey,
-      steps,
-      dispatch,
-      stepBlockNextBlockUpdate,
-      navigateToBlockActionUpdate,
-      blockOrderUpdate
-    ]
+    [updateEdge]
   )
 
   const onEdgeUpdateEnd = useCallback(

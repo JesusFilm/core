@@ -20,16 +20,16 @@ import Share from '@core/shared/ui/icons/Share'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
-import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
+import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode } from '../BaseNode'
 
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
-  const [blockOrderUpdate] = useBlockOrderUpdateMutation()
+  const updateEdge = useUpdateEdge()
 
   const {
     dispatch,
-    state: { steps, activeContent }
+    state: { activeContent }
   } = useEditor()
 
   function handleClick(): void {
@@ -58,31 +58,7 @@ export function SocialPreviewNode(): ReactElement {
   async function handleSourceConnect(
     params: { target: string } | Parameters<OnConnect>[0]
   ): Promise<void> {
-    // TODO HOOKS: update edge - social
-    if (params.target == null || journey == null) return
-    const { data } = await blockOrderUpdate({
-      variables: {
-        id: params.target,
-        journeyId: journey.id,
-        parentOrder: 0
-      },
-      optimisticResponse: {
-        blockOrderUpdate: [
-          {
-            id: params.target,
-            __typename: 'StepBlock',
-            parentOrder: 0
-          }
-        ]
-      }
-    })
-    if (data != null) {
-      const stepId = data.blockOrderUpdate[0].id
-      const selectedStep = steps?.find((step) => step.id === stepId)
-      if (selectedStep != null) {
-        dispatch({ type: 'SetSelectedStepAction', selectedStep })
-      }
-    }
+    void updateEdge('SocialPreview', null, params.target)
   }
 
   return (

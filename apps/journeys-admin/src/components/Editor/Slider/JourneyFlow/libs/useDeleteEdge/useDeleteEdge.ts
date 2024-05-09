@@ -22,16 +22,10 @@ export function useDeleteEdge(): (
   ): Promise<void> {
     const socialEdge = source === 'SocialPreview'
     const actionEdge = sourceHandle != null
-    const stepEdge = source != null
+    const stepEdge = source != null && !actionEdge
     if (journey == null || socialEdge) return
 
-    if (actionEdge) {
-      const step = steps?.find((step) => step.id === source)
-      const block = searchBlocks(step != null ? [step] : [], sourceHandle)
-      if (block != null) {
-        void blockActionDelete(block)
-      }
-    } else if (stepEdge) {
+    if (stepEdge) {
       void stepBlockNextBlockUpdate({
         variables: {
           id: source,
@@ -48,6 +42,12 @@ export function useDeleteEdge(): (
           }
         }
       })
+    } else if (actionEdge) {
+      const step = steps?.find((step) => step.id === source)
+      const block = searchBlocks(step != null ? [step] : [], sourceHandle)
+      if (block != null) {
+        void blockActionDelete(block)
+      }
     }
   }
 
