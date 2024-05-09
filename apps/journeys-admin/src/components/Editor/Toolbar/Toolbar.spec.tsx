@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -15,33 +16,40 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('Toolbar', () => {
-  it('should render Toolbar', () => {
-    const { getByTestId, getByAltText, getByText } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                title: 'My Awesome Journey Title',
-                description: 'My Awesome Journey Description',
-                primaryImageBlock: null,
-                status: JourneyStatus.draft
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <Toolbar />
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
+  it('should render NextSteps logo on Toolbar', () => {
+    const { getByAltText } = render(toolbar())
     expect(getByAltText('Next Steps')).toBeInTheDocument() // NextSteps logo
-    expect(getByTestId('ToolbarBackButton')).toHaveAttribute('href', '/')
-    expect(getByTestId('ThumbsUpIcon')).toBeInTheDocument()
+  })
+
+  it('should render title & description on Toolbar', () => {
+    const { getByText } = render(toolbar())
     expect(getByText('My Awesome Journey Title')).toBeInTheDocument()
     expect(getByText('My Awesome Journey Description')).toBeInTheDocument()
+  })
+
+  it('should render items stack on Toolbar', () => {
+    const { getByTestId } = render(toolbar())
     expect(getByTestId('ItemsStack')).toBeInTheDocument()
+  })
+
+  it('should render menu button on Toolbar', () => {
+    const { getByTestId } = render(toolbar())
     expect(getByTestId('ToolbarMenuButton')).toBeInTheDocument()
+    expect(getByTestId('MoreIcon')).toBeInTheDocument()
+  })
+
+  it('should render all journeys button', () => {
+    const { getByTestId } = render(toolbar())
+    expect(getByTestId('ToolbarBackButton')).toHaveAttribute('href', '/')
+    expect(getByTestId('FormatListBulletedIcon')).toBeInTheDocument()
+  })
+
+  it('should render journeys tooltip on hover', async () => {
+    const { getByTestId, getByText } = render(toolbar())
+    fireEvent.mouseOver(getByTestId('ToolbarBackButton'))
+    await waitFor(() => {
+      expect(getByText('See all journeys')).toBeInTheDocument()
+    })
   })
 
   it('should render journey image', () => {
@@ -79,3 +87,25 @@ describe('Toolbar', () => {
     expect(queryByTestId('ThumbsUpIcon')).not.toBeInTheDocument()
   })
 })
+
+function toolbar(): ReactElement {
+  return (
+    <SnackbarProvider>
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              title: 'My Awesome Journey Title',
+              description: 'My Awesome Journey Description',
+              primaryImageBlock: null,
+              status: JourneyStatus.draft
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <Toolbar />
+        </JourneyProvider>
+      </MockedProvider>
+    </SnackbarProvider>
+  )
+}
