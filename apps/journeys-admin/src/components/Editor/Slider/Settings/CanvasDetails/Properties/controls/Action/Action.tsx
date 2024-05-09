@@ -26,7 +26,6 @@ import { NavigateActionUpdate } from '../../../../../../../../../__generated__/N
 
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
-import { NavigateAction } from './NavigateAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { NavigateToJourneyAction } from './NavigateToJourneyAction'
 import { getNextStep } from './utils/getNextStep'
@@ -57,10 +56,6 @@ export const actions = [
   {
     value: 'none',
     label: t('None')
-  },
-  {
-    value: 'NavigateAction',
-    label: t('Next Step')
   },
   {
     value: 'NavigateToBlockAction',
@@ -206,7 +201,6 @@ export function Action(): ReactElement {
         <Typography variant="caption" color="secondary.main">
           {t('Redirect user to the selected resource')}
         </Typography>
-        {action === 'NavigateAction' && <NavigateAction />}
         {action === 'LinkAction' && <LinkAction />}
         {action === 'NavigateToJourneyAction' && <NavigateToJourneyAction />}
         {action === 'EmailAction' && <EmailAction />}
