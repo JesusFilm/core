@@ -24,18 +24,11 @@ export class LoginPage {
   async clickSubmitButton(): Promise<void> {
     await this.page.locator('button[type="submit"]').click()
   }
-
   async waitUntilDiscoverPageLoaded() {
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
       )
-    ).toBeVisible({ timeout: 65000 })
-  }
-
-  async waitUntilNavigationListItemProfileVisible() {
-    await expect(
-      this.page.locator('div[data-testid="NavigationListItemProfile"]')
     ).toBeVisible({ timeout: 65000 })
   }
 
@@ -53,6 +46,6 @@ export class LoginPage {
     const password = await getPassword()
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
-    await this.waitUntilNavigationListItemProfileVisible()
+    await this.waitUntilDiscoverPageLoaded()
   }
 }

@@ -82,7 +82,7 @@ export class TeamsPage {
       })
     ).toBeVisible()
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
-      timeout: 60000
+      timeout: 30000
     })
   }
   async clickDiaLogBoxCloseBtn() {
@@ -127,7 +127,7 @@ export class TeamsPage {
       this.renameTeamName + ' updated.'
     )
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
-      timeout: 60000
+      timeout: 30000
     })
   }
   async verifyRenamedTeamNameUpdatedInTeamSelectDropdown() {
