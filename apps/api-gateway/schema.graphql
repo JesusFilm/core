@@ -1205,7 +1205,7 @@ type Mutation
   @join__type(graph: USERS)
 {
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
-  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction! @join__field(graph: JOURNEYS) @deprecated(reason: "Removing support for this action")
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
@@ -1455,14 +1455,14 @@ type NavigateAction implements Action
   @join__implements(graph: JOURNEYS, interface: "Action")
   @join__type(graph: JOURNEYS)
 {
-  parentBlockId: ID!
-  gtmEventName: String
+  parentBlockId: ID! @deprecated(reason: "Removing support for this action")
+  gtmEventName: String @deprecated(reason: "Removing support for this action")
 }
 
 input NavigateActionInput
   @join__type(graph: JOURNEYS)
 {
-  gtmEventName: String
+  gtmEventName: String @deprecated(reason: "Removing support for this action")
 }
 
 type NavigateToBlockAction implements Action

@@ -33,8 +33,8 @@ NavigateAction is an Action that navigates to the nextBlockId field set on the
 closest ancestor StepBlock.
 """
 type NavigateAction implements Action {
-  parentBlockId: ID!
-  gtmEventName: String
+  parentBlockId: ID! @deprecated(reason: "Removing support for this action")
+  gtmEventName: String @deprecated(reason: "Removing support for this action")
 }
 
 type NavigateToBlockAction implements Action {
@@ -64,7 +64,7 @@ type EmailAction implements Action {
 }
 
 input NavigateActionInput {
-  gtmEventName: String
+  gtmEventName: String @deprecated(reason: "Removing support for this action")
 }
 
 input NavigateToBlockActionInput {
@@ -90,7 +90,7 @@ input EmailActionInput {
 
 extend type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
-  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
+  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction! @deprecated(reason: "Removing support for this action")
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
   blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
