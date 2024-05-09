@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -85,5 +86,29 @@ describe('Footer', () => {
       'aria-selected',
       'true'
     )
+  })
+
+  it('should return to journey map when close icon is clicked', async () => {
+    const contentState = { ...state, activeSlide: ActiveSlide.Content }
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={contentState}>
+            <TestEditorState />
+            <Footer />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('X2Icon')).toBeInTheDocument()
+    )
+    await waitFor(
+      async () => await userEvent.click(screen.getByTestId('X2Icon'))
+    )
+
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
 })

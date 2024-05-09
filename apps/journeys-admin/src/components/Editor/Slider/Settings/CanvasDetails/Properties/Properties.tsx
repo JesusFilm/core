@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { Drawer } from '../../Drawer'
@@ -105,9 +105,16 @@ interface PropertiesProps {
 
 export function Properties({ block, step }: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { state } = useEditor()
+  const { state, dispatch } = useEditor()
   const selectedBlock = block ?? state.selectedBlock
   const selectedStep = step ?? state.selectedStep
+
+  function onClose(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.JourneyFlow
+    })
+  }
 
   let component
   let title: string | undefined
@@ -173,7 +180,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       break
   }
   return block == null && step == null ? (
-    <Drawer title={title}>
+    <Drawer title={title} onClose={onClose}>
       <Stack>{component}</Stack>
     </Drawer>
   ) : (

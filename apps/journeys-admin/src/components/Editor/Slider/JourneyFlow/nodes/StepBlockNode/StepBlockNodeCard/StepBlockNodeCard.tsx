@@ -109,17 +109,19 @@ export function StepBlockNodeCard({
             padding: 2
           }}
         >
-          <Typography
-            sx={{
-              display: '-webkit-box',
-              '-webkit-box-orient': 'vertical',
-              '-webkit-line-clamp': '1',
-              overflow: 'hidden',
-              fontSize: 9
-            }}
-          >
-            {description !== '' ? description : ''}
-          </Typography>
+          {Boolean(description) && (
+            <Typography
+              sx={{
+                display: '-webkit-box',
+                '-webkit-box-orient': 'vertical',
+                '-webkit-line-clamp': '1',
+                overflow: 'hidden',
+                fontSize: 9
+              }}
+            >
+              {description !== '' ? description : ''}
+            </Typography>
+          )}
           <Typography
             gutterBottom
             sx={{

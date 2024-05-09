@@ -6,7 +6,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
@@ -93,6 +93,8 @@ export function DeleteBlock({
         }
         blockDeleteUpdate(currentBlock, data?.blockDelete, cache, journey.id)
       }
+    }).then(() => {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     })
 
     handleCloseDialog()

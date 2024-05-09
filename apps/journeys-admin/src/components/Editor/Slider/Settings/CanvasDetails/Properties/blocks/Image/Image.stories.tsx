@@ -1,3 +1,4 @@
+import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -17,6 +18,8 @@ const Demo: Meta<typeof Image> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Image'
 }
 
+const onClose = jest.fn()
+
 const image: TreeBlock<ImageBlock> = {
   id: 'image1.id',
   __typename: 'ImageBlock',
@@ -35,7 +38,7 @@ const Template: StoryObj<ComponentProps<typeof Image>> = {
     /* eslint-disable */
     return (
       <EditorProvider initialState={{ selectedBlock: args }}>
-        <Drawer title="Image Properties">
+        <Drawer title="Image Properties" onClose={onClose}>
           <Image {...args} />
         </Drawer>
       </EditorProvider>

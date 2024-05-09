@@ -20,12 +20,25 @@ export interface VideoFields_video_variant {
   hls: string | null;
 }
 
+export interface VideoFields_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface VideoFields_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: VideoFields_video_variantLanguages_name[];
+}
+
 export interface VideoFields_video {
   __typename: "Video";
   id: string;
   title: VideoFields_video_title[];
   image: string | null;
   variant: VideoFields_video_variant | null;
+  variantLanguages: VideoFields_video_variantLanguages[];
 }
 
 export interface VideoFields_action_NavigateAction {

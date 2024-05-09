@@ -46,8 +46,10 @@ export function StepBlockNodeMenu({
         onClick={handleClick}
         sx={{
           position: 'absolute',
-          top: -20,
-          right: -20
+          top: -14,
+          right: -20,
+          height: '28px',
+          color: 'rgba(0, 0, 0, 0.5)'
         }}
         data-testid="EditStepFab"
       >
