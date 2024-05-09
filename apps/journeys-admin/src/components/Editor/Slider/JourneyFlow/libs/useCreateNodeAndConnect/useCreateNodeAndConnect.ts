@@ -9,17 +9,18 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import { StepAndCardBlockCreate } from '../../../../../../../__generated__/StepAndCardBlockCreate'
 import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
 
-export function useCreateStepAndCard(): (
-  nodeId: string,
-  handleId: string,
+export function useCreateNodeAndConnect(): (
   x: number,
-  y: number
-) => Promise<void> {
+  y: number,
+  nodeId?: string,
+  handleId?: string
+) => Promise<StepAndCardBlockCreate | null | undefined> {
   const { journey } = useJourney()
   const {
     state: { steps },
@@ -50,16 +51,12 @@ export function useCreateStepAndCard(): (
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
 
-  async function createStepAndCard(
-    nodeId: string,
-    handleId: string,
+  async function createNodeAndConnect(
     x: number,
-    y: number
-  ): Promise<void> {
-    const step = steps?.find((step) => step.id === nodeId)
-    const block = searchBlocks(step != null ? [step] : [], handleId)
-
-    if (nodeId !== 'SocialPreview' && (step == null || block == null)) return
+    y: number,
+    nodeId?: string,
+    handleId?: string
+  ): Promise<StepAndCardBlockCreate | null | undefined> {
     if (journey == null) return
     const newStepId = uuidv4()
     const newCardId = uuidv4()
@@ -82,18 +79,21 @@ export function useCreateStepAndCard(): (
       }
     })
 
-    if (data != null) {
-      dispatch({
-        type: 'SetSelectedStepAction',
-        selectedStep: {
-          ...data.stepBlockCreate,
-          children: [{ ...data.cardBlockCreate, children: [] }]
-        }
-      })
-    }
+    if (data == null) return
+    dispatch({
+      type: 'SetSelectedStepAction',
+      selectedStep: {
+        ...data.stepBlockCreate,
+        children: [{ ...data.cardBlockCreate, children: [] }]
+      }
+    })
 
-    if (nodeId === 'SocialPreview') {
-      // social preview
+    const step = steps?.find((step) => step.id === nodeId ?? '')
+    const block = searchBlocks(step != null ? [step] : [], handleId ?? '')
+    const connectFromSocialNode = nodeId === 'SocialPreview'
+    const connectFromStepNode = step != null && step.id === block?.id
+    const connectFromActionNode = block != null
+    if (connectFromSocialNode) {
       await blockOrderUpdate({
         variables: {
           id: newStepId,
@@ -110,8 +110,7 @@ export function useCreateStepAndCard(): (
           ]
         }
       })
-    } else if (step != null && step.id === block?.id) {
-      // step
+    } else if (connectFromStepNode) {
       await stepBlockNextBlockUpdate({
         variables: {
           id: step.id,
@@ -128,10 +127,11 @@ export function useCreateStepAndCard(): (
           }
         }
       })
-    } else if (block != null) {
-      // action
+    } else if (connectFromActionNode) {
       await navigateToBlockActionUpdate(block, newStepId)
     }
+
+    return data
   }
-  return createStepAndCard
+  return createNodeAndConnect
 }

@@ -1,8 +1,6 @@
-import { gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import { ReactFlowInstance } from 'reactflow'
-import { v4 as uuidv4 } from 'uuid'
 
 import {
   ActiveFab,
@@ -12,12 +10,8 @@ import {
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Plus3Icon from '@core/shared/ui/icons/Plus3'
 
-import {
-  ThemeMode,
-  ThemeName
-} from '../../../../../../__generated__/globalTypes'
-import { useStepAndCardBlockCreateMutation } from '../../../../../libs/useStepAndCardBlockCreateMutation'
 import { Item } from '../../../Toolbar/Items/Item'
+import { useCreateNodeAndConnect } from '../libs/useCreateNodeAndConnect'
 import {
   STEP_NODE_CARD_HEIGHT,
   STEP_NODE_CARD_WIDTH
@@ -32,27 +26,7 @@ export function NewStepButton({
 }: NewStepButtonProps): ReactElement {
   const { journey } = useJourney()
   const { dispatch } = useEditor()
-  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation({
-    update(cache, { data }) {
-      if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
-        cache.modify({
-          fields: {
-            blocks(existingBlockRefs = []) {
-              const newStepBlockRef = cache.writeFragment({
-                data: data.stepBlockCreate,
-                fragment: gql`
-                  fragment NewBlock on Block {
-                    id
-                  }
-                `
-              })
-              return [...existingBlockRefs, newStepBlockRef]
-            }
-          }
-        })
-      }
-    }
-  })
+  const createNodeAndConnect = useCreateNodeAndConnect()
 
   async function handleAddStepAndCardBlock(event): Promise<void> {
     // TODO HOOKS: create node - step
@@ -62,33 +36,12 @@ export function NewStepButton({
       y: (event as unknown as MouseEvent).clientY
     })
 
-    const newStepId = uuidv4()
-    const newCardId = uuidv4()
-    const { data } = await stepAndCardBlockCreate({
-      variables: {
-        stepBlockCreateInput: {
-          id: newStepId,
-          journeyId: journey.id,
-          x: parseInt(x.toString()) - STEP_NODE_CARD_WIDTH,
-          y: parseInt(y.toString()) + STEP_NODE_CARD_HEIGHT / 2
-        },
-        cardBlockCreateInput: {
-          id: newCardId,
-          journeyId: journey.id,
-          parentBlockId: newStepId,
-          themeMode: ThemeMode.dark,
-          themeName: ThemeName.base
-        }
-      }
-    })
+    const data = await createNodeAndConnect(
+      parseInt(x.toString()) - STEP_NODE_CARD_WIDTH,
+      parseInt(y.toString()) + STEP_NODE_CARD_HEIGHT / 2
+    )
+
     if (data != null) {
-      dispatch({
-        type: 'SetSelectedStepAction',
-        selectedStep: {
-          ...data.stepBlockCreate,
-          children: [{ ...data.cardBlockCreate, children: [] }]
-        }
-      })
       dispatch({
         type: 'SetActiveSlideAction',
         activeSlide: ActiveSlide.Content

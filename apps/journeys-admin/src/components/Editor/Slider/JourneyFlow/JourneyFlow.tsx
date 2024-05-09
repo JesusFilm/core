@@ -46,7 +46,7 @@ import { CustomEdge } from './edges/CustomEdge'
 import { StartEdge } from './edges/StartEdge'
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
-import { useCreateStepAndCard } from './libs/useCreateStepAndCard'
+import { useCreateNodeAndConnect } from './libs/useCreateNodeAndConnect'
 import { NewStepButton } from './NewStepButton'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
@@ -82,7 +82,7 @@ export function JourneyFlow(): ReactElement {
     useState<ReactFlowInstance | null>(null)
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
-  const createStepAndCard = useCreateStepAndCard()
+  const createNodeAndConnect = useCreateNodeAndConnect()
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
   const [blockActionDelete] = useBlockActionDeleteMutation()
@@ -202,15 +202,15 @@ export function JourneyFlow(): ReactElement {
         })
 
         // TODO HOOKS: create node - step
-        void createStepAndCard(
-          connectingParams.current.nodeId,
-          connectingParams.current.handleId,
+        void createNodeAndConnect(
           parseInt(x.toString()),
-          parseInt(y.toString()) - STEP_NODE_CARD_HEIGHT / 2
+          parseInt(y.toString()) - STEP_NODE_CARD_HEIGHT / 2,
+          connectingParams.current.nodeId,
+          connectingParams.current.handleId
         )
       }
     },
-    [reactFlowInstance, connectingParams, createStepAndCard]
+    [reactFlowInstance, connectingParams, createNodeAndConnect]
   )
   const onNodeDragStop: NodeDragHandler = async (
     _event,
