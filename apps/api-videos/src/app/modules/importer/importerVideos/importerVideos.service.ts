@@ -63,7 +63,7 @@ export class ImporterVideosService extends ImporterService<Video> {
     if (video.childIds == null) {
       return {
         ...video,
-        childIds: [],
+        childIds: undefined,
         slug: await this.slugify(video.id, video.slug),
         noIndex: false
       }
