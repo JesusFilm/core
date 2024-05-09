@@ -5,7 +5,7 @@ import { BaseEdge as DefaultBaseEdge, useOnSelectionChange } from 'reactflow'
 import {
   MARKER_END_DEFAULT_COLOR,
   MARKER_END_SELECTED_COLOR
-} from '../../nodes/StepBlockNode/libs/colors'
+} from '../../libs/transformSteps'
 
 interface BaseEdgeProps {
   id: string

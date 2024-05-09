@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
@@ -15,9 +15,13 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import {
   ACTION_BUTTON_HEIGHT,
+  HANDLE_BORDER_WIDTH,
+  HANDLE_DIAMETER,
+  HANDLE_WITH_BORDER_DIAMETER,
   NODE_EXTRA_DETECTION_WIDTH,
   STEP_NODE_CARD_HEIGHT,
-  STEP_NODE_CARD_WIDTH
+  STEP_NODE_CARD_WIDTH,
+  STEP_NODE_WIDTH
 } from '../StepBlockNode/libs/sizes'
 
 import { PulseWrapper } from './PulseWrapper'
@@ -63,7 +67,6 @@ export function BaseNode({
     id !== connectionNodeId
   const [targetSelected, setTargetSelected] = useState(false)
   const [sourceSelected, setSourceSelected] = useState(false)
-  const theme = useTheme()
 
   useOnSelectionChange({
     onChange: (selected) => {
@@ -85,12 +88,11 @@ export function BaseNode({
         cursor: dragging === true ? 'grabbing' : 'pointer',
         '.arrow': {
           opacity: 0,
-          right: -20,
           transition: 'right 0.5s, opacity 0.4s'
         },
         ':hover .arrow': {
           opacity: isSourceConnected ? 0 : 1,
-          right: isSourceConnected ? -20 : -30
+          right: -22 // animation travel length
         }
       }}
     >
@@ -99,27 +101,26 @@ export function BaseNode({
         <PulseWrapper show={isConnecting}>
           <StyledHandle
             type="target"
-            data-testid="BaseNodeTopHandle"
+            data-testid="BaseNodeLeftHandle"
             position={Position.Left}
             isConnectableStart={isConnecting}
             isConnectable={id !== connectionNodeId}
             sx={{
-              ml: 0.5,
-              width: 8.5,
-              height: 8.5,
-              left: -7.5,
-              top: STEP_NODE_CARD_HEIGHT / 2 + 6,
-              background: '#F1F2F5',
-              border:
+              width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
+              height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
+              left: -HANDLE_WITH_BORDER_DIAMETER / 2,
+              top: (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2,
+              background: (theme) => theme.palette.background.default,
+              border: (theme) =>
                 isConnecting || targetSelected
-                  ? '2px solid #c52d3aff'
-                  : '2px solid #aaacbb',
+                  ? `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.primary.main}`
+                  : `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.secondary.light}80`,
 
               '&:after': {
                 display: isConnecting ? 'block' : 'none',
-                content: '""',
                 position: 'absolute',
-                width: STEP_NODE_CARD_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
+                content: '""',
+                width: STEP_NODE_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
                 height: STEP_NODE_CARD_HEIGHT,
                 top: -STEP_NODE_CARD_HEIGHT / 2,
                 left: -NODE_EXTRA_DETECTION_WIDTH,
@@ -134,29 +135,30 @@ export function BaseNode({
           id={id}
           type="source"
           title={t('Drag to connect')}
-          data-testid="BaseNodeBottomHandle"
+          data-testid="BaseNodeRightHandle"
           position={Position.Right}
           onConnect={onSourceConnect}
           {...sourceHandleProps}
           sx={{
-            width: 6,
-            height: 6,
-            background: sourceSelected
-              ? theme.palette.primary.main
-              : 'rgba(0,0,0,.25)',
-            border: sourceSelected ? '2px solid #c52d3aff' : 'none',
+            border: 'none',
+            width: HANDLE_DIAMETER,
+            height: HANDLE_DIAMETER,
+            background: (theme) =>
+              sourceSelected
+                ? theme.palette.primary.main
+                : `${theme.palette.secondary.light}A0`,
             ...sourceHandleProps?.sx,
 
             '&:after': {
               content: '""',
               position: 'absolute',
-              top: '-10px',
+              top: -((ACTION_BUTTON_HEIGHT - HANDLE_DIAMETER) / 2),
               width:
                 id === 'SocialPreview'
-                  ? 60
+                  ? NODE_EXTRA_DETECTION_WIDTH * 2
                   : STEP_NODE_CARD_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
               height: ACTION_BUTTON_HEIGHT,
-              right: -NODE_EXTRA_DETECTION_WIDTH,
+              right: -NODE_EXTRA_DETECTION_WIDTH / 2,
               backgroundColor: 'transparent'
             }
           }}
@@ -166,12 +168,12 @@ export function BaseNode({
             className="arrow"
             sx={{
               position: 'absolute',
-              borderRadius: '50%',
-              color: 'white',
+              borderRadius: '100%',
               fontSize: 'large',
-              backgroundColor: '#c52d3aff', // theme.palette.primary.main,
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
+              color: (theme) => theme.palette.background.paper,
+              backgroundColor: (theme) => theme.palette.primary.main,
+              top: -HANDLE_DIAMETER,
+              right: -HANDLE_DIAMETER,
               pointerEvents: 'none'
             }}
           />

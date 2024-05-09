@@ -2,7 +2,11 @@ import { keyframes } from '@emotion/react'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
-import { STEP_NODE_CARD_HEIGHT } from '../../StepBlockNode/libs/sizes'
+import {
+  HANDLE_DIAMETER,
+  HANDLE_WITH_BORDER_DIAMETER,
+  STEP_NODE_CARD_HEIGHT
+} from '../../StepBlockNode/libs/sizes'
 
 const pulse = keyframes`
   0%,10% {
@@ -50,11 +54,11 @@ export function PulseWrapper({
           sx={{
             background: 'red',
             position: 'absolute',
-            ml: '-6.25px',
-            top: STEP_NODE_CARD_HEIGHT / 2 + 1,
+            left: -HANDLE_DIAMETER,
+            top: STEP_NODE_CARD_HEIGHT / 2,
             borderRadius: '100%',
-            height: '10px',
-            width: '10px',
+            height: HANDLE_WITH_BORDER_DIAMETER,
+            width: HANDLE_WITH_BORDER_DIAMETER,
             animation: `${pulse} 0.8s infinite`
           }}
         />

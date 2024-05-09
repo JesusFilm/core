@@ -72,9 +72,9 @@ export function StepBlockNode({
         sx={{
           background: (theme) =>
             isSelected
-              ? `${theme.palette.secondary.dark}20`
-              : `${theme.palette.divider}80`,
-          // border: (theme) => `2px solid ${theme.palette.secondary.dark}0D`,
+              ? `${theme.palette.secondary.dark}18`
+              : `${theme.palette.background.default}10`,
+          border: (theme) => `2px solid ${theme.palette.secondary.dark}0D`,
           borderRadius: 3,
           maxWidth: STEP_NODE_WIDTH
         }}

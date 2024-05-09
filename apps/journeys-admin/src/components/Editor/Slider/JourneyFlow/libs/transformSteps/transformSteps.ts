@@ -7,12 +7,11 @@ import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
-import {
-  MARKER_END_DEFAULT_COLOR,
-  MARKER_END_SELECTED_COLOR
-} from '../../nodes/StepBlockNode/libs/colors'
 import { PositionMap } from '../arrangeSteps'
 import { filterActionBlocks } from '../filterActionBlocks'
+
+export const MARKER_END_DEFAULT_COLOR = '#D3D3D3'
+export const MARKER_END_SELECTED_COLOR = '#C52D3A' // theme.palette.primary.main
 
 interface Connection<T = BlockFields> {
   block: TreeBlock<T>

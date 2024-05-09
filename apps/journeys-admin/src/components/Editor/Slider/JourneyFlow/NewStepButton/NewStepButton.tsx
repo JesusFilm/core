@@ -110,6 +110,14 @@ export function NewStepButton({
         label="Add Step"
         icon={<Plus3Icon />}
         onClick={handleAddStepAndCardBlock}
+        ButtonProps={{
+          sx: {
+            backgroundColor: (theme) => theme.palette.background.paper,
+            ':hover': {
+              backgroundColor: (theme) => theme.palette.background.paper
+            }
+          }
+        }}
       />
     </Box>
   )

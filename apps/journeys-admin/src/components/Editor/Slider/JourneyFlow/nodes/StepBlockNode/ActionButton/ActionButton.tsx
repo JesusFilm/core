@@ -116,7 +116,7 @@ export function ActionButton({
     >
       <Box
         sx={{
-          opacity: selected ? 1 : 0.5,
+          opacity: selected ? 1 : 0.7,
           margin: 0,
           borderTop: (theme) => `1px solid ${theme.palette.secondary.dark}1A`,
           height: ACTION_BUTTON_HEIGHT,
