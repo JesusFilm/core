@@ -3,8 +3,11 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import {
   BlockFields_CardBlock as CardBlock,
-  BlockFields_ImageBlock as ImageBlock
+  BlockFields_ImageBlock as ImageBlock,
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
+import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import { VideoFields_video_variantLanguages } from '../../../../../../../../../__generated__/VideoFields'
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'
@@ -15,6 +18,37 @@ interface CardMetadata {
   description?: string
   priorityBlock?: TreeBlock
   bgImage?: string
+}
+
+function getVideoVariantLanguage(
+  selectedLanguageId,
+  languages?: VideoFields_video_variantLanguages[]
+): string | undefined {
+  if (languages == null) return
+
+  const language = languages.find(
+    (language) => language.id === selectedLanguageId
+  )
+
+  if (language != null) {
+    const local = language.name?.find(({ primary }) => !primary)?.value
+    const native = language.name?.find(({ primary }) => primary)?.value
+
+    return local ?? native
+  }
+}
+
+function getVideoDescription(videoBlock: VideoBlock): string {
+  return (
+    {
+      [VideoBlockSource.internal]: getVideoVariantLanguage(
+        videoBlock.videoVariantLanguageId,
+        videoBlock.video?.variantLanguages
+      ),
+      [VideoBlockSource.youTube]: 'YouTube Media',
+      [VideoBlockSource.cloudflare]: 'Uploaded Media'
+    }[videoBlock.source] ?? 'Internal Media'
+  )
 }
 
 export function getCardMetadata(
@@ -34,6 +68,8 @@ export function getCardMetadata(
           secondsToTimeFormat(priorityBlock.endAt, { trimZeroes: true })
         : undefined
 
+    const description = getVideoDescription(priorityBlock)
+
     const posterBlockImage =
       priorityBlock?.posterBlockId != null
         ? (
@@ -52,7 +88,7 @@ export function getCardMetadata(
       priorityBlock.image ??
       undefined
 
-    return { title, subtitle, priorityBlock, bgImage }
+    return { description, title, subtitle, priorityBlock, bgImage }
   } else {
     const [title, subtitle] = getCardHeadings(card.children)
     const bgImage = getBackgroundImage(card)
