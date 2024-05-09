@@ -114,10 +114,6 @@ describe('ActionResolver', () => {
       expect(resolver.__resolveType(linkAction)).toBe('LinkAction')
     })
 
-    it('returns NavigateAction', () => {
-      expect(resolver.__resolveType(navigateAction)).toBe('NavigateAction')
-    })
-
     it('returns NavigateToBlockAction', () => {
       expect(resolver.__resolveType(navigateToBlockAction)).toBe(
         'NavigateToBlockAction'
