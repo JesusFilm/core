@@ -36,7 +36,6 @@ import {
   GetStepBlocksWithPosition,
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
-import { useBlockActionDeleteMutation } from '../../../../libs/useBlockActionDeleteMutation'
 import { useBlockOrderUpdateMutation } from '../../../../libs/useBlockOrderUpdateMutation'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
@@ -47,6 +46,7 @@ import { StartEdge } from './edges/StartEdge'
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
 import { useCreateNodeAndConnect } from './libs/useCreateNodeAndConnect'
+import { useDeleteEdge } from './libs/useDeleteEdge'
 import { NewStepButton } from './NewStepButton'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
@@ -72,20 +72,20 @@ export function JourneyFlow(): ReactElement {
     state: { steps },
     dispatch
   } = useEditor()
+  const [reactFlowInstance, setReactFlowInstance] =
+    useState<ReactFlowInstance | null>(null)
   const connectingParams = useRef<OnConnectStartParams | null>(null)
   const edgeUpdateSuccessful = useRef<boolean | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const theme = useTheme()
 
-  const [reactFlowInstance, setReactFlowInstance] =
-    useState<ReactFlowInstance | null>(null)
+  const deleteEdge = useDeleteEdge()
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const createNodeAndConnect = useCreateNodeAndConnect()
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
-  const [blockActionDelete] = useBlockActionDeleteMutation()
   async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
     if (steps == null || journey == null) return
     positions = arrangeSteps(steps)
@@ -302,40 +302,12 @@ export function JourneyFlow(): ReactElement {
 
   const onEdgeUpdateEnd = useCallback(
     (_, edge: Edge) => {
-      // TODO HOOKS: delete edge - step / action
       if (edgeUpdateSuccessful.current === false) {
-        const { source, sourceHandle } = edge
-        if (journey == null || source === 'SocialPreview') return
-        if (sourceHandle != null) {
-          // action
-          const step = steps?.find((step) => step.id === source)
-          const block = searchBlocks(step != null ? [step] : [], sourceHandle)
-          if (block != null) {
-            void blockActionDelete(block)
-          }
-        } else if (source != null) {
-          // step
-          void stepBlockNextBlockUpdate({
-            variables: {
-              id: source,
-              journeyId: journey.id,
-              input: {
-                nextBlockId: null
-              }
-            },
-            optimisticResponse: {
-              stepBlockUpdate: {
-                id: source,
-                __typename: 'StepBlock',
-                nextBlockId: null
-              }
-            }
-          })
-        }
+        void deleteEdge(edge?.source, edge?.sourceHandle)
       }
       edgeUpdateSuccessful.current = true
     },
-    [journey, steps, blockActionDelete, stepBlockNextBlockUpdate]
+    [deleteEdge]
   )
 
   const nodeTypes = useMemo(

@@ -9,13 +9,9 @@ import {
   useOnSelectionChange
 } from 'reactflow'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import X3Icon from '@core/shared/ui/icons/X3'
 
-import { useBlockActionDeleteMutation } from '../../../../../../libs/useBlockActionDeleteMutation'
-import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
+import { useDeleteEdge } from '../../libs/useDeleteEdge'
 import { BaseEdge } from '../BaseEdge'
 
 export function CustomEdge({
@@ -28,14 +24,7 @@ export function CustomEdge({
   targetPosition,
   style = {}
 }: EdgeProps): ReactElement {
-  const { journey } = useJourney()
-  const {
-    state: { steps }
-  } = useEditor()
-
-  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
-  const [blockActionDelete] = useBlockActionDeleteMutation()
-
+  const deleteEdge = useDeleteEdge()
   const [edgeSelected, setEdgeSelected] = useState(false)
   const [selectedEdge, setSelectedEdge] = useState<Edge | undefined>(undefined)
   const [edgePath, labelX, labelY] = getBezierPath({
@@ -60,39 +49,7 @@ export function CustomEdge({
   })
 
   const onEdgeClick = (): void => {
-    // TODO HOOKS: delete edge - action / step
-    if (journey == null || selectedEdge == null) return
-    const step = steps?.find((step) => step.id === selectedEdge.source)
-    if (step == null) return
-
-    if (selectedEdge.sourceHandle != null) {
-      // action
-      const block = searchBlocks(
-        step != null ? [step] : [],
-        selectedEdge.sourceHandle
-      )
-      if (block != null) {
-        void blockActionDelete(block)
-      }
-    } else {
-      // step block
-      void stepBlockNextBlockUpdate({
-        variables: {
-          id: step.id,
-          journeyId: journey.id,
-          input: {
-            nextBlockId: null
-          }
-        },
-        optimisticResponse: {
-          stepBlockUpdate: {
-            id: step.id,
-            __typename: 'StepBlock',
-            nextBlockId: null
-          }
-        }
-      })
-    }
+    void deleteEdge(selectedEdge?.source, selectedEdge?.sourceHandle)
   }
 
   return (
