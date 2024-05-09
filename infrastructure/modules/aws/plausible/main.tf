@@ -1,5 +1,5 @@
 module "plausible" {
-  source                = "../../../infrastructure/modules/aws/ecs-task-base"
+  source                = "..ecs-task-base"
   ecs_config            = var.ecs_config
   service_config        = local.plausible.service_config
   env                   = var.env
@@ -9,7 +9,7 @@ module "plausible" {
 }
 
 module "clickhouse" {
-  source                = "../../../infrastructure/modules/aws/ecs-task-base"
+  source                = "../ecs-task-base"
   ecs_config            = var.ecs_config
   service_config        = local.service_config
   env                   = var.env
@@ -19,7 +19,7 @@ module "clickhouse" {
 }
 
 module "postgres" {
-  source                  = "../../../infrastructure/modules/aws/aurora"
+  source                  = "../aurora"
   name                    = local.service_config.name
   env                     = var.env
   doppler_token           = var.doppler_token
