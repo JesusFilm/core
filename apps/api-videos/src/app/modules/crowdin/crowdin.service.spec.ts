@@ -288,7 +288,7 @@ describe('CrowdinService', () => {
       expect(prismaService.videoStudyQuestion.upsert).toHaveBeenCalledTimes(2)
     })
 
-    it('should throw if no matching videoId for descriptions', async () => {
+    it('should throw if exported filename is wrong format', async () => {
       process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
       prismaService.video.findMany.mockResolvedValue([])
 
@@ -297,7 +297,53 @@ describe('CrowdinService', () => {
           {
             content: `<?xml version="1.0" encoding="UTF-8"?>
             <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-            <file id="35" original="/Arclight/collection_long_description.csv" source-language="en" target-language="ko">
+            <file id="35" original="/Arclight/study_questions.csv" source-language="en" target-language="ko">
+              <body>
+              <trans-unit id="1" resname="1">
+                <source>Why?</source>
+                <target>그 이유는?</target>
+              </trans-unit>
+              </body>
+            </file>
+            </xliff>`,
+            file: '/content/ko.xliff'
+          }
+        ]
+      })
+
+      await expect(service.pullTranslations()).rejects.toThrow(
+        'export filename does not match format or custom mapping not set: /content/ko.xliff'
+      )
+    })
+
+    it('should throw if data does not match schema', async () => {
+      process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
+      prismaService.video.findMany.mockResolvedValue([])
+
+      mockGetTranslations.mockResolvedValue({
+        ko: [
+          {
+            content: `wrong format`,
+            file: '/content/3804.xliff'
+          }
+        ]
+      })
+
+      await expect(service.pullTranslations()).rejects.toThrow(
+        'xliff12ToJs data does not match schema'
+      )
+    })
+
+    it('should throw if no matching videoId for titles', async () => {
+      process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
+      prismaService.video.findMany.mockResolvedValueOnce([])
+
+      mockGetTranslations.mockResolvedValue({
+        ko: [
+          {
+            content: `<?xml version="1.0" encoding="UTF-8"?>
+            <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+            <file id="35" original="/Arclight/media_metadata_tile.csv" source-language="en" target-language="ko">
               <body>
               <trans-unit id="1" resname="cl13-0-0">
                 <source>StoryClubs</source>
@@ -316,7 +362,7 @@ describe('CrowdinService', () => {
       )
     })
 
-    it('should throw if no matching videoId for titles', async () => {
+    it('should throw if no matching videoId for descriptions', async () => {
       process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
       prismaService.video.findMany.mockResolvedValue([])
 
@@ -325,7 +371,7 @@ describe('CrowdinService', () => {
           {
             content: `<?xml version="1.0" encoding="UTF-8"?>
             <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-            <file id="35" original="/Arclight/media_metadata_tile.csv" source-language="en" target-language="ko">
+            <file id="35" original="/Arclight/media_metadata_description.csv" source-language="en" target-language="ko">
               <body>
               <trans-unit id="1" resname="cl13-0-0">
                 <source>StoryClubs</source>

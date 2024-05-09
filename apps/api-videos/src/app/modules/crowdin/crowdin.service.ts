@@ -37,6 +37,14 @@ const schema = z.object({
 })
 
 type CrowdinData = z.infer<typeof schema>
+
+class MatchError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'MatchError'
+  }
+}
+
 @Injectable()
 export class CrowdinService {
   constructor(private readonly prisma: PrismaService) {}
@@ -62,14 +70,16 @@ export class CrowdinService {
           try {
             const data = schema.parse(await xliff12ToJs(language[0].content))
             await this.storeTranslations(languageId, data)
-          } catch {
-            throw new Error(
-              `xliff12ToJs data does not match schema on language: ${languageId}`
-            )
+          } catch (err) {
+            if (err instanceof MatchError) {
+              throw new Error(err.message)
+            } else {
+              throw new Error('xliff12ToJs data does not match schema')
+            }
           }
         } else {
           throw new Error(
-            'export filename does not match format [languageId].xliff'
+            `export filename does not match format or custom mapping not set: ${language[0].file}`
           )
         }
       })
@@ -116,106 +126,122 @@ export class CrowdinService {
       case '/Arclight/collection_title.csv':
         {
           const videoId = resName
-          const videos = await this.prisma.video.findMany({
-            select: { id: true },
-            where: {
-              id: { endsWith: videoId }
-            }
-          })
-          if (videos.length !== 1)
-            throw new Error(`no matching videoId found for ${videoId}`)
-          await this.prisma.videoTitle.upsert({
-            where: {
-              videoId_languageId: {
-                videoId: videos[0].id,
-                languageId
-              }
-            },
-            update: {
-              value
-            },
-            create: {
-              value,
-              languageId,
-              primary: false,
-              videoId: videos[0].id
-            }
-          })
+          const videos = await this.getVideos(videoId)
+          if (videos.length === 0)
+            throw new MatchError(`no matching videoId found for ${videoId}`)
+          await this.updateVideoTitle(videos[0].id, languageId, value)
         }
         break
       case '/Arclight/collection_long_description.csv':
       case '/Arclight/media_metadata_description.csv':
         {
           const videoId = resName
-          const videos = await this.prisma.video.findMany({
-            select: { id: true },
-            where: {
-              id: { endsWith: videoId }
-            }
-          })
-          if (videos.length !== 1)
-            throw new Error(`no matching videoId found for ${videoId}`)
-          await this.prisma.videoDescription.upsert({
-            where: {
-              videoId_languageId: {
-                videoId: videos[0].id,
-                languageId
-              }
-            },
-            update: {
-              value
-            },
-            create: {
-              value,
-              languageId,
-              primary: false,
-              videoId: videos[0].id
-            }
-          })
+          const videos = await this.getVideos(videoId)
+          if (videos.length === 0)
+            throw new MatchError(`no matching videoId found for ${videoId}`)
+          await this.updateVideoDescription(videos[0].id, languageId, value)
         }
         break
       case '/Arclight/study_questions.csv': {
-        const englishStudyQuestions =
-          await this.prisma.videoStudyQuestion.findMany({
-            select: {
-              videoId: true,
-              order: true
-            },
-            where: { crowdInId: resName }
-          })
-
+        const englishStudyQuestions = await this.getStudyQuestions(resName)
         if (englishStudyQuestions.length === 0)
-          throw new Error(`no matching crowdInId found for ${resName}`)
+          throw new MatchError(`no matching crowdInId found for ${resName}`)
 
         await Promise.all(
           map(englishStudyQuestions, async (englishStudyQuestion) => {
             const videoId = englishStudyQuestion.videoId
-            if (videoId === null)
-              throw new Error(`no matching videoId found for ${resName}`)
-            await this.prisma.videoStudyQuestion.upsert({
-              where: {
-                videoId_languageId_order: {
-                  videoId,
-                  languageId,
-                  order: englishStudyQuestion.order
-                }
-              },
-              update: {
-                value
-              },
-              create: {
-                value,
-                languageId,
-                primary: false,
-                videoId,
-                order: englishStudyQuestion.order,
-                crowdInId: resName
-              }
-            })
+            if (videoId == null)
+              throw new MatchError(`no matching videoId found for ${resName}`)
+            await this.updateStudyQuestion(
+              videoId,
+              languageId,
+              value,
+              resName,
+              englishStudyQuestion.order
+            )
           })
         )
         break
       }
     }
+  }
+
+  private async getVideos(videoId: string): Promise<
+    Array<{
+      id: string
+    }>
+  > {
+    return await this.prisma.video.findMany({
+      select: { id: true },
+      where: { id: { endsWith: videoId } }
+    })
+  }
+
+  private async updateVideoTitle(
+    videoId: string,
+    languageId: string,
+    value: string
+  ): Promise<void> {
+    await this.prisma.videoTitle.upsert({
+      where: { videoId_languageId: { videoId, languageId } },
+      update: { value },
+      create: { value, languageId, primary: false, videoId }
+    })
+  }
+
+  private async updateVideoDescription(
+    videoId: string,
+    languageId: string,
+    value: string
+  ): Promise<void> {
+    await this.prisma.videoDescription.upsert({
+      where: { videoId_languageId: { videoId, languageId } },
+      update: { value },
+      create: { value, languageId, primary: false, videoId }
+    })
+  }
+
+  private async getStudyQuestions(resName: string): Promise<
+    Array<{
+      order: number
+      videoId: string | null
+    }>
+  > {
+    return await this.prisma.videoStudyQuestion.findMany({
+      select: {
+        videoId: true,
+        order: true
+      },
+      where: { crowdInId: resName }
+    })
+  }
+
+  private async updateStudyQuestion(
+    videoId: string,
+    languageId: string,
+    value: string,
+    resName: string,
+    order: number
+  ): Promise<void> {
+    await this.prisma.videoStudyQuestion.upsert({
+      where: {
+        videoId_languageId_order: {
+          videoId,
+          languageId,
+          order
+        }
+      },
+      update: {
+        value
+      },
+      create: {
+        value,
+        languageId,
+        primary: false,
+        videoId,
+        order,
+        crowdInId: resName
+      }
+    })
   }
 }
