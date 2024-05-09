@@ -29,7 +29,7 @@ export function useUpdateEdge(): (
     target?: string
   ): Promise<void> {
     const socialEdge = source === 'SocialPreview'
-    const actionEdge = sourceHandle != null
+    const actionEdge = sourceHandle != null && sourceHandle !== source
     const stepEdge = source != null && !actionEdge
     if (journey == null || target == null) return
     let selectedStep: TreeBlock<StepBlock> | undefined
