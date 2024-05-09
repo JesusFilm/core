@@ -29,7 +29,6 @@ export function NewStepButton({
   const createNodeAndEdge = useCreateNodeAndEdge()
 
   async function handleAddStepAndCardBlock(event): Promise<void> {
-    // TODO HOOKS: create node - step
     if (reactFlowInstance == null || journey == null) return
     const { x, y } = reactFlowInstance.screenToFlowPosition({
       x: (event as unknown as MouseEvent).clientX,

@@ -195,7 +195,6 @@ export function JourneyFlow(): ReactElement {
           y: (event as unknown as MouseEvent).clientY
         })
 
-        // TODO HOOKS: create node - step
         void createNodeAndEdge(
           parseInt(x.toString()),
           parseInt(y.toString()) - STEP_NODE_CARD_HEIGHT / 2,
@@ -229,7 +228,6 @@ export function JourneyFlow(): ReactElement {
 
   const onEdgeUpdate: OnEdgeUpdateFunc = useCallback(
     (_, { source, sourceHandle, target }) => {
-      // TODO HOOKS: update edge - step / action / social
       edgeUpdateSuccessful.current = true
       void updateEdge(source, sourceHandle, target)
     },

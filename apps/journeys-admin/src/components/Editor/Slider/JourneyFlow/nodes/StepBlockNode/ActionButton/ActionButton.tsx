@@ -78,7 +78,6 @@ export function ActionButton({
     target: string
     source: string
   }): Promise<void> {
-    // TODO HOOKS: update edge - step / action
     if (journey == null) return
 
     if (block.__typename === 'StepBlock') {
