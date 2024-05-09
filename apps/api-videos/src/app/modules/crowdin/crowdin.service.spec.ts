@@ -336,7 +336,7 @@ describe('CrowdinService', () => {
 
     it('should throw if no matching videoId for titles', async () => {
       process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
-      prismaService.video.findMany.mockResolvedValueOnce([])
+      prismaService.video.findMany.mockResolvedValue([])
 
       mockGetTranslations.mockResolvedValue({
         ko: [
