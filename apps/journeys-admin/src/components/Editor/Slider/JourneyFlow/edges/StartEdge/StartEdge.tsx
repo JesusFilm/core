@@ -2,11 +2,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import {
-  EdgeLabelRenderer,
-  EdgeProps,
-  getBezierPath
-} from 'reactflow'
+import { EdgeLabelRenderer, EdgeProps, getBezierPath } from 'reactflow'
 
 import { BaseEdge } from '../BaseEdge'
 
@@ -30,18 +26,17 @@ export function StartEdge({
     targetPosition
   })
 
-
   return (
     <BaseEdge id={id} style={style} edgePath={edgePath}>
       <EdgeLabelRenderer>
         <Box
-          style={{
+          sx={{
             position: 'absolute',
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
             pointerEvents: 'all',
-            backgroundColor: 'white',
+            backgroundColor: (theme) => theme.palette.background.paper,
             borderRadius: 10,
-            border: '1px solid lightGrey'
+            border: (theme) => `1px solid ${theme.palette.divider}`
           }}
         >
           <Typography variant="body2" sx={{ px: 2 }}>

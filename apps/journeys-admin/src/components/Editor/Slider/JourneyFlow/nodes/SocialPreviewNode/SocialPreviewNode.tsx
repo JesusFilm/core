@@ -134,11 +134,16 @@ export function SocialPreviewNode(): ReactElement {
               <Box
                 width={45}
                 height={9}
-                bgcolor="#EFEFEF"
+                bgcolor="background.default"
                 borderRadius="4.5px"
               />
             </Box>
-            <Box width={9} height={9} bgcolor="#EFEFEF" borderRadius="4.5px" />
+            <Box
+              width={9}
+              height={9}
+              bgcolor="background.default"
+              borderRadius="4.5px"
+            />
           </Stack>
           <CardMedia
             sx={{
@@ -186,7 +191,7 @@ export function SocialPreviewNode(): ReactElement {
                   data-testid="SocialPreviewTitleEmpty"
                   width={118.5}
                   height={9}
-                  bgcolor="#EFEFEF"
+                  bgcolor="background.default"
                   borderRadius="4px"
                 />
               ) : (
@@ -194,7 +199,7 @@ export function SocialPreviewNode(): ReactElement {
                   variant="subtitle1"
                   fontSize={7}
                   lineHeight="9px"
-                  color="#26262E"
+                  color="secondary.dark"
                   noWrap
                 >
                   {journey.seoTitle}
@@ -206,7 +211,7 @@ export function SocialPreviewNode(): ReactElement {
                   data-testid="SocialPreviewDescriptionEmpty"
                   width={118.5}
                   height={9}
-                  bgcolor="#EFEFEF"
+                  bgcolor="background.default"
                   borderRadius="4px"
                 />
               ) : (
@@ -214,7 +219,7 @@ export function SocialPreviewNode(): ReactElement {
                   variant="body2"
                   fontSize={4.5}
                   lineHeight="9px"
-                  color="#6D6D7D"
+                  color="secondary.light"
                   noWrap
                 >
                   {journey.seoDescription}
@@ -224,7 +229,7 @@ export function SocialPreviewNode(): ReactElement {
             <Stack
               flexDirection="row"
               justifyContent="space-around"
-              color="#EFEFEF"
+              color="background.default"
             >
               <ThumbsUp sx={{ fontSize: 9 }} />
               <MessageCircle sx={{ fontSize: 9 }} />

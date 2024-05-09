@@ -70,14 +70,13 @@ export function StepBlockNode({
         gap={0.5}
         direction="column"
         sx={{
-          background:
-            activeContent === ActiveContent.Canvas &&
-            selectedStep?.id === step.id
-              ? 'rgba(0, 0, 0, .05)'
-              : 'rgba(240, 242, 245, .5)',
-          border: '2px solid rgba(0,0,0, .05)',
+          background: (theme) =>
+            isSelected
+              ? `${theme.palette.secondary.dark}20`
+              : `${theme.palette.divider}80`,
+          // border: (theme) => `2px solid ${theme.palette.secondary.dark}0D`,
           borderRadius: 3,
-          maxWidth: STEP_NODE_WIDTH + 16
+          maxWidth: STEP_NODE_WIDTH
         }}
       >
         <BaseNode

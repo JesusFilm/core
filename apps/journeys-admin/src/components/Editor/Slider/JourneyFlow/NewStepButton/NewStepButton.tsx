@@ -19,8 +19,8 @@ import {
 import { useStepAndCardBlockCreateMutation } from '../../../../../libs/useStepAndCardBlockCreateMutation'
 import { Item } from '../../../Toolbar/Items/Item'
 import {
-  STEP_NODE_HEIGHT,
-  STEP_NODE_WIDTH
+  STEP_NODE_CARD_HEIGHT,
+  STEP_NODE_CARD_WIDTH
 } from '../nodes/StepBlockNode/libs/sizes'
 
 interface NewStepButtonProps {
@@ -68,8 +68,8 @@ export function NewStepButton({
         stepBlockCreateInput: {
           id: newStepId,
           journeyId: journey.id,
-          x: parseInt(x.toString()) - STEP_NODE_WIDTH,
-          y: parseInt(y.toString()) + STEP_NODE_HEIGHT / 2
+          x: parseInt(x.toString()) - STEP_NODE_CARD_WIDTH,
+          y: parseInt(y.toString()) + STEP_NODE_CARD_HEIGHT / 2
         },
         cardBlockCreateInput: {
           id: newCardId,

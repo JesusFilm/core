@@ -47,10 +47,9 @@ export function StepBlockNodeIcon({
         height: 30,
         width: 30,
         display: 'flex',
-        position: 'absolute',
         alignItems: 'center',
         justifyContent: 'center',
-        color: 'white',
+        color: (theme) => theme.palette.background.paper,
         background
       }}
     >

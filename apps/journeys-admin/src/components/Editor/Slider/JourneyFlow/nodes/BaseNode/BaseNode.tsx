@@ -16,8 +16,8 @@ import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 import {
   ACTION_BUTTON_HEIGHT,
   NODE_EXTRA_DETECTION_WIDTH,
-  STEP_NODE_HEIGHT,
-  STEP_NODE_WIDTH
+  STEP_NODE_CARD_HEIGHT,
+  STEP_NODE_CARD_WIDTH
 } from '../StepBlockNode/libs/sizes'
 
 import { PulseWrapper } from './PulseWrapper'
@@ -108,7 +108,7 @@ export function BaseNode({
               width: 8.5,
               height: 8.5,
               left: -7.5,
-              top: STEP_NODE_HEIGHT / 2 + 6,
+              top: STEP_NODE_CARD_HEIGHT / 2 + 6,
               background: '#F1F2F5',
               border:
                 isConnecting || targetSelected
@@ -119,9 +119,9 @@ export function BaseNode({
                 display: isConnecting ? 'block' : 'none',
                 content: '""',
                 position: 'absolute',
-                width: STEP_NODE_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
-                height: STEP_NODE_HEIGHT,
-                top: -STEP_NODE_HEIGHT / 2,
+                width: STEP_NODE_CARD_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
+                height: STEP_NODE_CARD_HEIGHT,
+                top: -STEP_NODE_CARD_HEIGHT / 2,
                 left: -NODE_EXTRA_DETECTION_WIDTH,
                 backgroundColor: 'transparent'
               }
@@ -154,7 +154,7 @@ export function BaseNode({
               width:
                 id === 'SocialPreview'
                   ? 60
-                  : STEP_NODE_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
+                  : STEP_NODE_CARD_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
               height: ACTION_BUTTON_HEIGHT,
               right: -NODE_EXTRA_DETECTION_WIDTH,
               backgroundColor: 'transparent'

@@ -14,7 +14,7 @@ import {
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { getCardMetadata } from '../libs/getCardMetadata'
-import { STEP_NODE_HEIGHT, STEP_NODE_WIDTH } from '../libs/sizes'
+import { STEP_NODE_CARD_HEIGHT, STEP_NODE_CARD_WIDTH } from '../libs/sizes'
 import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
 
 interface StepBlockNodeCardProps {
@@ -58,7 +58,7 @@ export function StepBlockNodeCard({
       title={t('Click to edit or drag')}
       onClick={handleClick}
       sx={{
-        width: STEP_NODE_WIDTH,
+        width: STEP_NODE_CARD_WIDTH,
         m: 1.5,
         '&:hover': {
           boxShadow: selected ? 6 : 3
@@ -66,27 +66,25 @@ export function StepBlockNodeCard({
       }}
     >
       <CardContent
-        data-testid="Step block"
+        data-testid="StepBlock"
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'center',
-          justifyItems: 'center',
-          width: STEP_NODE_WIDTH,
-          height: STEP_NODE_HEIGHT,
-          margin: 0,
-          padding: 0,
+          width: STEP_NODE_CARD_WIDTH,
+          height: STEP_NODE_CARD_HEIGHT,
           borderRadius: 1,
-          paddingBottom: '0px !important'
+          p: 0,
+          '&:last-child': {
+            pb: 0
+          }
         }}
       >
         <Box
           sx={{
             height: '100%',
-            flexShrink: 0,
-            width: 50,
-            borderBottomLeftRadius: 6,
-            borderTopLeftRadius: 6,
+            width: 80,
+            borderBottomLeftRadius: 4,
+            borderTopLeftRadius: 4,
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
             display: 'flex',
@@ -106,9 +104,8 @@ export function StepBlockNodeCard({
             flexDirection: 'column',
             alignItems: 'flex-start',
             justifyContent: 'center',
-            width: STEP_NODE_WIDTH,
-            height: STEP_NODE_HEIGHT,
-            margin: 0,
+            width: STEP_NODE_CARD_WIDTH,
+            height: STEP_NODE_CARD_HEIGHT,
             padding: 2
           }}
         >
@@ -118,38 +115,22 @@ export function StepBlockNodeCard({
               '-webkit-box-orient': 'vertical',
               '-webkit-line-clamp': '1',
               overflow: 'hidden',
-              padding: 0,
-              fontSize: 9,
-              height: 'auto',
-              flexDirection: 'column',
-              justifyContent: 'flex-end',
-              alignSelf: 'flex-start',
-              marginBottom: 1,
-              lineHeight: 1.3,
-              alignItems: 'flex-end',
-              color: '#444451'
+              fontSize: 9
             }}
           >
             {description !== '' ? description : ''}
           </Typography>
           <Typography
+            gutterBottom
             sx={{
               display: '-webkit-box',
               '-webkit-box-orient': 'vertical',
               '-webkit-line-clamp': '2',
               overflow: 'hidden',
-              padding: 0,
               fontSize: 11,
               fontWeight: 'bold',
-              height: 'auto',
-              flexDirection: 'column',
-              justifyContent: 'flex-end',
               alignSelf: 'flex-start',
-              marginBottom: 1,
-              lineHeight: 1.3,
-              alignItems: 'flex-end',
-              color: '#26262E',
-              wordBreak: 'break-all'
+              lineHeight: 1.3
             }}
           >
             {title != null && title !== '' ? (
@@ -173,10 +154,7 @@ export function StepBlockNodeCard({
               '-webkit-line-clamp': '2',
               fontSize: 10,
               lineHeight: '1.2',
-              justifyContent: 'top',
-              color: '#444451',
-              overflow: 'hidden',
-              paddingBottom: '1px'
+              overflow: 'hidden'
             }}
           >
             {subtitle != null && subtitle !== '' ? (

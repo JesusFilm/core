@@ -7,6 +7,10 @@ import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
+import {
+  MARKER_END_DEFAULT_COLOR,
+  MARKER_END_SELECTED_COLOR
+} from '../../nodes/StepBlockNode/libs/colors'
 import { PositionMap } from '../arrangeSteps'
 import { filterActionBlocks } from '../filterActionBlocks'
 
@@ -33,7 +37,7 @@ export function transformSteps(
       type: MarkerType.ArrowClosed,
       height: 10,
       width: 10,
-      color: 'lightGrey'
+      color: MARKER_END_DEFAULT_COLOR
     }
   }
 
@@ -110,7 +114,7 @@ export function transformSteps(
         type: MarkerType.ArrowClosed,
         height: 10,
         width: 10,
-        color: '#C52D3A'
+        color: MARKER_END_SELECTED_COLOR
       },
       style: {
         opacity: 0

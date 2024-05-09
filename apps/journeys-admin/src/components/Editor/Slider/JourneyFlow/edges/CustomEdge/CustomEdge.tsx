@@ -109,17 +109,23 @@ export function CustomEdge({
               onClick={onEdgeClick}
               sx={{
                 borderRadius: '100%',
-                backgroundColor: '#C52D3A',
-                height: '16px',
-                width: '16px',
+                backgroundColor: (theme) => theme.palette.primary.main,
+                height: 4,
+                width: 4,
                 display: 'flex',
                 '&:hover': {
-                  backgroundColor: '#C52D3A',
+                  backgroundColor: (theme) => theme.palette.primary.main,
                   opacity: 0.8
                 }
               }}
             >
-              <X3Icon sx={{ height: '12px', width: '12px', color: 'white' }} />
+              <X3Icon
+                sx={{
+                  height: 12,
+                  width: 12,
+                  color: (theme) => theme.palette.background.paper
+                }}
+              />
             </IconButton>
           </Box>
         </EdgeLabelRenderer>

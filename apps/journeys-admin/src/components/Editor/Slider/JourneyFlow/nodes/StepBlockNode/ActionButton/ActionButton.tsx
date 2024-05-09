@@ -117,27 +117,21 @@ export function ActionButton({
       <Box
         sx={{
           opacity: selected ? 1 : 0.5,
-          margin: '0',
-          border: '1px solid rgba(0,0,0,.1)',
-          borderBottom: 'none',
-          borderRight: 'none',
-          borderLeft: 'none',
+          margin: 0,
+          borderTop: (theme) => `1px solid ${theme.palette.secondary.dark}1A`,
           height: ACTION_BUTTON_HEIGHT,
-          width: '100%'
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center'
         }}
       >
         <Typography
+          align="left"
+          noWrap
           sx={{
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-            textAlign: 'left',
-            paddingLeft: 3,
-            paddingRight: 3,
+            px: 3,
             fontWeight: 'bold',
-            fontSize: 10,
-            lineHeight: '27px',
-            color: 'black'
+            fontSize: 10
           }}
           variant="body2"
         >

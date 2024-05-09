@@ -1,5 +1,11 @@
+import { useTheme } from '@mui/material/styles'
 import { CSSProperties, ReactElement, ReactNode, useState } from 'react'
 import { BaseEdge as DefaultBaseEdge, useOnSelectionChange } from 'reactflow'
+
+import {
+  MARKER_END_DEFAULT_COLOR,
+  MARKER_END_SELECTED_COLOR
+} from '../../nodes/StepBlockNode/libs/colors'
 
 interface BaseEdgeProps {
   id: string
@@ -15,6 +21,7 @@ export function BaseEdge({
   children
 }: BaseEdgeProps): ReactElement {
   const [edgeSelected, setEdgeSelected] = useState(false)
+  const theme = useTheme()
 
   useOnSelectionChange({
     onChange: (selected) => {
@@ -32,11 +39,13 @@ export function BaseEdge({
       <DefaultBaseEdge
         path={edgePath}
         markerEnd={`url(#1__color=${
-          edgeSelected ? '#C52D3A' : 'lightGrey'
+          edgeSelected ? MARKER_END_SELECTED_COLOR : MARKER_END_DEFAULT_COLOR
         }&height=10&type=arrowclosed&width=10)`}
         style={{
           strokeWidth: 2,
-          stroke: edgeSelected ? '#C52D3A' : '#0000001A',
+          stroke: edgeSelected
+            ? theme.palette.primary.main
+            : `${theme.palette.secondary.dark}1A`,
           ...style
         }}
       />

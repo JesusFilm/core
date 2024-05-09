@@ -50,7 +50,7 @@ import { useCreateStepAndCard } from './libs/useCreateStepAndCard'
 import { NewStepButton } from './NewStepButton'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
-import { STEP_NODE_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
+import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
 
@@ -171,7 +171,7 @@ export function JourneyFlow(): ReactElement {
     const { nodes, edges } = transformSteps(steps, positions)
     setEdges(edges)
     setNodes(nodes)
-  }, [steps, data, setEdges, setNodes, refetch])
+  }, [steps, data, theme, setEdges, setNodes, refetch])
 
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections
@@ -205,7 +205,7 @@ export function JourneyFlow(): ReactElement {
           connectingParams.current.nodeId,
           connectingParams.current.handleId,
           parseInt(x.toString()),
-          parseInt(y.toString()) - STEP_NODE_HEIGHT / 2
+          parseInt(y.toString()) - STEP_NODE_CARD_HEIGHT / 2
         )
       }
     },
