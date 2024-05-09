@@ -15,7 +15,7 @@ import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/u
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
 
-export function useCreateNodeAndConnect(): (
+export function useCreateNodeAndEdge(): (
   x: number,
   y: number,
   nodeId?: string,
@@ -51,7 +51,7 @@ export function useCreateNodeAndConnect(): (
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
 
-  async function createNodeAndConnect(
+  async function createNodeAndEdge(
     x: number,
     y: number,
     nodeId?: string,
@@ -133,5 +133,5 @@ export function useCreateNodeAndConnect(): (
 
     return data
   }
-  return createNodeAndConnect
+  return createNodeAndEdge
 }

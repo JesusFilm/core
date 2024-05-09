@@ -11,7 +11,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Plus3Icon from '@core/shared/ui/icons/Plus3'
 
 import { Item } from '../../../Toolbar/Items/Item'
-import { useCreateNodeAndConnect } from '../libs/useCreateNodeAndConnect'
+import { useCreateNodeAndEdge } from '../libs/useCreateNodeAndEdge'
 import {
   STEP_NODE_CARD_HEIGHT,
   STEP_NODE_CARD_WIDTH
@@ -26,7 +26,7 @@ export function NewStepButton({
 }: NewStepButtonProps): ReactElement {
   const { journey } = useJourney()
   const { dispatch } = useEditor()
-  const createNodeAndConnect = useCreateNodeAndConnect()
+  const createNodeAndEdge = useCreateNodeAndEdge()
 
   async function handleAddStepAndCardBlock(event): Promise<void> {
     // TODO HOOKS: create node - step
@@ -36,7 +36,7 @@ export function NewStepButton({
       y: (event as unknown as MouseEvent).clientY
     })
 
-    const data = await createNodeAndConnect(
+    const data = await createNodeAndEdge(
       parseInt(x.toString()) - STEP_NODE_CARD_WIDTH,
       parseInt(y.toString()) + STEP_NODE_CARD_HEIGHT / 2
     )
