@@ -60,6 +60,7 @@ export function CustomEdge({
   })
 
   const onEdgeClick = (): void => {
+    // TODO HOOKS: delete edge - action / step
     if (journey == null || selectedEdge == null) return
     const step = steps?.find((step) => step.id === selectedEdge.source)
     if (step == null) return

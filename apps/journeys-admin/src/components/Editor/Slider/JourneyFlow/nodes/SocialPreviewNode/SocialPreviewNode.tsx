@@ -58,6 +58,7 @@ export function SocialPreviewNode(): ReactElement {
   async function handleSourceConnect(
     params: { target: string } | Parameters<OnConnect>[0]
   ): Promise<void> {
+    // TODO HOOKS: update edge - social
     if (params.target == null || journey == null) return
     const { data } = await blockOrderUpdate({
       variables: {

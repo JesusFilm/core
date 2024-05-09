@@ -201,6 +201,7 @@ export function JourneyFlow(): ReactElement {
           y: (event as unknown as MouseEvent).clientY
         })
 
+        // TODO HOOKS: create node - step
         void createStepAndCard(
           connectingParams.current.nodeId,
           connectingParams.current.handleId,
@@ -234,6 +235,7 @@ export function JourneyFlow(): ReactElement {
 
   const onEdgeUpdate: OnEdgeUpdateFunc = useCallback(
     (_, { target, source, sourceHandle }) => {
+      // TODO HOOKS: update edge - step / action / social
       edgeUpdateSuccessful.current = true
       if (journey == null || target == null) return
 
@@ -300,6 +302,7 @@ export function JourneyFlow(): ReactElement {
 
   const onEdgeUpdateEnd = useCallback(
     (_, edge: Edge) => {
+      // TODO HOOKS: delete edge - step / action
       if (edgeUpdateSuccessful.current === false) {
         const { source, sourceHandle } = edge
         if (journey == null || source === 'SocialPreview') return
