@@ -57,7 +57,7 @@ enum DeviceType {
 enum ButtonAction {
   NavigateAction
   NavigateToBlockAction
-  NavigateToJourneyAction
+  NavigateToJourneyAction /// @deprecated Use `LinkAction` instead.
   LinkAction
   EmailAction
 }
