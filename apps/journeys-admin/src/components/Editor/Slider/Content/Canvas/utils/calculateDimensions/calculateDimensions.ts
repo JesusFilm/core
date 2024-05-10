@@ -11,10 +11,8 @@ export function calculateScale(ref: RefObject<HTMLDivElement>): number {
   // which is done intentionally for the swiper
   if (current.clientWidth === 0) return 1
 
-  const clientWidth = current.clientWidth / CARD_WIDTH
   const clientHeight = current.clientHeight / CARD_HEIGHT
-  const scale = Math.min(clientWidth, clientHeight)
-
+  const scale = clientHeight
   return Math.min(scale, 1)
 }
 
