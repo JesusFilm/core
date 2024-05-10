@@ -88,13 +88,15 @@ export function transformSteps(
     draggable: false
   })
 
-  edges.push({
-    id: `SocialPreview->${steps[0].id}`,
-    source: 'SocialPreview',
-    target: steps[0].id,
-    ...defaultEdgeProps,
-    type: 'Start'
-  })
+  if (steps[0] != null) {
+    edges.push({
+      id: `SocialPreview->${steps[0].id}`,
+      source: 'SocialPreview',
+      target: steps[0].id,
+      ...defaultEdgeProps,
+      type: 'Start'
+    })
+  }
 
   // hidden edge so the markerEnd style can be used
   if (nodes.find((node) => node.id === 'hidden') == null) {

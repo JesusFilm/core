@@ -51,6 +51,11 @@ import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
 
+// some styles can only be updated through css after render
+const additionalEdgeStyles = {
+  '.react-flow__edgeupdater.react-flow__edgeupdater-target': { r: 15 }
+}
+
 export const GET_STEP_BLOCKS_WITH_POSITION = gql`
   query GetStepBlocksWithPosition($journeyIds: [ID!]) {
     blocks(where: { journeyIds: $journeyIds, typenames: ["StepBlock"] }) {
@@ -82,7 +87,7 @@ export function JourneyFlow(): ReactElement {
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
 
   async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
-    if (steps == null || journey == null) return
+    if (journey == null || steps == null) return
     positions = arrangeSteps(steps)
     Object.entries(positions).forEach(([id, position]) => {
       void stepBlockPositionUpdate({
@@ -133,14 +138,14 @@ export function JourneyFlow(): ReactElement {
           }
         })
       }
-      const { nodes, edges } = transformSteps(steps, positions)
+      const { nodes, edges } = transformSteps(steps ?? [], positions)
       setEdges(edges)
       setNodes(nodes)
     }
   })
 
   useEffect(() => {
-    if (steps == null || data?.blocks == null) return
+    if (data?.blocks == null) return
     const positions: PositionMap =
       data.blocks.reduce((acc, block) => {
         if (
@@ -153,17 +158,18 @@ export function JourneyFlow(): ReactElement {
         return acc
       }, {}) ?? {}
 
-    const validSteps = steps.every((step) => {
-      return (
-        positions[step.id] != null &&
-        positions[step.id].x != null &&
-        positions[step.id].y != null
-      )
-    })
+    const validSteps =
+      steps?.every((step) => {
+        return (
+          positions[step.id] != null &&
+          positions[step.id].x != null &&
+          positions[step.id].y != null
+        )
+      }) ?? false
 
     if (!validSteps) return
 
-    const { nodes, edges } = transformSteps(steps, positions)
+    const { nodes, edges } = transformSteps(steps ?? [], positions)
     setEdges(edges)
     setNodes(nodes)
   }, [steps, data, theme, setEdges, setNodes, refetch])
@@ -266,7 +272,7 @@ export function JourneyFlow(): ReactElement {
       sx={{
         width: '100%',
         height: '100%',
-        '.react-flow__edgeupdater.react-flow__edgeupdater-target': { r: 15 }
+        ...additionalEdgeStyles
       }}
       data-testid="JourneyFlow"
     >
