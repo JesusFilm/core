@@ -33,7 +33,7 @@ export class Register {
     await this.clickNextBtnInFewQuestionPage()
     await this.entetTeamName()
     await this.clickCreateBtn()
-    await this.waitUntilDiscoverPageLoaded()
+    await this.waitUntilLoginPageLoaded()
     await this.waitUntilTheToestMsgDisappear()
   }
   async enterUserName() {
@@ -141,6 +141,15 @@ export class Register {
       .locator('button[type="button"]', { hasText: 'Skip' })
       .click()
   }
+
+  async waitUntilLoginPageLoaded() {
+    await expect(
+      this.page.locator('svg[data-testid="UsersProfiles2Icon"]')
+    ).toBeVisible({
+      timeout: 65000
+    })
+  }
+
   async waitUntilDiscoverPageLoaded() {
     await expect(
       this.page.locator(
