@@ -76,14 +76,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             endIconId: null,
             action: {
               parentBlockId: 'button.id',
-              __typename: 'NavigateToJourneyAction',
-              gtmEventName: 'gtmEventName',
-              journey: {
-                __typename: 'Journey',
-                id: 'journeyId',
-                slug: 'my-journey',
-                language: { __typename: 'Language', bcp47: 'en' }
-              }
+              __typename: 'NavigateAction',
+              gtmEventName: 'gtmEventName'
             },
             children: []
           }
