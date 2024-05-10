@@ -32,6 +32,7 @@ describe('BatchResolver', () => {
         {
           id: 'batch1',
           nexusId: 'nexus1',
+          channelId: 'channel1',
           name: 'Batch 1',
           status: BatchStatus.completed,
           createdAt: new Date(),
@@ -49,6 +50,7 @@ describe('BatchResolver', () => {
           expect.objectContaining({
             id: 'batch1',
             nexusId: 'nexus1',
+            channelId: 'channel1',
             name: 'Batch 1',
             status: BatchStatus.completed,
             averagePercent: 75

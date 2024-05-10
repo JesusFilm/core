@@ -20,8 +20,6 @@ import { ResourceResolver } from './resource.resolver'
   providers: [
     ResourceResolver,
     PrismaService,
-    VideoPrismaService,
-    LanguagePrismaService,
     GoogleOAuthService,
     GoogleDriveService,
     GoogleSheetsService,

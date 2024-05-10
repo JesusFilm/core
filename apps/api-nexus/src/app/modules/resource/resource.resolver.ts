@@ -11,8 +11,10 @@ import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import {
+  Channel,
   GoogleAuthInput,
   GoogleAuthResponse,
+  PrivacyStatus,
   ResourceCreateInput,
   ResourceFilter,
   ResourceFromGoogleDriveInput,
@@ -30,8 +32,6 @@ import { PrismaService } from '../../lib/prisma.service'
 export class ResourceResolver {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly videoPrismaService: VideoPrismaService,
-    private readonly languagePrismaService: LanguagePrismaService,
     private readonly googleOAuthService: GoogleOAuthService,
     private readonly googleDriveService: GoogleDriveService,
     private readonly cloudFlareService: CloudFlareService,
@@ -368,128 +368,6 @@ export class ResourceResolver {
     return {
       id: tokenRecord.id,
       accessToken
-    }
-  }
-
-  @Mutation()
-  async resourceExportData(
-    @Args('input') input: { id: string; folderId: string }
-  ): Promise<{ name: string }> {
-    const videoCount = await this.videoPrismaService.video.count()
-    const languagecount = await this.languagePrismaService.language.count()
-
-    const videos = await this.videoPrismaService.video.findMany({
-      include: {
-        title: true,
-        variants: true
-      }
-    })
-
-    // const columnHeaders = Object.keys(videos[0]);
-
-    const columnHeaders = [
-      'media-component-id',
-      'title',
-      'description',
-      'description-long',
-      'language-id',
-      'language-name-en',
-      'language-native',
-      'language-bcp47',
-      'language-iso',
-      'media-component-questions',
-      'meta-data-language-tag',
-      'length',
-      'language-country'
-    ]
-
-    const spreadsheetData = [columnHeaders]
-
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    videos.forEach(async (video) => {
-      const videoLanguage = await this.languagePrismaService.language.findFirst(
-        {
-          where: {
-            id: video.primaryLanguageId
-          }
-        }
-      )
-
-      const id = video.id ?? ''
-      const label = video.title.map((title) => title.value).toString() ?? ''
-      const snippet =
-        video.snippet
-          .map(
-            (snip: { value: string; primary: boolean; languageId: string }) =>
-              snip.value
-          )
-          .toString() ?? ''
-      const description =
-        video.description
-          .map(
-            (desc: { value: string; primary: boolean; languageId: string }) =>
-              desc.value
-          )
-          .toString() ?? ''
-      const primaryLanguageId = video.primaryLanguageId ?? ''
-      const languageName =
-        videoLanguage?.name
-          ?.map(
-            (lang: { value: string; primary: boolean; languageId: string }) =>
-              lang.value
-          )
-          .toString() ?? ''
-      const languageBcp = videoLanguage?.bcp47 ?? ''
-      const languageIso = videoLanguage?.iso3 ?? ''
-      const studyQuestions =
-        video.studyQuestions
-          .map(
-            (studyQuestion: {
-              value: string
-              primary: boolean
-              languageId: string
-            }) => studyQuestion.value
-          )
-          .toString() ?? ''
-
-      spreadsheetData.push([
-        id,
-        label,
-        snippet,
-        description,
-        primaryLanguageId,
-        languageName,
-        '',
-        languageBcp,
-        languageIso,
-        studyQuestions,
-        '',
-        '',
-        ''
-      ])
-    })
-
-    const googleAccessToken =
-      await this.prismaService.googleAccessToken.findUnique({
-        where: { id: input.id }
-      })
-
-    if (googleAccessToken === null) {
-      throw new Error('Invalid tokenId')
-    }
-
-    const accessToken = await this.googleOAuthService.getNewAccessToken(
-      googleAccessToken.refreshToken
-    )
-
-    await this.googleSheetsService.createAndPopulateSpreadsheet(
-      spreadsheetData,
-      accessToken,
-      input.folderId
-    )
-
-    return {
-      name: `Video-Count: $ ${videoCount} | Language-Count: ${languagecount}`
     }
   }
 }
