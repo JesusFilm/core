@@ -1,3 +1,4 @@
+import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -25,6 +26,8 @@ const Demo: Meta<typeof Button> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Button'
 }
 
+const onClose = jest.fn()
+
 const block: TreeBlock<ButtonBlock> = {
   id: 'button.id',
   __typename: 'ButtonBlock',
@@ -44,7 +47,7 @@ const Template: StoryObj<ComponentProps<typeof Button>> = {
   render: (args) => {
     return (
       <EditorProvider>
-        <Drawer title="Button">
+        <Drawer title="Button" onClose={onClose}>
           <Button {...args} />
         </Drawer>
       </EditorProvider>
@@ -103,7 +106,7 @@ export const Filled: StoryObj<typeof Button> = {
     }
     return (
       <EditorProvider initialState={{ selectedBlock: block }}>
-        <Drawer title="Button">
+        <Drawer title="Button" onClose={onClose}>
           <Button {...block} />
         </Drawer>
       </EditorProvider>

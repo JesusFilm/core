@@ -105,8 +105,7 @@ export function Canvas(): ReactElement {
       selectedBlock?.__typename === 'TypographyBlock' &&
       selectedBlock.content === ''
     ) {
-      // reset click origin
-      selectionRef.current = false
+      resetClickOrigin()
       return
     }
     dispatch({
@@ -118,7 +117,10 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
     })
-    // reset click origin
+    resetClickOrigin()
+  }
+
+  function resetClickOrigin(): void {
     selectionRef.current = false
   }
 

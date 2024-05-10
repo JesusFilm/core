@@ -241,6 +241,7 @@ describe('CardIntro', () => {
                 hls: 'https://arc.gt/j67rz',
                 __typename: 'VideoVariant'
               },
+              variantLanguages: [],
               __typename: 'Video'
             },
             action: {

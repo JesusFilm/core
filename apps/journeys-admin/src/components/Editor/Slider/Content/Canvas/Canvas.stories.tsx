@@ -16,9 +16,9 @@ import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
-  ChatPlatform,
   IconName,
   IconSize,
+  MessagePlatform,
   ThemeMode,
   ThemeName,
   TypographyVariant,
@@ -434,7 +434,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
+              },
+              variantLanguages: []
             },
             startAt: null,
             endAt: null,
@@ -712,13 +713,13 @@ export const FooterEdit = {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: ChatPlatform.tikTok
+          platform: MessagePlatform.tikTok
         },
         {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: ChatPlatform.snapchat
+          platform: MessagePlatform.snapchat
         }
       ]
     }

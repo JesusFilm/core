@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
@@ -22,7 +22,8 @@ export function AddBlock(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { formiumForm } = useFlags()
   const {
-    state: { selectedStep }
+    state: { selectedStep },
+    dispatch
   } = useEditor()
 
   const cardBlock = selectedStep?.children.find(
@@ -33,8 +34,15 @@ export function AddBlock(): ReactElement {
     (block) => block.id !== cardBlock.coverBlockId
   )
 
+  function onClose(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.JourneyFlow
+    })
+  }
+
   return (
-    <Drawer title={t('Add a block')}>
+    <Drawer title={t('Add a block')} onClose={onClose}>
       <Grid p={5} container spacing={4}>
         <Grid item xs={6} sm={12}>
           <NewTypographyButton />

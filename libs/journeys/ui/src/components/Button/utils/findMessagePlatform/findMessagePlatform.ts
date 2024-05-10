@@ -1,18 +1,18 @@
 import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 import { ButtonFields_action } from '../../__generated__/ButtonFields'
 
-export function findChatPlatform(
+export function findMessagePlatform(
   buttonAction: ButtonFields_action | null
 ): MessagePlatform | undefined {
   if (buttonAction?.__typename !== 'LinkAction') return undefined
 
   const link = buttonAction?.url
-  const platform = chatPlatforms.find(({ url }) => link.includes(url))
+  const platform = messagePlatforms.find(({ url }) => link.includes(url))
 
   return platform?.messagePlatform
 }
 
-export const chatPlatforms = [
+export const messagePlatforms = [
   {
     url: 'm.me/',
     messagePlatform: MessagePlatform.facebook

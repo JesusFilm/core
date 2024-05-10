@@ -197,12 +197,25 @@ export interface CardIntroCreate_video_video_variant {
   hls: string | null;
 }
 
+export interface CardIntroCreate_video_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface CardIntroCreate_video_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: CardIntroCreate_video_video_variantLanguages_name[];
+}
+
 export interface CardIntroCreate_video_video {
   __typename: "Video";
   id: string;
   title: CardIntroCreate_video_video_title[];
   image: string | null;
   variant: CardIntroCreate_video_video_variant | null;
+  variantLanguages: CardIntroCreate_video_video_variantLanguages[];
 }
 
 export interface CardIntroCreate_video_action_NavigateAction {

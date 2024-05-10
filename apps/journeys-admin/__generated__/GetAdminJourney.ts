@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, ChatPlatform } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetAdminJourney
@@ -432,12 +432,25 @@ export interface GetAdminJourney_journey_blocks_VideoBlock_video_variant {
   hls: string | null;
 }
 
+export interface GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages_name[];
+}
+
 export interface GetAdminJourney_journey_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: GetAdminJourney_journey_blocks_VideoBlock_video_title[];
   image: string | null;
   variant: GetAdminJourney_journey_blocks_VideoBlock_video_variant | null;
+  variantLanguages: GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages[];
 }
 
 export interface GetAdminJourney_journey_blocks_VideoBlock_action_NavigateAction {
@@ -685,7 +698,7 @@ export interface GetAdminJourney_journey_chatButtons {
   __typename: "ChatButton";
   id: string;
   link: string | null;
-  platform: ChatPlatform | null;
+  platform: MessagePlatform | null;
 }
 
 export interface GetAdminJourney_journey_host {

@@ -1,11 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { render } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
+import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../../../libs/TestEditorState'
 
 import { SocialDetails } from '.'
 
@@ -34,5 +37,32 @@ describe('SocialDetails', () => {
     expect(getByText('Change')).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Title' })).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Description' })).toBeInTheDocument()
+  })
+
+  it('should navigate to journey map when close icon is clicked', async () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { status: JourneyStatus.published } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ activeSlide: ActiveSlide.Content }}>
+            <TestEditorState />
+            <SocialDetails />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('X2Icon')).toBeInTheDocument()
+    )
+    await waitFor(
+      async () => await userEvent.click(screen.getByTestId('X2Icon'))
+    )
+
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
 })

@@ -102,10 +102,12 @@ export function VideoOptions(): ReactElement {
         preventDuplicate: true
       })
     } catch (e) {
-      enqueueSnackbar(e.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (e instanceof Error) {
+        enqueueSnackbar(e.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
   }
 

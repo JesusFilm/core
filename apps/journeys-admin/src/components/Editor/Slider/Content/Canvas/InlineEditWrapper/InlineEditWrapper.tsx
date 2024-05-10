@@ -78,6 +78,8 @@ export function InlineEditWrapper({
         }
         blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
       }
+    }).then(() => {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     })
   }
 

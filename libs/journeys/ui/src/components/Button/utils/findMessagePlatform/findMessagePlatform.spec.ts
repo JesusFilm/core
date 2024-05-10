@@ -1,9 +1,9 @@
 import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 import { ButtonFields_action } from '../../__generated__/ButtonFields'
 
-import { findChatPlatform } from '.'
+import { findMessagePlatform } from '.'
 
-describe('findChatPlatform', () => {
+describe('findMessagePlatform', () => {
   const defaultAction: ButtonFields_action = {
     __typename: 'LinkAction',
     parentBlockId: 'button.id',
@@ -25,9 +25,9 @@ describe('findChatPlatform', () => {
       url: 'https://www.messenger.com/t/some-user'
     }
 
-    expect(findChatPlatform(action1)).toEqual(MessagePlatform.facebook)
-    expect(findChatPlatform(action2)).toEqual(MessagePlatform.facebook)
-    expect(findChatPlatform(action3)).toEqual(MessagePlatform.facebook)
+    expect(findMessagePlatform(action1)).toEqual(MessagePlatform.facebook)
+    expect(findMessagePlatform(action2)).toEqual(MessagePlatform.facebook)
+    expect(findMessagePlatform(action3)).toEqual(MessagePlatform.facebook)
   })
 
   it('should return telegram', () => {
@@ -40,8 +40,8 @@ describe('findChatPlatform', () => {
       url: 'https://telegram.org/some-user'
     }
 
-    expect(findChatPlatform(action1)).toEqual(MessagePlatform.telegram)
-    expect(findChatPlatform(action2)).toEqual(MessagePlatform.telegram)
+    expect(findMessagePlatform(action1)).toEqual(MessagePlatform.telegram)
+    expect(findMessagePlatform(action2)).toEqual(MessagePlatform.telegram)
   })
 
   it('should return whatsApp', () => {
@@ -58,9 +58,9 @@ describe('findChatPlatform', () => {
       url: 'api.whatsapp.com/some-user'
     }
 
-    expect(findChatPlatform(action1)).toEqual(MessagePlatform.whatsApp)
-    expect(findChatPlatform(action2)).toEqual(MessagePlatform.whatsApp)
-    expect(findChatPlatform(action3)).toEqual(MessagePlatform.whatsApp)
+    expect(findMessagePlatform(action1)).toEqual(MessagePlatform.whatsApp)
+    expect(findMessagePlatform(action2)).toEqual(MessagePlatform.whatsApp)
+    expect(findMessagePlatform(action3)).toEqual(MessagePlatform.whatsApp)
   })
 
   it('should return instagram', () => {
@@ -69,7 +69,7 @@ describe('findChatPlatform', () => {
       url: 'https://instagram.com/some-user'
     }
 
-    expect(findChatPlatform(action)).toEqual(MessagePlatform.instagram)
+    expect(findMessagePlatform(action)).toEqual(MessagePlatform.instagram)
   })
 
   it('should return viber', () => {
@@ -85,9 +85,9 @@ describe('findChatPlatform', () => {
       ...defaultAction,
       url: 'https://vb.me/some-user'
     }
-    expect(findChatPlatform(action1)).toEqual(MessagePlatform.viber)
-    expect(findChatPlatform(action2)).toEqual(MessagePlatform.viber)
-    expect(findChatPlatform(action3)).toEqual(MessagePlatform.viber)
+    expect(findMessagePlatform(action1)).toEqual(MessagePlatform.viber)
+    expect(findMessagePlatform(action2)).toEqual(MessagePlatform.viber)
+    expect(findMessagePlatform(action3)).toEqual(MessagePlatform.viber)
   })
 
   it('should return vk', () => {
@@ -100,8 +100,8 @@ describe('findChatPlatform', () => {
       url: 'https://vk.com/some-user'
     }
 
-    expect(findChatPlatform(action1)).toEqual(MessagePlatform.vk)
-    expect(findChatPlatform(action2)).toEqual(MessagePlatform.vk)
+    expect(findMessagePlatform(action1)).toEqual(MessagePlatform.vk)
+    expect(findMessagePlatform(action2)).toEqual(MessagePlatform.vk)
   })
 
   it('should return snapchat', () => {
@@ -110,7 +110,7 @@ describe('findChatPlatform', () => {
       url: 'https://snapchat.com/some-user'
     }
 
-    expect(findChatPlatform(action)).toEqual(MessagePlatform.snapchat)
+    expect(findMessagePlatform(action)).toEqual(MessagePlatform.snapchat)
   })
 
   it('should return skype', () => {
@@ -119,7 +119,7 @@ describe('findChatPlatform', () => {
       url: 'https://skype.com/some-user'
     }
 
-    expect(findChatPlatform(action)).toEqual(MessagePlatform.skype)
+    expect(findMessagePlatform(action)).toEqual(MessagePlatform.skype)
   })
 
   it('should return line', () => {
@@ -132,8 +132,8 @@ describe('findChatPlatform', () => {
       url: 'line.me'
     }
 
-    expect(findChatPlatform(action1)).toEqual(MessagePlatform.line)
-    expect(findChatPlatform(action2)).toEqual(MessagePlatform.line)
+    expect(findMessagePlatform(action1)).toEqual(MessagePlatform.line)
+    expect(findMessagePlatform(action2)).toEqual(MessagePlatform.line)
   })
 
   it('should return tikTok', () => {
@@ -142,10 +142,10 @@ describe('findChatPlatform', () => {
       url: 'https://tiktok.com/@some-user'
     }
 
-    expect(findChatPlatform(action)).toEqual(MessagePlatform.tikTok)
+    expect(findMessagePlatform(action)).toEqual(MessagePlatform.tikTok)
   })
 
   it('should return undefined', () => {
-    expect(findChatPlatform(defaultAction)).toBeUndefined()
+    expect(findMessagePlatform(defaultAction)).toBeUndefined()
   })
 })

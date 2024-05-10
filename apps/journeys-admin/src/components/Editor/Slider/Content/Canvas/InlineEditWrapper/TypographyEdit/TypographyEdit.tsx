@@ -5,6 +5,7 @@ import { ReactElement, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Typography } from '@core/journeys/ui/Typography'
+import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import { TypographyBlockUpdateContent } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
@@ -81,7 +82,7 @@ export function TypographyEdit({
       ref={inputRef}
       multiline
       fullWidth
-      autoFocus
+      autoFocus={!hasTouchScreen()}
       value={value}
       placeholder={t('Add your text here...')}
       onSelect={(e) => {

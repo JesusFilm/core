@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, ChatPlatform } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetPublisherTemplate
@@ -432,12 +432,25 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_
   hls: string | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages_name[];
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_title[];
   image: string | null;
   variant: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant | null;
+  variantLanguages: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages[];
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateAction {
@@ -685,7 +698,7 @@ export interface GetPublisherTemplate_publisherTemplate_chatButtons {
   __typename: "ChatButton";
   id: string;
   link: string | null;
-  platform: ChatPlatform | null;
+  platform: MessagePlatform | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_host {

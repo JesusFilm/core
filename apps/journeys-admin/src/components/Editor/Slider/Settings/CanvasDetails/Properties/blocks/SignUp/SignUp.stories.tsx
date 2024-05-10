@@ -1,3 +1,4 @@
+import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -22,6 +23,8 @@ const Demo: Meta<typeof SignUp> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/SignUp'
 }
 
+const onClose = jest.fn()
+
 const block: TreeBlock<SignUpBlock> = {
   id: 'signup.id',
   __typename: 'SignUpBlock',
@@ -37,7 +40,7 @@ const Template: StoryObj<ComponentProps<typeof SignUp>> = {
   render: (args) => {
     return (
       <EditorProvider initialState={{ selectedBlock: { ...args } }}>
-        <Drawer title="Subscribe Properties">
+        <Drawer title="Subscribe Properties" onClose={onClose}>
           <SignUp {...args} />
         </Drawer>
       </EditorProvider>
@@ -82,7 +85,7 @@ export const Filled: StoryObj<typeof SignUp> = {
     }
     return (
       <EditorProvider initialState={{ selectedBlock: { ...block } }}>
-        <Drawer title="Subscribe Properties">
+        <Drawer title="Subscribe Properties" onClose={onClose}>
           <SignUp {...block} />
         </Drawer>
       </EditorProvider>

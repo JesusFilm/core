@@ -83,7 +83,7 @@ export function SelectableWrapper({
   }
 
   const videoOutlineStyles =
-    selectedBlock?.__typename === 'VideoBlock'
+    block?.__typename === 'VideoBlock'
       ? {
           width: '100%',
           height: '100%',
@@ -130,7 +130,11 @@ export function SelectableWrapper({
       onMouseDown={blockNonSelectionEvents}
     >
       {children}
-      <QuickControls open={open} anchorEl={selectableRef.current} />
+      <QuickControls
+        open={open}
+        anchorEl={selectableRef.current}
+        block={block}
+      />
     </Box>
   ) : (
     children

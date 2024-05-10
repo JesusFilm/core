@@ -20,7 +20,7 @@ const Template: StoryObj<{ selectedBlock: TreeBlock<Block> }> = {
     <MockedProvider>
       <SnackbarProvider>
         <EditorProvider initialState={{ selectedBlock }}>
-          <QuickControls open anchorEl={null} />
+          <QuickControls open anchorEl={null} block={selectedBlock} />
         </EditorProvider>
       </SnackbarProvider>
     </MockedProvider>

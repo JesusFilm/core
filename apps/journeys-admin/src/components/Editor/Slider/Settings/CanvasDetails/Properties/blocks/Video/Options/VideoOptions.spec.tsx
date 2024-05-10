@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -63,7 +63,8 @@ const video: TreeBlock<VideoBlock> = {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
       hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    }
+    },
+    variantLanguages: []
   },
   posterBlockId: null,
   children: []
@@ -168,7 +169,7 @@ describe('VideoOptions', () => {
         duration: 144
       }
     }
-    const { getByRole, getByText } = render(
+    render(
       <MockedProvider
         mocks={[
           { ...getVideoMock, result },
@@ -191,7 +192,8 @@ describe('VideoOptions', () => {
           <ThemeProvider>
             <EditorProvider
               initialState={{
-                selectedBlock: { ...video, videoId: null }
+                selectedBlock: { ...video, videoId: null },
+                selectedAttributeId: video.id
               }}
             >
               <SnackbarProvider>
@@ -203,14 +205,16 @@ describe('VideoOptions', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      fireEvent.click(getByRole('button', { name: 'Select Video' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
     )
-    await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
-    fireEvent.click(getByText('Brand Video'))
+    await waitFor(() =>
+      expect(screen.getByText('Brand Video')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByText('Brand Video'))
     await waitFor(() =>
       expect(result).toHaveBeenCalledWith(getVideoMock.request.variables)
     )
-    fireEvent.click(getByRole('button', { name: 'Select' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() =>
       expect(videoBlockResult).toHaveBeenCalledWith(videoBlockUpdateVariables)
     )
@@ -265,7 +269,7 @@ describe('VideoOptions', () => {
 
     const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
 
-    const { getByText, getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           { ...getVideoMock, result: getVideoResult },
@@ -322,7 +326,8 @@ describe('VideoOptions', () => {
             <EditorProvider
               initialState={{
                 selectedStep,
-                selectedBlock: { ...video, videoId: null }
+                selectedBlock: { ...video, videoId: null },
+                selectedAttributeId: video.id
               }}
             >
               <SnackbarProvider>
@@ -333,11 +338,15 @@ describe('VideoOptions', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Video' }))
-    await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
-    fireEvent.click(getByText('Brand Video'))
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
+    )
+    await waitFor(() =>
+      expect(screen.getByText('Brand Video')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByText('Brand Video'))
     await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
-    fireEvent.click(getByRole('button', { name: 'Select' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['VideoBlock:video1.id']?.action).toEqual({
       gtmEventName: 'gtmEventName',

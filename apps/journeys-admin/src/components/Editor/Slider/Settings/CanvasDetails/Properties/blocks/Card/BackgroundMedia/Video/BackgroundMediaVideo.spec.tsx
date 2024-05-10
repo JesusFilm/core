@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
@@ -75,7 +76,8 @@ const video: TreeBlock<VideoBlock> = {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
       hls: 'https://arc.gt/zbrvj'
-    }
+    },
+    variantLanguages: []
   },
   posterBlockId: null,
   children: []
@@ -222,7 +224,9 @@ describe('BackgroundMediaVideo', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <BackgroundMediaVideo cardBlock={card} />
+              <EditorProvider initialState={{ selectedAttributeId: video.id }}>
+                <BackgroundMediaVideo cardBlock={card} />
+              </EditorProvider>
             </SnackbarProvider>
           </ThemeProvider>
         </JourneyProvider>
@@ -385,7 +389,11 @@ describe('BackgroundMediaVideo', () => {
           >
             <ThemeProvider>
               <SnackbarProvider>
-                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                <EditorProvider
+                  initialState={{ selectedAttributeId: video.id }}
+                >
+                  <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                </EditorProvider>
               </SnackbarProvider>
             </ThemeProvider>
           </JourneyProvider>

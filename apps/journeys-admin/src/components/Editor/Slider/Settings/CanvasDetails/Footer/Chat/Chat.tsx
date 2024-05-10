@@ -6,7 +6,7 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
-import { ChatPlatform } from '../../../../../../../../__generated__/globalTypes'
+import { MessagePlatform } from '../../../../../../../../__generated__/globalTypes'
 
 import { ChatOption } from './ChatOption'
 
@@ -17,19 +17,19 @@ export function Chat(): ReactElement {
   const chatButtons = journey?.chatButtons ?? []
   const maxSelection = chatButtons.length >= 2
   const facebook = chatButtons.find(
-    (button) => button.platform === ChatPlatform.facebook
+    (button) => button.platform === MessagePlatform.facebook
   )
   const whatsApp = chatButtons.find(
-    (button) => button.platform === ChatPlatform.whatsApp
+    (button) => button.platform === MessagePlatform.whatsApp
   )
   const telegram = chatButtons.find(
-    (button) => button.platform === ChatPlatform.telegram
+    (button) => button.platform === MessagePlatform.telegram
   )
   const custom = chatButtons.find(
     (button) =>
-      button.platform !== ChatPlatform.facebook &&
-      button.platform !== ChatPlatform.whatsApp &&
-      button.platform !== ChatPlatform.telegram
+      button.platform !== MessagePlatform.facebook &&
+      button.platform !== MessagePlatform.whatsApp &&
+      button.platform !== MessagePlatform.telegram
   )
 
   return (
@@ -37,7 +37,7 @@ export function Chat(): ReactElement {
       <ChatOption
         title={t('Facebook Messenger')}
         chatButton={facebook}
-        platform={ChatPlatform.facebook}
+        platform={MessagePlatform.facebook}
         active={facebook != null}
         journeyId={journey?.id}
         disableSelection={maxSelection}
@@ -45,7 +45,7 @@ export function Chat(): ReactElement {
       <ChatOption
         chatButton={whatsApp}
         title={t('WhatsApp')}
-        platform={ChatPlatform.whatsApp}
+        platform={MessagePlatform.whatsApp}
         active={whatsApp != null}
         journeyId={journey?.id}
         disableSelection={maxSelection}
@@ -53,7 +53,7 @@ export function Chat(): ReactElement {
       <ChatOption
         chatButton={telegram}
         title={t('Telegram')}
-        platform={ChatPlatform.telegram}
+        platform={MessagePlatform.telegram}
         active={telegram != null}
         journeyId={journey?.id}
         disableSelection={maxSelection}

@@ -1,4 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ComponentProps, ReactNode, useState } from 'react'
@@ -552,7 +555,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
+              },
+              variantLanguages: []
             },
             startAt: null,
             endAt: null,
@@ -638,7 +642,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
+              },
+              variantLanguages: []
             },
             startAt: null,
             endAt: null,
@@ -668,7 +673,19 @@ const steps: Array<TreeBlock<StepBlock>> = [
 ]
 
 const CardPreviewComponent = ({ ...args }): ReactNode => {
-  const [selected] = useState<TreeBlock<StepBlock>>(args.steps?.[0])
+  const [selected] = useState<TreeBlock<StepBlock>>(
+    args.steps != null && args.steps.length > 0
+      ? (args.steps[0] as TreeBlock<StepBlock>)
+      : {
+          id: 'defaultId',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children: []
+        }
+  )
 
   return (
     <MockedProvider>
@@ -701,6 +718,58 @@ const CardPreviewComponent = ({ ...args }): ReactNode => {
   )
 }
 
+const CustomLoadingComponent = ({ ...args }): ReactNode => {
+  return (
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        py: 5,
+        px: 6
+      }}
+    >
+      <Box
+        sx={{
+          border: '3px solid transparent'
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          width={87}
+          height={132}
+          sx={{ m: 1, borderRadius: 1 }}
+        />
+      </Box>
+      <Box
+        sx={{
+          border: '3px solid transparent'
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          width={87}
+          height={132}
+          sx={{ m: 1, borderRadius: 1 }}
+        />
+      </Box>
+      <Box
+        sx={{
+          border: '3px solid transparent'
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          width={87}
+          height={132}
+          sx={{ m: 1, borderRadius: 1 }}
+        />
+      </Box>
+    </Stack>
+  )
+}
+
 const Template: StoryObj<
   ComponentProps<typeof CardPreview> & { steps: Array<TreeBlock<StepBlock>> }
 > = {
@@ -724,13 +793,13 @@ export const AddButton = {
   }
 }
 
-export const Loading = { ...Template, args: { steps: undefined } }
+export const Loading = { ...CustomLoadingComponent }
 
 export const WithNavigationCards = {
   ...Template,
   args: {
     steps,
-    showNavigationCards: true
+    CustomLoadingComponent
   }
 }
 

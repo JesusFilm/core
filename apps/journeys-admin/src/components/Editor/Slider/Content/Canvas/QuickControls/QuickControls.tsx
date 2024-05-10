@@ -4,19 +4,14 @@ import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import { MouseEvent, ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-
 import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { DeleteBlock } from './DeleteBlock'
 import { DuplicateBlock } from './DuplicateBlock'
 import { MoveBlock } from './MoveBlock'
 
-export function QuickControls({ open, anchorEl }): ReactElement {
-  const {
-    state: { selectedBlock }
-  } = useEditor()
-  const isVideoBlock = selectedBlock?.__typename === 'VideoBlock'
+export function QuickControls({ open, anchorEl, block }): ReactElement {
+  const isVideoBlock = block?.__typename === 'VideoBlock'
 
   function handleClick(e: MouseEvent<HTMLDivElement>): void {
     e.stopPropagation()

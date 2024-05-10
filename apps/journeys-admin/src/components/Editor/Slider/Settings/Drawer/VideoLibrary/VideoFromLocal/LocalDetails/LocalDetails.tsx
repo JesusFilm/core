@@ -142,14 +142,19 @@ export function LocalDetails({
       playerRef.current = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
         fluid: true,
-        controls: true,
-        poster: data.video?.image ?? undefined
+        controls: true
       })
       playerRef.current.on('playing', () => {
         setPlaying(true)
       })
+
+      playerRef.current.poster(data?.video?.image ?? undefined)
+      playerRef.current.src({
+        type: 'application/x-mpegURL',
+        src: data?.video?.variant?.hls ?? ''
+      })
     }
-  }, [data])
+  }, [open, data])
 
   useEffect(() => {
     if (open) {
