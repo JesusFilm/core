@@ -130,6 +130,10 @@ variable "environment_variables" {
   type = list(string)
 }
 
-variable "dns_name" {
+variable "subnet_group_name" {
+  type = string
+}
+
+variable "vpc_security_group_id" {
   type = string
 }
