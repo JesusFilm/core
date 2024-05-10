@@ -25,6 +25,8 @@ export class LoginPage {
     await this.page.locator('button[type="submit"]').click()
   }
   async waitUntilDiscoverPageLoaded() {
+    //TODO: refresh the page otherwise 'Create custom journey' button is not visible
+    await this.page.reload({ waitUntil: 'networkidle' })
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
