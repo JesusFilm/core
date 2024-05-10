@@ -43,6 +43,7 @@ import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
 import { useCreateNodeAndEdge } from './libs/useCreateNodeAndEdge'
 import { useDeleteEdge } from './libs/useDeleteEdge'
+import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
 import { NewStepButton } from './NewStepButton'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
@@ -84,6 +85,7 @@ export function JourneyFlow(): ReactElement {
   const createNodeAndEdge = useCreateNodeAndEdge()
   const updateEdge = useUpdateEdge()
   const deleteEdge = useDeleteEdge()
+  const { onSelectionChange } = useDeleteOnKeyPress()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
 
   async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
@@ -182,7 +184,7 @@ export function JourneyFlow(): ReactElement {
     connectingParams.current = params
   }, [])
   const onConnectEnd = useCallback<OnConnectEnd>(
-    (event) => {
+    async (event) => {
       if (
         reactFlowInstance == null ||
         connectingParams.current == null ||
@@ -289,12 +291,14 @@ export function JourneyFlow(): ReactElement {
         onEdgeUpdate={onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
+        onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         proOptions={{ hideAttribution: true }}
         onInit={setReactFlowInstance}
+        deleteKeyCode={[]}
         connectionLineStyle={{
           stroke: theme.palette.primary.main,
           strokeWidth: 2
