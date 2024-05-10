@@ -42,10 +42,12 @@ type Batch
 {
   id: ID!
   nexusId: String!
+  channelId: String!
+  channel: Channel
+  resources: [BatchResource]
   name: String!
   status: BatchStatus!
-  tasks: [BatchTask!]!
-  progress: Float
+  averagePercent: Float
   createdAt: DateTime!
 }
 
@@ -80,6 +82,17 @@ input BatchJobResource
   channel: ID!
 }
 
+type BatchResource
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  batchId: String!
+  resourceId: String!
+  isCompleted: Boolean
+  error: String
+  percent: Float
+}
+
 enum BatchStatus
   @join__type(graph: NEXUS)
 {
@@ -92,26 +105,6 @@ enum BatchStatus
   error @join__enumValue(graph: NEXUS)
   warning @join__enumValue(graph: NEXUS)
   scheduled @join__enumValue(graph: NEXUS)
-}
-
-type BatchTask
-  @join__type(graph: NEXUS, key: "id")
-{
-  id: ID!
-  batchId: String!
-  type: BatchTaskType!
-  status: TaskStatus!
-  progress: Float
-  metadata: Object
-  error: String
-}
-
-enum BatchTaskType
-  @join__type(graph: NEXUS)
-{
-  video_upload @join__enumValue(graph: NEXUS)
-  caption_processing @join__enumValue(graph: NEXUS)
-  localization @join__enumValue(graph: NEXUS)
 }
 
 interface Block
@@ -1725,9 +1718,6 @@ input NexusUpdateInput
   description: String
 }
 
-scalar Object
-  @join__type(graph: NEXUS)
-
 type OperatingSystem
   @join__type(graph: JOURNEYS)
 {
@@ -2346,15 +2336,6 @@ type Tag
   name: [Translation!]! @join__field(graph: TAGS)
   parentId: ID @join__field(graph: TAGS)
   service: Service @join__field(graph: TAGS)
-}
-
-enum TaskStatus
-  @join__type(graph: NEXUS)
-{
-  pending @join__enumValue(graph: NEXUS)
-  processing @join__enumValue(graph: NEXUS)
-  completed @join__enumValue(graph: NEXUS)
-  failed @join__enumValue(graph: NEXUS)
 }
 
 type Team
