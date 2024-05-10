@@ -100,8 +100,8 @@ export function SocialPreviewNode(): ReactElement {
               sx={{
                 height: 15,
                 width: 15,
-                bgcolor: (theme) => theme.palette.background.default,
-                color: (theme) => theme.palette.background.paper,
+                bgcolor: 'background.default',
+                color: 'background.paper',
                 mr: 1.5
               }}
             >
@@ -136,8 +136,11 @@ export function SocialPreviewNode(): ReactElement {
                 display="block"
                 width={118.5}
                 height={90}
-                bgcolor="rgba(0, 0, 0, 0.1)"
-                borderRadius="4px"
+                borderRadius={1}
+                sx={{
+                  backgroundColor: (theme) =>
+                    `${theme.palette.secondary.dark}1A`
+                }}
               />
             ) : (
               <Image
@@ -146,7 +149,7 @@ export function SocialPreviewNode(): ReactElement {
                 width={118.5}
                 height={90}
                 style={{
-                  borderRadius: '4px',
+                  borderRadius: 1,
                   maxWidth: '100%',
                   objectFit: 'cover'
                 }}
@@ -169,7 +172,7 @@ export function SocialPreviewNode(): ReactElement {
                   width={118.5}
                   height={9}
                   bgcolor="background.default"
-                  borderRadius="4px"
+                  borderRadius={1}
                 />
               ) : (
                 <Typography
@@ -189,7 +192,7 @@ export function SocialPreviewNode(): ReactElement {
                   width={118.5}
                   height={9}
                   bgcolor="background.default"
-                  borderRadius="4px"
+                  borderRadius={1}
                 />
               ) : (
                 <Typography

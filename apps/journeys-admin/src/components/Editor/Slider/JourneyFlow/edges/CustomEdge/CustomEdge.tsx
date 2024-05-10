@@ -67,12 +67,12 @@ export function CustomEdge({
               onClick={onEdgeClick}
               sx={{
                 borderRadius: '100%',
-                backgroundColor: (theme) => theme.palette.primary.main,
+                backgroundColor: 'primary.main',
                 height: 4,
                 width: 4,
                 display: 'flex',
                 '&:hover': {
-                  backgroundColor: (theme) => theme.palette.primary.main,
+                  backgroundColor: 'primary.main',
                   opacity: 0.8
                 }
               }}
@@ -81,7 +81,7 @@ export function CustomEdge({
                 sx={{
                   height: 12,
                   width: 12,
-                  color: (theme) => theme.palette.background.paper
+                  color: 'background.paper'
                 }}
               />
             </IconButton>

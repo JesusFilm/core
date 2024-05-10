@@ -49,7 +49,7 @@ export function StepBlockNodeIcon({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: (theme) => theme.palette.background.paper,
+        color: 'background.paper',
         background
       }}
     >
