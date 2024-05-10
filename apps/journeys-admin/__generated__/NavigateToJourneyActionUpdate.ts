@@ -22,6 +22,9 @@ export interface NavigateToJourneyActionUpdate_blockUpdateNavigateToJourneyActio
 }
 
 export interface NavigateToJourneyActionUpdate {
+  /**
+   * DEPRECATED: NavigateToJourneyAction is being removed. Use blockUpdateLinkAction instead.
+   */
   blockUpdateNavigateToJourneyAction: NavigateToJourneyActionUpdate_blockUpdateNavigateToJourneyAction;
 }
 
