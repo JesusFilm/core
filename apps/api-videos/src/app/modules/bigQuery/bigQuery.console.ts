@@ -7,11 +7,17 @@ export async function main(): Promise<void> {
       port: 6379
     }
   })
-  const repeatableJobs = await myQueue.getRepeatableJobs()
+  const jobs = await myQueue.getJobs([
+    'active',
+    'waiting',
+    'delayed',
+    'completed'
+  ])
   const name = 'api-videos-bq-ingest'
-  for (const job of repeatableJobs) {
+  // remove old jobs
+  for (const job of jobs) {
     if (job.name === name) {
-      await myQueue.removeRepeatableByKey(job.key)
+      await job.remove()
     }
   }
   await myQueue.add(
