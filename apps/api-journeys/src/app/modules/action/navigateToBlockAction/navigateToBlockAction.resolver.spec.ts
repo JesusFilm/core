@@ -119,5 +119,18 @@ describe('NavigateToBlockActionResolver', () => {
         resolver.blockUpdateNavigateToBlockAction(ability, block.id, input)
       ).rejects.toThrow('user is not allowed to update block')
     })
+
+    it('throws error if input nextBlockId is the same as block id', async () => {
+      const wrongInput = {
+        gtmEventName: 'gtmEventName',
+        blockId: block.id
+      }
+
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.blockUpdateNavigateToBlockAction(ability, block.id, wrongInput)
+      ).rejects.toThrow('Cannot connect to self')
+    })
   })
 })

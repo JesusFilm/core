@@ -67,6 +67,13 @@ export class NavigateToBlockActionResolver {
         { extensions: { code: 'BAD_USER_INPUT' } }
       )
     }
+    console.log('block', block.id)
+    console.log('input', input.blockId)
+    if (block.id === input.blockId) {
+      throw new GraphQLError('Cannot connect to self', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
+    }
     const inputWithBlockConnection = {
       ...omit(input, 'blockId'),
       block: { connect: { id: input.blockId } }
