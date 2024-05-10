@@ -1,3 +1,4 @@
+import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -28,6 +29,8 @@ const Demo: Meta<typeof TextResponse> = {
   }
 }
 
+const onClose = jest.fn()
+
 const block: TreeBlock<TextResponseBlock> = {
   __typename: 'TextResponseBlock',
   id: 'textResponseBlock.id',
@@ -46,7 +49,7 @@ const Template: StoryObj<ComponentProps<typeof TextResponse>> = {
   render: ({ ...args }) => {
     return (
       <EditorProvider initialState={{ selectedBlock: { ...args } }}>
-        <Drawer title="Feedback Properties">
+        <Drawer title="Feedback Properties" onClose={onClose}>
           <TextResponse {...args} />
         </Drawer>
       </EditorProvider>

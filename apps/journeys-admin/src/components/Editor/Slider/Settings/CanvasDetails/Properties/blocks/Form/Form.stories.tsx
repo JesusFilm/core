@@ -1,5 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { Form as FormType } from '@formium/types'
+import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -24,6 +25,8 @@ const Demo: Meta<typeof Form> = {
   title:
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Form'
 }
+
+const onClose = jest.fn()
 
 const formBlock: TreeBlock<FormBlock> = {
   id: 'formBlock.id',
@@ -114,7 +117,7 @@ const getFilledFormBlockMock: MockedResponse<
 const Template: StoryObj<ComponentProps<typeof Form>> = {
   render: (block) => (
     <EditorProvider initialState={{ selectedBlock: { ...block } }}>
-      <Drawer title="Form Properties">
+      <Drawer title="Form Properties" onClose={onClose}>
         <Form {...block} />
       </Drawer>
     </EditorProvider>

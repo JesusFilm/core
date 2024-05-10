@@ -432,12 +432,25 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_
   hls: string | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages_name[];
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_title[];
   image: string | null;
   variant: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant | null;
+  variantLanguages: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages[];
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateAction {

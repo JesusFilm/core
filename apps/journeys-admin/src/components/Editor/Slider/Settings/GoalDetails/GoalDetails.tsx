@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { Drawer } from '../Drawer'
 
@@ -21,11 +21,18 @@ export function GoalDetails(): ReactElement {
   function setSelectedAction(url: string): void {
     dispatch({ type: 'SetSelectedGoalUrlAction', selectedGoalUrl: url })
   }
+  function onClose(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.JourneyFlow
+    })
+  }
 
   return (
     <Drawer
       data-testid="GoalDetails"
       title={selectedGoalUrl != null ? t('Goal Details') : t('Information')}
+      onClose={onClose}
     >
       <Box
         sx={{ overflow: 'auto', height: '100%' }}

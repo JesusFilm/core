@@ -1,9 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveSlide,
+  EditorProvider,
+  EditorState
+} from '@core/journeys/ui/EditorProvider'
+
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { Properties } from '.'
 
@@ -355,5 +362,42 @@ describe('Properties', () => {
     )
 
     await waitFor(() => expect(container.children[0].childElementCount).toBe(0))
+  })
+
+  it('should return to journey map when close icon is clicked', async () => {
+    const selectedBlock = {
+      __typename: 'CardBlock',
+      id: 'block.id',
+      fullscreen: false,
+      children: []
+    }
+    const selectedStep = {}
+
+    const state = {
+      selectedBlock,
+      selectedStep,
+      activeSlide: ActiveSlide.Content
+    } as unknown as EditorState
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={state}>
+            <TestEditorState />
+            <Properties />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('X2Icon')).toBeInTheDocument()
+    )
+    await waitFor(
+      async () => await userEvent.click(screen.getByTestId('X2Icon'))
+    )
+
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
 })

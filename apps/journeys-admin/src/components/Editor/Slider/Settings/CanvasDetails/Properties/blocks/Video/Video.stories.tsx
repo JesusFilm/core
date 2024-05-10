@@ -1,3 +1,4 @@
+import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
@@ -18,11 +19,13 @@ const VideoDemo: Meta<typeof Video> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video'
 }
 
+const onClose = jest.fn()
+
 const Template: StoryObj<ComponentPropsWithoutRef<typeof Video>> = {
   render: ({ ...args }) => {
     return (
       <EditorProvider initialState={{ selectedBlock: { ...args } }}>
-        <Drawer title="Video Properties">
+        <Drawer title="Video Properties" onClose={onClose}>
           <Video {...args} />
         </Drawer>
       </EditorProvider>

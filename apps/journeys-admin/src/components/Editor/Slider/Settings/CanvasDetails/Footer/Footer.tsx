@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
@@ -40,6 +40,13 @@ export function Footer(): ReactElement {
     setTabValue(newValue)
   }
 
+  function onClose(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.JourneyFlow
+    })
+  }
+
   useEffect(() => {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
@@ -49,7 +56,7 @@ export function Footer(): ReactElement {
   }, [dispatch])
 
   return (
-    <Drawer title={t('Footer Properties')}>
+    <Drawer title={t('Footer Properties')} onClose={onClose}>
       <Tabs
         value={tabValue}
         onChange={handleTabChange}

@@ -1,3 +1,4 @@
+import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -28,6 +29,8 @@ const Demo: Meta<typeof Typography> = {
   }
 }
 
+const onClose = jest.fn()
+
 const block: TreeBlock<TypographyBlock> = {
   __typename: 'TypographyBlock',
   id: 'typographyBlock.id',
@@ -44,7 +47,7 @@ const Template: StoryObj<ComponentProps<typeof Typography>> = {
   render: ({ ...args }) => {
     return (
       <EditorProvider initialState={{ selectedBlock: { ...args } }}>
-        <Drawer title="Feedback Properties">
+        <Drawer title="Feedback Properties" onClose={onClose}>
           <Typography {...args} />
         </Drawer>
       </EditorProvider>

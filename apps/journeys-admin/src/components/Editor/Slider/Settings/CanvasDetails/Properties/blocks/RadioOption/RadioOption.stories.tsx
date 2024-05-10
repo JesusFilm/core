@@ -1,3 +1,4 @@
+import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -17,6 +18,8 @@ const Demo: Meta<typeof RadioOption> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/RadioOption'
 }
 
+const onClose = jest.fn()
+
 const block: TreeBlock<RadioOptionBlock> = {
   id: 'radioOption1.id',
   __typename: 'RadioOptionBlock',
@@ -33,7 +36,7 @@ const Template: StoryObj<
   render: (block) => {
     return (
       <EditorProvider initialState={{ selectedBlock: { ...block } }}>
-        <Drawer title="Poll Option Properties">
+        <Drawer title="Poll Option Properties" onClose={onClose}>
           <RadioOption {...block} />
         </Drawer>
       </EditorProvider>
