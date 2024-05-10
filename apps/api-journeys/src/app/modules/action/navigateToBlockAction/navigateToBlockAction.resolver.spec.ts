@@ -120,12 +120,11 @@ describe('NavigateToBlockActionResolver', () => {
       ).rejects.toThrow('user is not allowed to update block')
     })
 
-    it('throws error if input nextBlockId is the same as block id', async () => {
+    it('throws error for matching block IDs', async () => {
       const wrongInput = {
         gtmEventName: 'gtmEventName',
         blockId: block.id
       }
-
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
