@@ -42,6 +42,14 @@ export function getLabelDetails(
       label = 'Short Film'
       color = '#FF9E00'
       break
+    case VideoLabel.behindTheScenes:
+      label = 'Behind The Scenes'
+      color = '#FF9E00'
+      break
+    case VideoLabel.trailer:
+      label = 'Trailer'
+      color = '#FF9E00'
+      break
   }
 
   const childCountLabel =

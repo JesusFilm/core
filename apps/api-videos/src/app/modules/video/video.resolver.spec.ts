@@ -6,6 +6,10 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
   Prisma,
   Video,
+  VideoDescription,
+  VideoImageAlt,
+  VideoSnippet,
+  VideoStudyQuestion,
   VideoTitle,
   VideoVariant
 } from '.prisma/api-videos-client'
@@ -26,12 +30,7 @@ describe('VideoResolver', () => {
     slug: 'video-slug',
     label: 'featureFilm',
     primaryLanguageId: '529',
-    seoTitle: [],
-    snippet: [],
-    description: [],
-    studyQuestions: [],
     image: '',
-    imageAlt: [],
     noIndex: false,
     childIds: ['20615', '20615']
   }
@@ -42,6 +41,7 @@ describe('VideoResolver', () => {
       videoId: video.id,
       hls: '',
       slug: 'jesus/english',
+      editionId: '1',
       languageId: '529',
       duration: 0
     }
@@ -52,6 +52,40 @@ describe('VideoResolver', () => {
     primary: false,
     languageId: '529',
     id: '1',
+    videoId: '20615'
+  }
+
+  const videoDescription: VideoDescription = {
+    value: '普通話',
+    primary: false,
+    languageId: '529',
+    id: '1',
+    videoId: '20615'
+  }
+
+  const videoSnippet: VideoSnippet = {
+    value: '普通話',
+    primary: false,
+    languageId: '529',
+    id: '1',
+    videoId: '20615'
+  }
+
+  const videoImageAlt: VideoImageAlt = {
+    value: '普通話',
+    primary: false,
+    languageId: '529',
+    id: '1',
+    videoId: '20615'
+  }
+
+  const videoStudyQuestion: VideoStudyQuestion = {
+    value: '普通話',
+    primary: false,
+    languageId: '529',
+    id: '1',
+    order: 1,
+    crowdInId: '12',
     videoId: '20615'
   }
 
@@ -82,6 +116,14 @@ describe('VideoResolver', () => {
     prismaService.video.findUnique.mockResolvedValue(video)
     prismaService.video.findFirst.mockResolvedValue(video)
     prismaService.videoTitle.findMany.mockResolvedValue([videoTitle])
+    prismaService.videoDescription.findMany.mockResolvedValue([
+      videoDescription
+    ])
+    prismaService.videoImageAlt.findMany.mockResolvedValue([videoImageAlt])
+    prismaService.videoSnippet.findMany.mockResolvedValue([videoSnippet])
+    prismaService.videoStudyQuestion.findMany.mockResolvedValue([
+      videoStudyQuestion
+    ])
     prismaService.videoVariant.findUnique.mockResolvedValue(videoVariant[0])
     prismaService.videoVariant.findMany.mockResolvedValue(videoVariant)
     prismaService.video.count.mockResolvedValue(1)
@@ -287,6 +329,102 @@ describe('VideoResolver', () => {
           videoId: video.id,
           OR: [{ primary: true }, { languageId: '529' }]
         }
+      })
+    })
+  })
+
+  describe('description', () => {
+    it('returns descriptions', async () => {
+      expect(await resolver.description(video)).toEqual([videoDescription])
+      expect(prismaService.videoDescription.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ languageId: '529' }]
+        }
+      })
+    })
+
+    it('returns filtered titles', async () => {
+      expect(await resolver.description(video, '529', true)).toEqual([
+        videoDescription
+      ])
+      expect(prismaService.videoDescription.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ primary: true }, { languageId: '529' }]
+        }
+      })
+    })
+  })
+
+  describe('snippet', () => {
+    it('returns snippet', async () => {
+      expect(await resolver.snippet(video)).toEqual([videoSnippet])
+      expect(prismaService.videoSnippet.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ languageId: '529' }]
+        }
+      })
+    })
+
+    it('returns filtered snippets', async () => {
+      expect(await resolver.snippet(video, '529', true)).toEqual([videoSnippet])
+      expect(prismaService.videoSnippet.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ primary: true }, { languageId: '529' }]
+        }
+      })
+    })
+  })
+
+  describe('imageAlt', () => {
+    it('returns snippet', async () => {
+      expect(await resolver.imageAlt(video)).toEqual([videoImageAlt])
+      expect(prismaService.videoImageAlt.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ languageId: '529' }]
+        }
+      })
+    })
+
+    it('returns filtered snippets', async () => {
+      expect(await resolver.imageAlt(video, '529', true)).toEqual([
+        videoImageAlt
+      ])
+      expect(prismaService.videoImageAlt.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ primary: true }, { languageId: '529' }]
+        }
+      })
+    })
+  })
+
+  describe('studyQuestions', () => {
+    it('returns studyQuestions', async () => {
+      expect(await resolver.studyQuestions(video)).toEqual([videoStudyQuestion])
+      expect(prismaService.videoStudyQuestion.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ languageId: '529' }]
+        },
+        orderBy: { order: 'asc' }
+      })
+    })
+
+    it('returns filtered studyQuestions', async () => {
+      expect(await resolver.studyQuestions(video, '529', true)).toEqual([
+        videoStudyQuestion
+      ])
+      expect(prismaService.videoStudyQuestion.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ primary: true }, { languageId: '529' }]
+        },
+        orderBy: { order: 'asc' }
       })
     })
   })

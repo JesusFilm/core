@@ -124,7 +124,6 @@ input ChannelCreateInput {
 
 input ChannelUpdateInput {
   name: String
-  nexusId: String
   platform: String
 }
 

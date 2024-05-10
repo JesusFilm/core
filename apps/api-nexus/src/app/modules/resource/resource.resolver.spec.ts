@@ -1,85 +1,311 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { v4 as uuidv4 } from 'uuid'
 
-import { Resource, ResourceStatus, SourceType } from '.prisma/api-nexus-client';
+import {
+  NexusStatus,
+  Prisma,
+  Resource,
+  ResourceStatus,
+  SourceType
+} from '.prisma/api-nexus-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
-import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService';
-import { GoogleSheetsService } from '../../lib/googleAPI/googleSheetsService';
-import { GoogleOAuthService } from '../../lib/googleOAuth/googleOAuth';
-import { PrismaService } from '../../lib/prisma.service';
-import { YoutubeService } from '../../lib/youtube/youtubeService';
-import { BatchService } from '../batch/batchService';
-import { BullMQService } from '../bullMQ/bullMQ.service';
-import { GoogleDriveService } from '../google-drive/googleDriveService';
+import { BullMQService } from '../../lib/bullMQ/bullMQ.service'
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
+import { GoogleDriveService } from '../../lib/google/drive.service'
+import { GoogleOAuthService } from '../../lib/google/oauth.service'
+import { GoogleSheetsService } from '../../lib/google/sheets.service'
+import { GoogleYoutubeService } from '../../lib/google/youtube.service'
+import { PrismaService } from '../../lib/prisma.service'
 
-import { ResourceResolver } from './resource.resolver';
+import { ResourceResolver } from './resource.resolver'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('ResourceResolver', () => {
-  let resolver: ResourceResolver;
-  let prismaService: DeepMockProxy<PrismaService>;
+  let resolver: ResourceResolver,
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
+
+  const resource: Resource = {
+    id: 'resourceId',
+    nexusId: 'nexusId',
+    name: 'Resource Name',
+    status: ResourceStatus.published,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+    category: 'Example Category',
+    privacy: null,
+    sourceType: SourceType.other
+  }
+  const resourceWithNexusUserNexus = {
+    ...resource,
+    nexus: {
+      userNexuses: [{ userId: 'userId', role: 'owner' }],
+      status: NexusStatus.published
+    }
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         ResourceResolver,
         { provide: PrismaService, useValue: mockDeep<PrismaService>() },
         {
           provide: GoogleOAuthService,
-          useValue: mockDeep<GoogleOAuthService>(),
+          useValue: mockDeep<GoogleOAuthService>()
         },
         {
           provide: GoogleDriveService,
-          useValue: mockDeep<GoogleDriveService>(),
+          useValue: mockDeep<GoogleDriveService>()
         },
-        { provide: CloudFlareService, useValue: mockDeep<CloudFlareService>() },
-        { provide: YoutubeService, useValue: mockDeep<YoutubeService>() },
-        { provide: BullMQService, useValue: mockDeep<BullMQService>() },
         {
           provide: GoogleSheetsService,
-          useValue: mockDeep<GoogleSheetsService>(),
+          useValue: mockDeep<GoogleSheetsService>()
         },
-        { provide: BatchService, useValue: mockDeep<BatchService>() },
-      ],
-    }).compile();
+        {
+          provide: GoogleYoutubeService,
+          useValue: mockDeep<GoogleYoutubeService>()
+        },
+        { provide: CloudFlareService, useValue: mockDeep<CloudFlareService>() },
+        { provide: BullMQService, useValue: mockDeep<BullMQService>() }
+      ]
+    }).compile()
 
-    resolver = module.get<ResourceResolver>(ResourceResolver);
+    resolver = module.get<ResourceResolver>(ResourceResolver)
     prismaService = module.get<PrismaService>(
-      PrismaService,
-    ) as DeepMockProxy<PrismaService>;
-  });
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+  })
 
   describe('resources', () => {
-    it('should return an array of resources based on the filter', async () => {
-      const userId = 'userId';
-      const mockResources: Resource[] = [
-        {
-          id: 'resourceId',
-          nexusId: 'nexusId',
-          name: 'Resource Name',
-          status: ResourceStatus.published,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          deletedAt: null,
-          category: 'Example Category',
-          privacy: null,
-          sourceType: SourceType.other,
-          // localizations: [],
-          // resourceYoutubeChannel: [],
-          // Include the missing properties with mock or null values as appropriate
-          spokenLanguage: null, // Assuming this can be null
-          customThumbnail: null, // Assuming this can be null
-          notifySubscribers: null, // Assuming this can be null or provide a mock value
-          playlistId: null, // Assuming this can be null or provide a mock value
-          isMadeForKids: null, // Assuming this can be null or provide a mock value
-          mediaComponentId: null, // Assuming this can be null or provide a mock value
-          // Include other properties as needed, matching the 'Resource' model
-        },
-      ];
-      prismaService.resource.findMany.mockResolvedValue(mockResources);
+    const accessibleResources: Prisma.ResourceWhereInput = { OR: [{}] }
 
-      const result = await resolver.resources(userId, {});
-      expect(result).toEqual(mockResources);
-      expect(prismaService.resource.findMany).toHaveBeenCalled();
-    });
-  });
-});
+    beforeEach(() => {
+      prismaService.resource.findMany.mockResolvedValueOnce([resource])
+    })
+
+    it('returns resources', async () => {
+      expect(await resolver.resources(accessibleResources)).toEqual([resource])
+      expect(prismaService.resource.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [accessibleResources, {}]
+        },
+        orderBy: { createdAt: 'desc' },
+        include: { localizations: true }
+      })
+    })
+
+    it('returns resources with filter', async () => {
+      const filter = { nexusId: 'nexusId', ids: ['resourceId'] }
+      expect(await resolver.resources(accessibleResources, filter)).toEqual([
+        resource
+      ])
+      expect(prismaService.resource.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            accessibleResources,
+            { nexusId: 'nexusId', id: { in: ['resourceId'] } }
+          ]
+        },
+        orderBy: { createdAt: 'desc' },
+        include: { localizations: true }
+      })
+    })
+
+    it('returns resources with take', async () => {
+      const filter = { limit: 1 }
+      expect(await resolver.resources(accessibleResources, filter)).toEqual([
+        resource
+      ])
+      expect(prismaService.resource.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [accessibleResources, {}]
+        },
+        take: 1,
+        orderBy: { createdAt: 'desc' },
+        include: { localizations: true }
+      })
+    })
+  })
+
+  describe('resource', () => {
+    it('returns resource', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce(
+        resourceWithNexusUserNexus
+      )
+      expect(await resolver.resource(ability, 'resourceId')).toEqual(
+        resourceWithNexusUserNexus
+      )
+      expect(prismaService.resource.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 'resourceId'
+        },
+        include: {
+          localizations: true,
+          nexus: { include: { userNexuses: true } }
+        }
+      })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce(null)
+      await expect(resolver.resource(ability, 'resourceId')).rejects.toThrow(
+        'resource not found'
+      )
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce(resource)
+      await expect(resolver.resource(ability, 'resourceId')).rejects.toThrow(
+        'user is not allowed to view resource'
+      )
+    })
+  })
+
+  describe('resourceCreate', () => {
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+    })
+
+    it('creates a resource', async () => {
+      prismaService.resource.create.mockResolvedValueOnce(resource)
+      prismaService.resource.findUnique.mockResolvedValue(
+        resourceWithNexusUserNexus
+      )
+      mockUuidv4.mockReturnValueOnce('resourceId')
+      expect(
+        await resolver.resourceCreate(ability, {
+          nexusId: 'nexusId',
+          name: 'New Resource'
+        })
+      ).toEqual(resourceWithNexusUserNexus)
+      expect(prismaService.resource.create).toHaveBeenCalledWith({
+        data: {
+          id: 'resourceId',
+          name: 'New Resource',
+          nexusId: 'nexusId',
+          status: 'published',
+          sourceType: 'other'
+        }
+      })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.resource.create.mockResolvedValueOnce(resource)
+      prismaService.resource.findUnique.mockResolvedValue(null)
+      await expect(
+        resolver.resourceCreate(ability, {
+          nexusId: 'nexusId',
+          name: 'New Resource'
+        })
+      ).rejects.toThrow('resource not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.resource.create.mockResolvedValueOnce(resource)
+      prismaService.resource.findUnique.mockResolvedValue(resource)
+      await expect(
+        resolver.resourceCreate(ability, {
+          nexusId: 'nexusId',
+          name: 'New Resource'
+        })
+      ).rejects.toThrow('user is not allowed to create resource')
+    })
+  })
+
+  describe('resourceUpdate', () => {
+    it('updates a resource', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce(
+        resourceWithNexusUserNexus
+      )
+      prismaService.resource.update.mockResolvedValueOnce(resource)
+      const input = {
+        name: 'Updated Resource Name'
+      }
+      expect(
+        await resolver.resourceUpdate(ability, 'resourceId', input)
+      ).toEqual(resource)
+      expect(prismaService.resource.update).toHaveBeenCalledWith({
+        where: { id: 'resourceId' },
+        data: input,
+        include: { localizations: true }
+      })
+    })
+
+    it('updates a resource with empty fields when not passed in', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce(
+        resourceWithNexusUserNexus
+      )
+      await resolver.resourceUpdate(ability, 'resourceId', {
+        name: null
+      })
+      expect(prismaService.resource.update).toHaveBeenCalledWith({
+        where: { id: 'resourceId' },
+        data: {
+          name: undefined
+        },
+        include: { localizations: true }
+      })
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce(resource)
+      await expect(
+        resolver.resourceUpdate(ability, 'resourceId', { name: 'new title' })
+      ).rejects.toThrow('user is not allowed to update resource')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.resourceUpdate(ability, 'resourceId', { name: 'new title' })
+      ).rejects.toThrow('resource not found')
+    })
+  })
+
+  describe('resourceDelete', () => {
+    it('deletes a resource', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce(
+        resourceWithNexusUserNexus
+      )
+      prismaService.resource.update.mockResolvedValueOnce(resource)
+      expect(await resolver.resourceDelete(ability, 'resourceId')).toEqual(
+        resource
+      )
+      expect(prismaService.resource.update).toHaveBeenCalledWith({
+        where: { id: 'resourceId' },
+        data: { status: ResourceStatus.deleted },
+        include: {
+          localizations: true
+        }
+      })
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce(resource)
+      await expect(
+        resolver.resourceDelete(ability, 'resourceId')
+      ).rejects.toThrow('user is not allowed to delete resource')
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.resourceDelete(ability, 'resourceId')
+      ).rejects.toThrow('resource not found')
+    })
+  })
+})

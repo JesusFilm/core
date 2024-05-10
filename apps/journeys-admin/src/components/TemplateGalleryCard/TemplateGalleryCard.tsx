@@ -62,9 +62,11 @@ export function TemplateGalleryCard({
   const { t } = useTranslation('apps-journeys-admin')
   const date =
     journey != null
-      ? intlFormat(parseISO(journey.createdAt), {
+      ? intlFormat(parseISO(String(journey.createdAt)), {
           month: 'short',
-          year: isThisYear(parseISO(journey?.createdAt)) ? undefined : 'numeric'
+          year: isThisYear(parseISO(String(journey?.createdAt)))
+            ? undefined
+            : 'numeric'
         }).replace(' ', ', ')
       : ''
 

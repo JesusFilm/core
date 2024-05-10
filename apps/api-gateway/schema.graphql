@@ -386,7 +386,6 @@ input ChannelUpdateInput
   @join__type(graph: NEXUS)
 {
   name: String
-  nexusId: String
   platform: String
 }
 
@@ -408,21 +407,21 @@ type ChatButton
 {
   id: ID!
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 input ChatButtonCreateInput
   @join__type(graph: JOURNEYS)
 {
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 input ChatButtonUpdateInput
   @join__type(graph: JOURNEYS)
 {
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 type ChatOpenEvent implements Event
@@ -463,22 +462,6 @@ input ChatOpenEventCreateInput
 
   """messagePlatform of the link used for chat"""
   value: MessagePlatform
-}
-
-enum ChatPlatform
-  @join__type(graph: JOURNEYS)
-{
-  facebook @join__enumValue(graph: JOURNEYS)
-  telegram @join__enumValue(graph: JOURNEYS)
-  whatsApp @join__enumValue(graph: JOURNEYS)
-  instagram @join__enumValue(graph: JOURNEYS)
-  viber @join__enumValue(graph: JOURNEYS)
-  vk @join__enumValue(graph: JOURNEYS)
-  snapchat @join__enumValue(graph: JOURNEYS)
-  skype @join__enumValue(graph: JOURNEYS)
-  line @join__enumValue(graph: JOURNEYS)
-  tikTok @join__enumValue(graph: JOURNEYS)
-  custom @join__enumValue(graph: JOURNEYS)
 }
 
 type CloudflareImage
@@ -1421,6 +1404,18 @@ type Mutation
 
     """drop this parameter after merging teams"""
     journeyId: ID
+
+    """
+    x is used to position a step block block horizontally in the journey flow diagram on
+    the editor.
+    """
+    x: Int
+
+    """
+    y is used to position a step block block vertically in the journey flow diagram on
+    the editor.
+    """
+    y: Int
   ): [Block!]! @join__field(graph: JOURNEYS)
   blockOrderUpdate(
     id: ID!
@@ -2809,7 +2804,6 @@ type Video
   primaryLanguageId: ID!
   label: VideoLabel! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
@@ -3201,6 +3195,8 @@ enum VideoLabel
   segment @join__enumValue(graph: VIDEOS)
   series @join__enumValue(graph: VIDEOS)
   shortFilm @join__enumValue(graph: VIDEOS)
+  trailer @join__enumValue(graph: VIDEOS)
+  behindTheScenes @join__enumValue(graph: VIDEOS)
 }
 
 type VideoPauseEvent implements Event

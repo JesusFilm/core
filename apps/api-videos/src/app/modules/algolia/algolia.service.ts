@@ -25,9 +25,22 @@ export class AlgoliaService {
         take: 1000,
         skip: offset,
         include: {
-          video: { include: { title: true } },
+          video: {
+            include: {
+              title: true,
+              description: true,
+              imageAlt: true,
+              snippet: true
+            }
+          },
           subtitle: true
-        }
+        },
+        where:
+          appIndex === 'video-variants-prd'
+            ? undefined
+            : {
+                languageId: '529'
+              }
       })
 
       if (videoVariants.length === 0) {

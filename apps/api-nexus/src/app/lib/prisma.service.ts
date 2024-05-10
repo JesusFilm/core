@@ -1,13 +1,11 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common'
 
-import { PrismaClient as LanguagePrismaClient } from '.prisma/api-languages-client';
-import { PrismaClient } from '.prisma/api-nexus-client';
-import { PrismaClient as VideoPrismaClient } from '.prisma/api-videos-client';
+import { PrismaClient } from '.prisma/api-nexus-client'
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
   async onModuleInit(): Promise<void> {
-    await this.$connect();
+    await this.$connect()
   }
 }
 
@@ -17,7 +15,7 @@ export class VideoPrismaService
   implements OnModuleInit
 {
   async onModuleInit(): Promise<void> {
-    await this.$connect();
+    await this.$connect()
   }
 }
 
@@ -27,6 +25,6 @@ export class LanguagePrismaService
   implements OnModuleInit
 {
   async onModuleInit(): Promise<void> {
-    await this.$connect();
+    await this.$connect()
   }
 }

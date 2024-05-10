@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { Reference, gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -52,7 +52,9 @@ export function ApproveUser({
           cache.modify({
             fields: {
               userInvites(refs, { readField }) {
-                return refs.filter((ref) => id !== readField('id', ref))
+                return refs.filter(
+                  (ref: Reference) => id !== readField('id', ref)
+                )
               }
             }
           })
