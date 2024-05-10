@@ -25,13 +25,6 @@ export class LoginPage {
     await this.page.locator('button[type="submit"]').click()
   }
 
-  async waitUntilLoginPageLoaded() {
-    await expect(
-      this.page.locator('svg[data-testid="UsersProfiles2Icon"]')
-    ).toBeVisible({
-      timeout: 65000
-    })
-  }
   async waitUntilDiscoverPageLoaded() {
     await expect(
       this.page.locator(
@@ -54,6 +47,6 @@ export class LoginPage {
     const password = await getPassword()
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
-    await this.waitUntilLoginPageLoaded()
+    await this.waitUntilDiscoverPageLoaded()
   }
 }
