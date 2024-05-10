@@ -12,6 +12,36 @@ import { filterActionBlocks } from '../filterActionBlocks'
 
 export const MARKER_END_DEFAULT_COLOR = '#D3D3D3'
 export const MARKER_END_SELECTED_COLOR = '#C52D3A' // theme.palette.primary.main
+export const defaultEdgeProps = {
+  type: 'Custom',
+  markerEnd: {
+    type: MarkerType.ArrowClosed,
+    height: 10,
+    width: 10,
+    color: MARKER_END_DEFAULT_COLOR
+  }
+}
+export const hiddenEdge = {
+  id: 'SocialPreview->hidden',
+  source: 'SocialPreview',
+  target: 'hidden',
+  markerEnd: {
+    type: MarkerType.ArrowClosed,
+    height: 10,
+    width: 10,
+    color: MARKER_END_SELECTED_COLOR
+  },
+  style: {
+    opacity: 0
+  }
+}
+export const hiddenNode = {
+  id: 'hidden',
+  data: {},
+  position: { x: -165, y: -46 },
+  draggable: false,
+  hidden: true
+}
 
 interface Connection<T = BlockFields> {
   block: TreeBlock<T>
@@ -30,15 +60,6 @@ export function transformSteps(
 } {
   const nodes: Node[] = []
   const edges: Edge[] = []
-  const defaultEdgeProps = {
-    type: 'Custom',
-    markerEnd: {
-      type: MarkerType.ArrowClosed,
-      height: 10,
-      width: 10,
-      color: MARKER_END_DEFAULT_COLOR
-    }
-  }
 
   function connectBlockToNextBlock({ block, step, steps }: Connection): void {
     const index = findIndex(steps, (child) => child.id === step.id)
@@ -100,27 +121,8 @@ export function transformSteps(
 
   // hidden edge so the markerEnd style can be used
   if (nodes.find((node) => node.id === 'hidden') == null) {
-    nodes.push({
-      id: 'hidden',
-      data: {},
-      position: { x: -165, y: -46 },
-      draggable: false,
-      hidden: true
-    })
-    edges.push({
-      id: 'SocialPreview->hidden',
-      source: 'SocialPreview',
-      target: 'hidden',
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-        height: 10,
-        width: 10,
-        color: MARKER_END_SELECTED_COLOR
-      },
-      style: {
-        opacity: 0
-      }
-    })
+    nodes.push(hiddenNode)
+    edges.push(hiddenEdge)
   }
 
   return { nodes, edges }

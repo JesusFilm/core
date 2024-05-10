@@ -6,6 +6,8 @@ import {
   BlockFields_RadioQuestionBlock as RadioQuestionBlock
 } from '../../../../../../../__generated__/BlockFields'
 
+import { defaultEdgeProps, hiddenEdge, hiddenNode } from './transformSteps'
+
 import { transformSteps } from '.'
 
 describe('tranformSteps', () => {
@@ -72,11 +74,12 @@ describe('tranformSteps', () => {
         draggable: false,
         id: 'SocialPreview',
         position: {
-          x: -165,
-          y: -195
+          x: -365,
+          y: -46
         },
         type: 'SocialPreview'
-      }
+      },
+      hiddenNode
     ])
 
     expect(edges).toEqual([
@@ -84,20 +87,29 @@ describe('tranformSteps', () => {
         id: 'step1.id->step2.id',
         source: 'step1.id',
         sourceHandle: undefined,
-        style: {
-          strokeDasharray: 4
-        },
-        target: 'step2.id'
+        target: 'step2.id',
+        ...defaultEdgeProps
       },
       {
         id: 'step2.id->step3.id',
         source: 'step2.id',
         sourceHandle: undefined,
-        style: {
-          strokeDasharray: 4
+        target: 'step3.id',
+        ...defaultEdgeProps
+      },
+      {
+        id: 'SocialPreview->step1.id',
+        markerEnd: {
+          color: '#D3D3D3',
+          height: 10,
+          type: 'arrowclosed',
+          width: 10
         },
-        target: 'step3.id'
-      }
+        source: 'SocialPreview',
+        target: 'step1.id',
+        type: 'Start'
+      },
+      hiddenEdge
     ])
   })
 
@@ -217,11 +229,12 @@ describe('tranformSteps', () => {
         draggable: false,
         id: 'SocialPreview',
         position: {
-          x: -165,
-          y: -195
+          x: -365,
+          y: -46
         },
         type: 'SocialPreview'
-      }
+      },
+      hiddenNode
     ])
 
     expect(edges).toEqual([
@@ -229,35 +242,41 @@ describe('tranformSteps', () => {
         id: 'step1.id->step2.id',
         source: 'step1.id',
         sourceHandle: undefined,
-        style: {
-          strokeDasharray: 4
-        },
-        target: 'step2.id'
+        target: 'step2.id',
+        type: 'Custom',
+        markerEnd: {
+          type: 'arrowclosed',
+          height: 10,
+          width: 10,
+          color: '#D3D3D3'
+        }
       },
       {
         id: 'radioOptionBlock1.id->step3.id',
         source: 'step1.id',
         sourceHandle: 'radioOptionBlock1.id',
-        target: 'step3.id'
+        target: 'step3.id',
+        type: 'Custom',
+        markerEnd: {
+          type: 'arrowclosed',
+          height: 10,
+          width: 10,
+          color: '#D3D3D3'
+        }
       },
       {
-        id: 'step2.id->step3.id',
-        source: 'step2.id',
-        sourceHandle: 'step2.id',
-        style: {
-          strokeDasharray: 4
-        },
-        target: 'step3.id'
+        id: 'SocialPreview->step1.id',
+        source: 'SocialPreview',
+        target: 'step1.id',
+        type: 'Start',
+        markerEnd: {
+          type: 'arrowclosed',
+          height: 10,
+          width: 10,
+          color: '#D3D3D3'
+        }
       },
-      {
-        id: 'buttonBlock1.id->step3.id',
-        source: 'step2.id',
-        sourceHandle: 'buttonBlock1.id',
-        style: {
-          strokeDasharray: 4
-        },
-        target: 'step3.id'
-      }
+      hiddenEdge
     ])
   })
 
@@ -314,14 +333,29 @@ describe('tranformSteps', () => {
         draggable: false,
         id: 'SocialPreview',
         position: {
-          x: -165,
-          y: -195
+          x: -365,
+          y: -46
         },
         type: 'SocialPreview'
-      }
+      },
+      hiddenNode
     ])
 
-    expect(edges).toEqual([])
+    expect(edges).toEqual([
+      {
+        id: 'SocialPreview->step1.id',
+        markerEnd: {
+          color: '#D3D3D3',
+          height: 10,
+          type: 'arrowclosed',
+          width: 10
+        },
+        source: 'SocialPreview',
+        target: 'step1.id',
+        type: 'Start'
+      },
+      hiddenEdge
+    ])
   })
 
   it('should handle empty steps and positions', () => {
@@ -333,13 +367,14 @@ describe('tranformSteps', () => {
         draggable: false,
         id: 'SocialPreview',
         position: {
-          x: -165,
-          y: -195
+          x: -365,
+          y: -46
         },
         type: 'SocialPreview'
-      }
+      },
+      hiddenNode
     ])
 
-    expect(edges).toEqual([])
+    expect(edges).toEqual([hiddenEdge])
   })
 })

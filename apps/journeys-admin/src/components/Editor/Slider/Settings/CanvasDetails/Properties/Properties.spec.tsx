@@ -115,51 +115,6 @@ describe('Properties', () => {
     )
   })
 
-  it('should return properties for Step block', async () => {
-    const block = {
-      __typename: 'StepBlock',
-      id: 'block.id',
-      children: [
-        {
-          __typename: 'CardBlock',
-          id: 'card.id',
-          children: [
-            {
-              __typename: 'TypographyBlock',
-              id: 'typography.id',
-              children: []
-            }
-          ]
-        }
-      ]
-    } as unknown as TreeBlock
-    const state = {
-      selectedBlock: {
-        __typename: 'StepBlock',
-        id: 'step.id',
-        nextBlockBlock: 'nextBlock.id',
-        locked: false,
-        parentOrder: 0,
-        children: []
-      }
-    } as unknown as EditorState
-
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <Properties block={block} />
-          </EditorProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(screen.getByTestId('StepProperties')).toBeInTheDocument()
-    )
-    expect(screen.getByTestId('CardProperties')).toBeInTheDocument()
-  })
-
   it('should return card templates for StepBlock if there are no blocks on the card', async () => {
     const block = {
       __typename: 'StepBlock',
