@@ -131,20 +131,6 @@ export enum VideoBlockObjectFit {
     zoomed = "zoomed"
 }
 
-export enum ChatPlatform {
-    facebook = "facebook",
-    telegram = "telegram",
-    whatsApp = "whatsApp",
-    instagram = "instagram",
-    viber = "viber",
-    vk = "vk",
-    snapchat = "snapchat",
-    skype = "skype",
-    line = "line",
-    tikTok = "tikTok",
-    custom = "custom"
-}
-
 export enum ButtonAction {
     NavigateAction = "NavigateAction",
     NavigateToBlockAction = "NavigateToBlockAction",
@@ -463,12 +449,12 @@ export class VideoBlockUpdateInput {
 
 export class ChatButtonCreateInput {
     link?: Nullable<string>;
-    platform?: Nullable<ChatPlatform>;
+    platform?: Nullable<MessagePlatform>;
 }
 
 export class ChatButtonUpdateInput {
     link?: Nullable<string>;
-    platform?: Nullable<ChatPlatform>;
+    platform?: Nullable<MessagePlatform>;
 }
 
 export class CustomDomainCreateInput {
@@ -1098,7 +1084,7 @@ export class ChatButton {
     __typename?: 'ChatButton';
     id: string;
     link?: Nullable<string>;
-    platform?: Nullable<ChatPlatform>;
+    platform?: Nullable<MessagePlatform>;
 }
 
 export class CustomDomain {
@@ -1519,7 +1505,7 @@ export abstract class IMutation {
 
     abstract blockDelete(id: string, journeyId?: Nullable<string>, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
 
-    abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
+    abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, journeyId?: Nullable<string>, x?: Nullable<number>, y?: Nullable<number>): Block[] | Promise<Block[]>;
 
     abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
 

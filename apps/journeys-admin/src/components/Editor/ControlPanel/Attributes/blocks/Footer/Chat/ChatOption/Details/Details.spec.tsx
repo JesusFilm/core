@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
-import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
+import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 
 import { JOURNEY_CHAT_BUTTON_UPDATE } from './Details'
 
@@ -13,7 +13,7 @@ describe('Details', () => {
   const defaultProps = {
     journeyId: 'journeyId',
     chatButtonId: 'chat.id',
-    currentPlatform: ChatPlatform.whatsApp,
+    currentPlatform: MessagePlatform.whatsApp,
     currentLink: 'https://example.com',
     setCurrentPlatform: noop,
     setCurrentLink: noop,
@@ -37,7 +37,7 @@ describe('Details', () => {
   it('should update link', async () => {
     const props = {
       ...defaultProps,
-      currentPlatform: ChatPlatform.telegram
+      currentPlatform: MessagePlatform.telegram
     }
 
     const result = jest.fn(() => ({
@@ -46,7 +46,7 @@ describe('Details', () => {
           __typename: 'ChatButton',
           id: 'chat.id',
           link: 'https://newlink.com',
-          platform: ChatPlatform.telegram
+          platform: MessagePlatform.telegram
         }
       }
     }))
@@ -62,7 +62,7 @@ describe('Details', () => {
                 journeyId: 'journeyId',
                 input: {
                   link: 'https://newlink.com',
-                  platform: ChatPlatform.telegram
+                  platform: MessagePlatform.telegram
                 }
               }
             },
@@ -87,7 +87,7 @@ describe('Details', () => {
   it('should update platform', async () => {
     const props = {
       ...defaultProps,
-      currentPlatform: ChatPlatform.tikTok,
+      currentPlatform: MessagePlatform.tikTok,
       enableIconSelect: true
     }
 
@@ -97,7 +97,7 @@ describe('Details', () => {
           __typename: 'ChatButton',
           id: 'chat.id',
           link: 'https://example.com',
-          platform: ChatPlatform.snapchat
+          platform: MessagePlatform.snapchat
         }
       }
     }))
@@ -113,7 +113,7 @@ describe('Details', () => {
                 journeyId: 'journeyId',
                 input: {
                   link: 'https://example.com',
-                  platform: ChatPlatform.snapchat
+                  platform: MessagePlatform.snapchat
                 }
               }
             },
