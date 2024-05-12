@@ -36,7 +36,6 @@ describe('ResourceResolver', () => {
 
   const resource: Resource = {
     id: 'resourceId',
-    nexusId: 'nexusId',
     name: 'Resource Name',
     status: ResourceStatus.published,
     createdAt: new Date(),

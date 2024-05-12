@@ -2,12 +2,7 @@ import { InjectQueue } from '@nestjs/bull'
 import { Injectable } from '@nestjs/common'
 import Bull, { Queue } from 'bull'
 
-import {
-  Batch,
-  Channel,
-  Resource,
-  ResourceLocalization
-} from '.prisma/api-nexus-client'
+import { Batch, Channel, Resource } from '.prisma/api-nexus-client'
 
 import { PrivacyStatus } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -32,27 +27,26 @@ export interface UploadResourceJob {
     refreshToken: string
   }
 }
-export interface UpdateVideoLocalization {
+export interface UpdateVideoLocalizationJob {
   batchId: string
-  batchTaskId: string
-  videoId: string
   channel: {
     id: string
     channelId: string
     refreshToken: string
   }
   resource: {
+    category: string,
     refreshToken: string
-    thumbnailDriveId?: string
     privacyStatus?: string
   }
   localizations: Array<{
+    videoId: string
     resourceId?: string
     title?: string
     description?: string
-    tags?: string[]
     language: string
     captionDriveId?: string
+    captionDriveRefreshToken?: string
   }>
 }
 
@@ -95,7 +89,7 @@ export class BullMQService {
     })
 
     if (batch == null) {
-      throw new Error('Batch not found')
+      throw new Error('Batch not found @ worker')
     }
 
     const channelData = await this.prismaService.channel.findUnique({
@@ -105,7 +99,7 @@ export class BullMQService {
 
     const jobs = await Promise.all(
       batch.batchTasks.map(async (batchTask) => {
-        const task = JSON.parse(batchTask?.task?.toString() ?? '')
+        const task = batchTask.task as { channelId: string; resourceId: string }
         const resource = await this.prismaService.resource.findUnique({
           where: { id: task.resourceId ?? '' },
           include: {
@@ -120,7 +114,7 @@ export class BullMQService {
 
         const jobData: UploadResourceJob = {
           batchId: batch.id,
-          batchTaskId: task.id,
+          batchTaskId: batchTask.id,
           resource: {
             id: resource.id,
             driveId: resource.resourceSource?.videoGoogleDriveId ?? '',
@@ -140,189 +134,31 @@ export class BullMQService {
         }
 
         return {
-          name: task.type,
+          name: batchTask.type,
           data: jobData
         }
       })
     )
-
-    console.log('jobs', jobs)
     return await this.batchJobQueue.addBulk(
       jobs.filter((job) => job.data !== undefined)
     )
   }
 
-  private async createLocalizationBatchJob(
-    batchId: string,
-    videoId: string,
-    localizations: ResourceLocalization[],
-    channel: Channel
-  ): Promise<Array<Bull.Job<unknown>>> {
-    const batch = await this.prismaService.batch.findUnique({
-      where: {
-        id: batchId
-      },
-      include: {
-        batchTasks: {
-          where: {
-            type: 'localization'
-          }
-        }
-      }
-    })
-
-    if (batch == null) {
-      throw new Error('Batch not found')
-    }
-    const channelData = await this.prismaService.channel.findUnique({
-      where: { id: channel.id },
-      include: { youtube: true }
-    })
-
-    const jobs = []
-
-    for (const task of batch.batchTasks) {
-      const resource = await this.prismaService.resource.findUnique({
-        where: { id: JSON.parse(task.task as string).resourceId },
-        include: {
-          resourceSource: true,
-          resourceLocalizations: {
-            include: {
-              resourceLocalizationSource: true
-            }
-          }
-        }
-      })
-
-      if (resource == null) {
-        throw new Error('Resource not found')
-      }
-
-      const jobData = {
-        batchId,
-        batchTaskId: task.id,
-        videoId,
-        channel: {
-          id: channel.id,
-          channelId: channelData?.youtube?.youtubeId ?? '',
-          refreshToken: channelData?.youtube?.refreshToken ?? ''
-        },
-        resource: {
-          refreshToken:
-            resource.resourceSource?.videoGoogleDriveRefreshToken ?? '',
-          thumbnailDriveId:
-            resource.resourceSource?.thumbnailGoogleDriveId ?? '',
-          privacyStatus: resource.privacy ?? undefined
-        },
-        localizations: localizations.map((loc) => ({
-          resourceId: loc.resourceId,
-          title: loc.title ?? '',
-          description: loc.description ?? '',
-          language: loc.language
-        }))
-      }
-      console.log('jobData', jobData)
-      // jobs.push({
-      //   name: 'processLocalization',
-      //   data: jobData,
-      // });
-    }
-    return await this.batchJobQueue.addBulk(jobs)
-  }
-
-  async createCaptionBatchJob(
-    batchId: string,
-    channel: Channel
-  ): Promise<Array<Bull.Job<unknown>>> {
-    const batch = await this.prismaService.batch.findUnique({
-      where: {
-        id: batchId
-      },
-      include: {
-        batchTasks: {
-          where: {
-            type: 'caption_processing'
-          }
-        }
-      }
-    })
-
-    if (batch == null) {
-      throw new Error('Batch not found')
-    }
-
-    const channelData = await this.prismaService.channel.findUnique({
-      where: { id: channel.id },
-      include: { youtube: true }
-    })
-
-    const jobs: Array<{ name: string; data: unknown }> = []
-
-    for (const task of batch.batchTasks) {
-      const resource = await this.prismaService.resource.findUnique({
-        where: { id: JSON.parse(task.task as string).resourceId },
-        include: {
-          resourceLocalizations: {
-            include: {
-              resourceLocalizationSource: true
-            }
-          }
-        }
-      })
-
-      if (resource == null) {
-        throw new Error('Resource not found')
-      }
-
-      for (const localization of resource.resourceLocalizations) {
-        jobs.push({
-          name: 'processCaption',
-          data: {
-            batchId,
-            batchTaskId: task.id,
-            videoId: localization.videoId,
-            channel: {
-              id: channel.id,
-              channelId: channelData?.youtube?.youtubeId,
-              refreshToken: channelData?.youtube?.refreshToken
-            },
-            resource: {
-              driveId:
-                localization.resourceLocalizationSource?.captionGoogleDriveId,
-              mimeType:
-                localization.resourceLocalizationSource?.captionMimeType,
-              language: localization.language,
-              refreshToken:
-                localization.resourceLocalizationSource
-                  ?.captionGoogleDriveRefreshToken,
-              videoId: localization.videoId
-            }
-          }
-        })
-      }
-    }
-
-    return await this.batchJobQueue.addBulk(jobs)
-  }
-
   async createUploadResourceBatch(
     batchName: string,
-    nexusId: string,
     channel: Channel,
     resources: Resource[]
   ): Promise<Batch> {
-    console.log('Creating upload batch...')
     const batch = await this.prismaService.batch.create({
       data: {
-        name: batchName,
-        nexusId
+        name: batchName
       }
     })
     await this.prismaService.batchTask.createMany({
       data: resources.map((resource) => {
         return {
           batchId: batch.id,
-          type: 'RESOURCE_UPLOAD',
+          type: 'processResourceUpload',
           task: {
             resourceId: resource.id,
             channelId: channel.id
@@ -338,59 +174,81 @@ export class BullMQService {
 
   async createLocalizationBatch(
     batchName: string,
-    nexusId: string,
-    videoId: string,
-    channel: Channel,
-    localizations: ResourceLocalization[]
+    channelId: string,
+    resourceIds: string[]
   ): Promise<Batch> {
-    console.log('createLocalizationBatch')
+    // Create Batch
     const batch = await this.prismaService.batch.create({
       data: {
-        name: batchName,
-        nexusId
+        name: batchName
+      }
+    })
+    const channel = await this.prismaService.channel.findFirst({
+      where: { id: channelId },
+      include: {
+        resourceChannels: { where: { resourceId: { in: resourceIds } } },
+        youtube: true
       }
     })
 
-    // task for localization
+    const resources = await this.prismaService.resource.findMany({
+      where: { id: { in: resourceIds } },
+      include: {
+        resourceLocalizations: {
+          include: { resourceLocalizationSource: true }
+        },
+        resourceSource: true
+      }
+    })
+    // Create Batch Tasks
     await this.prismaService.batchTask.createMany({
-      data: localizations.map((localization) => {
+      data: resources.map((resource) => {
         return {
           batchId: batch.id,
-          resourceId: localization.resourceId,
-          type: 'localization',
+          type: 'UPDATE_LOCALIZATION',
           status: 'pending',
-          metadata: {
-            localization,
+          task: {
+            resourceId: resource.id,
+            localization: resource.resourceLocalizations.map((item) => item.id),
             channel
           }
         }
       })
     })
 
-    // task for caption
-    await this.prismaService.batchTask.createMany({
-      data: localizations.map((localization) => {
-        return {
-          batchId: batch.id,
-          resourceId: localization.resourceId,
-          type: 'caption_processing',
-          status: 'pending',
-          metadata: {
-            localization,
-            channel
+    for (const item of resources) {
+      const job: UpdateVideoLocalizationJob = {
+        batchId: batch.id,
+        channel: {
+          id: channel?.id ?? '',
+          channelId: channel?.resourceChannels[0].channelId ?? '',
+          refreshToken: channel?.youtube?.refreshToken ?? ''
+        },
+        resource: {
+          category: item.category ?? '',
+          refreshToken:
+            item.resourceSource?.thumbnailGoogleDriveRefreshToken ?? '',
+          privacyStatus: item.privacy
+        },
+        localizations: item.resourceLocalizations.map((loc) => {
+          return {
+            videoId: loc.videoId ?? '',
+            language: loc.language ?? '',
+            title: loc.title ?? '',
+            description: loc.description ?? '',
+            resourceId: loc.resourceId ?? '',
+            captionDriveId:
+              loc.resourceLocalizationSource?.captionGoogleDriveId ?? '',
+            captionDriveRefreshToken:
+              loc.resourceLocalizationSource?.captionGoogleDriveRefreshToken ??
+              ''
           }
-        }
-      })
-    })
-
-    await this.createLocalizationBatchJob(
-      batch.id,
-      videoId,
-      localizations,
-      channel
-    )
-    await this.createCaptionBatchJob(batch.id, channel)
-
+        })
+      }
+      await this.batchJobQueue.addBulk([
+        { data: job, name: 'processResourceUpdate' }
+      ])
+    }
     return batch as unknown as Batch
   }
 }

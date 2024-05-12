@@ -6,6 +6,7 @@ import { BucketService } from '../bucket/bucket.service'
 import { GoogleDriveService } from '../google/drive.service'
 import { GoogleOAuthService } from '../google/oauth.service'
 import { GoogleSheetsService } from '../google/sheets.service'
+import { GoogleYoutubeService } from '../google/youtube.service'
 import { PrismaService } from '../prisma.service'
 
 import { BullMQService } from './bullMQ.service'
@@ -29,6 +30,7 @@ import { NexusJobListener } from './listener/jobListener'
     GoogleOAuthService,
     GoogleSheetsService,
     GoogleDriveService,
+    GoogleYoutubeService,
     BatchService,
     BucketService,
     PrismaService,

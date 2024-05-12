@@ -30,7 +30,6 @@ describe('ChannelResolver', () => {
     id: 'channelId',
     name: 'Channel Name',
     status: NexusStatus.created,
-    nexusId: 'nexusId',
     connected: true,
     platform: 'youtube',
     createdAt: new Date(),

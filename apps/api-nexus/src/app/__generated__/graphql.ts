@@ -296,9 +296,7 @@ export abstract class IMutation {
 
     abstract resourceDelete(id: string): Resource | Promise<Resource>;
 
-    abstract resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
-
-    abstract resourceFromTemplate(nexusId: string, tokenId: string, spreadsheetId: string, drivefolderId: string): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
+    abstract resourceFromTemplate(tokenId: string, spreadsheetId: string, drivefolderId: string): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
 
     abstract getGoogleAccessToken(input: GoogleAuthInput): GoogleAuthResponse | Promise<GoogleAuthResponse>;
 

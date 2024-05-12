@@ -2,15 +2,9 @@ import { createReadStream, statSync } from 'fs'
 
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { google, youtube_v3 } from 'googleapis'
-import { GaxiosPromise, OAuth2Client } from 'googleapis-common'
+import { GaxiosPromise } from 'googleapis-common'
 
 import { GoogleOAuthService } from './oauth.service'
-
-interface Credential {
-  client_secret: string
-  client_id: string
-  redirect_uris: string[]
-}
 
 interface ChannelsRequest {
   accessToken: string
@@ -55,31 +49,10 @@ interface ChannelsResponse {
 
 @Injectable()
 export class GoogleYoutubeService {
-  private readonly credential: Credential
-
   private readonly rootUrl: string
 
-  constructor(private readonly googleService: GoogleOAuthService) {
+  constructor(private readonly googleOAuthService: GoogleOAuthService) {
     this.rootUrl = 'https://www.googleapis.com/youtube/v3/channels'
-    this.credential = {
-      client_secret: process.env.CLIENT_SECRET ?? '',
-      client_id: process.env.CLIENT_ID ?? '',
-      redirect_uris: ['https://localhost:4200']
-    }
-  }
-
-  authorize(token: string): OAuth2Client {
-    const oAuth2Client = new google.auth.OAuth2(
-      this.credential.client_id,
-      this.credential.client_secret,
-      this.credential.redirect_uris[0]
-    )
-    oAuth2Client.setCredentials({
-      access_token: token,
-      scope:
-        'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload'
-    })
-    return oAuth2Client
   }
 
   async getChannels(req: ChannelsRequest): Promise<ChannelsResponse> {
@@ -119,7 +92,10 @@ export class GoogleYoutubeService {
     try {
       return await service.videos.insert(
         {
-          auth: this.authorize(youtubeData.token),
+          auth: this.googleOAuthService.authorize(
+            youtubeData.token,
+            'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload'
+          ),
           part: ['id', 'snippet', 'status'],
           notifySubscribers: false,
           requestBody: {
@@ -162,10 +138,11 @@ export class GoogleYoutubeService {
   async updateVideo(youtubeData: {
     token: string
     videoId: string
-    title?: string
-    description?: string
+    title: string
+    description: string
     defaultLanguage?: string
     privacyStatus?: string
+    category: string
     localizations: Array<{
       resourceId?: string
       title?: string
@@ -186,21 +163,23 @@ export class GoogleYoutubeService {
         }
       })
       uploadedYoutubeResponse = await service.videos.update({
-        auth: this.authorize(youtubeData.token),
+        auth: this.googleOAuthService.authorize(
+          youtubeData.token,
+          'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl'
+        ),
         part: ['snippet', 'localizations'],
         requestBody: {
           id: youtubeData.videoId,
           snippet: {
             title: youtubeData.title,
-            description: youtubeData.description
-          },
-          status: {
-            privacyStatus: youtubeData.privacyStatus
+            description: youtubeData.description,
+            categoryId: youtubeData.category
           },
           localizations: convertedLocalizations
         }
       })
     } catch (error) {
+      console.log('error', error)
       throw new BadRequestException(error.message)
     }
 
@@ -216,7 +195,10 @@ export class GoogleYoutubeService {
     const service = google.youtube('v3')
 
     return await service.thumbnails.set({
-      auth: this.authorize(youtubeData.token),
+      auth: this.googleOAuthService.authorize(
+        youtubeData.token,
+        'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload'
+      ),
       videoId: youtubeData.videoId,
       media: {
         mimeType: youtubeData.mimeType,
@@ -235,7 +217,10 @@ export class GoogleYoutubeService {
     mimeType: string
   }): Promise<unknown> {
     const service = google.youtube('v3')
-    const auth = this.authorize(youtubeData.token)
+    const auth = this.googleOAuthService.authorize(
+      youtubeData.token,
+      'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload'
+    )
 
     const captionData = {
       auth,

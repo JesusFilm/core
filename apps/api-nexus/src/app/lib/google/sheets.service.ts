@@ -145,12 +145,10 @@ export class GoogleSheetsService {
   }
 
   async processUploadSpreadsheetTemplate(
-    nexusId: string,
     googleAccessToken: { id: string; refreshToken: string },
     spreadsheetRows: SpreadsheetRow[]
   ): Promise<Resource[]> {
     // UPLOADING TEMPLATE DATA
-    console.log('PREPARING UPLOAD-TEMPLATE DATA', spreadsheetRows)
     const allResources: Resource[] = []
 
     // Find Unique Channels
@@ -163,7 +161,6 @@ export class GoogleSheetsService {
     )
     for (const channel of channels) {
       const resources = await this.createResourceFromSpreadsheet(
-        nexusId,
         googleAccessToken.refreshToken,
         spreadsheetRows.filter(
           (spreadsheetRow) => spreadsheetRow.channelData?.id === channel
@@ -171,10 +168,8 @@ export class GoogleSheetsService {
       )
       await this.bullMQService.createUploadResourceBatch(
         uuidv4(),
-        nexusId,
-        spreadsheetRows.find(
-          (item) => item.channelData?.id === channel
-        ) as Channel,
+        spreadsheetRows.find((item) => item.channelData?.id === channel)
+          ?.channelData as Channel,
         resources
       )
 
@@ -184,17 +179,15 @@ export class GoogleSheetsService {
   }
 
   async createResourceFromSpreadsheet(
-    nexusId: string,
     refreshToken: string,
-    data: SpreadsheetRow[]
+    spreadsheetRows: SpreadsheetRow[]
   ): Promise<Resource[]> {
     const resources: Resource[] = []
-    for (const row of data) {
+    for (const row of spreadsheetRows) {
       const resource = await this.prismaService.resource.create({
         data: {
           id: uuidv4(),
           name: row.filename ?? '',
-          nexusId,
           status: row.channelData?.id !== null ? 'processing' : 'published',
           createdAt: new Date(),
           customThumbnail: row.customThumbnail,
@@ -313,9 +306,31 @@ export class GoogleSheetsService {
     }
 
     if (row.videoId != null) {
+      // Populate Resource Data
       row.resourceData = (await this.prismaService.resource.findFirst({
-        where: {}
+        where: { resourceLocalizations: { some: { videoId: row.videoId } } },
+        include: {
+          resourceLocalizations: true,
+          resourceChannels: { where: { youtubeId: row.videoId } }
+        }
       })) as Resource
+
+      // Populate Channel Data
+      row.channelData =
+        (
+          await this.prismaService.resource.findFirst({
+            where: {
+              resourceLocalizations: { some: { videoId: row.videoId } }
+            },
+            include: {
+              resourceLocalizations: true,
+              resourceChannels: {
+                where: { youtubeId: row.videoId },
+                include: { channel: true }
+              }
+            }
+          })
+        )?.resourceChannels[0]?.channel ?? undefined
     }
 
     if (row.notifySubscribers != null) {
@@ -328,28 +343,19 @@ export class GoogleSheetsService {
   }
 
   async processLocalizationTemplateBatches(
-    nexusId: string,
     googleAccessToken: { id: string; refreshToken: string },
     spreadsheetData: SpreadsheetRow[]
   ): Promise<void> {
-    const batchLocalizations =
-      await this.batchService.createResourcesLocalization(
+    const preparedBatchJobs =
+      await this.batchService.createUpdateResourcesLocalization(
         googleAccessToken.refreshToken,
         spreadsheetData
       )
-    console.log('batchLocalizations', batchLocalizations)
-    const preparedBatchJobs =
-      this.batchService.prepareBatchResourceLocalizationsForBatchJob(
-        batchLocalizations
-      )
-    console.log('preparedBatchJobs', preparedBatchJobs)
     for (const preparedBatchJob of preparedBatchJobs) {
       await this.bullMQService.createLocalizationBatch(
         uuidv4(),
-        nexusId,
-        preparedBatchJob.videoId,
         preparedBatchJob.channel,
-        preparedBatchJob.localizations
+        preparedBatchJob.resourceIds
       )
     }
   }

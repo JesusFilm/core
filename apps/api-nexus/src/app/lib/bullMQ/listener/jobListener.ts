@@ -19,8 +19,7 @@ export class NexusJobListener implements OnModuleInit {
   }
 
   private listenToProgressEvents(): void {
-    this.uploadQueue.on(
-      'progress',
+    this.uploadQueue.on('progress',
       async (job: Job<UploadResourceJob>, progress: number) => {
         // console.log('Job Progress:', job.id, progress);
         // void Promise.all([
@@ -62,7 +61,7 @@ export class NexusJobListener implements OnModuleInit {
 
   private listenToFailedEvents(): void {
     this.uploadQueue.on('failed', async (job: Job<UploadResourceJob>) => {
-      console.log('Job failed', job.id)
+      console.log('Job failed', job.stacktrace)
       // void Promise.all([
       //   await this.prismaService.batchResource.updateMany({
       //     data: {

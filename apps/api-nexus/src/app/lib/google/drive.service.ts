@@ -3,9 +3,11 @@ import path from 'path'
 
 import { drive, drive_v3 } from '@googleapis/drive'
 import { Injectable } from '@nestjs/common/decorators/core'
-import axios from 'axios'
+import { google } from 'googleapis'
 import { OAuth2Client } from 'googleapis-common'
 import { v4 as uuidv4 } from 'uuid'
+
+import { GoogleOAuthService } from './oauth.service'
 
 interface FileRequest {
   fileId: string
@@ -19,6 +21,9 @@ type FileResponse = Pick<
 
 @Injectable()
 export class GoogleDriveService {
+  constructor(private readonly googleOAuthService: GoogleOAuthService) {
+  }
+
   async getFile({ fileId, accessToken }: FileRequest): Promise<FileResponse> {
     const client = drive({ version: 'v3', auth: accessToken })
     const res = await client.files.get({
@@ -40,44 +45,49 @@ export class GoogleDriveService {
   }
 
   async downloadDriveFile(
-    data: { fileId: string; accessToken: string },
+    {fileId, accessToken}: { fileId: string; accessToken: string },
     progressCallback?: (progress: number) => Promise<void>
   ): Promise<string> {
-    await this.setFilePermission({
-      fileId: data.fileId,
-      accessToken: data.accessToken
-    })
-    const fileUrl = this.getFileUrl(data.fileId)
-    const response = await axios({
-      method: 'get',
-      url: fileUrl,
-      responseType: 'stream'
-    })
-
-    const filename: string = response.headers['content-disposition']
-      .split('filename=')[1]
-      .split(';')[0]
-      .replace(/["']/g, '') as string
-
+    const drive = google.drive({ version: 'v3', auth: this.googleOAuthService.authorize(accessToken, "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file") });
+    const driveFile = await drive.files.get({
+      fileId,
+      fields: 'name, mimeType',
+    });
+    const downloadFileName = driveFile.data.name ?? 'sample.mp4';
     const downloadDirectory = path.join(__dirname, '..', 'downloads')
-    const fileName = uuidv4() + path.extname(filename)
+    const fileName = uuidv4() + path.extname(downloadFileName)
     const outputPath = path.join(downloadDirectory, fileName)
     const writer = createWriteStream(outputPath)
 
+    const response = await drive.files.get(
+      { fileId, alt: 'media' },
+      { responseType: 'stream' }
+    );
+
     const totalLength = response.headers['content-length']
     let downloadedLength = 0
-    response.data.on('data', async (chunk: Buffer) => {
+
+    response.data.on('data', (chunk: Buffer) => {
       downloadedLength += chunk.length
-      const percentage = ((downloadedLength / totalLength) * 100).toFixed(2)
-      if (progressCallback != null) {
-        await progressCallback(Number(percentage))
-      }
+      const percentage = ((downloadedLength / totalLength) * 100)
+      void Promise.all([this.executeCallback(progressCallback, percentage)])
     })
+
     response.data.pipe(writer)
+
     return await new Promise((resolve, reject) => {
       writer.on('finish', () => resolve(outputPath))
       writer.on('error', reject)
     })
+  }
+
+  private async executeCallback(
+    progressCallback: ((arg0: number) => Promise<void>) | null | undefined,
+    progress: number
+  ): Promise<void> {
+    if (progressCallback != null) {
+      await progressCallback(progress)
+    }
   }
 
   getFileUrl(fileId: string): string {

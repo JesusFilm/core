@@ -15,7 +15,6 @@ import {
   GoogleAuthResponse,
   ResourceCreateInput,
   ResourceFilter,
-  ResourceFromGoogleDriveInput,
   ResourceUpdateInput
 } from '../../__generated__/graphql'
 import { BullMQService } from '../../lib/bullMQ/bullMQ.service'
@@ -49,8 +48,6 @@ export class ResourceResolver {
   ): Promise<Resource[]> {
     const filter: Prisma.ResourceWhereInput = {}
     if (where?.ids != null) filter.id = { in: where?.ids }
-    if (where?.nexusId != null) filter.nexusId = where.nexusId
-
     return await this.prismaService.resource.findMany({
       where: {
         AND: [accessibleResources, filter]
@@ -72,7 +69,6 @@ export class ResourceResolver {
       },
       include: {
         resourceLocalizations: true,
-        nexus: { include: { userNexuses: true } }
       }
     })
     if (resource == null)
@@ -104,7 +100,6 @@ export class ResourceResolver {
         where: { id },
         include: {
           resourceLocalizations: true,
-          nexus: { include: { userNexuses: true } }
         }
       })
       if (resource == null)
@@ -126,10 +121,7 @@ export class ResourceResolver {
     @Args('input') input: ResourceUpdateInput
   ): Promise<Resource> {
     const resource = await this.prismaService.resource.findUnique({
-      where: { id },
-      include: {
-        nexus: { include: { userNexuses: true } }
-      }
+      where: { id }
     })
     if (resource == null)
       throw new GraphQLError('resource not found', {
@@ -157,7 +149,6 @@ export class ResourceResolver {
   ): Promise<Resource> {
     const resource = await this.prismaService.resource.findUnique({
       where: { id },
-      include: { nexus: { include: { userNexuses: true } } }
     })
     if (resource == null)
       throw new GraphQLError('resource not found', {
@@ -181,93 +172,12 @@ export class ResourceResolver {
   }
 
   @Mutation()
-  async resourceFromGoogleDrive(
-    @CurrentUserId() userId: string,
-    @CurrentUser() user: User,
-    @Args('input') input: ResourceFromGoogleDriveInput
-  ): Promise<Resource[]> {
-    const nexus = await this.prismaService.nexus.findUnique({
-      where: { id: input.nexusId, userNexuses: { every: { userId } } }
-    })
-    if (nexus == null)
-      throw new GraphQLError('nexus not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    await input.fileIds.forEach(async (fileId) => {
-      const driveFile = await this.googleDriveService.getFile({
-        fileId,
-        accessToken: input.authCode ?? ''
-      })
-      if (
-        driveFile == null ||
-        driveFile.id == null ||
-        driveFile.name == null ||
-        driveFile.mimeType == null
-      )
-        throw new GraphQLError('file not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-
-      const fileUrl = this.googleDriveService.getFileUrl(fileId)
-      await this.googleDriveService.setFilePermission({
-        fileId,
-        accessToken: input.authCode ?? ''
-      })
-      const res = await this.cloudFlareService.uploadToCloudflareByUrl(
-        fileUrl,
-        driveFile.name,
-        userId
-      )
-      console.log('CLOUD FLARE', res)
-
-      const resource = await this.prismaService.resource.create({
-        data: {
-          id: uuidv4(),
-          name: driveFile.name,
-          nexusId: nexus.id,
-          status: 'published',
-          createdAt: new Date()
-        }
-      })
-
-      await this.prismaService.resourceSource.create({
-        data: {
-          id: uuidv4(),
-          resourceId: resource.id,
-          videoGoogleDriveId: driveFile.id,
-          videoMimeType: driveFile.mimeType,
-          videoGoogleDriveRefreshToken: input.authCode ?? ''
-        }
-      })
-    })
-
-    return await this.prismaService.resource.findMany({
-      where: { resourceSource: { videoGoogleDriveId: { in: input.fileIds } } },
-      include: { resourceSource: true }
-    })
-  }
-
-  @Mutation()
   async resourceFromTemplate(
-    @CurrentUserId() userId: string,
-    @Args('nexusId') nexusId: string,
     @Args('tokenId') tokenId: string,
     @Args('spreadsheetId') spreadsheetId: string,
     @Args('drivefolderId') drivefolderId: string
   ): Promise<Resource[]> {
     console.log('Resource From Template . . .')
-    const nexus = await this.prismaService.nexus.findUnique({
-      where: {
-        id: nexusId,
-        userNexuses: { every: { userId } }
-      }
-    })
-    if (nexus == null)
-      throw new GraphQLError('nexus not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-
     const { templateType, spreadsheetData, googleAccessToken } =
       await this.googleSheetsService.getSpreadSheetTemplateData(
         tokenId,
@@ -278,14 +188,12 @@ export class ResourceResolver {
     if (templateType === SpreadsheetTemplateType.UPLOAD) {
       // PROCESS UPLOAD TEMPLATE
       return await this.googleSheetsService.processUploadSpreadsheetTemplate(
-        nexus.id,
         googleAccessToken,
         spreadsheetData
       )
     } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
       // PROCESS LOCALIZATION TEMPLATE
       await this.googleSheetsService.processLocalizationTemplateBatches(
-        nexus.id,
         googleAccessToken,
         spreadsheetData
       )

@@ -6,9 +6,7 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { BatchFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
-// interface BatchWithAverage extends Batch {
-//   averagePercent: number;
-// }
+
 interface BatchWithProgress extends Batch {
   progress: number
 }
@@ -24,19 +22,10 @@ export class BatchResolver {
   ): Promise<BatchWithProgress[]> {
     const filter: Prisma.BatchWhereInput = {}
     if (where?.ids != null) filter.id = { in: where?.ids }
-    filter.nexusId = where?.nexusId ?? undefined
-
     const batches = await this.prismaService.batch.findMany({
       where: {
         AND: [
-          filter,
-          {
-            nexus: {
-              userNexuses: {
-                every: { userId }
-              }
-            }
-          }
+          filter
         ]
       },
       include: {
@@ -73,8 +62,7 @@ export class BatchResolver {
   ): Promise<BatchWithProgress | null> {
     const batch = await this.prismaService.batch.findUnique({
       where: {
-        id,
-        AND: [{ nexus: { userNexuses: { some: { userId } } } }]
+        id
       },
       include: {
         batchTasks: true

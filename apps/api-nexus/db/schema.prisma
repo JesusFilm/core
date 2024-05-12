@@ -21,9 +21,6 @@ model Nexus {
     createdAt   DateTime    @default(now())
     deletedAt   DateTime?
     userNexuses UserNexus[]
-    channels    Channel[]
-    resources   Resource[]
-    batches     Batch[]
 }
 
 model UserNexus {
@@ -41,17 +38,15 @@ enum ChannelStatus {
 }
 
 model Channel {
-    id              String            @id @default(uuid())
-    nexusId         String
-    name            String
-    platform        String
-    connected       Boolean           @default(false)
-    nexus           Nexus             @relation(fields: [nexusId], references: [id])
-    youtube         ChannelYoutube?
-    status          ChannelStatus     @default(created)
-    createdAt       DateTime          @default(now())
-    deletedAt       DateTime?
-    resourceChannel ResourceChannel[]
+    id               String            @id @default(uuid())
+    name             String
+    platform         String
+    connected        Boolean           @default(false)
+    youtube          ChannelYoutube?
+    status           ChannelStatus     @default(created)
+    createdAt        DateTime          @default(now())
+    deletedAt        DateTime?
+    resourceChannels ResourceChannel[]
 }
 
 model ChannelYoutube {
@@ -81,7 +76,6 @@ enum ResourceStatus {
 
 model Resource {
     id                    String                 @id @default(uuid())
-    nexusId               String
     name                  String
     category              String?
     spokenLanguage        String?
@@ -94,9 +88,8 @@ model Resource {
     privacy               PrivacyStatus          @default(private)
     resourceLocalizations ResourceLocalization[]
     resourceChannels      ResourceChannel[]
-    nexus                 Nexus                  @relation(fields: [nexusId], references: [id])
     createdAt             DateTime               @default(now())
-    updatedAt             DateTime               @updatedAt
+    updatedAt             DateTime?              @updatedAt
     deletedAt             DateTime?
     resourceSource        ResourceSource?
 }
@@ -170,7 +163,6 @@ enum BatchStatus {
 
 model Batch {
     id             String      @id @default(uuid())
-    nexusId        String
     name           String
     status         BatchStatus @default(pending)
     totalTasks     Int         @default(0)
@@ -179,7 +171,6 @@ model Batch {
     progress       Float       @default(0)
     createdAt      DateTime    @default(now())
     updatedAt      DateTime    @updatedAt
-    nexus          Nexus       @relation(fields: [nexusId], references: [id], onDelete: Cascade)
     batchTasks     BatchTask[]
 }
 
