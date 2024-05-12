@@ -4,7 +4,7 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { ComponentProps, ReactElement } from 'react'
 
-import { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { VideoChildFields } from '../../libs/videoChildFields/__generated__/VideoChildFields'
 import { VideoCard } from '../VideoCard'
 
 interface VideoGridProps {

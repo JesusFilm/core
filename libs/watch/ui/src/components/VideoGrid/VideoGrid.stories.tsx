@@ -3,13 +3,13 @@ import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
-import { watchConfig } from '../../libs/storybook/config'
-import { videos } from '../Videos/__generated__/testData'
+import { watchUiConfig } from '../../libs/storybook'
+import { videos } from '../../libs/testDataGenerator/__generated__/testData'
 
 import { VideoGrid } from './VideoGrid'
 
 const VideoGridStory: Meta<typeof VideoGrid> = {
-  ...watchConfig,
+  ...watchUiConfig,
   component: VideoGrid,
   title: 'Watch/VideoGrid'
 }

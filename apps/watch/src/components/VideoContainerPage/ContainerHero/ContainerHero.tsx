@@ -7,7 +7,8 @@ import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
+import { getLabelDetails } from '@core/watch/ui/getLabelDetails'
+
 import { useVideo } from '../../../libs/videoContext'
 import { HeroOverlay } from '../../HeroOverlay'
 

@@ -1,20 +1,11 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { ReactElement, useEffect } from 'react'
 
 import { Nexuses } from '../__generated__/Nexuses'
-import { NEXUS_CREATE } from '../src/components/CreateNexusModal'
+import { GET_NEXUSES, NEXUS_CREATE } from '../src/components/CreateNexusModal'
 import { Loader } from '../src/components/Loader'
-
-export const GET_NEXUSES = gql`
-  query Nexuses($where: NexusFilter) {
-    nexuses(where: $where) {
-      id
-      name
-    }
-  }
-`
 
 function Index(): ReactElement {
   const router = useRouter()
@@ -25,12 +16,12 @@ function Index(): ReactElement {
   })
   const [nexusCreate] = useMutation(NEXUS_CREATE)
 
-  const redirectToDashboard = (nexusId: string): void => {
-    localStorage.setItem('nexusId', nexusId)
-    void router.push('/channels')
-  }
-
   useEffect(() => {
+    const redirectToDashboard = (nexusId: string): void => {
+      localStorage.setItem('nexusId', nexusId)
+      void router.push('/channels')
+    }
+
     if (data !== undefined) {
       if (data.nexuses.length === 0) {
         void nexusCreate({
@@ -46,7 +37,7 @@ function Index(): ReactElement {
         redirectToDashboard(data.nexuses?.[0]?.id)
       }
     }
-  }, [data])
+  }, [data, nexusCreate, router])
 
   return <Loader />
 }

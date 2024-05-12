@@ -14,8 +14,8 @@ import { ReactElement } from 'react'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
-import { VideoChildFields } from '../../../__generated__/VideoChildFields'
-import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
+import { getLabelDetails } from '../../libs/getLabelDetails'
+import { VideoChildFields } from '../../libs/videoChildFields/__generated__/VideoChildFields'
 
 interface VideoCardProps {
   video?: VideoChildFields

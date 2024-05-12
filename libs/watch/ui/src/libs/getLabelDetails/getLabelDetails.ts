@@ -1,4 +1,4 @@
-import { VideoLabel } from '../../../../__generated__/globalTypes'
+import { VideoLabel } from '../../../__generated__/globalTypes'
 
 interface LabelDetails {
   label: string

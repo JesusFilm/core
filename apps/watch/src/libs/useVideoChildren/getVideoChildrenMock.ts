@@ -1,4 +1,4 @@
-import { videos } from '../../components/Videos/__generated__/testData'
+import { videos } from '@core/watch/ui/testDataGenerator/__generated__/testData'
 
 import { GET_VIDEO_CHILDREN } from './useVideoChildren'
 

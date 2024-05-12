@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 
-import { videos } from '../Videos/__generated__/testData'
+import { videos } from '../../libs/testDataGenerator/__generated__/testData'
 
 import { VideoGrid } from './VideoGrid'
 

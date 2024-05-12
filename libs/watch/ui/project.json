@@ -1,0 +1,25 @@
+{
+  "name": "watch-ui",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/watch/ui/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+          },
+          {
+            "command": "rm -rf libs/watch/ui/__generated__"
+          },
+          {
+            "command": "npx apollo client:codegen --config libs/watch/ui/apollo.config.js --target typescript  --globalTypesFile=libs/watch/ui/__generated__/globalTypes.ts"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -3,6 +3,8 @@ import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 
+import { VIDEO_CHILD_FIELDS } from '@core/watch/ui/videoChildFields'
+
 import {
   GetHomeVideos,
   GetHomeVideos_videos as Video
@@ -11,7 +13,6 @@ import i18nConfig from '../next-i18next.config'
 import { Videos } from '../src/components/VideosPage'
 import { GET_LANGUAGES } from '../src/components/VideosPage/VideosPage'
 import { createApolloClient } from '../src/libs/apolloClient'
-import { VIDEO_CHILD_FIELDS } from '../src/libs/videoChildFields'
 
 import { GET_HOME_VIDEOS } from './index'
 

@@ -32,6 +32,10 @@
       "@core/shared/ui/*": [
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"
+      ],
+      "@core/watch/ui/*": [
+        "libs/watch/ui/src/components/*",
+        "libs/watch/ui/src/libs/*"
       ]
     }
   },

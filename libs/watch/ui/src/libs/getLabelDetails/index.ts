@@ -1,0 +1,1 @@
+export { getLabelDetails } from './getLabelDetails'

@@ -5,7 +5,7 @@ import {
   VideoLabel,
   VideoVariantDownloadQuality
 } from '../../../../__generated__/globalTypes'
-import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+import { VideoContentFields } from '../../videoContentFields/__generated__/VideoContentFields'
 
 export const videos: VideoContentFields[] = [
   {

@@ -4,12 +4,13 @@ import { promisify } from 'util'
 
 import { gql } from '@apollo/client'
 
+import { createApolloClient } from '../apolloClient'
+import { VIDEO_CONTENT_FIELDS } from '../videoContentFields/videoContentFields'
+
 import {
   GetVideosForTestData,
   GetVideosForTestData_videos as Videos
-} from '../../../__generated__/GetVideosForTestData'
-import { createApolloClient } from '../../libs/apolloClient'
-import { VIDEO_CONTENT_FIELDS } from '../../libs/videoContentFields'
+} from './__generated__/GetVideosForTestData'
 
 const ids = [
   '1_jf-0-0',
@@ -60,7 +61,7 @@ async function testDataGenerator(): Promise<void> {
   })
   const videos: Videos[] = []
 
-  data.videos.forEach((video) => {
+  data.videos.forEach((video: Videos) => {
     videos[ids.indexOf(video.id)] = video
   })
 

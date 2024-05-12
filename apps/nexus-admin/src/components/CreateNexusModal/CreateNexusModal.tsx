@@ -7,7 +7,6 @@ import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 import { object, string } from 'yup'
 
-import { GET_NEXUSES } from '../../../pages'
 import { Modal } from '../Modal'
 
 interface CreateNexusModalProps {
@@ -26,6 +25,15 @@ export const NEXUS_CREATE = gql`
       id
       name
       description
+    }
+  }
+`
+
+export const GET_NEXUSES = gql`
+  query Nexuses($where: NexusFilter) {
+    nexuses(where: $where) {
+      id
+      name
     }
   }
 `
