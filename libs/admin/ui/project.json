@@ -46,7 +46,7 @@
             "command": "rm -rf libs/admin/ui/__generated__"
           },
           {
-            "command": "npx apollo client:codegen --config libs/admin/ui/apollo.config.js --target typescript  --globalTypesFile=libs/admin/ui/__generated__/globalTypes.ts"
+            "command": "npx apollo client:codegen --config libs/admin/ui/apollo.config.js --target typescript   --outputFlat libs/admin/ui/__generated__"
           }
         ]
       }

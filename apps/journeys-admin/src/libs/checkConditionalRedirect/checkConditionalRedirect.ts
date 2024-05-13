@@ -4,7 +4,7 @@ import { Redirect } from 'next'
 
 import { GetJourneyProfileAndTeams } from '../../../__generated__/GetJourneyProfileAndTeams'
 import { GetMe } from '../../../__generated__/GetMe'
-import { GET_ME } from '../../../../../libs/admin/ui/src/components/NavigationDrawer/UserNavigation'
+import { GET_ME } from '../../components/PageWrapper/UserNavigation'
 
 export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
   query GetJourneyProfileAndTeams {

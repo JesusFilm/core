@@ -18,7 +18,7 @@ import {
 import { GET_ADMIN_JOURNEYS } from '../../../../../../apps/journeys-admin/src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { GET_USER_ROLE } from '../../../../../../apps/journeys-admin/src/libs/useUserRoleQuery/useUserRoleQuery'
 
-import { GET_ME } from './UserNavigation'
+import { GET_ME } from '../../../../../../apps/journeys-admin/src/components/PageWrapper/UserNavigation'
 
 import { NavigationDrawer } from '.'
 

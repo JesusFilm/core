@@ -1,12 +1,29 @@
+import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import NoSsr from '@mui/material/NoSsr'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import { NavigationDrawer } from '@core/admin/ui/NavigationDrawer'
+import Tooltip from '@mui/material/Tooltip'
+import { UserNavigation } from 'apps/journeys-admin/src/components/PageWrapper/UserNavigation'
+import dynamic from 'next/dynamic'
+import Image from 'next/image'
+import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
-import { ReactElement, ReactNode, useState } from 'react'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, ReactNode, Suspense, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
+import { NavigationDrawer } from '@core/admin/ui/NavigationDrawer'
+import Bag5Icon from '@core/shared/ui/icons/Bag5'
+import JourneysIcon from '@core/shared/ui/icons/Journeys'
+
+import nextstepsTitle from '../../../../../../apps/journeys-admin/public/nextsteps-title.svg'
+import taskbarIcon from '../../../../../../apps/journeys-admin/public/taskbar-icon.svg'
 import { PageProvider, PageState } from '../../libs/PageWrapperProvider'
 
 import { AppHeader } from './AppHeader'
@@ -60,6 +77,18 @@ export function PageWrapper({
   const viewportHeight = use100vh()
   const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
   const router = useRouter()
+  const [tooltip, setTooltip] = useState<string | undefined>()
+  const selectedPage = router?.pathname?.split('/')[1]
+  const { t } = useTranslation('apps-journeys-admin')
+
+  const UserNavigation = dynamic(
+    async () =>
+      await import(
+        /* webpackChunkName: "UserNavigation" */
+        './UserNavigation'
+      ).then((mod) => mod.UserNavigation),
+    { ssr: false }
+  )
 
   return (
     <PageProvider initialState={initialState}>
@@ -74,12 +103,77 @@ export function PageWrapper({
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
           {showNavBar && (
-            <NavigationDrawer
-              open={open}
-              onClose={setOpen}
-              user={user}
-              selectedPage={router?.pathname?.split('/')[1]}
-            />
+            <NavigationDrawer open={open} onClose={setOpen}>
+              <NextLink href="/" passHref legacyBehavior>
+                <Tooltip title={tooltip} placement="right" arrow>
+                  <ListItemButton
+                    selected={
+                      selectedPage === 'journeys' || selectedPage === ''
+                    }
+                    data-testid="NavigationListItemDiscover"
+                  >
+                    <ListItemIcon>
+                      <Badge
+                        variant="dot"
+                        color="warning"
+                        overlap="circular"
+                        invisible={tooltip == null}
+                      >
+                        <JourneysIcon />
+                      </Badge>
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={t('Discover')}
+                      primaryTypographyProps={{
+                        style: { whiteSpace: 'nowrap' }
+                      }}
+                    />
+                  </ListItemButton>
+                </Tooltip>
+              </NextLink>
+              <NextLink href="/templates" passHref legacyBehavior>
+                <ListItemButton
+                  selected={selectedPage === 'templates'}
+                  data-testid="NavigationListItemTemplates"
+                >
+                  <ListItemIcon>
+                    <Bag5Icon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={t('Templates')}
+                    primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+                  />
+                </ListItemButton>
+              </NextLink>
+              {user?.id != null && (
+                <NoSsr>
+                  <Suspense>
+                    <UserNavigation
+                      user={user}
+                      selectedPage={selectedPage}
+                      setTooltip={setTooltip}
+                    />
+                  </Suspense>
+                </NoSsr>
+              )}
+              <ListItem component="div" sx={{ flexGrow: '1 !important' }} />
+              <ListItem component="div" sx={{ mb: 1.5 }}>
+                <ListItemIcon>
+                  <Image
+                    src={taskbarIcon}
+                    width={32}
+                    height={32}
+                    alt="Next Steps Logo"
+                  />
+                </ListItemIcon>
+                <Image
+                  src={nextstepsTitle}
+                  width={106}
+                  height={24}
+                  alt="Next Steps Title"
+                />
+              </ListItem>
+            </NavigationDrawer>
           )}
 
           <Stack

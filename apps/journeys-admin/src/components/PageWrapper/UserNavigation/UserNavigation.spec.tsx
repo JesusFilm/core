@@ -8,16 +8,16 @@ import { Suspense } from 'react'
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables
-} from '../../../../../../../apps/journeys-admin/__generated__/GetAdminJourneys'
-import { GetMe } from '../../../../../../../apps/journeys-admin/__generated__/GetMe'
-import { GetUserRole } from '../../../../../../../apps/journeys-admin/__generated__/GetUserRole'
+} from '../../../../__generated__/GetAdminJourneys'
+import { GetMe } from '../../../../__generated__/GetMe'
+import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import {
   JourneyStatus,
   Role,
   UserJourneyRole
-} from '../../../../../../../apps/journeys-admin/__generated__/globalTypes'
-import { GET_ADMIN_JOURNEYS } from '../../../../../../../apps/journeys-admin/src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { GET_USER_ROLE } from '../../../../../../../apps/journeys-admin/src/libs/useUserRoleQuery/useUserRoleQuery'
+} from '../../../../__generated__/globalTypes'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 
 import { GET_ME } from './UserNavigation'
 

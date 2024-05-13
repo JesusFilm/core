@@ -17,7 +17,7 @@ import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'
 import { Drawer } from '../Editor/Drawer'
 
-import { GET_ME } from '../../../../../libs/admin/ui/src/components/NavigationDrawer/UserNavigation'
+import { GET_ME } from './UserNavigation'
 import { SidePanelContainer } from './SidePanelContainer'
 
 import { PageWrapper } from '.'

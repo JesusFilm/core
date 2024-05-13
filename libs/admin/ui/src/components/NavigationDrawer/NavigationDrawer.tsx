@@ -1,54 +1,25 @@
 import Backdrop from '@mui/material/Backdrop'
-import Badge from '@mui/material/Badge'
 import Drawer from '@mui/material/Drawer'
 import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import NoSsr from '@mui/material/NoSsr'
-import Tooltip from '@mui/material/Tooltip'
-import dynamic from 'next/dynamic'
-import Image from 'next/image'
-import NextLink from 'next/link'
-import type { User } from 'next-firebase-auth'
-import { useTranslation } from 'next-i18next'
-import { ReactElement, Suspense, useState } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
-import Bag5Icon from '@core/shared/ui/icons/Bag5'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
-import JourneysIcon from '@core/shared/ui/icons/Journeys'
-
-import nextstepsTitle from '../../../../../../apps/journeys-admin/public/nextsteps-title.svg'
-import taskbarIcon from '../../../../../../apps/journeys-admin/public/taskbar-icon.svg'
 
 const DRAWER_WIDTH = '237px'
-
-const UserNavigation = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "UserNavigation" */
-      '../NavigationDrawer/UserNavigation'
-    ).then((mod) => mod.UserNavigation),
-  { ssr: false }
-)
 
 interface NavigationDrawerProps {
   open?: boolean
   onClose?: (value: boolean) => void
-  user?: User
-  selectedPage?: string
+  children?: ReactNode
 }
 
 export function NavigationDrawer({
   open,
   onClose,
-  user,
-  selectedPage
+  children
 }: NavigationDrawerProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-  const [tooltip, setTooltip] = useState<string | undefined>()
-
   function handleClose(): void {
     onClose?.(open !== true)
   }
@@ -134,71 +105,7 @@ export function NavigationDrawer({
             <ChevronRightIcon />
           </ListItemIcon>
         </ListItemButton>
-        <NextLink href="/" passHref legacyBehavior>
-          <Tooltip title={tooltip} placement="right" arrow>
-            <ListItemButton
-              selected={selectedPage === 'journeys' || selectedPage === ''}
-              data-testid="NavigationListItemDiscover"
-            >
-              <ListItemIcon>
-                <Badge
-                  variant="dot"
-                  color="warning"
-                  overlap="circular"
-                  invisible={tooltip == null}
-                >
-                  <JourneysIcon />
-                </Badge>
-              </ListItemIcon>
-              <ListItemText
-                primary={t('Discover')}
-                primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
-              />
-            </ListItemButton>
-          </Tooltip>
-        </NextLink>
-        <NextLink href="/templates" passHref legacyBehavior>
-          <ListItemButton
-            selected={selectedPage === 'templates'}
-            data-testid="NavigationListItemTemplates"
-          >
-            <ListItemIcon>
-              <Bag5Icon />
-            </ListItemIcon>
-            <ListItemText
-              primary={t('Templates')}
-              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
-            />
-          </ListItemButton>
-        </NextLink>
-        {user?.id != null && (
-          <NoSsr>
-            <Suspense>
-              <UserNavigation
-                user={user}
-                selectedPage={selectedPage}
-                setTooltip={setTooltip}
-              />
-            </Suspense>
-          </NoSsr>
-        )}
-        <ListItem component="div" sx={{ flexGrow: '1 !important' }} />
-        <ListItem component="div" sx={{ mb: 1.5 }}>
-          <ListItemIcon>
-            <Image
-              src={taskbarIcon}
-              width={32}
-              height={32}
-              alt="Next Steps Logo"
-            />
-          </ListItemIcon>
-          <Image
-            src={nextstepsTitle}
-            width={106}
-            height={24}
-            alt="Next Steps Title"
-          />
-        </ListItem>
+        {children}
       </List>
     </Drawer>
   )

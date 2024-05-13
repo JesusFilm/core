@@ -4,11 +4,11 @@ import { NextRouter, useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
-import { GetLastActiveTeamIdAndTeams } from '../../../../../../../../apps/journeys-admin/__generated__/GetLastActiveTeamIdAndTeams'
+import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../../../../../../../../apps/journeys-admin/src/components/Team/TeamProvider'
+} from '../../../Team/TeamProvider'
 
 import { UserMenu } from '.'
 
