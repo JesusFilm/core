@@ -12,8 +12,7 @@ export function calculateScale(ref: RefObject<HTMLDivElement>): number {
   if (current.clientWidth === 0) return 1
 
   const clientHeight = current.clientHeight / CARD_HEIGHT
-  const scale = clientHeight
-  return Math.min(scale, 1)
+  return Math.min(clientHeight, 1)
 }
 
 export function calculateScaledMargin(
