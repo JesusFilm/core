@@ -4,11 +4,12 @@ import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
+import { VideoGrid } from '@core/watch/ui/VideoGrid'
+
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
-import { VideoGrid } from '../VideoGrid/VideoGrid'
 
 import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'

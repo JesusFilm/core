@@ -1,8 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
+import { videos } from '@core/watch/ui/testDataGenerator/__generated__/testData'
+
 import { VideoProvider } from '../../../libs/videoContext'
-import { videos } from '../../Videos/__generated__/testData'
 
 import { AudioLanguageButton } from '.'
 

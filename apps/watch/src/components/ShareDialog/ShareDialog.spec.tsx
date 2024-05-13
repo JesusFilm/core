@@ -1,9 +1,10 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { videos } from '@core/watch/ui/testDataGenerator/__generated__/testData'
+
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../libs/videoContext'
-import { videos } from '../Videos/__generated__/testData'
 
 import { ShareDialog } from './ShareDialog'
 

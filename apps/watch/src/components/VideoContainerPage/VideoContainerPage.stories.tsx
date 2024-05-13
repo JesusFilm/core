@@ -1,10 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
+import { videos } from '@core/watch/ui/testDataGenerator/__generated__/testData'
+
 import { watchConfig } from '../../libs/storybook'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
-import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContainerPage } from '.'
 

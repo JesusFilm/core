@@ -1,8 +1,9 @@
 import { fireEvent, render } from '@testing-library/react'
 
+import { videos } from '@core/watch/ui/testDataGenerator/__generated__/testData'
+
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../../libs/videoContext'
-import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoContent } from './VideoContent'
 

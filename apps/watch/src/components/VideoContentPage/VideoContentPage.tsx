@@ -4,13 +4,14 @@ import Stack from '@mui/material/Stack'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
 
+import { getSlug } from '@core/watch/ui/VideoCard'
+
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
 import { DownloadDialog } from '../DownloadDialog'
 import { PageWrapper } from '../PageWrapper'
 import { ShareButton } from '../ShareButton'
 import { ShareDialog } from '../ShareDialog'
-import { getSlug } from '../VideoCard'
 import { VideoCarousel } from '../VideoCarousel'
 
 import { DownloadButton } from './DownloadButton'

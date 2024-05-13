@@ -5,8 +5,9 @@ import { A11y, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
+import { VideoCard } from '@core/watch/ui/VideoCard'
+
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
-import { VideoCard } from '../VideoCard'
 
 import { NavButton } from './NavButton'
 

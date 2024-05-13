@@ -6,10 +6,11 @@ import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
+import { VideoGrid } from '@core/watch/ui/VideoGrid'
+
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
-import { VideoGrid } from '../VideoGrid/VideoGrid'
 
 import { FilterList } from './FilterList'
 import { VideosHero } from './Hero'

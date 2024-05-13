@@ -2,8 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { videos } from '@core/watch/ui/testDataGenerator/__generated__/testData'
+
 import { VideoProvider } from '../../../libs/videoContext'
-import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoHero } from './VideoHero'
 

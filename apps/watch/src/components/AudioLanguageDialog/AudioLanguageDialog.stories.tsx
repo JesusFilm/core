@@ -2,9 +2,10 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
+import { videos } from '@core/watch/ui/testDataGenerator/__generated__/testData'
+
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
-import { videos } from '../Videos/__generated__/testData'
 
 import { getLanguagesSlugMock } from './testData'
 

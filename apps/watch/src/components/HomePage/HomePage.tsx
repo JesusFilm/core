@@ -7,10 +7,10 @@ import { ReactElement } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { VideoGrid } from '@core/watch/ui/VideoGrid'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
-import { VideoGrid } from '../VideoGrid'
 
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
