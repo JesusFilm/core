@@ -26,7 +26,7 @@ describe('AppCaslFactory', () => {
           Action.Create,
           subject('Channel', {
             id: 'channelId',
-            status: ChannelStatus.created,
+            status: ChannelStatus.created
           } as unknown as Channel)
         )
       ).toBe(true)
@@ -38,7 +38,7 @@ describe('AppCaslFactory', () => {
           Action.Manage,
           subject('Channel', {
             id: 'channelId',
-            status: ChannelStatus.created,
+            status: ChannelStatus.created
           } as unknown as Channel)
         )
       ).toBe(true)
@@ -52,7 +52,7 @@ describe('AppCaslFactory', () => {
           Action.Create,
           subject('Resource', {
             id: 'resourceId',
-            status: ChannelStatus.created,
+            status: ChannelStatus.created
           } as unknown as Resource)
         )
       ).toBe(true)
@@ -64,7 +64,7 @@ describe('AppCaslFactory', () => {
           Action.Manage,
           subject('Resource', {
             id: 'resourceId',
-            status: ChannelStatus.created,
+            status: ChannelStatus.created
           } as unknown as Resource)
         )
       ).toBe(true)

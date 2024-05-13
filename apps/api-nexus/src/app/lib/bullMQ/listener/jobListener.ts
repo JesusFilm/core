@@ -19,7 +19,8 @@ export class NexusJobListener implements OnModuleInit {
   }
 
   private listenToProgressEvents(): void {
-    this.uploadQueue.on('progress',
+    this.uploadQueue.on(
+      'progress',
       async (job: Job<UploadResourceJob>, progress: number) => {
         // console.log('Job Progress:', job.id, progress);
         // void Promise.all([

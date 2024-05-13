@@ -35,7 +35,7 @@ export interface UpdateVideoLocalizationJob {
     refreshToken: string
   }
   resource: {
-    category: string,
+    category: string
     refreshToken: string
     privacyStatus?: string
   }

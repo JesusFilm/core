@@ -1,4 +1,3 @@
-
 async function main(): Promise<void> {
   console.log('DB Seender')
 }

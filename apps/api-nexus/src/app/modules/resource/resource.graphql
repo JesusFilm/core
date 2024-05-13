@@ -107,7 +107,11 @@ extend type Mutation {
   resourceCreate(input: ResourceCreateInput!): Resource!
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
-  resourceFromTemplate(tokenId: String! spreadsheetId: String! drivefolderId: String! ): [Resource!]
+  resourceFromTemplate(
+    tokenId: String!
+    spreadsheetId: String!
+    drivefolderId: String!
+  ): [Resource!]
   getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
   resourceBatchJob(input: BatchJobInput!): String

@@ -160,7 +160,8 @@ export class ChannelResolver {
     @Args('input') input: ConnectYoutubeChannelInput
   ): Promise<Channel | null> {
     const channel = await this.prismaService.channel.findUnique({
-      where: { id: input.channelId }    })
+      where: { id: input.channelId }
+    })
     if (channel == null)
       throw new GraphQLError('channel not found', {
         extensions: { code: 'NOT_FOUND' }

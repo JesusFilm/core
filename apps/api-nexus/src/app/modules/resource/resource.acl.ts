@@ -6,7 +6,7 @@ export const resourceAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
   can(Action.Create, 'Resource', {
     status: { not: ResourceStatus.deleted }
   })
-  
+
   can(Action.Manage, 'Resource', {
     status: { not: ResourceStatus.deleted }
   })

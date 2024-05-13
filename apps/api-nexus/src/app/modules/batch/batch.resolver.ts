@@ -6,7 +6,6 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { BatchFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
-
 interface BatchWithProgress extends Batch {
   progress: number
 }
@@ -24,9 +23,7 @@ export class BatchResolver {
     if (where?.ids != null) filter.id = { in: where?.ids }
     const batches = await this.prismaService.batch.findMany({
       where: {
-        AND: [
-          filter
-        ]
+        AND: [filter]
       },
       include: {
         batchTasks: true
