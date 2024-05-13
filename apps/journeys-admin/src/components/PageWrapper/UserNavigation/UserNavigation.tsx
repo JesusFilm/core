@@ -15,12 +15,12 @@ import { MouseEvent, ReactElement, useEffect, useState } from 'react'
 import BoxIcon from '@core/shared/ui/icons/Box'
 import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
 
-import { GetMe } from '../../../../../__generated__/GetMe'
-import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
-import { useAdminJourneysSuspenseQuery } from '../../../../libs/useAdminJourneysSuspenseQuery'
-import { useUserRoleSuspenseQuery } from '../../../../libs/useUserRoleSuspenseQuery'
-import { getJourneyTooltip } from '../../utils/getJourneyTooltip'
-import { JourneyTooltip } from '../../utils/getJourneyTooltip/getJourneyTooltip'
+import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
+import { getJourneyTooltip } from '../utils/getJourneyTooltip'
+import { JourneyTooltip } from '../utils/getJourneyTooltip/getJourneyTooltip'
+import { useAdminJourneysSuspenseQuery } from '../../../libs/useAdminJourneysSuspenseQuery'
+import { useUserRoleSuspenseQuery } from '../../../libs/useUserRoleSuspenseQuery'
+import { GetMe } from '../../../../../../libs/admin/ui/__generated__/GetMe'
 
 const ImpersonateDialog = dynamic(
   async () =>

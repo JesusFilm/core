@@ -52,7 +52,6 @@ export class Video {
     label: VideoLabel;
     primaryLanguageId: string;
     title?: Translation[];
-    seoTitle?: Translation[];
     snippet?: Translation[];
     description?: Translation[];
     studyQuestions?: Translation[];

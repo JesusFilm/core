@@ -16,10 +16,10 @@ import { ReactElement, useState } from 'react'
 import Logout2Icon from '@core/shared/ui/icons/Logout2'
 import Mail1 from '@core/shared/ui/icons/Mail1'
 
-import { GetMe_me as ApiUser } from '../../../../../../__generated__/GetMe'
-import { LanguageSwitcher } from '../../../../LanguageSwitcher'
-import { MenuItem } from '../../../../MenuItem'
-import { useTeam } from '../../../../Team/TeamProvider'
+import { GetMe_me as ApiUser } from '../../../../../__generated__/GetMe'
+import { LanguageSwitcher } from '../../../LanguageSwitcher'
+import { MenuItem } from '../../../MenuItem'
+import { useTeam } from '../../../Team/TeamProvider'
 
 export interface UserMenuProps {
   apiUser: ApiUser
