@@ -58,6 +58,7 @@ export function BaseEdge({
               edgeSelected || isHovering
                 ? theme.palette.primary.main
                 : `${theme.palette.secondary.dark}1A`,
+            opacity: isHovering ? 0.5 : 1,
             ...style
           }}
         />
