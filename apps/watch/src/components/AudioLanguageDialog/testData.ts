@@ -1,4 +1,4 @@
-import { videos } from '../Videos/__generated__/testData'
+import { videos } from '@core/watch/ui/testDataGenerator/__generated__/testData'
 
 import { GET_LANGUAGES_SLUG } from './AudioLanguageDialog'
 
