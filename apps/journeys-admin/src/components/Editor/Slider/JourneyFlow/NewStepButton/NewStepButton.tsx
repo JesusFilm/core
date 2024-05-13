@@ -31,10 +31,9 @@ export function NewStepButton(): ReactElement {
       y: (event as unknown as MouseEvent).clientY
     })
 
-    const data = await createNodeAndEdge(
-      parseInt(x.toString()) - STEP_NODE_CARD_WIDTH,
-      parseInt(y.toString()) + STEP_NODE_CARD_HEIGHT / 2
-    )
+    const xCoordinate = parseInt(x.toString()) - STEP_NODE_CARD_WIDTH
+    const yCoordinate = parseInt(y.toString()) + STEP_NODE_CARD_HEIGHT / 2
+    const data = await createNodeAndEdge(xCoordinate, yCoordinate)
 
     if (data != null) {
       dispatch({

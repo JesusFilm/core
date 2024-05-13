@@ -28,23 +28,22 @@ export function useCreateNodeAndEdge(): (
   } = useEditor()
   const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation({
     update(cache, { data }) {
-      if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
-        cache.modify({
-          fields: {
-            blocks(existingBlockRefs = []) {
-              const newStepBlockRef = cache.writeFragment({
-                data: data.stepBlockCreate,
-                fragment: gql`
-                  fragment NewBlock on Block {
-                    id
-                  }
-                `
-              })
-              return [...existingBlockRefs, newStepBlockRef]
-            }
+      if (data?.stepBlockCreate == null || data?.cardBlockCreate == null) return
+      cache.modify({
+        fields: {
+          blocks(existingBlockRefs = []) {
+            const newStepBlockRef = cache.writeFragment({
+              data: data.stepBlockCreate,
+              fragment: gql`
+                fragment NewBlock on Block {
+                  id
+                }
+              `
+            })
+            return [...existingBlockRefs, newStepBlockRef]
           }
-        })
-      }
+        }
+      })
     }
   })
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
@@ -54,8 +53,9 @@ export function useCreateNodeAndEdge(): (
   async function createNodeAndEdge(
     x: number,
     y: number,
-    nodeId?: string,
-    handleId?: string
+    sourceStepId?: string,
+    sourceBlockId?: string,
+    sourceSocialPreview?: boolean
   ): Promise<StepAndCardBlockCreate | null | undefined> {
     if (journey == null) return
     const newStepId = uuidv4()
@@ -88,9 +88,15 @@ export function useCreateNodeAndEdge(): (
       }
     })
 
-    const step = steps?.find((step) => step.id === nodeId ?? '')
-    const block = searchBlocks(step != null ? [step] : [], handleId ?? '')
-    const connectFromSocialNode = nodeId === 'SocialPreview'
+    const step =
+      sourceStepId == null || sourceStepId === 'SocialPreview'
+        ? undefined
+        : steps?.find((step) => step.id === sourceStepId)
+    const block =
+      step == null || sourceBlockId == null
+        ? undefined
+        : searchBlocks([step], sourceBlockId)
+    const connectFromSocialNode = sourceStepId === 'SocialPreview'
     const connectFromStepNode = step != null && step.id === block?.id
     const connectFromActionNode = block != null
     if (connectFromSocialNode) {
