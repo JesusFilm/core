@@ -1,7 +1,13 @@
 import { NextRequest } from 'next/server'
 
 import { paramsToRecord } from '../../../../lib/paramsToRecord'
-import { contentTypes, genres, osisBibleBooks, subTypes, types } from '../route'
+import {
+  contentTypes,
+  genres,
+  osisBibleBooks,
+  subTypes,
+  types
+} from '../fields'
 
 /* TODO: 
   querystring:
