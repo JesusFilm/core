@@ -12,7 +12,6 @@ import { nua9 } from './seeds/nua9'
 import { onboarding } from './seeds/onboarding'
 import { onboardingTemplates } from './seeds/onboardingTemplates'
 import { playwrightUserAccess } from './seeds/playwrightUserAccess'
-// import { processNextBlockId } from './seeds/processNextBlockId'
 
 async function main(): Promise<void> {
   // this should be removed when the UI can support team management
@@ -28,9 +27,6 @@ async function main(): Promise<void> {
   await discoveryAdminCenter()
   await discoveryAdminRight()
   await playwrightUserAccess()
-
-  // this will be run manually in way for branching changes
-  // await processNextBlockId()
 }
 main().catch((e) => {
   console.error(e)

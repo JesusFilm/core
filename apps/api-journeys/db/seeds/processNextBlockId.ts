@@ -1,3 +1,4 @@
+import get from 'lodash/get'
 import sortBy from 'lodash/sortBy'
 
 import { PrismaClient } from '.prisma/api-journeys-client'
@@ -6,16 +7,24 @@ import { Block, StepBlock } from '../../src/app/__generated__/graphql'
 
 const prisma = new PrismaClient()
 
-function getStepBlocks(blocks): StepBlock[] {
-  return blocks.filter(
-    (block): block is StepBlock => block.typename === 'StepBlock'
-  )
+function actionType(obj): string {
+  if (get(obj, 'blockId') != null) return 'NavigateToBlockAction'
+  if (get(obj, 'journeyId') != null) return 'NavigateToJourneyAction'
+  if (get(obj, 'url') != null) return 'LinkAction'
+  if (get(obj, 'email') != null) return 'EmailAction'
+  return 'NavigateAction'
 }
 
 function getBlocksWithNavigateActions(blocks): Block[] {
   return blocks.filter(
     (block): boolean =>
-      block.action != null && block.action.gtmEventName === 'NavigateAction'
+      block.action != null && actionType(block.action) === 'NavigateAction'
+  )
+}
+
+function getStepBlocks(blocks): StepBlock[] {
+  return blocks.filter(
+    (block): block is StepBlock => block.typename === 'StepBlock'
   )
 }
 
@@ -33,10 +42,9 @@ async function updateStepBlocksAndActions(journey): Promise<void> {
   await Promise.all(
     stepBlocks.map(async (stepBlock, index) => {
       const nextIndex = index + 1
-      const hasNextStep = nextIndex < stepBlocks.length
       const nextStepBlock = stepBlocks[nextIndex]
 
-      if (hasNextStep) {
+      if (nextStepBlock != null) {
         await prisma.block.update({
           where: { id: stepBlock.id },
           data: { nextBlockId: nextStepBlock.id }
