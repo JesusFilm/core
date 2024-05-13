@@ -19,7 +19,8 @@
     "**/*.js",
     "**/*.jsx",
     "next-env.d.ts",
-    "../../libs/journeys/ui/src/ImageBlockProvider/ImageBlockProvider.tsx"
+    "../../libs/journeys/ui/src/ImageBlockProvider/ImageBlockProvider.tsx",
+    "../../libs/admin/ui/src/components/NavigationDrawer/NavigationDrawer.spec.tsx"
   ],
   "exclude": ["node_modules", "jest.config.ts"]
 }

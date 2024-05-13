@@ -19,8 +19,8 @@ import Bag5Icon from '@core/shared/ui/icons/Bag5'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
 
-import nextstepsTitle from '../../../../public/nextsteps-title.svg'
-import taskbarIcon from '../../../../public/taskbar-icon.svg'
+import nextstepsTitle from '../../../../../../apps/journeys-admin/public/nextsteps-title.svg'
+import taskbarIcon from '../../../../../../apps/journeys-admin/public/taskbar-icon.svg'
 
 const DRAWER_WIDTH = '237px'
 
@@ -28,7 +28,7 @@ const UserNavigation = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "UserNavigation" */
-      './UserNavigation'
+      '../NavigationDrawer/UserNavigation'
     ).then((mod) => mod.UserNavigation),
   { ssr: false }
 )

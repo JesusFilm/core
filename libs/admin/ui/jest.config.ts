@@ -1,13 +1,13 @@
 import type { Config } from 'jest'
 
 const config: Config = {
-  displayName: 'journeys-admin-ui',
+  displayName: 'admin-ui',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
     '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/react/babel'] }]
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../../coverage/libs/journeys-admin/ui',
+  coverageDirectory: '../../../coverage/libs/admin/ui',
   setupFilesAfterEnv: ['<rootDir>setupTests.ts'],
   collectCoverage: true,
   coverageReporters: ['cobertura'],

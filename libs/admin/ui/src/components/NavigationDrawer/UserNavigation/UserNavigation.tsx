@@ -15,12 +15,15 @@ import { MouseEvent, ReactElement, useEffect, useState } from 'react'
 import BoxIcon from '@core/shared/ui/icons/Box'
 import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
 
-import { GetMe } from '../../../../../__generated__/GetMe'
-import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
-import { useAdminJourneysSuspenseQuery } from '../../../../libs/useAdminJourneysSuspenseQuery'
-import { useUserRoleSuspenseQuery } from '../../../../libs/useUserRoleSuspenseQuery'
-import { getJourneyTooltip } from '../../utils/getJourneyTooltip'
-import { JourneyTooltip } from '../../utils/getJourneyTooltip/getJourneyTooltip'
+import { GetMe } from '../../../../../../../apps/journeys-admin/__generated__/GetMe'
+import {
+  JourneyStatus,
+  Role
+} from '../../../../../../../apps/journeys-admin/__generated__/globalTypes'
+import { useAdminJourneysSuspenseQuery } from '../../../../../../../apps/journeys-admin/src/libs/useAdminJourneysSuspenseQuery'
+import { useUserRoleSuspenseQuery } from '../../../../../../../apps/journeys-admin/src/libs/useUserRoleSuspenseQuery'
+import { getJourneyTooltip } from '../../../../../../../apps/journeys-admin/src/components/PageWrapper/utils/getJourneyTooltip'
+import { JourneyTooltip } from '../../../../../../../apps/journeys-admin/src/components/PageWrapper/utils/getJourneyTooltip/getJourneyTooltip'
 
 const ImpersonateDialog = dynamic(
   async () =>

@@ -20,7 +20,7 @@ import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 
-import { GET_ME } from './UserNavigation'
+import { GET_ME } from '../UserNavigation'
 
 import { NavigationDrawer } from '.'
 

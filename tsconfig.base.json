@@ -32,7 +32,8 @@
       "@core/shared/ui/*": [
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"
-      ]
+      ],
+      "@core/admin/ui/*": ["libs/admin/ui/src/components/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

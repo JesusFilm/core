@@ -24,7 +24,7 @@ import { CreateVerificationRequest } from '../../__generated__/CreateVerificatio
 import { GetMe } from '../../__generated__/GetMe'
 import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerification/EmailVerification'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
-import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
+import { GET_ME } from '../../../../libs/admin/ui/src/components/NavigationDrawer/UserNavigation'
 import { useTeam } from '../../src/components/Team/TeamProvider'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'

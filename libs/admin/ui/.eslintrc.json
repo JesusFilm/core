@@ -14,7 +14,7 @@
     {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
-        "project": ["libs/journeys-admin/ui/tsconfig.*?.json"]
+        "project": ["libs/admin/ui/tsconfig.*?.json"]
       },
       "rules": {
         "no-void": [

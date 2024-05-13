@@ -1,7 +1,7 @@
 {
-  "name": "journeys-admin-ui",
+  "name": "admin-ui",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/journeys-admin/ui/src",
+  "sourceRoot": "libs/admin/ui/src",
   "projectType": "library",
   "tags": [],
   "implicitDependencies": ["locales"],
@@ -13,14 +13,14 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b libs/journeys-admin/ui/tsconfig.json"
+        "command": "npx tsc -b libs/admin/ui/tsconfig.json"
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/libs/journeys-admin/ui"],
+      "outputs": ["{workspaceRoot}/coverage/libs/admin/ui"],
       "options": {
-        "jestConfig": "libs/journeys-admin/ui/jest.config.ts"
+        "jestConfig": "libs/admin/ui/jest.config.ts"
       }
     },
     "demo": {
@@ -43,10 +43,10 @@
             "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
           },
           {
-            "command": "rm -rf libs/journeys-admin/ui/__generated__"
+            "command": "rm -rf libs/admin/ui/__generated__"
           },
           {
-            "command": "npx apollo client:codegen --config libs/journeys-admin/ui/apollo.config.js --target typescript  --globalTypesFile=libs/journeys-admin/ui/__generated__/globalTypes.ts"
+            "command": "npx apollo client:codegen --config libs/admin/ui/apollo.config.js --target typescript  --globalTypesFile=libs/admin/ui/__generated__/globalTypes.ts"
           }
         ]
       }
@@ -56,7 +56,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx i18next --config libs/journeys-admin/ui/i18next-parser.config.js"
+            "command": "npx i18next --config libs/admin/ui/i18next-parser.config.js"
           }
         ]
       }
@@ -64,7 +64,7 @@
     "codecov": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "codecov -f coverage/libs/journeys-admin/ui/cobertura-coverage.xml -F libs.journeys-admin.ui"
+        "command": "codecov -f coverage/libs/admin/ui/cobertura-coverage.xml -F libs.admin.ui"
       }
     }
   }
