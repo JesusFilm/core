@@ -170,8 +170,8 @@ export function BaseNode({
               position: 'absolute',
               borderRadius: '100%',
               fontSize: 'large',
-              color: (theme) => theme.palette.background.paper,
-              backgroundColor: (theme) => theme.palette.primary.main,
+              color: 'background.paper',
+              backgroundColor: 'primary.main',
               top: -HANDLE_DIAMETER,
               right: -HANDLE_DIAMETER,
               pointerEvents: 'none'

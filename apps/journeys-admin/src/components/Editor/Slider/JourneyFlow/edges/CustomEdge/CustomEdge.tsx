@@ -25,7 +25,7 @@ export function CustomEdge({
   style = {}
 }: EdgeProps): ReactElement {
   const deleteEdge = useDeleteEdge()
-  const [edgeSelected, setEdgeSelected] = useState(false)
+  const [selected, setSelected] = useState(false)
   const [selectedEdge, setSelectedEdge] = useState<Edge | undefined>(undefined)
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
@@ -41,9 +41,9 @@ export function CustomEdge({
       const selectedEdge = selected.edges.find((edge) => edge.id === id)
       if (selectedEdge != null) {
         setSelectedEdge(selectedEdge)
-        setEdgeSelected(true)
+        setSelected(true)
       } else {
-        setEdgeSelected(false)
+        setSelected(false)
       }
     }
   })
@@ -54,7 +54,7 @@ export function CustomEdge({
 
   return (
     <BaseEdge id={id} style={style} edgePath={edgePath}>
-      {edgeSelected && (
+      {selected && (
         <EdgeLabelRenderer>
           <Box
             sx={{
@@ -67,12 +67,12 @@ export function CustomEdge({
               onClick={onEdgeClick}
               sx={{
                 borderRadius: '100%',
-                backgroundColor: (theme) => theme.palette.primary.main,
+                backgroundColor: 'primary.main',
                 height: 4,
                 width: 4,
                 display: 'flex',
                 '&:hover': {
-                  backgroundColor: (theme) => theme.palette.primary.main,
+                  backgroundColor: 'primary.main',
                   opacity: 0.8
                 }
               }}
@@ -81,7 +81,7 @@ export function CustomEdge({
                 sx={{
                   height: 12,
                   width: 12,
-                  color: (theme) => theme.palette.background.paper
+                  color: 'background.paper'
                 }}
               />
             </IconButton>

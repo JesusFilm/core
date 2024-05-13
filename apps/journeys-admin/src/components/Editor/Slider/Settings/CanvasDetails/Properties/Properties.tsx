@@ -1,4 +1,3 @@
-import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
@@ -16,14 +15,6 @@ const Card = dynamic(
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card" */ './blocks/Card'
     ).then((mod) => mod.Card),
-  { ssr: false }
-)
-
-const Step = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Step" */ './blocks/Step'
-    ).then((mod) => mod.Step),
   { ssr: false }
 )
 
@@ -130,12 +121,8 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       const card = selectedBlock.children[0]
       if (card?.children.length > 0) {
         title = t('Card Properties')
-        component = (
-          <>
-            {/* <Step {...selectedBlock} />
-            {card != null && <Divider />} */}
-            {card != null && <Properties block={card} step={selectedStep} />}
-          </>
+        component = card != null && (
+          <Properties block={card} step={selectedStep} />
         )
       } else {
         title = t('Card Templates')

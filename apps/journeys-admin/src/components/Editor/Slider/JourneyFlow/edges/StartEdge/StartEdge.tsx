@@ -34,7 +34,7 @@ export function StartEdge({
             position: 'absolute',
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
             pointerEvents: 'all',
-            backgroundColor: (theme) => theme.palette.background.paper,
+            backgroundColor: 'background.paper',
             borderRadius: 10,
             border: (theme) => `1px solid ${theme.palette.divider}`
           }}

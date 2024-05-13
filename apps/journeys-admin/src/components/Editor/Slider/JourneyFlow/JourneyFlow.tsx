@@ -21,6 +21,7 @@ import {
   OnConnectStart,
   OnConnectStartParams,
   OnEdgeUpdateFunc,
+  Panel,
   ReactFlow,
   ReactFlowInstance,
   useEdgesState,
@@ -276,7 +277,6 @@ export function JourneyFlow(): ReactElement {
       }}
       data-testid="JourneyFlow"
     >
-      <NewStepButton reactFlowInstance={reactFlowInstance} />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -300,6 +300,9 @@ export function JourneyFlow(): ReactElement {
           strokeWidth: 2
         }}
       >
+        <Panel position="top-right">
+          <NewStepButton />
+        </Panel>
         <Controls showInteractive={false}>
           <ControlButton onClick={async () => await blockPositionsUpdate({})}>
             <ArrowRefresh6Icon />
