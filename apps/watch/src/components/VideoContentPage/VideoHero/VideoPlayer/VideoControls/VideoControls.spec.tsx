@@ -10,9 +10,9 @@ import fscreen from 'fscreen'
 import videojs from 'video.js'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+import { videos } from '@core/watch/ui/testDataGenerator/__generated__/testData'
 
 import { VideoProvider } from '../../../../../libs/videoContext'
-import { videos } from '../../../../Videos/__generated__/testData'
 
 import { VideoControls } from './VideoControls'
 

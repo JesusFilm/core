@@ -5,9 +5,9 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { videos } from '@core/watch/ui/testDataGenerator/__generated__/testData'
 
 import { watchConfig } from '../../libs/storybook/config'
-import { videos } from '../Videos/__generated__/testData'
 
 import { VideoCarousel } from './VideoCarousel'
 
