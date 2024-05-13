@@ -37,16 +37,14 @@ export function BaseEdge({
     }
   })
 
-  const hoverProps = !hasTouchScreen()
-    ? {
-        onMouseOver: () => setIsHovering(true),
-        onMouseLeave: () => setIsHovering(false)
-      }
-    : {}
+  const props = !hasTouchScreen() && {
+    onMouseOver: () => setIsHovering(true),
+    onMouseLeave: () => setIsHovering(false)
+  }
 
   return (
     <>
-      <g {...hoverProps}>
+      <g {...props}>
         <DefaultBaseEdge
           path={edgePath}
           markerEnd={`url(#1__color=${
