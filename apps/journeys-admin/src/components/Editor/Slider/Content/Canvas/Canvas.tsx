@@ -163,7 +163,6 @@ export function Canvas(): ReactElement {
           data-testid="stack here"
         >
           <Box
-            data-testid="CardAndFabBox"
             sx={{
               display: 'flex',
               flexDirection: 'column',
