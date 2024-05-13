@@ -29,7 +29,6 @@ describe('BatchResolver', () => {
     const userId = 'someUserId'
     const batch = {
       id: 'batch1',
-      nexusId: 'nexÒus1',
       name: 'Batch 1',
       status: BatchStatus.completed,
       totalTasks: 2,

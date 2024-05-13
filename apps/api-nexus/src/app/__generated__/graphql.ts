@@ -55,7 +55,6 @@ export enum ResourceStatus {
 export class BatchFilter {
     ids?: Nullable<string[]>;
     name?: Nullable<string>;
-    nexusId?: Nullable<string>;
     status?: Nullable<BatchStatus>;
     limit?: Nullable<number>;
 }
@@ -155,7 +154,6 @@ export class BatchJobInput {
 export class Batch {
     __typename?: 'Batch';
     id: string;
-    nexusId: string;
     channelId: string;
     channel?: Nullable<Channel>;
     resources?: Nullable<Nullable<BatchResource>[]>;
