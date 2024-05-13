@@ -21,6 +21,7 @@ export enum BatchStatus {
 }
 
 export enum ChannelStatus {
+    created = "created",
     deleted = "deleted",
     published = "published"
 }
@@ -60,7 +61,6 @@ export class BatchFilter {
 }
 
 export class ChannelCreateInput {
-    nexusId: string;
     name: string;
     platform: string;
 }
@@ -73,7 +73,6 @@ export class ChannelUpdateInput {
 export class ChannelFilter {
     ids?: Nullable<string[]>;
     name?: Nullable<string>;
-    nexusId?: Nullable<string>;
     limit?: Nullable<number>;
     connected?: Nullable<boolean>;
     status?: Nullable<ChannelStatus>;
@@ -105,7 +104,6 @@ export class NexusFilter {
 }
 
 export class ResourceCreateInput {
-    nexusId: string;
     name: string;
 }
 
@@ -116,13 +114,11 @@ export class ResourceUpdateInput {
 export class ResourceFromGoogleDriveInput {
     fileIds: string[];
     authCode: string;
-    nexusId: string;
 }
 
 export class ResourceFilter {
     ids?: Nullable<string[]>;
     name?: Nullable<string>;
-    nexusId?: Nullable<string>;
     status?: Nullable<ResourceStatus>;
     limit?: Nullable<number>;
 }
@@ -130,12 +126,10 @@ export class ResourceFilter {
 export class AddResourceFromGoogleDriveInput {
     accessToken: string;
     fileId: string;
-    nexusId: string;
 }
 
 export class ResourceFromSpreadsheetInput {
     file?: Nullable<Upload>;
-    nexusId: string;
 }
 
 export class GoogleAuthInput {
@@ -204,7 +198,6 @@ export abstract class IQuery {
 export class Channel {
     __typename?: 'Channel';
     id: string;
-    nexusId: string;
     name: string;
     platform?: Nullable<string>;
     connected?: Nullable<boolean>;
@@ -238,8 +231,6 @@ export class Nexus {
 export class Resource {
     __typename?: 'Resource';
     id: string;
-    nexusId: string;
-    nexus: Nexus;
     name: string;
     status: ResourceStatus;
     createdAt: DateTime;

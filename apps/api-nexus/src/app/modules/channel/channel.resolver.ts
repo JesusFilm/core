@@ -4,7 +4,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Channel, NexusStatus, Prisma } from '.prisma/api-nexus-client'
+import { Channel, Prisma } from '.prisma/api-nexus-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
 import {
@@ -147,7 +147,7 @@ export class ChannelResolver {
         id
       },
       data: {
-        status: NexusStatus.deleted,
+        status: ChannelStatus.deleted,
         connected: false
       },
       include: { youtube: true }

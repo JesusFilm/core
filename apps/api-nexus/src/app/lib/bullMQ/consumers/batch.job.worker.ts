@@ -25,18 +25,18 @@ export class BatchJobWorker {
   ): Promise<UploadResourceJob> {
     // console.log('processResourceUpdate', job.data)
     // GET VIDEO DRIVE TOKEN
-    const channelToken = await this.googleOAuthService.getNewAccessToken(
-      job.data.channel.refreshToken
-    )
+    // const channelToken = await this.googleOAuthService.getNewAccessToken(
+    //   job.data.channel.refreshToken
+    // )
 
-    const resp1 = await this.youtubeService.updateVideo({
-      token: channelToken,
-      title: job.data.localizations[0].title ?? '',
-      description: job.data.localizations[0].description ?? '',
-      category: job.data.resource.category,
-      videoId: job.data.localizations[0].videoId,
-      localizations: job.data.localizations
-    })
+    // const resp1 = await this.youtubeService.updateVideo({
+    //   token: channelToken,
+    //   title: job.data.localizations[0].title ?? '',
+    //   description: job.data.localizations[0].description ?? '',
+    //   category: job.data.resource.category,
+    //   videoId: job.data.localizations[0].videoId,
+    //   localizations: job.data.localizations
+    // })
 
     // console.log('resp1', resp1)
 

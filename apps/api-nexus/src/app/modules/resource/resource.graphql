@@ -2,8 +2,6 @@ scalar Upload
 
 type Resource @key(fields: "id") {
   id: ID!
-  nexusId: String!
-  nexus: Nexus!
   name: String!
   status: ResourceStatus!
   createdAt: DateTime!
@@ -52,7 +50,6 @@ enum ResourceStatus {
 }
 
 input ResourceCreateInput {
-  nexusId: String!
   name: String!
 }
 
@@ -63,13 +60,11 @@ input ResourceUpdateInput {
 input ResourceFromGoogleDriveInput {
   fileIds: [String!]!
   authCode: String!
-  nexusId: String!
 }
 
 input ResourceFilter {
   ids: [ID!]
   name: String
-  nexusId: String
   status: ResourceStatus
   limit: Int
 }
@@ -77,12 +72,10 @@ input ResourceFilter {
 input AddResourceFromGoogleDriveInput {
   accessToken: String!
   fileId: String!
-  nexusId: String!
 }
 
 input ResourceFromSpreadsheetInput {
   file: Upload
-  nexusId: String!
 }
 
 input GoogleAuthInput {

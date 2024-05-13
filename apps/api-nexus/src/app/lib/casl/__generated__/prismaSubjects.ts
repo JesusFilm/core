@@ -8,13 +8,11 @@ import {
   Channel, 
   ChannelYoutube, 
   GoogleAccessToken, 
-  Nexus, 
   Resource, 
   ResourceChannel, 
   ResourceLocalization, 
   ResourceLocalizationSource, 
   ResourceSource, 
-  UserNexus, 
   UserRole
 } from '.prisma/api-nexus-client'
 
@@ -24,12 +22,10 @@ export type PrismaSubjects = Subjects<{
   Channel: Channel, 
   ChannelYoutube: ChannelYoutube, 
   GoogleAccessToken: GoogleAccessToken, 
-  Nexus: Nexus, 
   Resource: Resource, 
   ResourceChannel: ResourceChannel, 
   ResourceLocalization: ResourceLocalization, 
   ResourceLocalizationSource: ResourceLocalizationSource, 
   ResourceSource: ResourceSource, 
-  UserNexus: UserNexus, 
   UserRole: UserRole
 }>

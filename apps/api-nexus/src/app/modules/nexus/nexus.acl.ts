@@ -1,24 +1,13 @@
-import { NexusStatus } from '.prisma/api-nexus-client'
 
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const nexusAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
-  can(Action.Create, 'Nexus', {
-    userNexuses: {
-      some: {
-        userId: user.id,
-        role: 'owner'
-      }
-    },
-    status: { not: NexusStatus.deleted }
+  can(Action.Create, 'UserRole', {
+    userId: user.id,
+    roles: {has: "publisher"}
   })
-  can(Action.Manage, 'Nexus', {
-    userNexuses: {
-      some: {
-        userId: user.id,
-        role: 'owner'
-      }
-    },
-    status: { not: NexusStatus.deleted }
+  can(Action.Manage, 'UserRole', {
+    userId: user.id,
+    roles: {has: "publisher"}
   })
 }

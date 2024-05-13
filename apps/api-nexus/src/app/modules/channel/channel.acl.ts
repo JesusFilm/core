@@ -1,12 +1,12 @@
-import { NexusStatus } from '.prisma/api-nexus-client'
 
+import { ChannelStatus } from '../../__generated__/graphql'
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const channelAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
   can(Action.Create, 'Channel', {
-    status: { not: NexusStatus.deleted },
+    status: { not: ChannelStatus.deleted },
   })
   can(Action.Manage, 'Channel', {
-    status: { not: NexusStatus.deleted },
+    status: { not: ChannelStatus.deleted },
   })
 }

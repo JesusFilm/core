@@ -68,12 +68,12 @@ export class ResourceResolver {
         id
       },
       include: {
-        resourceLocalizations: true,
+        resourceLocalizations: true
       }
     })
     if (resource == null)
       throw new GraphQLError('resource not found', {
-        extensions: { code: 'NOT_FOUND' }
+        extensions: { code: 'user is not allowed to view resource' }
       })
     if (!ability.can(Action.Read, subject('Resource', resource)))
       throw new GraphQLError('user is not allowed to view resource', {
@@ -99,7 +99,7 @@ export class ResourceResolver {
       const resource = await tx.resource.findUnique({
         where: { id },
         include: {
-          resourceLocalizations: true,
+          resourceLocalizations: true
         }
       })
       if (resource == null)
@@ -148,7 +148,7 @@ export class ResourceResolver {
     @Args('id') id: string
   ): Promise<Resource> {
     const resource = await this.prismaService.resource.findUnique({
-      where: { id },
+      where: { id }
     })
     if (resource == null)
       throw new GraphQLError('resource not found', {

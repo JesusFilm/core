@@ -8,29 +8,6 @@ datasource db {
     url      = env("PG_DATABASE_URL_NEXUS")
 }
 
-enum NexusStatus {
-    created
-    deleted
-}
-
-model Nexus {
-    id          String      @id @default(uuid())
-    name        String
-    description String?
-    status      NexusStatus @default(created)
-    createdAt   DateTime    @default(now())
-    deletedAt   DateTime?
-    userNexuses UserNexus[]
-}
-
-model UserNexus {
-    id      String @id @default(uuid())
-    userId  String
-    nexusId String
-    nexus   Nexus  @relation(fields: [nexusId], references: [id])
-    role    String
-}
-
 enum ChannelStatus {
     created
     published

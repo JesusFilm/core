@@ -1,7 +1,6 @@
-import { jfNexus } from './seeds/jfNexus'
 
 async function main(): Promise<void> {
-  await jfNexus()
+  console.log('DB Seender')
 }
 main().catch((e) => {
   console.error(e)

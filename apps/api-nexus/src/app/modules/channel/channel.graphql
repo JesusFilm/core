@@ -1,6 +1,5 @@
 type Channel @key(fields: "id") {
   id: ID!
-  nexusId: String!
   name: String!
   platform: String
   connected: Boolean
@@ -10,6 +9,7 @@ type Channel @key(fields: "id") {
 }
 
 enum ChannelStatus {
+  created
   deleted
   published
 }
@@ -26,7 +26,6 @@ type ChannelYoutube {
 }
 
 input ChannelCreateInput {
-  nexusId: String!
   name: String!
   platform: String!
 }
@@ -39,7 +38,6 @@ input ChannelUpdateInput {
 input ChannelFilter {
   ids: [ID!]
   name: String
-  nexusId: String
   limit: Int
   connected: Boolean
   status: ChannelStatus
