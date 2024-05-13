@@ -27,14 +27,18 @@ interface MediaLanguage {
 
 async function getLanguage(languageId: string): Promise<Language | null> {
   const result = await prismaService.language.findUnique({
-    where: { id: languageId }
+    where: { id: languageId },
+    include: { languageName: true }
   })
 
   return result as unknown as Language
 }
 
 async function getLanguageByBcp47(bcp47: string): Promise<Language | null> {
-  const result = await prismaService.language.findFirst({ where: { bcp47 } })
+  const result = await prismaService.language.findFirst({
+    where: { bcp47 },
+    include: { languageName: true }
+  })
   return result as unknown as Language
 }
 
@@ -67,10 +71,28 @@ async function digestMediaLanguage(
     ]
   }
 
+  const primaryName = {
+    parentLanguageId: languageId.toString(),
+    value: nameNative,
+    languageId: languageId.toString(),
+    primary: true
+  }
+
   await prismaService.language.upsert({
     where: { id: languageId.toString() },
     update: body,
     create: { id: languageId.toString(), ...body }
+  })
+
+  await prismaService.languageName.upsert({
+    where: {
+      parentLanguageId_languageId: {
+        parentLanguageId: languageId.toString(),
+        languageId: languageId.toString()
+      }
+    },
+    update: primaryName,
+    create: primaryName
   })
 }
 
@@ -106,6 +128,25 @@ async function digestMediaLanguageMetadata(
           primary: false
         }
       ]
+    }
+  })
+
+  await prismaService.languageName.upsert({
+    where: {
+      parentLanguageId_languageId: {
+        parentLanguageId: languageId.toString(),
+        languageId: metadataLanguage.id
+      }
+    },
+    update: {
+      value: name,
+      primary: false
+    },
+    create: {
+      parentLanguageId: languageId.toString(),
+      value: name,
+      languageId: metadataLanguage.id,
+      primary: false
     }
   })
 }
