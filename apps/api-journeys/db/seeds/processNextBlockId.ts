@@ -1,13 +1,20 @@
 import get from 'lodash/get'
 import sortBy from 'lodash/sortBy'
 
-import { PrismaClient } from '.prisma/api-journeys-client'
-
-import { Block, StepBlock } from '../../src/app/__generated__/graphql'
+import {
+  Action,
+  Block,
+  Journey,
+  PrismaClient
+} from '.prisma/api-journeys-client'
 
 const prisma = new PrismaClient()
 
-function actionType(obj): string {
+type BlockWithAction = Array<Block & { action: Action }>
+
+type JourneyWithBlocks = Journey & { blocks: BlockWithAction }
+
+function actionType(obj: Action): string {
   if (get(obj, 'blockId') != null) return 'NavigateToBlockAction'
   if (get(obj, 'journeyId') != null) return 'NavigateToJourneyAction'
   if (get(obj, 'url') != null) return 'LinkAction'
@@ -15,26 +22,54 @@ function actionType(obj): string {
   return 'NavigateAction'
 }
 
-function getBlocksWithNavigateActions(blocks): Block[] {
+function getBlocksWithNavigateActions(blocks: BlockWithAction): Block[] {
   return blocks.filter(
     (block): boolean =>
       block.action != null && actionType(block.action) === 'NavigateAction'
   )
 }
 
-function getStepBlocks(blocks): StepBlock[] {
-  return blocks.filter(
-    (block): block is StepBlock => block.typename === 'StepBlock'
-  )
+function getStepBlocks(blocks: Block[]): Block[] {
+  return blocks.filter((block) => block.typename === 'StepBlock')
 }
 
-function findParentStepBlock(blocks, parentBlockId): string {
+function findParentStepBlock(
+  blocks: Block[],
+  parentBlockId: string
+): string | undefined {
   const block = blocks.find((block) => block.id === parentBlockId)
+  if (block?.parentBlockId == null) return
   if (block != null && block.typename === 'StepBlock') return block.id
   return findParentStepBlock(blocks, block.parentBlockId)
 }
 
-async function updateStepBlocksAndActions(journey): Promise<void> {
+async function updateNextBlockId(
+  id: string,
+  nextBlockId: string
+): Promise<void> {
+  await prisma.block.update({
+    where: { id },
+    data: { nextBlockId }
+  })
+}
+
+async function updateBlockAction(id: string, blockId: string): Promise<void> {
+  await prisma.block.update({
+    where: { id },
+    data: {
+      action: {
+        update: {
+          gtmEventName: 'NavigateToBlockAction',
+          blockId
+        }
+      }
+    }
+  })
+}
+
+async function processStepBlockAndActions(
+  journey: JourneyWithBlocks
+): Promise<void> {
   const blocks = journey.blocks
   const stepBlocks = sortBy(getStepBlocks(blocks), 'parentOrder')
   const blocksWithNavigateActions = getBlocksWithNavigateActions(blocks)
@@ -45,33 +80,19 @@ async function updateStepBlocksAndActions(journey): Promise<void> {
       const nextStepBlock = stepBlocks[nextIndex]
 
       if (nextStepBlock != null) {
-        await prisma.block.update({
-          where: { id: stepBlock.id },
-          data: { nextBlockId: nextStepBlock.id }
-        })
+        await updateNextBlockId(stepBlock.id, nextStepBlock.id)
 
         const currentStepBlockActions = blocksWithNavigateActions.filter(
           (actionBlock) =>
+            actionBlock.parentBlockId != null &&
             findParentStepBlock(blocks, actionBlock.parentBlockId) ===
-            stepBlock.id
+              stepBlock.id
         )
 
         await Promise.all(
-          currentStepBlockActions.map(async (block) => {
-            if (block != null) {
-              await prisma.block.update({
-                where: { id: block.id },
-                data: {
-                  action: {
-                    update: {
-                      gtmEventName: 'NavigateToBlockAction',
-                      blockId: nextStepBlock.id
-                    }
-                  }
-                }
-              })
-            }
-          })
+          currentStepBlockActions.map(
+            async (block) => await updateBlockAction(block.id, nextStepBlock.id)
+          )
         )
       }
     })
@@ -89,7 +110,7 @@ export async function processNextBlockId(): Promise<void> {
 
     if (journeys.length === 0) break
 
-    await Promise.all(journeys.map(updateStepBlocksAndActions))
+    await Promise.all(journeys.map(processStepBlockAndActions))
 
     offset += 100
   }
