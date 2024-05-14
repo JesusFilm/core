@@ -216,12 +216,7 @@ export async function nua9(): Promise<void> {
       autoplay: true,
       title: "What' Jesus Got to Do With Me?",
       parentOrder: 0,
-      fullsize: true,
-      action: {
-        create: {
-          gtmEventName: 'NavigateAction'
-        }
-      }
+      fullsize: true
     }
   })
 

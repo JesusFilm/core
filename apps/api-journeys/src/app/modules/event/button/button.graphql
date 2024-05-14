@@ -1,5 +1,4 @@
 enum ButtonAction {
-  NavigateAction
   NavigateToBlockAction
   NavigateToJourneyAction
   LinkAction

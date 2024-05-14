@@ -205,12 +205,7 @@ export async function nua2(): Promise<void> {
       autoplay: true,
       title: 'What About The Ressurection?',
       fullsize: true,
-      parentOrder: 0,
-      action: {
-        create: {
-          gtmEventName: 'NavigateAction'
-        }
-      }
+      parentOrder: 0
     }
   })
 
@@ -383,12 +378,7 @@ export async function nua2(): Promise<void> {
       title: 'What About The Ressurection?',
       startAt: 109,
       fullsize: true,
-      parentOrder: 0,
-      action: {
-        create: {
-          gtmEventName: 'NavigateAction'
-        }
-      }
+      parentOrder: 0
     }
   })
 
@@ -558,12 +548,7 @@ export async function nua2(): Promise<void> {
       title: 'What About The Ressurection?',
       startAt: 272,
       fullsize: true,
-      parentOrder: 0,
-      action: {
-        create: {
-          gtmEventName: 'NavigateAction'
-        }
-      }
+      parentOrder: 0
     }
   })
 

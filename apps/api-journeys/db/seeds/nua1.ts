@@ -213,12 +213,7 @@ export async function nua1(): Promise<void> {
       description:
         'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
       fullsize: true,
-      parentOrder: 0,
-      action: {
-        create: {
-          gtmEventName: 'NavigateAction'
-        }
-      }
+      parentOrder: 0
     }
   })
 
@@ -387,12 +382,7 @@ export async function nua1(): Promise<void> {
       title: 'Fact or fiction',
       startAt: 134,
       fullsize: true,
-      parentOrder: 0,
-      action: {
-        create: {
-          gtmEventName: 'NavigateAction'
-        }
-      }
+      parentOrder: 0
     }
   })
 

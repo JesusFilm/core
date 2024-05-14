@@ -205,12 +205,7 @@ export async function nua8(): Promise<void> {
       autoplay: true,
       title: "What' Jesus Got to Do With Me?",
       parentOrder: 0,
-      fullsize: true,
-      action: {
-        create: {
-          gtmEventName: 'NavigateAction'
-        }
-      }
+      fullsize: true
     }
   })
 
@@ -368,12 +363,7 @@ export async function nua8(): Promise<void> {
       title: "What' Jesus Got to Do With Me?",
       startAt: 158,
       fullsize: true,
-      parentOrder: 0,
-      action: {
-        create: {
-          gtmEventName: 'NavigateAction'
-        }
-      }
+      parentOrder: 0
     }
   })
 
@@ -543,12 +533,7 @@ export async function nua8(): Promise<void> {
       title: "What' Jesus Got to Do With Me?",
       startAt: 221,
       fullsize: true,
-      parentOrder: 0,
-      action: {
-        create: {
-          gtmEventName: 'NavigateAction'
-        }
-      }
+      parentOrder: 0
     }
   })
 

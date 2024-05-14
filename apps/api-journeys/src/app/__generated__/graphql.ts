@@ -132,7 +132,6 @@ export enum VideoBlockObjectFit {
 }
 
 export enum ButtonAction {
-    NavigateAction = "NavigateAction",
     NavigateToBlockAction = "NavigateToBlockAction",
     NavigateToJourneyAction = "NavigateToJourneyAction",
     LinkAction = "LinkAction",
@@ -214,10 +213,6 @@ export enum VisitorStatus {
     robotFace = "robotFace",
     redExclamationMark = "redExclamationMark",
     redQuestionMark = "redQuestionMark"
-}
-
-export class NavigateActionInput {
-    gtmEventName?: Nullable<string>;
 }
 
 export class NavigateToBlockActionInput {
@@ -753,12 +748,6 @@ export interface Event {
     createdAt: DateTime;
     label?: Nullable<string>;
     value?: Nullable<string>;
-}
-
-export class NavigateAction implements Action {
-    __typename?: 'NavigateAction';
-    parentBlockId: string;
-    gtmEventName?: Nullable<string>;
 }
 
 export class NavigateToBlockAction implements Action {
@@ -1492,8 +1481,6 @@ export class Translation {
 
 export abstract class IMutation {
     abstract blockDeleteAction(id: string, journeyId: string): Block | Promise<Block>;
-
-    abstract blockUpdateNavigateAction(id: string, journeyId: string, input: NavigateActionInput): NavigateAction | Promise<NavigateAction>;
 
     abstract blockUpdateNavigateToBlockAction(id: string, journeyId: string, input: NavigateToBlockActionInput): NavigateToBlockAction | Promise<NavigateToBlockAction>;
 
