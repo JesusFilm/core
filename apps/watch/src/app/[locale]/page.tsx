@@ -6,7 +6,7 @@ import {
   GetHomeVideos_videos as Video
 } from '../../../__generated__/GetHomeVideos'
 import { HomePage } from '../../components/HomePage'
-import { locales } from '../../i18n'
+import { locales } from '../../i18n.settings'
 import { getApolloClient } from '../../libs/apolloClient/apolloClient'
 
 import { GET_HOME_VIDEOS } from './grahql'

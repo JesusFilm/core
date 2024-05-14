@@ -3,7 +3,7 @@ import { unstable_setRequestLocale } from 'next-intl/server'
 import { ReactElement } from 'react'
 
 import { GetVideoContent } from '../../../../../__generated__/GetVideoContent'
-import { locales } from '../../../../i18n'
+import { locales } from '../../../../i18n.settings'
 import { getApolloClient } from '../../../../libs/apolloClient/apolloClient'
 
 import { GET_VIDEO_CONTENT } from './graphql'

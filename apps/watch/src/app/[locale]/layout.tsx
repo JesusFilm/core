@@ -1,6 +1,4 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter'
-import { NextIntlClientProvider, useMessages } from 'next-intl'
-import { unstable_setRequestLocale } from 'next-intl/server'
 import { ReactNode } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -26,8 +24,6 @@ export default function RootLayout({
   children: React.ReactNode
   params: { locale: string }
 }): ReactNode {
-  unstable_setRequestLocale(locale)
-  const messages = useMessages()
   return (
     <html lang={locale}>
       <head>
@@ -96,18 +92,16 @@ export default function RootLayout({
            `}
             </script>
           )}
-        <NextIntlClientProvider messages={messages}>
-          <ApolloWrapper>
-            <AppRouterCacheProvider>
-              <ThemeProvider
-                themeName={ThemeName.website}
-                themeMode={ThemeMode.light}
-              >
-                {children}
-              </ThemeProvider>
-            </AppRouterCacheProvider>
-          </ApolloWrapper>
-        </NextIntlClientProvider>
+        <ApolloWrapper>
+          <AppRouterCacheProvider>
+            <ThemeProvider
+              themeName={ThemeName.website}
+              themeMode={ThemeMode.light}
+            >
+              {children}
+            </ThemeProvider>
+          </AppRouterCacheProvider>
+        </ApolloWrapper>
       </body>
     </html>
   )
