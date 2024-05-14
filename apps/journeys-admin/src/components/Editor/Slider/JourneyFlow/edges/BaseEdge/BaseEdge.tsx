@@ -41,7 +41,6 @@ export function BaseEdge({
     onMouseOver: () => setIsHovering(true),
     onMouseLeave: () => setIsHovering(false)
   }
-  // dummy comment
 
   return (
     <>
