@@ -8,7 +8,7 @@ import { ChangeEvent, ReactElement } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { ChatPlatform } from '../../../../../../../../../../__generated__/globalTypes'
+import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonCreate } from '../../../../../../../../../../__generated__/JourneyChatButtonCreate'
 import { JourneyChatButtonRemove } from '../../../../../../../../../../__generated__/JourneyChatButtonRemove'
 
@@ -39,7 +39,7 @@ interface SummaryProps {
   disableSelection: boolean
   journeyId?: string
   currentLink: string
-  currentPlatform: ChatPlatform
+  currentPlatform: MessagePlatform
   chatButtonId?: string
   openAccordion: () => void
 }
