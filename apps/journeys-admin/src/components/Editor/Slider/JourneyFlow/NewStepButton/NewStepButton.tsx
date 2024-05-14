@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { MouseEvent, ReactElement } from 'react'
 import { useReactFlow } from 'reactflow'
 
 import {
@@ -24,7 +24,7 @@ export function NewStepButton(): ReactElement {
   const createStep = useCreateStep()
   const reactFlowInstance = useReactFlow()
 
-  async function handleAddStepAndCardBlock(event): Promise<void> {
+  async function handleClick(event: MouseEvent): Promise<void> {
     if (reactFlowInstance == null || journey == null) return
     const { x, y } = reactFlowInstance.screenToFlowPosition({
       x: (event as unknown as MouseEvent).clientX,
@@ -50,7 +50,7 @@ export function NewStepButton(): ReactElement {
       variant="button"
       label={t('Add Step')}
       icon={<Plus3Icon />}
-      onClick={handleAddStepAndCardBlock}
+      onClick={handleClick}
       ButtonProps={{
         sx: {
           backgroundColor: 'background.paper',
