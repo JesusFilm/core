@@ -43,25 +43,23 @@ export function BaseEdge({
   }
 
   return (
-    <>
-      <g {...props}>
-        <DefaultBaseEdge
-          path={edgePath}
-          markerEnd={`url(#1__color=${
-            edgeSelected ? MARKER_END_SELECTED_COLOR : MARKER_END_DEFAULT_COLOR
-          }&height=10&type=arrowclosed&width=10)`}
-          style={{
-            strokeWidth: 2,
-            stroke:
-              edgeSelected || isHovering
-                ? theme.palette.primary.main
-                : `${theme.palette.secondary.dark}1A`,
-            opacity: isHovering ? 0.5 : 1,
-            ...style
-          }}
-        />
-        {children}
-      </g>
-    </>
+    <g {...props}>
+      <DefaultBaseEdge
+        path={edgePath}
+        markerEnd={`url(#1__color=${
+          edgeSelected ? MARKER_END_SELECTED_COLOR : MARKER_END_DEFAULT_COLOR
+        }&height=10&type=arrowclosed&width=10)`}
+        style={{
+          strokeWidth: 2,
+          stroke:
+            edgeSelected || isHovering
+              ? theme.palette.primary.main
+              : `${theme.palette.secondary.dark}1A`,
+          opacity: isHovering ? 0.5 : 1,
+          ...style
+        }}
+      />
+      {children}
+    </g>
   )
 }
