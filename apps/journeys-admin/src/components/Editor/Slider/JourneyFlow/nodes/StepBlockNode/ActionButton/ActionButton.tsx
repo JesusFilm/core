@@ -69,20 +69,11 @@ export function ActionButton({
       break
   }
 
-  async function handleSourceConnect(params: {
-    source: string
-    sourceHandle: string
-    target: string
-  }): Promise<void> {
-    const { source, sourceHandle, target } = params
-    void updateEdge(source, sourceHandle, target)
-  }
-
   return (
     <BaseNode
       id={block.id}
       isSourceConnectable
-      onSourceConnect={handleSourceConnect}
+      onSourceConnect={updateEdge}
       selected={selected}
       isSourceConnected={isSourceConnected}
     >

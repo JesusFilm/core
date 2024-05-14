@@ -49,7 +49,10 @@ export function CustomEdge({
   })
 
   const onEdgeClick = (): void => {
-    void deleteEdge(selectedEdge?.source, selectedEdge?.sourceHandle)
+    void deleteEdge({
+      source: selectedEdge?.source,
+      sourceHandle: selectedEdge?.sourceHandle
+    })
   }
 
   return (

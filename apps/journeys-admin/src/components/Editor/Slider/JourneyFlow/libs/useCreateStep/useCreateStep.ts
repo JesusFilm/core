@@ -14,12 +14,15 @@ import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrde
 import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
+import { RawEdgeSource, convertToEdgeSource } from '../convertToEdgeSource'
 
-export function useCreateNodeAndEdge(): (
-  x: number,
-  y: number,
-  nodeId?: string,
-  handleId?: string
+type RawEdgeSourceAndCoordinates = RawEdgeSource & {
+  x: number
+  y: number
+}
+
+export function useCreateStep(): (
+  rawEdgeSource: RawEdgeSourceAndCoordinates
 ) => Promise<StepAndCardBlockCreate | null | undefined> {
   const { journey } = useJourney()
   const {
@@ -50,13 +53,13 @@ export function useCreateNodeAndEdge(): (
   const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
 
-  async function createNodeAndEdge(
-    x: number,
-    y: number,
-    sourceStepId?: string,
-    sourceBlockId?: string,
-    sourceSocialPreview?: boolean
-  ): Promise<StepAndCardBlockCreate | null | undefined> {
+  return async function createStep({
+    x,
+    y,
+    ...rawEdgeSource
+  }: RawEdgeSourceAndCoordinates): Promise<
+    StepAndCardBlockCreate | null | undefined
+  > {
     if (journey == null) return
     const newStepId = uuidv4()
     const newCardId = uuidv4()
@@ -80,6 +83,7 @@ export function useCreateNodeAndEdge(): (
     })
 
     if (data == null) return
+
     dispatch({
       type: 'SetSelectedStepAction',
       selectedStep: {
@@ -88,56 +92,56 @@ export function useCreateNodeAndEdge(): (
       }
     })
 
-    const step =
-      sourceStepId == null || sourceStepId === 'SocialPreview'
-        ? undefined
-        : steps?.find((step) => step.id === sourceStepId)
-    const block =
-      step == null || sourceBlockId == null
-        ? undefined
-        : searchBlocks([step], sourceBlockId)
-    const connectFromSocialNode = sourceStepId === 'SocialPreview'
-    const connectFromStepNode = step != null && step.id === block?.id
-    const connectFromActionNode = block != null
-    if (connectFromSocialNode) {
-      await blockOrderUpdate({
-        variables: {
-          id: newStepId,
-          journeyId: journey.id,
-          parentOrder: 0
-        },
-        optimisticResponse: {
-          blockOrderUpdate: [
-            {
-              id: newStepId,
-              __typename: 'StepBlock',
-              parentOrder: 0
+    const edgeSource = convertToEdgeSource(rawEdgeSource)
+
+    switch (edgeSource.sourceType) {
+      case 'socialPreview':
+        await blockOrderUpdate({
+          variables: {
+            id: newStepId,
+            journeyId: journey.id,
+            parentOrder: 0
+          },
+          optimisticResponse: {
+            blockOrderUpdate: [
+              {
+                id: newStepId,
+                __typename: 'StepBlock',
+                parentOrder: 0
+              }
+            ]
+          }
+        })
+        break
+      case 'step':
+        await stepBlockNextBlockUpdate({
+          variables: {
+            id: edgeSource.stepId,
+            journeyId: journey.id,
+            input: {
+              nextBlockId: newStepId
             }
-          ]
-        }
-      })
-    } else if (connectFromStepNode) {
-      await stepBlockNextBlockUpdate({
-        variables: {
-          id: step.id,
-          journeyId: journey.id,
-          input: {
-            nextBlockId: newStepId
+          },
+          optimisticResponse: {
+            stepBlockUpdate: {
+              id: edgeSource.stepId,
+              __typename: 'StepBlock',
+              nextBlockId: newStepId
+            }
           }
-        },
-        optimisticResponse: {
-          stepBlockUpdate: {
-            id: step.id,
-            __typename: 'StepBlock',
-            nextBlockId: newStepId
-          }
-        }
-      })
-    } else if (connectFromActionNode) {
-      await navigateToBlockActionUpdate(block, newStepId)
+        })
+        break
+      case 'action': {
+        const step = steps?.find((step) => step.id === edgeSource.stepId)
+        const block = searchBlocks(
+          step != null ? [step] : [],
+          edgeSource.blockId
+        )
+        if (block != null) await navigateToBlockActionUpdate(block, newStepId)
+        break
+      }
     }
 
     return data
   }
-  return createNodeAndEdge
 }

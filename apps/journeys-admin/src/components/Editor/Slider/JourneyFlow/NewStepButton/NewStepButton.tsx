@@ -11,7 +11,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Plus3Icon from '@core/shared/ui/icons/Plus3'
 
 import { Item } from '../../../Toolbar/Items/Item'
-import { useCreateNodeAndEdge } from '../libs/useCreateNodeAndEdge'
+import { useCreateStep } from '../libs/useCreateStep'
 import {
   STEP_NODE_CARD_HEIGHT,
   STEP_NODE_CARD_WIDTH
@@ -21,7 +21,7 @@ export function NewStepButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { dispatch } = useEditor()
-  const createNodeAndEdge = useCreateNodeAndEdge()
+  const createStep = useCreateStep()
   const reactFlowInstance = useReactFlow()
 
   async function handleAddStepAndCardBlock(event): Promise<void> {
@@ -31,9 +31,10 @@ export function NewStepButton(): ReactElement {
       y: (event as unknown as MouseEvent).clientY
     })
 
-    const xCoordinate = parseInt(x.toString()) - STEP_NODE_CARD_WIDTH
-    const yCoordinate = parseInt(y.toString()) + STEP_NODE_CARD_HEIGHT / 2
-    const data = await createNodeAndEdge(xCoordinate, yCoordinate)
+    const xCoordinate = parseInt(x.toString() as string) - STEP_NODE_CARD_WIDTH
+    const yCoordinate =
+      parseInt(y.toString() as string) + STEP_NODE_CARD_HEIGHT / 2
+    const data = await createStep({ x: xCoordinate, y: yCoordinate })
 
     if (data != null) {
       dispatch({
