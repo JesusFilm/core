@@ -23,7 +23,7 @@ export const GET_HOME_VIDEOS = gql`
 
 function VideosPage({ videos }: VideosPageProps): ReactElement {
   return (
-    // TO DO: add edmonds page wrapper and side nav bar
+    // TO DO: add edmonds page wrapper and side nav bar. make into paginated table?
     <Stack sx={{ p: 20 }}>
       <VideoGrid videos={videos} />
     </Stack>
