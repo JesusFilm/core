@@ -128,6 +128,7 @@ async function digestMediaLanguageMetadata(
       primary: false
     }
   })
+}
 
 export function getIteration(slug: string, collection: string[]): string {
   const exists = collection.find((t) => t === slug)
