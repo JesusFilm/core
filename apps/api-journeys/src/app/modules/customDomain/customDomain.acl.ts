@@ -16,4 +16,16 @@ export const customDomainAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
       }
     }
   })
+  can(Action.Read, 'CustomDomain', {
+    team: {
+      is: {
+        userTeams: {
+          some: {
+            userId: user.id,
+            role: { in: [UserTeamRole.manager, UserTeamRole.member] }
+          }
+        }
+      }
+    }
+  })
 }

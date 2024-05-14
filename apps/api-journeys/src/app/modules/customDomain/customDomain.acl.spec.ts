@@ -143,4 +143,56 @@ describe('customDomainAcl', () => {
       ).toBe(false)
     })
   })
+
+  describe('Read', () => {
+    it('should allow when user is team manager', () => {
+      expect(
+        ability.can(
+          Action.Read,
+          subject('CustomDomain', {
+            ...customDomain,
+            team: {
+              userTeams: [
+                {
+                  userId: 'userId',
+                  role: UserTeamRole.manager
+                }
+              ]
+            }
+          })
+        )
+      ).toBe(true)
+    })
+
+    it('should allow when user is team member', () => {
+      expect(
+        ability.can(
+          Action.Read,
+          subject('CustomDomain', {
+            ...customDomain,
+            team: {
+              userTeams: [
+                {
+                  userId: 'userId',
+                  role: UserTeamRole.member
+                }
+              ]
+            }
+          })
+        )
+      ).toBe(true)
+    })
+
+    it('should not allow when user is not team member', () => {
+      expect(
+        ability.can(
+          Action.Read,
+          subject('CustomDomain', {
+            ...customDomain,
+            team: {}
+          })
+        )
+      ).toBe(false)
+    })
+  })
 })
