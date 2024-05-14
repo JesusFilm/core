@@ -24,19 +24,19 @@ import { GET_GOOGLE_ACCESS_TOKEN } from '../../../pages/resources/import-youtube
 import { getOrigin } from '../../../utils/getOrigin'
 import { Modal } from '../Modal'
 
-const GET_GOOGLE_SHEET_DATA = gql`
-  mutation getSheetData(
-    $nexusId: String!
-    $tokenId: String!
-    $spreadsheetId: String!
-  ) {
-    getSheetData(
-      nexusId: $nexusId
-      tokenId: $tokenId
-      spreadsheetId: $spreadsheetId
-    )
-  }
-`
+// const GET_GOOGLE_SHEET_DATA = gql`
+//   mutation getSheetData(
+//     $nexusId: String!
+//     $tokenId: String!
+//     $spreadsheetId: String!
+//   ) {
+//     getSheetData(
+//       nexusId: $nexusId
+//       tokenId: $tokenId
+//       spreadsheetId: $spreadsheetId
+//     )
+//   }
+// `
 
 interface CreateShortLinkModalProps {
   open: boolean

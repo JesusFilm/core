@@ -3,7 +3,8 @@ import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 
-import { VIDEO_CHILD_FIELDS } from '../../../libs/watch/ui/src/libs/videoChildFields'
+import { VIDEO_CHILD_FIELDS } from '@core/watch/ui/videoChildFields'
+
 import {
   GetHomeVideos,
   GetHomeVideos_videos as Video

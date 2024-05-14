@@ -45,6 +45,15 @@ export enum TaskStatus {
   processing = "processing",
 }
 
+export enum VideoLabel {
+  collection = "collection",
+  episode = "episode",
+  featureFilm = "featureFilm",
+  segment = "segment",
+  series = "series",
+  shortFilm = "shortFilm",
+}
+
 export interface BatchFilter {
   ids?: string[] | null;
   name?: string | null;
@@ -70,7 +79,6 @@ export interface ChannelFilter {
 
 export interface ChannelUpdateInput {
   name?: string | null;
-  nexusId?: string | null;
   platform?: string | null;
 }
 

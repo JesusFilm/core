@@ -36,6 +36,14 @@ const nextConfig = {
       ]
     },
     fallbackNodePolyfills: false
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'd1wl257kev7hsz.cloudfront.net'
+      }
+    ]
   }
 }
 const plugins = [withNx]

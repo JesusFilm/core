@@ -11,8 +11,10 @@ import { useMemo } from 'react'
 
 import { cache } from './cache'
 
+let apolloClient: ApolloClient<NormalizedCacheObject>
+
 export function createApolloClient(
-  token: string
+  token?: string
 ): ApolloClient<NormalizedCacheObject> {
   const isSsrMode = typeof window === 'undefined'
 
@@ -54,6 +56,40 @@ export function createApolloClient(
   })
 }
 
-export function useApollo(token: string): ApolloClient<NormalizedCacheObject> {
-  return useMemo(() => createApolloClient(token), [token])
+interface InitializeApolloOptions {
+  token?: string
+  initialState?: NormalizedCacheObject
+}
+
+export function initializeApollo({
+  token,
+  initialState
+}: InitializeApolloOptions): ApolloClient<NormalizedCacheObject> {
+  const _apolloClient = apolloClient ?? createApolloClient(token)
+
+  // If your page has Next.js data fetching methods that use Apollo Client, the initial state
+  // gets hydrated here
+  if (initialState != null) {
+    // Get existing cache, loaded during client side data fetching
+    const existingCache = _apolloClient.extract()
+    // Restore the cache using the data passed from getStaticProps/getServerSideProps
+    // combined with the existing cached data
+    _apolloClient.cache.restore({ ...existingCache, ...initialState })
+  }
+  // For SSG and SSR always create a new Apollo Client
+  if (typeof window === 'undefined') return _apolloClient
+  // Create the Apollo Client once in the client
+  if (apolloClient == null) apolloClient = _apolloClient
+  return _apolloClient
+}
+
+export function useApollo({
+  token,
+  initialState
+}: InitializeApolloOptions): ApolloClient<NormalizedCacheObject> {
+  const store = useMemo(
+    () => initializeApollo({ token, initialState }),
+    [token, initialState]
+  )
+  return store
 }

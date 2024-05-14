@@ -1,4 +1,4 @@
-import { ApolloProvider } from '@apollo/client'
+import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { GoogleOAuthProvider } from '@react-oauth/google'
@@ -20,6 +20,7 @@ const clientSideEmotionCache = createEmotionCache({})
 
 type NexusAdminAppProps = NextJsAppProps<{
   userSerialized?: string
+  initialApolloState?: NormalizedCacheObject
 }> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
@@ -35,9 +36,10 @@ function NexusAdminApp({
       ? JSON.parse(pageProps.userSerialized)
       : null
 
-  const token = user?._token ?? ''
-
-  const apolloClient = useApollo(token)
+  const apolloClient = useApollo({
+    token: user?._token,
+    initialState: pageProps.initialApolloState
+  })
 
   return (
     <CacheProvider value={emotionCache}>

@@ -10,24 +10,24 @@ import { DeleteModal } from '../../src/components/DeleteModal'
 import { MainLayout } from '../../src/components/MainLayout'
 import { ShortLinksTable } from '../../src/components/ShortLinksTable'
 
-export const GET_LINKS = gql`
-  query getLinksWithFilters(
-    $limit: Int
-    $offset: Int
-    $orderBy: [links_order_by!]
-    $where: links_bool_exp!
-  ) {
-    links(limit: $limit, offset: $offset, where: $where) {
-      id
-      createdDate
-      title
-      description
-      extraOptionsGeolocations
-      url
-      domain
-    }
-  }
-`
+// export const GET_LINKS = gql`
+//   query getLinksWithFilters(
+//     $limit: Int
+//     $offset: Int
+//     $orderBy: [links_order_by!]
+//     $where: links_bool_exp!
+//   ) {
+//     links(limit: $limit, offset: $offset, where: $where) {
+//       id
+//       createdDate
+//       title
+//       description
+//       extraOptionsGeolocations
+//       url
+//       domain
+//     }
+//   }
+// `
 
 const ShortLinksPage: FC = () => {
   const [openCreateLinkModal, setOpenCreateLinkModal] = useState<boolean>(false)
