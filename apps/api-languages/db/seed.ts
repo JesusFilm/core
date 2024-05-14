@@ -129,26 +129,6 @@ async function digestMediaLanguageMetadata(
     }
   })
 
-  await prismaService.languageName.upsert({
-    where: {
-      parentLanguageId_languageId: {
-        parentLanguageId: languageId.toString(),
-        languageId: metadataLanguage.id
-      }
-    },
-    update: {
-      value: name,
-      primary: false
-    },
-    create: {
-      parentLanguageId: languageId.toString(),
-      value: name,
-      languageId: metadataLanguage.id,
-      primary: false
-    }
-  })
-}
-
 export function getIteration(slug: string, collection: string[]): string {
   const exists = collection.find((t) => t === slug)
   if (exists != null && slug !== '') {
