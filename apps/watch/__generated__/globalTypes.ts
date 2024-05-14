@@ -33,20 +33,6 @@ export enum ButtonVariant {
   text = "text",
 }
 
-export enum ChatPlatform {
-  custom = "custom",
-  facebook = "facebook",
-  instagram = "instagram",
-  line = "line",
-  skype = "skype",
-  snapchat = "snapchat",
-  telegram = "telegram",
-  tikTok = "tikTok",
-  viber = "viber",
-  vk = "vk",
-  whatsApp = "whatsApp",
-}
-
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -164,12 +150,14 @@ export enum VideoBlockSource {
 }
 
 export enum VideoLabel {
+  behindTheScenes = "behindTheScenes",
   collection = "collection",
   episode = "episode",
   featureFilm = "featureFilm",
   segment = "segment",
   series = "series",
   shortFilm = "shortFilm",
+  trailer = "trailer",
 }
 
 export enum VideoVariantDownloadQuality {

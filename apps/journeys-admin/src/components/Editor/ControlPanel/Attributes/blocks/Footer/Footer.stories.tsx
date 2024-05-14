@@ -7,7 +7,7 @@ import { JourneyFields_chatButtons as ChatButton } from '@core/journeys/ui/Journ
 
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import {
-  ChatPlatform,
+  MessagePlatform,
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
@@ -75,7 +75,7 @@ export const Filled = {
       {
         id: '1',
         link: 'https://m.me/user',
-        platform: ChatPlatform.facebook
+        platform: MessagePlatform.facebook
       }
     ]
   }

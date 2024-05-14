@@ -75,7 +75,7 @@ export async function fetchPlus(
     if (error.name === 'FetchError' && retries > 0) {
       return await fetchPlus(url, init, retries - 1)
     }
-    throw new Error(error)
+    throw error
   }
 }
 
@@ -266,13 +266,6 @@ export function transformArclightMediaComponentToVideo(
     ],
     snippet: [
       {
-        value: mediaComponent.shortDescription,
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    newSnippet: [
-      {
         videoId: mediaComponent.mediaComponentId,
         value: mediaComponent.shortDescription,
         languageId: metadataLanguageId,
@@ -281,25 +274,13 @@ export function transformArclightMediaComponentToVideo(
     ],
     description: [
       {
-        value: mediaComponent.longDescription,
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    newDescription: [
-      {
         videoId: mediaComponent.mediaComponentId,
         value: mediaComponent.longDescription,
         languageId: metadataLanguageId,
         primary: true
       }
     ],
-    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => ({
-      languageId: metadataLanguageId,
-      value: studyQuestion,
-      primary: true
-    })),
-    newStudyQuestions: mediaComponent.studyQuestions.map(
+    studyQuestions: mediaComponent.studyQuestions.map(
       (studyQuestion, index) => ({
         videoId: mediaComponent.mediaComponentId,
         languageId: metadataLanguageId,
@@ -310,16 +291,6 @@ export function transformArclightMediaComponentToVideo(
     ),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     imageAlt: [
-      {
-        value:
-          mediaComponent.title.length <= 100
-            ? mediaComponent.title
-            : mediaComponent.title.substring(0, 99),
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    newImageAlt: [
       {
         videoId: mediaComponent.mediaComponentId,
         value:

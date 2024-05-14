@@ -54,7 +54,7 @@ export function VisitorDetails({ id }: VisitorDetailsProps): ReactElement {
         >
           <MessageText1Icon />
           <Typography>
-            {intlFormat(parseISO(data?.visitor.lastChatStartedAt), {
+            {intlFormat(parseISO(String(data?.visitor.lastChatStartedAt)), {
               hour: 'numeric',
               minute: 'numeric',
               month: 'short',

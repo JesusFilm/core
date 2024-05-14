@@ -17,7 +17,7 @@ export function NextCard(): ReactElement {
   const theme = useTheme()
   const [tabValue, setTabValue] = useState(0)
 
-  const handleTabChange = (event, newValue): void => {
+  const handleTabChange = (event, newValue: number): void => {
     setTabValue(newValue)
   }
 

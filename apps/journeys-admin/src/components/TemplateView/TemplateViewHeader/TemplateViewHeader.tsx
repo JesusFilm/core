@@ -43,7 +43,7 @@ export function TemplateViewHeader({
         noWrap
       >
         {journey?.createdAt != null ? (
-          intlFormat(parseISO(journey?.createdAt), {
+          intlFormat(parseISO(String(journey?.createdAt)), {
             month: 'long',
             year: 'numeric'
           })
@@ -84,7 +84,7 @@ export function TemplateViewHeader({
               noWrap
             >
               {journey?.createdAt != null ? (
-                intlFormat(parseISO(journey?.createdAt), {
+                intlFormat(parseISO(String(journey?.createdAt)), {
                   month: 'long',
                   year: 'numeric'
                 })

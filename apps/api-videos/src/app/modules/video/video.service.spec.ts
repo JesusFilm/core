@@ -14,11 +14,7 @@ const video: Video = {
   slug: 'video-slug',
   label: 'featureFilm',
   primaryLanguageId: '529',
-  snippet: [],
-  description: [],
-  studyQuestions: [],
   image: '',
-  imageAlt: [],
   noIndex: false,
   childIds: []
 }

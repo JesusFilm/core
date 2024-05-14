@@ -32,7 +32,7 @@ export function ToPostgresql() {
           ? toPostgresql(obj)
           : obj
       )
-      const result = await childFunction.apply(this, newArgs)
+      const result: TransformObject = await childFunction.apply(this, newArgs)
       return Array.isArray(result)
         ? result.map(fromPostgresql)
         : fromPostgresql(result)
