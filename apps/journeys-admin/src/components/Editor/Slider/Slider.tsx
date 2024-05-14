@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { styled, useTheme } from '@mui/material/styles'
@@ -66,6 +67,7 @@ export function Slider(): ReactElement {
   }
 
   function handlePrev(): void {
+    console.log('Back button clicked')
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: activeSlide - 1
@@ -155,6 +157,7 @@ export function Slider(): ReactElement {
           }}
         >
           <ChevronLeftIcon />
+          <Typography>Back to Map</Typography>
         </IconButton>
       </Box>
       <StyledSwiperSlide
