@@ -2,11 +2,6 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { useReactFlow } from 'reactflow'
 
-import {
-  ActiveFab,
-  ActiveSlide,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Plus3Icon from '@core/shared/ui/icons/Plus3'
 
@@ -20,7 +15,6 @@ import {
 export function NewStepButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { dispatch } = useEditor()
   const createNodeAndEdge = useCreateNodeAndEdge()
   const reactFlowInstance = useReactFlow()
 
@@ -33,15 +27,7 @@ export function NewStepButton(): ReactElement {
 
     const xCoordinate = parseInt(x.toString()) - STEP_NODE_CARD_WIDTH
     const yCoordinate = parseInt(y.toString()) + STEP_NODE_CARD_HEIGHT / 2
-    const data = await createNodeAndEdge(xCoordinate, yCoordinate)
-
-    if (data != null) {
-      dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.Content
-      })
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-    }
+    await createNodeAndEdge(xCoordinate, yCoordinate)
   }
 
   return (
