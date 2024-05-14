@@ -1,10 +1,12 @@
 import findIndex from 'lodash/findIndex'
+import reduce from 'lodash/reduce'
 import { XYPosition } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
+  ACTION_BUTTON_HEIGHT,
   STEP_NODE_CARD_HEIGHT,
   STEP_NODE_CARD_WIDTH,
   STEP_NODE_HEIGHT_GAP,
@@ -71,15 +73,25 @@ export function arrangeSteps(steps: TreeStepBlock[]): PositionMap {
 
   blocks.forEach((column, index) => {
     const stepX = index * (STEP_NODE_CARD_WIDTH + STEP_NODE_WIDTH_GAP)
-    column.forEach((step, index) => {
-      const stepY =
-        index * (STEP_NODE_CARD_HEIGHT + STEP_NODE_HEIGHT_GAP) -
-        (column.length / 2) * (STEP_NODE_CARD_HEIGHT + STEP_NODE_HEIGHT_GAP)
-      positions[step.id] = {
-        x: stepX,
-        y: stepY
-      }
-    })
+    reduce<TreeStepBlock, TreeStepBlock | null>(
+      column,
+      (result, step) => {
+        let stepY = -8 // 8 is the offset required to make the start edge flat
+        if (result != null) {
+          stepY =
+            positions[result.id].y +
+            (filterActionBlocks(result).length + 1) * ACTION_BUTTON_HEIGHT +
+            STEP_NODE_CARD_HEIGHT +
+            STEP_NODE_HEIGHT_GAP
+        }
+        positions[step.id] = {
+          x: stepX,
+          y: stepY
+        }
+        return step
+      },
+      null
+    )
   })
 
   return positions
