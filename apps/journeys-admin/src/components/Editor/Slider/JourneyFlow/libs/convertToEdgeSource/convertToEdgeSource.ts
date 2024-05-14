@@ -40,7 +40,7 @@ export function convertToEdgeSource({
     return { sourceType: 'socialPreview' }
   }
 
-  if (sourceHandle == null) {
+  if (source === sourceHandle || sourceHandle == null) {
     return { sourceType: 'step', stepId: source }
   }
 
