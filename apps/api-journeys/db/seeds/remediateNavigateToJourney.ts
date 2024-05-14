@@ -2,21 +2,25 @@
  * NavigateToJourneyAction is being removed. This script is to convert all
  * usages of the property to the LinkAction instead.
  */
+import get from 'lodash/get'
 import sortBy from 'lodash/sortBy'
 
 import {
-  PrismaClient,
-  Block,
   Action,
-  Journey
+  Block,
+  Journey,
+  PrismaClient
 } from '.prisma/api-journeys-client'
-
-import { get } from 'lodash'
 
 const prisma = new PrismaClient()
 
 type BlockWithAction = Array<Block & { action: Action }>
 type JourneyWithBlocks = Journey & { blocks: BlockWithAction }
+interface LinkActionUpdate {
+  target: null
+  gtmEventName: string
+  url: string
+}
 
 function findParentStepBlock(blocks, parentBlockId): string {
   const block = blocks.find((block) => block.id === parentBlockId)
@@ -24,8 +28,8 @@ function findParentStepBlock(blocks, parentBlockId): string {
   return findParentStepBlock(blocks, block.parentBlockId)
 }
 
-function urlFromJourneySlug(journey: Journey) {
-  if (!journey.slug) {
+function urlFromJourneySlug(journey: Journey): string {
+  if (journey.slug == null) {
     console.error('Journey slug is missing!')
     return ``
   } else {
@@ -33,7 +37,7 @@ function urlFromJourneySlug(journey: Journey) {
   }
 }
 
-function createLinkActionForJourney(journey: Journey) {
+function createLinkActionForJourney(journey: Journey): LinkActionUpdate {
   return {
     gtmEventName: 'LinkAction',
     url: urlFromJourneySlug(journey),
@@ -45,6 +49,7 @@ async function updateNextStepId(
   stepBlockId: string,
   nextStepBlockId: string
 ): Promise<void> {
+  // many nextBlockIds are null - therefore update them
   await prisma.block.update({
     where: { id: stepBlockId },
     data: { nextBlockId: nextStepBlockId }
