@@ -31,7 +31,7 @@ export function getVisitorRows(visitors: Visitor[]): GridRowDef[] {
             ? new Intl.DateTimeFormat([], {
                 dateStyle: 'medium',
                 timeStyle: 'short'
-              }).format(new Date(lastStepViewedAt))
+              }).format(new Date(String(lastStepViewedAt)))
             : null,
         lastChatPlatform,
         lastLinkAction,

@@ -1,6 +1,6 @@
 import { ExecutionContext } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
-import { cert, initializeApp } from 'firebase-admin/app'
+import { ServiceAccount, cert, initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
 import get from 'lodash/get'
 
@@ -17,7 +17,9 @@ export const firebaseClient = initializeApp(
   process.env.GOOGLE_APPLICATION_JSON != null &&
     process.env.GOOGLE_APPLICATION_JSON !== ''
     ? {
-        credential: cert(JSON.parse(process.env.GOOGLE_APPLICATION_JSON))
+        credential: cert(
+          JSON.parse(process.env.GOOGLE_APPLICATION_JSON) as ServiceAccount
+        )
       }
     : undefined
 )
@@ -28,10 +30,21 @@ export async function contextToUserId(
   context: ExecutionContext
 ): Promise<string | null> {
   const ctx = GqlExecutionContext.create(context).getContext()
-  const token = get(ctx.headers, 'authorization')
+  const token: string = get(ctx.headers, 'authorization')
   if (token == null || token === '') return null
-  const { uid } = await auth.verifyIdToken(token)
-  return uid
+  try {
+    const { uid } = await auth.verifyIdToken(token)
+    return uid
+  } catch (err) {
+    if (
+      err instanceof Error &&
+      'message' in err &&
+      typeof err.message === 'string' &&
+      err.message.includes('Decoding Firebase ID token failed.')
+    )
+      return null
+    throw err
+  }
 }
 
 export async function contextToUser(

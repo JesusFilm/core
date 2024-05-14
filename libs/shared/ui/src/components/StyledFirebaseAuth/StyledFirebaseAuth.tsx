@@ -33,7 +33,7 @@ export const StyledFirebaseAuth = ({
     // Firebase UI only works on the Client. So we're loading the package only after
     // the component has mounted, so that this works when doing server-side rendering.
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    setFirebaseui(require('firebaseui'))
+    setFirebaseui(require('firebaseui') as typeof import('firebaseui'))
   }, [])
 
   useEffect(() => {

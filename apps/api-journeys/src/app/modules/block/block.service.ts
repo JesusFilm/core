@@ -104,7 +104,9 @@ export class BlockService {
   @FromPostgresql()
   async duplicateBlock(
     block: BlockWithAction,
-    parentOrder?: number
+    parentOrder?: number,
+    x?: number,
+    y?: number
   ): Promise<BlockWithAction[]> {
     const blockAndChildrenData = await this.getDuplicateBlockAndChildren(
       block.id,
@@ -134,21 +136,33 @@ export class BlockService {
           newBlock.nextBlockId != null ||
           newBlock.action != null
         ) {
-          return await this.prismaService.block.update({
-            where: { id: newBlock.id },
-            include: { action: true },
-            data: {
-              parentBlockId: newBlock.parentBlockId ?? undefined,
-              posterBlockId: newBlock.posterBlockId ?? undefined,
-              coverBlockId: newBlock.coverBlockId ?? undefined,
-              nextBlockId: newBlock.nextBlockId ?? undefined,
-              action:
-                newBlock.action != null
-                  ? { create: newBlock.action }
-                  : undefined
-            }
-          })
+          const updateBlockData = {
+            parentBlockId: newBlock.parentBlockId ?? undefined,
+            posterBlockId: newBlock.posterBlockId ?? undefined,
+            coverBlockId: newBlock.coverBlockId ?? undefined,
+            nextBlockId: newBlock.nextBlockId ?? undefined,
+            action:
+              newBlock.action != null ? { create: newBlock.action } : undefined
+          }
+          if (newBlock.typename === 'StepBlock') {
+            return await this.prismaService.block.update({
+              where: { id: newBlock.id },
+              include: { action: true },
+              data: {
+                ...updateBlockData,
+                x: x ?? newBlock.x,
+                y: y ?? newBlock.y
+              }
+            })
+          } else {
+            return await this.prismaService.block.update({
+              where: { id: newBlock.id },
+              include: { action: true },
+              data: updateBlockData
+            })
+          }
         }
+
         return newBlock
       })
     )
@@ -222,7 +236,7 @@ export class BlockService {
       include: { action: true },
       orderBy: { parentOrder: 'asc' }
     })
-    const childIds = new Map()
+    const childIds = new Map<string, string>()
     children.forEach((block) => {
       childIds.set(block.id, uuidv4())
     })
@@ -236,7 +250,8 @@ export class BlockService {
         // All ids that link to child blocks should include BlockId in the key name.
         // TODO: startIconId and endIconId should be renamed as IconBlockId's
       } else if (key.includes('BlockId') || key.includes('IconId')) {
-        updatedBlockProps[key] = childIds.get(block[key]) ?? null
+        const blockId: string | null | undefined = block[key]
+        updatedBlockProps[key] = blockId != null ? childIds.get(blockId) : null
       }
       if (key === 'action') {
         const action = omit(block.action, 'parentBlockId') as unknown as Action

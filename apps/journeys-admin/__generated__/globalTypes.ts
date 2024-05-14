@@ -33,20 +33,6 @@ export enum ButtonVariant {
   text = "text",
 }
 
-export enum ChatPlatform {
-  custom = "custom",
-  facebook = "facebook",
-  instagram = "instagram",
-  line = "line",
-  skype = "skype",
-  snapchat = "snapchat",
-  telegram = "telegram",
-  tikTok = "tikTok",
-  viber = "viber",
-  vk = "vk",
-  whatsApp = "whatsApp",
-}
-
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -202,12 +188,14 @@ export enum VideoBlockSource {
 }
 
 export enum VideoLabel {
+  behindTheScenes = "behindTheScenes",
   collection = "collection",
   episode = "episode",
   featureFilm = "featureFilm",
   segment = "segment",
   series = "series",
   shortFilm = "shortFilm",
+  trailer = "trailer",
 }
 
 /**
@@ -278,12 +266,12 @@ export interface CardBlockUpdateInput {
 
 export interface ChatButtonCreateInput {
   link?: string | null;
-  platform?: ChatPlatform | null;
+  platform?: MessagePlatform | null;
 }
 
 export interface ChatButtonUpdateInput {
   link?: string | null;
-  platform?: ChatPlatform | null;
+  platform?: MessagePlatform | null;
 }
 
 export interface ChatOpenEventCreateInput {

@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
-import { useFormik } from 'formik'
+import { FormikValues, useFormik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -34,6 +34,14 @@ import {
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 
+interface Values extends FormikValues {
+  autoplay: boolean
+  muted: boolean
+  startAt: string
+  endAt: string
+  objectFit: ObjectFit
+}
+
 interface VideoBlockEditorSettingsProps {
   selectedBlock: TreeBlock<VideoBlock> | null
   posterBlock: ImageBlock | null
@@ -47,23 +55,25 @@ export function VideoBlockEditorSettings({
 }: VideoBlockEditorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { values, errors, handleChange, setFieldValue } = useFormik({
-    initialValues: {
-      autoplay: selectedBlock?.autoplay ?? true,
-      muted: selectedBlock?.muted ?? true,
-      startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
-      endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0),
-      objectFit: selectedBlock?.objectFit ?? ObjectFit.fill
-    },
+  const initialValues: Values = {
+    autoplay: selectedBlock?.autoplay ?? true,
+    muted: selectedBlock?.muted ?? true,
+    startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
+    endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0),
+    objectFit: selectedBlock?.objectFit ?? ObjectFit.fill
+  }
+  const { values, errors, handleChange, setFieldValue } = useFormik<Values>({
+    initialValues,
     enableReinitialize: true,
     validate: async (values) => {
       const convertedStartAt = timeFormatToSeconds(values.startAt)
       const convertedEndAt = timeFormatToSeconds(values.endAt)
       if (convertedStartAt > convertedEndAt - 3) {
-        errors.startAt = t(
+        const message = t(
           'Start time has to be at least 3 seconds less than end time'
         )
-        enqueueSnackbar(errors.startAt, {
+        errors.startAt = message
+        enqueueSnackbar(message, {
           variant: 'error',
           preventDuplicate: true
         })
@@ -71,11 +81,12 @@ export function VideoBlockEditorSettings({
         selectedBlock?.duration != null &&
         convertedStartAt > selectedBlock?.duration - 3
       ) {
-        errors.startAt = t(
+        const message = t(
           'Start time has to be at least 3 seconds less than video duration {{ time }}',
           { time: secondsToTimeFormat(selectedBlock?.duration) }
         )
-        enqueueSnackbar(errors.startAt, {
+        errors.startAt = message
+        enqueueSnackbar(message, {
           variant: 'error',
           preventDuplicate: true
         })
@@ -83,11 +94,12 @@ export function VideoBlockEditorSettings({
         selectedBlock?.duration != null &&
         convertedEndAt > selectedBlock?.duration
       ) {
-        errors.endAt = t(
+        const message = t(
           'End time has to be no more than video duration {{ time }}',
           { time: secondsToTimeFormat(selectedBlock?.duration) }
         )
-        enqueueSnackbar(errors.endAt, {
+        errors.endAt = message
+        enqueueSnackbar(message, {
           variant: 'error',
           preventDuplicate: true
         })

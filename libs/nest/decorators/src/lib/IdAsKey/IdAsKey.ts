@@ -22,7 +22,7 @@ export function IdAsKey() {
     const childFunction = descriptor.value
     descriptor.value = async function (...args: TransformObject[]) {
       const newArgs = Array.isArray(args) ? args.map(idAsKey) : idAsKey(args)
-      const result = await childFunction.apply(this, newArgs)
+      const result: TransformObject = await childFunction.apply(this, newArgs)
       return Array.isArray(result) ? result.map(keyAsId) : keyAsId(result)
     }
   }

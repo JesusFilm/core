@@ -64,7 +64,7 @@ export function TemplatePreviewTabs({
     return videoBlocks?.filter(({ id }) => !cardBlockCoverIds?.includes(id))
   }, [journey?.blocks])
 
-  const handleTabChange = (_event, newValue): void => {
+  const handleTabChange = (_event, newValue: number): void => {
     setTabValue(newValue)
   }
 
