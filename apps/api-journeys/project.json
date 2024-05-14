@@ -124,6 +124,12 @@
         ]
       }
     },
+    "remediate-navigate-to-journey": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-journeys/db/seeds/remediateNavigateToJourney.ts"
+      }
+    },
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
