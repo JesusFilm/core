@@ -77,10 +77,14 @@ function getStepBlocks(blocks: Block[]): Block[] {
 }
 
 async function updateBlockAction(id: string, linkAction): Promise<void> {
-  await prisma.block.update({
+  console.log({
     where: { id: id },
     data: { action: { update: linkAction } }
   })
+  // await prisma.block.update({
+  //   where: { id: id },
+  //   data: { action: { update: linkAction } }
+  // })
 }
 
 async function convertStepBlocksAndActions(
@@ -98,7 +102,13 @@ async function convertStepBlocksAndActions(
       const nextStepBlock = stepBlocks[nextIndex]
 
       if (hasNextStep) {
-        await updateNextStepId(stepBlock.id, nextStepBlock.id)
+        console.log(
+          'Updating next block ID: ',
+          stepBlock.nextBlockId,
+          ' to ',
+          nextStepBlock.id
+        )
+        // await updateNextStepId(stepBlock.id, nextStepBlock.id)
 
         const childActionBlocks = navigateToJourneyBlocks.filter(
           (actionBlock) =>
