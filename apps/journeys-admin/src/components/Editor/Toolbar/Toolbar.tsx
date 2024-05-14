@@ -1,13 +1,14 @@
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
@@ -42,9 +43,11 @@ export function Toolbar(): ReactElement {
         }}
       />
       <NextLink href="/" passHref legacyBehavior>
-        <IconButton data-testid="ToolbarBackButton">
-          <ChevronLeftIcon />
-        </IconButton>
+        <Tooltip title="See all journeys" placement="right" arrow>
+          <IconButton data-testid="ToolbarBackButton">
+            <FormatListBulletedIcon />
+          </IconButton>
+        </Tooltip>
       </NextLink>
       {journey != null && (
         <>
