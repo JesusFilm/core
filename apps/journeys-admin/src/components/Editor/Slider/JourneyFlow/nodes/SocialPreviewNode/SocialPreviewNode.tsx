@@ -7,32 +7,68 @@ import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement } from 'react'
+import { OnConnect } from 'reactflow'
 
-import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 import Share from '@core/shared/ui/icons/Share'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
+import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode } from '../BaseNode'
 
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
+  const updateEdge = useUpdateEdge()
+
   const {
     dispatch,
     state: { activeContent }
   } = useEditor()
 
   function handleClick(): void {
-    dispatch({
-      type: 'SetActiveContentAction',
-      activeContent: ActiveContent.Social
-    })
+    if (activeContent !== ActiveContent.Social) {
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: undefined
+      })
+      dispatch({ type: 'SetSelectedStepAction', selectedStep: undefined })
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.JourneyFlow
+      })
+      dispatch({
+        type: 'SetActiveContentAction',
+        activeContent: ActiveContent.Social
+      })
+    } else {
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.Content
+      })
+    }
+  }
+
+  async function handleSourceConnect(
+    params: { target: string } | Parameters<OnConnect>[0]
+  ): Promise<void> {
+    void updateEdge({ source: 'SocialPreview', target: params.target })
   }
 
   return (
-    <BaseNode selected={activeContent === ActiveContent.Social}>
+    <BaseNode
+      id="SocialPreview"
+      selected={activeContent === ActiveContent.Social}
+      isSourceConnectable
+      onSourceConnect={handleSourceConnect}
+      isSourceConnected
+    >
       {({ selected }) => (
         <Card
           data-testid="SocialPreviewNode"
@@ -64,8 +100,8 @@ export function SocialPreviewNode(): ReactElement {
               sx={{
                 height: 15,
                 width: 15,
-                bgcolor: (theme) => theme.palette.background.default,
-                color: (theme) => theme.palette.background.paper,
+                bgcolor: 'background.default',
+                color: 'background.paper',
                 mr: 1.5
               }}
             >
@@ -75,11 +111,16 @@ export function SocialPreviewNode(): ReactElement {
               <Box
                 width={45}
                 height={9}
-                bgcolor="#EFEFEF"
+                bgcolor="background.default"
                 borderRadius="4.5px"
               />
             </Box>
-            <Box width={9} height={9} bgcolor="#EFEFEF" borderRadius="4.5px" />
+            <Box
+              width={9}
+              height={9}
+              bgcolor="background.default"
+              borderRadius="4.5px"
+            />
           </Stack>
           <CardMedia
             sx={{
@@ -95,8 +136,11 @@ export function SocialPreviewNode(): ReactElement {
                 display="block"
                 width={118.5}
                 height={90}
-                bgcolor="rgba(0, 0, 0, 0.1)"
-                borderRadius="4px"
+                borderRadius={1}
+                sx={{
+                  backgroundColor: (theme) =>
+                    `${theme.palette.secondary.dark}1A`
+                }}
               />
             ) : (
               <Image
@@ -105,7 +149,7 @@ export function SocialPreviewNode(): ReactElement {
                 width={118.5}
                 height={90}
                 style={{
-                  borderRadius: '4px',
+                  borderRadius: 1,
                   maxWidth: '100%',
                   objectFit: 'cover'
                 }}
@@ -127,15 +171,15 @@ export function SocialPreviewNode(): ReactElement {
                   data-testid="SocialPreviewTitleEmpty"
                   width={118.5}
                   height={9}
-                  bgcolor="#EFEFEF"
-                  borderRadius="4px"
+                  bgcolor="background.default"
+                  borderRadius={1}
                 />
               ) : (
                 <Typography
                   variant="subtitle1"
                   fontSize={7}
                   lineHeight="9px"
-                  color="#26262E"
+                  color="secondary.dark"
                   noWrap
                 >
                   {journey.seoTitle}
@@ -147,15 +191,15 @@ export function SocialPreviewNode(): ReactElement {
                   data-testid="SocialPreviewDescriptionEmpty"
                   width={118.5}
                   height={9}
-                  bgcolor="#EFEFEF"
-                  borderRadius="4px"
+                  bgcolor="background.default"
+                  borderRadius={1}
                 />
               ) : (
                 <Typography
                   variant="body2"
                   fontSize={4.5}
                   lineHeight="9px"
-                  color="#6D6D7D"
+                  color="secondary.light"
                   noWrap
                 >
                   {journey.seoDescription}
@@ -165,7 +209,7 @@ export function SocialPreviewNode(): ReactElement {
             <Stack
               flexDirection="row"
               justifyContent="space-around"
-              color="#EFEFEF"
+              color="background.default"
             >
               <ThumbsUp sx={{ fontSize: 9 }} />
               <MessageCircle sx={{ fontSize: 9 }} />

@@ -1,7 +1,10 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { StoryObj } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
+import { Background, ReactFlow } from 'reactflow'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
@@ -21,6 +24,8 @@ import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
 import { SocialPreviewNode } from './SocialPreviewNode'
+
+import 'reactflow/dist/style.css'
 
 const SocialPreviewNodeStory = {
   ...simpleComponentConfig,
@@ -139,7 +144,32 @@ const Template: StoryObj<typeof SocialPreviewNode> = {
     <MockedProvider mocks={[stepAndCardBlockCreateMock]}>
       <SnackbarProvider>
         <JourneyProvider value={{ journey: args.journey }}>
-          <SocialPreviewNode />
+          <EditorProvider>
+            <Box sx={{ height: 400, width: 600 }}>
+              <ReactFlow
+                onConnectStart={() => undefined}
+                onConnectEnd={() => undefined}
+                fitView
+                proOptions={{ hideAttribution: true }}
+                edges={[]}
+                edgeTypes={{}}
+                nodes={[
+                  {
+                    id: 'SocialPreview',
+                    type: 'SocialPreview',
+                    data: {},
+                    position: { x: -200, y: 0 },
+                    draggable: false
+                  }
+                ]}
+                nodeTypes={{
+                  SocialPreview: SocialPreviewNode
+                }}
+              >
+                <Background color="#aaa" gap={16} />
+              </ReactFlow>
+            </Box>
+          </EditorProvider>
         </JourneyProvider>
       </SnackbarProvider>
     </MockedProvider>

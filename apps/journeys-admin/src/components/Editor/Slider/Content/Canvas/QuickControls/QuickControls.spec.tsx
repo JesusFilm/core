@@ -26,7 +26,7 @@ describe('QuickControls', () => {
 
     expect(screen.getByLabelText('move-block-up')).toBeInTheDocument()
     expect(screen.getByLabelText('move-block-down')).toBeInTheDocument()
-    expect(screen.getByTestId('duplicate-Block')).toBeInTheDocument()
+    expect(screen.getByTestId('duplicate-block')).toBeInTheDocument()
     expect(screen.getByLabelText('Delete Block Actions')).toBeInTheDocument()
   })
 
@@ -41,6 +41,6 @@ describe('QuickControls', () => {
       </SnackbarProvider>
     )
 
-    expect(screen.getByTestId('duplicate-Block')).toBeDisabled()
+    expect(screen.getByTestId('duplicate-block')).toBeDisabled()
   })
 })

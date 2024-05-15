@@ -87,6 +87,7 @@ export function CardVideo(): ReactElement {
           height={195}
           src={cardVideoImage}
           alt="Card Video Template"
+          draggable={false}
         />
       </ButtonBase>
     </Box>

@@ -1,15 +1,18 @@
 import findIndex from 'lodash/findIndex'
+import reduce from 'lodash/reduce'
 import { XYPosition } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
-  STEP_NODE_HEIGHT,
+  ACTION_BUTTON_HEIGHT,
+  STEP_NODE_CARD_HEIGHT,
+  STEP_NODE_CARD_WIDTH,
   STEP_NODE_HEIGHT_GAP,
-  STEP_NODE_WIDTH,
+  STEP_NODE_OFFSET,
   STEP_NODE_WIDTH_GAP
-} from '../../nodes/StepBlockNode'
+} from '../../nodes/StepBlockNode/libs/sizes'
 import { filterActionBlocks } from '../filterActionBlocks'
 
 export interface PositionMap {
@@ -69,17 +72,27 @@ export function arrangeSteps(steps: TreeStepBlock[]): PositionMap {
     if (step != null) processSteps([step])
   }
 
-  blocks.forEach((row, index) => {
-    const stepY = index * (STEP_NODE_HEIGHT + STEP_NODE_HEIGHT_GAP)
-    row.forEach((step, index) => {
-      const stepX =
-        index * (STEP_NODE_WIDTH + STEP_NODE_WIDTH_GAP) -
-        (row.length / 2) * (STEP_NODE_WIDTH + STEP_NODE_WIDTH_GAP)
-      positions[step.id] = {
-        x: stepX,
-        y: stepY
-      }
-    })
+  blocks.forEach((column, index) => {
+    const stepX = index * (STEP_NODE_CARD_WIDTH + STEP_NODE_WIDTH_GAP)
+    reduce<TreeStepBlock, TreeStepBlock | null>(
+      column,
+      (result, step) => {
+        let stepY = STEP_NODE_OFFSET
+        if (result != null) {
+          stepY =
+            positions[result.id].y +
+            (filterActionBlocks(result).length + 1) * ACTION_BUTTON_HEIGHT +
+            STEP_NODE_CARD_HEIGHT +
+            STEP_NODE_HEIGHT_GAP
+        }
+        positions[step.id] = {
+          x: stepX,
+          y: stepY
+        }
+        return step
+      },
+      null
+    )
   })
 
   return positions
