@@ -1,8 +1,10 @@
-import { expect, test } from '@playwright/test'
+/* eslint-disable playwright/expect-expect */
+import { test } from '@playwright/test'
+
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
-import { TeamsPage } from '../../pages/teams-page'
 import { Register } from '../../pages/register-Page'
+import { TeamsPage } from '../../pages/teams-page'
 
 let userEmail = ''
 
@@ -26,14 +28,16 @@ test.describe('Verify Add member', () => {
     await landingPage.goToAdminUrl()
     await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
   })
-  //Verify the user able to add the member through member option in discover page
+
+  // Verify the user able to add the member through member option in discover page
   test('Add a member through member option in discover page', async ({
     page
   }) => {
     const teamsPage = new TeamsPage(page)
     await teamsPage.verifyMemberAddedViaMemberOptionOfThreeDotOptions()
   })
-  //Verify the user able to add the member through + icon in discover page
+
+  // Verify the user able to add the member through + icon in discover page
   test('Add the member through + icon in discover page', async ({ page }) => {
     const teamsPage = new TeamsPage(page)
     await teamsPage.verifyMemberAddedViaPlusIconAtTopOfTheRightCorner()
