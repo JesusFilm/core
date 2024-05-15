@@ -100,7 +100,7 @@ describe('tranformSteps', () => {
       {
         id: 'SocialPreview->step1.id',
         markerEnd: {
-          color: '#D3D3D3',
+          color: 'rgb(111, 111, 112)',
           height: 10,
           type: 'arrowclosed',
           width: 10
@@ -248,7 +248,7 @@ describe('tranformSteps', () => {
           type: 'arrowclosed',
           height: 10,
           width: 10,
-          color: '#D3D3D3'
+          color: 'rgb(111, 111, 112)'
         }
       },
       {
@@ -261,7 +261,7 @@ describe('tranformSteps', () => {
           type: 'arrowclosed',
           height: 10,
           width: 10,
-          color: '#D3D3D3'
+          color: 'rgb(111, 111, 112)'
         }
       },
       {
@@ -273,7 +273,7 @@ describe('tranformSteps', () => {
           type: 'arrowclosed',
           height: 10,
           width: 10,
-          color: '#D3D3D3'
+          color: 'rgb(111, 111, 112)'
         }
       },
       hiddenEdge
@@ -345,7 +345,7 @@ describe('tranformSteps', () => {
       {
         id: 'SocialPreview->step1.id',
         markerEnd: {
-          color: '#D3D3D3',
+          color: 'rgb(111, 111, 112)',
           height: 10,
           type: 'arrowclosed',
           width: 10
