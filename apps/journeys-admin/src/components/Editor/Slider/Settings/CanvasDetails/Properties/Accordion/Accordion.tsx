@@ -44,9 +44,9 @@ export function Accordion({
         selectedAttributeId: id
       })
       if (param != null) {
-        router.query.param = param
-        // shallow: true so cache doesn't get destroyed on reload
-        void router.push(router, undefined, { shallow: true })
+        void router.push({ query: { ...router.query, param } }, undefined, {
+          shallow: true
+        })
         router.events.on('routeChangeComplete', () => {
           setBeaconPageViewed(param)
         })
