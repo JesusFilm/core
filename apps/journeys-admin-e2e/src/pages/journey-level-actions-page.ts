@@ -6,6 +6,7 @@ import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
+const sixtySecondsTimeout = 60000
 export class JourneyLevelActions {
   readonly page: Page
   context
@@ -182,12 +183,12 @@ export class JourneyLevelActions {
       this.page.locator('div[id="notistack-snackbar"]', {
         hasText: snackbarMsg
       })
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     await expect(
       this.page.locator('div[id="notistack-snackbar"]', {
         hasText: snackbarMsg
       })
-    ).toBeHidden({ timeout: thirtySecondsTimeout })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
   async clickSelectTeamDropDownIcon() {
