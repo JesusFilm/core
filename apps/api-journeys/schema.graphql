@@ -2128,10 +2128,12 @@ type JourneyProfile
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
   onboardingFormCompletedAt: DateTime
+  journeyFlowBackButtonClicked: Boolean
 }
 
 input JourneyProfileUpdateInput {
   lastActiveTeamId: String
+  journeyFlowBackButtonClicked: Boolean
 }
 
 type JourneyVisitor

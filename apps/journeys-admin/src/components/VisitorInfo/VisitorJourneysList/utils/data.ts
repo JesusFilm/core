@@ -88,20 +88,6 @@ export const buttonClickNavigateToBlockEvent: TimelineItem = {
   duration: '0.01'
 }
 
-export const buttonClickNavigateToJourneyEvent: TimelineItem = {
-  event: {
-    __typename: 'ButtonClickEvent',
-    id: 'ButtonClickEventId',
-    journeyId: 'journeyId',
-    label: 'Navigate To Journey Action',
-    value: 'Write a book',
-    createdAt: '2022-11-02T03:20:26.368Z',
-    action: ButtonAction.NavigateToJourneyAction,
-    actionValue: 'Another jourey name'
-  },
-  duration: '0.01'
-}
-
 export const buttonClickLinkEvent: TimelineItem = {
   event: {
     __typename: 'ButtonClickEvent',
