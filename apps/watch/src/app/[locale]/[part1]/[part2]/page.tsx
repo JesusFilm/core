@@ -1,3 +1,4 @@
+import { ApolloError } from '@apollo/client'
 import { notFound, redirect } from 'next/navigation'
 import { unstable_setRequestLocale } from 'next-intl/server'
 import { ReactElement } from 'react'
@@ -29,16 +30,27 @@ export default async function Page2Page({
     return redirect(`/${contentId}.html/${languageId}.html`)
   }
 
-  const { data } = await getApolloClient().query<GetVideoContent>({
-    query: GET_VIDEO_CONTENT,
-    variables: {
-      id: `${contentId}/${languageId}`
+  try {
+    const { data } = await getApolloClient().query<GetVideoContent>({
+      query: GET_VIDEO_CONTENT,
+      variables: {
+        id: `${contentId}/${languageId}`
+      }
+    })
+    if (data.content == null) {
+      return notFound()
     }
-  })
-  if (data.content == null) {
-    return notFound()
+    return <Page2PageClient content={data.content} />
+  } catch (error) {
+    if (
+      error instanceof ApolloError &&
+      error.graphQLErrors.some(
+        ({ extensions }) => extensions?.code === 'NOT_FOUND'
+      )
+    )
+      return notFound({ revalidate: 1 })
+    throw error
   }
-  return <Page2PageClient content={data.content} />
 }
 
 export function generateStaticParams(): Page2PageParams[] {

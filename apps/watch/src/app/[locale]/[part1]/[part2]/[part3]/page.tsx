@@ -1,3 +1,4 @@
+import { ApolloError } from '@apollo/client'
 import { notFound, redirect } from 'next/navigation'
 import { unstable_setRequestLocale } from 'next-intl/server'
 import { ReactElement } from 'react'
@@ -33,17 +34,27 @@ export default async function Page3Page({
     return redirect(`/${containerId}.html/${contentId}/${languageId}.html`)
   }
 
-  const { data } =
-    await getApolloClient().query<GetVideoContainerAndVideoContent>({
-      query: GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT,
-      variables: {
-        containerId: `${containerId}/${languageId}`,
-        contentId: `${contentId}/${languageId}`
-      }
-    })
-  if (data.container == null || data.content == null) {
-    return notFound()
+  try {
+    const { data } =
+      await getApolloClient().query<GetVideoContainerAndVideoContent>({
+        query: GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT,
+        variables: {
+          containerId: `${containerId}/${languageId}`,
+          contentId: `${contentId}/${languageId}`
+        }
+      })
+    if (data.container == null || data.content == null) {
+      return notFound()
+    }
+    return <Page3PageClient content={data.content} container={data.container} />
+  } catch (error) {
+    if (
+      error instanceof ApolloError &&
+      error.graphQLErrors.some(
+        ({ extensions }) => extensions?.code === 'NOT_FOUND'
+      )
+    )
+      return notFound({ revalidate: 1 })
+    throw error
   }
-
-  return <Page3PageClient content={data.content} container={data.container} />
 }
