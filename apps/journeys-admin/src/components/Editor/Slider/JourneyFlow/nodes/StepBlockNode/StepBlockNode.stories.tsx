@@ -889,7 +889,7 @@ export const Hover = {
     const canvas = within(canvasElement)
 
     await waitFor(async () => {
-      await userEvent.hover(canvas.getByTestId('BaseNode'))
+      await userEvent.hover(canvas.getAllByTestId('BaseNode')[0])
     })
   }
 }

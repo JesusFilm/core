@@ -56,6 +56,8 @@ export function SelectableWrapper({
       updateEditor(block)
       editBlock()
     } else if (block.__typename === 'RadioOptionBlock') {
+      // this stopPropagation prevents links from being opened in the editor when clicked radioOptions are selected
+      e.stopPropagation()
       const parentSelected = selectedBlock?.id === block.parentBlockId
       const siblingSelected =
         selectedBlock?.parentBlockId === block.parentBlockId

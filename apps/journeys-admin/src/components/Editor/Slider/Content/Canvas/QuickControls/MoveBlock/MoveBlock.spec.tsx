@@ -7,8 +7,9 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { blockOrderUpdateMock } from '../../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'
 
-import { BLOCK_ORDER_UPDATE, MoveBlock } from '.'
+import { MoveBlock } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -81,22 +82,20 @@ describe('MoveBlockButton', () => {
   }))
 
   it('should move selected block up on click', async () => {
+    const mockBlockOrderUpdateMock = {
+      request: {
+        ...blockOrderUpdateMock.request,
+        variables: {
+          id: 'typographyBlockId2',
+          journeyId: 'journeyId',
+          parentOrder: 0
+        }
+      },
+      result
+    }
+
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: BLOCK_ORDER_UPDATE,
-              variables: {
-                id: 'typographyBlockId2',
-                journeyId: 'journeyId',
-                parentOrder: 0
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[mockBlockOrderUpdateMock]}>
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
@@ -117,22 +116,20 @@ describe('MoveBlockButton', () => {
   })
 
   it('should move selected block down on click', async () => {
+    const mockBlockOrderUpdateMock = {
+      request: {
+        ...blockOrderUpdateMock.request,
+        variables: {
+          id: 'typographyBlockId1',
+          journeyId: 'journeyId',
+          parentOrder: 1
+        }
+      },
+      result
+    }
+
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: BLOCK_ORDER_UPDATE,
-              variables: {
-                id: 'typographyBlockId1',
-                journeyId: 'journeyId',
-                parentOrder: 1
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[mockBlockOrderUpdateMock]}>
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,

@@ -1,9 +1,9 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import { useTheme } from '@mui/material/styles'
 import {
   MouseEvent,
   ReactElement,
-  TouchEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -12,40 +12,50 @@ import {
 } from 'react'
 import {
   Background,
+  ControlButton,
   Controls,
   NodeDragHandler,
   OnConnect,
   OnConnectEnd,
   OnConnectStart,
   OnConnectStartParams,
+  OnEdgeUpdateFunc,
+  Panel,
   ReactFlow,
   ReactFlowInstance,
+  ReactFlowProps,
   useEdgesState,
   useNodesState
 } from 'reactflow'
-import { v4 as uuidv4 } from 'uuid'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { searchBlocks } from '@core/journeys/ui/searchBlocks'
+import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import {
   GetStepBlocksWithPosition,
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
-import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
-import { useNavigateToBlockActionUpdateMutation } from '../../../../libs/useNavigateToBlockActionUpdateMutation'
-import { useStepAndCardBlockCreateMutation } from '../../../../libs/useStepAndCardBlockCreateMutation'
-import { useStepBlockNextBlockUpdateMutation } from '../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
+import { CustomEdge } from './edges/CustomEdge'
+import { StartEdge } from './edges/StartEdge'
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
+import { useCreateStep } from './libs/useCreateStep'
+import { useDeleteEdge } from './libs/useDeleteEdge'
+import { useUpdateEdge } from './libs/useUpdateEdge'
+import { NewStepButton } from './NewStepButton'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
-import { STEP_NODE_WIDTH, StepBlockNode } from './nodes/StepBlockNode'
+import { StepBlockNode } from './nodes/StepBlockNode'
+import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+
+// some styles can only be updated through css after render
+const additionalEdgeStyles = {
+  '.react-flow__edgeupdater.react-flow__edgeupdater-target': { r: 15 }
+}
 
 export const GET_STEP_BLOCKS_WITH_POSITION = gql`
   query GetStepBlocksWithPosition($journeyIds: [ID!]) {
@@ -61,39 +71,45 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 
 export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
+  const theme = useTheme()
   const {
     state: { steps }
   } = useEditor()
+  const [reactFlowInstance, setReactFlowInstance] =
+    useState<ReactFlowInstance | null>(null)
   const connectingParams = useRef<OnConnectStartParams | null>(null)
+  const edgeUpdateSuccessful = useRef<boolean | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
 
-  const [reactFlowInstance, setReactFlowInstance] =
-    useState<ReactFlowInstance | null>(null)
-  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation({
-    update(cache, { data }) {
-      if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
-        cache.modify({
-          fields: {
-            blocks(existingBlockRefs = []) {
-              const newStepBlockRef = cache.writeFragment({
-                data: data.stepBlockCreate,
-                fragment: gql`
-                  fragment NewBlock on Block {
-                    id
-                  }
-                `
-              })
-              return [...existingBlockRefs, newStepBlockRef]
-            }
-          }
-        })
-      }
-    }
-  })
-  const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
+  const createStep = useCreateStep()
+  const updateEdge = useUpdateEdge()
+  const deleteEdge = useDeleteEdge()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
-  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
+
+  async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
+    if (journey == null || steps == null) return
+    positions = arrangeSteps(steps)
+    Object.entries(positions).forEach(([id, position]) => {
+      void stepBlockPositionUpdate({
+        variables: {
+          id,
+          journeyId: journey.id,
+          x: position.x,
+          y: position.y
+        },
+        optimisticResponse: {
+          stepBlockUpdate: {
+            id,
+            __typename: 'StepBlock',
+            x: position.x,
+            y: position.y
+          }
+        }
+      })
+    })
+  }
+
   const { data, refetch } = useQuery<
     GetStepBlocksWithPosition,
     GetStepBlocksWithPositionVariables
@@ -102,7 +118,7 @@ export function JourneyFlow(): ReactElement {
     variables: { journeyIds: journey?.id != null ? [journey.id] : undefined },
     onCompleted: (data) => {
       if (steps == null || journey == null) return
-      let positions: PositionMap = {}
+      const positions: PositionMap = {}
       if (
         data.blocks.some(
           (block) =>
@@ -111,17 +127,7 @@ export function JourneyFlow(): ReactElement {
         )
       ) {
         // some steps have no x or y coordinates
-        positions = arrangeSteps(steps)
-        Object.entries(positions).forEach(([id, position]) => {
-          void stepBlockPositionUpdate({
-            variables: {
-              id,
-              journeyId: journey.id,
-              x: position.x,
-              y: position.y
-            }
-          })
-        })
+        void blockPositionsUpdate(positions)
       } else {
         data.blocks.forEach((block) => {
           if (
@@ -133,14 +139,14 @@ export function JourneyFlow(): ReactElement {
           }
         })
       }
-      const { nodes, edges } = transformSteps(steps, positions)
+      const { nodes, edges } = transformSteps(steps ?? [], positions)
       setEdges(edges)
       setNodes(nodes)
     }
   })
 
   useEffect(() => {
-    if (steps == null || data?.blocks == null) return
+    if (data?.blocks == null) return
     const positions: PositionMap =
       data.blocks.reduce((acc, block) => {
         if (
@@ -153,72 +159,22 @@ export function JourneyFlow(): ReactElement {
         return acc
       }, {}) ?? {}
 
-    const validSteps = steps.every((step) => {
-      return (
-        positions[step.id] != null &&
-        positions[step.id].x != null &&
-        positions[step.id].y != null
-      )
-    })
+    const validSteps =
+      steps?.every((step) => {
+        return (
+          positions[step.id] != null &&
+          positions[step.id].x != null &&
+          positions[step.id].y != null
+        )
+      }) ?? false
 
     if (!validSteps) return
 
-    const { nodes, edges } = transformSteps(steps, positions)
+    const { nodes, edges } = transformSteps(steps ?? [], positions)
     setEdges(edges)
     setNodes(nodes)
-  }, [steps, data, setEdges, setNodes, refetch])
+  }, [steps, data, theme, setEdges, setNodes, refetch])
 
-  const createStepAndCardBlock = useCallback(
-    async function createStepAndCardBlock(
-      step: TreeBlock,
-      block: TreeBlock,
-      x: number,
-      y: number
-    ): Promise<void> {
-      if (journey == null) return
-      const newStepId = uuidv4()
-      const newCardId = uuidv4()
-
-      await stepAndCardBlockCreate({
-        variables: {
-          stepBlockCreateInput: {
-            id: newStepId,
-            journeyId: journey.id,
-            x,
-            y
-          },
-          cardBlockCreateInput: {
-            id: newCardId,
-            journeyId: journey.id,
-            parentBlockId: newStepId,
-            themeMode: ThemeMode.dark,
-            themeName: ThemeName.base
-          }
-        }
-      })
-      if (step.id === block.id) {
-        // step
-        await stepBlockNextBlockUpdate({
-          variables: {
-            id: step.id,
-            journeyId: journey.id,
-            input: {
-              nextBlockId: newStepId
-            }
-          }
-        })
-      } else {
-        // action
-        await navigateToBlockActionUpdate(block, newStepId)
-      }
-    },
-    [
-      journey,
-      navigateToBlockActionUpdate,
-      stepAndCardBlockCreate,
-      stepBlockNextBlockUpdate
-    ]
-  )
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections
     connectingParams.current = null
@@ -233,46 +189,29 @@ export function JourneyFlow(): ReactElement {
         connectingParams.current == null ||
         connectingParams.current.nodeId == null ||
         connectingParams.current.handleId == null ||
-        connectingParams.current.handleType === 'target'
+        connectingParams.current.handleType === 'target' ||
+        edgeUpdateSuccessful.current === false
       )
         return
 
-      const step = steps?.find(
-        (step) => step.id === connectingParams.current?.nodeId
+      const targetIsPane = (event.target as Element)?.classList.contains(
+        'react-flow__pane'
       )
-      const block = searchBlocks(
-        step != null ? [step] : [],
-        connectingParams.current.handleId
-      )
+      if (targetIsPane) {
+        const { x, y } = reactFlowInstance.screenToFlowPosition({
+          x: (event as unknown as MouseEvent).clientX,
+          y: (event as unknown as MouseEvent).clientY
+        })
 
-      if (step == null || block == null) return
-
-      let clientX = 0
-      let clientY = 0
-      if (event.type === 'touchend') {
-        const touchEvent = event as unknown as TouchEvent
-        touchEvent.preventDefault()
-        clientX = touchEvent.changedTouches[0].clientX
-        clientY = touchEvent.changedTouches[0].clientY
-      } else if (event.type === 'mouseup') {
-        const mouseEvent = event as unknown as MouseEvent
-        clientX = mouseEvent.clientX
-        clientY = mouseEvent.clientY
+        void createStep({
+          x: Math.trunc(x),
+          y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
+          source: connectingParams.current.nodeId,
+          sourceHandle: connectingParams.current.handleId
+        })
       }
-
-      const { x, y } = reactFlowInstance.screenToFlowPosition({
-        x: clientX,
-        y: clientY
-      })
-
-      void createStepAndCardBlock(
-        step,
-        block,
-        parseInt(x.toString()) - STEP_NODE_WIDTH / 2,
-        parseInt(y.toString())
-      )
     },
-    [reactFlowInstance, connectingParams, createStepAndCardBlock, steps]
+    [reactFlowInstance, connectingParams, createStep]
   )
   const onNodeDragStop: NodeDragHandler = async (
     _event,
@@ -280,8 +219,8 @@ export function JourneyFlow(): ReactElement {
   ): Promise<void> => {
     if (journey == null || node.type !== 'StepBlock') return
 
-    const x = parseInt(node.position.x.toString())
-    const y = parseInt(node.position.y.toString())
+    const x = Math.trunc(node.position.x)
+    const y = Math.trunc(node.position.y)
     await stepBlockPositionUpdate({
       variables: {
         id: node.id,
@@ -291,6 +230,31 @@ export function JourneyFlow(): ReactElement {
       }
     })
   }
+  const onEdgeUpdateStart = useCallback<
+    NonNullable<ReactFlowProps['onEdgeUpdateStart']>
+  >(() => {
+    edgeUpdateSuccessful.current = false
+  }, [])
+
+  const onEdgeUpdate = useCallback<OnEdgeUpdateFunc>(
+    (_, { source, sourceHandle, target }) => {
+      edgeUpdateSuccessful.current = true
+      void updateEdge({ source, sourceHandle, target })
+    },
+    [updateEdge]
+  )
+
+  const onEdgeUpdateEnd = useCallback<
+    NonNullable<ReactFlowProps['onEdgeUpdateEnd']>
+  >(
+    (_, { source, sourceHandle }) => {
+      if (edgeUpdateSuccessful.current === false) {
+        void deleteEdge({ source, sourceHandle })
+      }
+      edgeUpdateSuccessful.current = true
+    },
+    [deleteEdge]
+  )
 
   const nodeTypes = useMemo(
     () => ({
@@ -300,8 +264,23 @@ export function JourneyFlow(): ReactElement {
     []
   )
 
+  const edgeTypes = useMemo(
+    () => ({
+      Custom: CustomEdge,
+      Start: StartEdge
+    }),
+    []
+  )
+
   return (
-    <Box sx={{ width: '100%', height: '100%' }} data-testid="JourneyFlow">
+    <Box
+      sx={{
+        width: '100%',
+        height: '100%',
+        ...additionalEdgeStyles
+      }}
+      data-testid="JourneyFlow"
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -311,12 +290,28 @@ export function JourneyFlow(): ReactElement {
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
+        onEdgeUpdate={onEdgeUpdate}
+        onEdgeUpdateStart={onEdgeUpdateStart}
+        onEdgeUpdateEnd={onEdgeUpdateEnd}
         fitView
+        fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         proOptions={{ hideAttribution: true }}
         onInit={setReactFlowInstance}
+        connectionLineStyle={{
+          stroke: theme.palette.primary.main,
+          strokeWidth: 2
+        }}
       >
-        <Controls showInteractive={false} />
+        <Panel position="top-right">
+          <NewStepButton />
+        </Panel>
+        <Controls showInteractive={false}>
+          <ControlButton onClick={async () => await blockPositionsUpdate({})}>
+            <ArrowRefresh6Icon />
+          </ControlButton>
+        </Controls>
         <Background color="#aaa" gap={16} />
       </ReactFlow>
     </Box>

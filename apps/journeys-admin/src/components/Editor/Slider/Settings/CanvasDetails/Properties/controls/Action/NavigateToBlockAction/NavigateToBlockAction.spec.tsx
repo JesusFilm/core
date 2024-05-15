@@ -92,7 +92,9 @@ describe('NavigateToBlockAction', () => {
 
     expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
       gtmEventName: 'gtmEventName',
-      blockId: 'step0.id'
+      blockId: 'step0.id',
+      id: 'button1.id',
+      journeyId: 'journeyId'
     })
   })
 })

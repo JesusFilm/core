@@ -379,6 +379,7 @@ export interface JourneyCollectionUpdateInput {
 
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
+  journeyFlowBackButtonClicked?: boolean | null;
 }
 
 export interface JourneyTemplateInput {

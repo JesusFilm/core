@@ -758,11 +758,11 @@ export const blocks: Block[] = [
 
 export const blocksWithStepBlockPosition: StepBlockWithPosition[] = blocks
   .filter((block) => block.__typename === 'StepBlock')
-  .map((block) => {
+  .map((block, index) => {
     return {
       __typename: 'StepBlock',
       id: block.id,
-      x: null,
-      y: null
+      x: parseInt(`${index * 3}00`),
+      y: 1
     }
   })
