@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { styled, useTheme } from '@mui/material/styles'
+import { darken, styled, useTheme } from '@mui/material/styles'
 import Zoom from '@mui/material/Zoom'
 import { ReactElement, useEffect, useRef } from 'react'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
@@ -151,7 +151,12 @@ export function Slider(): ReactElement {
             backgroundColor: 'background.paper',
             borderWidth: 1,
             borderStyle: 'solid',
-            borderColor: 'divider'
+            borderColor: 'divider',
+            transition: (theme) => theme.transitions.create('background-color'),
+            '&:hover': {
+              backgroundColor: (theme) =>
+                darken(theme.palette.background.paper, 0.1)
+            }
           }}
         >
           <ChevronLeftIcon />

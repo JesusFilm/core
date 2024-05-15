@@ -27,7 +27,6 @@ import { NavigateActionUpdate } from '../../../../../../../../../__generated__/N
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
-import { NavigateToJourneyAction } from './NavigateToJourneyAction'
 import { getNextStep } from './utils/getNextStep'
 
 export const NAVIGATE_ACTION_UPDATE = gql`
@@ -202,7 +201,6 @@ export function Action(): ReactElement {
           {t('Redirect user to the selected resource')}
         </Typography>
         {action === 'LinkAction' && <LinkAction />}
-        {action === 'NavigateToJourneyAction' && <NavigateToJourneyAction />}
         {action === 'EmailAction' && <EmailAction />}
       </Stack>
       {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
