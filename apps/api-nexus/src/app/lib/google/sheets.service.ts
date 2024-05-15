@@ -38,7 +38,7 @@ export interface SpreadsheetRow {
   notifySubscribers?: string
   notifySubscriber?: boolean
   playlistId?: string
-  isMadeForKids?: boolean
+  isMadeForKids?: string
   mediaComponentId?: string
   textLanguage?: string
 }
@@ -195,8 +195,9 @@ export class GoogleSheetsService {
           privacy: row.privacy as PrivacyStatus,
           notifySubscribers: row.notifySubscriber ?? false,
           playlistId: row.playlistId,
-          isMadeForKids: row.isMadeForKids,
+          isMadeForKids:  ['1', 'true', 'yes', 'on'].includes(row.isMadeForKids ?? ''),
           mediaComponentId: row.mediaComponentId,
+          language: row.language,
           resourceLocalizations: {
             create: {
               title: row.title ?? '',
@@ -285,6 +286,10 @@ export class GoogleSheetsService {
   ): Promise<SpreadsheetRow> {
     if (row.filename != null) {
       row.videoDriveFile = files?.find((file) => file.name === row.filename)
+    }
+
+    if (row.textLanguage != null) {
+      row.language = row.textLanguage
     }
 
     if (row.customThumbnail != null) {

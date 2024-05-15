@@ -38,6 +38,7 @@ export interface UpdateVideoLocalizationJob {
     category: string
     refreshToken: string
     privacyStatus?: string
+    isMadeForKids: boolean
   }
   localizations: Array<{
     videoId: string
@@ -228,7 +229,8 @@ export class BullMQService {
           category: item.category ?? '',
           refreshToken:
             item.resourceSource?.thumbnailGoogleDriveRefreshToken ?? '',
-          privacyStatus: item.privacy
+          privacyStatus: item.privacy,
+          isMadeForKids: item.isMadeForKids
         },
         localizations: item.resourceLocalizations.map((loc) => {
           return {

@@ -29,7 +29,6 @@ export class BatchService {
           resourceChannels: { where: { youtubeId: row.videoId } }
         }
       })
-      console.log('RESOURCE SIZE', resource?.resourceLocalizations.length)
       if (resource?.resourceLocalizations.length === 0) {
         // Create Localization is it is not existing
         await this.prismaService.resourceLocalization.create({

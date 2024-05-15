@@ -55,7 +55,7 @@ model Resource {
     id                    String                 @id @default(uuid())
     name                  String
     category              String?
-    spokenLanguage        String?
+    language              String?
     customThumbnail       String?
     playlistId            String?
     isMadeForKids         Boolean                @default(false)
