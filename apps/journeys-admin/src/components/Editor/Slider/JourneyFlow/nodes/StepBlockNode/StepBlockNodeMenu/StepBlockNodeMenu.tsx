@@ -7,15 +7,20 @@ import EllipsisIcon from '@core/shared/ui/icons/Ellipsis'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { DeleteBlock } from '../../../../Content/Canvas/QuickControls/DeleteBlock'
-import { DuplicateBlock } from '../../../../Content/Canvas/QuickControls/DuplicateBlock'
+
+import { DuplicateStep } from './DuplicateStep'
 
 interface StepBlockNodeMenuProps {
   step: TreeBlock<StepBlock>
+  xPos?: number
+  yPos?: number
   className?: string
 }
 
 export function StepBlockNodeMenu({
   step,
+  xPos,
+  yPos,
   className
 }: StepBlockNodeMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -67,9 +72,10 @@ export function StepBlockNodeMenu({
         }}
         data-testid="StepBlockNodeMenu"
       >
-        <DuplicateBlock
-          variant="list-item"
-          block={step}
+        <DuplicateStep
+          step={step}
+          xPos={xPos}
+          yPos={yPos}
           handleClick={handleClose}
         />
         <DeleteBlock variant="list-item" block={step} closeMenu={handleClose} />

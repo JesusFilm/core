@@ -324,6 +324,7 @@ export function CardCta(): ReactElement {
           height={195}
           src={cardCtaImage}
           alt="Card CTA Template"
+          draggable={false}
         />
       </ButtonBase>
     </Box>

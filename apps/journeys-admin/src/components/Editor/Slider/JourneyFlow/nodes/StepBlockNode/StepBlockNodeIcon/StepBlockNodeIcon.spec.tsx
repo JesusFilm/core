@@ -36,6 +36,6 @@ describe('StepBlockNodeIcon', () => {
   it('should render radio question icon', () => {
     render(<StepBlockNodeIcon typename="RadioQuestionBlock" />)
 
-    expect(screen.getByTestId('TextInput1Icon')).toBeInTheDocument()
+    expect(screen.getByTestId('GitBranchIcon')).toBeInTheDocument()
   })
 })

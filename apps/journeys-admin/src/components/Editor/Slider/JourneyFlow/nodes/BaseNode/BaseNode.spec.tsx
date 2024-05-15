@@ -13,9 +13,11 @@ describe('BaseNode', () => {
 
   it('should render with default properties', () => {
     render(
-      <MockedProvider>
-        <BaseNode />
-      </MockedProvider>
+      <ReactFlowProvider>
+        <MockedProvider>
+          <BaseNode />
+        </MockedProvider>
+      </ReactFlowProvider>
     )
 
     expect(screen.getByTestId('BaseNode')).toBeInTheDocument()
@@ -30,7 +32,7 @@ describe('BaseNode', () => {
       </ReactFlowProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeTopHandle')).toBeInTheDocument()
+    expect(screen.getByTestId('BaseNodeLeftHandle')).toBeInTheDocument()
   })
 
   it('should render source handles', async () => {
@@ -42,14 +44,14 @@ describe('BaseNode', () => {
       </ReactFlowProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeBottomHandle')).toBeInTheDocument()
+    expect(screen.getByTestId('BaseNodeRightHandle')).toBeInTheDocument()
   })
 
-  it.skip('should render arrow icon', () => {
+  it('should render arrow icon', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode isSourceConnectable="arrow" />
+          <BaseNode isSourceConnectable />
         </MockedProvider>
       </ReactFlowProvider>
     )
