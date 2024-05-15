@@ -111,6 +111,7 @@ export function ActionButton({
         sx={{
           px: 3,
           opacity: selected ? 1 : 0.7,
+          transition: (theme) => theme.transitions.create('opacity'),
           margin: 0,
           borderTop: (theme) =>
             `1px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
@@ -124,7 +125,8 @@ export function ActionButton({
           noWrap
           sx={{
             fontWeight: 'bold',
-            fontSize: 10
+            fontSize: 10,
+            lineHeight: `${ACTION_BUTTON_HEIGHT - 1}px`
           }}
           variant="body2"
         >

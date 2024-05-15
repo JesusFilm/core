@@ -38,7 +38,6 @@ export function StepBlockNode({
         yPos={yPos}
       />
       <Stack
-        gap={0.5}
         direction="column"
         sx={{
           background: (theme) =>
