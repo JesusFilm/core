@@ -200,6 +200,7 @@ export function CardForm(): ReactElement {
           height={195}
           src={cardFormImage}
           alt="Card Form Template"
+          draggable={false}
         />
       </ButtonBase>
     </Box>

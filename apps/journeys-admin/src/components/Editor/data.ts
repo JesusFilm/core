@@ -291,7 +291,8 @@ export const blocks: Block[] = [
         __typename: 'VideoVariant',
         id: '2_0-FallingPlates-529',
         hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-      }
+      },
+      variantLanguages: []
     },
     startAt: null,
     endAt: null,
@@ -597,7 +598,8 @@ export const blocks: Block[] = [
         __typename: 'VideoVariant',
         id: '2_0-FallingPlates-529',
         hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-      }
+      },
+      variantLanguages: []
     },
     startAt: null,
     endAt: null,
@@ -756,11 +758,11 @@ export const blocks: Block[] = [
 
 export const blocksWithStepBlockPosition: StepBlockWithPosition[] = blocks
   .filter((block) => block.__typename === 'StepBlock')
-  .map((block) => {
+  .map((block, index) => {
     return {
       __typename: 'StepBlock',
       id: block.id,
-      x: null,
-      y: null
+      x: parseInt(`${index * 3}00`),
+      y: 1
     }
   })
