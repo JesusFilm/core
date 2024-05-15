@@ -3,6 +3,7 @@ locals {
   environment_variables = [
     "APOLLO_GRAPH_REF",
     "APOLLO_KEY",
+    "DATADOG_AGENT_HOST",
     "GOOGLE_APPLICATION_JSON",
   ]
   service_config = {

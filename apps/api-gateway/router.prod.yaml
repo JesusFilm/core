@@ -50,6 +50,7 @@ telemetry:
       otlp:
         enabled: true
         temporality: delta
+        endpoint: '${env.DATADOG_AGENT_HOST}:4317'
 experimental_batching:
   enabled: true
   mode: batch_http_link
