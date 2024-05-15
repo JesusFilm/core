@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import dynamic from 'next/dynamic'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
@@ -14,7 +13,6 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import { VideoBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
-import { setBeaconPageViewed } from '../../../../../../libs/setBeaconPageViewed'
 import { Drawer } from '../Drawer'
 
 import { VideoFromLocal } from './VideoFromLocal'
@@ -59,34 +57,16 @@ export function VideoLibrary({
     selectedBlock?.videoId != null && open
   )
   const [activeTab, setActiveTab] = useState(0)
-  const router = useRouter()
 
   useEffect(() => {
     setOpenVideoDetails(selectedBlock?.videoId != null && open)
   }, [open, selectedBlock?.videoId])
-
-  const TabParams = {
-    0: 'video-library',
-    1: 'video-youtube',
-    2: 'video-upload'
-  }
-
-  function setRoute(param: string): void {
-    router.query.param = param
-    void router.push(router, undefined, { shallow: true })
-    router.events.on('routeChangeComplete', () => {
-      setBeaconPageViewed(param)
-    })
-  }
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
     setActiveTab(newValue)
-    const route: 'unsplash-image' | 'custom-image' | 'ai-image' =
-      TabParams[newValue]
-    if (route != null) setRoute(route)
   }
 
   const onSelect = (block: VideoBlockUpdateInput): void => {

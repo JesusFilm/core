@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
 
 import {
   VideoBlockSource,
@@ -17,17 +16,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
-}))
-
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-
 describe('VideoLibrary', () => {
-  const push = jest.fn()
-  const on = jest.fn()
-
   describe('smUp', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
@@ -283,14 +272,6 @@ describe('VideoLibrary', () => {
   })
 
   it('should render YouTube', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: {
-        on
-      }
-    } as unknown as NextRouter)
-
     render(
       <MockedProvider>
         <VideoLibrary open />
@@ -300,80 +281,17 @@ describe('VideoLibrary', () => {
     await waitFor(() =>
       expect(screen.getByText('Paste any YouTube Link')).toBeInTheDocument()
     )
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'video-youtube' },
-          push,
-          events: {
-            on
-          }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
-  })
-
-  it('should update url params on library tab click', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: {
-        on
-      }
-    } as unknown as NextRouter)
-
-    const { getByRole } = render(
-      <MockedProvider>
-        <VideoLibrary open />
-      </MockedProvider>
-    )
-    fireEvent.click(getByRole('tab', { name: 'Upload' }))
-    fireEvent.click(getByRole('tab', { name: 'Library' }))
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'video-library' },
-          push,
-          events: {
-            on
-          }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
   })
 
   it('should render Cloudflare', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: {
-        on
-      }
-    } as unknown as NextRouter)
-
     render(
       <MockedProvider>
         <VideoLibrary open />
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
-    expect(screen.getByText('Drop a video here')).toBeInTheDocument()
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'video-upload' },
-          push,
-          events: {
-            on
-          }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
+    await waitFor(() =>
+      expect(screen.getByText('Drop a video here')).toBeInTheDocument()
+    )
   })
 })

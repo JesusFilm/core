@@ -1,18 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 
 import { ImageBlockEditor } from '.'
-
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
-}))
-
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('ImageBlockEditor', () => {
   const imageBlock: ImageBlock = {
@@ -42,17 +34,6 @@ describe('ImageBlockEditor', () => {
   })
 
   it('should switch tabs', async () => {
-    const push = jest.fn()
-    const on = jest.fn()
-
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: {
-        on
-      }
-    } as unknown as NextRouter)
-
     const { getByText, getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
@@ -61,54 +42,14 @@ describe('ImageBlockEditor', () => {
       </SnackbarProvider>
     )
     expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
-    expect(getByText('Unsplash')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Unsplash')).toBeInTheDocument())
     fireEvent.click(getByRole('tab', { name: 'Custom' }))
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'custom-image' },
-          push,
-          events: {
-            on
-          }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
-
-    expect(getByText('Add image by URL')).toBeInTheDocument()
-    await fireEvent.click(getByRole('tab', { name: 'AI' }))
+    await waitFor(() =>
+      expect(getByText('Add image by URL')).toBeInTheDocument()
+    )
+    fireEvent.click(getByRole('tab', { name: 'AI' }))
     await waitFor(() =>
       expect(getByRole('button', { name: 'Prompt' })).toBeInTheDocument()
     )
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'ai-image' },
-          push,
-          events: {
-            on
-          }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
-
-    fireEvent.click(getByRole('tab', { name: 'Gallery' }))
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'unsplash-image' },
-          push,
-          events: {
-            on
-          }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
   })
 })
