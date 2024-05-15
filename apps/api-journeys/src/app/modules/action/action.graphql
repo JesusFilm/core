@@ -74,9 +74,16 @@ extend type Mutation {
     journeyId: ID!
     input: NavigateToBlockActionInput!
   ): NavigateToBlockAction!
+
+  """
+  DEPRECATED: NavigateToJourneyAction is being removed. Use blockUpdateLinkAction instead.
+  """
   blockUpdateNavigateToJourneyAction(
     id: ID!
     journeyId: ID!
+    """
+    DEPRECATED: NavigateToJourneyAction is being removed. Use blockUpdateLinkAction and LinkActionInput instead.
+    """
     input: NavigateToJourneyActionInput!
   ): NavigateToJourneyAction!
   blockUpdateLinkAction(

@@ -5,13 +5,13 @@ import isEmpty from 'lodash/isEmpty'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
 
-import { Prisma, PrismaClient } from '.prisma/api-languages-client'
+import { LanguageName, PrismaClient } from '.prisma/api-languages-client'
 
 const prismaService = new PrismaClient()
 
 interface Language {
   id: string
-  name: Prisma.JsonObject[]
+  name: LanguageName[]
   bcp47?: string
   iso3?: string
 }
@@ -28,7 +28,7 @@ interface MediaLanguage {
 async function getLanguage(languageId: string): Promise<Language | null> {
   const result = await prismaService.language.findUnique({
     where: { id: languageId },
-    include: { languageName: true }
+    include: { name: true }
   })
 
   return result as unknown as Language
@@ -37,7 +37,7 @@ async function getLanguage(languageId: string): Promise<Language | null> {
 async function getLanguageByBcp47(bcp47: string): Promise<Language | null> {
   const result = await prismaService.language.findFirst({
     where: { bcp47 },
-    include: { languageName: true }
+    include: { name: true }
   })
   return result as unknown as Language
 }
@@ -61,14 +61,7 @@ async function digestMediaLanguage(
   const { languageId, bcp47, iso3, nameNative } = mediaLanguage
   const body = {
     bcp47: isEmpty(bcp47) ? undefined : bcp47,
-    iso3: isEmpty(iso3) ? undefined : iso3,
-    name: [
-      {
-        value: nameNative,
-        languageId: languageId.toString(),
-        primary: true
-      }
-    ]
+    iso3: isEmpty(iso3) ? undefined : iso3
   }
 
   const primaryName = {
@@ -116,20 +109,6 @@ async function digestMediaLanguageMetadata(
     ) != null
   )
     return
-
-  await prismaService.language.update({
-    where: { id: languageId.toString() },
-    data: {
-      name: [
-        ...language.name,
-        {
-          value: name,
-          languageId: metadataLanguage.id,
-          primary: false
-        }
-      ]
-    }
-  })
 
   await prismaService.languageName.upsert({
     where: {

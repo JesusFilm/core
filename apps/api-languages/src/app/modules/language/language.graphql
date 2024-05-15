@@ -3,6 +3,7 @@ type Language @key(fields: "id") @cacheControl(maxAge: 86400) {
   bcp47: String
   iso3: String
   name(languageId: ID, primary: Boolean): [Translation!]!
+    @cacheControl(maxAge: 86400)
 }
 
 enum LanguageIdType {
