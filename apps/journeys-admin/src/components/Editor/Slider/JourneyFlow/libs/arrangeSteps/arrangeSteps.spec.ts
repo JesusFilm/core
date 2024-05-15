@@ -89,16 +89,16 @@ describe('arrangeSteps', () => {
   it('should return the positions of each step', () => {
     const positions = arrangeSteps(steps)
     expect(positions).toEqual({
-      'step0.id': { x: 0, y: -113 },
-      'step1.id': { x: 400, y: -113 },
-      'step2.id': { x: 800, y: -113 },
-      'step3.id': { x: 1200, y: -113 }
+      'step0.id': { x: 0, y: -8 },
+      'step1.id': { x: 400, y: -8 },
+      'step2.id': { x: 800, y: -8 },
+      'step3.id': { x: 1200, y: -8 }
     })
   })
 
   it('should handle a single step', () => {
     const positions = arrangeSteps([steps[0]])
-    expect(positions).toEqual({ 'step0.id': { x: 0, y: -113 } })
+    expect(positions).toEqual({ 'step0.id': { x: 0, y: -8 } })
   })
 
   it('should return positions if there are action within a step', () => {
@@ -115,8 +115,8 @@ describe('arrangeSteps', () => {
       { ...steps[1] }
     ])
     expect(positions).toEqual({
-      'step0.id': { x: 0, y: -113 },
-      'step1.id': { x: 400, y: -113 }
+      'step0.id': { x: 0, y: -8 },
+      'step1.id': { x: 400, y: -8 }
     })
   })
 })
