@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack'
+import { alpha } from '@mui/material/styles'
 import { ReactElement } from 'react'
 import { NodeProps } from 'reactflow'
 
@@ -29,25 +30,25 @@ export function StepBlockNode({
 
   return step != null ? (
     <>
-      {isSelected && (
-        <StepBlockNodeMenu
-          className="fab"
-          step={step}
-          xPos={xPos}
-          yPos={yPos}
-        />
-      )}
+      <StepBlockNodeMenu
+        in={isSelected}
+        className="fab"
+        step={step}
+        xPos={xPos}
+        yPos={yPos}
+      />
       <Stack
-        gap={0.5}
         direction="column"
         sx={{
           background: (theme) =>
             isSelected
-              ? `${theme.palette.secondary.dark}18`
-              : `${theme.palette.background.default}10`,
-          border: (theme) => `2px solid ${theme.palette.secondary.dark}0D`,
+              ? alpha(theme.palette.secondary.dark, 0.095)
+              : alpha(theme.palette.background.default, 0.064),
+          border: (theme) =>
+            `2px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
           borderRadius: 3,
-          maxWidth: STEP_NODE_WIDTH
+          maxWidth: STEP_NODE_WIDTH,
+          transition: (theme) => theme.transitions.create('background')
         }}
       >
         <BaseNode
