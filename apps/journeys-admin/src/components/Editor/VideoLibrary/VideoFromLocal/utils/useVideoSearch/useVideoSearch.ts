@@ -65,11 +65,14 @@ export function useVideoSearch(): UseVideoSearchResult {
           hits: resultHits,
           page: pageNumber,
           nbPages: totalPages
-        } = await index.search(searchQuery, { page, filters: 'languageId:529' })
+        } = await index.search(searchQuery, {
+          page,
+          hitsPerPage: 5,
+          filters: 'languageId:529'
+        })
 
         const newHits =
           loadMore === true ? [...hits, ...resultHits] : resultHits
-
         setHits(newHits)
         setCurrentPage(pageNumber)
         setTotalPages(totalPages)
@@ -78,11 +81,10 @@ export function useVideoSearch(): UseVideoSearchResult {
         console.error('Error occurred while searching:', error)
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [hits]
   )
 
-  const handleLoadMore = async (searchQuery: string): Promise<void> => {
+  async function handleLoadMore(searchQuery: string): Promise<void> {
     if (isEnd || loading) return
     await handleSearch(searchQuery, currentPage + 1, true)
   }

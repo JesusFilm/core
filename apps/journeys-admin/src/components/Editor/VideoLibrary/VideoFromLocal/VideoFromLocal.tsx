@@ -46,10 +46,9 @@ export function VideoFromLocal({
 
   useEffect(() => {
     void handleSearch(searchQuery, 0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery])
 
-  console.log('algoliaVideos', algoliaVideos)
-  console.log('searchQuery', searchQuery)
   return (
     <>
       <VideoSearch
