@@ -1,1 +1,1 @@
-export { useBlockDeleteMutation } from './useBlockDeleteMutation'
+export { useBlockDeleteMutation, BLOCK_DELETE } from './useBlockDeleteMutation'

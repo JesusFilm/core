@@ -20,8 +20,10 @@ import {
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../libs/TestEditorState'
+import { BLOCK_DELETE } from '../../../../../../../libs/useBlockDeleteMutation'
+import { deleteBlockMock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 
-import { BLOCK_DELETE, DeleteBlock } from './DeleteBlock'
+import { DeleteBlock } from './DeleteBlock'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -72,28 +74,6 @@ describe('DeleteBlock', () => {
         children: [selectedBlock, block1, block2]
       }
     ]
-  }
-
-  const deleteBlockMock: MockedResponse<BlockDelete> = {
-    request: {
-      query: BLOCK_DELETE,
-      variables: {
-        id: selectedBlock.id,
-        parentBlockId: selectedBlock.parentBlockId,
-        journeyId: 'journeyId'
-      }
-    },
-    result: {
-      data: {
-        blockDelete: [
-          {
-            __typename: 'TypographyBlock',
-            id: selectedBlock.id,
-            parentOrder: selectedBlock.parentOrder
-          }
-        ]
-      }
-    }
   }
 
   const deleteCardMock: MockedResponse<BlockDelete> = {
