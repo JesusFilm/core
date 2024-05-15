@@ -2,8 +2,9 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
-import { styled, useTheme } from '@mui/material/styles'
+import { darken, styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+// import { darken, styled, useTheme } from '@mui/material/styles'
 import Zoom from '@mui/material/Zoom'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef } from 'react'
@@ -189,7 +190,12 @@ export function Slider(): ReactElement {
             borderStyle: 'solid',
             borderColor: 'divider',
             borderRadius: '41px',
-            marginLeft: '30px'
+            marginLeft: '30px',
+            transition: (theme) => theme.transitions.create('background-color'),
+            '&:hover': {
+              backgroundColor: (theme) =>
+                darken(theme.palette.background.paper, 0.1)
+            }
           }}
         >
           <ChevronLeftIcon />

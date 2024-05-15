@@ -39,7 +39,7 @@ export function UnsplashSearch({
             fullWidth
             inputProps={{
               'aria-label': 'UnsplashSearch',
-              enterkeyhint: 'Search'
+              enterKeyHint: 'Search'
             }}
             InputProps={{
               startAdornment: (

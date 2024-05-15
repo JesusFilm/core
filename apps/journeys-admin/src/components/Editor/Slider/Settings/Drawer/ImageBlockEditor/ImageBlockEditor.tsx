@@ -69,8 +69,9 @@ export function ImageBlockEditor({
   const TabParams = { 0: 'unsplash-image', 1: 'custom-image', 2: 'ai-image' }
 
   function setRoute(param: string): void {
-    router.query.param = param
-    void router.push(router, undefined, { shallow: true })
+    void router.push({ query: { ...router.query, param } }, undefined, {
+      shallow: true
+    })
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })

@@ -81,11 +81,12 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
     })
-
-    router.query.param = 'step-footer'
-    void router.push(router)
+    const param = 'step-footer'
+    void router.push({ query: { ...router.query, param } }, undefined, {
+      shallow: true
+    })
     router.events.on('routeChangeComplete', () => {
-      setBeaconPageViewed('Step Footer')
+      setBeaconPageViewed(param)
     })
   }
 

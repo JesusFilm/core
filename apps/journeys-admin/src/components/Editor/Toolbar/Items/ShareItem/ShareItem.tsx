@@ -63,8 +63,9 @@ export function ShareItem({
     closeMenu?.() // test e2e
   }
   function setRoute(param: string): void {
-    router.query.param = param
-    void router.push(router, undefined, { shallow: true })
+    void router.push({ query: { ...router.query, param } }, undefined, {
+      shallow: true
+    })
     router.events.on('routeChangeComplete', () => {
       setBeaconPageViewed(param)
     })
