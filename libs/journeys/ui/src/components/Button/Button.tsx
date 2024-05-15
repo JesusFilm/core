@@ -140,16 +140,6 @@ export function Button({
           outboundActionValue: action.url
         }
       })
-    } else if (action?.__typename === 'NavigateToJourneyAction') {
-      TagManager.dataLayer({
-        dataLayer: {
-          ...eventProperties,
-          event: 'outbound_action_click',
-          buttonLabel: label,
-          outboundActionType: GoalType.Journey,
-          outboundActionValue: action.journey?.id
-        }
-      })
     } else {
       TagManager.dataLayer({
         dataLayer: {
