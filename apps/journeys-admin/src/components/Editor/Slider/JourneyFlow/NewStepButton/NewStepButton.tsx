@@ -31,9 +31,8 @@ export function NewStepButton(): ReactElement {
       y: event.clientY
     })
 
-    const xCoordinate = parseInt(x.toString() as string) - STEP_NODE_CARD_WIDTH
-    const yCoordinate =
-      parseInt(y.toString() as string) + STEP_NODE_CARD_HEIGHT / 2
+    const xCoordinate = parseInt(x.toString()) - STEP_NODE_CARD_WIDTH
+    const yCoordinate = parseInt(y.toString()) + STEP_NODE_CARD_HEIGHT / 2
     const data = await createStep({ x: xCoordinate, y: yCoordinate })
 
     if (data != null) {
