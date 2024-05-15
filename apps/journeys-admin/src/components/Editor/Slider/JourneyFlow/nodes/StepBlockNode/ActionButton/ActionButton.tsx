@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
@@ -7,6 +8,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import EmailIcon from '@core/shared/ui/icons/Email'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
+import { ActionFields as Action } from '../../../../../../../../__generated__/ActionFields'
 import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
 import { useUpdateEdge } from '../../../libs/useUpdateEdge'
 import { BaseNode } from '../../BaseNode'
@@ -24,12 +26,24 @@ export function ActionButton({
   const { t } = useTranslation('apps-journeys-admin')
   const updateEdge = useUpdateEdge()
 
-  function getIcon(typename?: string): ReactNode {
-    switch (typename) {
+  function getIcon(action?: Action | null): ReactNode {
+    switch (action?.__typename) {
       case 'LinkAction':
-        return <LinkIcon sx={{ fontSize: 10 }} />
+        return (
+          <Tooltip title={action.url} placement="left" arrow>
+            <LinkIcon
+              sx={{ fontSize: 10, position: 'absolute', left: -20, top: 7 }}
+            />
+          </Tooltip>
+        )
       case 'EmailAction':
-        return <EmailIcon sx={{ fontSize: 10 }} />
+        return (
+          <Tooltip title={action.email} placement="left" arrow>
+            <EmailIcon
+              sx={{ fontSize: 10, position: 'absolute', left: -20, top: 8 }}
+            />
+          </Tooltip>
+        )
       default:
         return <></>
     }
@@ -49,33 +63,33 @@ export function ActionButton({
     case 'ButtonBlock':
       title =
         block.label != null && block.label !== '' ? block.label : t('Button')
-      icon = getIcon(block.action?.__typename)
+      icon = getIcon(block.action)
       isSourceConnected = getSourceConnection(block)
       break
     case 'FormBlock':
       title = t('Form')
-      icon = getIcon(block.action?.__typename)
+      icon = getIcon(block.action)
       isSourceConnected = getSourceConnection(block)
       break
     case 'RadioOptionBlock':
       title =
         block.label != null && block.label !== '' ? block.label : t('Option')
-      icon = getIcon(block.action?.__typename)
+      icon = getIcon(block.action)
       isSourceConnected = getSourceConnection(block)
       break
     case 'SignUpBlock':
       title = t('Subscribe')
-      icon = getIcon(block.action?.__typename)
+      icon = getIcon(block.action)
       isSourceConnected = getSourceConnection(block)
       break
     case 'TextResponseBlock':
       title = t('Feedback')
-      icon = getIcon(block.action?.__typename)
+      icon = getIcon(block.action)
       isSourceConnected = getSourceConnection(block)
       break
     case 'VideoBlock':
       title = block.video?.title?.[0]?.value ?? block.title ?? t('Video')
-      icon = getIcon(block.action?.__typename)
+      icon = getIcon(block.action)
       isSourceConnected = getSourceConnection(block)
       break
     case 'StepBlock':
@@ -95,16 +109,14 @@ export function ActionButton({
       <Box
         sx={{
           px: 3,
-          gap: 1,
           opacity: selected ? 1 : 0.7,
           margin: 0,
           borderTop: (theme) => `1px solid ${theme.palette.secondary.dark}1A`,
           height: ACTION_BUTTON_HEIGHT,
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center'
+          width: '100%'
         }}
       >
+        {icon}
         <Typography
           align="left"
           noWrap
@@ -116,7 +128,6 @@ export function ActionButton({
         >
           {title}
         </Typography>
-        {icon}
       </Box>
     </BaseNode>
   )
