@@ -176,10 +176,9 @@ export function Canvas(): ReactElement {
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
                 transform: `scale(${scale})`,
-                margin: `${calculateScaledMargin(
-                  CARD_HEIGHT,
-                  scale
-                )} ${calculateScaledMargin(CARD_WIDTH, scale)}`,
+                margin: `calc(${calculateScaledMargin(CARD_HEIGHT, scale)} + ${
+                  scale < 0.65 ? '20px' : '0px'
+                }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
                 borderRadius: 6,
                 transition: (theme) =>
                   theme.transitions.create('border-color', {

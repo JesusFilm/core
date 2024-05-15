@@ -18,6 +18,7 @@ export function StepBlockNodeIcon({
 }: StepBlockNodeIconProps): ReactElement {
   let background: string | undefined
   let Icon: typeof SvgIcon
+  let color = 'background.paper'
   switch (typename) {
     case 'VideoBlock':
       background = 'linear-gradient(to bottom, #f89f4c, #de7818)'
@@ -37,6 +38,8 @@ export function StepBlockNodeIcon({
       Icon = AlignCenterIcon
       break
     default:
+      background = '#FFFFFF'
+      color = 'text.primary'
       Icon = FlexAlignBottom1Icon
   }
 
@@ -49,7 +52,7 @@ export function StepBlockNodeIcon({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: 'background.paper',
+        color,
         background
       }}
     >

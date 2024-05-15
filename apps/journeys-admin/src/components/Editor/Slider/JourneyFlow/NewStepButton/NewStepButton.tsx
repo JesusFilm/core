@@ -27,13 +27,12 @@ export function NewStepButton(): ReactElement {
   async function handleClick(event: MouseEvent): Promise<void> {
     if (reactFlowInstance == null || journey == null) return
     const { x, y } = reactFlowInstance.screenToFlowPosition({
-      x: (event as unknown as MouseEvent).clientX,
-      y: (event as unknown as MouseEvent).clientY
+      x: event.clientX,
+      y: event.clientY
     })
 
-    const xCoordinate = parseInt(x.toString() as string) - STEP_NODE_CARD_WIDTH
-    const yCoordinate =
-      parseInt(y.toString() as string) + STEP_NODE_CARD_HEIGHT / 2
+    const xCoordinate = Math.trunc(x) - STEP_NODE_CARD_WIDTH
+    const yCoordinate = Math.trunc(y) + STEP_NODE_CARD_HEIGHT / 2
     const data = await createStep({ x: xCoordinate, y: yCoordinate })
 
     if (data != null) {

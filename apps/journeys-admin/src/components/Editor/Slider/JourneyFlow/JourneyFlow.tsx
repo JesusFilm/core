@@ -204,8 +204,8 @@ export function JourneyFlow(): ReactElement {
         })
 
         void createStep({
-          x: parseInt(x.toString() as string),
-          y: parseInt(y.toString() as string) - STEP_NODE_CARD_HEIGHT / 2,
+          x: Math.trunc(x),
+          y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
           source: connectingParams.current.nodeId,
           sourceHandle: connectingParams.current.handleId
         })
@@ -219,8 +219,8 @@ export function JourneyFlow(): ReactElement {
   ): Promise<void> => {
     if (journey == null || node.type !== 'StepBlock') return
 
-    const x = parseInt(node.position.x.toString() as string)
-    const y = parseInt(node.position.y.toString() as string)
+    const x = Math.trunc(node.position.x)
+    const y = Math.trunc(node.position.y)
     await stepBlockPositionUpdate({
       variables: {
         id: node.id,

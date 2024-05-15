@@ -10,6 +10,7 @@ import {
   STEP_NODE_CARD_HEIGHT,
   STEP_NODE_CARD_WIDTH,
   STEP_NODE_HEIGHT_GAP,
+  STEP_NODE_OFFSET,
   STEP_NODE_WIDTH_GAP
 } from '../../nodes/StepBlockNode/libs/sizes'
 import { filterActionBlocks } from '../filterActionBlocks'
@@ -76,7 +77,7 @@ export function arrangeSteps(steps: TreeStepBlock[]): PositionMap {
     reduce<TreeStepBlock, TreeStepBlock | null>(
       column,
       (result, step) => {
-        let stepY = -8 // 8 is the offset required to make the start edge flat
+        let stepY = STEP_NODE_OFFSET
         if (result != null) {
           stepY =
             positions[result.id].y +
