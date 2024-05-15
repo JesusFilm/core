@@ -1,6 +1,8 @@
-import { useTheme } from '@mui/material/styles'
+import { alpha, useTheme } from '@mui/material/styles'
 import { CSSProperties, ReactElement, ReactNode, useState } from 'react'
 import { BaseEdge as DefaultBaseEdge, useOnSelectionChange } from 'reactflow'
+
+import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import {
   MARKER_END_DEFAULT_COLOR,
@@ -21,6 +23,7 @@ export function BaseEdge({
   children
 }: BaseEdgeProps): ReactElement {
   const [edgeSelected, setEdgeSelected] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
   const theme = useTheme()
 
   useOnSelectionChange({
@@ -34,8 +37,25 @@ export function BaseEdge({
     }
   })
 
+  const props = !hasTouchScreen() && {
+    onMouseOver: () => setIsHovering(true),
+    onMouseLeave: () => setIsHovering(false)
+  }
+
+  let stroke: CSSProperties['stroke']
+
+  if (edgeSelected) {
+    stroke = theme.palette.primary.main
+  } else {
+    if (isHovering) {
+      stroke = alpha(theme.palette.primary.main, 0.5)
+    } else {
+      stroke = alpha(theme.palette.secondary.dark, 0.1)
+    }
+  }
+
   return (
-    <>
+    <g {...props} data-testid={`BaseEdge-${id}`}>
       <DefaultBaseEdge
         path={edgePath}
         markerEnd={`url(#1__color=${
@@ -43,13 +63,12 @@ export function BaseEdge({
         }&height=10&type=arrowclosed&width=10)`}
         style={{
           strokeWidth: 2,
-          stroke: edgeSelected
-            ? theme.palette.primary.main
-            : `${theme.palette.secondary.dark}1A`,
+          stroke,
+          transition: theme.transitions.create('stroke'),
           ...style
         }}
       />
       {children}
-    </>
+    </g>
   )
 }
