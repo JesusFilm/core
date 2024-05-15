@@ -1,28 +1,20 @@
 import { gql, useMutation } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
-import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
 import { BlockDuplicate } from '../../../../../../../../__generated__/BlockDuplicate'
-import {
-  BlockFields,
-  BlockFields_StepBlock as StepBlock
-} from '../../../../../../../../__generated__/BlockFields'
-import { MenuItem } from '../../../../../../MenuItem'
+import { BlockFields } from '../../../../../../../../__generated__/BlockFields'
 
 interface DuplicateBlockProps {
-  variant: 'button' | 'list-item'
   handleClick?: () => void
   disabled?: boolean
-  block?: TreeBlock
 }
 
 export const BLOCK_DUPLICATE = gql`
@@ -34,10 +26,8 @@ export const BLOCK_DUPLICATE = gql`
 `
 
 export function DuplicateBlock({
-  variant,
   handleClick,
-  disabled = false,
-  block
+  disabled = false
 }: DuplicateBlockProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
@@ -47,39 +37,28 @@ export function DuplicateBlock({
   } = useEditor()
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
-  const currentBlock = block ?? selectedBlock
-  const blockType = currentBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
-  const disableAction = currentBlock == null || disabled
+  const disableAction = selectedBlock == null || disabled
 
   const handleDuplicateBlock = async (): Promise<void> => {
-    if (currentBlock != null && journey != null) {
-      const { id, parentOrder } = currentBlock
+    if (selectedBlock != null && journey != null) {
+      const { id, parentOrder } = selectedBlock
       if (parentOrder == null) return
 
       const { data } = await blockDuplicate({
         variables: {
           id,
           journeyId: journey.id,
-          parentOrder:
-            currentBlock.__typename === 'StepBlock' ? null : parentOrder + 1
+          parentOrder: parentOrder + 1
         },
         update(cache, { data }) {
           if (data?.blockDuplicate != null) {
             const nextBlock = data.blockDuplicate[parentOrder + 1]
-            const lastStep = last(
-              data.blockDuplicate.filter(
-                (block) => block.__typename === 'StepBlock'
-              )
-            )
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const duplicatedBlockRef = cache.writeFragment({
-                    data:
-                      currentBlock.__typename === 'StepBlock'
-                        ? lastStep
-                        : nextBlock,
+                    data: nextBlock,
                     fragment: gql`
                       fragment DuplicatedBlock on Block {
                         id
@@ -90,84 +69,34 @@ export function DuplicateBlock({
                 }
               }
             })
-            if (currentBlock.__typename === 'StepBlock') {
-              cache.modify({
-                fields: {
-                  blocks(existingBlockRefs = []) {
-                    const newStepBlockRef = cache.writeFragment({
-                      data: lastStep,
-                      fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                    })
-                    return [...existingBlockRefs, newStepBlockRef]
-                  }
-                }
-              })
-            }
           }
         }
       })
       if (data?.blockDuplicate != null) {
-        if (currentBlock.__typename === 'StepBlock') {
-          const stepBlocks = transformer(
-            data?.blockDuplicate as BlockFields[]
-          ) as Array<TreeBlock<StepBlock>>
-          const steps = stepBlocks.filter(
-            (block) => block.__typename === 'StepBlock'
-          )
-          const duplicatedStep = last(steps)
-          dispatch({
-            type: 'SetSelectedStepAction',
-            selectedStep: duplicatedStep
-          })
-        } else {
-          const block = transformer(data.blockDuplicate as BlockFields[])
-          const duplicatedBlock = block[parentOrder + 1]
-          dispatch({
-            type: 'SetSelectedBlockAction',
-            selectedBlock: duplicatedBlock
-          })
-        }
+        const block = transformer(data.blockDuplicate as BlockFields[])
+        const duplicatedBlock = block[parentOrder + 1]
+        dispatch({
+          type: 'SetSelectedBlockAction',
+          selectedBlock: duplicatedBlock
+        })
       }
     }
-    enqueueSnackbar(
-      t('{{ blockLabel }} Duplicated', {
-        blockLabel: blockType === 'Card' ? t('Card') : t('Block')
-      }),
-      {
-        variant: 'success',
-        preventDuplicate: true
-      }
-    )
+    enqueueSnackbar(t('Block Duplicated'), {
+      variant: 'success',
+      preventDuplicate: true
+    })
     handleClick?.()
   }
 
   return (
-    <>
-      {variant === 'button' ? (
-        <IconButton
-          id={`duplicate-${blockType}-actions`}
-          aria-label={`Duplicate ${blockType} Actions`}
-          disabled={disableAction}
-          onMouseUp={handleDuplicateBlock}
-          data-testid={`duplicate-${blockType}`}
-        >
-          <CopyLeftIcon />
-        </IconButton>
-      ) : (
-        <MenuItem
-          label={t('Duplicate {{ blockLabel }}', {
-            blockLabel: blockType === 'Card' ? t('Card') : t('Block')
-          })}
-          icon={<CopyLeftIcon color="inherit" />}
-          disabled={disableAction}
-          onMouseUp={handleDuplicateBlock}
-          testId={`Duplicate-${blockType}`}
-        />
-      )}
-    </>
+    <IconButton
+      id="duplicate-block-actions"
+      aria-label="Duplicate Block Actions"
+      disabled={disableAction}
+      onMouseUp={handleDuplicateBlock}
+      data-testid="duplicate-block"
+    >
+      <CopyLeftIcon />
+    </IconButton>
   )
 }

@@ -78,7 +78,18 @@ describe('CustomDomainResolver', () => {
       )
       expect(prismaService.customDomain.findUnique).toHaveBeenCalledWith({
         where: { id: 'customDomainId' },
-        include: { team: { include: { userTeams: true } } }
+        include: {
+          team: {
+            include: {
+              userTeams: true,
+              journeys: {
+                include: {
+                  userJourneys: true
+                }
+              }
+            }
+          }
+        }
       })
     })
 

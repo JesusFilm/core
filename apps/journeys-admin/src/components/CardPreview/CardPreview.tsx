@@ -1,4 +1,3 @@
-import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -13,7 +12,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
-import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
+import { useBlockOrderUpdateMutation } from '../../libs/useBlockOrderUpdateMutation'
 import { useStepAndCardBlockCreateMutation } from '../../libs/useStepAndCardBlockCreateMutation'
 
 import { CardList } from './CardList'
@@ -47,19 +46,6 @@ export interface CardPreviewProps {
   testId?: string
 }
 
-export const STEPS_ORDER_UPDATE = gql`
-  mutation StepsOrderUpdate($id: ID!, $journeyId: ID!, $parentOrder: Int!) {
-    blockOrderUpdate(
-      id: $id
-      journeyId: $journeyId
-      parentOrder: $parentOrder
-    ) {
-      id
-      parentOrder
-    }
-  }
-`
-
 export function CardPreview({
   steps,
   selected,
@@ -71,7 +57,7 @@ export function CardPreview({
 }: CardPreviewProps): ReactElement {
   const [isDragging, setIsDragging] = useState(false)
   const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
-  const [stepsOrderUpdate] = useMutation<StepsOrderUpdate>(STEPS_ORDER_UPDATE)
+  const [stepsOrderUpdate] = useBlockOrderUpdateMutation()
   const { journey } = useJourney()
 
   const handleChange = (selectedId: string): void => {

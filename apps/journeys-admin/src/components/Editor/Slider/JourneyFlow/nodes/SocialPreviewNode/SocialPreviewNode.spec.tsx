@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { ReactFlowProvider } from 'reactflow'
 
 import { ActiveFab, EditorState } from '@core/journeys/ui/EditorProvider'
 import {
@@ -19,11 +20,16 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { SocialPreviewNode } from '.'
 
 describe('SocialPreviewNode', () => {
+  beforeEach(() => {
+    mockReactFlow()
+  })
+
   const image: ImageBlock = {
     id: 'image1.id',
     __typename: 'ImageBlock',
@@ -85,11 +91,13 @@ describe('SocialPreviewNode', () => {
 
   it('renders social preview node properly', async () => {
     render(
-      <MockedProvider>
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <SocialPreviewNode />
-        </JourneyProvider>
-      </MockedProvider>
+      <ReactFlowProvider>
+        <MockedProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <SocialPreviewNode />
+          </JourneyProvider>
+        </MockedProvider>
+      </ReactFlowProvider>
     )
 
     expect(screen.getByRole('img')).toHaveAttribute(
@@ -104,11 +112,13 @@ describe('SocialPreviewNode', () => {
 
   it('renders blank social preview node properly', async () => {
     render(
-      <MockedProvider>
-        <JourneyProvider value={{ journey: blankSeoJourney }}>
-          <SocialPreviewNode />
-        </JourneyProvider>
-      </MockedProvider>
+      <ReactFlowProvider>
+        <MockedProvider>
+          <JourneyProvider value={{ journey: blankSeoJourney }}>
+            <SocialPreviewNode />
+          </JourneyProvider>
+        </MockedProvider>
+      </ReactFlowProvider>
     )
 
     expect(screen.getByTestId('SocialPreviewPostEmpty')).toBeInTheDocument()
@@ -127,14 +137,16 @@ describe('SocialPreviewNode', () => {
     }
 
     render(
-      <MockedProvider>
-        <JourneyProvider value={{ journey: blankSeoJourney }}>
-          <EditorProvider initialState={state}>
-            <TestEditorState />
-            <SocialPreviewNode />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <ReactFlowProvider>
+        <MockedProvider>
+          <JourneyProvider value={{ journey: blankSeoJourney }}>
+            <EditorProvider initialState={state}>
+              <TestEditorState />
+              <SocialPreviewNode />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </ReactFlowProvider>
     )
 
     expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()

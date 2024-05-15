@@ -9,10 +9,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockDuplicate } from '../../../../../../../../__generated__/BlockDuplicate'
-import {
-  BlockFields_StepBlock as StepBlock,
-  BlockFields_TypographyBlock as TypographyBlock
-} from '../../../../../../../../__generated__/BlockFields'
+import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import {
   TypographyAlign,
@@ -40,29 +37,6 @@ describe('DuplicateBlock', () => {
     children: []
   }
 
-  const step: TreeBlock<StepBlock> = {
-    __typename: 'StepBlock',
-    id: 'stepId',
-    parentBlockId: 'journeyId',
-    parentOrder: 0,
-    locked: true,
-    nextBlockId: null,
-    children: [
-      {
-        id: 'card1.id',
-        __typename: 'CardBlock',
-        parentBlockId: 'stepId',
-        parentOrder: 0,
-        coverBlockId: null,
-        backgroundColor: null,
-        themeMode: null,
-        themeName: null,
-        fullscreen: false,
-        children: [block]
-      }
-    ]
-  }
-
   const blockOrder = block?.parentOrder != null ? block.parentOrder : 0
 
   const duplicateBlockMock: MockedResponse<BlockDuplicate> = {
@@ -86,27 +60,6 @@ describe('DuplicateBlock', () => {
     }
   }
 
-  const duplicateCardMock: MockedResponse<BlockDuplicate> = {
-    request: {
-      query: BLOCK_DUPLICATE,
-      variables: {
-        id: step.id,
-        journeyId: 'journeyId',
-        parentOrder: null
-      }
-    },
-    result: {
-      data: {
-        blockDuplicate: [
-          {
-            __typename: 'StepBlock',
-            id: 'duplicatedId'
-          }
-        ]
-      }
-    }
-  }
-
   it('should duplicate a block on button click', async () => {
     const duplicateBlockResultMock = jest.fn(() => ({
       ...duplicateBlockMock.result
@@ -123,7 +76,7 @@ describe('DuplicateBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock: block }}>
-              <DuplicateBlock variant="button" />
+              <DuplicateBlock />
             </EditorProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -133,128 +86,13 @@ describe('DuplicateBlock', () => {
     expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
     await userEvent.click(button)
     await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
-  })
-
-  it('should duplicate a block on menu click', async () => {
-    const duplicateBlockResultMock = jest.fn(() => ({
-      ...duplicateBlockMock.result
-    }))
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[{ ...duplicateBlockMock, result: duplicateBlockResultMock }]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock: block }}>
-              <DuplicateBlock variant="list-item" />
-            </EditorProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    await userEvent.click(getByRole('menuitem', { name: 'Duplicate Block' }))
-    await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
-  })
-
-  it('should duplicate a card on button click', async () => {
-    const duplicateCardResultMock = jest.fn(() => ({
-      ...duplicateCardMock.result
-    }))
-    render(
-      <MockedProvider
-        mocks={[{ ...duplicateCardMock, result: duplicateCardResultMock }]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock: step }}>
-              <DuplicateBlock variant="button" />
-            </EditorProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    const button = screen.getByRole('button')
-    expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
-    await userEvent.click(button)
-    await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
-  })
-
-  it('should duplicate a card on menu click', async () => {
-    const duplicateCardResultMock = jest.fn(() => ({
-      ...duplicateCardMock.result
-    }))
-    render(
-      <MockedProvider
-        mocks={[{ ...duplicateCardMock, result: duplicateCardResultMock }]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock: step }}>
-              <DuplicateBlock variant="list-item" />
-            </EditorProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    await userEvent.click(
-      screen.getByRole('menuitem', { name: 'Duplicate Card' })
-    )
-    await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
-  })
-
-  it('should call handleClick after clicking duplicate', async () => {
-    const handleClickMock = jest.fn()
-    const duplicateCardResultMock = jest.fn(() => ({
-      ...duplicateCardMock.result
-    }))
-    render(
-      <MockedProvider
-        mocks={[{ ...duplicateCardMock, result: duplicateCardResultMock }]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock: step }}>
-              <DuplicateBlock
-                variant="list-item"
-                handleClick={handleClickMock}
-              />
-            </EditorProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    await userEvent.click(
-      screen.getByRole('menuitem', { name: 'Duplicate Card' })
-    )
-    await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
-    await waitFor(() => expect(handleClickMock).toHaveBeenCalled())
   })
 
   it('should be disabled if nothing is selected', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <DuplicateBlock variant="button" />
+          <DuplicateBlock />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -265,96 +103,11 @@ describe('DuplicateBlock', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <DuplicateBlock variant="button" disabled />
+          <DuplicateBlock disabled />
         </MockedProvider>
       </SnackbarProvider>
     )
     expect(screen.getByRole('button')).toBeDisabled()
-  })
-
-  it('should duplicate the card that is passed in', async () => {
-    const passedInStep: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'passedInStepId',
-      parentBlockId: 'journeyId',
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: [
-        {
-          id: 'card1.id',
-          __typename: 'CardBlock',
-          parentBlockId: 'passedInStepId',
-          parentOrder: 0,
-          coverBlockId: null,
-          backgroundColor: null,
-          themeMode: null,
-          themeName: null,
-          fullscreen: false,
-          children: [block]
-        }
-      ]
-    }
-
-    const passedInStepDuplicateMock: MockedResponse<BlockDuplicate> = {
-      request: {
-        query: BLOCK_DUPLICATE,
-        variables: {
-          id: passedInStep.id,
-          journeyId: 'journeyId',
-          parentOrder: null
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          blockDuplicate: [
-            {
-              __typename: 'StepBlock',
-              id: 'duplicatedId'
-            }
-          ]
-        }
-      }))
-    }
-
-    const selectedStepDuplicateMock = duplicateCardMock
-    const selectedStepDuplicateResultMock = jest.fn(() => ({
-      ...selectedStepDuplicateMock.result
-    }))
-
-    render(
-      <MockedProvider
-        mocks={[
-          passedInStepDuplicateMock,
-          {
-            ...selectedStepDuplicateMock,
-            result: selectedStepDuplicateResultMock
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock: step }}>
-              <DuplicateBlock variant="button" block={passedInStep} />
-            </EditorProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    const button = screen.getByRole('button')
-    expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
-    await userEvent.click(button)
-    await waitFor(() =>
-      expect(passedInStepDuplicateMock.result).toHaveBeenCalled()
-    )
-    await waitFor(() =>
-      expect(selectedStepDuplicateResultMock).not.toHaveBeenCalled()
-    )
   })
 
   it('should update cache on block duplication', async () => {
@@ -391,7 +144,7 @@ describe('DuplicateBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock: block }}>
-              <DuplicateBlock variant="button" />
+              <DuplicateBlock />
             </EditorProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -404,64 +157,6 @@ describe('DuplicateBlock', () => {
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: `TypographyBlock:${block.id}` },
       { __ref: 'TypographyBlock:duplicatedId' }
-    ])
-  })
-
-  it('should update cache on card duplication', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [
-          { __ref: `StepBlock:${step.id}` },
-          { __ref: `CardBlock:${step.children[0].id}` },
-          { __ref: `TypographyBlock:${block.id}` }
-        ],
-        id: 'journeyId',
-        __typename: 'Journey'
-      }
-    })
-
-    const duplicateCardResultMock = jest.fn(() => ({
-      data: {
-        blockDuplicate: [
-          { __typename: 'StepBlock', id: step.id },
-          {
-            __typename: 'StepBlock',
-            id: 'duplicatedId'
-          },
-          { __typename: 'CardBlock', id: step.children[0].id },
-          { __typename: 'TypographyBlock', id: block.id }
-        ]
-      }
-    }))
-    render(
-      <MockedProvider
-        cache={cache}
-        mocks={[{ ...duplicateCardMock, result: duplicateCardResultMock }]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider initialState={{ selectedBlock: step }}>
-              <DuplicateBlock variant="button" />
-            </EditorProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    const button = screen.getByRole('button')
-    expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
-    await userEvent.click(button)
-    await waitFor(() => expect(duplicateCardResultMock).toHaveBeenCalled())
-    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
-      { __ref: 'StepBlock:stepId' },
-      { __ref: `CardBlock:card1.id` },
-      { __ref: `TypographyBlock:typography0.id` },
-      { __ref: 'StepBlock:duplicatedId' }
     ])
   })
 })

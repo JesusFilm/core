@@ -18,6 +18,7 @@ export function StepBlockNodeIcon({
 }: StepBlockNodeIconProps): ReactElement {
   let background: string | undefined
   let Icon: typeof SvgIcon
+  let color = 'background.paper'
   switch (typename) {
     case 'VideoBlock':
       background = 'linear-gradient(to bottom, #f89f4c, #de7818)'
@@ -28,6 +29,7 @@ export function StepBlockNodeIcon({
       Icon = TextInput1Icon
       break
     case 'ButtonBlock':
+    case 'RadioQuestionBlock':
       background = 'linear-gradient(to bottom, #4c9bf8, #1873de)'
       Icon = GitBranchIcon
       break
@@ -35,11 +37,9 @@ export function StepBlockNodeIcon({
       background = 'linear-gradient(to bottom, #00C3C3, #03a3a3)'
       Icon = AlignCenterIcon
       break
-    case 'RadioQuestionBlock':
-      background = 'linear-gradient(to bottom, #b849ec, #9415d1)'
-      Icon = TextInput1Icon
-      break
     default:
+      background = '#FFFFFF'
+      color = 'text.primary'
       Icon = FlexAlignBottom1Icon
   }
 
@@ -50,10 +50,9 @@ export function StepBlockNodeIcon({
         height: 30,
         width: 30,
         display: 'flex',
-        position: 'absolute',
         alignItems: 'center',
         justifyContent: 'center',
-        color: 'white',
+        color,
         background
       }}
     >
