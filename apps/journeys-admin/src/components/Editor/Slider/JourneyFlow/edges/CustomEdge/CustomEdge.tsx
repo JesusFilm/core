@@ -37,14 +37,8 @@ export function CustomEdge({
   })
 
   useOnSelectionChange({
-    onChange: (selected) => {
-      const selectedEdge = selected.edges.find((edge) => edge.id === id)
-      if (selectedEdge != null) {
-        setSelected(true)
-      } else {
-        setSelected(false)
-      }
-    }
+    onChange: (selected) =>
+      setSelected(selected.edges.find((edge) => edge.id === id) != null)
   })
 
   const onEdgeClick = (): void => {
