@@ -1,3 +1,4 @@
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { styled, useTheme } from '@mui/material/styles'
@@ -12,11 +13,22 @@ import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
+import { UpdateJourneyFlowBackButtonClicked } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Content } from './Content'
 import { JourneyFlow } from './JourneyFlow'
 import { Settings } from './Settings'
+
+export const UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED = gql`
+  mutation UpdateJourneyFlowBackButtonClicked(
+    $input: JourneyProfileUpdateInput!
+  ) {
+    journeyProfileUpdate(input: $input) {
+      id
+    }
+  }
+`
 
 const StyledSwiper = styled(Swiper)(() => ({}))
 const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
@@ -32,6 +44,10 @@ export function Slider(): ReactElement {
   } = useEditor()
   const [backButtonClicked, setBackButtonClicked] = useState(false)
   const { t } = useTranslation('apps-journeys-admin')
+  const [updateBackButtonClick] =
+    useMutation<UpdateJourneyFlowBackButtonClicked>(
+      UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED
+    )
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
