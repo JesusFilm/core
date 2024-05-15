@@ -1,5 +1,6 @@
 import { UserTeamRole } from '.prisma/api-journeys-client'
 
+import { UserJourneyRole } from '../../__generated__/graphql'
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const customDomainAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
@@ -16,6 +17,7 @@ export const customDomainAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
       }
     }
   })
+  // read as manager or member of team
   can(Action.Read, 'CustomDomain', {
     team: {
       is: {
@@ -23,6 +25,25 @@ export const customDomainAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
           some: {
             userId: user.id,
             role: { in: [UserTeamRole.manager, UserTeamRole.member] }
+          }
+        }
+      }
+    }
+  })
+  // read as editor or owner of journey
+  can(Action.Read, 'CustomDomain', {
+    team: {
+      is: {
+        journeys: {
+          some: {
+            userJourneys: {
+              some: {
+                userId: user.id,
+                role: {
+                  in: [UserJourneyRole.owner, UserJourneyRole.editor]
+                }
+              }
+            }
           }
         }
       }

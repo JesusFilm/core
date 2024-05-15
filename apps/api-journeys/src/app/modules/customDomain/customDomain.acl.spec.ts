@@ -1,7 +1,7 @@
 import { subject } from '@casl/ability'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { UserTeamRole } from '../../__generated__/graphql'
+import { UserJourneyRole, UserTeamRole } from '../../__generated__/graphql'
 import { Action, AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 
 describe('customDomainAcl', () => {
@@ -183,7 +183,7 @@ describe('customDomainAcl', () => {
       ).toBe(true)
     })
 
-    it('should not allow when user is not team member', () => {
+    it('should not allow when user is not team member, journey owner or journey editor', () => {
       expect(
         ability.can(
           Action.Read,
@@ -193,6 +193,52 @@ describe('customDomainAcl', () => {
           })
         )
       ).toBe(false)
+    })
+
+    it('should  allow when user is journey owner', () => {
+      expect(
+        ability.can(
+          Action.Read,
+          subject('CustomDomain', {
+            ...customDomain,
+            team: {
+              journeys: [
+                {
+                  userJourneys: [
+                    {
+                      userId: 'userId',
+                      role: UserJourneyRole.editor
+                    }
+                  ]
+                }
+              ]
+            }
+          })
+        )
+      ).toBe(true)
+    })
+
+    it('should  allow when user is journey editor', () => {
+      expect(
+        ability.can(
+          Action.Read,
+          subject('CustomDomain', {
+            ...customDomain,
+            team: {
+              journeys: [
+                {
+                  userJourneys: [
+                    {
+                      userId: 'userId',
+                      role: UserJourneyRole.editor
+                    }
+                  ]
+                }
+              ]
+            }
+          })
+        )
+      ).toBe(true)
     })
   })
 })
