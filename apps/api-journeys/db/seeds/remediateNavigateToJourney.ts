@@ -13,11 +13,9 @@ function urlFromJourneySlug(journey: Journey | null): string {
 }
 
 async function remediateNavigateToJourney(): Promise<void> {
-  let offset = 0
   while (true) {
     const actions = await prisma.action.findMany({
       take: 100,
-      skip: offset,
       include: { journey: true },
       where: { journeyId: { not: null } }
     })
@@ -44,8 +42,6 @@ async function remediateNavigateToJourney(): Promise<void> {
     )
 
     if (actions.length === 0) break
-
-    offset += 100
   }
 }
 
