@@ -347,11 +347,12 @@ model UserRole {
 }
 
 model JourneyProfile {
-  id                        String    @id @default(uuid())
-  userId                    String    @unique
-  acceptedTermsAt           DateTime  @default(now())
-  lastActiveTeamId          String?
-  onboardingFormCompletedAt DateTime?
+  id                           String    @id @default(uuid())
+  userId                       String    @unique
+  acceptedTermsAt              DateTime  @default(now())
+  lastActiveTeamId             String?
+  onboardingFormCompletedAt    DateTime?
+  journeyFlowBackButtonClicked Boolean?
 
   @@index(userId)
 }

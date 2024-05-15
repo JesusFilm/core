@@ -1,21 +1,48 @@
-import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import Box from '@mui/material/Box'
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
-import { ComponentProps, ReactElement, ReactNode } from 'react'
-import { Handle, OnConnect, Position } from 'reactflow'
+import { useTranslation } from 'next-i18next'
+import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
+import {
+  Handle,
+  OnConnect,
+  Position,
+  useOnSelectionChange,
+  useStore
+} from 'reactflow'
+
+import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
+
+import {
+  ACTION_BUTTON_HEIGHT,
+  HANDLE_BORDER_WIDTH,
+  HANDLE_DIAMETER,
+  HANDLE_WITH_BORDER_DIAMETER,
+  NODE_EXTRA_DETECTION_WIDTH,
+  STEP_NODE_CARD_HEIGHT,
+  STEP_NODE_CARD_WIDTH,
+  STEP_NODE_WIDTH
+} from '../StepBlockNode/libs/sizes'
+
+import { PulseWrapper } from './PulseWrapper'
 
 const StyledHandle = styled(Handle)(() => ({}))
+const connectionHandleIdSelector = (state): string | null =>
+  state.connectionHandleId
+const connectionNodeIdSelector = (state): string | null =>
+  state.connectionNodeId
 
 interface BaseNodeProps {
   id?: string
   isTargetConnectable?: boolean
-  isSourceConnectable?: 'arrow' | boolean
+  isSourceConnectable?: boolean
   onSourceConnect?: (
     params: { target: string } | Parameters<OnConnect>[0]
   ) => void
   selected?: 'descendant' | boolean
+  isSourceConnected?: boolean
   sourceHandleProps?: Partial<ComponentProps<typeof StyledHandle>>
+  dragging?: boolean
   children?:
     | ((context: { selected: 'descendant' | boolean }) => ReactNode)
     | ReactNode
@@ -27,104 +54,130 @@ export function BaseNode({
   isSourceConnectable = false,
   onSourceConnect,
   selected = false,
+  isSourceConnected = false,
   sourceHandleProps,
+  dragging,
   children
 }: BaseNodeProps): ReactElement {
-  const theme = useTheme()
-  const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches
+  const { t } = useTranslation('apps-journeys-admin')
+  const connectionHandleId = useStore(connectionHandleIdSelector)
+  const connectionNodeId = useStore(connectionNodeIdSelector)
+  const isConnecting =
+    (connectionHandleId != null || connectionNodeId != null) &&
+    id !== connectionNodeId
+  const [targetSelected, setTargetSelected] = useState(false)
+  const [sourceSelected, setSourceSelected] = useState(false)
 
-  const desktopStyle = {
-    '.arrow': {
-      visibility: 'hidden'
-    },
-    ':hover .arrow': {
-      visibility: 'visible'
+  useOnSelectionChange({
+    onChange: (selected) => {
+      const selectedEdge = selected.edges[0]
+      setTargetSelected(selectedEdge?.target === id)
+      setSourceSelected(
+        selectedEdge?.sourceHandle != null
+          ? selectedEdge.sourceHandle === id
+          : selectedEdge?.source === id
+      )
     }
-  }
-
-  const touchStyle = {
-    '.arrow': {
-      visibility: selected === true ? 'visible' : 'hidden'
-    }
-  }
-
-  const borderColor = selected === true ? theme.palette.primary.main : '#AAACBB'
+  })
 
   return (
     <Box
       data-testid="BaseNode"
       sx={{
         position: 'relative',
-        ...(isTouchDevice ? touchStyle : desktopStyle)
+        cursor: dragging === true ? 'grabbing' : 'pointer',
+        '.arrow': {
+          opacity: 0,
+          transition: 'right 0.5s, opacity 0.4s'
+        },
+        ':hover .arrow': {
+          opacity: isSourceConnected ? 0 : 1,
+          right: -22 // animation travel length
+        }
       }}
     >
       {isFunction(children) ? children({ selected }) : children}
       {isTargetConnectable && (
-        <StyledHandle
-          type="target"
-          data-testid="BaseNodeTopHandle"
-          position={Position.Top}
-          sx={{
-            width: 7.5,
-            height: 7.5,
-            background: theme.palette.background.paper,
-            border: `2px solid ${borderColor}`,
-            outline: `1px solid ${theme.palette.background.paper}`,
-            outlineColor: theme.palette.background.paper,
-            cursor: 'pointer'
-          }}
-        />
-      )}
-      {isSourceConnectable !== false && (
-        <>
+        <PulseWrapper show={isConnecting}>
           <StyledHandle
-            id={id}
-            type="source"
-            data-testid="BaseNodeBottomHandle"
-            position={Position.Bottom}
-            onConnect={onSourceConnect}
-            {...sourceHandleProps}
+            type="target"
+            data-testid="BaseNodeLeftHandle"
+            position={Position.Left}
+            isConnectableStart={isConnecting}
+            isConnectable={id !== connectionNodeId}
             sx={{
-              width: 7.5,
-              height: 7.5,
-              background: theme.palette.background.paper,
-              border: `2px solid ${borderColor}`,
-              outline: `1px solid ${theme.palette.background.paper}`,
-              outlineColor: theme.palette.background.paper,
-              ...sourceHandleProps?.sx,
+              width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
+              height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
+              left: -HANDLE_WITH_BORDER_DIAMETER / 2,
+              top: (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2,
+              background: (theme) => theme.palette.background.default,
+              border: (theme) =>
+                isConnecting || targetSelected
+                  ? `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.primary.main}`
+                  : `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.secondary.light}80`,
+
               '&:after': {
-                content: '""',
+                display: isConnecting ? 'block' : 'none',
                 position: 'absolute',
-                transform: 'translate(-50%, -50%)',
-                top: '50%',
-                left: '50%',
-                width: 18,
-                height: 18,
-                backgroundColor: 'transparent',
-                borderRadius: '50%'
+                content: '""',
+                width: STEP_NODE_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
+                height: STEP_NODE_CARD_HEIGHT,
+                top: -STEP_NODE_CARD_HEIGHT / 2,
+                left: -NODE_EXTRA_DETECTION_WIDTH,
+                backgroundColor: 'transparent'
               }
             }}
-          >
-            {isSourceConnectable === 'arrow' && (
-              <ArrowDownwardRoundedIcon
-                data-testid="BaseNodeDownwardArrowIcon"
-                className="arrow"
-                sx={{
-                  display: 'flex',
-                  position: 'absolute',
-                  borderRadius: '50%',
-                  color: theme.palette.background.paper,
-                  fontSize: 'large',
-                  top: '50%',
-                  backgroundColor: 'primary.main',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  pointerEvents: 'none'
-                }}
-              />
-            )}
-          </StyledHandle>
-        </>
+          />
+        </PulseWrapper>
+      )}
+      {isSourceConnectable && (
+        <StyledHandle
+          id={id}
+          type="source"
+          title={t('Drag to connect')}
+          data-testid="BaseNodeRightHandle"
+          position={Position.Right}
+          onConnect={onSourceConnect}
+          {...sourceHandleProps}
+          sx={{
+            border: 'none',
+            width: HANDLE_DIAMETER,
+            height: HANDLE_DIAMETER,
+            background: (theme) =>
+              sourceSelected
+                ? theme.palette.primary.main
+                : `${theme.palette.secondary.light}A0`,
+            ...sourceHandleProps?.sx,
+
+            '&:after': {
+              content: '""',
+              position: 'absolute',
+              top: -((ACTION_BUTTON_HEIGHT - HANDLE_DIAMETER) / 2),
+              width:
+                id === 'SocialPreview'
+                  ? NODE_EXTRA_DETECTION_WIDTH * 2
+                  : STEP_NODE_CARD_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
+              height: ACTION_BUTTON_HEIGHT,
+              right: -NODE_EXTRA_DETECTION_WIDTH / 2,
+              backgroundColor: 'transparent'
+            }
+          }}
+        >
+          <ArrowRightIcon
+            data-testid="BaseNodeDownwardArrowIcon"
+            className="arrow"
+            sx={{
+              position: 'absolute',
+              borderRadius: '100%',
+              fontSize: 'large',
+              color: 'background.paper',
+              backgroundColor: 'primary.main',
+              top: -HANDLE_DIAMETER,
+              right: -HANDLE_DIAMETER,
+              pointerEvents: 'none'
+            }}
+          />
+        </StyledHandle>
       )}
     </Box>
   )
