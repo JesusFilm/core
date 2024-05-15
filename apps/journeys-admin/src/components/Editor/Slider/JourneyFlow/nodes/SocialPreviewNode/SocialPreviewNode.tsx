@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
+import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
@@ -139,7 +140,7 @@ export function SocialPreviewNode(): ReactElement {
                 borderRadius={1}
                 sx={{
                   backgroundColor: (theme) =>
-                    `${theme.palette.secondary.dark}1A`
+                    alpha(theme.palette.secondary.dark, 0.1)
                 }}
               />
             ) : (

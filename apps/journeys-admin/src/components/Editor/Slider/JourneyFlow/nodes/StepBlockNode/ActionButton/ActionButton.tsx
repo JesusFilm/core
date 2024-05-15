@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import { alpha } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
@@ -111,7 +112,8 @@ export function ActionButton({
           px: 3,
           opacity: selected ? 1 : 0.7,
           margin: 0,
-          borderTop: (theme) => `1px solid ${theme.palette.secondary.dark}1A`,
+          borderTop: (theme) =>
+            `1px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
           height: ACTION_BUTTON_HEIGHT,
           width: '100%'
         }}
