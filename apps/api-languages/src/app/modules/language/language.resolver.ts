@@ -8,7 +8,7 @@ import {
 } from '@nestjs/graphql'
 
 import { Language, Prisma } from '.prisma/api-languages-client'
-import { TranslationField } from '@core/nest/decorators/TranslationField'
+import { Translation } from '@core/nest/common/TranslationModule'
 
 import { LanguageIdType, LanguagesFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -43,12 +43,23 @@ export class LanguageResolver {
   }
 
   @ResolveField()
-  @TranslationField('name')
-  name(
+  async name(
     @Parent() language,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {}
+  ): Promise<Translation[]> {
+    const where: Prisma.LanguageNameWhereInput = {
+      parentLanguageId: language.id,
+      OR: languageId == null && primary == null ? undefined : []
+    }
+    if (languageId != null) where.OR?.push({ languageId })
+    if (primary != null) where.OR?.push({ primary })
+
+    return await this.prismaService.languageName.findMany({
+      where,
+      orderBy: { primary: 'desc' }
+    })
+  }
 
   @ResolveReference()
   async resolveReference(reference: {
