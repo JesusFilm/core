@@ -49,7 +49,7 @@ export function ActionButton({
     }
   }
 
-  function getSourceConnection(block): boolean {
+  function hasConnection(block): boolean {
     return (
       block.action?.__typename === 'NavigateToBlockAction' &&
       block.action?.blockId != null
@@ -64,33 +64,33 @@ export function ActionButton({
       title =
         block.label != null && block.label !== '' ? block.label : t('Button')
       icon = getIcon(block.action)
-      isSourceConnected = getSourceConnection(block)
+      isSourceConnected = hasConnection(block)
       break
     case 'FormBlock':
       title = t('Form')
       icon = getIcon(block.action)
-      isSourceConnected = getSourceConnection(block)
+      isSourceConnected = hasConnection(block)
       break
     case 'RadioOptionBlock':
       title =
         block.label != null && block.label !== '' ? block.label : t('Option')
       icon = getIcon(block.action)
-      isSourceConnected = getSourceConnection(block)
+      isSourceConnected = hasConnection(block)
       break
     case 'SignUpBlock':
       title = t('Subscribe')
       icon = getIcon(block.action)
-      isSourceConnected = getSourceConnection(block)
+      isSourceConnected = hasConnection(block)
       break
     case 'TextResponseBlock':
       title = t('Feedback')
       icon = getIcon(block.action)
-      isSourceConnected = getSourceConnection(block)
+      isSourceConnected = hasConnection(block)
       break
     case 'VideoBlock':
       title = block.video?.title?.[0]?.value ?? block.title ?? t('Video')
       icon = getIcon(block.action)
-      isSourceConnected = getSourceConnection(block)
+      isSourceConnected = hasConnection(block)
       break
     case 'StepBlock':
       title = t('Next Step →')
