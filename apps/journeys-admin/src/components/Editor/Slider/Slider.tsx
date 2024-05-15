@@ -6,7 +6,11 @@ import { ReactElement, useEffect, useRef } from 'react'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
-import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
@@ -25,7 +29,7 @@ export function Slider(): ReactElement {
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const {
-    state: { activeSlide, selectedStep },
+    state: { activeSlide, activeContent, selectedStep },
     dispatch
   } = useEditor()
 
@@ -66,6 +70,16 @@ export function Slider(): ReactElement {
   }
 
   function handlePrev(): void {
+    if (
+      activeSlide === ActiveSlide.Content &&
+      activeContent === ActiveContent.Goals
+    ) {
+      dispatch({
+        type: 'SetActiveContentAction',
+        activeContent:
+          selectedStep == null ? ActiveContent.Social : ActiveContent.Canvas
+      })
+    }
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: activeSlide - 1
