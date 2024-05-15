@@ -159,7 +159,7 @@ export function StepBlockNodeCard({
               overflow: 'hidden'
             }}
           >
-            {subtitle != null && subtitle !== '' ? (
+            {(subtitle != null && subtitle !== '') || title != null ? (
               subtitle
             ) : (
               <Skeleton
