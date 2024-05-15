@@ -14,7 +14,6 @@ import {
   Background,
   ControlButton,
   Controls,
-  Edge,
   NodeDragHandler,
   OnConnect,
   OnConnectEnd,
