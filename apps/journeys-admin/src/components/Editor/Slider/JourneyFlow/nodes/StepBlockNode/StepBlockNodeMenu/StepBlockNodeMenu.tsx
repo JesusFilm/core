@@ -7,7 +7,8 @@ import EllipsisIcon from '@core/shared/ui/icons/Ellipsis'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { DeleteBlock } from '../../../../Content/Canvas/QuickControls/DeleteBlock'
-import { DuplicateStep } from '../../../../Content/Canvas/QuickControls/DuplicateStep'
+
+import { DuplicateStep } from './DuplicateStep'
 
 interface StepBlockNodeMenuProps {
   step: TreeBlock<StepBlock>

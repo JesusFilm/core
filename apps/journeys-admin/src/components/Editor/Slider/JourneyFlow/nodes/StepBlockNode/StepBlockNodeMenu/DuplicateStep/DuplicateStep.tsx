@@ -13,9 +13,9 @@ import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
-} from '../../../../../../../../__generated__/BlockFields'
-import { StepDuplicate } from '../../../../../../../../__generated__/StepDuplicate'
-import { MenuItem } from '../../../../../../MenuItem'
+} from '../../../../../../../../../__generated__/BlockFields'
+import { StepDuplicate } from '../../../../../../../../../__generated__/StepDuplicate'
+import { MenuItem } from '../../../../../../../MenuItem'
 
 interface DuplicateStepProps {
   step: TreeBlock<StepBlock>
@@ -50,7 +50,7 @@ export function DuplicateStep({
   xPos,
   yPos,
   handleClick,
-  disabled = false
+  disabled
 }: DuplicateStepProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
@@ -139,7 +139,7 @@ export function DuplicateStep({
     <MenuItem
       label={t('Duplicate Card')}
       icon={<CopyLeftIcon color="inherit" />}
-      disabled={step == null}
+      disabled={disabled ?? step == null}
       onMouseUp={handleDuplicateStep}
       testId="Duplicate-Card"
     />
