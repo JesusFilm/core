@@ -1,9 +1,14 @@
 import { expect } from '@playwright/test'
-import { Page } from 'playwright-core'
 import dayjs from 'dayjs'
+import { Page } from 'playwright-core'
+
 import testData from '../utils/testData.json'
+
 let journeyName = ''
 let randomNumber = ''
+const thirtySecondsTimeout = 30000
+const fifteenSecondsTimeout = 15000
+const sixtySecondsTimeout = 60000
 
 export class JourneyPage {
   existingJourneyName = ''
@@ -12,6 +17,7 @@ export class JourneyPage {
   context
   journeyCardFrame =
     'div[data-testid="EditorCanvas"] div[data-testid="CanvasContainer"] iframe'
+
   constructor(page: Page) {
     this.page = page
     randomNumber =
@@ -39,6 +45,7 @@ export class JourneyPage {
     await this.navigateToPublisherPage()
     await this.verifyCreatedJourneyInTemplateList()
   }
+
   async verifyCreatedNewTemplateMovedToArchivedTab() {
     await this.clickThreeDotOfCreatedNewTemple()
     await this.clickArchiveOption()
@@ -46,6 +53,7 @@ export class JourneyPage {
     await this.clickArchivedTab()
     await this.verifyCreatedNewTemplateMovedToArchiveOrNot()
   }
+
   async verifyCreatedNewTemplateMovedToTrashTab() {
     await this.clickThreeDotOfCreatedNewTemple()
     await this.clickTrashOption()
@@ -54,6 +62,7 @@ export class JourneyPage {
     await this.clickTrashTab()
     await this.verifyCreatedNewTemplateMovedToTrashTabOrNot()
   }
+
   async verifyCreatedNewTemplateDetetedForever() {
     await this.clickThreeDotOfCreatedNewTemple()
     await this.clickDeleteForeverOption()
@@ -61,6 +70,7 @@ export class JourneyPage {
     await this.verifyToastMessage()
     await this.verifyCreatedNewTemplateRemovedFromTrashTabOrNot()
   }
+
   async navigateToDiscoverPage() {
     await expect(
       this.page.locator('a[data-testid="NavigationListItemDiscover"]')
@@ -72,10 +82,10 @@ export class JourneyPage {
       this.page.locator(
         'a[data-testid="NavigationListItemDiscover"][class*="Mui-selected"]'
       )
-    ).toBeVisible({ timeout: 30000 })
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
     await expect(
       this.page.locator('div[data-testid="JourneysAdminContainedIconButton"]')
-    ).toBeVisible({ timeout: 60000 })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
   async verifyCreatedJourneyMovedToTrash() {
@@ -86,6 +96,7 @@ export class JourneyPage {
     await this.clickTrashTab()
     await this.verifyCreatedNewJourneyMovedToTrashTabOrNot()
   }
+
   async verifyCreatedNewJourneyRestored() {
     await this.clickThreeDotOfCreatedNewJourney()
     await this.clickTheRestore()
@@ -94,6 +105,7 @@ export class JourneyPage {
     await this.clickActiveTab()
     await this.verifyCreatedNewJourneyMovedToActiveTabOrNot()
   }
+
   async verifyExistingJourneyMovedActiveToArchivedTab() {
     await this.clickThreeDotOfExistingJourney()
     await this.setExistingJourneyNameToJourneyName()
@@ -102,6 +114,7 @@ export class JourneyPage {
     await this.clickArchivedTab()
     await this.verifyJourneyMovedToArchiveOrNot()
   }
+
   async verifyJourneyDeletedForeverFromTrashTab() {
     await this.clickThreeDotOfCreatedNewJourney()
     await this.clickDeleteForeverOption()
@@ -109,6 +122,7 @@ export class JourneyPage {
     await this.verifySnackbarToastMessage('Journey Deleted')
     await this.verifyJourneyDeletedForeverInTrashTab()
   }
+
   async verifyJourneyMovedFromArchivedToActiveTab() {
     await this.clickThreeDotOfCreatedNewJourney()
     await this.clickUnarchiveOption()
@@ -116,6 +130,7 @@ export class JourneyPage {
     await this.clickActiveTab()
     await this.verifyCreatedNewJourneyMovedToActiveTabOrNot()
   }
+
   async verifyAllJourneysMovedActiveToArchivedTab() {
     await this.getJourneyListOfActiveTab()
     await this.clickThreeDotBesideSortByOption()
@@ -126,6 +141,7 @@ export class JourneyPage {
     await this.clickArchivedTab()
     await this.verifyAllJourneyMovedToArchivedTab()
   }
+
   async verifyAllJourneysMovedToTrash() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Trash All')
@@ -144,6 +160,7 @@ export class JourneyPage {
     await this.clickActiveTab()
     await this.verifyAllJourneyMovedToActiveTab()
   }
+
   async verifyAllJourneysDeletedForeverFromTrashTab() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Delete All Forever')
@@ -161,6 +178,7 @@ export class JourneyPage {
     await this.clickActiveTab()
     await this.verifyAllJourneyMovedToActiveTab()
   }
+
   async verifyJourneyCreatedViaTemplate() {
     await this.enterJourneysTypographyForTemplate()
     await this.clickDoneBtn()
@@ -171,6 +189,7 @@ export class JourneyPage {
     await this.backIcon()
     await this.verifyCreatedCustomJourneyInActiveList()
   }
+
   // Create a custom journey
   async createCustomJourney(): Promise<void> {
     await this.page
@@ -188,17 +207,18 @@ export class JourneyPage {
       .click()
     await this.page.getByRole('link', { name: 'Preview' }).click()
   }
+
   async clickCreateCustomJourney(): Promise<void> {
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
       )
-    ).toBeVisible({ timeout: 150000 })
+    ).toBeVisible({ timeout: fifteenSecondsTimeout })
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
       )
-    ).toBeHidden({ timeout: 15000 })
+    ).toBeHidden({ timeout: fifteenSecondsTimeout })
     await this.page
       .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
       .click()
@@ -206,8 +226,9 @@ export class JourneyPage {
       this.page.locator(
         'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
       )
-    ).toBeHidden({ timeout: 15000 })
+    ).toBeHidden({ timeout: fifteenSecondsTimeout })
   }
+
   async setJourneyName(journey: string) {
     journeyName =
       (journey == 'firstJourneyName'
@@ -223,8 +244,8 @@ export class JourneyPage {
         'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
       )
       .first()
-      .click({ timeout: 15000, delay: 1000 })
-    for (var clickRetry = 0; clickRetry < 5; clickRetry++) {
+      .click({ timeout: fifteenSecondsTimeout, delay: 1000 })
+    for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
       if (
         await this.page
           .frameLocator(this.journeyCardFrame)
@@ -242,7 +263,7 @@ export class JourneyPage {
             'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
           )
           .first()
-          .click({ timeout: 15000, delay: 1000 })
+          .click({ timeout: fifteenSecondsTimeout, delay: 1000 })
       }
     }
     await this.page
@@ -262,9 +283,11 @@ export class JourneyPage {
   async clickDoneBtn(): Promise<void> {
     await this.page.locator('button[data-testid="Fab"]').click()
   }
+
   async clickThreeDotBtnOfCustomJourney(): Promise<void> {
     await this.page.locator('button#edit-journey-actions').click()
   }
+
   async clickTitleInThreeDotOptions() {
     await this.page
       .locator(
@@ -273,16 +296,19 @@ export class JourneyPage {
       )
       .click()
   }
+
   async enterTitle() {
     await this.page.locator('input#title').click({ delay: 2000 })
     await this.page.locator('input#title').clear()
     await this.page.locator('input#title').fill(journeyName)
   }
+
   async clickSaveBtn() {
     await this.page
       .locator('div[role="dialog"] button', { hasText: 'Save' })
       .click()
   }
+
   async backIcon() {
     await this.page.locator('a[data-testid="ToolbarBackButton"]').click()
   }
@@ -290,13 +316,14 @@ export class JourneyPage {
   async verifyCreatedCustomJourneyInActiveList() {
     await expect(
       this.page.locator('span[data-testid="new-journey-badge"] div').first()
-    ).toBeVisible({ timeout: 30000 })
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
     await expect(
       this.page.locator('span[data-testid="new-journey-badge"] div', {
         hasText: journeyName
       })
     ).toBeVisible()
   }
+
   async clickOnTheCreatedCustomJourney() {
     await this.page
       .locator('span[data-testid="new-journey-badge"] div', {
@@ -305,8 +332,9 @@ export class JourneyPage {
       .click()
     await expect(
       this.page.locator('div[data-testid="StrategyItem"] button')
-    ).toBeVisible({ timeout: 15000 })
+    ).toBeVisible({ timeout: fifteenSecondsTimeout })
   }
+
   async clickTheCreateTempleteOption() {
     await this.page
       .locator(
@@ -316,6 +344,7 @@ export class JourneyPage {
       .click({ delay: 1000 })
     await this.page.waitForURL('**/publisher/**')
   }
+
   async verifyCreatedJourneyInTemplateList() {
     await expect(
       this.page
@@ -324,8 +353,9 @@ export class JourneyPage {
           { hasText: journeyName }
         )
         .first()
-    ).toBeVisible({ timeout: 30000 })
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
+
   async clickThreeDotOfCreatedNewTemple() {
     await this.page
       .locator(
@@ -335,11 +365,13 @@ export class JourneyPage {
       )
       .click()
   }
+
   async clickArchiveOption() {
     await this.page
       .locator('li[data-testid="JourneysAdminMenuItemArchive"]')
       .click()
   }
+
   async clickArchivedTab() {
     await this.page.locator('button[id*="archived-status-panel-tab"]').click()
     await expect(
@@ -348,6 +380,7 @@ export class JourneyPage {
       )
     ).toBeVisible()
   }
+
   async verifyCreatedNewTemplateMovedToArchiveOrNot() {
     await expect(
       this.page.locator(
@@ -356,24 +389,28 @@ export class JourneyPage {
       )
     ).toBeVisible()
   }
+
   async clickTrashOption() {
     await this.page
       .locator('li[data-testid="JourneysAdminMenuItem"]', { hasText: 'Trash' })
       .click()
   }
+
   async clickDeleteBtn() {
     await this.page
       .locator('div[role="dialog"] button', { hasText: 'Delete' })
       .click()
   }
+
   async verifyToastMessage() {
     await expect(this.page.locator('#notistack-snackbar')).toBeVisible({
-      timeout: 300000
+      timeout: thirtySecondsTimeout
     })
     await expect(this.page.locator('#notistack-snackbar')).toBeHidden({
-      timeout: 300000
+      timeout: thirtySecondsTimeout
     })
   }
+
   async clickTrashTab() {
     await this.page.locator('button[id*="trashed-status-panel-tab"]').click()
     await expect(
@@ -382,6 +419,7 @@ export class JourneyPage {
       )
     ).toBeVisible()
   }
+
   async verifyCreatedNewTemplateMovedToTrashTabOrNot() {
     await expect(
       this.page.locator(
@@ -390,6 +428,7 @@ export class JourneyPage {
       )
     ).toBeVisible()
   }
+
   async clickThreeDotOfCreatedNewJourney() {
     await this.page
       .locator(
@@ -407,6 +446,7 @@ export class JourneyPage {
       })
       .click()
   }
+
   async verifyCreatedNewJourneyMovedToTrashTabOrNot() {
     await expect(
       this.page.locator(
@@ -415,6 +455,7 @@ export class JourneyPage {
       )
     ).toBeVisible()
   }
+
   async clickActiveTab() {
     await this.page.locator('button[id*="active-status-panel-tab"]').click()
     await expect(
@@ -423,11 +464,13 @@ export class JourneyPage {
       )
     ).toBeVisible()
   }
+
   async clickRestoreBtn() {
     await this.page
       .locator('div[role="dialog"] button', { hasText: 'Restore' })
       .click()
   }
+
   async verifyCreatedNewJourneyMovedToActiveTabOrNot() {
     await expect(
       this.page.locator(
@@ -436,6 +479,7 @@ export class JourneyPage {
       )
     ).toBeVisible()
   }
+
   async clickDeleteForeverOption() {
     await this.page
       .locator('li[data-testid="JourneysAdminMenuItemDelete"] span', {
@@ -443,6 +487,7 @@ export class JourneyPage {
       })
       .click()
   }
+
   async verifyCreatedNewTemplateRemovedFromTrashTabOrNot() {
     await expect(
       this.page.locator(
@@ -451,9 +496,11 @@ export class JourneyPage {
       )
     ).toBeHidden()
   }
+
   async getJourneyName() {
     return journeyName
   }
+
   async clickThreeDotOfExistingJourney() {
     this.existingJourneyName = await this.page
       .locator('span[data-testid="new-journey-badge"] div', {
@@ -470,9 +517,11 @@ export class JourneyPage {
       .first()
       .click()
   }
+
   async setExistingJourneyNameToJourneyName() {
     journeyName = this.existingJourneyName
   }
+
   async verifyJourneyMovedToArchiveOrNot() {
     await expect(
       this.page.locator(
@@ -481,6 +530,7 @@ export class JourneyPage {
       )
     ).toBeVisible()
   }
+
   async verifyJourneyDeletedForeverInTrashTab() {
     await expect(
       this.page.locator(
@@ -489,11 +539,13 @@ export class JourneyPage {
       )
     ).toHaveCount(0)
   }
+
   async clickUnarchiveOption() {
     await this.page
       .locator('li[data-testid="JourneysAdminMenuItemUnarchive"]')
       .click()
   }
+
   async clickThreeDotBesideSortByOption() {
     await this.page
       .locator(
@@ -501,6 +553,7 @@ export class JourneyPage {
       )
       .click()
   }
+
   async selectThreeDotOptionsBesideSortByOption(option) {
     await this.page
       .locator('ul[aria-labelledby="edit-journey-actions"] li', {
@@ -508,6 +561,7 @@ export class JourneyPage {
       })
       .click()
   }
+
   async getJourneyListOfActiveTab() {
     await expect(
       this.page
@@ -522,6 +576,7 @@ export class JourneyPage {
       )
       .allInnerTexts()
   }
+
   async clickDialogBoxBtn(buttonName) {
     await this.page
       .locator('div[data-testid="dialog-action"] button', {
@@ -529,9 +584,11 @@ export class JourneyPage {
       })
       .click()
   }
+
   async getCurrentUrl() {
     console.log('current Url is ' + this.page.url())
   }
+
   async verifyAllJourneyMovedToArchivedTab() {
     let matchCount = 0
     await expect(
@@ -540,8 +597,8 @@ export class JourneyPage {
           'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"] div'
         )
         .first()
-    ).toBeVisible({ timeout: 30000 })
-    let archiveTabJournetList = await this.page
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
+    const archiveTabJournetList = await this.page
       .locator(
         'div[aria-labelledby*="archived-status-panel-tab"] span[data-testid="new-journey-badge"] div'
       )
@@ -553,6 +610,7 @@ export class JourneyPage {
     }
     expect(matchCount == this.journeyList.length).toBeTruthy()
   }
+
   async verifyActiveTabShowsEmptyMessage() {
     await expect(
       this.page.locator('div[aria-labelledby*="active-status-panel-tab"] h6', {
@@ -560,6 +618,7 @@ export class JourneyPage {
       })
     ).toBeVisible()
   }
+
   async getJourneyListOfArchivedTab() {
     await expect(
       this.page
@@ -574,6 +633,7 @@ export class JourneyPage {
       )
       .allInnerTexts()
   }
+
   async verifyAllJourneyMovedToTrashTab() {
     let matchCount = 0
     await expect(
@@ -582,8 +642,8 @@ export class JourneyPage {
           'div[aria-labelledby*="trashed-status-panel-tab"] span[data-testid="new-journey-badge"] div'
         )
         .first()
-    ).toBeVisible({ timeout: 30000 })
-    let TrashTabJournetList = await this.page
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
+    const TrashTabJournetList = await this.page
       .locator(
         'div[aria-labelledby*="trashed-status-panel-tab"] span[data-testid="new-journey-badge"] div'
       )
@@ -595,6 +655,7 @@ export class JourneyPage {
     }
     expect(matchCount == this.journeyList.length).toBeTruthy()
   }
+
   async getJourneyListOfTrashTab() {
     await expect(
       this.page
@@ -609,6 +670,7 @@ export class JourneyPage {
       )
       .allInnerTexts()
   }
+
   async verifyAllJourneyMovedToActiveTab() {
     let matchCount = 0
     await expect(
@@ -617,8 +679,8 @@ export class JourneyPage {
           'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div'
         )
         .first()
-    ).toBeVisible({ timeout: 30000 })
-    let activeTabJournetList = await this.page
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
+    const activeTabJournetList = await this.page
       .locator(
         'div[id*="active-status-panel-tabpanel"] span[data-testid="new-journey-badge"] div'
       )
@@ -630,6 +692,7 @@ export class JourneyPage {
     }
     expect(matchCount == this.journeyList.length).toBeTruthy()
   }
+
   async verifyAlljourneysAreDeletedFromTrashTab() {
     await expect(
       this.page
@@ -644,14 +707,16 @@ export class JourneyPage {
       })
     ).toBeVisible()
   }
+
   async verifySnackbarToastMessage(message: string) {
     await expect(
       this.page.locator('#notistack-snackbar', { hasText: message })
-    ).toBeVisible({ timeout: 15000 })
+    ).toBeVisible({ timeout: fifteenSecondsTimeout })
     await expect(this.page.locator('#notistack-snackbar')).toBeHidden({
-      timeout: 30000
+      timeout: thirtySecondsTimeout
     })
   }
+
   async verifyEmptyMessageInArchivedTab() {
     await expect(
       this.page.locator(
@@ -660,11 +725,13 @@ export class JourneyPage {
       )
     ).toBeVisible()
   }
+
   async clickSortByIcon() {
     await this.page
       .locator('div[aria-label="journey status tabs"] div[role="button"]')
       .click()
   }
+
   async clickSortOpion(sortOption: string) {
     await this.page
       .locator(
@@ -673,31 +740,33 @@ export class JourneyPage {
       )
       .click()
   }
+
   async verifySelectedSortOptionInSortByIcon(selectedSortOption: string) {
     await expect(
       this.page.locator(
         'div[aria-label="journey status tabs"] div[role="button"]',
         { hasText: selectedSortOption }
       )
-    ).toBeVisible({ timeout: 30000 })
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
+
   async verifyJouyneysAreSortedByNames() {
-    let journeyList = await this.page
+    const journeyList = await this.page
       .locator(
         'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
         {
-          has: await this.page.locator(
+          has: this.page.locator(
             'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
           )
         }
       )
       .locator('span[data-testid="new-journey-badge"] div')
       .allInnerTexts()
-    let journeyExpectedList = await this.page
+    const journeyExpectedList = await this.page
       .locator(
         'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
         {
-          has: await this.page.locator(
+          has: this.page.locator(
             'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
           )
         }
@@ -706,6 +775,7 @@ export class JourneyPage {
       .allInnerTexts()
     await this.sortTheListToAscendingOrder(journeyList, journeyExpectedList)
   }
+
   async sortTheListToAscendingOrder(
     list: string[],
     expectedSortedList: string[]
@@ -713,8 +783,9 @@ export class JourneyPage {
     list.map((str) => str.toLowerCase()).sort(Intl.Collator().compare)
     expect(list.join().trim() == expectedSortedList.join().trim()).toBeTruthy()
   }
+
   async verifyNewlyJouyneysAreSortedByNames() {
-    let journeyListCount = await this.page
+    const journeyListCount = await this.page
       .locator(
         'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
         {
@@ -726,7 +797,7 @@ export class JourneyPage {
       .locator('span[data-testid="new-journey-badge"] div')
       .count()
     if (journeyListCount != 0) {
-      let journeyList = await this.page
+      const journeyList = await this.page
         .locator(
           'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
           {
@@ -737,7 +808,7 @@ export class JourneyPage {
         )
         .locator('span[data-testid="new-journey-badge"] div')
         .allInnerTexts()
-      let journeyExpectedList = await this.page
+      const journeyExpectedList = await this.page
         .locator(
           'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
           {
@@ -753,8 +824,9 @@ export class JourneyPage {
       console.log('There are no new journeys exist to name sort')
     }
   }
+
   async verifyJourneyAreSortedByDates() {
-    let journeysDescriptionList = await this.page
+    const journeysDescriptionList = await this.page
       .locator(
         'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
         {
@@ -765,8 +837,8 @@ export class JourneyPage {
       )
       .locator('span[data-testid="new-journey-badge"] + span')
       .allInnerTexts()
-    let journeySiteSortedDate: string[] = []
-    let journeyExpectdSortedList: string[] = []
+    const journeySiteSortedDate: string[] = []
+    const journeyExpectdSortedList: string[] = []
     for (let journey = 0; journey < journeysDescriptionList.length; journey++) {
       journeySiteSortedDate.push(
         journeysDescriptionList[journey].split('-')[0].trim()
@@ -780,19 +852,21 @@ export class JourneyPage {
       journeyExpectdSortedList
     )
   }
+
   async sortDateToDessendingOrder(
     expectedSortedList: string[],
     list: string[]
   ) {
     list.sort(function (a: string, b: string) {
-      let dateA = new Date(a)
-      let dateB = new Date(b)
+      const dateA = new Date(a)
+      const dateB = new Date(b)
       return dateB.getTime() - dateA.getTime()
     })
     expect(list.join().trim() == expectedSortedList.join().trim()).toBeTruthy()
   }
+
   async verifyNewlyJourneyAreSortedByDates() {
-    let journeysDescriptionCount = await this.page
+    const journeysDescriptionCount = await this.page
       .locator(
         'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
         {
@@ -804,7 +878,7 @@ export class JourneyPage {
       .locator('span[data-testid="new-journey-badge"] + span')
       .count()
     if (journeysDescriptionCount != 0) {
-      let journeysDescriptionList = await this.page
+      const journeysDescriptionList = await this.page
         .locator(
           'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
           {
@@ -815,8 +889,8 @@ export class JourneyPage {
         )
         .locator('span[data-testid="new-journey-badge"] + span')
         .allInnerTexts()
-      let journeySiteSortedDate: string[] = []
-      let journeyExpectdSortedList: string[] = []
+      const journeySiteSortedDate: string[] = []
+      const journeyExpectdSortedList: string[] = []
       for (
         let journey = 0;
         journey < journeysDescriptionList.length;
@@ -837,6 +911,7 @@ export class JourneyPage {
       console.log('There are no new journeys exist to sort')
     }
   }
+
   async verifySeeLinkHrefAttributeBesideUseTemplate() {
     await expect(
       this.page.locator('h6:has-text("Use Template") + a', {
@@ -844,6 +919,7 @@ export class JourneyPage {
       })
     ).toHaveAttribute('href', '/templates')
   }
+
   async verifySeeAllTemplateBelowUseTemplate() {
     await expect(
       this.page.locator('div[data-testid="SidePanelContainer"] a', {
@@ -851,11 +927,13 @@ export class JourneyPage {
       })
     ).toHaveAttribute('href', '/templates')
   }
+
   async clickPreviewBtnInCustomJourneyPage() {
     await this.page
       .locator('div[data-testid="PreviewItem"] a[aria-label="Preview"]')
       .click()
   }
+
   async verifyPreviewFromCustomJourneyPage() {
     const [newPage] = await Promise.all([
       this.context.waitForEvent('page'),
@@ -863,15 +941,15 @@ export class JourneyPage {
     ])
     await newPage.waitForLoadState()
     // await expect(await newPage.locator('h3[data-testid="JourneysTypography"]')).toHaveText(this.existingJourneyName)
-    let tabName: string = await newPage.title()
+    const tabName: string = await newPage.title()
     await expect(tabName.includes(journeyName)).toBeTruthy()
-    let slidesCount = await newPage
+    const slidesCount = await newPage
       .locator(
         'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
       )
       .count()
     await expect(
-      await newPage
+      newPage
         .locator(
           'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
         )
@@ -894,9 +972,11 @@ export class JourneyPage {
     }
     await newPage.close()
   }
+
   async setBrowserContext(context) {
     this.context = context
   }
+
   async selectExistingJourney() {
     this.existingJourneyName = await this.page
       .locator('span[data-testid="new-journey-badge"] div', {
@@ -911,17 +991,20 @@ export class JourneyPage {
       .first()
       .click()
   }
+
   async navigateToPublisherPage() {
     await this.page
       .locator('a[data-testid="NavigationListItemPublisher"]')
       .click()
     await expect(
       this.page.locator('div[data-testid="JourneysAdminTemplateList"]')
-    ).toBeVisible({ timeout: 60000 })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
+
   async clickAnalyticsIconInCustomJourneyPage() {
     await this.page.locator('div[data-testid="AnalyticsItem"] a').click()
   }
+
   async verifyAnalyticsPageNavigation() {
     const [newPage] = await Promise.all([
       this.context.waitForEvent('page'),
@@ -933,6 +1016,7 @@ export class JourneyPage {
     ).toBeVisible()
     await newPage.close()
   }
+
   async clickOnJourneyCard() {
     await this.page
       .frameLocator(this.journeyCardFrame)
@@ -941,6 +1025,7 @@ export class JourneyPage {
       .first()
       .click()
   }
+
   async enterJourneysTypographyForTemplate(): Promise<void> {
     let typographyPath = ''
     let textareaPath = ''
@@ -967,8 +1052,8 @@ export class JourneyPage {
       .first()
       .locator(typographyPath)
       .first()
-      .click({ timeout: 15000, delay: 1000 })
-    for (var clickRetry = 0; clickRetry < 5; clickRetry++) {
+      .click({ timeout: fifteenSecondsTimeout, delay: 1000 })
+    for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
       if (
         await this.page
           .frameLocator(this.journeyCardFrame)
@@ -984,7 +1069,7 @@ export class JourneyPage {
           .first()
           .locator(typographyPath)
           .first()
-          .click({ timeout: 15000, delay: 1000 })
+          .click({ timeout: fifteenSecondsTimeout, delay: 1000 })
       }
     }
     await this.page

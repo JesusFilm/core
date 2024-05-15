@@ -3,6 +3,8 @@ import { Page } from 'playwright-core'
 
 import { getEmail, getPassword } from '../framework/helpers'
 
+const sixtySecondsTimeout = 60000
+
 export class LoginPage {
   readonly page: Page
 
@@ -30,7 +32,7 @@ export class LoginPage {
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
       )
-    ).toBeVisible({ timeout: 65000 })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
   async login(): Promise<void> {
@@ -41,6 +43,7 @@ export class LoginPage {
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
   }
+
   async logInWithCreatedNewUser(userName: string) {
     await this.fillExistingEmail(userName)
     await this.clickSubmitButton()

@@ -1,31 +1,35 @@
 import { expect } from '@playwright/test'
 import { Page } from 'playwright-core'
-import dayjs from 'dayjs'
-import testData from '../utils/testData.json'
+
+const thirtySecondsTimeout = 30000
 
 export class ProfilePage {
   readonly page: Page
   constructor(page: Page) {
     this.page = page
   }
+
   async clickProfileIconInNavBar() {
     await this.page
       .locator('div[data-testid="NavigationListItemProfile"]')
       .click()
   }
+
   async clickEmailPreferences() {
     await this.page
       .locator('li[data-testid="JourneysAdminMenuItemEmailPreferences"]')
       .click()
   }
+
   async verifyEmailPreferencePage() {
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminOnboardingPageWrapper"] h4',
         { hasText: 'Email Preferences' }
       )
-    ).toBeVisible({ timeout: 30000 })
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
+
   async clickAccountNotification() {
     await this.page.locator('input[name="accountNotifications"]').click()
     await expect(
@@ -37,8 +41,9 @@ export class ProfilePage {
       this.page.locator('#notistack-snackbar', {
         hasText: 'Email Preferences Updated.'
       })
-    ).toBeHidden({ timeout: 30000 })
+    ).toBeHidden({ timeout: thirtySecondsTimeout })
   }
+
   async activateAccountNotification() {
     if (
       !(await this.page
@@ -56,6 +61,7 @@ export class ProfilePage {
       )
     ).toBeVisible()
   }
+
   async deactivateAccountNotification() {
     if (
       await this.page
@@ -73,6 +79,7 @@ export class ProfilePage {
       )
     ).toBeHidden()
   }
+
   async clickDoneBtn() {
     await this.page
       .locator('div[data-testid="JourneysAdminOnboardingPageWrapper"] a', {
@@ -80,22 +87,25 @@ export class ProfilePage {
       })
       .click()
   }
+
   async clickLogout() {
     await this.page
       .locator('li[data-testid="JourneysAdminMenuItemLogOut"]')
       .click()
   }
+
   async verifyLogoutToastMsg() {
     await expect(
       this.page.locator('#notistack-snackbar', { hasText: 'Logout successful' })
     ).toBeVisible()
     await expect(
       this.page.locator('#notistack-snackbar', { hasText: 'Logout successful' })
-    ).toBeHidden({ timeout: 30000 })
+    ).toBeHidden({ timeout: thirtySecondsTimeout })
   }
+
   async verifyloggedOut() {
     await expect(this.page.locator('input#username')).toBeVisible({
-      timeout: 30000
+      timeout: thirtySecondsTimeout
     })
   }
 }
