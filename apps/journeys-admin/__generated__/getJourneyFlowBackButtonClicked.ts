@@ -4,15 +4,15 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UpdateJourneyFlowBackButtonClicked
+// GraphQL query operation: getJourneyFlowBackButtonClicked
 // ====================================================
 
-export interface UpdateJourneyFlowBackButtonClicked_journeyProfileUpdate {
+export interface getJourneyFlowBackButtonClicked_getJourneyProfile {
   __typename: "JourneyProfile";
   id: string;
   journeyFlowBackButtonClicked: boolean | null;
 }
 
-export interface UpdateJourneyFlowBackButtonClicked {
-  journeyProfileUpdate: UpdateJourneyFlowBackButtonClicked_journeyProfileUpdate;
+export interface getJourneyFlowBackButtonClicked {
+  getJourneyProfile: getJourneyFlowBackButtonClicked_getJourneyProfile | null;
 }

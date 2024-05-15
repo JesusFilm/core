@@ -1,11 +1,12 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
@@ -13,6 +14,7 @@ import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
+import { getJourneyFlowBackButtonClicked } from '../../../../__generated__/getJourneyFlowBackButtonClicked'
 import { UpdateJourneyFlowBackButtonClicked } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 
@@ -21,11 +23,19 @@ import { JourneyFlow } from './JourneyFlow'
 import { Settings } from './Settings'
 
 export const UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED = gql`
-  mutation UpdateJourneyFlowBackButtonClicked(
-    $input: JourneyProfileUpdateInput!
-  ) {
-    journeyProfileUpdate(input: $input) {
+  mutation UpdateJourneyFlowBackButtonClicked {
+    journeyProfileUpdate(input: { journeyFlowBackButtonClicked: true }) {
       id
+      journeyFlowBackButtonClicked
+    }
+  }
+`
+
+export const GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED = gql`
+  query getJourneyFlowBackButtonClicked {
+    getJourneyProfile {
+      id
+      journeyFlowBackButtonClicked
     }
   }
 `
@@ -42,12 +52,17 @@ export function Slider(): ReactElement {
     state: { activeSlide, selectedStep },
     dispatch
   } = useEditor()
-  const [backButtonClicked, setBackButtonClicked] = useState(false)
   const { t } = useTranslation('apps-journeys-admin')
   const [updateBackButtonClick] =
     useMutation<UpdateJourneyFlowBackButtonClicked>(
       UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED
     )
+  const { data } = useQuery<getJourneyFlowBackButtonClicked>(
+    GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED
+  )
+
+  const showBackButtonHelp =
+    data?.getJourneyProfile?.journeyFlowBackButtonClicked !== true
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
@@ -86,10 +101,8 @@ export function Slider(): ReactElement {
   }
 
   function handlePrev(): void {
-    if (!backButtonClicked) {
-      setBackButtonClicked(true)
-      console.log('Back button clicked')
-    }
+    if (showBackButtonHelp) void updateBackButtonClick()
+
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: activeSlide - 1
@@ -165,7 +178,6 @@ export function Slider(): ReactElement {
             sm: 'flex'
           },
           alignItems: 'center',
-          justifyContent: 'center',
           transition: (theme) =>
             theme.transitions.create('left', { duration: 300, delay: 300 })
         }}
@@ -176,15 +188,20 @@ export function Slider(): ReactElement {
             borderWidth: 1,
             borderStyle: 'solid',
             borderColor: 'divider',
-            borderRadius: '50%'
+            borderRadius: '41px',
+            marginLeft: '30px'
           }}
         >
           <ChevronLeftIcon />
-          {!backButtonClicked && activeSlide === ActiveSlide.Content && (
-            <Typography sx={{ color: 'primary.main' }}>
-              {t('Back to Map')}
+          <Collapse
+            in={showBackButtonHelp && activeSlide === ActiveSlide.Content}
+            orientation="horizontal"
+            style={{ transitionDelay: '300ms' }}
+          >
+            <Typography sx={{ color: 'primary.main' }} noWrap>
+              {t('back to map')}
             </Typography>
-          )}
+          </Collapse>
         </IconButton>
       </Box>
       <StyledSwiperSlide
