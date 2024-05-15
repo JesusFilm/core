@@ -379,6 +379,7 @@ export interface JourneyCollectionUpdateInput {
 
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
+  journeyFlowBackButtonClicked?: boolean | null;
 }
 
 export interface JourneyTemplateInput {
@@ -449,11 +450,6 @@ export interface NavigateActionInput {
 export interface NavigateToBlockActionInput {
   gtmEventName?: string | null;
   blockId: string;
-}
-
-export interface NavigateToJourneyActionInput {
-  gtmEventName?: string | null;
-  journeyId: string;
 }
 
 export interface RadioOptionBlockCreateInput {
