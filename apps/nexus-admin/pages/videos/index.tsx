@@ -19,7 +19,7 @@ function VideosPage({ videos }: VideosPageProps): ReactElement {
     // TO DO: add edmonds page wrapper and side nav bar. make into paginated table?
     <Stack sx={{ p: 20 }}>
       <VideosTable />
-      <VideoGrid videos={videos} />
+      {/* <VideoGrid videos={videos} /> */}
     </Stack>
   )
 }
