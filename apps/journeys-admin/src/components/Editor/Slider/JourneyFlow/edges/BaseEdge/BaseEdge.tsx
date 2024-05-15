@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material/styles'
+import { alpha, useTheme } from '@mui/material/styles'
 import { CSSProperties, ReactElement, ReactNode, useState } from 'react'
 import { BaseEdge as DefaultBaseEdge, useOnSelectionChange } from 'reactflow'
 
@@ -42,6 +42,18 @@ export function BaseEdge({
     onMouseLeave: () => setIsHovering(false)
   }
 
+  let stroke: CSSProperties['stroke']
+
+  if (edgeSelected) {
+    stroke = theme.palette.primary.main
+  } else {
+    if (isHovering) {
+      stroke = alpha(theme.palette.primary.main, 0.5)
+    } else {
+      stroke = alpha(theme.palette.secondary.dark, 0.1)
+    }
+  }
+
   return (
     <g {...props} data-testid={`BaseEdge-${id}`}>
       <DefaultBaseEdge
@@ -51,11 +63,8 @@ export function BaseEdge({
         }&height=10&type=arrowclosed&width=10)`}
         style={{
           strokeWidth: 2,
-          stroke:
-            edgeSelected || isHovering
-              ? theme.palette.primary.main
-              : `${theme.palette.secondary.dark}1A`,
-          opacity: isHovering ? 0.5 : 1,
+          stroke,
+          transition: theme.transitions.create('stroke'),
           ...style
         }}
       />
