@@ -1,9 +1,10 @@
-import { Typography } from '@mui/material'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { styled, useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
-import { ReactElement, useEffect, useRef } from 'react'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
@@ -29,6 +30,8 @@ export function Slider(): ReactElement {
     state: { activeSlide, selectedStep },
     dispatch
   } = useEditor()
+  const [backButtonClicked, setBackButtonClicked] = useState(false)
+  const { t } = useTranslation('apps-journeys-admin')
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
@@ -67,7 +70,10 @@ export function Slider(): ReactElement {
   }
 
   function handlePrev(): void {
-    console.log('Back button clicked')
+    if (!backButtonClicked) {
+      setBackButtonClicked(true)
+      console.log('Back button clicked')
+    }
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: activeSlide - 1
@@ -153,11 +159,16 @@ export function Slider(): ReactElement {
             backgroundColor: 'background.paper',
             borderWidth: 1,
             borderStyle: 'solid',
-            borderColor: 'divider'
+            borderColor: 'divider',
+            borderRadius: '50%'
           }}
         >
           <ChevronLeftIcon />
-          <Typography>Back to Map</Typography>
+          {!backButtonClicked && activeSlide === ActiveSlide.Content && (
+            <Typography sx={{ color: 'primary.main' }}>
+              {t('Back to Map')}
+            </Typography>
+          )}
         </IconButton>
       </Box>
       <StyledSwiperSlide
