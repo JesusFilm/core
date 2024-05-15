@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { ReactElement, useState } from 'react'
 import {
-  Edge,
   EdgeLabelRenderer,
   EdgeProps,
   getBezierPath,
@@ -22,11 +21,12 @@ export function CustomEdge({
   targetY,
   sourcePosition,
   targetPosition,
+  source,
+  sourceHandleId,
   style = {}
 }: EdgeProps): ReactElement {
   const deleteEdge = useDeleteEdge()
   const [selected, setSelected] = useState(false)
-  const [selectedEdge, setSelectedEdge] = useState<Edge | undefined>(undefined)
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -40,7 +40,6 @@ export function CustomEdge({
     onChange: (selected) => {
       const selectedEdge = selected.edges.find((edge) => edge.id === id)
       if (selectedEdge != null) {
-        setSelectedEdge(selectedEdge)
         setSelected(true)
       } else {
         setSelected(false)
@@ -50,8 +49,8 @@ export function CustomEdge({
 
   const onEdgeClick = (): void => {
     void deleteEdge({
-      source: selectedEdge?.source,
-      sourceHandle: selectedEdge?.sourceHandle
+      source,
+      sourceHandle: sourceHandleId
     })
   }
 
