@@ -141,7 +141,7 @@ export function DuplicateStep({
       icon={<CopyLeftIcon color="inherit" />}
       disabled={disabled ?? step == null}
       onMouseUp={handleDuplicateStep}
-      testId="Duplicate-Card"
+      testId="duplicate-step"
     />
   )
 }
