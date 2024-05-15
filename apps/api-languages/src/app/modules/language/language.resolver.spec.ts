@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Language } from '.prisma/api-languages-client'
+import { Language, LanguageName } from '.prisma/api-languages-client'
 
 import { LanguageIdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -15,21 +15,26 @@ describe('LangaugeResolver', () => {
     id: '20615',
     bcp47: 'zh',
     iso3: 'zh',
-    name: [
-      {
-        value: '普通話',
-        primary: true,
-        languageId: '20615'
-      },
-      {
-        value: 'Chinese, Mandarin',
-        primary: false,
-        languageId: '529'
-      }
-    ],
     createdAt: new Date('2021-01-01T00:00:00.000Z'),
     updatedAt: new Date('2021-01-01T00:00:00.000Z')
   }
+
+  const languageName: LanguageName[] = [
+    {
+      id: '1',
+      parentLanguageId: language.id,
+      value: '普通話',
+      primary: true,
+      languageId: '20615'
+    },
+    {
+      id: '2',
+      parentLanguageId: language.id,
+      value: 'Chinese, Mandarin',
+      primary: false,
+      languageId: '529'
+    }
+  ]
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -96,18 +101,33 @@ describe('LangaugeResolver', () => {
   })
 
   describe('name', () => {
-    it('should return translations', () => {
-      expect(resolver.name(language)).toEqual(language.name)
+    it('should return translations', async () => {
+      prismaService.languageName.findMany.mockResolvedValue(languageName)
+      expect(await resolver.name(language)).toEqual(languageName)
+      expect(prismaService.languageName.findMany).toHaveBeenCalledWith({
+        where: { parentLanguageId: '20615' },
+        orderBy: { primary: 'desc' }
+      })
     })
 
-    it('should return translations filtered by languageId', () => {
-      expect(resolver.name(language, '529')).toEqual([language.name[1]])
+    it('should return translations filtered by languageId', async () => {
+      prismaService.languageName.findMany.mockResolvedValue([languageName[1]])
+      expect(await resolver.name(language, '529')).toEqual([languageName[1]])
+      expect(prismaService.languageName.findMany).toHaveBeenCalledWith({
+        where: { parentLanguageId: '20615', OR: [{ languageId: '529' }] },
+        orderBy: { primary: 'desc' }
+      })
     })
 
-    it('should return translations filtered by primary', () => {
-      expect(resolver.name(language, undefined, true)).toEqual([
-        language.name[0]
+    it('should return translations filtered by primary', async () => {
+      prismaService.languageName.findMany.mockResolvedValue([languageName[0]])
+      expect(await resolver.name(language, undefined, true)).toEqual([
+        languageName[0]
       ])
+      expect(prismaService.languageName.findMany).toHaveBeenCalledWith({
+        where: { parentLanguageId: '20615', OR: [{ primary: true }] },
+        orderBy: { primary: 'desc' }
+      })
     })
   })
 
