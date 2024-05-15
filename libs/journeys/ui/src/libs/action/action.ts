@@ -1,8 +1,6 @@
 import { NextRouter } from 'next/dist/client/router'
 
 import { nextActiveBlock } from '../block'
-import { JourneyFields as Journey } from '../JourneyProvider/__generated__/JourneyFields'
-import { getJourneyRTL } from '../rtl'
 
 import { ActionFields } from './__generated__/ActionFields'
 
