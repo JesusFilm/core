@@ -10,19 +10,19 @@ import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
+import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { FC, MouseEvent, useState } from 'react'
 
 interface HeaderProps {
   title?: string
   hasBack?: boolean
+  user?: User
 }
 
-export const Header: FC<HeaderProps> = ({ title, hasBack }) => {
+export const Header: FC<HeaderProps> = ({ title, hasBack, user }) => {
   const [accountMenu, setAccountMenu] = useState<HTMLElement | null>(null)
   const accountMenuOpen = Boolean(accountMenu)
-  const user = useUser()
   const router = useRouter()
   const { t } = useTranslation()
 
@@ -35,11 +35,16 @@ export const Header: FC<HeaderProps> = ({ title, hasBack }) => {
   }
 
   const logout = async (): Promise<void> => {
-    await user.signOut()
+    await user?.signOut()
   }
 
   return (
-    <Stack direction="row" alignItems="center" justifyContent="space-between">
+    <Stack
+      direction="row"
+      alignItems="center"
+      justifyContent="space-between"
+      data-testid="main-header"
+    >
       <Stack direction="row" alignItems="center">
         {hasBack === true && (
           <IconButton onClick={() => router.back()}>

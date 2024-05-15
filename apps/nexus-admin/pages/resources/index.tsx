@@ -15,7 +15,7 @@ import { ResourceDelete } from '../../__generated__/ResourceDelete'
 import { Resources, Resources_resources } from '../../__generated__/Resources'
 import { ResourceUpdate } from '../../__generated__/ResourceUpdate'
 import { DeleteModal } from '../../src/components/DeleteModal'
-import { MainLayout } from '../../src/components/MainLayout'
+import { PageWrapper } from '../../src/components/PageWrapper'
 import { ResourcesTable } from '../../src/components/ResourcesTable'
 import { UpdateResourceModal } from '../../src/components/UpdateResourceModal'
 import { getOrigin } from '../../utils/getOrigin'
@@ -175,7 +175,7 @@ const ResourcesPage: FC = () => {
   }
 
   return (
-    <MainLayout title="Resources">
+    <PageWrapper title="Resources">
       <Stack spacing={14}>
         <Stack
           direction="row"
@@ -260,7 +260,7 @@ const ResourcesPage: FC = () => {
           })
         }}
       />
-    </MainLayout>
+    </PageWrapper>
   )
 }
 

@@ -15,7 +15,7 @@ import { FC, SyntheticEvent, useEffect, useState } from 'react'
 
 import { ChannelTable } from '../../src/components/ChannelTable'
 import { LocalizationTable } from '../../src/components/LocalizationTable/LocalizationTable'
-import { MainLayout } from '../../src/components/MainLayout'
+import { PageWrapper } from '../../src/components/PageWrapper'
 
 import { GET_RESOURCE } from '.'
 
@@ -47,7 +47,7 @@ const ResourceDetailsPage: FC = () => {
   }
 
   return (
-    <MainLayout title="Video Details" hasBack>
+    <PageWrapper title="Video Details" hasBack>
       <Stack
         sx={{
           pt: 4
@@ -111,7 +111,7 @@ const ResourceDetailsPage: FC = () => {
           {tabIndex === 1 && <ChannelTable loading={false} data={[]} />}
         </Paper>
       </Stack>
-    </MainLayout>
+    </PageWrapper>
   )
 }
 

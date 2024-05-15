@@ -4,7 +4,7 @@ import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { FC, useEffect, useState } from 'react'
 
 import { BatchesTable } from '../../src/components/BatchesTable'
-import { MainLayout } from '../../src/components/MainLayout'
+import { PageWrapper } from '../../src/components/PageWrapper'
 
 const GET_BATCHES = gql`
   query Batches($where: BatchFilter) {
@@ -46,7 +46,7 @@ const BatchesPage: FC = () => {
   }, [data])
 
   return (
-    <MainLayout title="Batch Jobs">
+    <PageWrapper title="Batch Jobs">
       <Stack
         sx={{
           pt: 4
@@ -54,7 +54,7 @@ const BatchesPage: FC = () => {
       >
         <BatchesTable loading={loading} data={batches} />
       </Stack>
-    </MainLayout>
+    </PageWrapper>
   )
 }
 
