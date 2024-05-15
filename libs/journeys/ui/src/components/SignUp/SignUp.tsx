@@ -193,7 +193,7 @@ export const SignUp = ({
                 mb: 0
               }}
             >
-              {editableSubmitLabel ?? submitLabel ?? t('Submit')}
+              <span>{editableSubmitLabel ?? submitLabel ?? t('Submit')}</span>
             </LoadingButton>
           </Form>
         )}

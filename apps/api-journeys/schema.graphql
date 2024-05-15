@@ -92,7 +92,19 @@ extend type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
-  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction!
+
+  """
+  DEPRECATED: NavigateToJourneyAction is being removed. Use blockUpdateLinkAction instead.
+  """
+  blockUpdateNavigateToJourneyAction(
+    id: ID!
+    journeyId: ID!
+
+    """
+    DEPRECATED: NavigateToJourneyAction is being removed. Use blockUpdateLinkAction and LinkActionInput instead.
+    """
+    input: NavigateToJourneyActionInput!
+  ): NavigateToJourneyAction!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
   blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction!
 
@@ -120,6 +132,18 @@ extend type Mutation {
 
     """drop this parameter after merging teams"""
     journeyId: ID
+
+    """
+    x is used to position a step block block horizontally in the journey flow diagram on
+    the editor.
+    """
+    x: Int
+
+    """
+    y is used to position a step block block vertically in the journey flow diagram on
+    the editor.
+    """
+    y: Int
   ): [Block!]!
   blockOrderUpdate(
     id: ID!
@@ -1188,31 +1212,17 @@ type VideoTriggerBlock implements Block {
 type ChatButton {
   id: ID!
   link: String
-  platform: ChatPlatform
-}
-
-enum ChatPlatform {
-  facebook
-  telegram
-  whatsApp
-  instagram
-  viber
-  vk
-  snapchat
-  skype
-  line
-  tikTok
-  custom
+  platform: MessagePlatform
 }
 
 input ChatButtonCreateInput {
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 input ChatButtonUpdateInput {
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 type CustomDomain {
@@ -1272,7 +1282,9 @@ type CustomDomainVerificationResponse {
 enum ButtonAction {
   NavigateAction
   NavigateToBlockAction
-  NavigateToJourneyAction
+
+  """DEPRECATED: use LinkAction instead."""
+  NavigateToJourneyAction @deprecated(reason: "Journey flow now handles this. Use LinkAction.")
   LinkAction
   EmailAction
 }
@@ -1300,7 +1312,6 @@ input ButtonClickEventCreateInput {
   The label for each corresponding action, mapping below:
   NavigateAction - undefined
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
   """
   actionValue: String
@@ -1328,7 +1339,6 @@ type ButtonClickEvent implements Event {
   The label for each corresponding action, mapping below:
   NavigateAction - null
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
   """
   actionValue: String
@@ -2118,10 +2128,12 @@ type JourneyProfile
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
   onboardingFormCompletedAt: DateTime
+  journeyFlowBackButtonClicked: Boolean
 }
 
 input JourneyProfileUpdateInput {
   lastActiveTeamId: String
+  journeyFlowBackButtonClicked: Boolean
 }
 
 type JourneyVisitor

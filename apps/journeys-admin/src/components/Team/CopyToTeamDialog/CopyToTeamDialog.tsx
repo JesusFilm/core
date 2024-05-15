@@ -2,11 +2,11 @@ import { useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
-import { Formik, FormikHelpers, FormikValues } from 'formik'
+import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { object, string } from 'yup'
+import { InferType, object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -48,8 +48,8 @@ export function CopyToTeamDialog({
   )
 
   async function handleSubmit(
-    values: FormikValues,
-    { resetForm }: FormikHelpers<FormikValues>
+    values: InferType<typeof copyToSchema>,
+    { resetForm }: FormikHelpers<InferType<typeof copyToSchema>>
   ): Promise<void> {
     await updateLastActiveTeamId({
       variables: {

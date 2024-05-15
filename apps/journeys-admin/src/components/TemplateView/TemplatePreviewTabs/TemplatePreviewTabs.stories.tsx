@@ -47,7 +47,7 @@ export const Videos = {
   args: {
     journey
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
     fireEvent.click(canvas.getByText('{{count}} Videos'))
   }

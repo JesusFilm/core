@@ -33,20 +33,6 @@ export enum ButtonVariant {
   text = "text",
 }
 
-export enum ChatPlatform {
-  custom = "custom",
-  facebook = "facebook",
-  instagram = "instagram",
-  line = "line",
-  skype = "skype",
-  snapchat = "snapchat",
-  telegram = "telegram",
-  tikTok = "tikTok",
-  viber = "viber",
-  vk = "vk",
-  whatsApp = "whatsApp",
-}
-
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -280,12 +266,12 @@ export interface CardBlockUpdateInput {
 
 export interface ChatButtonCreateInput {
   link?: string | null;
-  platform?: ChatPlatform | null;
+  platform?: MessagePlatform | null;
 }
 
 export interface ChatButtonUpdateInput {
   link?: string | null;
-  platform?: ChatPlatform | null;
+  platform?: MessagePlatform | null;
 }
 
 export interface ChatOpenEventCreateInput {
@@ -393,6 +379,7 @@ export interface JourneyCollectionUpdateInput {
 
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
+  journeyFlowBackButtonClicked?: boolean | null;
 }
 
 export interface JourneyTemplateInput {
@@ -463,11 +450,6 @@ export interface NavigateActionInput {
 export interface NavigateToBlockActionInput {
   gtmEventName?: string | null;
   blockId: string;
-}
-
-export interface NavigateToJourneyActionInput {
-  gtmEventName?: string | null;
-  journeyId: string;
 }
 
 export interface RadioOptionBlockCreateInput {

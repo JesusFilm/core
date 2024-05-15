@@ -7,7 +7,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 
-import { ChatPlatform } from '../../../../../../../__generated__/globalTypes'
+import { MessagePlatform } from '../../../../../../../__generated__/globalTypes'
 import { Attribute } from '../../Attribute'
 
 const HostSidePanel = dynamic(
@@ -33,16 +33,16 @@ export function Footer(): ReactElement {
   const hostName = journey?.host?.title
 
   const translatedPlatforms = [
-    { value: ChatPlatform.facebook, label: t('Facebook') },
-    { value: ChatPlatform.telegram, label: t('Telegram') },
-    { value: ChatPlatform.whatsApp, label: t('WhatsApp') },
-    { value: ChatPlatform.instagram, label: t('Instagram') },
-    { value: ChatPlatform.viber, label: t('Viber') },
-    { value: ChatPlatform.vk, label: t('Vk') },
-    { value: ChatPlatform.snapchat, label: t('Snapchat') },
-    { value: ChatPlatform.skype, label: t('Skype') },
-    { value: ChatPlatform.line, label: t('Line') },
-    { value: ChatPlatform.tikTok, label: t('TikTok') }
+    { value: MessagePlatform.facebook, label: t('Facebook') },
+    { value: MessagePlatform.telegram, label: t('Telegram') },
+    { value: MessagePlatform.whatsApp, label: t('WhatsApp') },
+    { value: MessagePlatform.instagram, label: t('Instagram') },
+    { value: MessagePlatform.viber, label: t('Viber') },
+    { value: MessagePlatform.vk, label: t('Vk') },
+    { value: MessagePlatform.snapchat, label: t('Snapchat') },
+    { value: MessagePlatform.skype, label: t('Skype') },
+    { value: MessagePlatform.line, label: t('Line') },
+    { value: MessagePlatform.tikTok, label: t('TikTok') }
   ]
 
   const platforms = (journey?.chatButtons ?? [])
