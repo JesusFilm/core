@@ -848,12 +848,14 @@ type JourneyProfile
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
   onboardingFormCompletedAt: DateTime
+  journeyFlowBackButtonClicked: Boolean
 }
 
 input JourneyProfileUpdateInput
   @join__type(graph: JOURNEYS)
 {
   lastActiveTeamId: String
+  journeyFlowBackButtonClicked: Boolean
 }
 
 type JourneysEmailPreference
