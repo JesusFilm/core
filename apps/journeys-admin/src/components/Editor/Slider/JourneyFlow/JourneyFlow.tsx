@@ -24,6 +24,7 @@ import {
   Panel,
   ReactFlow,
   ReactFlowInstance,
+  ReactFlowProps,
   useEdgesState,
   useNodesState
 } from 'reactflow'
@@ -42,7 +43,7 @@ import { CustomEdge } from './edges/CustomEdge'
 import { StartEdge } from './edges/StartEdge'
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
-import { useCreateNodeAndEdge } from './libs/useCreateNodeAndEdge'
+import { useCreateStep } from './libs/useCreateStep'
 import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useUpdateEdge } from './libs/useUpdateEdge'
 import { NewStepButton } from './NewStepButton'
@@ -82,7 +83,7 @@ export function JourneyFlow(): ReactElement {
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
 
-  const createNodeAndEdge = useCreateNodeAndEdge()
+  const createStep = useCreateStep()
   const updateEdge = useUpdateEdge()
   const deleteEdge = useDeleteEdge()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
@@ -203,15 +204,15 @@ export function JourneyFlow(): ReactElement {
           y: (event as unknown as MouseEvent).clientY
         })
 
-        void createNodeAndEdge(
-          parseInt(x.toString()),
-          parseInt(y.toString()) - STEP_NODE_CARD_HEIGHT / 2,
-          connectingParams.current.nodeId,
-          connectingParams.current.handleId
-        )
+        void createStep({
+          x: Math.trunc(x),
+          y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
+          source: connectingParams.current.nodeId,
+          sourceHandle: connectingParams.current.handleId
+        })
       }
     },
-    [reactFlowInstance, connectingParams, createNodeAndEdge]
+    [reactFlowInstance, connectingParams, createStep]
   )
   const onNodeDragStop: NodeDragHandler = async (
     _event,
@@ -219,8 +220,8 @@ export function JourneyFlow(): ReactElement {
   ): Promise<void> => {
     if (journey == null || node.type !== 'StepBlock') return
 
-    const x = parseInt(node.position.x.toString())
-    const y = parseInt(node.position.y.toString())
+    const x = Math.trunc(node.position.x)
+    const y = Math.trunc(node.position.y)
     await stepBlockPositionUpdate({
       variables: {
         id: node.id,
@@ -230,22 +231,26 @@ export function JourneyFlow(): ReactElement {
       }
     })
   }
-  const onEdgeUpdateStart = useCallback(() => {
+  const onEdgeUpdateStart = useCallback<
+    NonNullable<ReactFlowProps['onEdgeUpdateStart']>
+  >(() => {
     edgeUpdateSuccessful.current = false
   }, [])
 
-  const onEdgeUpdate: OnEdgeUpdateFunc = useCallback(
+  const onEdgeUpdate = useCallback<OnEdgeUpdateFunc>(
     (_, { source, sourceHandle, target }) => {
       edgeUpdateSuccessful.current = true
-      void updateEdge(source, sourceHandle, target)
+      void updateEdge({ source, sourceHandle, target })
     },
     [updateEdge]
   )
 
-  const onEdgeUpdateEnd = useCallback(
-    (_, edge: Edge) => {
+  const onEdgeUpdateEnd = useCallback<
+    NonNullable<ReactFlowProps['onEdgeUpdateEnd']>
+  >(
+    (_, { source, sourceHandle }) => {
       if (edgeUpdateSuccessful.current === false) {
-        void deleteEdge(edge?.source, edge?.sourceHandle)
+        void deleteEdge({ source, sourceHandle })
       }
       edgeUpdateSuccessful.current = true
     },

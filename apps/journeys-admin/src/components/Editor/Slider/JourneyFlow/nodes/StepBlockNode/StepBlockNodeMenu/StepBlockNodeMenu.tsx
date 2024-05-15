@@ -21,25 +21,7 @@ import { StepDuplicate } from '../../../../../../../../__generated__/StepDuplica
 import { MenuItem } from '../../../../../../MenuItem'
 import { DeleteBlock } from '../../../../Content/Canvas/QuickControls/DeleteBlock'
 
-export const STEP_DUPLICATE = gql`
-  mutation StepDuplicate(
-    $id: ID!
-    $journeyId: ID!
-    $parentOrder: Int
-    $x: Int
-    $y: Int
-  ) {
-    blockDuplicate(
-      id: $id
-      journeyId: $journeyId
-      parentOrder: $parentOrder
-      x: $x
-      y: $y
-    ) {
-      id
-    }
-  }
-`
+import { DuplicateStep } from './DuplicateStep'
 
 interface StepBlockNodeMenuProps {
   step: TreeBlock<StepBlock>
@@ -185,12 +167,11 @@ export function StepBlockNodeMenu({
         }}
         data-testid="StepBlockNodeMenu"
       >
-        <MenuItem
-          label={t('Duplicate Card')}
-          icon={<CopyLeftIcon color="inherit" />}
-          disabled={step == null}
-          onMouseUp={handleDuplicateStep}
-          testId="Duplicate-Card"
+        <DuplicateStep
+          step={step}
+          xPos={xPos}
+          yPos={yPos}
+          handleClick={handleClose}
         />
         <DeleteBlock variant="list-item" block={step} closeMenu={handleClose} />
       </Menu>

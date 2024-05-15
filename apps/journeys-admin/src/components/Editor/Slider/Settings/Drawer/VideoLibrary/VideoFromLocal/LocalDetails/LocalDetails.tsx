@@ -154,7 +154,7 @@ export function LocalDetails({
         src: data?.video?.variant?.hls ?? ''
       })
     }
-  }, [data])
+  }, [open, data])
 
   useEffect(() => {
     if (open) {

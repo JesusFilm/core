@@ -58,7 +58,7 @@ export function SocialPreviewNode(): ReactElement {
   async function handleSourceConnect(
     params: { target: string } | Parameters<OnConnect>[0]
   ): Promise<void> {
-    void updateEdge('SocialPreview', null, params.target)
+    void updateEdge({ source: 'SocialPreview', target: params.target })
   }
 
   return (
