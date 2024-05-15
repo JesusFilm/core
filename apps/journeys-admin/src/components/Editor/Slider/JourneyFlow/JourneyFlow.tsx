@@ -303,6 +303,7 @@ export function JourneyFlow(): ReactElement {
           stroke: theme.palette.primary.main,
           strokeWidth: 2
         }}
+        elevateEdgesOnSelect
       >
         <Panel position="top-right">
           <NewStepButton />
