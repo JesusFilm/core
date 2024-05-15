@@ -43,7 +43,7 @@ export function BaseEdge({
   }
 
   return (
-    <g {...props}>
+    <g {...props} data-testid={`BaseEdge-${id}`}>
       <DefaultBaseEdge
         path={edgePath}
         markerEnd={`url(#1__color=${
