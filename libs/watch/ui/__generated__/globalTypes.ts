@@ -8,12 +8,14 @@
 //==============================================================
 
 export enum VideoLabel {
+  behindTheScenes = "behindTheScenes",
   collection = "collection",
   episode = "episode",
   featureFilm = "featureFilm",
   segment = "segment",
   series = "series",
   shortFilm = "shortFilm",
+  trailer = "trailer",
 }
 
 export enum VideoVariantDownloadQuality {
