@@ -1,4 +1,6 @@
 
+import { test } from '@playwright/test'
+
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
