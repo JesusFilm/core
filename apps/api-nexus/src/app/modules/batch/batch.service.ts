@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 
 import { Resource } from '.prisma/api-nexus-client'
 
+import { PrivacyStatus } from '../../__generated__/graphql'
 import { SpreadsheetRow } from '../../lib/google/sheets.service'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -29,6 +30,28 @@ export class BatchService {
           resourceChannels: { where: { youtubeId: row.videoId } }
         }
       })
+      if(resource != null) {
+        // Update Resource
+      await this.prismaService.resource.update({
+        where: {id: row.resourceData?.id},
+        data: {
+          customThumbnail: row.customThumbnail,
+          isMadeForKids: row.isMadeForKids !== undefined?  ['1', 'true', 'on', 'yes'].includes(row.isMadeForKids) : undefined,
+          privacy: row.privacy as PrivacyStatus,
+          category: row.category,
+          notifySubscribers: row.notifySubscribers !== undefined?  ['1', 'true', 'on', 'yes'].includes(row.notifySubscribers) : undefined,
+          resourceSource: {
+            update: {
+              where: {resourceId: row.resourceData?.id},
+              data: {
+                thumbnailGoogleDriveId: row.customThumbnailDriveFile?.id,
+                thumbnailMimeType: row.customThumbnailDriveFile?.mimeType
+              }
+            }
+          }
+        }
+      });
+      }
       if (resource?.resourceLocalizations.length === 0) {
         // Create Localization is it is not existing
         await this.prismaService.resourceLocalization.create({

@@ -36,7 +36,6 @@ export interface SpreadsheetRow {
   customThumbnailDriveFile?: drive_v3.Schema$File
   captionLanguage?: string
   notifySubscribers?: string
-  notifySubscriber?: boolean
   playlistId?: string
   isMadeForKids?: string
   mediaComponentId?: string
@@ -193,7 +192,7 @@ export class GoogleSheetsService {
           customThumbnail: row.customThumbnail,
           category: row.category,
           privacy: row.privacy as PrivacyStatus,
-          notifySubscribers: row.notifySubscriber ?? false,
+          notifySubscribers:  ['1', 'true', 'yes', 'on'].includes(row.notifySubscribers ?? ''),
           playlistId: row.playlistId,
           isMadeForKids:  ['1', 'true', 'yes', 'on'].includes(row.isMadeForKids ?? ''),
           mediaComponentId: row.mediaComponentId,
@@ -204,6 +203,7 @@ export class GoogleSheetsService {
               description: row.description ?? '',
               keywords: row.keywords ?? '',
               language: row.textLanguage ?? '',
+              audioTrackFile: row.audioTrackFile ?? '',
               captionFile: row.captionFile ?? '',
               resourceLocalizationSource: {
                 create: {
@@ -221,7 +221,8 @@ export class GoogleSheetsService {
               videoGoogleDriveId: row.videoDriveFile?.id ?? '',
               videoGoogleDriveRefreshToken: refreshToken,
               thumbnailGoogleDriveId: row.customThumbnailDriveFile?.id ?? '',
-              thumbnailMimeType: row.customThumbnailDriveFile?.mimeType ?? ''
+              thumbnailMimeType: row.customThumbnailDriveFile?.mimeType ?? '',
+              thumbnailGoogleDriveRefreshToken: refreshToken
             }
           }
         }
@@ -252,7 +253,6 @@ export class GoogleSheetsService {
       const headers = rows.shift()?.map((header) =>
         header
           .toString()
-          .toLowerCase()
           .replace(/[-_]+/g, ' ')
           .replace(/ (.)/g, ($txt) => $txt.toUpperCase())
           .replace(/ /g, '')
@@ -298,6 +298,12 @@ export class GoogleSheetsService {
       )
     }
 
+    if (row.captionFile != null) {
+      row.captionDriveFile = files?.find(
+        (file) => file.name === row.captionFile
+      )
+    }
+
     if (row.audioTrackFile != null) {
       row.audioTrackDriveFile = files?.find(
         (file) => file.name === row.audioTrackFile
@@ -336,13 +342,6 @@ export class GoogleSheetsService {
             }
           })
         )?.resourceChannels[0]?.channel ?? undefined
-    }
-
-    if (row.notifySubscribers != null) {
-      row.notifySubscriber =
-        row.notifySubscribers.toLowerCase() === 'true' ||
-        row.notifySubscribers.toLowerCase() === '1' ||
-        row.notifySubscribers.toLowerCase() === 'yes'
     }
     return row
   }

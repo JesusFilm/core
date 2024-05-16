@@ -65,10 +65,10 @@ model Resource {
     privacy               PrivacyStatus          @default(private)
     resourceLocalizations ResourceLocalization[]
     resourceChannels      ResourceChannel[]
+    resourceSource        ResourceSource?
     createdAt             DateTime               @default(now())
     updatedAt             DateTime?              @updatedAt
     deletedAt             DateTime?
-    resourceSource        ResourceSource?
 }
 
 model ResourceSource {

@@ -1,3 +1,5 @@
+import { unlink } from 'fs'
+
 import { Process, Processor } from '@nestjs/bull'
 import { Job } from 'bull'
 
@@ -30,150 +32,45 @@ export class BatchJobWorker {
       job.data.channel.refreshToken
     )
 
-    const resp1 = await this.youtubeService.updateVideo({
+    // DOWNLOAD THUMBNAIL FROM DRIVE
+    console.log('UPLOAD THUMBNAIL FROM DRIVE')
+    let thumnbnailFilePath = ''
+    if (job.data.resource?.thumbnailDriveId != null) {
+      thumnbnailFilePath = await this.googleDriveService.downloadDriveFile({
+        fileId: job.data.resource.thumbnailDriveId,
+        accessToken: await this.googleOAuthService.getNewAccessToken(
+          job.data.resource.refreshToken
+        )
+      })
+
+      if (thumnbnailFilePath !== '') {
+        await this.youtubeService.updateVideoThumbnail({
+          token: channelToken,
+          videoId: job.data.localizations[0].videoId,
+          mimeType: job.data.resource.thumbnailMimeType ?? '',
+          thumbnailPath: thumnbnailFilePath
+        })
+      }
+    }
+
+    // UPDATE YOUTUBE DATA
+    console.log('UPDATE YOUTUBE')
+    await this.youtubeService.updateVideo({
       token: channelToken,
       title: job.data.localizations[0].title ?? '',
       description: job.data.localizations[0].description ?? '',
       category: job.data.resource.category,
-      privacyStatus: job.data.resource.privacyStatus ?? 'private',
-      isMadeForKids: job.data.resource.isMadeForKids ?? false,
+      privacyStatus: job.data.resource.privacyStatus,
+      isMadeForKids: job.data.resource.isMadeForKids,
       videoId: job.data.localizations[0].videoId,
       localizations: job.data.localizations
     })
 
-    console.log('resp1', resp1)
 
-    // DOWNLOAD VIDEO FROM DRIVE
-    // console.log('DOWNLOAD FROM DRIVE: ', job.data.resource.driveId)
-    // const videoFilePath = await this.googleDriveService.downloadDriveFile(
-    //   { fileId: job.data.resource.driveId, accessToken: videoDriveToken },
-    //   async (downloadProgress) => {
-    //     await job.progress(0 + downloadProgress / 3)
-    //     return await Promise.resolve()
-    //   }
-    // )
-
-    // DOWNLOAD FROM DRIVE
-    // console.log('UPLOADING FILE TO BUCKET: ', videoFilePath)
-    // const bucketFile = await this.bucketService.uploadFile(
-    //   videoFilePath,
-    //   process.env.BUCKET_NAME ?? 'bucket-name',
-    //   async (progress) => {
-    //     progress = 30 + progress / 4
-    //     await job.progress(progress)
-    //     return await Promise.resolve()
-    //   }
-    // )
-
-    // console.log('resource', job?.data?.resource)
-
-    // UPLOAD VIDEO
-    // console.log('UPLOAD TO YOUTUBE NOW', videoFilePath);
-    // const youtubeData = await this.youtubeService.uploadVideo(
-    //   {
-    //     token: await this.googleOAuthService.getNewAccessToken(
-    //       job.data.channel.refreshToken,
-    //     ),
-    //     filePath: videoFilePath,
-    //     channelId: job.data.channel.channelId,
-    //     title: job.data.resource.title ?? '',
-    //     description: job.data.resource.description ?? '',
-    //     defaultLanguage: job.data.resource.language ?? 'en',
-    //     privacyStatus: job.data.resource.privacyStatus
-    //   },
-    //   async (progress) => {
-    //     progress = 55 + progress / 3;
-    //     await job.progress(progress);
-    //     return await Promise.resolve();
-    //   },
-    // );
-
-    // // UPLOAD THUMBNAIL
-    // if (
-    //   job?.data?.resource?.thumbnailDriveId != null &&
-    //   youtubeData?.data?.id != null
-    // ) {
-    //   // GET THUMBNAIL DRIVE TOKEN
-    //   const thumbnailDriveToken =
-    //     await this.googleOAuthService.getNewAccessToken(
-    //       job.data.resource.refreshToken,
-    //     );
-
-    //   if (thumbnailDriveToken != null) {
-    //     // DOWNLOAD THUMBNAIL FROM DRIVE
-    //     console.log(
-    //       'DOWNLOAD THUMBNAIL FROM DRIVE: ',
-    //       job.data.resource.thumbnailDriveId,
-    //     );
-    //     const thumnbnailFilePath =
-    //       await this.googleDriveService.downloadDriveFile(
-    //         {
-    //           fileId: job.data.resource.thumbnailDriveId,
-    //           accessToken: thumbnailDriveToken,
-    //         },
-    //         async (downloadProgress) => {
-    //           downloadProgress = 90 + downloadProgress / 20;
-    //           await job.progress(downloadProgress);
-    //           return await Promise.resolve();
-    //         },
-    //       );
-    //     const resp = await this.youtubeService.updateVideoThumbnail({
-    //       token: await this.googleOAuthService.getNewAccessToken(
-    //         job.data.channel.refreshToken,
-    //       ),
-    //       videoId: youtubeData?.data?.id,
-    //       thumbnailPath: thumnbnailFilePath,
-    //       mimeType: 'image/jpeg',
-    //     });
-    //     console.log('THUMBNAIL UPLOAD', resp);
-    //   }
-    // }
-
-    // // UPLOAD CAPTION
-    // if (
-    //   job?.data?.resource?.captionDriveId != null &&
-    //   youtubeData?.data?.id != null
-    // ) {
-    //   // GET THUMBNAIL DRIVE TOKEN
-    //   const captionDriveToken = await this.googleOAuthService.getNewAccessToken(
-    //     job.data.resource.refreshToken,
-    //   );
-
-    //   if (captionDriveToken != null) {
-    //     // DOWNLOAD THUMBNAIL FROM DRIVE
-    //     console.log(
-    //       'DOWNLOAD THUMBNAIL FROM DRIVE: ',
-    //       job.data.resource.thumbnailDriveId,
-    //     );
-    //     const captionFilePath = await this.googleDriveService.downloadDriveFile(
-    //       {
-    //         fileId: job.data.resource.captionDriveId,
-    //         accessToken: captionDriveToken,
-    //       },
-    //       async (downloadProgress) => {
-    //         downloadProgress = 95 + downloadProgress / 20;
-    //           await job.progress(downloadProgress);
-    //         return await Promise.resolve();
-    //       },
-    //     );
-    //     const resp = await this.youtubeService.uploadCaption({
-    //       token: await this.googleOAuthService.getNewAccessToken(
-    //         job.data.channel.refreshToken,
-    //       ),
-    //       videoId: youtubeData?.data?.id,
-    //       language: job.data.resource?.language ?? 'en',
-    //       name: '',
-    //       captionFile: captionFilePath,
-    //       isDraft: false,
-    //       mimeType: job.data.resource.captionDriveId,
-    //     });
-    //     console.log('THUMBNAIL UPLOAD', resp);
-    //   }
-    // }
+    console.log('channelToken', channelToken)
 
     await job.progress(100)
     return { ...job.returnvalue }
-    // return { ...job.returnvalue, youtubeId: youtubeData?.data?.id, bucketFileId: bucketFile.Key };
   }
 
   @Process('processResourceUpload')
@@ -243,6 +140,14 @@ export class BatchJobWorker {
     //   }
     // )
 
+    await unlink(videoFilePath, (err) => {
+      if (err != null) {
+        console.log('Unable to Delete File: ', videoFilePath)
+      } else {
+        console.log('File Deleted')
+      }
+    })
+
     // UPDATE THUMBNAIL
     if (
       job?.data?.resource?.thumbnailDriveId != null &&
@@ -260,7 +165,14 @@ export class BatchJobWorker {
       }
     }
 
-    // UPDATE Resource Channel
+    // UPDATE Data
+    await this.prismaService.resourceSource.updateMany({
+      where: { resourceId: job.data.resource?.id },
+      data: {
+        videoCloudFlareId: bucketFile.Key ?? ''
+      }
+    })
+
     await this.prismaService.resourceChannel.create({
       data: {
         channelId: job.data.channel.id,
@@ -270,7 +182,10 @@ export class BatchJobWorker {
     })
 
     await this.prismaService.resourceLocalization.updateMany({
-     where: {resourceId: job.data.resource?.id, language: job.data.resource?.language},
+      where: {
+        resourceId: job.data.resource?.id,
+        language: job.data.resource?.language
+      },
       data: {
         videoId: youtubeData.data.id ?? ''
       }

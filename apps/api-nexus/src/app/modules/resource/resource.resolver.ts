@@ -186,7 +186,6 @@ export class ResourceResolver {
       )
     // CHECK SPREADSHEET TEMPLATE TYPE
     if (templateType === SpreadsheetTemplateType.UPLOAD) {
-      console.log("UPLOAD");
       // PROCESS UPLOAD TEMPLATE
       return await this.googleSheetsService.processUploadSpreadsheetTemplate(
         googleAccessToken,
