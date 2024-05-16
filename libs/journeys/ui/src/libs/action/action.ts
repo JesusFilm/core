@@ -34,9 +34,6 @@ export function handleAction(
         }
       }
       break
-    case 'NavigateAction':
-      nextActiveBlock()
-      break
     case 'LinkAction':
       if (
         action.url.startsWith('http') &&

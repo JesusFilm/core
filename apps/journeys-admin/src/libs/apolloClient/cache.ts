@@ -11,7 +11,6 @@ export const cache = (): InMemoryCache =>
    */
     possibleTypes: {
       Action: [
-        'NavigateAction',
         'NavigateToBlockAction',
         'NavigateToJourneyAction',
         'LinkAction',

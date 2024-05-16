@@ -76,15 +76,6 @@ describe('action', () => {
       ).not.toThrow()
     })
 
-    it('should handle NavigateAction', () => {
-      handleAction(router, {
-        __typename: 'NavigateAction',
-        parentBlockId: 'parent-id',
-        gtmEventName: null
-      })
-      expect(nextActiveBlock).toHaveBeenCalledWith()
-    })
-
     it('should handle EmailAction', () => {
       window.open = jest.fn()
 
