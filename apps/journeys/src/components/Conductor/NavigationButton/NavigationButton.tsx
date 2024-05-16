@@ -65,7 +65,7 @@ export function NavigationButton({
   ] as TreeBlock<StepFields>
 
   const onFirstStep = activeBlock === treeBlocks[0]
-  const onLastStep = activeBlock === last(treeBlocks)
+  const onLastStep = activeBlock?.nextBlockId === null
   const navigateToAnotherBlock =
     activeBlock?.nextBlockId != null &&
     activeBlock?.nextBlockId !== activeBlock.id

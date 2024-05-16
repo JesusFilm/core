@@ -74,7 +74,7 @@ export function Card({
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
   const onFirstStep = activeBlock === treeBlocks[0]
-  const onLastStep = activeBlock === last(treeBlocks)
+  const onLastStep = activeBlock?.nextBlockId === null
 
   const cardColor =
     backgroundColor != null
