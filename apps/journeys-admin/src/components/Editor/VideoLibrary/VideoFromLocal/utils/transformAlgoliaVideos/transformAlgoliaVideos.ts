@@ -1,7 +1,7 @@
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
-import type { geronimoType } from '../useVideoSearch/useVideoSearch'
+import type { LocalVideoFields } from '../useVideoSearch/useVideoSearch'
 
-export function transformAlgoliaVideos(hits): geronimoType {
+export function transformAlgoliaVideos(hits): LocalVideoFields {
   return hits.map((videoVariant) => {
     return {
       id: videoVariant.videoId,
