@@ -129,7 +129,7 @@ describe('NavigateToBlockActionResolver', () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
         resolver.blockUpdateNavigateToBlockAction(ability, block.id, wrongInput)
-      ).rejects.toThrow('Cannot connect to self')
+      ).rejects.toThrow('blockId cannot be the parent step block id')
     })
   })
 })

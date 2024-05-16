@@ -167,7 +167,7 @@ describe('StepBlockResolver', () => {
       prismaService.block.findUnique.mockResolvedValueOnce(block)
       await expect(
         resolver.stepBlockUpdate(ability, 'blockId', wrongBlockUpdateInput)
-      ).rejects.toThrow('Cannot connect to self')
+      ).rejects.toThrow('nextBlockId cannot be the current step block id')
     })
   })
 

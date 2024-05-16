@@ -90,9 +90,12 @@ export class StepBlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
     if (block.id === input.nextBlockId)
-      throw new GraphQLError('Cannot connect to self', {
-        extensions: { code: 'BAD_USER_INPUT' }
-      })
+      throw new GraphQLError(
+        'nextBlockId cannot be the current step block id',
+        {
+          extensions: { code: 'BAD_USER_INPUT' }
+        }
+      )
     return await this.blockService.update(id, input)
   }
 

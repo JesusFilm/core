@@ -68,7 +68,7 @@ export class NavigateToBlockActionResolver {
       )
     }
     if (block.id === input.blockId)
-      throw new GraphQLError('Cannot connect to self', {
+      throw new GraphQLError('blockId cannot be the parent step block id', {
         extensions: { code: 'BAD_USER_INPUT' }
       })
     const inputWithBlockConnection = {
