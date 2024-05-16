@@ -99,7 +99,7 @@ async function processStepBlockAndActions(
   )
 }
 
-export async function processNextBlockId(): Promise<void> {
+export async function remediateNextBlock(): Promise<void> {
   let offset = 0
   while (true) {
     const journeys = await prisma.journey.findMany({
@@ -115,3 +115,11 @@ export async function processNextBlockId(): Promise<void> {
     offset += 100
   }
 }
+
+async function main(): Promise<void> {
+  await remediateNextBlock()
+}
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})
