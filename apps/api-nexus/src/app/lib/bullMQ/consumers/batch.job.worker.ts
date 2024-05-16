@@ -120,25 +120,25 @@ export class BatchJobWorker {
 
     // UPLOAD VIDEO
     // console.log('UPLOAD TO YOUTUBE NOW', videoFilePath)
-    const youtubeData = { data: { id: null } }
-    // const youtubeData = await this.youtubeService.uploadVideo(
-    //   {
-    //     token: await this.googleOAuthService.getNewAccessToken(
-    //       job.data.channel.refreshToken
-    //     ),
-    //     filePath: videoFilePath,
-    //     channelId: job.data.channel.channelId,
-    //     title: job.data.resource.title ?? '',
-    //     description: job.data.resource.description ?? '',
-    //     defaultLanguage: job.data.resource.language ?? 'en',
-    //     privacyStatus: job.data.resource.privacyStatus
-    //   },
-    //   async (progress) => {
-    //     progress = 55 + progress / 3
-    //     await job.progress(progress)
-    //     return await Promise.resolve()
-    //   }
-    // )
+    // const youtubeData = { data: { id: null } }
+    const youtubeData = await this.youtubeService.uploadVideo(
+      {
+        token: await this.googleOAuthService.getNewAccessToken(
+          job.data.channel.refreshToken
+        ),
+        filePath: videoFilePath,
+        channelId: job.data.channel.channelId,
+        title: job.data.resource.title ?? '',
+        description: job.data.resource.description ?? '',
+        defaultLanguage: job.data.resource.language ?? 'en',
+        privacyStatus: job.data.resource.privacyStatus
+      },
+      async (progress) => {
+        progress = 55 + progress / 3
+        await job.progress(progress)
+        return await Promise.resolve()
+      }
+    )
 
     await unlink(videoFilePath, (err) => {
       if (err != null) {
