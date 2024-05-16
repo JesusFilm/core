@@ -71,11 +71,7 @@ describe('DescriptionItem', () => {
     fireEvent.click(getByText('Description'))
     expect(push).toHaveBeenCalledWith(
       {
-        query: { param: 'description' },
-        push,
-        events: {
-          on
-        }
+        query: { param: 'description' }
       },
       undefined,
       { shallow: true }

@@ -219,6 +219,7 @@ export function CardPoll(): ReactElement {
           height={195}
           src={cardPollImage}
           alt="Card Poll Template"
+          draggable={false}
         />
       </ButtonBase>
     </Box>

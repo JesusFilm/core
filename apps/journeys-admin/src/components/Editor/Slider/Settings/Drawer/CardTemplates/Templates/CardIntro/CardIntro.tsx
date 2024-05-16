@@ -216,6 +216,7 @@ export function CardIntro(): ReactElement {
           height={195}
           src={cardIntroImage}
           alt="Card Intro Template"
+          draggable={false}
         />
       </ButtonBase>
     </Box>

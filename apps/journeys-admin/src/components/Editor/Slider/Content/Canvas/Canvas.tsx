@@ -81,11 +81,12 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
     })
-
-    router.query.param = 'step-footer'
-    void router.push(router)
+    const param = 'step-footer'
+    void router.push({ query: { ...router.query, param } }, undefined, {
+      shallow: true
+    })
     router.events.on('routeChangeComplete', () => {
-      setBeaconPageViewed('Step Footer')
+      setBeaconPageViewed(param)
     })
   }
 
@@ -176,10 +177,9 @@ export function Canvas(): ReactElement {
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
                 transform: `scale(${scale})`,
-                margin: `${calculateScaledMargin(
-                  CARD_HEIGHT,
-                  scale
-                )} ${calculateScaledMargin(CARD_WIDTH, scale)}`,
+                margin: `calc(${calculateScaledMargin(CARD_HEIGHT, scale)} + ${
+                  scale < 0.65 ? '20px' : '0px'
+                }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
                 borderRadius: 6,
                 transition: (theme) =>
                   theme.transitions.create('border-color', {

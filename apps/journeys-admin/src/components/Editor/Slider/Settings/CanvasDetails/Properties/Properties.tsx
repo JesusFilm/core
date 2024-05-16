@@ -1,11 +1,10 @@
-import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { Drawer } from '../../Drawer'
@@ -16,14 +15,6 @@ const Card = dynamic(
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card" */ './blocks/Card'
     ).then((mod) => mod.Card),
-  { ssr: false }
-)
-
-const Step = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Step" */ './blocks/Step'
-    ).then((mod) => mod.Step),
   { ssr: false }
 )
 
@@ -105,9 +96,16 @@ interface PropertiesProps {
 
 export function Properties({ block, step }: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { state } = useEditor()
+  const { state, dispatch } = useEditor()
   const selectedBlock = block ?? state.selectedBlock
   const selectedStep = step ?? state.selectedStep
+
+  function onClose(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.JourneyFlow
+    })
+  }
 
   let component
   let title: string | undefined
@@ -123,12 +121,8 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       const card = selectedBlock.children[0]
       if (card?.children.length > 0) {
         title = t('Card Properties')
-        component = (
-          <>
-            <Step {...selectedBlock} />
-            {card != null && <Divider />}
-            {card != null && <Properties block={card} step={selectedStep} />}
-          </>
+        component = card != null && (
+          <Properties block={card} step={selectedStep} />
         )
       } else {
         title = t('Card Templates')
@@ -173,7 +167,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       break
   }
   return block == null && step == null ? (
-    <Drawer title={title}>
+    <Drawer title={title} onClose={onClose}>
       <Stack>{component}</Stack>
     </Drawer>
   ) : (

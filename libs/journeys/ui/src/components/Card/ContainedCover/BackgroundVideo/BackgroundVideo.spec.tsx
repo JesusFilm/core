@@ -43,7 +43,8 @@ const video: TreeBlock<VideoFields> = {
       __typename: 'VideoVariant',
       id: '5_0-NUA0201-0-0-529',
       hls: 'https://arc.gt/hls/5_0-NUA0201-0-0/529'
-    }
+    },
+    variantLanguages: []
   },
   posterBlockId: null,
   children: []

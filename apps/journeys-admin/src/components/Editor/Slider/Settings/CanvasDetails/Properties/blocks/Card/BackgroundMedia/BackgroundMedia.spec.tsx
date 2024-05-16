@@ -143,7 +143,8 @@ describe('BackgroundMedia', () => {
           __typename: 'VideoVariant',
           id: '2_0-FallingPlates-529',
           hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-        }
+        },
+        variantLanguages: []
       },
       posterBlockId: 'poster1.id',
       children: []
@@ -261,24 +262,24 @@ describe('BackgroundMedia', () => {
 
     fireEvent.click(getByTestId('bgvideo-image-tab'))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'background-image' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'background-image' }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
 
     fireEvent.click(getByTestId('bgvideo-video-tab'))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'background-video' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'background-video' }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 })

@@ -16,7 +16,6 @@ import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 
 import { Action, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
-import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction/NavigateToJourneyAction'
 
 const ActionStory: Meta<typeof Action> = {
   ...journeysAdminConfig,
@@ -70,16 +69,6 @@ const Template: StoryObj<typeof Action> = {
     return (
       <MockedProvider
         mocks={[
-          {
-            request: {
-              query: GET_JOURNEY_NAMES
-            },
-            result: {
-              data: {
-                journeys: [journey]
-              }
-            }
-          },
           {
             request: {
               query: NAVIGATE_ACTION_UPDATE,

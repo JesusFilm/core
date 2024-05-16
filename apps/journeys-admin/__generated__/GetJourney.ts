@@ -43,25 +43,6 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAct
   blockId: string;
 }
 
-export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface GetJourney_journey_blocks_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -76,7 +57,7 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_EmailAction {
   email: string;
 }
 
-export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_blocks_ButtonBlock_action_NavigateAction | GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_ButtonBlock_action_LinkAction | GetJourney_journey_blocks_ButtonBlock_action_EmailAction;
+export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_blocks_ButtonBlock_action_NavigateAction | GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_ButtonBlock_action_LinkAction | GetJourney_journey_blocks_ButtonBlock_action_EmailAction;
 
 export interface GetJourney_journey_blocks_ButtonBlock {
   __typename: "ButtonBlock";
@@ -138,25 +119,6 @@ export interface GetJourney_journey_blocks_FormBlock_action_NavigateToBlockActio
   blockId: string;
 }
 
-export interface GetJourney_journey_blocks_FormBlock_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetJourney_journey_blocks_FormBlock_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetJourney_journey_blocks_FormBlock_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetJourney_journey_blocks_FormBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetJourney_journey_blocks_FormBlock_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface GetJourney_journey_blocks_FormBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -171,7 +133,7 @@ export interface GetJourney_journey_blocks_FormBlock_action_EmailAction {
   email: string;
 }
 
-export type GetJourney_journey_blocks_FormBlock_action = GetJourney_journey_blocks_FormBlock_action_NavigateAction | GetJourney_journey_blocks_FormBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_FormBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_FormBlock_action_LinkAction | GetJourney_journey_blocks_FormBlock_action_EmailAction;
+export type GetJourney_journey_blocks_FormBlock_action = GetJourney_journey_blocks_FormBlock_action_NavigateAction | GetJourney_journey_blocks_FormBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_FormBlock_action_LinkAction | GetJourney_journey_blocks_FormBlock_action_EmailAction;
 
 export interface GetJourney_journey_blocks_FormBlock {
   __typename: "FormBlock";
@@ -221,25 +183,6 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlo
   blockId: string;
 }
 
-export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -254,7 +197,7 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_EmailAction {
   email: string;
 }
 
-export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction | GetJourney_journey_blocks_RadioOptionBlock_action_EmailAction;
+export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction | GetJourney_journey_blocks_RadioOptionBlock_action_EmailAction;
 
 export interface GetJourney_journey_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -285,25 +228,6 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAct
   blockId: string;
 }
 
-export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface GetJourney_journey_blocks_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -318,7 +242,7 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_EmailAction {
   email: string;
 }
 
-export type GetJourney_journey_blocks_SignUpBlock_action = GetJourney_journey_blocks_SignUpBlock_action_NavigateAction | GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_SignUpBlock_action_LinkAction | GetJourney_journey_blocks_SignUpBlock_action_EmailAction;
+export type GetJourney_journey_blocks_SignUpBlock_action = GetJourney_journey_blocks_SignUpBlock_action_NavigateAction | GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_SignUpBlock_action_LinkAction | GetJourney_journey_blocks_SignUpBlock_action_EmailAction;
 
 export interface GetJourney_journey_blocks_SignUpBlock {
   __typename: "SignUpBlock";
@@ -362,25 +286,6 @@ export interface GetJourney_journey_blocks_TextResponseBlock_action_NavigateToBl
   blockId: string;
 }
 
-export interface GetJourney_journey_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetJourney_journey_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetJourney_journey_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetJourney_journey_blocks_TextResponseBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetJourney_journey_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface GetJourney_journey_blocks_TextResponseBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -395,7 +300,7 @@ export interface GetJourney_journey_blocks_TextResponseBlock_action_EmailAction 
   email: string;
 }
 
-export type GetJourney_journey_blocks_TextResponseBlock_action = GetJourney_journey_blocks_TextResponseBlock_action_NavigateAction | GetJourney_journey_blocks_TextResponseBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_TextResponseBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_TextResponseBlock_action_LinkAction | GetJourney_journey_blocks_TextResponseBlock_action_EmailAction;
+export type GetJourney_journey_blocks_TextResponseBlock_action = GetJourney_journey_blocks_TextResponseBlock_action_NavigateAction | GetJourney_journey_blocks_TextResponseBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_TextResponseBlock_action_LinkAction | GetJourney_journey_blocks_TextResponseBlock_action_EmailAction;
 
 export interface GetJourney_journey_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
@@ -432,12 +337,25 @@ export interface GetJourney_journey_blocks_VideoBlock_video_variant {
   hls: string | null;
 }
 
+export interface GetJourney_journey_blocks_VideoBlock_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface GetJourney_journey_blocks_VideoBlock_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: GetJourney_journey_blocks_VideoBlock_video_variantLanguages_name[];
+}
+
 export interface GetJourney_journey_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: GetJourney_journey_blocks_VideoBlock_video_title[];
   image: string | null;
   variant: GetJourney_journey_blocks_VideoBlock_video_variant | null;
+  variantLanguages: GetJourney_journey_blocks_VideoBlock_video_variantLanguages[];
 }
 
 export interface GetJourney_journey_blocks_VideoBlock_action_NavigateAction {
@@ -451,25 +369,6 @@ export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockActi
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
-}
-
-export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetJourney_journey_blocks_VideoBlock_action_LinkAction {
@@ -486,7 +385,7 @@ export interface GetJourney_journey_blocks_VideoBlock_action_EmailAction {
   email: string;
 }
 
-export type GetJourney_journey_blocks_VideoBlock_action = GetJourney_journey_blocks_VideoBlock_action_NavigateAction | GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_VideoBlock_action_LinkAction | GetJourney_journey_blocks_VideoBlock_action_EmailAction;
+export type GetJourney_journey_blocks_VideoBlock_action = GetJourney_journey_blocks_VideoBlock_action_NavigateAction | GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_VideoBlock_action_LinkAction | GetJourney_journey_blocks_VideoBlock_action_EmailAction;
 
 export interface GetJourney_journey_blocks_VideoBlock {
   __typename: "VideoBlock";
@@ -580,25 +479,6 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_Navig
   blockId: string;
 }
 
-export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey | null;
-}
-
 export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -613,7 +493,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_Email
   email: string;
 }
 
-export type GetJourney_journey_blocks_VideoTriggerBlock_triggerAction = GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction;
+export type GetJourney_journey_blocks_VideoTriggerBlock_triggerAction = GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";

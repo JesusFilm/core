@@ -64,11 +64,7 @@ describe('ShareItem', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'edit-url' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'edit-url' }
         },
         undefined,
         { shallow: true }
@@ -114,11 +110,7 @@ describe('ShareItem', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'embed-journey' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'embed-journey' }
         },
         undefined,
         { shallow: true }

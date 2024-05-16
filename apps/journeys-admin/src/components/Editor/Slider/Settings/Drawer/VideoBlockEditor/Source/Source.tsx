@@ -90,11 +90,12 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
 
   function handleClick(): void {
     setOpen(true)
-
-    router.query.param = 'video-library'
-    void router.push(router)
+    const param = 'video-library'
+    void router.push({ query: { ...router.query, param } }, undefined, {
+      shallow: true
+    })
     router.events.on('routeChangeComplete', () => {
-      setBeaconPageViewed('video-library')
+      setBeaconPageViewed(param)
     })
   }
 

@@ -1,5 +1,6 @@
 import Fab from '@mui/material/Fab'
 import Menu from '@mui/material/Menu'
+import Zoom from '@mui/material/Zoom'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -7,16 +8,23 @@ import EllipsisIcon from '@core/shared/ui/icons/Ellipsis'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { DeleteBlock } from '../../../../Content/Canvas/QuickControls/DeleteBlock'
-import { DuplicateBlock } from '../../../../Content/Canvas/QuickControls/DuplicateBlock'
+
+import { DuplicateStep } from './DuplicateStep'
 
 interface StepBlockNodeMenuProps {
   step: TreeBlock<StepBlock>
+  xPos?: number
+  yPos?: number
   className?: string
+  in?: boolean
 }
 
 export function StepBlockNodeMenu({
   step,
-  className
+  xPos,
+  yPos,
+  className,
+  in: appear
 }: StepBlockNodeMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -31,24 +39,28 @@ export function StepBlockNodeMenu({
 
   return (
     <>
-      <Fab
-        variant="extended"
-        className={className}
-        id="edit-step"
-        size="small"
-        aria-controls={open ? 'edit-step-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
-        sx={{
-          position: 'absolute',
-          top: -20,
-          right: -20
-        }}
-        data-testid="EditStepFab"
-      >
-        <EllipsisIcon />
-      </Fab>
+      <Zoom in={appear}>
+        <Fab
+          variant="extended"
+          className={className}
+          id="edit-step"
+          size="small"
+          aria-controls={open ? 'edit-step-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}
+          onClick={handleClick}
+          sx={{
+            position: 'absolute',
+            top: -14,
+            right: -20,
+            height: '28px',
+            color: 'rgba(0, 0, 0, 0.5)'
+          }}
+          data-testid="EditStepFab"
+        >
+          <EllipsisIcon />
+        </Fab>
+      </Zoom>
       <Menu
         id="edit-step-menu"
         anchorEl={anchorEl}
@@ -65,9 +77,10 @@ export function StepBlockNodeMenu({
         }}
         data-testid="StepBlockNodeMenu"
       >
-        <DuplicateBlock
-          variant="list-item"
-          block={step}
+        <DuplicateStep
+          step={step}
+          xPos={xPos}
+          yPos={yPos}
           handleClick={handleClose}
         />
         <DeleteBlock variant="list-item" block={step} closeMenu={handleClose} />

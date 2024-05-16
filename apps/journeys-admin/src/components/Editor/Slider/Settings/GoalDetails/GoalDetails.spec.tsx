@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
@@ -12,6 +14,7 @@ import {
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { StepFields } from '../../../../../../__generated__/StepFields'
 import { TestEditorState } from '../../../../../libs/TestEditorState'
 
 import { GoalDetails } from './GoalDetails'
@@ -100,5 +103,55 @@ describe('GoalDetails', () => {
         screen.getByText('selectedGoalUrl: https://newUrl.com')
       ).toBeInTheDocument()
     })
+  })
+
+  it('should navigate to journey map with social when close icon is clicked', async () => {
+    const contentState = { ...state, activeSlide: ActiveSlide.Content }
+    render(
+      <MockedProvider>
+        <EditorProvider initialState={contentState}>
+          <TestEditorState />
+          <GoalDetails />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('X2Icon')).toBeInTheDocument()
+    )
+    await waitFor(
+      async () => await userEvent.click(screen.getByTestId('X2Icon'))
+    )
+
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    expect(screen.getByText('activeContent: social')).toBeInTheDocument()
+  })
+
+  it('should navigate to journey map with canvas when close icon is clicked', async () => {
+    const contentState = {
+      ...state,
+      activeSlide: ActiveSlide.Content,
+      steps: [{} as unknown as TreeBlock<StepFields>]
+    }
+    render(
+      <MockedProvider>
+        <EditorProvider initialState={contentState}>
+          <TestEditorState />
+          <GoalDetails />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('X2Icon')).toBeInTheDocument()
+    )
+    await waitFor(
+      async () => await userEvent.click(screen.getByTestId('X2Icon'))
+    )
+
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
   })
 })

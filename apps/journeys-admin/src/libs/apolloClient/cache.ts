@@ -13,7 +13,6 @@ export const cache = (): InMemoryCache =>
       Action: [
         'NavigateAction',
         'NavigateToBlockAction',
-        'NavigateToJourneyAction',
         'LinkAction',
         'EmailAction'
       ],
@@ -61,6 +60,7 @@ export const cache = (): InMemoryCache =>
       },
       Translation: {
         keyFields: ['value']
-      }
+      },
+      NavigateToBlockAction: { keyFields: ['parentBlockId'] }
     }
   })

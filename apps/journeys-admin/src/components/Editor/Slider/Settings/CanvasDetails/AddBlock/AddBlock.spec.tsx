@@ -1,8 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
@@ -11,6 +12,7 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { AddBlock } from '.'
@@ -112,5 +114,30 @@ describe('AddNewBlock', () => {
     const newVideoButton = newVideoButtonDiv.querySelector('button')
 
     expect(newVideoButton).toBeDisabled()
+  })
+
+  it('should return to journey map when close icon is clicked', async () => {
+    render(
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider
+            initialState={{ selectedStep, activeSlide: ActiveSlide.Content }}
+          >
+            <TestEditorState />
+            <AddBlock />
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('X2Icon')).toBeInTheDocument()
+    )
+    await waitFor(
+      async () => await userEvent.click(screen.getByTestId('X2Icon'))
+    )
+
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
 })

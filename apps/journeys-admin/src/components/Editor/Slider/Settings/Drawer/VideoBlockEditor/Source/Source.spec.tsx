@@ -135,13 +135,13 @@ describe('Source', () => {
       })
     )
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'video-library' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'video-library' }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 
