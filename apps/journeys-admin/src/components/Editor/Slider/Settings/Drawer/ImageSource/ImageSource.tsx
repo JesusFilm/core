@@ -42,11 +42,12 @@ export function ImageSource({
 
   function handleClick(): void {
     setOpen(true)
-
-    router.query.param = 'unsplash-image'
-    void router.push(router)
+    const param = 'unsplash-image'
+    void router.push({ query: { ...router.query, param } }, undefined, {
+      shallow: true
+    })
     router.events.on('routeChangeComplete', () => {
-      setBeaconPageViewed('unsplash-image')
+      setBeaconPageViewed(param)
     })
   }
 

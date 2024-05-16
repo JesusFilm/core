@@ -13,7 +13,6 @@ export const cache = (): InMemoryCache =>
       Action: [
         'NavigateAction',
         'NavigateToBlockAction',
-        'NavigateToJourneyAction',
         'LinkAction',
         'EmailAction'
       ],

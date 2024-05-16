@@ -1,12 +1,16 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { styled, useTheme } from '@mui/material/styles'
+import { darken, styled, useTheme } from '@mui/material/styles'
 import Zoom from '@mui/material/Zoom'
 import { ReactElement, useEffect, useRef } from 'react'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
-import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
@@ -25,7 +29,7 @@ export function Slider(): ReactElement {
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const {
-    state: { activeSlide, selectedStep },
+    state: { activeSlide, activeContent, selectedStep },
     dispatch
   } = useEditor()
 
@@ -66,6 +70,16 @@ export function Slider(): ReactElement {
   }
 
   function handlePrev(): void {
+    if (
+      activeSlide === ActiveSlide.Content &&
+      activeContent === ActiveContent.Goals
+    ) {
+      dispatch({
+        type: 'SetActiveContentAction',
+        activeContent:
+          selectedStep == null ? ActiveContent.Social : ActiveContent.Canvas
+      })
+    }
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: activeSlide - 1
@@ -151,7 +165,12 @@ export function Slider(): ReactElement {
             backgroundColor: 'background.paper',
             borderWidth: 1,
             borderStyle: 'solid',
-            borderColor: 'divider'
+            borderColor: 'divider',
+            transition: (theme) => theme.transitions.create('background-color'),
+            '&:hover': {
+              backgroundColor: (theme) =>
+                darken(theme.palette.background.paper, 0.1)
+            }
           }}
         >
           <ChevronLeftIcon />

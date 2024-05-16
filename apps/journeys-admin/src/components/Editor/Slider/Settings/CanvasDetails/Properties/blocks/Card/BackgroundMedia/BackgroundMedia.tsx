@@ -50,21 +50,18 @@ export function BackgroundMedia(): ReactElement {
   )
 
   const handleTypeChange = (
-    event: MouseEvent<HTMLElement>,
+    _event: MouseEvent<HTMLElement>,
     selected: string
   ): void => {
     if (selected != null) {
       setBlockType(selected)
-
       const param =
         selected === 'VideoBlock' ? 'background-video' : 'background-image'
-
-      router.query.param = param
-      void router.push(router)
+      void router.push({ query: { ...router.query, param } }, undefined, {
+        shallow: true
+      })
       router.events.on('routeChangeComplete', () => {
-        setBeaconPageViewed(
-          selected === 'VideoBlock' ? 'Background Video' : 'Background Image'
-        )
+        setBeaconPageViewed(param)
       })
     }
   }

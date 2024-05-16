@@ -303,11 +303,7 @@ describe('VideoLibrary', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'video-youtube' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'video-youtube' }
         },
         undefined,
         { shallow: true }
@@ -334,11 +330,7 @@ describe('VideoLibrary', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'video-library' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'video-library' }
         },
         undefined,
         { shallow: true }
@@ -361,15 +353,13 @@ describe('VideoLibrary', () => {
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
-    expect(screen.getByText('Drop a video here')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Drop a video here')).toBeInTheDocument()
+    })
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'video-upload' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'video-upload' }
         },
         undefined,
         { shallow: true }
