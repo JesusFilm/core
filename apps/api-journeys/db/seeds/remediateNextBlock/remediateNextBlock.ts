@@ -26,18 +26,14 @@ function findParentStepBlock(
   parentBlockId: string
 ): string | undefined {
   const block = blocks.find((block) => block.id === parentBlockId)
-  if (
-    block == null ||
-    (block.parentBlockId == null && block.typename !== 'StepBlock')
-  ) {
-    // following line should never run, purely for type system
+  if (block?.parentBlockId == null) {
+    if (block?.typename === 'StepBlock') return block.id
+
+    // following line should never run
     throw new Error("Parent block is not a step block or doesn't exist")
   }
 
-  if (block.parentBlockId == null && block.typename === 'StepBlock')
-    return block.id
-
-  return findParentStepBlock(blocks, block.parentBlockId as string)
+  return findParentStepBlock(blocks, block.parentBlockId)
 }
 
 async function processJourney(journey: Journey): Promise<void> {
