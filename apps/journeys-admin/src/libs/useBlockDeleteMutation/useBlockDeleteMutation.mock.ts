@@ -9,8 +9,8 @@ export const deleteBlockMock: MockedResponse<BlockDelete> = {
     query: BLOCK_DELETE,
     variables: {
       id: 'typography0.id',
-      parentBlockId: 'card1.id',
-      journeyId: 'journeyId'
+      journeyId: 'journey-id',
+      parentBlockId: 'card1.id'
     }
   },
   result: {

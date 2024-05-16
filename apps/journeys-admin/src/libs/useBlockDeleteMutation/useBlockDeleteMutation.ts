@@ -48,19 +48,23 @@ export function useBlockDeleteMutation(
     block: TreeBlock,
     options: MutationFunctionOptions<BlockDelete, BlockDeleteVariables>
   ): Promise<FetchResult<BlockDelete> | undefined> {
-    if (journey == null) return
+    try {
+      if (journey == null) return
 
-    return await blockDeleteMutation({
-      variables: {
-        id: block.id,
-        journeyId: journey.id,
-        parentBlockId: block.parentBlockId
-      },
-      update(cache, { data }) {
-        blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
-      },
-      ...options
-    })
+      return await blockDeleteMutation({
+        variables: {
+          id: block.id,
+          journeyId: journey.id,
+          parentBlockId: block.parentBlockId
+        },
+        update(cache, { data }) {
+          blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
+        },
+        ...options
+      })
+    } catch (e) {
+      return undefined
+    }
   }
 
   return [wrappedBlockDeleteMutation, result]
