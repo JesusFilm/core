@@ -56,7 +56,6 @@ enum ButtonAction
   @join__type(graph: JOURNEYS)
 {
   NavigateToBlockAction @join__enumValue(graph: JOURNEYS)
-  NavigateToJourneyAction @join__enumValue(graph: JOURNEYS)
   LinkAction @join__enumValue(graph: JOURNEYS)
   EmailAction @join__enumValue(graph: JOURNEYS)
 }
@@ -127,7 +126,6 @@ type ButtonClickEvent implements Event
   The label for each corresponding action, mapping below:
   NavigateAction - null
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
   """
   actionValue: String
@@ -158,7 +156,6 @@ input ButtonClickEventCreateInput
   The label for each corresponding action, mapping below:
   NavigateAction - undefined
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
   """
   actionValue: String
@@ -847,12 +844,14 @@ type JourneyProfile
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
   onboardingFormCompletedAt: DateTime
+  journeyFlowBackButtonClicked: Boolean
 }
 
 input JourneyProfileUpdateInput
   @join__type(graph: JOURNEYS)
 {
   lastActiveTeamId: String
+  journeyFlowBackButtonClicked: Boolean
 }
 
 type JourneysEmailPreference
@@ -1205,7 +1204,6 @@ type Mutation
 {
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
-  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
   blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction! @join__field(graph: JOURNEYS)
 
@@ -1459,23 +1457,6 @@ input NavigateToBlockActionInput
 {
   gtmEventName: String
   blockId: String!
-}
-
-type NavigateToJourneyAction implements Action
-  @join__implements(graph: JOURNEYS, interface: "Action")
-  @join__type(graph: JOURNEYS)
-{
-  parentBlockId: ID!
-  gtmEventName: String
-  journeyId: String!
-  journey: Journey
-}
-
-input NavigateToJourneyActionInput
-  @join__type(graph: JOURNEYS)
-{
-  gtmEventName: String
-  journeyId: String!
 }
 
 type OperatingSystem

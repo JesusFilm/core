@@ -10,7 +10,6 @@ import { ActionResolver } from './action.resolver'
 import { EmailActionResolver } from './emailAction/emailAction.resolver'
 import { LinkActionResolver } from './linkAction/linkAction.resolver'
 import { NavigateToBlockActionResolver } from './navigateToBlockAction/navigateToBlockAction.resolver'
-import { NavigateToJourneyActionResolver } from './navigateToJourneyAction/navigateToJourneyAction.resolver'
 
 @Module({
   imports: [CaslAuthModule.register(AppCaslFactory)],
@@ -20,8 +19,7 @@ import { NavigateToJourneyActionResolver } from './navigateToJourneyAction/navig
     PrismaService,
     LinkActionResolver,
     EmailActionResolver,
-    NavigateToBlockActionResolver,
-    NavigateToJourneyActionResolver
+    NavigateToBlockActionResolver
   ]
 })
 export class ActionModule {}

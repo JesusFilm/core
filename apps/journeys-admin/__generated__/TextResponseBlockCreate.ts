@@ -22,25 +22,6 @@ export interface TextResponseBlockCreate_textResponseBlockCreate_action_Navigate
   blockId: string;
 }
 
-export interface TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface TextResponseBlockCreate_textResponseBlockCreate_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -55,7 +36,7 @@ export interface TextResponseBlockCreate_textResponseBlockCreate_action_EmailAct
   email: string;
 }
 
-export type TextResponseBlockCreate_textResponseBlockCreate_action = TextResponseBlockCreate_textResponseBlockCreate_action_NavigateAction | TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToBlockAction | TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToJourneyAction | TextResponseBlockCreate_textResponseBlockCreate_action_LinkAction | TextResponseBlockCreate_textResponseBlockCreate_action_EmailAction;
+export type TextResponseBlockCreate_textResponseBlockCreate_action = TextResponseBlockCreate_textResponseBlockCreate_action_NavigateAction | TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToBlockAction | TextResponseBlockCreate_textResponseBlockCreate_action_LinkAction | TextResponseBlockCreate_textResponseBlockCreate_action_EmailAction;
 
 export interface TextResponseBlockCreate_textResponseBlockCreate {
   __typename: "TextResponseBlock";
@@ -93,25 +74,6 @@ export interface TextResponseBlockCreate_textResponseBlockUpdate_action_Navigate
   blockId: string;
 }
 
-export interface TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface TextResponseBlockCreate_textResponseBlockUpdate_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -126,7 +88,7 @@ export interface TextResponseBlockCreate_textResponseBlockUpdate_action_EmailAct
   email: string;
 }
 
-export type TextResponseBlockCreate_textResponseBlockUpdate_action = TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateAction | TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToBlockAction | TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToJourneyAction | TextResponseBlockCreate_textResponseBlockUpdate_action_LinkAction | TextResponseBlockCreate_textResponseBlockUpdate_action_EmailAction;
+export type TextResponseBlockCreate_textResponseBlockUpdate_action = TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateAction | TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToBlockAction | TextResponseBlockCreate_textResponseBlockUpdate_action_LinkAction | TextResponseBlockCreate_textResponseBlockUpdate_action_EmailAction;
 
 export interface TextResponseBlockCreate_textResponseBlockUpdate {
   __typename: "TextResponseBlock";

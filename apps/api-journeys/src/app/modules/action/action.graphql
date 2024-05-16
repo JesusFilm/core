@@ -9,12 +9,6 @@ type NavigateToBlockAction implements Action {
   blockId: String!
 }
 
-type NavigateToJourneyAction implements Action {
-  parentBlockId: ID!
-  gtmEventName: String
-  journeyId: String!
-}
-
 type LinkAction implements Action {
   parentBlockId: ID!
   gtmEventName: String
@@ -31,11 +25,6 @@ type EmailAction implements Action {
 input NavigateToBlockActionInput {
   gtmEventName: String
   blockId: String!
-}
-
-input NavigateToJourneyActionInput {
-  gtmEventName: String
-  journeyId: String!
 }
 
 input LinkActionInput {
@@ -56,11 +45,6 @@ extend type Mutation {
     journeyId: ID!
     input: NavigateToBlockActionInput!
   ): NavigateToBlockAction!
-  blockUpdateNavigateToJourneyAction(
-    id: ID!
-    journeyId: ID!
-    input: NavigateToJourneyActionInput!
-  ): NavigateToJourneyAction!
   blockUpdateLinkAction(
     id: ID!
     journeyId: ID!

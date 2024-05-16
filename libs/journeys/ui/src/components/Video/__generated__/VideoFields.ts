@@ -41,25 +41,6 @@ export interface VideoFields_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface VideoFields_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface VideoFields_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: VideoFields_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface VideoFields_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: VideoFields_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface VideoFields_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -74,7 +55,7 @@ export interface VideoFields_action_EmailAction {
   email: string;
 }
 
-export type VideoFields_action = VideoFields_action_NavigateAction | VideoFields_action_NavigateToBlockAction | VideoFields_action_NavigateToJourneyAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction;
+export type VideoFields_action = VideoFields_action_NavigateAction | VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction;
 
 export interface VideoFields {
   __typename: "VideoBlock";
