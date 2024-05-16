@@ -49,11 +49,7 @@ export const journeyVideoBlocks: Blocks[] = [
         hls: 'https://arc.gt/zxqrt'
       }
     },
-    action: {
-      __typename: 'NavigateAction',
-      parentBlockId: 'e4edb342-7ca2-4248-a548-bf182cd05587',
-      gtmEventName: 'NavigateAction'
-    }
+    action: null
   },
   {
     __typename: 'VideoBlock',
@@ -91,11 +87,7 @@ export const journeyVideoBlocks: Blocks[] = [
         hls: 'https://arc.gt/rnfsp'
       }
     },
-    action: {
-      __typename: 'NavigateAction',
-      parentBlockId: 'a7f0c3a2-63c0-4618-acf3-4934791728b7',
-      gtmEventName: 'NavigateAction'
-    }
+    action: null
   },
   {
     __typename: 'VideoBlock',
@@ -133,11 +125,7 @@ export const journeyVideoBlocks: Blocks[] = [
         hls: 'https://arc.gt/7unjy'
       }
     },
-    action: {
-      __typename: 'NavigateAction',
-      parentBlockId: 'ced85f9e-9299-43b4-a3e5-ef832589d1c5',
-      gtmEventName: 'NavigateAction'
-    }
+    action: null
   },
   {
     __typename: 'VideoBlock',
@@ -160,11 +148,7 @@ export const journeyVideoBlocks: Blocks[] = [
     duration: 120,
     objectFit: null,
     video: null,
-    action: {
-      __typename: 'NavigateAction',
-      parentBlockId: '2c8913b8-4b64-49a6-a31e-16677b8f6c99',
-      gtmEventName: 'NavigateAction'
-    }
+    action: null
   },
   {
     __typename: 'CardBlock',

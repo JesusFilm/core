@@ -437,11 +437,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       submitLabel: null,
       submitIconId: null,
-      action: {
-        __typename: 'NavigateAction',
-        parentBlockId: 'signUp',
-        gtmEventName: 'gtmEventName'
-      },
+      action: null,
       children: []
     }
     const { getByLabelText } = render(
@@ -463,11 +459,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       submitLabel: null,
       submitIconId: null,
-      action: {
-        __typename: 'NavigateAction',
-        parentBlockId: 'signUp',
-        gtmEventName: 'gtmEventName'
-      },
+      action: null,
       children: []
     }
     const { getByTestId, getByLabelText } = render(

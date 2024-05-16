@@ -161,11 +161,7 @@ export const publishedJourney: Journey = {
       size: ButtonSize.large,
       startIconId: 'icon',
       endIconId: null,
-      action: {
-        __typename: 'NavigateAction',
-        parentBlockId: 'button0.id',
-        gtmEventName: 'gtmEventName'
-      }
+      action: null
     },
     {
       id: 'icon',

@@ -68,7 +68,7 @@ export const buttonClickNavigateEvent: TimelineItem = {
     label: 'Navigate Action',
     value: 'Write a book',
     createdAt: '2022-11-02T03:20:26.368Z',
-    action: ButtonAction.NavigateAction,
+    action: ButtonAction.NavigateToBlockAction,
     actionValue: null
   },
   duration: '0.01'

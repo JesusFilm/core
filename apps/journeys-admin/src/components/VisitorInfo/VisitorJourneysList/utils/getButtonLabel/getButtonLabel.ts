@@ -9,9 +9,6 @@ export function getButtonLabel(
 ): string {
   let res = ''
   switch (event.action) {
-    case ButtonAction.NavigateAction:
-      res = t('Next Card')
-      break
     case ButtonAction.NavigateToBlockAction:
       res = t('Selected Card')
       break
