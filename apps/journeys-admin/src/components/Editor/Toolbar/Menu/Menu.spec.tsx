@@ -217,11 +217,7 @@ describe('Toolbar Menu', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            query: { param: 'title' },
-            push,
-            events: {
-              on
-            }
+            query: { param: 'title' }
           },
           undefined,
           { shallow: true }
@@ -271,11 +267,7 @@ describe('Toolbar Menu', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            query: { param: 'description' },
-            push,
-            events: {
-              on
-            }
+            query: { param: 'description' }
           },
           undefined,
           { shallow: true }

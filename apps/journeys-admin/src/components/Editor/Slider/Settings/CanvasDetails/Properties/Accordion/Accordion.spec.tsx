@@ -69,11 +69,7 @@ describe('accordion', () => {
     expect(getByText('selectedAttributeId: custom-id')).toBeInTheDocument()
     expect(push).toHaveBeenCalledWith(
       {
-        query: { param: 'test-params' },
-        push,
-        events: {
-          on
-        }
+        query: { param: 'test-params' }
       },
       undefined,
       { shallow: true }
