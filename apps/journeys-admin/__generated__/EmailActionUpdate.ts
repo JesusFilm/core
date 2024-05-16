@@ -11,9 +11,9 @@ import { EmailActionInput } from "./globalTypes";
 
 export interface EmailActionUpdate_blockUpdateEmailAction {
   __typename: "EmailAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  parentBlockId: string;
 }
 
 export interface EmailActionUpdate {

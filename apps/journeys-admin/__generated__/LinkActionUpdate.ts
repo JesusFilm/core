@@ -11,9 +11,9 @@ import { LinkActionInput } from "./globalTypes";
 
 export interface LinkActionUpdate_blockUpdateLinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  parentBlockId: string;
 }
 
 export interface LinkActionUpdate {

@@ -11,8 +11,8 @@ import { NavigateActionInput } from "./globalTypes";
 
 export interface NavigateActionUpdate_blockUpdateNavigateAction {
   __typename: "NavigateAction";
-  gtmEventName: string | null;
   parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface NavigateActionUpdate {

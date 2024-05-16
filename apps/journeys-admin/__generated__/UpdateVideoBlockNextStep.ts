@@ -11,9 +11,9 @@ import { NavigateToBlockActionInput } from "./globalTypes";
 
 export interface UpdateVideoBlockNextStep_blockUpdateNavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
-  parentBlockId: string;
 }
 
 export interface UpdateVideoBlockNextStep {
