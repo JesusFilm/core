@@ -178,11 +178,7 @@ const videoNode = {
                 hls: 'https://arc.gt/zxqrt'
               }
             },
-            action: {
-              __typename: 'NavigateAction',
-              parentBlockId: 'f2c4a164-c87e-4944-91a9-b1f1df0b2cfb',
-              gtmEventName: 'NavigateAction'
-            },
+            action: null,
             children: []
           }
         ]
@@ -266,11 +262,7 @@ const videoNode = {
                     hls: 'https://arc.gt/zxqrt'
                   }
                 },
-                action: {
-                  __typename: 'NavigateAction',
-                  parentBlockId: 'f2c4a164-c87e-4944-91a9-b1f1df0b2cfb',
-                  gtmEventName: 'NavigateAction'
-                },
+                action: null,
                 children: []
               }
             ]
