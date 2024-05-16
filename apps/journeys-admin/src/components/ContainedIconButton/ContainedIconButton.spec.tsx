@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import noop from 'lodash/noop'
 
 import { ContainedIconButton } from './ContainedIconButton'
@@ -49,5 +49,13 @@ describe('ContainedIconButton', () => {
     )
 
     expect(getByRole('button')).toBeDisabled()
+  })
+
+  it('should render slots image thumnail', () => {
+    const slots = {
+      ImageThumbnail: <div>Test ImageThumbnail</div>
+    }
+    render(<ContainedIconButton label="label" onClick={noop} slots={slots} />)
+    expect(screen.getByText('Test ImageThumbnail')).toBeInTheDocument()
   })
 })

@@ -214,10 +214,12 @@ export function HeaderAndLanguageFilter({
   const localButtonProps: LocalButtonProps = {
     loading,
     onClick: (e) => {
-      router.query.param = 'template-language'
-      void router.push(router)
+      const param = 'template-language'
+      void router.push({ query: { ...router.query, param } }, undefined, {
+        shallow: true
+      })
       router.events.on('routeChangeComplete', () => {
-        setBeaconPageViewed('template-language')
+        setBeaconPageViewed(param)
       })
       setOpen(!open)
     }

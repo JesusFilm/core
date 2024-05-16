@@ -442,10 +442,6 @@ export interface MeInput {
   redirect?: string | null;
 }
 
-export interface NavigateActionInput {
-  gtmEventName?: string | null;
-}
-
 export interface NavigateToBlockActionInput {
   gtmEventName?: string | null;
   blockId: string;
