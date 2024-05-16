@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
@@ -20,6 +21,7 @@ export const EMAIL_ACTION_UPDATE = gql`
     $input: EmailActionInput!
   ) {
     blockUpdateEmailAction(id: $id, journeyId: $journeyId, input: $input) {
+      parentBlockId
       gtmEventName
       email
     }
@@ -76,19 +78,24 @@ export function EmailAction(): ReactElement {
   }
 
   return (
-    <Box sx={{ pt: 8 }} data-testid="EmailAction">
-      <TextFieldForm
-        id="email"
-        label={t('Paste Email here...')}
-        initialValue={emailAction?.email}
-        validationSchema={emailActionSchema}
-        onSubmit={handleSubmit}
-        startIcon={
-          <InputAdornment position="start">
-            <Mail2Icon />
-          </InputAdornment>
-        }
-      />
-    </Box>
+    <>
+      <Typography variant="caption" color="secondary.main" gutterBottom>
+        {t('Open client with the provided email in the to field.')}
+      </Typography>
+      <Box data-testid="EmailAction">
+        <TextFieldForm
+          id="email"
+          label={t('Paste Email here...')}
+          initialValue={emailAction?.email}
+          validationSchema={emailActionSchema}
+          onSubmit={handleSubmit}
+          startIcon={
+            <InputAdornment position="start">
+              <Mail2Icon />
+            </InputAdornment>
+          }
+        />
+      </Box>
+    </>
   )
 }

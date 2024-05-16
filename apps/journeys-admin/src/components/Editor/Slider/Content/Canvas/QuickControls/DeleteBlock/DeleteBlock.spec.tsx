@@ -20,8 +20,10 @@ import {
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../libs/TestEditorState'
+import { BLOCK_DELETE } from '../../../../../../../libs/useBlockDeleteMutation'
+import { deleteBlockMock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 
-import { BLOCK_DELETE, DeleteBlock } from './DeleteBlock'
+import { DeleteBlock } from './DeleteBlock'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -54,7 +56,7 @@ describe('DeleteBlock', () => {
   const selectedStep: TreeBlock<StepBlock> = {
     __typename: 'StepBlock',
     id: 'stepId',
-    parentBlockId: 'journeyId',
+    parentBlockId: 'journey-id',
     parentOrder: 0,
     locked: true,
     nextBlockId: null,
@@ -74,35 +76,13 @@ describe('DeleteBlock', () => {
     ]
   }
 
-  const deleteBlockMock: MockedResponse<BlockDelete> = {
-    request: {
-      query: BLOCK_DELETE,
-      variables: {
-        id: selectedBlock.id,
-        parentBlockId: selectedBlock.parentBlockId,
-        journeyId: 'journeyId'
-      }
-    },
-    result: {
-      data: {
-        blockDelete: [
-          {
-            __typename: 'TypographyBlock',
-            id: selectedBlock.id,
-            parentOrder: selectedBlock.parentOrder
-          }
-        ]
-      }
-    }
-  }
-
   const deleteCardMock: MockedResponse<BlockDelete> = {
     request: {
       query: BLOCK_DELETE,
       variables: {
         id: selectedStep.id,
         parentBlockId: selectedStep.parentBlockId,
-        journeyId: 'journeyId'
+        journeyId: 'journey-id'
       }
     },
     result: {
@@ -122,12 +102,12 @@ describe('DeleteBlock', () => {
   it('should delete a block on button click', async () => {
     const cache = new InMemoryCache()
     cache.restore({
-      'Journey:journeyId': {
+      'Journey:journey-id': {
         blocks: [
           { __ref: `CardBlock:card1.id` },
           { __ref: `TypographyBlock:typography0.id` }
         ],
-        id: 'journeyId',
+        id: 'journey-id',
         __typename: 'Journey'
       },
       'CardBlock:card1.id': {
@@ -146,7 +126,7 @@ describe('DeleteBlock', () => {
         >
           <JourneyProvider
             value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
+              journey: { id: 'journey-id' } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -162,7 +142,7 @@ describe('DeleteBlock', () => {
     )
     await userEvent.click(screen.getByRole('button'))
     await waitFor(() => expect(deleteBlockResultMock).toHaveBeenCalled())
-    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+    expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([
       { __ref: 'CardBlock:card1.id' }
     ])
   })
@@ -170,12 +150,12 @@ describe('DeleteBlock', () => {
   it('should delete a block on menu item click', async () => {
     const cache = new InMemoryCache()
     cache.restore({
-      'Journey:journeyId': {
+      'Journey:journey-id': {
         blocks: [
           { __ref: `CardBlock:card1.id` },
           { __ref: `TypographyBlock:typography0.id` }
         ],
-        id: 'journeyId',
+        id: 'journey-id',
         __typename: 'Journey'
       },
       'CardBlock:card1.id': {
@@ -194,7 +174,7 @@ describe('DeleteBlock', () => {
         >
           <JourneyProvider
             value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
+              journey: { id: 'journey-id' } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -209,7 +189,7 @@ describe('DeleteBlock', () => {
       screen.getByRole('menuitem', { name: 'Delete Block' })
     )
     await waitFor(() => expect(deleteBlockResultMock).toHaveBeenCalled())
-    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+    expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([
       { __ref: 'CardBlock:card1.id' }
     ])
   })
@@ -219,13 +199,13 @@ describe('DeleteBlock', () => {
 
     const cache = new InMemoryCache()
     cache.restore({
-      'Journey:journeyId': {
+      'Journey:journey-id': {
         blocks: [
           { __ref: `StepBlock:stepId` },
           { __ref: `CardBlock:card1.id` },
           { __ref: `TypographyBlock:typography0.id` }
         ],
-        id: 'journeyId',
+        id: 'journey-id',
         __typename: 'Journey'
       },
       'StepBlock:stepId': {
@@ -247,7 +227,7 @@ describe('DeleteBlock', () => {
         >
           <JourneyProvider
             value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
+              journey: { id: 'journey-id' } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -271,7 +251,7 @@ describe('DeleteBlock', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
-    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
+    expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([])
   })
 
   it('should delete card on menu click', async () => {
@@ -279,13 +259,13 @@ describe('DeleteBlock', () => {
 
     const cache = new InMemoryCache()
     cache.restore({
-      'Journey:journeyId': {
+      'Journey:journey-id': {
         blocks: [
           { __ref: `StepBlock:stepId` },
           { __ref: `CardBlock:card1.id` },
           { __ref: `TypographyBlock:typography0.id` }
         ],
-        id: 'journeyId',
+        id: 'journey-id',
         __typename: 'Journey'
       },
       'StepBlock:stepId': {
@@ -307,7 +287,7 @@ describe('DeleteBlock', () => {
         >
           <JourneyProvider
             value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
+              journey: { id: 'journey-id' } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -327,7 +307,7 @@ describe('DeleteBlock', () => {
     )
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
-    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
+    expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([])
     await waitFor(() =>
       expect(screen.queryByRole('menu')).not.toBeInTheDocument()
     )
@@ -362,7 +342,7 @@ describe('DeleteBlock', () => {
     const passedInStep: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'passedInStepId',
-      parentBlockId: 'journeyId',
+      parentBlockId: 'journey-id',
       parentOrder: 0,
       locked: true,
       nextBlockId: null,
@@ -388,7 +368,7 @@ describe('DeleteBlock', () => {
         variables: {
           id: passedInStep.id,
           parentBlockId: passedInStep.parentBlockId,
-          journeyId: 'journeyId'
+          journeyId: 'journey-id'
         }
       },
       result: jest.fn(() => ({
@@ -407,13 +387,13 @@ describe('DeleteBlock', () => {
 
     const cache = new InMemoryCache()
     cache.restore({
-      'Journey:journeyId': {
+      'Journey:journey-id': {
         blocks: [
           { __ref: `StepBlock:passedInStepId` },
           { __ref: `CardBlock:card1.id` },
           { __ref: `TypographyBlock:typography0.id` }
         ],
-        id: 'journeyId',
+        id: 'journey-id',
         __typename: 'Journey'
       }
     })
@@ -430,7 +410,7 @@ describe('DeleteBlock', () => {
         >
           <JourneyProvider
             value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
+              journey: { id: 'journey-id' } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -454,7 +434,7 @@ describe('DeleteBlock', () => {
       expect(passedInStepDeleteMock.result).toHaveBeenCalled()
     )
     await waitFor(() => expect(deleteCardResultMock).not.toHaveBeenCalled())
-    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
+    expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([])
 
     expect(
       screen.getByText(`selectedBlock: ${selectedStep.id}`)

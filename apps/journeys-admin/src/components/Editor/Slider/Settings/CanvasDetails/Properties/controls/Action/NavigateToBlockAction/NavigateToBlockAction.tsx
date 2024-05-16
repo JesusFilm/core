@@ -1,27 +1,29 @@
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { type TreeBlock } from '@core/journeys/ui/block'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../../__generated__/BlockFields'
-import { useNavigateToBlockActionUpdateMutation } from '../../../../../../../../../libs/useNavigateToBlockActionUpdateMutation'
-import { CardPreview, OnSelectProps } from '../../../../../../../../CardPreview'
+
+import { CardItem } from './CardItem/CardItem'
 
 export function NavigateToBlockAction(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { steps, selectedBlock }
+    state: { steps, selectedBlock },
+    dispatch
   } = useEditor()
-  const { journey } = useJourney()
   const currentBlock = selectedBlock as
     | TreeBlock<ButtonBlock>
     | TreeBlock<VideoBlock>
     | undefined
-
-  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
 
   const currentActionStep =
     steps?.find(
@@ -30,18 +32,28 @@ export function NavigateToBlockAction(): ReactElement {
         id === currentBlock?.action?.blockId
     ) ?? undefined
 
-  async function handleSelectStep({ step }: OnSelectProps): Promise<void> {
-    if (currentBlock != null && journey != null && step != null) {
-      await navigateToBlockActionUpdate(currentBlock, step.id)
-    }
+  function handleButtonClick(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.JourneyFlow
+    })
   }
-
   return (
-    <CardPreview
-      selected={currentActionStep}
-      steps={steps}
-      onSelect={handleSelectStep}
-      testId="NavigationToBlockAction"
-    />
+    <>
+      <Typography variant="caption" color="secondary.main" gutterBottom>
+        {t('Navigate to the selected card (set in the map).')}
+      </Typography>
+      {currentActionStep == null ? (
+        <Button
+          variant="outlined"
+          onClick={handleButtonClick}
+          startIcon={<ChevronLeftIcon />}
+        >
+          {t('back to map')}
+        </Button>
+      ) : (
+        <CardItem step={currentActionStep} id={currentActionStep.id} />
+      )}
+    </>
   )
 }

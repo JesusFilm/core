@@ -1,100 +1,96 @@
-import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
-import {
-  ThemeMode,
-  ThemeName
-} from '../../../../../../../../../../__generated__/globalTypes'
-import { NAVIGATE_TO_BLOCK_ACTION_UPDATE } from '../../../../../../../../../libs/useNavigateToBlockActionUpdateMutation/useNavigateToBlockActionUpdateMutation'
+import { TestEditorState } from '../../../../../../../../../libs/TestEditorState'
+import { journey } from '../../../../../GoalDetails/data'
 import { steps } from '../data'
 
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
 describe('NavigateToBlockAction', () => {
-  it('updates the action on card click', async () => {
-    const selectedBlock = steps[1].children[0].children[3]
+  const selectedBlock = steps[1].children[0].children[3]
 
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      },
-      'ButtonBlock:button1.id': {
-        ...selectedBlock
-      }
-    })
-
-    const result = jest.fn(() => ({
-      data: {
-        blockUpdateNavigateToBlockAction: {
-          id: selectedBlock.id,
-          journeyId: 'journeyId',
-          gtmEventName: 'gtmEventName',
-          blockId: 'step0.id'
-        }
-      }
-    }))
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: NAVIGATE_TO_BLOCK_ACTION_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                journeyId: 'journeyId',
-                input: {
-                  blockId: 'step0.id'
-                }
-              }
-            },
-            result
-          }
-        ]}
-        cache={cache}
-      >
+  it("should show 'back to map' button", () => {
+    const { getByRole } = render(
+      <MockedProvider>
         <JourneyProvider
           value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.light,
-              themeName: ThemeName.base,
-              language: {
-                __typename: 'Language',
-                id: '529',
-                bcp47: 'en',
-                iso3: 'eng'
-              }
-            } as unknown as Journey,
+            journey,
             variant: 'admin'
           }}
         >
-          <EditorProvider initialState={{ steps, selectedBlock }}>
+          <EditorProvider initialState={{ steps }}>
             <NavigateToBlockAction />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('CardItem-step0.id'))
-    await waitFor(() => expect(result).toHaveBeenCalled())
 
-    expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
-      gtmEventName: 'gtmEventName',
-      blockId: 'step0.id',
-      id: 'button1.id',
-      journeyId: 'journeyId'
-    })
+    expect(getByRole('button', { name: 'back to map' })).toBeInTheDocument()
+  })
+
+  it("should hanle 'back to map' button click", () => {
+    const { getByText, queryByText, getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{ steps, activeSlide: ActiveSlide.Drawer }}
+          >
+            <NavigateToBlockAction />
+            <TestEditorState />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(queryByText('activeSlide: 0')).not.toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'back to map' }))
+    expect(getByText('activeSlide: 0')).toBeInTheDocument()
+  })
+
+  it('should show preview of connected card', async () => {
+    const selectedBlockWithAction = {
+      ...selectedBlock,
+      action: {
+        __typename: 'NavigateToBlockAction' as const,
+        blockId: 'step2.id',
+        parentBlockId: 'someParentBlockId',
+        gtmEventName: 'someGTMEventName'
+      }
+    }
+    const { getByTestId, queryByText } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              steps,
+              selectedBlock: selectedBlockWithAction,
+              selectedStep: steps[2]
+            }}
+          >
+            <NavigateToBlockAction />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        queryByText('Connect this block to a card in the Journey Flow')
+      ).not.toBeInTheDocument()
+    )
+    expect(getByTestId('CardItem-step2.id')).toBeInTheDocument()
   })
 })
