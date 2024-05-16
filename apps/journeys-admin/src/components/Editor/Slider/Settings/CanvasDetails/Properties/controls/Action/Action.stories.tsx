@@ -14,7 +14,7 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 
-import { Action, NAVIGATE_ACTION_UPDATE } from './Action'
+import { Action } from './Action'
 import { steps } from './data'
 
 const ActionStory: Meta<typeof Action> = {
@@ -67,28 +67,7 @@ const journey: Journey = {
 const Template: StoryObj<typeof Action> = {
   render: ({ ...args }) => {
     return (
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: NAVIGATE_ACTION_UPDATE,
-              variables: {
-                id: steps[0].id,
-                journeyId: 'journeyId',
-                input: {}
-              }
-            },
-            result: {
-              data: {
-                blockUpdateNavigateAction: {
-                  id: 'journeyId',
-                  gtmEventName: 'gtmEventName'
-                }
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider
             initialState={{
@@ -141,14 +120,6 @@ export const EmailAction = {
   }
 }
 
-export const NavigateAction = {
-  ...Template,
-  args: {
-    steps,
-    selectedStep: steps[3],
-    selectedBlock: steps[3].children[0].children[2]
-  }
-}
 export const NavigateToBlockAction = {
   ...Template,
   args: {

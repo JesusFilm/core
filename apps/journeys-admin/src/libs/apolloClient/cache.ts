@@ -10,12 +10,7 @@ export const cache = (): InMemoryCache =>
      initializing InMemoryCache.
    */
     possibleTypes: {
-      Action: [
-        'NavigateAction',
-        'NavigateToBlockAction',
-        'LinkAction',
-        'EmailAction'
-      ],
+      Action: ['NavigateToBlockAction', 'LinkAction', 'EmailAction'],
       Block: [
         'ButtonBlock',
         'CardBlock',
