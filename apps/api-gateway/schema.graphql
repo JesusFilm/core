@@ -124,7 +124,6 @@ type ButtonClickEvent implements Event
 
   """
   The label for each corresponding action, mapping below:
-  NavigateAction - null
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
   LinkAction - url of the link
   """
@@ -154,7 +153,6 @@ input ButtonClickEventCreateInput
 
   """
   The label for each corresponding action, mapping below:
-  NavigateAction - undefined
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
   LinkAction - url of the link
   """
@@ -1784,10 +1782,8 @@ type StepBlock implements Block
   journeyId: ID!
 
   """
-  nextBlockId contains the preferred block to navigate to when a
-  NavigateAction occurs or if the user manually tries to advance to the next
-  step. If no nextBlockId is set it will automatically navigate to the next
-  step in the journey based on parentOrder.
+  nextBlockId contains the preferred block to navigate to, users will have to
+  manually set the next block they want to card to navigate to
   """
   nextBlockId: ID
 
