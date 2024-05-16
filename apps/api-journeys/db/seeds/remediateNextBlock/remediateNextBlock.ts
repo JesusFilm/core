@@ -5,6 +5,7 @@ import sortBy from 'lodash/sortBy'
 
 import {
   Action,
+  Prisma,
   Block as PrismaBlock,
   PrismaClient,
   Journey as PrismaJourney
@@ -16,7 +17,7 @@ type Block = PrismaBlock & { action?: Action | null }
 
 type Journey = PrismaJourney & { blocks: Block[] }
 
-export const STEP_GROUP_SIZE = 50
+export const STEP_GROUP_SIZE = 10
 
 function actionType(obj: Action): boolean {
   return (
@@ -134,7 +135,7 @@ async function processJourney(
                 nextBlockId,
                 'updating action with next block id',
                 `"${block.label}"`,
-                `${step.parentOrder}->${
+                `${step.parentOrder} -> ${
                   steps.find(({ id }) => id === nextBlockId)?.parentOrder
                 }`
               )
@@ -173,6 +174,8 @@ async function processJourney(
 }
 
 export async function remediateNextBlock(): Promise<void> {
+  const t0 = performance.now()
+
   console.log('deleting all actions of step blocks')
   await prisma.action.deleteMany({
     where: {
@@ -192,16 +195,25 @@ export async function remediateNextBlock(): Promise<void> {
     })
 
     if (journeys.length === 0) break
-    const t0 = performance.now()
     for (let index = 0; index < journeys.length; index++) {
       console.log(
         skip + index,
         '------------------',
         formatDistance(0, performance.now() - t0, { includeSeconds: true })
       )
-      await prisma.$transaction(async (tx) => {
-        await processJourney(skip + index, journeys[index], tx)
-      })
+      await prisma.$transaction(
+        async (tx) => {
+          await processJourney(skip + index, journeys[index], tx)
+        },
+        {
+          // default: 2_000
+          maxWait: 2_000_000,
+          // default: 5_000
+          timeout: 1_000_000,
+          // optional, default defined by database configuration
+          isolationLevel: Prisma.TransactionIsolationLevel.Serializable
+        }
+      )
     }
 
     skip += 100
