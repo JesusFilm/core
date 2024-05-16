@@ -60,7 +60,6 @@ async function processJourney(
   )
 
   const groupedSteps = chunk(steps, STEP_GROUP_SIZE)
-  console.log(groupedSteps)
 
   for (
     let groupStepIndex = 0;
@@ -175,7 +174,8 @@ export async function remediateNextBlock(): Promise<void> {
   let skip = 0
 
   while (true) {
-    // get journeys with blocks that have navigate actions
+    console.log('processed journeys:', skip)
+
     const journeys = await prisma.journey.findMany({
       skip,
       take: 100,
