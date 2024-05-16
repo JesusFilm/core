@@ -1,6 +1,5 @@
 import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useCallback } from 'react'
 import TagManager from 'react-gtm-module'
@@ -46,7 +45,7 @@ export function SwipeNavigation({
   } = useBlocks()
   const { t } = useTranslation('apps-journeys')
   const onFirstStep = activeBlock === treeBlocks[0]
-  const onLastStep = activeBlock === last(treeBlocks)
+  const onLastStep = activeBlock?.nextBlockId === null
 
   const handleNavigation = useCallback(
     (direction: 'next' | 'previous'): void => {

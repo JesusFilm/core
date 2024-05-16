@@ -1,7 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
-import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
@@ -74,7 +73,7 @@ export function Card({
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
   const onFirstStep = activeBlock === treeBlocks[0]
-  const onLastStep = activeBlock === last(treeBlocks)
+  const onLastStep = activeBlock?.nextBlockId === null
 
   const cardColor =
     backgroundColor != null
