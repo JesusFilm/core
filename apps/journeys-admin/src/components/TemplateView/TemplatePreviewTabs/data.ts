@@ -301,9 +301,9 @@ export const videoBlocksFiltered = [
     objectFit: null,
     video: null,
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: '27c87b6a-8be5-4fb3-b2e0-a99d96df9c54',
-      gtmEventName: 'NavigateAction'
+      gtmEventName: 'NavigateToBlockAction'
     }
   },
   {
@@ -343,9 +343,9 @@ export const videoBlocksFiltered = [
       }
     },
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: '46dafb32-2585-4e14-b97b-eb7a9ae71536',
-      gtmEventName: 'NavigateAction'
+      gtmEventName: 'NavigateToBlockAction'
     }
   },
   {
@@ -370,9 +370,9 @@ export const videoBlocksFiltered = [
     objectFit: null,
     video: null,
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: '5b095694-6048-412e-96d4-729678fb7857',
-      gtmEventName: 'NavigateAction'
+      gtmEventName: 'NavigateToBlockAction'
     }
   },
   {
@@ -412,9 +412,9 @@ export const videoBlocksFiltered = [
       }
     },
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: '70fb44fe-6bf0-4e7c-89f9-29801c903f8c',
-      gtmEventName: 'NavigateAction'
+      gtmEventName: 'NavigateToBlockAction'
     }
   },
   {
@@ -454,9 +454,9 @@ export const videoBlocksFiltered = [
       }
     },
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: 'af552762-8e5e-4fe8-82e1-a133e83343b3',
-      gtmEventName: 'NavigateAction'
+      gtmEventName: 'NavigateToBlockAction'
     }
   },
   {
@@ -496,9 +496,9 @@ export const videoBlocksFiltered = [
       }
     },
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: '7190f7be-00f1-406b-8e54-e8ca3cbbb7ce',
-      gtmEventName: 'NavigateAction'
+      gtmEventName: 'NavigateToBlockAction'
     }
   }
 ]

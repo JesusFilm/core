@@ -243,9 +243,10 @@ export const blocks: Block[] = [
     startIconId: 'icon0-1.id',
     endIconId: null,
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: 'button0.id',
-      gtmEventName: 'gtmEventName'
+      gtmEventName: 'gtmEventName',
+      blockId: 'step1.id'
     }
   },
   {
@@ -358,9 +359,10 @@ export const blocks: Block[] = [
     startIconId: 'icon1-1.id',
     endIconId: null,
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: 'button1.id',
-      gtmEventName: 'gtmEventName'
+      gtmEventName: 'gtmEventName',
+      blockId: 'step2.id'
     }
   },
   {
@@ -436,9 +438,10 @@ export const blocks: Block[] = [
     parentOrder: 0,
     label: 'One of many ways to God',
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption1.id',
-      gtmEventName: 'gtmEventName'
+      gtmEventName: 'gtmEventName',
+      blockId: 'step3.id'
     }
   },
   {
@@ -448,9 +451,10 @@ export const blocks: Block[] = [
     parentOrder: 1,
     label: 'One great lie...',
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption2.id',
-      gtmEventName: 'gtmEventName'
+      gtmEventName: 'gtmEventName',
+      blockId: 'step3.id'
     }
   },
   {
@@ -460,9 +464,10 @@ export const blocks: Block[] = [
     parentOrder: 2,
     label: 'One true way to God',
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption3.id',
-      gtmEventName: 'gtmEventName'
+      gtmEventName: 'gtmEventName',
+      blockId: 'step3.id'
     }
   },
   {
@@ -528,9 +533,10 @@ export const blocks: Block[] = [
     parentOrder: 0,
     label: 'Yes, God likes good people',
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption4.id',
-      gtmEventName: 'gtmEventName'
+      gtmEventName: 'gtmEventName',
+      blockId: 'step4.id'
     }
   },
   {
@@ -540,9 +546,10 @@ export const blocks: Block[] = [
     parentOrder: 1,
     label: 'No, He will accept me as I am',
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       parentBlockId: 'radioOption5.id',
-      gtmEventName: 'gtmEventName'
+      gtmEventName: 'gtmEventName',
+      blockId: 'step4.id'
     }
   },
   {
