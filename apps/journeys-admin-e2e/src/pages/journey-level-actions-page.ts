@@ -241,7 +241,8 @@ export class JourneyLevelActions {
       .locator('ul[aria-labelledby="edit-journey-actions"] li', {
         hasText: option
       })
-      .click({ delay: 1000 })
+      // eslint-disable-next-line playwright/no-force-option
+      .click({ force: true })
   }
 
   async enterDescription() {
