@@ -5,6 +5,7 @@ import sortBy from 'lodash/sortBy'
 import {
   Action,
   Block as PrismaBlock,
+  PrismaClient,
   Journey as PrismaJourney
 } from '.prisma/api-journeys-client'
 
@@ -13,6 +14,8 @@ import prisma from './prisma'
 type Block = PrismaBlock & { action?: Action | null }
 
 type Journey = PrismaJourney & { blocks: Block[] }
+
+const STEP_GROUP_SIZE = 5
 
 function actionType(obj: Action): boolean {
   return (
@@ -37,7 +40,13 @@ function findParentStepBlock(
   return findParentStepBlock(blocks, block.parentBlockId)
 }
 
-async function processJourney(journey: Journey): Promise<void> {
+async function processJourney(
+  journey: Journey,
+  tx: Omit<
+    PrismaClient,
+    '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+  >
+): Promise<void> {
   console.log(journey.id, 'updating journey')
   // get step blocks belonging to journey
   const steps = sortBy(
@@ -50,7 +59,8 @@ async function processJourney(journey: Journey): Promise<void> {
     (block) => block.action != null && actionType(block.action)
   )
 
-  const groupedSteps = chunk(steps, 5)
+  const groupedSteps = chunk(steps, STEP_GROUP_SIZE)
+  console.log(groupedSteps)
 
   for (
     let groupStepIndex = 0;
@@ -59,12 +69,13 @@ async function processJourney(journey: Journey): Promise<void> {
   ) {
     console.log(journey.id, groupStepIndex, 'processing step group')
     await Promise.all(
-      groupedSteps[groupStepIndex].map(async (step, index) => {
+      groupedSteps[groupStepIndex].map(async (step, stepIndex) => {
         let nextBlockId = step.nextBlockId
 
         if (nextBlockId == null) {
           // implicit next block id on card
-          const nextBlock = steps[index + 1]
+          const nextBlock =
+            steps[groupStepIndex * STEP_GROUP_SIZE + stepIndex + 1]
 
           if (nextBlock != null) {
             // step is not last step in journey
@@ -76,7 +87,7 @@ async function processJourney(journey: Journey): Promise<void> {
               'updating step with next block id',
               `${step.parentOrder}->${nextBlock.parentOrder}`
             )
-            await prisma.block.update({
+            await tx.block.update({
               where: { id: step.id },
               data: { nextBlockId: nextBlock.id }
             })
@@ -93,7 +104,12 @@ async function processJourney(journey: Journey): Promise<void> {
 
         // no blocks to update
         if (currentBlocks.length === 0) {
-          console.log(journey.id, index, step.id, 'no blocks to update')
+          console.log(
+            journey.id,
+            groupStepIndex,
+            step.id,
+            'no blocks to update'
+          )
           return
         }
 
@@ -113,7 +129,7 @@ async function processJourney(journey: Journey): Promise<void> {
                   steps.find(({ id }) => id === nextBlockId)?.parentOrder
                 }`
               )
-              await prisma.action.update({
+              await tx.action.update({
                 where: { parentBlockId: block.id },
                 data: {
                   gtmEventName: 'NavigateToBlockAction',
@@ -135,7 +151,7 @@ async function processJourney(journey: Journey): Promise<void> {
                 `"${block.label}"`,
                 step.parentOrder
               )
-              await prisma.action.delete({
+              await tx.action.delete({
                 where: { parentBlockId: block.id }
               })
             })
@@ -156,22 +172,20 @@ export async function remediateNextBlock(): Promise<void> {
     }
   })
 
+  let skip = 0
+
   while (true) {
     // get journeys with blocks that have navigate actions
     const journeys = await prisma.journey.findMany({
+      skip,
       take: 100,
       include: { blocks: { include: { action: true } } },
       where: {
         id: {
           in: [
-            'e91bb3fb-5607-450a-b138-33b593cb7dec' // tatai
-            // 'fb81c220-cab9-41f4-a1fd-793e3ba74540' // charles
+            // 'e91bb3fb-5607-450a-b138-33b593cb7dec' // tatai
+            'fb81c220-cab9-41f4-a1fd-793e3ba74540' // charles
           ]
-        },
-        blocks: {
-          some: {
-            action: { blockId: null, journeyId: null, url: null, email: null }
-          }
         }
       }
     })
@@ -179,8 +193,12 @@ export async function remediateNextBlock(): Promise<void> {
     if (journeys.length === 0) break
 
     for (let index = 0; index < journeys.length; index++) {
-      await processJourney(journeys[index])
+      await prisma.$transaction(async (tx) => {
+        await processJourney(journeys[index], tx)
+      })
     }
+
+    skip += 100
   }
 }
 

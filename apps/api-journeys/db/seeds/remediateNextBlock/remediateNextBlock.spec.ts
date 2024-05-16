@@ -131,11 +131,24 @@ describe('remediateNextBlock', () => {
 
   const journeyWithStepWithoutNextBlockId = {
     ...journey,
-    blocks: [card, step, { ...step, id: 'step1.id' }, button]
+    blocks: [
+      card,
+      step,
+      { ...step, id: 'step1.id' },
+      { ...step, id: 'step2.id' },
+      { ...step, id: 'step3.id' },
+      { ...step, id: 'step4.id' },
+      { ...step, id: 'step5.id' },
+      { ...step, id: 'step6.id' },
+      button
+    ]
   }
 
   beforeEach(() => {
     mockReset(prismaMock)
+    prismaMock.$transaction.mockImplementation(
+      async (callback) => await callback(prismaMock)
+    )
   })
 
   it('should delete all actions of blocks', async () => {
@@ -176,10 +189,44 @@ describe('remediateNextBlock', () => {
       journeyWithStepWithoutNextBlockId
     ])
     await remediateNextBlock()
-    expect(prismaMock.block.update).toHaveBeenCalledWith({
-      where: { id: 'step0.id' },
-      data: { nextBlockId: 'step1.id' }
-    })
+    expect(prismaMock.block.update.mock.calls).toEqual([
+      [
+        {
+          where: { id: 'step0.id' },
+          data: { nextBlockId: 'step1.id' }
+        }
+      ],
+      [
+        {
+          where: { id: 'step1.id' },
+          data: { nextBlockId: 'step2.id' }
+        }
+      ],
+      [
+        {
+          where: { id: 'step2.id' },
+          data: { nextBlockId: 'step3.id' }
+        }
+      ],
+      [
+        {
+          where: { id: 'step3.id' },
+          data: { nextBlockId: 'step4.id' }
+        }
+      ],
+      [
+        {
+          where: { id: 'step4.id' },
+          data: { nextBlockId: 'step5.id' }
+        }
+      ],
+      [
+        {
+          where: { id: 'step5.id' },
+          data: { nextBlockId: 'step6.id' }
+        }
+      ]
+    ])
     expect(prismaMock.action.update).toHaveBeenCalledWith({
       where: { parentBlockId: 'button0.id' },
       data: {
