@@ -55,25 +55,6 @@ export interface CardIntroCreate_button_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface CardIntroCreate_button_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardIntroCreate_button_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardIntroCreate_button_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardIntroCreate_button_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardIntroCreate_button_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardIntroCreate_button_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -88,7 +69,7 @@ export interface CardIntroCreate_button_action_EmailAction {
   email: string;
 }
 
-export type CardIntroCreate_button_action = CardIntroCreate_button_action_NavigateAction | CardIntroCreate_button_action_NavigateToBlockAction | CardIntroCreate_button_action_NavigateToJourneyAction | CardIntroCreate_button_action_LinkAction | CardIntroCreate_button_action_EmailAction;
+export type CardIntroCreate_button_action = CardIntroCreate_button_action_NavigateAction | CardIntroCreate_button_action_NavigateToBlockAction | CardIntroCreate_button_action_LinkAction | CardIntroCreate_button_action_EmailAction;
 
 export interface CardIntroCreate_button {
   __typename: "ButtonBlock";
@@ -137,25 +118,6 @@ export interface CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction 
   blockId: string;
 }
 
-export interface CardIntroCreate_buttonBlockUpdate_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardIntroCreate_buttonBlockUpdate_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardIntroCreate_buttonBlockUpdate_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardIntroCreate_buttonBlockUpdate_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardIntroCreate_buttonBlockUpdate_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardIntroCreate_buttonBlockUpdate_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -170,7 +132,7 @@ export interface CardIntroCreate_buttonBlockUpdate_action_EmailAction {
   email: string;
 }
 
-export type CardIntroCreate_buttonBlockUpdate_action = CardIntroCreate_buttonBlockUpdate_action_NavigateAction | CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction | CardIntroCreate_buttonBlockUpdate_action_NavigateToJourneyAction | CardIntroCreate_buttonBlockUpdate_action_LinkAction | CardIntroCreate_buttonBlockUpdate_action_EmailAction;
+export type CardIntroCreate_buttonBlockUpdate_action = CardIntroCreate_buttonBlockUpdate_action_NavigateAction | CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction | CardIntroCreate_buttonBlockUpdate_action_LinkAction | CardIntroCreate_buttonBlockUpdate_action_EmailAction;
 
 export interface CardIntroCreate_buttonBlockUpdate {
   __typename: "ButtonBlock";
@@ -218,25 +180,6 @@ export interface CardIntroCreate_video_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface CardIntroCreate_video_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardIntroCreate_video_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardIntroCreate_video_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardIntroCreate_video_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardIntroCreate_video_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardIntroCreate_video_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -251,7 +194,7 @@ export interface CardIntroCreate_video_action_EmailAction {
   email: string;
 }
 
-export type CardIntroCreate_video_action = CardIntroCreate_video_action_NavigateAction | CardIntroCreate_video_action_NavigateToBlockAction | CardIntroCreate_video_action_NavigateToJourneyAction | CardIntroCreate_video_action_LinkAction | CardIntroCreate_video_action_EmailAction;
+export type CardIntroCreate_video_action = CardIntroCreate_video_action_NavigateAction | CardIntroCreate_video_action_NavigateToBlockAction | CardIntroCreate_video_action_LinkAction | CardIntroCreate_video_action_EmailAction;
 
 export interface CardIntroCreate_video {
   __typename: "VideoBlock";

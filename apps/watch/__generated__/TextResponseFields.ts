@@ -20,25 +20,6 @@ export interface TextResponseFields_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface TextResponseFields_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface TextResponseFields_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: TextResponseFields_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface TextResponseFields_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: TextResponseFields_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface TextResponseFields_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -53,7 +34,7 @@ export interface TextResponseFields_action_EmailAction {
   email: string;
 }
 
-export type TextResponseFields_action = TextResponseFields_action_NavigateAction | TextResponseFields_action_NavigateToBlockAction | TextResponseFields_action_NavigateToJourneyAction | TextResponseFields_action_LinkAction | TextResponseFields_action_EmailAction;
+export type TextResponseFields_action = TextResponseFields_action_NavigateAction | TextResponseFields_action_NavigateToBlockAction | TextResponseFields_action_LinkAction | TextResponseFields_action_EmailAction;
 
 export interface TextResponseFields {
   __typename: "TextResponseBlock";
