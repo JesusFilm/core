@@ -15,9 +15,6 @@ export function getButtonLabel(
     case ButtonAction.NavigateToBlockAction:
       res = t('Selected Card')
       break
-    case ButtonAction.NavigateToJourneyAction:
-      res = t('Journey')
-      break
     case ButtonAction.LinkAction:
       if (event.actionValue != null) {
         res = event.actionValue

@@ -12,7 +12,6 @@ export enum ButtonAction {
   LinkAction = "LinkAction",
   NavigateAction = "NavigateAction",
   NavigateToBlockAction = "NavigateToBlockAction",
-  NavigateToJourneyAction = "NavigateToJourneyAction",
 }
 
 export enum ButtonColor {
@@ -379,6 +378,7 @@ export interface JourneyCollectionUpdateInput {
 
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
+  journeyFlowBackButtonClicked?: boolean | null;
 }
 
 export interface JourneyTemplateInput {
@@ -449,11 +449,6 @@ export interface NavigateActionInput {
 export interface NavigateToBlockActionInput {
   gtmEventName?: string | null;
   blockId: string;
-}
-
-export interface NavigateToJourneyActionInput {
-  gtmEventName?: string | null;
-  journeyId: string;
 }
 
 export interface RadioOptionBlockCreateInput {

@@ -32,8 +32,19 @@ export async function contextToUserId(
   const ctx = GqlExecutionContext.create(context).getContext()
   const token: string = get(ctx.headers, 'authorization')
   if (token == null || token === '') return null
-  const { uid } = await auth.verifyIdToken(token)
-  return uid
+  try {
+    const { uid } = await auth.verifyIdToken(token)
+    return uid
+  } catch (err) {
+    if (
+      err instanceof Error &&
+      'message' in err &&
+      typeof err.message === 'string' &&
+      err.message.includes('Decoding Firebase ID token failed.')
+    )
+      return null
+    throw err
+  }
 }
 
 export async function contextToUser(

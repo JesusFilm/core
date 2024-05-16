@@ -134,7 +134,6 @@ export enum VideoBlockObjectFit {
 export enum ButtonAction {
     NavigateAction = "NavigateAction",
     NavigateToBlockAction = "NavigateToBlockAction",
-    NavigateToJourneyAction = "NavigateToJourneyAction",
     LinkAction = "LinkAction",
     EmailAction = "EmailAction"
 }
@@ -223,11 +222,6 @@ export class NavigateActionInput {
 export class NavigateToBlockActionInput {
     gtmEventName?: Nullable<string>;
     blockId: string;
-}
-
-export class NavigateToJourneyActionInput {
-    gtmEventName?: Nullable<string>;
-    journeyId: string;
 }
 
 export class LinkActionInput {
@@ -680,6 +674,7 @@ export class JourneyCollectionUpdateInput {
 
 export class JourneyProfileUpdateInput {
     lastActiveTeamId?: Nullable<string>;
+    journeyFlowBackButtonClicked?: Nullable<boolean>;
 }
 
 export class JourneyVisitorFilter {
@@ -766,14 +761,6 @@ export class NavigateToBlockAction implements Action {
     parentBlockId: string;
     gtmEventName?: Nullable<string>;
     blockId: string;
-}
-
-export class NavigateToJourneyAction implements Action {
-    __typename?: 'NavigateToJourneyAction';
-    parentBlockId: string;
-    gtmEventName?: Nullable<string>;
-    journeyId: string;
-    journey?: Nullable<Journey>;
 }
 
 export class LinkAction implements Action {
@@ -1329,6 +1316,7 @@ export class JourneyProfile {
     acceptedTermsAt?: Nullable<DateTime>;
     lastActiveTeamId?: Nullable<string>;
     onboardingFormCompletedAt?: Nullable<DateTime>;
+    journeyFlowBackButtonClicked?: Nullable<boolean>;
 }
 
 export class JourneyVisitor {
@@ -1496,8 +1484,6 @@ export abstract class IMutation {
     abstract blockUpdateNavigateAction(id: string, journeyId: string, input: NavigateActionInput): NavigateAction | Promise<NavigateAction>;
 
     abstract blockUpdateNavigateToBlockAction(id: string, journeyId: string, input: NavigateToBlockActionInput): NavigateToBlockAction | Promise<NavigateToBlockAction>;
-
-    abstract blockUpdateNavigateToJourneyAction(id: string, journeyId: string, input: NavigateToJourneyActionInput): NavigateToJourneyAction | Promise<NavigateToJourneyAction>;
 
     abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): LinkAction | Promise<LinkAction>;
 

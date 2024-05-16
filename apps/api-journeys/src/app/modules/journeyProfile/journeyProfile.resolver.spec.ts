@@ -22,7 +22,8 @@ describe('JourneyProfileResolver', () => {
     userId: 'userId',
     acceptedTermsAt: new Date(),
     lastActiveTeamId: null,
-    onboardingFormCompletedAt: null
+    onboardingFormCompletedAt: null,
+    journeyFlowBackButtonClicked: null
   }
 
   const user: User = {
@@ -77,7 +78,8 @@ describe('JourneyProfileResolver', () => {
         userId: 'newUserId',
         acceptedTermsAt: new Date(),
         lastActiveTeamId: null,
-        onboardingFormCompletedAt: null
+        onboardingFormCompletedAt: null,
+        journeyFlowBackButtonClicked: null
       })
 
       await resolver.journeyProfileCreate({
@@ -103,7 +105,7 @@ describe('JourneyProfileResolver', () => {
   })
 
   describe('journeyProfileUpdate', () => {
-    it('should update journeyProfile', async () => {
+    it('should update journeyProfile lastTeamId', async () => {
       prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
       await resolver.journeyProfileUpdate('userId', {
         lastActiveTeamId: 'lastTeamId'
@@ -112,6 +114,19 @@ describe('JourneyProfileResolver', () => {
         where: { id: profile.id },
         data: {
           lastActiveTeamId: 'lastTeamId'
+        }
+      })
+    })
+
+    it('should update journeyProfile journeyFlowBackButtonClicked', async () => {
+      prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
+      await resolver.journeyProfileUpdate('userId', {
+        journeyFlowBackButtonClicked: true
+      })
+      expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
+        where: { id: profile.id },
+        data: {
+          journeyFlowBackButtonClicked: true
         }
       })
     })
