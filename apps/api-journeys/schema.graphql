@@ -43,13 +43,6 @@ type NavigateToBlockAction implements Action {
   blockId: String!
 }
 
-type NavigateToJourneyAction implements Action {
-  parentBlockId: ID!
-  gtmEventName: String
-  journeyId: String!
-  journey: Journey
-}
-
 type LinkAction implements Action {
   parentBlockId: ID!
   gtmEventName: String
@@ -72,11 +65,6 @@ input NavigateToBlockActionInput {
   blockId: String!
 }
 
-input NavigateToJourneyActionInput {
-  gtmEventName: String
-  journeyId: String!
-}
-
 input LinkActionInput {
   gtmEventName: String
   url: String!
@@ -92,19 +80,6 @@ extend type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
-
-  """
-  DEPRECATED: NavigateToJourneyAction is being removed. Use blockUpdateLinkAction instead.
-  """
-  blockUpdateNavigateToJourneyAction(
-    id: ID!
-    journeyId: ID!
-
-    """
-    DEPRECATED: NavigateToJourneyAction is being removed. Use blockUpdateLinkAction and LinkActionInput instead.
-    """
-    input: NavigateToJourneyActionInput!
-  ): NavigateToJourneyAction!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
   blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction!
 
@@ -1282,9 +1257,6 @@ type CustomDomainVerificationResponse {
 enum ButtonAction {
   NavigateAction
   NavigateToBlockAction
-
-  """DEPRECATED: use LinkAction instead."""
-  NavigateToJourneyAction @deprecated(reason: "Journey flow now handles this. Use LinkAction.")
   LinkAction
   EmailAction
 }

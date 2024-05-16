@@ -69,11 +69,7 @@ describe('TitleItem', () => {
     fireEvent.click(getByText('Title'))
     expect(push).toHaveBeenCalledWith(
       {
-        query: { param: 'title' },
-        push,
-        events: {
-          on
-        }
+        query: { param: 'title' }
       },
       undefined,
       { shallow: true }

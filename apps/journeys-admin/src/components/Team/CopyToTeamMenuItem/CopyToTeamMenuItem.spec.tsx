@@ -135,11 +135,7 @@ describe('DuplicateJourneys', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'copy-journey' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'copy-journey' }
         },
         undefined,
         { shallow: true }

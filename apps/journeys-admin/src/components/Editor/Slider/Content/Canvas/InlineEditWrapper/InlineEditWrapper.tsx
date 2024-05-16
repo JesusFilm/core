@@ -1,11 +1,9 @@
-import { useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockDelete } from '../../../../../../../__generated__/BlockDelete'
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQuestionFields'
@@ -13,7 +11,7 @@ import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
 import { TextResponseFields } from '../../../../../../../__generated__/TextResponseFields'
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
-import { BLOCK_DELETE } from '../QuickControls/DeleteBlock/DeleteBlock'
+import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import getSelected from '../QuickControls/DeleteBlock/utils/getSelected'
 
 import { ButtonEdit } from './ButtonEdit'
@@ -37,7 +35,7 @@ export function InlineEditWrapper({
   block,
   children
 }: InlineEditWrapperProps): ReactElement {
-  const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
+  const [blockDelete] = useBlockDeleteMutation()
 
   const {
     state: { selectedBlock, activeFab, selectedStep, steps },
@@ -59,12 +57,7 @@ export function InlineEditWrapper({
     const stepsBeforeDelete = steps
     const stepBeforeDelete = selectedStep
 
-    await blockDelete({
-      variables: {
-        id: selectedBlock.id,
-        journeyId: journey.id,
-        parentBlockId: selectedBlock.parentBlockId
-      },
+    await blockDelete(selectedBlock, {
       update(cache, { data }) {
         if (data?.blockDelete != null && deletedBlockParentOrder != null) {
           const selected = getSelected({

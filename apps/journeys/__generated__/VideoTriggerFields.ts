@@ -20,25 +20,6 @@ export interface VideoTriggerFields_triggerAction_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey_language;
-}
-
-export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey | null;
-}
-
 export interface VideoTriggerFields_triggerAction_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -53,7 +34,7 @@ export interface VideoTriggerFields_triggerAction_EmailAction {
   email: string;
 }
 
-export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_NavigateAction | VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_NavigateToJourneyAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction;
+export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_NavigateAction | VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction;
 
 export interface VideoTriggerFields {
   __typename: "VideoTriggerBlock";
