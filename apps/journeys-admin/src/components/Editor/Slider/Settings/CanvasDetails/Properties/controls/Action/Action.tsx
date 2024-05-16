@@ -37,6 +37,7 @@ export const NAVIGATE_ACTION_UPDATE = gql`
     $input: NavigateActionInput!
   ) {
     blockUpdateNavigateAction(id: $id, journeyId: $journeyId, input: $input) {
+      parentBlockId
       gtmEventName
     }
   }
