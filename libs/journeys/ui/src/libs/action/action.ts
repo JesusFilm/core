@@ -19,9 +19,6 @@ export function handleAction(
     case 'NavigateToBlockAction':
       nextActiveBlock({ id: action.blockId })
       break
-    case 'NavigateAction':
-      nextActiveBlock()
-      break
     case 'LinkAction':
       if (
         action.url.startsWith('http') &&
