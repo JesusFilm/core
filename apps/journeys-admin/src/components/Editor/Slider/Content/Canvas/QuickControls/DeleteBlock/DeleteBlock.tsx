@@ -1,4 +1,3 @@
-import { gql, useMutation } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
@@ -11,23 +10,11 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
-import { BlockDelete } from '../../../../../../../../__generated__/BlockDelete'
 import { blockDeleteUpdate } from '../../../../../../../libs/blockDeleteUpdate'
+import { useBlockDeleteMutation } from '../../../../../../../libs/useBlockDeleteMutation'
 import { MenuItem } from '../../../../../../MenuItem'
 
 import getSelected from './utils/getSelected'
-
-export const BLOCK_DELETE = gql`
-  mutation BlockDelete($id: ID!, $journeyId: ID!, $parentBlockId: ID) {
-    blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
-      id
-      parentOrder
-      ... on StepBlock {
-        nextBlockId
-      }
-    }
-  }
-`
 
 interface DeleteBlockProps {
   variant: 'button' | 'list-item'
@@ -43,7 +30,7 @@ export function DeleteBlock({
   block
 }: DeleteBlockProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
+  const [blockDelete] = useBlockDeleteMutation()
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
   const {
@@ -70,12 +57,7 @@ export function DeleteBlock({
     const stepsBeforeDelete = steps
     const stepBeforeDelete = selectedStep
 
-    await blockDelete({
-      variables: {
-        id: currentBlock.id,
-        journeyId: journey.id,
-        parentBlockId: currentBlock.parentBlockId
-      },
+    await blockDelete(currentBlock, {
       update(cache, { data }) {
         if (
           data?.blockDelete != null &&
