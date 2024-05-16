@@ -337,12 +337,25 @@ export interface GetAdminJourney_journey_blocks_VideoBlock_video_variant {
   hls: string | null;
 }
 
+export interface GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages_name[];
+}
+
 export interface GetAdminJourney_journey_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: GetAdminJourney_journey_blocks_VideoBlock_video_title[];
   image: string | null;
   variant: GetAdminJourney_journey_blocks_VideoBlock_video_variant | null;
+  variantLanguages: GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages[];
 }
 
 export interface GetAdminJourney_journey_blocks_VideoBlock_action_NavigateAction {
