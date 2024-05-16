@@ -30,12 +30,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_GridContainerBloc
   parentOrder: number | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -57,7 +51,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_actio
   email: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_EmailAction;
+export type GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock {
   __typename: "ButtonBlock";
@@ -106,12 +100,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_CardBlock {
   fullscreen: boolean;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -133,7 +121,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_
   email: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action = GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_EmailAction;
+export type GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action = GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock {
   __typename: "FormBlock";
@@ -170,12 +158,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ImageBlock {
   blurhash: string;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -197,7 +179,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_
   email: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action = GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_EmailAction;
+export type GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action = GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -213,12 +195,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBloc
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction {
@@ -242,7 +218,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_actio
   email: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action = GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_EmailAction;
+export type GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action = GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock {
   __typename: "SignUpBlock";
@@ -273,12 +249,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_StepBlock {
   nextBlockId: string | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -300,7 +270,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock
   email: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action = GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_EmailAction;
+export type GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action = GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
@@ -345,12 +315,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video 
   variant: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -372,7 +336,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action
   email: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_EmailAction;
+export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
   __typename: "VideoBlock";
@@ -453,12 +417,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
   action: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -480,7 +438,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   email: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction = GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_EmailAction;
+export type GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction = GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";

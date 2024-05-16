@@ -22,25 +22,12 @@ import {
   GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../__generated__/GetJourney'
-import { NavigateActionUpdate } from '../../../../../../__generated__/NavigateActionUpdate'
 
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateAction } from './NavigateAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { getNextStep } from './utils/getNextStep'
-
-export const NAVIGATE_ACTION_UPDATE = gql`
-  mutation NavigateActionUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: NavigateActionInput!
-  ) {
-    blockUpdateNavigateAction(id: $id, journeyId: $journeyId, input: $input) {
-      gtmEventName
-    }
-  }
-`
 
 export const ACTION_DELETE = gql`
   mutation ActionDelete($id: ID!, $journeyId: ID!) {
@@ -89,9 +76,6 @@ export function Action(): ReactElement {
     | TreeBlock<VideoBlock>
     | undefined
 
-  const [navigateActionUpdate] = useMutation<NavigateActionUpdate>(
-    NAVIGATE_ACTION_UPDATE
-  )
   const [actionDelete] = useMutation<ActionDelete>(ACTION_DELETE)
 
   const selectedAction = actions.find(
@@ -108,36 +92,6 @@ export function Action(): ReactElement {
       setAction('none')
     }
   }, [selectedBlock, selectedAction])
-
-  async function navigateAction(): Promise<void> {
-    if (
-      selectedBlock != null &&
-      (state.selectedStep?.nextBlockId != null || nextStep != null) &&
-      journey != null
-    ) {
-      const { id, __typename: typeName } = selectedBlock
-      await navigateActionUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          input: {}
-        },
-        update(cache, { data }) {
-          if (data?.blockUpdateNavigateAction != null) {
-            cache.modify({
-              id: cache.identify({
-                __typename: typeName,
-                id
-              }),
-              fields: {
-                action: () => data.blockUpdateNavigateAction
-              }
-            })
-          }
-        }
-      })
-    }
-  }
 
   async function removeAction(): Promise<void> {
     if (selectedBlock != null && journey != null) {
@@ -167,8 +121,6 @@ export function Action(): ReactElement {
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     if (event.target.value === 'none') {
       await removeAction()
-    } else if (event.target.value === 'NavigateAction') {
-      await navigateAction()
     }
     setAction(event.target.value)
   }

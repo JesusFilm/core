@@ -10,7 +10,6 @@
 export enum ButtonAction {
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
-  NavigateAction = "NavigateAction",
   NavigateToBlockAction = "NavigateToBlockAction",
 }
 
@@ -440,10 +439,6 @@ export interface LinkActionInput {
 
 export interface MeInput {
   redirect?: string | null;
-}
-
-export interface NavigateActionInput {
-  gtmEventName?: string | null;
 }
 
 export interface NavigateToBlockActionInput {

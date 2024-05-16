@@ -2,23 +2,12 @@ import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
 import {
   ButtonFields_action_LinkAction as LinkAction,
-  ButtonFields_action_NavigateAction as NavigateAction,
   ButtonFields_action_NavigateToBlockAction as NavigateToBlockAction
 } from '../../__generated__/ButtonFields'
 
 import { getActionLabel } from './getActionLabel'
 
 describe('getActionLabel', () => {
-  it('should be undefined for NavigateAction', () => {
-    const action: NavigateAction = {
-      __typename: 'NavigateAction',
-      parentBlockId: 'parentBlock.id',
-      gtmEventName: 'click'
-    }
-    const result = getActionLabel(action)
-    expect(result).toBeUndefined()
-  })
-
   it('should return step block title for NavigateToBlockAction', () => {
     const action: NavigateToBlockAction = {
       __typename: 'NavigateToBlockAction',

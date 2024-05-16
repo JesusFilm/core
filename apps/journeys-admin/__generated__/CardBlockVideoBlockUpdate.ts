@@ -28,12 +28,6 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video {
   variant: CardBlockVideoBlockUpdate_videoBlockUpdate_video_variant | null;
 }
 
-export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -55,7 +49,7 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_EmailAction {
   email: string;
 }
 
-export type CardBlockVideoBlockUpdate_videoBlockUpdate_action = CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_LinkAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_EmailAction;
+export type CardBlockVideoBlockUpdate_videoBlockUpdate_action = CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_LinkAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_EmailAction;
 
 export interface CardBlockVideoBlockUpdate_videoBlockUpdate {
   __typename: "VideoBlock";
