@@ -262,24 +262,24 @@ describe('BackgroundMedia', () => {
 
     fireEvent.click(getByTestId('bgvideo-image-tab'))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'background-image' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'background-image' }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
 
     fireEvent.click(getByTestId('bgvideo-video-tab'))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'background-video' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'background-video' }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 })

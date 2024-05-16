@@ -81,11 +81,7 @@ describe('TemplateSettingsItem', () => {
     fireEvent.click(getByRole('menuitem'))
     expect(push).toHaveBeenCalledWith(
       {
-        query: { param: 'templatesettings' },
-        push,
-        events: {
-          on
-        }
+        query: { param: 'templatesettings' }
       },
       undefined,
       { shallow: true }
