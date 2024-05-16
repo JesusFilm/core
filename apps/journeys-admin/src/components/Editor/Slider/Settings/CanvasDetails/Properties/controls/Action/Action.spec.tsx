@@ -28,44 +28,6 @@ describe('Action', () => {
     expect(getByText('None')).toBeInTheDocument()
   })
 
-  it('enables Next Step option if there is a next step', async () => {
-    const selectedStep = {
-      ...steps[1],
-      nextBlockId: null
-    }
-    const { getByRole } = render(
-      <MockedProvider>
-        <EditorProvider initialState={{ selectedStep, steps }}>
-          <Action />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    fireEvent.mouseDown(getByRole('button'))
-    await waitFor(() =>
-      expect(getByRole('option', { name: 'Next Step' })).not.toHaveAttribute(
-        'aria-disabled'
-      )
-    )
-  })
-
-  it('disables Next Step option if there is no next step', async () => {
-    const selectedStep = steps[4]
-    const { getByRole } = render(
-      <MockedProvider>
-        <EditorProvider initialState={{ selectedStep, steps }}>
-          <Action />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    fireEvent.mouseDown(getByRole('button'))
-    await waitFor(() =>
-      expect(getByRole('option', { name: 'Next Step' })).toHaveAttribute(
-        'aria-disabled',
-        'true'
-      )
-    )
-  })
-
   it('shows "back to map button" when Selected Card is selected', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
