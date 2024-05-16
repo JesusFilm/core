@@ -13,11 +13,12 @@ type Block = PrismaBlock & { action?: Action | null }
 
 type Journey = PrismaJourney & { blocks: Block[] }
 
-function actionType(obj: Action): string {
-  if (get(obj, 'blockId') != null) return 'NavigateToBlockAction'
-  if (get(obj, 'url') != null) return 'LinkAction'
-  if (get(obj, 'email') != null) return 'EmailAction'
-  return 'NavigateAction'
+function actionType(obj: Action): boolean {
+  return (
+    get(obj, 'blockId') == null &&
+    get(obj, 'url') == null &&
+    get(obj, 'email') == null
+  )
 }
 
 function findParentStepBlock(
@@ -25,9 +26,18 @@ function findParentStepBlock(
   parentBlockId: string
 ): string | undefined {
   const block = blocks.find((block) => block.id === parentBlockId)
-  if (block?.parentBlockId == null) return
-  if (block != null && block.typename === 'StepBlock') return block.id
-  return findParentStepBlock(blocks, block.parentBlockId)
+  if (
+    block == null ||
+    (block.parentBlockId == null && block.typename !== 'StepBlock')
+  ) {
+    // following line should never run, purely for type system
+    throw new Error("Parent block is not a step block or doesn't exist")
+  }
+
+  if (block.parentBlockId == null && block.typename === 'StepBlock')
+    return block.id
+
+  return findParentStepBlock(blocks, block.parentBlockId as string)
 }
 
 async function processJourney(journey: Journey): Promise<void> {
@@ -37,12 +47,9 @@ async function processJourney(journey: Journey): Promise<void> {
     'parentOrder'
   )
 
-  console.log('got called here')
-
   // get blocks with navigate actions
   const actionBlocks = journey.blocks.filter(
-    (block) =>
-      block.action != null && actionType(block.action) === 'NavigateAction'
+    (block) => block.action != null && actionType(block.action)
   )
 
   await Promise.all(
@@ -67,28 +74,22 @@ async function processJourney(journey: Journey): Promise<void> {
       const currentBlocks = actionBlocks.filter(
         (block) =>
           block.parentBlockId != null &&
-          findParentStepBlock(actionBlocks, block.parentBlockId) === step.id
+          findParentStepBlock(journey.blocks, block.parentBlockId) === step.id
       )
 
       // no blocks to update
       if (currentBlocks.length === 0) return
-
-      console.log('nextBlockId', nextBlockId)
 
       if (nextBlockId != null) {
         // step is not last step, update all navigate actions in step
         await Promise.all(
           currentBlocks.map(
             async (block) =>
-              await prisma.block.update({
-                where: { id: block.id },
+              await prisma.action.update({
+                where: { parentBlockId: block.id },
                 data: {
-                  action: {
-                    update: {
-                      gtmEventName: 'NavigateToBlockAction',
-                      blockId: nextBlockId
-                    }
-                  }
+                  gtmEventName: 'NavigateToBlockAction',
+                  blockId: nextBlockId
                 }
               })
           )

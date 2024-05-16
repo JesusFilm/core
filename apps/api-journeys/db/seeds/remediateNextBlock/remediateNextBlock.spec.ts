@@ -2,9 +2,9 @@ import { DeepMockProxy, mockDeep, mockReset } from 'jest-mock-extended'
 
 import {
   Action,
-  Block,
-  Journey,
+  Block as PrismaBlock,
   PrismaClient,
+  Journey as PrismaJourney,
   ThemeMode,
   ThemeName
 } from '.prisma/api-journeys-client'
@@ -21,8 +21,12 @@ jest.mock('./prisma', () => ({
 
 const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>
 
+type Block = PrismaBlock & { action?: Action | null }
+
+type Journey = PrismaJourney & { blocks: Block[] }
+
 describe('remediateNextBlock', () => {
-  const step = {
+  const step: Partial<Block> = {
     id: 'step0.id',
     typename: 'StepBlock',
     journeyId: 'journeyId',
@@ -30,91 +34,63 @@ describe('remediateNextBlock', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null
-  } as unknown as Block
+  }
 
-  const step1 = {
-    ...step,
-    id: 'step1.id'
-  } as unknown as Block
-
-  const step2 = {
-    ...step,
-    id: 'step2.id'
-  } as unknown as Block
-
-  const button = {
-    typename: 'ButtonBlock',
-    id: 'button',
+  const card: Partial<Block> = {
+    id: 'card0.id',
+    typename: 'CardBlock',
+    journeyId: 'journeyId',
     parentBlockId: 'step0.id',
     parentOrder: 0,
-    label: 'This is a button',
-    size: 'small',
-    startIconId: null,
-    endIconId: null,
-    action: {
-      gtmEventName: 'gtmEventName',
-      blockId: null,
-      journeyId: null,
-      url: null,
-      email: null
-    }
+    locked: false,
+    nextBlockId: null
   }
 
-  const button1 = {
-    ...button,
+  const button: Partial<Block> = {
     typename: 'ButtonBlock',
-    id: 'button2',
-    parentBlockId: 'step1.id',
+    id: 'button0.id',
+    parentBlockId: 'card0.id',
     parentOrder: 0,
     label: 'This is a button',
-    buttonVariant: 'contained',
-    buttonColor: 'primary',
     size: 'small',
     startIconId: null,
     endIconId: null,
     action: {
-      gtmEventName: 'gtmEventName',
+      parentBlockId: 'button0.id',
+      gtmEventName: 'NavigateAction',
       blockId: null,
       journeyId: null,
       url: null,
-      email: null
+      email: null,
+      target: null,
+      updatedAt: new Date()
     }
   }
 
-  const button2 = {
+  const button1: Partial<Block> = {
     typename: 'ButtonBlock',
-    id: 'button3',
-    parentBlockId: 'step2.id',
+    id: 'button1.id',
+    parentBlockId: 'card0.id',
     parentOrder: 0,
     label: 'This is a button',
-    buttonVariant: 'contained',
-    buttonColor: 'primary',
     size: 'small',
     startIconId: null,
     endIconId: null,
     action: {
-      gtmEventName: 'gtmEventName',
+      parentBlockId: 'button1.id',
+      gtmEventName: 'EmailAction',
       blockId: null,
       journeyId: null,
       url: null,
-      email: null
+      email: 'test@example.com',
+      target: null,
+      updatedAt: new Date()
     }
   }
 
-  const blocks = [
-    step,
-    button,
-    step1,
-    button1,
-    step2,
-    button2
-  ] as unknown as Array<Block & { action?: Action | null }>
+  const blocks = [step, card, button, button1] as unknown as Block[]
 
-  const steps = [step, step1, step2]
-
-  const actions = [button, button1, button2]
-
-  const journey: Journey & { blocks: Block[] } = {
+  const journey: Journey = {
     id: 'journeyId',
     slug: 'journey-slug',
     title: 'published',
@@ -127,9 +103,9 @@ describe('remediateNextBlock', () => {
     creatorImageBlockId: null,
     primaryImageBlockId: null,
     teamId: 'teamId',
-    publishedAt: new Date('2021-11-19T12:34:56.647Z'),
-    createdAt: new Date('2021-11-19T12:34:56.647Z'),
-    updatedAt: new Date('2021-11-19T12:34:56.647Z'),
+    publishedAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
     archivedAt: null,
     trashedAt: null,
     featuredAt: null,
@@ -142,30 +118,65 @@ describe('remediateNextBlock', () => {
     blocks
   }
 
-  const journeys: Journey[] = [
-    journey,
-    { ...journey, id: 'journeyId2' },
-    { ...journey, id: 'journeyId3' }
-  ]
+  const journeyWithStepWithNextBlockId = {
+    ...journey,
+    blocks: [
+      card,
+      { ...step, nextBlockId: 'step1.id' },
+      { ...step, id: 'step1.id' },
+      button
+    ]
+  }
+
+  const journeyWithStepWithoutNextBlockId = {
+    ...journey,
+    blocks: [card, step, { ...step, id: 'step1.id' }, button]
+  }
 
   beforeEach(() => {
     mockReset(prismaMock)
   })
 
-  it('should update next block id of step and action', async () => {
-    prismaMock.journey.findMany.mockResolvedValueOnce([])
-    prismaMock.journey.findMany.mockResolvedValueOnce(journeys)
-
+  it('should delete the action of block contained in the last step', async () => {
+    prismaMock.journey.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValueOnce([journey])
     await remediateNextBlock()
+    expect(prismaMock.action.delete).toHaveBeenCalledWith({
+      where: { parentBlockId: 'button0.id' }
+    })
   })
 
-  it('should update next block id of just action if step already has next block id', async () => {
-    prismaMock.journey.findMany.mockResolvedValueOnce(journeys)
+  it('should update nextBlockId of actions in steps when step is not last and has nextBlockId', async () => {
+    prismaMock.journey.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValueOnce([
+      journeyWithStepWithNextBlockId
+    ])
     await remediateNextBlock()
+    expect(prismaMock.action.update).toHaveBeenCalledWith({
+      where: { parentBlockId: 'button0.id' },
+      data: {
+        gtmEventName: 'NavigateToBlockAction',
+        blockId: 'step1.id'
+      }
+    })
   })
 
-  it('should delete the action of the last step', async () => {
-    prismaMock.journey.findMany.mockResolvedValueOnce(journeys)
+  it('should update nextBlockId of actions in steps when step is not last and has no nextBlockId', async () => {
+    prismaMock.journey.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValueOnce([
+      journeyWithStepWithoutNextBlockId
+    ])
     await remediateNextBlock()
+    expect(prismaMock.block.update).toHaveBeenCalledWith({
+      where: { id: 'step0.id' },
+      data: { nextBlockId: 'step1.id' }
+    })
+    expect(prismaMock.action.update).toHaveBeenCalledWith({
+      where: { parentBlockId: 'button0.id' },
+      data: {
+        gtmEventName: 'NavigateToBlockAction',
+        blockId: 'step1.id'
+      }
+    })
   })
 })
