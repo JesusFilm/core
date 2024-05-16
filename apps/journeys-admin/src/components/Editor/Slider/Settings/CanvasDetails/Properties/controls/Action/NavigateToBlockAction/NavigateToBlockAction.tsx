@@ -1,10 +1,11 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { type TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
@@ -38,18 +39,21 @@ export function NavigateToBlockAction(): ReactElement {
     })
   }
   return (
-    <Box sx={{ p: 4 }}>
+    <>
+      <Typography variant="caption" color="secondary.main" gutterBottom>
+        {t('Navigate to the selected card (set in the map).')}
+      </Typography>
       {currentActionStep == null ? (
         <Button
           variant="outlined"
           onClick={handleButtonClick}
-          sx={{ height: 140 }}
+          startIcon={<ChevronLeftIcon />}
         >
-          {t('Connect this block to a card in the Journey Flow')}
+          {t('back to map')}
         </Button>
       ) : (
         <CardItem step={currentActionStep} id={currentActionStep.id} />
       )}
-    </Box>
+    </>
   )
 }

@@ -1,11 +1,9 @@
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { CardPreview } from '../../../../../../../../CardPreview'
 import { getNextStep } from '../utils/getNextStep'
@@ -23,6 +21,9 @@ export function NavigateAction(): ReactElement {
 
   return (
     <>
+      <Typography variant="caption" color="secondary.main" gutterBottom>
+        {t('Default Next Step defined in the current card settings.')}
+      </Typography>
       <Box
         sx={{
           display: 'absolute',
@@ -37,18 +38,6 @@ export function NavigateAction(): ReactElement {
           testId="NavigateAction"
         />
       </Box>
-      <Stack
-        direction="row"
-        alignItems="center"
-        spacing={3}
-        sx={{ pt: 8 }}
-        color="text.secondary"
-      >
-        <InformationCircleContainedIcon />
-        <Typography variant="caption">
-          {t('Default Next Step defined in the current card settings.')}
-        </Typography>
-      </Stack>
     </>
   )
 }

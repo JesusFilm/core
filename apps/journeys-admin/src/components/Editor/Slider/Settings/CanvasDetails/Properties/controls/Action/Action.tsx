@@ -4,7 +4,6 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { init, t } from 'i18next'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
@@ -201,15 +200,11 @@ export function Action(): ReactElement {
             })}
           </Select>
         </FormControl>
-
-        <Typography variant="caption" color="secondary.main">
-          {t('Redirect user to the selected resource')}
-        </Typography>
         {action === 'NavigateAction' && <NavigateAction />}
         {action === 'LinkAction' && <LinkAction />}
         {action === 'EmailAction' && <EmailAction />}
+        {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
       </Stack>
-      {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
     </>
   )
 }

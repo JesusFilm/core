@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
@@ -94,19 +95,24 @@ export function LinkAction(): ReactElement {
   }
 
   return (
-    <Box sx={{ pt: 8 }} data-testid="LinkAction">
-      <TextFieldForm
-        id="link"
-        label={t('Paste URL here...')}
-        initialValue={linkAction?.url}
-        validationSchema={linkActionSchema}
-        onSubmit={handleSubmit}
-        startIcon={
-          <InputAdornment position="start">
-            <LinkIcon />
-          </InputAdornment>
-        }
-      />
-    </Box>
+    <>
+      <Typography variant="caption" color="secondary.main" gutterBottom>
+        {t('Open new tab pointing to the provided URL.')}
+      </Typography>
+      <Box data-testid="LinkAction">
+        <TextFieldForm
+          id="link"
+          label={t('Paste URL here...')}
+          initialValue={linkAction?.url}
+          validationSchema={linkActionSchema}
+          onSubmit={handleSubmit}
+          startIcon={
+            <InputAdornment position="start">
+              <LinkIcon />
+            </InputAdornment>
+          }
+        />
+      </Box>
+    </>
   )
 }
