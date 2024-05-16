@@ -91,7 +91,8 @@ describe('EmailAction', () => {
 
     expect(cache.extract()['ButtonBlock:button2.id']?.action).toEqual({
       gtmEventName: 'gtmEventName',
-      email: 'edmondwashere@gmail.com'
+      email: 'edmondwashere@gmail.com',
+      id: 'button2.id'
     })
   })
 

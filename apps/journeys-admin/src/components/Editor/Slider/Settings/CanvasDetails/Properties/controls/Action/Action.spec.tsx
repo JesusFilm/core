@@ -138,7 +138,8 @@ describe('Action', () => {
 
     expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
       gtmEventName: 'gtmEventName',
-      __typename: 'NavigateAction'
+      __typename: 'NavigateAction',
+      id: 'journeyId'
     })
   })
 

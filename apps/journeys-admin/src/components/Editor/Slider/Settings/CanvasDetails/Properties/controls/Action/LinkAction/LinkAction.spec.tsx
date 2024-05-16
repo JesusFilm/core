@@ -89,7 +89,8 @@ describe('LinkAction', () => {
 
     expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
       gtmEventName: 'gtmEventName',
-      url: 'https://github.com'
+      url: 'https://github.com',
+      id: 'button1.id'
     })
   })
 
@@ -146,7 +147,8 @@ describe('LinkAction', () => {
     await waitFor(() =>
       expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
         gtmEventName: 'gtmEventName',
-        url: 'https://github.com'
+        url: 'https://github.com',
+        id: 'button1.id'
       })
     )
   })
@@ -216,7 +218,8 @@ describe('LinkAction', () => {
     await waitFor(() =>
       expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
         gtmEventName: 'gtmEventName',
-        url: 'viber://'
+        url: 'viber://',
+        id: 'button1.id'
       })
     )
   })
@@ -276,7 +279,8 @@ describe('LinkAction', () => {
     await waitFor(() =>
       expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
         gtmEventName: 'gtmEventName',
-        url: 'https://github.com'
+        url: 'https://github.com',
+        id: 'button1.id'
       })
     )
   })

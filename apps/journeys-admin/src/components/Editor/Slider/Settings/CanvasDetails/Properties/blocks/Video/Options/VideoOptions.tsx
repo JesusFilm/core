@@ -40,6 +40,7 @@ export const UPDATE_VIDEO_BLOCK_NEXT_STEP = gql`
     ) {
       gtmEventName
       blockId
+      parentBlockId
     }
   }
 `

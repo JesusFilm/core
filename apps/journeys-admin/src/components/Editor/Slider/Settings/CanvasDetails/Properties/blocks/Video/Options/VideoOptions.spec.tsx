@@ -350,7 +350,9 @@ describe('VideoOptions', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['VideoBlock:video1.id']?.action).toEqual({
       gtmEventName: 'gtmEventName',
-      blockId: 'step1.id'
+      blockId: 'step1.id',
+      id: 'video1.id',
+      journeyId: 'journeyId'
     })
   })
 })

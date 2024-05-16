@@ -23,6 +23,7 @@ export const LINK_ACTION_UPDATE = gql`
     blockUpdateLinkAction(id: $id, journeyId: $journeyId, input: $input) {
       gtmEventName
       url
+      parentBlockId
     }
   }
 `
