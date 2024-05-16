@@ -67,25 +67,6 @@ export interface CardPollCreate_radioOption1_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface CardPollCreate_radioOption1_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardPollCreate_radioOption1_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardPollCreate_radioOption1_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardPollCreate_radioOption1_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardPollCreate_radioOption1_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardPollCreate_radioOption1_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -100,7 +81,7 @@ export interface CardPollCreate_radioOption1_action_EmailAction {
   email: string;
 }
 
-export type CardPollCreate_radioOption1_action = CardPollCreate_radioOption1_action_NavigateAction | CardPollCreate_radioOption1_action_NavigateToBlockAction | CardPollCreate_radioOption1_action_NavigateToJourneyAction | CardPollCreate_radioOption1_action_LinkAction | CardPollCreate_radioOption1_action_EmailAction;
+export type CardPollCreate_radioOption1_action = CardPollCreate_radioOption1_action_NavigateAction | CardPollCreate_radioOption1_action_NavigateToBlockAction | CardPollCreate_radioOption1_action_LinkAction | CardPollCreate_radioOption1_action_EmailAction;
 
 export interface CardPollCreate_radioOption1 {
   __typename: "RadioOptionBlock";
@@ -124,25 +105,6 @@ export interface CardPollCreate_radioOption2_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface CardPollCreate_radioOption2_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardPollCreate_radioOption2_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardPollCreate_radioOption2_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardPollCreate_radioOption2_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardPollCreate_radioOption2_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardPollCreate_radioOption2_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -157,7 +119,7 @@ export interface CardPollCreate_radioOption2_action_EmailAction {
   email: string;
 }
 
-export type CardPollCreate_radioOption2_action = CardPollCreate_radioOption2_action_NavigateAction | CardPollCreate_radioOption2_action_NavigateToBlockAction | CardPollCreate_radioOption2_action_NavigateToJourneyAction | CardPollCreate_radioOption2_action_LinkAction | CardPollCreate_radioOption2_action_EmailAction;
+export type CardPollCreate_radioOption2_action = CardPollCreate_radioOption2_action_NavigateAction | CardPollCreate_radioOption2_action_NavigateToBlockAction | CardPollCreate_radioOption2_action_LinkAction | CardPollCreate_radioOption2_action_EmailAction;
 
 export interface CardPollCreate_radioOption2 {
   __typename: "RadioOptionBlock";
@@ -181,25 +143,6 @@ export interface CardPollCreate_radioOption3_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface CardPollCreate_radioOption3_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardPollCreate_radioOption3_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardPollCreate_radioOption3_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardPollCreate_radioOption3_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardPollCreate_radioOption3_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardPollCreate_radioOption3_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -214,7 +157,7 @@ export interface CardPollCreate_radioOption3_action_EmailAction {
   email: string;
 }
 
-export type CardPollCreate_radioOption3_action = CardPollCreate_radioOption3_action_NavigateAction | CardPollCreate_radioOption3_action_NavigateToBlockAction | CardPollCreate_radioOption3_action_NavigateToJourneyAction | CardPollCreate_radioOption3_action_LinkAction | CardPollCreate_radioOption3_action_EmailAction;
+export type CardPollCreate_radioOption3_action = CardPollCreate_radioOption3_action_NavigateAction | CardPollCreate_radioOption3_action_NavigateToBlockAction | CardPollCreate_radioOption3_action_LinkAction | CardPollCreate_radioOption3_action_EmailAction;
 
 export interface CardPollCreate_radioOption3 {
   __typename: "RadioOptionBlock";
@@ -238,25 +181,6 @@ export interface CardPollCreate_radioOption4_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface CardPollCreate_radioOption4_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardPollCreate_radioOption4_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardPollCreate_radioOption4_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardPollCreate_radioOption4_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardPollCreate_radioOption4_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardPollCreate_radioOption4_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -271,7 +195,7 @@ export interface CardPollCreate_radioOption4_action_EmailAction {
   email: string;
 }
 
-export type CardPollCreate_radioOption4_action = CardPollCreate_radioOption4_action_NavigateAction | CardPollCreate_radioOption4_action_NavigateToBlockAction | CardPollCreate_radioOption4_action_NavigateToJourneyAction | CardPollCreate_radioOption4_action_LinkAction | CardPollCreate_radioOption4_action_EmailAction;
+export type CardPollCreate_radioOption4_action = CardPollCreate_radioOption4_action_NavigateAction | CardPollCreate_radioOption4_action_NavigateToBlockAction | CardPollCreate_radioOption4_action_LinkAction | CardPollCreate_radioOption4_action_EmailAction;
 
 export interface CardPollCreate_radioOption4 {
   __typename: "RadioOptionBlock";

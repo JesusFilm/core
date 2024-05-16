@@ -1,13 +1,6 @@
 enum ButtonAction {
   NavigateAction
   NavigateToBlockAction
-
-  """
-  DEPRECATED: use LinkAction instead.
-  """
-  NavigateToJourneyAction
-    @deprecated(reason: "Journey flow now handles this. Use LinkAction.")
-
   LinkAction
   EmailAction
 }
