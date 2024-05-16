@@ -143,8 +143,8 @@ describe('Action', () => {
     })
   })
 
-  it('shows card selector when Selected Card is selected', async () => {
-    const { getByRole, getByText, getByTestId } = render(
+  it('shows "back to map button" when Selected Card is selected', async () => {
+    const { getByRole, getByText } = render(
       <MockedProvider>
         <Action />
       </MockedProvider>
@@ -152,7 +152,9 @@ describe('Action', () => {
     fireEvent.mouseDown(getByRole('button', { name: 'None' }))
     await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
     fireEvent.click(getByRole('option', { name: 'Selected Card' }))
-    await waitFor(() => expect(getByTestId('CardList')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'back to map' })).toBeInTheDocument()
+    )
   })
 
   it('shows url input text box when URL/Website is selected', async () => {
