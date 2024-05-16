@@ -22,10 +22,6 @@ function actionType(obj: Action): boolean {
   )
 }
 
-function group<T>(array: T[], amount: number): T[][] {
-  return chunk(array, Math.ceil(array.length / amount))
-}
-
 function findParentStepBlock(
   blocks: Block[],
   parentBlockId: string
@@ -54,11 +50,16 @@ async function processJourney(journey: Journey): Promise<void> {
     (block) => block.action != null && actionType(block.action)
   )
 
-  const groupedSteps = group(steps, 5)
-  for (let index = 0; index < groupedSteps.length; index++) {
-    console.log(journey.id, index, 'processing step group')
+  const groupedSteps = chunk(steps, 5)
+
+  for (
+    let groupStepIndex = 0;
+    groupStepIndex < groupedSteps.length;
+    groupStepIndex++
+  ) {
+    console.log(journey.id, groupStepIndex, 'processing step group')
     await Promise.all(
-      groupedSteps[index].map(async (step, index) => {
+      groupedSteps[groupStepIndex].map(async (step, index) => {
         let nextBlockId = step.nextBlockId
 
         if (nextBlockId == null) {
@@ -69,10 +70,11 @@ async function processJourney(journey: Journey): Promise<void> {
             // step is not last step in journey
             console.log(
               journey.id,
-              index,
+              groupStepIndex,
               step.id,
               nextBlock.id,
-              'updating step with next block id'
+              'updating step with next block id',
+              `${step.parentOrder}->${nextBlock.parentOrder}`
             )
             await prisma.block.update({
               where: { id: step.id },
@@ -101,11 +103,15 @@ async function processJourney(journey: Journey): Promise<void> {
             currentBlocks.map(async (block) => {
               console.log(
                 journey.id,
-                index,
+                groupStepIndex,
                 step.id,
                 block.id,
                 nextBlockId,
-                'updating action with next block id'
+                'updating action with next block id',
+                `"${block.label}"`,
+                `${step.parentOrder}->${
+                  steps.find(({ id }) => id === nextBlockId)?.parentOrder
+                }`
               )
               await prisma.action.update({
                 where: { parentBlockId: block.id },
@@ -122,10 +128,12 @@ async function processJourney(journey: Journey): Promise<void> {
             currentBlocks.map(async (block) => {
               console.log(
                 journey.id,
-                index,
+                groupStepIndex,
                 step.id,
                 block.id,
-                'deleting action'
+                'deleting action',
+                `"${block.label}"`,
+                step.parentOrder
               )
               await prisma.action.delete({
                 where: { parentBlockId: block.id }
@@ -154,6 +162,12 @@ export async function remediateNextBlock(): Promise<void> {
       take: 100,
       include: { blocks: { include: { action: true } } },
       where: {
+        id: {
+          in: [
+            'e91bb3fb-5607-450a-b138-33b593cb7dec' // tatai
+            // 'fb81c220-cab9-41f4-a1fd-793e3ba74540' // charles
+          ]
+        },
         blocks: {
           some: {
             action: { blockId: null, journeyId: null, url: null, email: null }

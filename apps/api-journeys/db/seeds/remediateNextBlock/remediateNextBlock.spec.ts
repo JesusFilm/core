@@ -122,8 +122,9 @@ describe('remediateNextBlock', () => {
     ...journey,
     blocks: [
       card,
-      { ...step, nextBlockId: 'step1.id' },
+      { ...step, nextBlockId: 'step2.id' },
       { ...step, id: 'step1.id' },
+      { ...step, id: 'step2.id' },
       button
     ]
   }
@@ -164,7 +165,7 @@ describe('remediateNextBlock', () => {
       where: { parentBlockId: 'button0.id' },
       data: {
         gtmEventName: 'NavigateToBlockAction',
-        blockId: 'step1.id'
+        blockId: 'step2.id'
       }
     })
   })
