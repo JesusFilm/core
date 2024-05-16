@@ -20,7 +20,6 @@ export class ActionResolver {
   @ResolveField()
   __resolveType(obj: Action): string {
     if (get(obj, 'blockId') != null) return 'NavigateToBlockAction'
-    if (get(obj, 'url') != null) return 'LinkAction'
     if (get(obj, 'email') != null) return 'EmailAction'
     return 'LinkAction'
   }
