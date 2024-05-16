@@ -259,8 +259,7 @@ describe('VideoOptions', () => {
     const result = jest.fn(() => ({
       data: {
         blockUpdateNavigateToBlockAction: {
-          id: video.id,
-          journeyId: 'journeyId',
+          parentBlockId: video.id,
           gtmEventName: 'gtmEventName',
           blockId: 'step1.id'
         }
@@ -349,10 +348,9 @@ describe('VideoOptions', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['VideoBlock:video1.id']?.action).toEqual({
+      parentBlockId: 'video1.id',
       gtmEventName: 'gtmEventName',
-      blockId: 'step1.id',
-      id: 'video1.id',
-      journeyId: 'journeyId'
+      blockId: 'step1.id'
     })
   })
 })

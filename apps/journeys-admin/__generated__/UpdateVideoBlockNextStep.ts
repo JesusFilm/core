@@ -13,6 +13,7 @@ export interface UpdateVideoBlockNextStep_blockUpdateNavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
   blockId: string;
+  parentBlockId: string;
 }
 
 export interface UpdateVideoBlockNextStep {

@@ -13,6 +13,7 @@ export interface EmailActionUpdate_blockUpdateEmailAction {
   __typename: "EmailAction";
   gtmEventName: string | null;
   email: string;
+  parentBlockId: string;
 }
 
 export interface EmailActionUpdate {

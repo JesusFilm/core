@@ -19,7 +19,7 @@ describe('ActionDetails', () => {
   const result1 = jest.fn(() => ({
     data: {
       blockUpdateLinkAction: {
-        id: buttonBlock?.id,
+        parentBlockId: buttonBlock?.id,
         gtmEventName: 'gtmEventName',
         url
       }
@@ -29,7 +29,7 @@ describe('ActionDetails', () => {
   const result2 = jest.fn(() => ({
     data: {
       blockUpdateLinkAction: {
-        id: signUpBlock?.id,
+        parentBlockId: signUpBlock?.id,
         gtmEventName: 'gtmEventName',
         url
       }

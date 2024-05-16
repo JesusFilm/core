@@ -86,7 +86,7 @@ describe('Action', () => {
     const result = jest.fn(() => ({
       data: {
         blockUpdateNavigateAction: {
-          id: 'journeyId',
+          parentBlockId: selectedBlock.id,
           gtmEventName: 'gtmEventName',
           __typename: 'NavigateAction'
         }
@@ -137,9 +137,9 @@ describe('Action', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+      parentBlockId: 'button1.id',
       gtmEventName: 'gtmEventName',
-      __typename: 'NavigateAction',
-      id: 'journeyId'
+      __typename: 'NavigateAction'
     })
   })
 

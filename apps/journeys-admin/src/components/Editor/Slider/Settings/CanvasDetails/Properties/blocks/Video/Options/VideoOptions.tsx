@@ -38,9 +38,9 @@ export const UPDATE_VIDEO_BLOCK_NEXT_STEP = gql`
       journeyId: $journeyId
       input: $input
     ) {
+      parentBlockId
       gtmEventName
       blockId
-      parentBlockId
     }
   }
 `

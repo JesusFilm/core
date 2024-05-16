@@ -13,6 +13,7 @@ export interface LinkActionUpdate_blockUpdateLinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
   url: string;
+  parentBlockId: string;
 }
 
 export interface LinkActionUpdate {

@@ -20,7 +20,7 @@ describe('LinkAction', () => {
   const result = jest.fn(() => ({
     data: {
       blockUpdateLinkAction: {
-        id: selectedBlock.id,
+        parentBlockId: selectedBlock.id,
         gtmEventName: 'gtmEventName',
         url: 'https://github.com'
       }
@@ -88,9 +88,9 @@ describe('LinkAction', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+      parentBlockId: 'button1.id',
       gtmEventName: 'gtmEventName',
-      url: 'https://github.com',
-      id: 'button1.id'
+      url: 'https://github.com'
     })
   })
 
@@ -146,9 +146,9 @@ describe('LinkAction', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() =>
       expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+        parentBlockId: 'button1.id',
         gtmEventName: 'gtmEventName',
-        url: 'https://github.com',
-        id: 'button1.id'
+        url: 'https://github.com'
       })
     )
   })
@@ -169,7 +169,7 @@ describe('LinkAction', () => {
     const result = jest.fn(() => ({
       data: {
         blockUpdateLinkAction: {
-          id: selectedBlock.id,
+          parentBlockId: selectedBlock.id,
           gtmEventName: 'gtmEventName',
           url: 'viber://'
         }
@@ -217,9 +217,9 @@ describe('LinkAction', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() =>
       expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+        parentBlockId: 'button1.id',
         gtmEventName: 'gtmEventName',
-        url: 'viber://',
-        id: 'button1.id'
+        url: 'viber://'
       })
     )
   })
@@ -278,9 +278,9 @@ describe('LinkAction', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() =>
       expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+        parentBlockId: 'button1.id',
         gtmEventName: 'gtmEventName',
-        url: 'https://github.com',
-        id: 'button1.id'
+        url: 'https://github.com'
       })
     )
   })

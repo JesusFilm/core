@@ -20,9 +20,9 @@ export const EMAIL_ACTION_UPDATE = gql`
     $input: EmailActionInput!
   ) {
     blockUpdateEmailAction(id: $id, journeyId: $journeyId, input: $input) {
+      parentBlockId
       gtmEventName
       email
-      parentBlockId
     }
   }
 `
