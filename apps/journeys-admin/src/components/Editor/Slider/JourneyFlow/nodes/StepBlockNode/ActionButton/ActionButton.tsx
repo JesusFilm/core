@@ -117,6 +117,7 @@ export function ActionButton({
           height: ACTION_BUTTON_HEIGHT,
           width: '100%'
         }}
+        data-testid="ActionButton"
       >
         {icon}
         <Typography
@@ -127,6 +128,7 @@ export function ActionButton({
             fontSize: 10
           }}
           variant="body2"
+          data-testid="ActionButtonText"
         >
           {title}
         </Typography>
