@@ -190,9 +190,7 @@ describe('DuplicateJourneys', () => {
     await waitFor(() => expect(result).not.toHaveBeenCalled())
     expect(push).toHaveBeenCalledWith(
       {
-        query: { param: 'duplicate-journey' },
-        push,
-        events
+        query: { param: 'duplicate-journey' }
       },
       undefined,
       { shallow: true }

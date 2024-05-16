@@ -20,12 +20,25 @@ export interface CardVideoCreate_video_video_variant {
   hls: string | null;
 }
 
+export interface CardVideoCreate_video_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface CardVideoCreate_video_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: CardVideoCreate_video_video_variantLanguages_name[];
+}
+
 export interface CardVideoCreate_video_video {
   __typename: "Video";
   id: string;
   title: CardVideoCreate_video_video_title[];
   image: string | null;
   variant: CardVideoCreate_video_video_variant | null;
+  variantLanguages: CardVideoCreate_video_video_variantLanguages[];
 }
 
 export interface CardVideoCreate_video_action_NavigateToBlockAction {

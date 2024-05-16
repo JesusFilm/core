@@ -47,7 +47,8 @@ export const journeyVideoBlocks: Blocks[] = [
         __typename: 'VideoVariant',
         id: '1_529-0-TrainV_1Install',
         hls: 'https://arc.gt/zxqrt'
-      }
+      },
+      variantLanguages: []
     },
     action: null
   },
@@ -85,7 +86,8 @@ export const journeyVideoBlocks: Blocks[] = [
         __typename: 'VideoVariant',
         id: '1_529-0-TrainV_5Ministry',
         hls: 'https://arc.gt/rnfsp'
-      }
+      },
+      variantLanguages: []
     },
     action: null
   },
@@ -123,7 +125,8 @@ export const journeyVideoBlocks: Blocks[] = [
         __typename: 'VideoVariant',
         id: '1_529-cl1302-0-0',
         hls: 'https://arc.gt/7unjy'
-      }
+      },
+      variantLanguages: []
     },
     action: null
   },
@@ -204,7 +207,8 @@ export const journeyVideoBlocks: Blocks[] = [
         __typename: 'VideoVariant',
         id: '1_529-cl1305-0-0',
         hls: 'https://arc.gt/hmkwc'
-      }
+      },
+      variantLanguages: []
     }
   },
   {

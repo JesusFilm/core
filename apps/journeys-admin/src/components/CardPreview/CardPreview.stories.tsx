@@ -562,7 +562,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
+              },
+              variantLanguages: []
             },
             startAt: null,
             endAt: null,
@@ -648,7 +649,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
+              },
+              variantLanguages: []
             },
             startAt: null,
             endAt: null,

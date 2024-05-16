@@ -307,12 +307,25 @@ export interface JourneyFields_blocks_VideoBlock_video_variant {
   hls: string | null;
 }
 
+export interface JourneyFields_blocks_VideoBlock_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface JourneyFields_blocks_VideoBlock_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: JourneyFields_blocks_VideoBlock_video_variantLanguages_name[];
+}
+
 export interface JourneyFields_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: JourneyFields_blocks_VideoBlock_video_title[];
   image: string | null;
   variant: JourneyFields_blocks_VideoBlock_video_variant | null;
+  variantLanguages: JourneyFields_blocks_VideoBlock_video_variantLanguages[];
 }
 
 export interface JourneyFields_blocks_VideoBlock_action_NavigateToBlockAction {

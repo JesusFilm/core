@@ -74,7 +74,7 @@ describe('LanguageSwitcher', () => {
     await waitFor(() => fireEvent.click(getByText('Japanese')))
     expect(push).toHaveBeenCalledWith('/', '/', { locale: 'ja' })
     expect(
-      getByText('Are you sure you want to change language?')
+      getByText('Would you like to revert to previous language?')
     ).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Revert' }))
     expect(push).toHaveBeenCalledWith('/', '/', { locale: 'en' })

@@ -128,11 +128,7 @@ describe('TeamMenu', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'create-team' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'create-team' }
         },
         undefined,
         { shallow: true }
@@ -151,11 +147,7 @@ describe('TeamMenu', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'rename-team' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'rename-team' }
         },
         undefined,
         { shallow: true }
@@ -174,11 +166,7 @@ describe('TeamMenu', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'teams' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'teams' }
         },
         undefined,
         { shallow: true }

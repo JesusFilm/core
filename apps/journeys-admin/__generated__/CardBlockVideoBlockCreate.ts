@@ -20,12 +20,25 @@ export interface CardBlockVideoBlockCreate_videoBlockCreate_video_variant {
   hls: string | null;
 }
 
+export interface CardBlockVideoBlockCreate_videoBlockCreate_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface CardBlockVideoBlockCreate_videoBlockCreate_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: CardBlockVideoBlockCreate_videoBlockCreate_video_variantLanguages_name[];
+}
+
 export interface CardBlockVideoBlockCreate_videoBlockCreate_video {
   __typename: "Video";
   id: string;
   title: CardBlockVideoBlockCreate_videoBlockCreate_video_title[];
   image: string | null;
   variant: CardBlockVideoBlockCreate_videoBlockCreate_video_variant | null;
+  variantLanguages: CardBlockVideoBlockCreate_videoBlockCreate_video_variantLanguages[];
 }
 
 export interface CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction {
