@@ -51,13 +51,13 @@ describe('HeaderAndLanguageFilter', () => {
     fireEvent.click(getByTestId('PresentationLayer'))
     await waitFor(() => expect(onChange).toHaveBeenCalledTimes(3))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        query: { param: 'template-language' },
-        push,
-        events: {
-          on
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'template-language' }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 })

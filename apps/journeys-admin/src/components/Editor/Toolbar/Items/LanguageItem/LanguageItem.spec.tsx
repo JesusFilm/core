@@ -56,11 +56,7 @@ describe('LanguageItem', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'languages' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'languages' }
         },
         undefined,
         { shallow: true }
