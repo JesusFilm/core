@@ -21,20 +21,6 @@ function actionType(obj: Action): string {
   return 'NavigateAction'
 }
 
-function getBlocksWithNavigateActions(blocks: Block[]): Block[] {
-  return blocks.filter(
-    (block) =>
-      block.action != null && actionType(block.action) === 'NavigateAction'
-  )
-}
-
-function getStepBlocks(blocks: Block[]): Block[] {
-  return sortBy(
-    blocks.filter((block) => block.typename === 'StepBlock'),
-    'parentOrder'
-  )
-}
-
 function findParentStepBlock(
   blocks: Block[],
   parentBlockId: string
@@ -45,70 +31,81 @@ function findParentStepBlock(
   return findParentStepBlock(blocks, block.parentBlockId)
 }
 
-async function updateNextBlockId(
-  id: string,
-  nextBlockId: string
-): Promise<void> {
-  await prisma.block.update({
-    where: { id },
-    data: { nextBlockId }
-  })
-}
-
-async function updateBlockAction(id: string, blockId: string): Promise<void> {
-  await prisma.block.update({
-    where: { id },
-    data: {
-      action: {
-        update: {
-          gtmEventName: 'NavigateToBlockAction',
-          blockId
-        }
-      }
-    }
-  })
-}
-
-function getBlocksBelongingToCurrentStep(
-  blocks: Block[],
-  stepId: string
-): Block[] {
-  return blocks.filter(
-    (block) =>
-      block.parentBlockId != null &&
-      findParentStepBlock(blocks, block.parentBlockId) === stepId
-  )
-}
-
 async function processJourney(journey: Journey): Promise<void> {
-  const steps = getStepBlocks(journey.blocks)
-  const blocks = getBlocksWithNavigateActions(journey.blocks)
-
+  // get step blocks belonging to journey
+  const steps = sortBy(
+    journey.blocks.filter((block) => block.typename === 'StepBlock'),
+    'parentOrder'
+  )
+  // get blocks with navigate actions
+  const actionBlocks = journey.blocks.filter(
+    (block) =>
+      block.action != null && actionType(block.action) === 'NavigateAction'
+  )
   await Promise.all(
     steps.map(async (step, index) => {
       let nextBlockId = step.nextBlockId
+
       if (nextBlockId == null) {
+        // implicit next block id on card
         const nextBlock = steps[index + 1]
 
         if (nextBlock != null) {
-          await updateNextBlockId(step.id, nextBlock.id)
+          // step is not last step in journey
+          await prisma.block.update({
+            where: { id: step.id },
+            data: { nextBlockId: nextBlock.id }
+          })
           nextBlockId = nextBlock.id
         }
       }
 
-      const currentBlocks = getBlocksBelongingToCurrentStep(blocks, step.id)
-
-      await Promise.all(
-        currentBlocks.map(
-          async (block) => await updateBlockAction(block.id, nextBlockId)
-        )
+      // get action blocks belonging to current step
+      const currentBlocks = actionBlocks.filter(
+        (block) =>
+          block.parentBlockId != null &&
+          findParentStepBlock(actionBlocks, block.parentBlockId) === step.id
       )
+
+      // no blocks to update
+      if (currentBlocks.length === 0) return
+
+      if (nextBlockId != null) {
+        // step is not last step, update all navigate actions in step
+        await Promise.all(
+          currentBlocks.map(
+            async (block) =>
+              await prisma.block.update({
+                where: { id: block.id },
+                data: {
+                  action: {
+                    update: {
+                      gtmEventName: 'NavigateToBlockAction',
+                      blockId: nextBlockId
+                    }
+                  }
+                }
+              })
+          )
+        )
+      } else {
+        // step is last step, delete all navigate actions in step
+        await Promise.all(
+          currentBlocks.map(
+            async (block) =>
+              await prisma.action.delete({
+                where: { parentBlockId: block.id }
+              })
+          )
+        )
+      }
     })
   )
 }
 
 export async function remediateNextBlock(): Promise<void> {
   while (true) {
+    // get journeys with blocks that have navigate actions
     const journeys = await prisma.journey.findMany({
       take: 100,
       include: { blocks: { include: { action: true } } },
