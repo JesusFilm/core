@@ -15,7 +15,7 @@ type Block = PrismaBlock & { action?: Action | null }
 
 type Journey = PrismaJourney & { blocks: Block[] }
 
-const STEP_GROUP_SIZE = 5
+export const STEP_GROUP_SIZE = 50
 
 function actionType(obj: Action): boolean {
   return (
@@ -41,13 +41,14 @@ function findParentStepBlock(
 }
 
 async function processJourney(
+  journeyIndex: number,
   journey: Journey,
   tx: Omit<
     PrismaClient,
     '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
   >
 ): Promise<void> {
-  console.log(journey.id, 'updating journey')
+  console.log(journeyIndex, journey.id, 'updating journey')
   // get step blocks belonging to journey
   const steps = sortBy(
     journey.blocks.filter((block) => block.typename === 'StepBlock'),
@@ -66,7 +67,12 @@ async function processJourney(
     groupStepIndex < groupedSteps.length;
     groupStepIndex++
   ) {
-    console.log(journey.id, groupStepIndex, 'processing step group')
+    console.log(
+      journeyIndex,
+      journey.id,
+      groupStepIndex,
+      'processing step group'
+    )
     await Promise.all(
       groupedSteps[groupStepIndex].map(async (step, stepIndex) => {
         let nextBlockId = step.nextBlockId
@@ -79,6 +85,7 @@ async function processJourney(
           if (nextBlock != null) {
             // step is not last step in journey
             console.log(
+              journeyIndex,
               journey.id,
               groupStepIndex,
               step.id,
@@ -104,6 +111,7 @@ async function processJourney(
         // no blocks to update
         if (currentBlocks.length === 0) {
           console.log(
+            journeyIndex,
             journey.id,
             groupStepIndex,
             step.id,
@@ -117,6 +125,7 @@ async function processJourney(
           await Promise.all(
             currentBlocks.map(async (block) => {
               console.log(
+                journeyIndex,
                 journey.id,
                 groupStepIndex,
                 step.id,
@@ -142,6 +151,7 @@ async function processJourney(
           await Promise.all(
             currentBlocks.map(async (block) => {
               console.log(
+                journeyIndex,
                 journey.id,
                 groupStepIndex,
                 step.id,
@@ -174,8 +184,6 @@ export async function remediateNextBlock(): Promise<void> {
   let skip = 0
 
   while (true) {
-    console.log('processed journeys:', skip)
-
     const journeys = await prisma.journey.findMany({
       skip,
       take: 100,
@@ -185,8 +193,9 @@ export async function remediateNextBlock(): Promise<void> {
     if (journeys.length === 0) break
 
     for (let index = 0; index < journeys.length; index++) {
+      console.log(skip + index, '------------------')
       await prisma.$transaction(async (tx) => {
-        await processJourney(journeys[index], tx)
+        await processJourney(skip + index, journeys[index], tx)
       })
     }
 
