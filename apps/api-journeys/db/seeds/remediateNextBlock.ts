@@ -3,16 +3,16 @@ import sortBy from 'lodash/sortBy'
 
 import {
   Action,
-  Block,
-  Journey,
-  PrismaClient
+  Block as PrismaBlock,
+  PrismaClient,
+  Journey as PrismaJourney
 } from '.prisma/api-journeys-client'
 
 const prisma = new PrismaClient()
 
-type BlockWithAction = Array<Block & { action: Action }>
+type Block = PrismaBlock & { action?: Action | null }
 
-type JourneyWithBlocks = Journey & { blocks: BlockWithAction }
+type Journey = PrismaJourney & { blocks: Block[] }
 
 function actionType(obj: Action): string {
   if (get(obj, 'blockId') != null) return 'NavigateToBlockAction'
@@ -22,15 +22,18 @@ function actionType(obj: Action): string {
   return 'NavigateAction'
 }
 
-function getBlocksWithNavigateActions(blocks: BlockWithAction): Block[] {
+function getBlocksWithNavigateActions(blocks: Block[]): Block[] {
   return blocks.filter(
-    (block): boolean =>
+    (block) =>
       block.action != null && actionType(block.action) === 'NavigateAction'
   )
 }
 
 function getStepBlocks(blocks: Block[]): Block[] {
-  return blocks.filter((block) => block.typename === 'StepBlock')
+  return sortBy(
+    blocks.filter((block) => block.typename === 'StepBlock'),
+    'parentOrder'
+  )
 }
 
 function findParentStepBlock(
@@ -67,52 +70,60 @@ async function updateBlockAction(id: string, blockId: string): Promise<void> {
   })
 }
 
-async function processStepBlockAndActions(
-  journey: JourneyWithBlocks
-): Promise<void> {
-  const blocks = journey.blocks
-  const stepBlocks = sortBy(getStepBlocks(blocks), 'parentOrder')
-  const blocksWithNavigateActions = getBlocksWithNavigateActions(blocks)
+function getBlocksBelongingToCurrentStep(
+  blocks: Block[],
+  stepId: string
+): Block[] {
+  return blocks.filter(
+    (block) =>
+      block.parentBlockId != null &&
+      findParentStepBlock(blocks, block.parentBlockId) === stepId
+  )
+}
+
+async function processJourney(journey: Journey): Promise<void> {
+  const steps = getStepBlocks(journey.blocks)
+  const blocks = getBlocksWithNavigateActions(journey.blocks)
 
   await Promise.all(
-    stepBlocks.map(async (stepBlock, index) => {
-      const nextIndex = index + 1
-      const nextStepBlock = stepBlocks[nextIndex]
+    steps.map(async (step, index) => {
+      let nextBlockId = step.nextBlockId
+      if (nextBlockId == null) {
+        const nextBlock = steps[index + 1]
 
-      if (nextStepBlock != null) {
-        await updateNextBlockId(stepBlock.id, nextStepBlock.id)
-
-        const currentStepBlockActions = blocksWithNavigateActions.filter(
-          (actionBlock) =>
-            actionBlock.parentBlockId != null &&
-            findParentStepBlock(blocks, actionBlock.parentBlockId) ===
-              stepBlock.id
-        )
-
-        await Promise.all(
-          currentStepBlockActions.map(
-            async (block) => await updateBlockAction(block.id, nextStepBlock.id)
-          )
-        )
+        if (nextBlock != null) {
+          await updateNextBlockId(step.id, nextBlock.id)
+          nextBlockId = nextBlock.id
+        }
       }
+
+      const currentBlocks = getBlocksBelongingToCurrentStep(blocks, step.id)
+
+      await Promise.all(
+        currentBlocks.map(
+          async (block) => await updateBlockAction(block.id, nextBlockId)
+        )
+      )
     })
   )
 }
 
 export async function remediateNextBlock(): Promise<void> {
-  let offset = 0
   while (true) {
     const journeys = await prisma.journey.findMany({
       take: 100,
-      skip: offset,
-      include: { blocks: { include: { action: true } } }
+      include: { blocks: { include: { action: true } } },
+      where: {
+        blocks: {
+          some: {
+            action: { blockId: null, journeyId: null, url: null, email: null }
+          }
+        }
+      }
     })
-
     if (journeys.length === 0) break
 
-    await Promise.all(journeys.map(processStepBlockAndActions))
-
-    offset += 100
+    await Promise.all(journeys.map(processJourney))
   }
 }
 
