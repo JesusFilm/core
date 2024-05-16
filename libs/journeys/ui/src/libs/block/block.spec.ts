@@ -112,6 +112,20 @@ describe('block', () => {
       })
     })
 
+    it('should navigate to next step in tree if no nextBlockId', () => {
+      treeBlocksVar([
+        { ...step, id: 'step1.id' },
+        { ...step, id: 'step2.id' },
+        { ...step, id: 'step3.id' }
+      ])
+      blockHistoryVar([{ ...step, id: 'step1.id' }])
+
+      nextActiveBlock()
+
+      expect(blockHistoryVar()).toHaveLength(2)
+      expect(blockHistoryVar()[1].id).toBe('step2.id')
+    })
+
     describe('navigate by tree block parent order', () => {
       it('should not navigate to next step if it does not exist', () => {
         treeBlocksVar([

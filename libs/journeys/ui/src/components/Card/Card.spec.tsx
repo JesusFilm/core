@@ -72,7 +72,7 @@ describe('CardBlock', () => {
     parentBlockId: 'card1.id',
     parentOrder: 0,
     locked: false,
-    nextBlockId: 'step2.id',
+    nextBlockId: null,
     children: []
   }
   const step2: TreeBlock<StepBlock> = {
@@ -81,7 +81,7 @@ describe('CardBlock', () => {
     parentBlockId: 'card2.id',
     parentOrder: 0,
     locked: false,
-    nextBlockId: 'step3.id',
+    nextBlockId: null,
     children: []
   }
   const step3: TreeBlock<StepBlock> = {
