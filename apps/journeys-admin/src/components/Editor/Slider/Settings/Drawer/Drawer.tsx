@@ -90,34 +90,17 @@ export function Drawer({
       elevation={0}
       hideBackdrop
       sx={{
-        '& .MuiDrawer-paper':
-          open != null
-            ? {
-                // persistent drawer
-                borderRadius: 4,
-                borderBottomLeftRadius: { xs: 0, sm: 16 },
-                borderBottomRightRadius: { xs: 0, sm: 16 },
-                width: smUp ? DRAWER_WIDTH : 'auto',
-                top: { xs: 0, sm: 20 },
-                left: { xs: 0, sm: 'auto' },
-                right: { xs: 0, sm: 20 },
-                bottom: { xs: 0, sm: 20 },
-                height: 'auto'
-              }
-            : {
-                // permanent drawer
-                borderRadius: 4,
-                borderBottomLeftRadius: { xs: 0, sm: 16 },
-                borderBottomRightRadius: { xs: 0, sm: 16 },
-                width: smUp ? DRAWER_WIDTH : 'auto',
-                left: { xs: 0, sm: 'auto' },
-                top: { xs: 0, sm: 20 },
-                right: { xs: 0, sm: 20 },
-                bottom: { xs: 0, sm: 'unset' },
-                height: 'auto',
-                minHeight: 'calc(100% - 40px)',
-                maxHeight: 'calc(100% - 4px)'
-              }
+        '& .MuiDrawer-paper': {
+          borderRadius: 4,
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+          width: smUp ? DRAWER_WIDTH : 'auto',
+          left: { xs: 0, sm: 'auto' },
+          top: { xs: 0, sm: 20 },
+          right: { xs: 0, sm: 20 },
+          bottom: 0,
+          height: 'calc(100% - 20px)'
+        }
       }}
     >
       <DrawerTitle title={title} onClose={onClose} />
