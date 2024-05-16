@@ -1,6 +1,6 @@
 import algoliasearch from 'algoliasearch'
 import { RankingInfo } from 'instantsearch.js'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { VideoListItemProps } from '../../../VideoList/VideoListItem/VideoListItem'
 import { transformAlgoliaVideos } from '../transformAlgoliaVideos/transformAlgoliaVideos'
@@ -23,19 +23,20 @@ interface Hit {
 
 interface Hits extends Array<Hit> {}
 
-export type geronimoType = Array<
-  Pick<
-    VideoListItemProps,
-    'id' | 'title' | 'description' | 'image' | 'duration' | 'source'
-  >
->
+export interface LocalVideoFields
+  extends Array<
+    Pick<
+      VideoListItemProps,
+      'id' | 'title' | 'description' | 'image' | 'duration' | 'source'
+    >
+  > {}
 
 interface UseVideoSearchResult {
   isEnd: boolean
   loading: boolean
   handleSearch: (searchQuery: string, page: number) => Promise<void>
   handleLoadMore: (searchQuery: string) => Promise<void>
-  algoliaVideos: geronimoType
+  algoliaVideos: LocalVideoFields
 }
 
 export function useVideoSearch(): UseVideoSearchResult {
@@ -53,36 +54,33 @@ export function useVideoSearch(): UseVideoSearchResult {
     }
   }, [currentPage, totalPages])
 
-  const handleSearch = useCallback(
-    async (
-      searchQuery: string,
-      page: number,
-      loadMore?: boolean
-    ): Promise<void> => {
-      try {
-        setLoading(true)
-        const {
-          hits: resultHits,
-          page: pageNumber,
-          nbPages: totalPages
-        } = await index.search(searchQuery, {
-          page,
-          hitsPerPage: 5,
-          filters: 'languageId:529'
-        })
+  async function handleSearch(
+    searchQuery: string,
+    page: number,
+    loadMore?: boolean
+  ): Promise<void> {
+    try {
+      setLoading(true)
+      const {
+        hits: resultHits,
+        page: pageNumber,
+        nbPages: totalPages
+      } = await index.search(searchQuery, {
+        page,
+        hitsPerPage: 5,
+        filters: 'languageId:529'
+      })
 
-        const newHits =
-          loadMore === true ? [...hits, ...resultHits] : resultHits
-        setHits(newHits)
-        setCurrentPage(pageNumber)
-        setTotalPages(totalPages)
-        setLoading(false)
-      } catch (error) {
-        console.error('Error occurred while searching:', error)
-      }
-    },
-    [hits]
-  )
+      const newHits = loadMore === true ? [...hits, ...resultHits] : resultHits
+      setHits(newHits)
+      setCurrentPage(pageNumber)
+      setTotalPages(totalPages)
+    } catch (error) {
+      console.error('Error occurred while searching:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   async function handleLoadMore(searchQuery: string): Promise<void> {
     if (isEnd || loading) return
