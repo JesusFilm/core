@@ -137,6 +137,14 @@ describe('remediateNextBlock', () => {
     mockReset(prismaMock)
   })
 
+  it('should delete all actions of blocks', async () => {
+    prismaMock.journey.findMany.mockResolvedValue([])
+    await remediateNextBlock()
+    expect(prismaMock.action.deleteMany).toHaveBeenCalledWith({
+      where: { parentBlock: { typename: 'StepBlock' } }
+    })
+  })
+
   it('should delete the action of block contained in the last step', async () => {
     prismaMock.journey.findMany.mockResolvedValue([])
     prismaMock.journey.findMany.mockResolvedValueOnce([journey])
