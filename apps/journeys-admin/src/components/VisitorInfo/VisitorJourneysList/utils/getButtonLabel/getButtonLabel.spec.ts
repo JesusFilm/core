@@ -46,18 +46,6 @@ describe('getButtonLabel', () => {
     expect(result).toBe('Selected Card')
   })
 
-  it('should return label for NavigateToJourneyAction', () => {
-    const result = getButtonLabel(
-      {
-        ...buttonEvent,
-        action: ButtonAction.NavigateToJourneyAction,
-        actionValue: 'Journey name'
-      },
-      t
-    )
-    expect(result).toBe('Journey')
-  })
-
   it('should return label for LinkAction', () => {
     const result = getButtonLabel(
       {

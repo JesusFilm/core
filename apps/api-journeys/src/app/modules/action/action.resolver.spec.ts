@@ -74,16 +74,6 @@ describe('ActionResolver', () => {
     url: null,
     email: null
   }
-  const navigateToJourneyAction: Action = {
-    parentBlockId: 'parentBlockId',
-    gtmEventName: 'gtmEventName',
-    updatedAt: new Date(),
-    blockId: null,
-    journeyId: '4',
-    target: null,
-    url: null,
-    email: null
-  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -121,12 +111,6 @@ describe('ActionResolver', () => {
     it('returns NavigateToBlockAction', () => {
       expect(resolver.__resolveType(navigateToBlockAction)).toBe(
         'NavigateToBlockAction'
-      )
-    })
-
-    it('returns NavigateToJourneyAction', () => {
-      expect(resolver.__resolveType(navigateToJourneyAction)).toBe(
-        'NavigateToJourneyAction'
       )
     })
   })
