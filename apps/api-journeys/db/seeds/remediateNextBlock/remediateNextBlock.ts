@@ -179,15 +179,7 @@ export async function remediateNextBlock(): Promise<void> {
     const journeys = await prisma.journey.findMany({
       skip,
       take: 100,
-      include: { blocks: { include: { action: true } } },
-      where: {
-        id: {
-          in: [
-            // 'e91bb3fb-5607-450a-b138-33b593cb7dec' // tatai
-            'fb81c220-cab9-41f4-a1fd-793e3ba74540' // charles
-          ]
-        }
-      }
+      include: { blocks: { include: { action: true } } }
     })
 
     if (journeys.length === 0) break
