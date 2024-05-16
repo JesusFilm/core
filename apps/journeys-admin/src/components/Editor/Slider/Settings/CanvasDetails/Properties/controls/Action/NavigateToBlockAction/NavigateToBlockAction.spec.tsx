@@ -13,8 +13,8 @@ import { NavigateToBlockAction } from './NavigateToBlockAction'
 describe('NavigateToBlockAction', () => {
   const selectedBlock = steps[1].children[0].children[3]
 
-  it("should show 'Connect in Fourney Flow' button", () => {
-    const { getByText } = render(
+  it("should show 'back to map' button", () => {
+    const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -29,13 +29,11 @@ describe('NavigateToBlockAction', () => {
       </MockedProvider>
     )
 
-    expect(
-      getByText('Connect this block to a card in the Journey Flow')
-    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'back to map' })).toBeInTheDocument()
   })
 
-  it("should hanle 'Connect in Fourney Flow' button click", () => {
-    const { getByText, queryByText } = render(
+  it("should hanle 'back to map' button click", () => {
+    const { getByText, queryByText, getByRole } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -53,9 +51,7 @@ describe('NavigateToBlockAction', () => {
       </MockedProvider>
     )
     expect(queryByText('activeSlide: 0')).not.toBeInTheDocument()
-    fireEvent.click(
-      getByText('Connect this block to a card in the Journey Flow')
-    )
+    fireEvent.click(getByRole('button', { name: 'back to map' }))
     expect(getByText('activeSlide: 0')).toBeInTheDocument()
   })
 
