@@ -74,11 +74,7 @@ describe('AccessItem', () => {
     fireEvent.click(getByText('Manage Access'))
     expect(push).toHaveBeenCalledWith(
       {
-        query: { param: 'access' },
-        push,
-        events: {
-          on
-        }
+        query: { param: 'access' }
       },
       undefined,
       { shallow: true }

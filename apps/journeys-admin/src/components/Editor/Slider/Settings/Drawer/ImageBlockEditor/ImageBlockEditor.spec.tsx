@@ -61,16 +61,12 @@ describe('ImageBlockEditor', () => {
       </SnackbarProvider>
     )
     expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
-    expect(getByText('Unsplash')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Unsplash')).toBeInTheDocument())
     fireEvent.click(getByRole('tab', { name: 'Custom' }))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'custom-image' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'custom-image' }
         },
         undefined,
         { shallow: true }
@@ -85,11 +81,7 @@ describe('ImageBlockEditor', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'ai-image' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'ai-image' }
         },
         undefined,
         { shallow: true }
@@ -100,11 +92,7 @@ describe('ImageBlockEditor', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'unsplash-image' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'unsplash-image' }
         },
         undefined,
         { shallow: true }

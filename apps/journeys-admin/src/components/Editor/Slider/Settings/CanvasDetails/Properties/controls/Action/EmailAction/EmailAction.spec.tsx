@@ -22,7 +22,7 @@ describe('EmailAction', () => {
   const result = jest.fn(() => ({
     data: {
       blockUpdateEmailAction: {
-        id: selectedBlock.id,
+        parentBlockId: selectedBlock.id,
         gtmEventName: 'gtmEventName',
         email: 'edmondwashere@gmail.com'
       }
@@ -90,6 +90,7 @@ describe('EmailAction', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(cache.extract()['ButtonBlock:button2.id']?.action).toEqual({
+      parentBlockId: 'button2.id',
       gtmEventName: 'gtmEventName',
       email: 'edmondwashere@gmail.com'
     })

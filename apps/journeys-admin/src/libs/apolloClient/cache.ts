@@ -12,7 +12,6 @@ export const cache = (): InMemoryCache =>
     possibleTypes: {
       Action: [
         'NavigateToBlockAction',
-        'NavigateToJourneyAction',
         'LinkAction',
         'EmailAction'
       ],
@@ -61,6 +60,9 @@ export const cache = (): InMemoryCache =>
       Translation: {
         keyFields: ['value']
       },
+      LinkAction: { keyFields: ['parentBlockId'] },
+      EmailAction: { keyFields: ['parentBlockId'] },
+      NavigateAction: { keyFields: ['parentBlockId'] },
       NavigateToBlockAction: { keyFields: ['parentBlockId'] }
     }
   })

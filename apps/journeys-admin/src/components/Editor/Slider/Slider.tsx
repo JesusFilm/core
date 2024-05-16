@@ -1,20 +1,48 @@
+import { gql, useMutation, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
 import { darken, styled, useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef } from 'react'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
-import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
+import { getJourneyFlowBackButtonClicked } from '../../../../__generated__/getJourneyFlowBackButtonClicked'
+import { UpdateJourneyFlowBackButtonClicked } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Content } from './Content'
 import { JourneyFlow } from './JourneyFlow'
 import { Settings } from './Settings'
+
+export const UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED = gql`
+  mutation UpdateJourneyFlowBackButtonClicked {
+    journeyProfileUpdate(input: { journeyFlowBackButtonClicked: true }) {
+      id
+      journeyFlowBackButtonClicked
+    }
+  }
+`
+
+export const GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED = gql`
+  query getJourneyFlowBackButtonClicked {
+    getJourneyProfile {
+      id
+      journeyFlowBackButtonClicked
+    }
+  }
+`
 
 const StyledSwiper = styled(Swiper)(() => ({}))
 const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
@@ -25,9 +53,20 @@ export function Slider(): ReactElement {
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const {
-    state: { activeSlide, selectedStep },
+    state: { activeSlide, activeContent, selectedStep },
     dispatch
   } = useEditor()
+  const { t } = useTranslation('apps-journeys-admin')
+  const [updateBackButtonClick] =
+    useMutation<UpdateJourneyFlowBackButtonClicked>(
+      UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED
+    )
+  const { data } = useQuery<getJourneyFlowBackButtonClicked>(
+    GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED
+  )
+
+  const showBackButtonHelp =
+    data?.getJourneyProfile?.journeyFlowBackButtonClicked !== true
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
@@ -66,6 +105,18 @@ export function Slider(): ReactElement {
   }
 
   function handlePrev(): void {
+    if (showBackButtonHelp) void updateBackButtonClick()
+
+    if (
+      activeSlide === ActiveSlide.Content &&
+      activeContent === ActiveContent.Goals
+    ) {
+      dispatch({
+        type: 'SetActiveContentAction',
+        activeContent:
+          selectedStep == null ? ActiveContent.Social : ActiveContent.Canvas
+      })
+    }
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: activeSlide - 1
@@ -141,7 +192,6 @@ export function Slider(): ReactElement {
             sm: 'flex'
           },
           alignItems: 'center',
-          justifyContent: 'center',
           transition: (theme) =>
             theme.transitions.create('left', { duration: 300, delay: 300 })
         }}
@@ -152,6 +202,8 @@ export function Slider(): ReactElement {
             borderWidth: 1,
             borderStyle: 'solid',
             borderColor: 'divider',
+            borderRadius: '41px',
+            marginLeft: '30px',
             transition: (theme) => theme.transitions.create('background-color'),
             '&:hover': {
               backgroundColor: (theme) =>
@@ -160,6 +212,15 @@ export function Slider(): ReactElement {
           }}
         >
           <ChevronLeftIcon />
+          <Collapse
+            in={showBackButtonHelp && activeSlide === ActiveSlide.Content}
+            orientation="horizontal"
+            style={{ transitionDelay: '300ms' }}
+          >
+            <Typography sx={{ color: 'primary.main' }} noWrap>
+              {t('back to map')}
+            </Typography>
+          </Collapse>
         </IconButton>
       </Box>
       <StyledSwiperSlide

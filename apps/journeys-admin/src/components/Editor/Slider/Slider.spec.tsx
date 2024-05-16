@@ -47,7 +47,7 @@ describe('Slider', () => {
 
   beforeEach(() => {
     state = {
-      selectedStep,
+      steps: [selectedStep],
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
       activeContent: ActiveContent.Canvas,
       activeFab: ActiveFab.Add,
@@ -111,5 +111,52 @@ describe('Slider', () => {
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+  })
+
+  it('handles prev on back click when goals with selected step', async () => {
+    const contentState = {
+      ...state,
+      activeContent: ActiveContent.Goals,
+      activeSlide: ActiveSlide.Content
+    }
+
+    render(
+      <MockedProvider>
+        <EditorProvider initialState={contentState}>
+          <TestEditorState />
+          <Slider />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
+  })
+
+  it('handles prev on back click when goals without selected step', async () => {
+    const contentState = {
+      ...state,
+      activeContent: ActiveContent.Goals,
+      activeSlide: ActiveSlide.Content,
+      steps: undefined
+    }
+
+    render(
+      <MockedProvider>
+        <EditorProvider initialState={contentState}>
+          <TestEditorState />
+          <Slider />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    expect(screen.getByText('activeContent: social')).toBeInTheDocument()
   })
 })
