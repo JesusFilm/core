@@ -57,9 +57,6 @@ enum ButtonAction
 {
   NavigateAction @join__enumValue(graph: JOURNEYS)
   NavigateToBlockAction @join__enumValue(graph: JOURNEYS)
-
-  """DEPRECATED: use LinkAction instead."""
-  NavigateToJourneyAction @join__enumValue(graph: JOURNEYS) @deprecated(reason: "Journey flow now handles this. Use LinkAction.")
   LinkAction @join__enumValue(graph: JOURNEYS)
   EmailAction @join__enumValue(graph: JOURNEYS)
 }
@@ -1209,19 +1206,6 @@ type Mutation
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
-
-  """
-  DEPRECATED: NavigateToJourneyAction is being removed. Use blockUpdateLinkAction instead.
-  """
-  blockUpdateNavigateToJourneyAction(
-    id: ID!
-    journeyId: ID!
-
-    """
-    DEPRECATED: NavigateToJourneyAction is being removed. Use blockUpdateLinkAction and LinkActionInput instead.
-    """
-    input: NavigateToJourneyActionInput!
-  ): NavigateToJourneyAction! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
   blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction! @join__field(graph: JOURNEYS)
 
@@ -1493,23 +1477,6 @@ input NavigateToBlockActionInput
 {
   gtmEventName: String
   blockId: String!
-}
-
-type NavigateToJourneyAction implements Action
-  @join__implements(graph: JOURNEYS, interface: "Action")
-  @join__type(graph: JOURNEYS)
-{
-  parentBlockId: ID!
-  gtmEventName: String
-  journeyId: String!
-  journey: Journey
-}
-
-input NavigateToJourneyActionInput
-  @join__type(graph: JOURNEYS)
-{
-  gtmEventName: String
-  journeyId: String!
 }
 
 type OperatingSystem

@@ -18,12 +18,6 @@ type NavigateToBlockAction implements Action {
   blockId: String!
 }
 
-type NavigateToJourneyAction implements Action {
-  parentBlockId: ID!
-  gtmEventName: String
-  journeyId: String!
-}
-
 type LinkAction implements Action {
   parentBlockId: ID!
   gtmEventName: String
@@ -44,11 +38,6 @@ input NavigateActionInput {
 input NavigateToBlockActionInput {
   gtmEventName: String
   blockId: String!
-}
-
-input NavigateToJourneyActionInput {
-  gtmEventName: String
-  journeyId: String!
 }
 
 input LinkActionInput {
@@ -74,18 +63,6 @@ extend type Mutation {
     journeyId: ID!
     input: NavigateToBlockActionInput!
   ): NavigateToBlockAction!
-
-  """
-  DEPRECATED: NavigateToJourneyAction is being removed. Use blockUpdateLinkAction instead.
-  """
-  blockUpdateNavigateToJourneyAction(
-    id: ID!
-    journeyId: ID!
-    """
-    DEPRECATED: NavigateToJourneyAction is being removed. Use blockUpdateLinkAction and LinkActionInput instead.
-    """
-    input: NavigateToJourneyActionInput!
-  ): NavigateToJourneyAction!
   blockUpdateLinkAction(
     id: ID!
     journeyId: ID!
