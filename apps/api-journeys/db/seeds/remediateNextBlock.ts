@@ -32,7 +32,7 @@ function findParentStepBlock(
 }
 
 async function processJourney(journey: Journey): Promise<void> {
-  // get step blocks belonging to journey
+  // get step blocks sorted by parent order belonging to journey
   const steps = sortBy(
     journey.blocks.filter((block) => block.typename === 'StepBlock'),
     'parentOrder'
