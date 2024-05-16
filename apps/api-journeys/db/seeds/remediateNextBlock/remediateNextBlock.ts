@@ -1,3 +1,4 @@
+import formatDistance from 'date-fns/formatDistance'
 import chunk from 'lodash/chunk'
 import get from 'lodash/get'
 import sortBy from 'lodash/sortBy'
@@ -191,9 +192,13 @@ export async function remediateNextBlock(): Promise<void> {
     })
 
     if (journeys.length === 0) break
-
+    const t0 = performance.now()
     for (let index = 0; index < journeys.length; index++) {
-      console.log(skip + index, '------------------')
+      console.log(
+        skip + index,
+        '------------------',
+        formatDistance(0, performance.now() - t0, { includeSeconds: true })
+      )
       await prisma.$transaction(async (tx) => {
         await processJourney(skip + index, journeys[index], tx)
       })
