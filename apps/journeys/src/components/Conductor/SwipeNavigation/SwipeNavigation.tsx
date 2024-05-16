@@ -70,28 +70,30 @@ export function SwipeNavigation({
           targetBlock != null &&
           getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
 
-        void stepNextEventCreate({
-          variables: {
-            input: {
-              id,
-              blockId: activeBlock.id,
-              label: stepName,
-              value: targetStepName,
-              nextStepId: targetBlock?.id
+        if (targetBlock != null) {
+          void stepNextEventCreate({
+            variables: {
+              input: {
+                id,
+                blockId: activeBlock.id,
+                label: stepName,
+                value: targetStepName,
+                nextStepId: targetBlock?.id
+              }
             }
-          }
-        })
+          })
 
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'step_next',
-            eventId: id,
-            blockId: activeBlock.id,
-            stepName,
-            targetStepId: targetBlock?.id,
-            targetStepName
-          }
-        })
+          TagManager.dataLayer({
+            dataLayer: {
+              event: 'step_next',
+              eventId: id,
+              blockId: activeBlock.id,
+              stepName,
+              targetStepId: targetBlock?.id,
+              targetStepName
+            }
+          })
+        }
       }
       // should always be called with previousActiveBlock()
       // should match with other handlePreviousNavigationEventCreate functions
