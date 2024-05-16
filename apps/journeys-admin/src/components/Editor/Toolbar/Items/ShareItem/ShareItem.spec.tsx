@@ -110,7 +110,7 @@ describe('ShareItem', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'embed-journey' },
+          query: { param: 'embed-journey' }
         },
         undefined,
         { shallow: true }
