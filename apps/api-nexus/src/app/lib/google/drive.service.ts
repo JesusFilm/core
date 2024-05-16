@@ -3,15 +3,11 @@ import path from 'path'
 
 import { drive, drive_v3 } from '@googleapis/drive'
 import { Injectable } from '@nestjs/common/decorators/core'
-import axios from 'axios'
+import { google } from 'googleapis'
 import { OAuth2Client } from 'googleapis-common'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Channel } from '../../__generated__/graphql'
-import { PrismaService } from '../prisma.service'
-
 import { GoogleOAuthService } from './oauth.service'
-import { GoogleSheetsService } from './sheets.service'
 
 interface FileRequest {
   fileId: string
@@ -23,26 +19,9 @@ type FileResponse = Pick<
   'id' | 'name' | 'mimeType' | 'thumbnailLink' | 'kind'
 >
 
-interface SpreadsheetRow {
-  driveFile?: drive_v3.Schema$File
-  channel?: string
-  channelData?: Channel
-  filename?: string
-  title?: string
-  description?: string
-  keywords?: string
-  category?: string
-  privacy?: string
-  spoken_language?: string
-}
-
 @Injectable()
 export class GoogleDriveService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly googleOAuthService: GoogleOAuthService,
-    private readonly googleSheetsService: GoogleSheetsService
-  ) {}
+  constructor(private readonly googleOAuthService: GoogleOAuthService) {}
 
   async getFile({ fileId, accessToken }: FileRequest): Promise<FileResponse> {
     const client = drive({ version: 'v3', auth: accessToken })
@@ -65,44 +44,55 @@ export class GoogleDriveService {
   }
 
   async downloadDriveFile(
-    data: { fileId: string; accessToken: string },
+    { fileId, accessToken }: { fileId: string; accessToken: string },
     progressCallback?: (progress: number) => Promise<void>
   ): Promise<string> {
-    await this.setFilePermission({
-      fileId: data.fileId,
-      accessToken: data.accessToken
+    const drive = google.drive({
+      version: 'v3',
+      auth: this.googleOAuthService.authorize(
+        accessToken,
+        'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file'
+      )
     })
-    const fileUrl = this.getFileUrl(data.fileId)
-    const response = await axios({
-      method: 'get',
-      url: fileUrl,
-      responseType: 'stream'
+    const driveFile = await drive.files.get({
+      fileId,
+      fields: 'name, mimeType'
     })
-
-    const filename: string = response.headers['content-disposition']
-      .split('filename=')[1]
-      .split(';')[0]
-      .replace(/["']/g, '') as string
-
+    const downloadFileName = driveFile.data.name ?? 'sample.mp4'
     const downloadDirectory = path.join(__dirname, '..', 'downloads')
-    const fileName = uuidv4() + path.extname(filename)
+    const fileName = uuidv4() + path.extname(downloadFileName)
     const outputPath = path.join(downloadDirectory, fileName)
     const writer = createWriteStream(outputPath)
 
+    const response = await drive.files.get(
+      { fileId, alt: 'media' },
+      { responseType: 'stream' }
+    )
+
     const totalLength = response.headers['content-length']
     let downloadedLength = 0
-    response.data.on('data', async (chunk: Buffer) => {
+
+    response.data.on('data', (chunk: Buffer) => {
       downloadedLength += chunk.length
-      const percentage = ((downloadedLength / totalLength) * 100).toFixed(2)
-      if (progressCallback != null) {
-        await progressCallback(Number(percentage))
-      }
+      const percentage = (downloadedLength / totalLength) * 100
+      void Promise.all([this.executeCallback(progressCallback, percentage)])
     })
+
     response.data.pipe(writer)
+
     return await new Promise((resolve, reject) => {
       writer.on('finish', () => resolve(outputPath))
       writer.on('error', reject)
     })
+  }
+
+  private async executeCallback(
+    progressCallback: ((arg0: number) => Promise<void>) | null | undefined,
+    progress: number
+  ): Promise<void> {
+    if (progressCallback != null) {
+      await progressCallback(progress)
+    }
   }
 
   getFileUrl(fileId: string): string {
@@ -134,77 +124,5 @@ export class GoogleDriveService {
     })
 
     return driveResponse.data.files
-  }
-
-  async handleGoogleDriveOperations(
-    tokenId: string,
-    spreadsheetId: string,
-    drivefolderId: string
-  ): Promise<SpreadsheetRow[]> {
-    const googleAccessToken =
-      await this.prismaService.googleAccessToken.findUnique({
-        where: { id: tokenId }
-      })
-
-    if (googleAccessToken === null) {
-      throw new Error('Invalid tokenId')
-    }
-
-    console.log('googleAccessToken')
-    const accessToken = await this.googleOAuthService.getNewAccessToken(
-      googleAccessToken.refreshToken
-    )
-
-    console.log('getFirstSheetName')
-    const firstSheetName = await this.googleSheetsService.getFirstSheetName(
-      spreadsheetId,
-      accessToken
-    )
-
-    if (firstSheetName == null)
-      throw new Error('Spreadsheet does not contain first sheet')
-
-    console.log('downloadSpreadsheet')
-    const spreadsheetData = await this.googleSheetsService.downloadSpreadsheet(
-      spreadsheetId,
-      firstSheetName,
-      accessToken
-    )
-
-    console.log('Prepare spreadsheetRows')
-    let spreadsheetRows: SpreadsheetRow[] = []
-
-    if (spreadsheetData != null && spreadsheetData.length > 0) {
-      const header = spreadsheetData[0] as string[]
-      spreadsheetRows = spreadsheetData.slice(1).map((row) => {
-        const rowObject = {}
-
-        row.forEach((value, index) => {
-          rowObject[header[index]] = value
-        })
-
-        return rowObject as SpreadsheetRow
-      })
-    }
-
-    console.log('Authorize')
-    // const authClient = this.youtubeService.authorize(accessToken);
-
-    console.log('Find Files')
-    // const files = await this.findFiles(authClient, drivefolderId);
-
-    console.log('Authorize spreadsheetRows')
-    // for (const spreadsheetRow of spreadsheetRows) {
-    //   spreadsheetRow.driveFile = files?.find((file) => {
-    //     return file.name === spreadsheetRow.filename;
-    //   });
-    //   console.log('spreadsheetRow.driveFile', spreadsheetRow.driveFile);
-    //   spreadsheetRow.channelData = (await this.prismaService.channel.findFirst({
-    //     where: { youtube: { youtubeId: spreadsheetRow.channel as string } },
-    //     include: { youtube: true },
-    //   })) as Channel | undefined;
-    // }
-
-    return spreadsheetRows
   }
 }

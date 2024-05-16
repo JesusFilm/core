@@ -21,6 +21,7 @@ export enum BatchStatus {
 }
 
 export enum ChannelStatus {
+    created = "created",
     deleted = "deleted",
     published = "published"
 }
@@ -54,13 +55,11 @@ export enum ResourceStatus {
 export class BatchFilter {
     ids?: Nullable<string[]>;
     name?: Nullable<string>;
-    nexusId?: Nullable<string>;
     status?: Nullable<BatchStatus>;
     limit?: Nullable<number>;
 }
 
 export class ChannelCreateInput {
-    nexusId: string;
     name: string;
     platform: string;
 }
@@ -73,7 +72,6 @@ export class ChannelUpdateInput {
 export class ChannelFilter {
     ids?: Nullable<string[]>;
     name?: Nullable<string>;
-    nexusId?: Nullable<string>;
     limit?: Nullable<number>;
     connected?: Nullable<boolean>;
     status?: Nullable<ChannelStatus>;
@@ -105,7 +103,6 @@ export class NexusFilter {
 }
 
 export class ResourceCreateInput {
-    nexusId: string;
     name: string;
 }
 
@@ -116,13 +113,11 @@ export class ResourceUpdateInput {
 export class ResourceFromGoogleDriveInput {
     fileIds: string[];
     authCode: string;
-    nexusId: string;
 }
 
 export class ResourceFilter {
     ids?: Nullable<string[]>;
     name?: Nullable<string>;
-    nexusId?: Nullable<string>;
     status?: Nullable<ResourceStatus>;
     limit?: Nullable<number>;
 }
@@ -130,12 +125,10 @@ export class ResourceFilter {
 export class AddResourceFromGoogleDriveInput {
     accessToken: string;
     fileId: string;
-    nexusId: string;
 }
 
 export class ResourceFromSpreadsheetInput {
     file?: Nullable<Upload>;
-    nexusId: string;
 }
 
 export class GoogleAuthInput {
@@ -161,7 +154,6 @@ export class BatchJobInput {
 export class Batch {
     __typename?: 'Batch';
     id: string;
-    nexusId: string;
     channelId: string;
     channel?: Nullable<Channel>;
     resources?: Nullable<Nullable<BatchResource>[]>;
@@ -204,7 +196,6 @@ export abstract class IQuery {
 export class Channel {
     __typename?: 'Channel';
     id: string;
-    nexusId: string;
     name: string;
     platform?: Nullable<string>;
     connected?: Nullable<boolean>;
@@ -238,8 +229,6 @@ export class Nexus {
 export class Resource {
     __typename?: 'Resource';
     id: string;
-    nexusId: string;
-    nexus: Nexus;
     name: string;
     status: ResourceStatus;
     createdAt: DateTime;
@@ -296,9 +285,7 @@ export abstract class IMutation {
 
     abstract resourceDelete(id: string): Resource | Promise<Resource>;
 
-    abstract resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
-
-    abstract resourceFromTemplate(nexusId: string, tokenId: string, spreadsheetId: string, drivefolderId: string): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
+    abstract resourceFromTemplate(tokenId: string, spreadsheetId: string, drivefolderId: string): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
 
     abstract getGoogleAccessToken(input: GoogleAuthInput): GoogleAuthResponse | Promise<GoogleAuthResponse>;
 

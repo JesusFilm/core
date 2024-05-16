@@ -97,6 +97,7 @@
     "form-data": "^4.0.0",
     "formik": "^2.4.4",
     "fscreen": "^1.2.0",
+    "googleapis": "^136.0.0",
     "gql.tada": "^1.5.3",
     "graphql": "^16.8.0",
     "i18next": "23.6.0",

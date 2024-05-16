@@ -77,7 +77,6 @@ type Channel
   @key(fields: "id")
 {
   id: ID!
-  nexusId: String!
   name: String!
   platform: String
   connected: Boolean
@@ -87,6 +86,7 @@ type Channel
 }
 
 enum ChannelStatus {
+  created
   deleted
   published
 }
@@ -103,7 +103,6 @@ type ChannelYoutube {
 }
 
 input ChannelCreateInput {
-  nexusId: String!
   name: String!
   platform: String!
 }
@@ -116,7 +115,6 @@ input ChannelUpdateInput {
 input ChannelFilter {
   ids: [ID!]
   name: String
-  nexusId: String
   limit: Int
   connected: Boolean
   status: ChannelStatus
@@ -139,8 +137,7 @@ extend type Mutation {
   resourceCreate(input: ResourceCreateInput!): Resource!
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
-  resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput!): [Resource!]
-  resourceFromTemplate(nexusId: String!, tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!]
+  resourceFromTemplate(tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!]
   getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
   resourceBatchJob(input: BatchJobInput!): String
@@ -187,8 +184,6 @@ type Resource
   @key(fields: "id")
 {
   id: ID!
-  nexusId: String!
-  nexus: Nexus!
   name: String!
   status: ResourceStatus!
   createdAt: DateTime!
@@ -239,7 +234,6 @@ enum ResourceStatus {
 }
 
 input ResourceCreateInput {
-  nexusId: String!
   name: String!
 }
 
@@ -250,13 +244,11 @@ input ResourceUpdateInput {
 input ResourceFromGoogleDriveInput {
   fileIds: [String!]!
   authCode: String!
-  nexusId: String!
 }
 
 input ResourceFilter {
   ids: [ID!]
   name: String
-  nexusId: String
   status: ResourceStatus
   limit: Int
 }
@@ -264,12 +256,10 @@ input ResourceFilter {
 input AddResourceFromGoogleDriveInput {
   accessToken: String!
   fileId: String!
-  nexusId: String!
 }
 
 input ResourceFromSpreadsheetInput {
   file: Upload
-  nexusId: String!
 }
 
 input GoogleAuthInput {

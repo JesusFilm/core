@@ -4,12 +4,13 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Channel, NexusStatus, Prisma } from '.prisma/api-nexus-client'
+import { Channel, Prisma } from '.prisma/api-nexus-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
 import {
   ChannelCreateInput,
   ChannelFilter,
+  ChannelStatus,
   ChannelUpdateInput,
   ConnectYoutubeChannelInput
 } from '../../__generated__/graphql'
@@ -34,8 +35,6 @@ export class ChannelResolver {
     @Args('where') where?: ChannelFilter
   ): Promise<Channel[]> {
     const filter: Prisma.ChannelWhereInput = {}
-    if (where?.nexusId != null) filter.nexusId = where.nexusId
-
     return await this.prismaService.channel.findMany({
       where: {
         AND: [accessibleChannels, filter]
@@ -53,7 +52,7 @@ export class ChannelResolver {
   ): Promise<Channel | null> {
     const channel = await this.prismaService.channel.findUnique({
       where: { id },
-      include: { youtube: true, nexus: { include: { userNexuses: true } } }
+      include: { youtube: true }
     })
     if (channel == null)
       throw new GraphQLError('channel not found', {
@@ -78,12 +77,12 @@ export class ChannelResolver {
         data: {
           ...input,
           id,
-          status: NexusStatus.published
+          status: ChannelStatus.published
         }
       })
       const channel = await tx.channel.findUnique({
         where: { id },
-        include: { youtube: true, nexus: { include: { userNexuses: true } } }
+        include: { youtube: true }
       })
       if (channel == null)
         throw new GraphQLError('channel not found', {
@@ -106,7 +105,7 @@ export class ChannelResolver {
   ): Promise<Channel> {
     const channel = await this.prismaService.channel.findUnique({
       where: { id },
-      include: { youtube: true, nexus: { include: { userNexuses: true } } }
+      include: { youtube: true }
     })
     if (channel == null)
       throw new GraphQLError('channel not found', {
@@ -133,8 +132,7 @@ export class ChannelResolver {
     @Args('id') id: string
   ): Promise<Channel> {
     const channel = await this.prismaService.channel.findUnique({
-      where: { id },
-      include: { nexus: { include: { userNexuses: true } } }
+      where: { id }
     })
     if (channel == null)
       throw new GraphQLError('channel not found', {
@@ -149,7 +147,7 @@ export class ChannelResolver {
         id
       },
       data: {
-        status: NexusStatus.deleted,
+        status: ChannelStatus.deleted,
         connected: false
       },
       include: { youtube: true }
@@ -162,8 +160,7 @@ export class ChannelResolver {
     @Args('input') input: ConnectYoutubeChannelInput
   ): Promise<Channel | null> {
     const channel = await this.prismaService.channel.findUnique({
-      where: { id: input.channelId },
-      include: { nexus: { include: { userNexuses: true } } }
+      where: { id: input.channelId }
     })
     if (channel == null)
       throw new GraphQLError('channel not found', {
