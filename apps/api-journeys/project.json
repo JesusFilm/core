@@ -127,7 +127,7 @@
     "remediate-next-block": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apps/api-journeys/db/seeds/remediateNextBlock.ts"
+        "command": "npm run ts-node apps/api-journeys/db/seeds/remediateNextBlock/remediateNextBlock.ts"
       }
     },
     "prisma-seed": {
