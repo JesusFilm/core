@@ -5,6 +5,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { ApolloWrapper } from '../../libs/apolloClient/apolloWrapper'
+import { LocaleProvider } from '../../libs/localeContext/LocaleContext'
 
 import 'swiper/css'
 import 'swiper/css/a11y'
@@ -92,16 +93,18 @@ export default function RootLayout({
            `}
             </script>
           )}
-        <ApolloWrapper>
-          <AppRouterCacheProvider>
-            <ThemeProvider
-              themeName={ThemeName.website}
-              themeMode={ThemeMode.light}
-            >
-              {children}
-            </ThemeProvider>
-          </AppRouterCacheProvider>
-        </ApolloWrapper>
+        <LocaleProvider locale={locale}>
+          <ApolloWrapper>
+            <AppRouterCacheProvider>
+              <ThemeProvider
+                themeName={ThemeName.website}
+                themeMode={ThemeMode.light}
+              >
+                {children}
+              </ThemeProvider>
+            </AppRouterCacheProvider>
+          </ApolloWrapper>
+        </LocaleProvider>
       </body>
     </html>
   )
