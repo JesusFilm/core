@@ -2,7 +2,7 @@ import algoliasearch from 'algoliasearch'
 import { RankingInfo } from 'instantsearch.js'
 import { useEffect, useState } from 'react'
 
-import { VideoListItemProps } from '../../../../Slider/Settings/Drawer/VideoLibrary/VideoList/VideoListItem/VideoListItem'
+import { VideoListItemProps } from '../../../VideoList/VideoListItem/VideoListItem'
 import { transformAlgoliaVideos } from '../transformAlgoliaVideos/transformAlgoliaVideos'
 
 const searchClient = algoliasearch(
