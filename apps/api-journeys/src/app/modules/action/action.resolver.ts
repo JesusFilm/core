@@ -3,7 +3,6 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import get from 'lodash/get'
-import includes from 'lodash/includes'
 
 import { Action, Block } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
@@ -13,7 +12,7 @@ import { AppAbility, Action as CaslAction } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
-import { checkBlockSupport } from './checkBlockSupport'
+import { canBlockHaveAction } from './canBlockHaveAction'
 
 @Resolver('Action')
 export class ActionResolver {
@@ -55,7 +54,7 @@ export class ActionResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    if (block == null || !checkBlockSupport(block)) {
+    if (block == null || !canBlockHaveAction(block)) {
       throw new GraphQLError('This block does not support actions', {
         extensions: { code: 'BAD_USER_INPUT' }
       })

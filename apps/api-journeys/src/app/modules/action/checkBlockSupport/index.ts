@@ -1,1 +1,0 @@
-export { checkBlockSupport } from './checkBlockSupport'

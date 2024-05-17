@@ -2,7 +2,7 @@ import includes from 'lodash/includes'
 
 import { Block } from '.prisma/api-journeys-client'
 
-export function checkBlockSupport(block: Block): boolean {
+export function canBlockHaveAction(block: Block): boolean {
   return includes(
     [
       'SignUpBlock',

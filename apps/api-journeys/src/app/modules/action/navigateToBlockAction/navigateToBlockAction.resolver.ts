@@ -12,7 +12,7 @@ import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
-import { checkBlockSupport } from '../checkBlockSupport'
+import { canBlockHaveAction } from '../canBlockHaveAction'
 
 @Resolver('NavigateToBlockAction')
 export class NavigateToBlockActionResolver {
@@ -47,7 +47,7 @@ export class NavigateToBlockActionResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    if (block == null || !checkBlockSupport(block)) {
+    if (block == null || !canBlockHaveAction(block)) {
       throw new GraphQLError(
         'This block does not support navigate to block actions',
         { extensions: { code: 'BAD_USER_INPUT' } }
