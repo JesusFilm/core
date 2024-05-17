@@ -93,7 +93,7 @@ interface PropertiesProps {
   block?: TreeBlock
   step?: TreeBlock<StepBlock>
 }
-
+// dummy comment
 export function Properties({ block, step }: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { state, dispatch } = useEditor()
