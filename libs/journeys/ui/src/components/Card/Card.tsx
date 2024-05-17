@@ -1,7 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
-import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
@@ -73,8 +72,6 @@ export function Card({
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
-  const onFirstStep = activeBlock === treeBlocks[0]
-  const onLastStep = activeBlock === last(treeBlocks)
 
   const cardColor =
     backgroundColor != null
@@ -146,7 +143,7 @@ export function Card({
             blockId: activeBlock.id,
             label: stepName,
             value: targetStepName,
-            nextStepId: targetBlock?.id
+            nextStepId: targetBlock.id
           }
         }
       })
@@ -157,7 +154,7 @@ export function Card({
           eventId: id,
           blockId: activeBlock.id,
           stepName,
-          targetStepId: targetBlock?.id,
+          targetStepId: targetBlock.id,
           targetStepName
         }
       })
@@ -184,28 +181,30 @@ export function Card({
       targetBlock != null &&
       getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
 
-    void stepPreviousEventCreate({
-      variables: {
-        input: {
-          id,
-          blockId: activeBlock.id,
-          label: stepName,
-          value: targetStepName,
-          previousStepId: targetBlock?.id
+    if (targetBlock != null) {
+      void stepPreviousEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId: activeBlock.id,
+            label: stepName,
+            value: targetStepName,
+            previousStepId: targetBlock.id
+          }
         }
-      }
-    })
+      })
 
-    TagManager.dataLayer({
-      dataLayer: {
-        event: 'step_prev',
-        eventId: id,
-        blockId: activeBlock.id,
-        stepName,
-        targetStepId: targetBlock?.id,
-        targetStepName
-      }
-    })
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'step_prev',
+          eventId: id,
+          blockId: activeBlock.id,
+          stepName,
+          targetStepId: targetBlock.id,
+          targetStepName
+        }
+      })
+    }
   }
   const handleNavigation = (e: MouseEvent): void => {
     if (variant === 'admin') return
@@ -213,12 +212,12 @@ export function Card({
     if (rtl) {
       const divide = screenWidth * 0.66
       if (e.clientX <= divide) {
-        if (!activeBlock?.locked && !onLastStep) {
+        if (!activeBlock?.locked && activeBlock?.nextBlockId != null) {
           handleNextNavigationEventCreate()
           nextActiveBlock()
         }
       } else {
-        if (!onFirstStep) {
+        if (blockHistory.length > 1) {
           handlePreviousNavigationEventCreate()
           previousActiveBlock()
         }
@@ -226,12 +225,12 @@ export function Card({
     } else {
       const divide = screenWidth * 0.33
       if (e.clientX >= divide) {
-        if (!activeBlock?.locked && !onLastStep) {
+        if (!activeBlock?.locked && activeBlock?.nextBlockId != null) {
           handleNextNavigationEventCreate()
           nextActiveBlock()
         }
       } else {
-        if (!onFirstStep) {
+        if (blockHistory.length > 1) {
           handlePreviousNavigationEventCreate()
           previousActiveBlock()
         }
