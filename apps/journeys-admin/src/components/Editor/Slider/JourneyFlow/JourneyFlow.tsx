@@ -260,7 +260,7 @@ export function JourneyFlow(): ReactElement {
       }
       edgeUpdateSuccessful.current = true
     },
-    [deleteEdge]
+    [deleteEdge, setEdges]
   )
 
   const nodeTypes = useMemo(
