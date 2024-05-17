@@ -246,7 +246,7 @@ export function JourneyFlow(): ReactElement {
       edgeUpdateSuccessful.current = true
       void updateEdge({ source, sourceHandle, target })
     },
-    [updateEdge]
+    [updateEdge, setEdges]
   )
 
   const onEdgeUpdateEnd = useCallback<
