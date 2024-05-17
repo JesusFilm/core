@@ -24,9 +24,9 @@ import {
   ReactFlow,
   ReactFlowInstance,
   ReactFlowProps,
+  updateEdge as reactFlowUpdateEdge,
   useEdgesState,
-  useNodesState,
-  updateEdge as reactFlowUpdateEdge
+  useNodesState
 } from 'reactflow'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -252,8 +252,10 @@ export function JourneyFlow(): ReactElement {
   const onEdgeUpdateEnd = useCallback<
     NonNullable<ReactFlowProps['onEdgeUpdateEnd']>
   >(
-    (_, { source, sourceHandle }) => {
+    (_, edge) => {
+      const { source, sourceHandle } = edge
       if (edgeUpdateSuccessful.current === false) {
+        setEdges((eds) => eds.filter((e) => e.id !== edge.id))
         void deleteEdge({ source, sourceHandle })
       }
       edgeUpdateSuccessful.current = true
