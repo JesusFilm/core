@@ -143,7 +143,7 @@ export function Card({
             blockId: activeBlock.id,
             label: stepName,
             value: targetStepName,
-            nextStepId: targetBlock?.id
+            nextStepId: targetBlock.id
           }
         }
       })
@@ -154,7 +154,7 @@ export function Card({
           eventId: id,
           blockId: activeBlock.id,
           stepName,
-          targetStepId: targetBlock?.id,
+          targetStepId: targetBlock.id,
           targetStepName
         }
       })
@@ -189,7 +189,7 @@ export function Card({
             blockId: activeBlock.id,
             label: stepName,
             value: targetStepName,
-            previousStepId: targetBlock?.id
+            previousStepId: targetBlock.id
           }
         }
       })
@@ -200,7 +200,7 @@ export function Card({
           eventId: id,
           blockId: activeBlock.id,
           stepName,
-          targetStepId: targetBlock?.id,
+          targetStepId: targetBlock.id,
           targetStepName
         }
       })
@@ -212,12 +212,12 @@ export function Card({
     if (rtl) {
       const divide = screenWidth * 0.66
       if (e.clientX <= divide) {
-        if (!activeBlock?.locked && activeBlock?.nextBlockId !== null) {
+        if (!activeBlock?.locked && activeBlock?.nextBlockId != null) {
           handleNextNavigationEventCreate()
           nextActiveBlock()
         }
       } else {
-        if (blockHistory.length !== 1) {
+        if (blockHistory.length > 1) {
           handlePreviousNavigationEventCreate()
           previousActiveBlock()
         }
@@ -225,12 +225,12 @@ export function Card({
     } else {
       const divide = screenWidth * 0.33
       if (e.clientX >= divide) {
-        if (!activeBlock?.locked && activeBlock?.nextBlockId !== null) {
+        if (!activeBlock?.locked && activeBlock?.nextBlockId != null) {
           handleNextNavigationEventCreate()
           nextActiveBlock()
         }
       } else {
-        if (blockHistory.length !== 1) {
+        if (blockHistory.length > 1) {
           handlePreviousNavigationEventCreate()
           previousActiveBlock()
         }

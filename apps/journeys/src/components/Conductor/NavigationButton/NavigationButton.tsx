@@ -65,8 +65,8 @@ export function NavigationButton({
 
   const canNavigate =
     variant === 'previous'
-      ? blockHistory.length !== 1
-      : activeBlock?.nextBlockId !== null
+      ? blockHistory.length > 1
+      : activeBlock?.nextBlockId != null
   const disabled = variant === 'next' && activeBlock?.locked
 
   // Handle fade navigation after 3 seconds inactive
@@ -110,7 +110,7 @@ export function NavigationButton({
             blockId: activeBlock.id,
             label: stepName,
             value: targetStepName,
-            nextStepId: targetBlock?.id
+            nextStepId: targetBlock.id
           }
         }
       })
@@ -121,7 +121,7 @@ export function NavigationButton({
           eventId: id,
           blockId: activeBlock.id,
           stepName,
-          targetStepId: targetBlock?.id,
+          targetStepId: targetBlock.id,
           targetStepName
         }
       })
@@ -156,7 +156,7 @@ export function NavigationButton({
             blockId: activeBlock.id,
             label: stepName,
             value: targetStepName,
-            previousStepId: targetBlock?.id
+            previousStepId: targetBlock.id
           }
         }
       })
@@ -167,7 +167,7 @@ export function NavigationButton({
           eventId: id,
           blockId: activeBlock.id,
           stepName,
-          targetStepId: targetBlock?.id,
+          targetStepId: targetBlock.id,
           targetStepName
         }
       })

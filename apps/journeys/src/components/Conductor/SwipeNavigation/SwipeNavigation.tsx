@@ -76,7 +76,7 @@ export function SwipeNavigation({
                 blockId: activeBlock.id,
                 label: stepName,
                 value: targetStepName,
-                nextStepId: targetBlock?.id
+                nextStepId: targetBlock.id
               }
             }
           })
@@ -87,7 +87,7 @@ export function SwipeNavigation({
               eventId: id,
               blockId: activeBlock.id,
               stepName,
-              targetStepId: targetBlock?.id,
+              targetStepId: targetBlock.id,
               targetStepName
             }
           })
@@ -122,7 +122,7 @@ export function SwipeNavigation({
                 blockId: activeBlock.id,
                 label: stepName,
                 value: targetStepName,
-                previousStepId: targetBlock?.id
+                previousStepId: targetBlock.id
               }
             }
           })
@@ -133,7 +133,7 @@ export function SwipeNavigation({
               eventId: id,
               blockId: activeBlock.id,
               stepName,
-              targetStepId: targetBlock?.id,
+              targetStepId: targetBlock.id,
               targetStepName
             }
           })
@@ -142,12 +142,12 @@ export function SwipeNavigation({
 
       if (
         direction === 'next' &&
-        activeBlock?.nextBlockId !== null &&
+        activeBlock?.nextBlockId != null &&
         !activeBlock.locked
       ) {
         handleNextNavigationEventCreate()
         nextActiveBlock()
-      } else if (direction === 'previous' && blockHistory.length !== 1) {
+      } else if (direction === 'previous' && blockHistory.length > 1) {
         handlePreviousNavigationEventCreate()
         previousActiveBlock()
       }
