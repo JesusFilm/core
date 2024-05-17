@@ -37,13 +37,73 @@ export async function nua8(): Promise<void> {
     update: journeyData
   })
 
+  const step7 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 6
+    }
+  })
+
+  const step6 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 5,
+      nextBlockId: step7.id
+    }
+  })
+
+  const step5 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 4,
+      nextBlockId: step6.id
+    }
+  })
+
+  const step4 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 3,
+      nextBlockId: step5.id
+    }
+  })
+
+  const step3 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 2,
+      nextBlockId: step4.id
+    }
+  })
+
+  const step2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 1,
+      nextBlockId: step3.id
+    }
+  })
+
   // first step
   const step1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       typename: 'StepBlock',
       locked: false,
-      parentOrder: 0
+      parentOrder: 0,
+      nextBlockId: step2.id
     }
   })
 
@@ -132,15 +192,6 @@ export async function nua8(): Promise<void> {
   })
 
   // second step
-  const step2 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 1
-    }
-  })
-
   const button1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -196,15 +247,6 @@ export async function nua8(): Promise<void> {
   })
 
   // third step
-  const step3 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 2
-    }
-  })
-
   const video = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -306,15 +348,6 @@ export async function nua8(): Promise<void> {
   })
 
   // fourth step
-  const step4 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 3
-    }
-  })
-
   await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -359,15 +392,6 @@ export async function nua8(): Promise<void> {
   })
 
   // fifth step
-  const step5 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 4
-    }
-  })
-
   const video1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -471,15 +495,6 @@ export async function nua8(): Promise<void> {
   })
 
   // sixth step
-  const step6 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 5
-    }
-  })
-
   const button2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -535,15 +550,6 @@ export async function nua8(): Promise<void> {
   })
 
   // seventh step
-  const step7 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 6
-    }
-  })
-
   const video2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
