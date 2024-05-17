@@ -14,8 +14,6 @@ export function handleAction(
     'your-stage.nextstep.is'
   ]
 
-  console.log('action', action)
-
   if (action == null) return
   switch (action.__typename) {
     case 'NavigateToBlockAction':
@@ -27,6 +25,8 @@ export function handleAction(
         !journeysUrls.some((substring) => action.url.includes(substring))
       ) {
         window.open(action.url, '_blank')
+      } else if (action.url === '') {
+        break
       } else {
         void router.push(action.url)
       }

@@ -87,5 +87,17 @@ describe('action', () => {
       )
       expect(window.open).not.toHaveBeenCalled()
     })
+
+    it('should handle empty link actions', () => {
+      window.open = jest.fn()
+      handleAction(router, {
+        __typename: 'LinkAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        url: ''
+      })
+      expect(router.push).not.toHaveBeenCalled()
+      expect(window.open).not.toHaveBeenCalled()
+    })
   })
 })
