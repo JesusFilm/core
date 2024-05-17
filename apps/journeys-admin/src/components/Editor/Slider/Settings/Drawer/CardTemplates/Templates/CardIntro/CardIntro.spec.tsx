@@ -244,11 +244,7 @@ describe('CardIntro', () => {
               variantLanguages: [],
               __typename: 'Video'
             },
-            action: {
-              parentBlockId: 'videoId',
-              gtmEventName: 'NavigateAction',
-              __typename: 'NavigateAction'
-            },
+            action: null,
             __typename: 'VideoBlock'
           }
         }

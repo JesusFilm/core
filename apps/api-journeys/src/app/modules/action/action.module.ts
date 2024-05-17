@@ -9,7 +9,6 @@ import { PrismaService } from '../../lib/prisma.service'
 import { ActionResolver } from './action.resolver'
 import { EmailActionResolver } from './emailAction/emailAction.resolver'
 import { LinkActionResolver } from './linkAction/linkAction.resolver'
-import { NavigateActionResolver } from './navigateAction/navigateAction.resolver'
 import { NavigateToBlockActionResolver } from './navigateToBlockAction/navigateToBlockAction.resolver'
 
 @Module({
@@ -20,7 +19,6 @@ import { NavigateToBlockActionResolver } from './navigateToBlockAction/navigateT
     PrismaService,
     LinkActionResolver,
     EmailActionResolver,
-    NavigateActionResolver,
     NavigateToBlockActionResolver
   ]
 })

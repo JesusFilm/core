@@ -9,7 +9,6 @@ import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { TimelineItem } from '../../utils'
 import {
   buttonClickLinkEvent,
-  buttonClickNavigateEvent,
   buttonClickNavigateToBlockEvent,
   chatOpenedEvent,
   journeyViewEvent,
@@ -63,7 +62,6 @@ const Template: StoryObj<typeof TimelineEvent> = {
         title="TextResponseSubmissionEvent"
         event={textResponseSubmissionEvent}
       />
-      <StoryItem title="ButtonClickEvent" event={buttonClickNavigateEvent} />
       <StoryItem event={buttonClickNavigateToBlockEvent} />
       <StoryItem event={buttonClickLinkEvent} />
       <StoryItem

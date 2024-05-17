@@ -3,15 +3,6 @@ interface Action {
   gtmEventName: String
 }
 
-"""
-NavigateAction is an Action that navigates to the nextBlockId field set on the
-closest ancestor StepBlock.
-"""
-type NavigateAction implements Action {
-  parentBlockId: ID!
-  gtmEventName: String
-}
-
 type NavigateToBlockAction implements Action {
   parentBlockId: ID!
   gtmEventName: String
@@ -29,10 +20,6 @@ type EmailAction implements Action {
   parentBlockId: ID!
   gtmEventName: String
   email: String!
-}
-
-input NavigateActionInput {
-  gtmEventName: String
 }
 
 input NavigateToBlockActionInput {
@@ -53,11 +40,6 @@ input EmailActionInput {
 
 extend type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
-  blockUpdateNavigateAction(
-    id: ID!
-    journeyId: ID!
-    input: NavigateActionInput!
-  ): NavigateAction!
   blockUpdateNavigateToBlockAction(
     id: ID!
     journeyId: ID!

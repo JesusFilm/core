@@ -64,7 +64,7 @@ const buttonClickEvent: ButtonClickEvent = {
   label: 'Button label - journey 1',
   value: 'Button  value - journey 1',
   createdAt: '2022-11-02T03:33:16.368Z',
-  action: ButtonAction.NavigateAction,
+  action: ButtonAction.NavigateToBlockAction,
   actionValue: null
 }
 const radioQuestionResponseEvent: Event = {
