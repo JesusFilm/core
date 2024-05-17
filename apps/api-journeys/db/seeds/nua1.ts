@@ -634,10 +634,8 @@ export async function nua1(): Promise<void> {
       label: 'A great influencer',
       action: {
         create: {
-          gtmEventName: 'click',
-          journey: {
-            connect: { id: '2' }
-          }
+          gtmEventName: 'LinkAction',
+          url: '/what-about-the-resurrection'
         }
       },
       parentOrder: 0
@@ -653,10 +651,8 @@ export async function nua1(): Promise<void> {
       label: 'The Son of God',
       action: {
         create: {
-          gtmEventName: 'click',
-          journey: {
-            connect: { id: '2' }
-          }
+          gtmEventName: 'LinkAction',
+          url: '/what-about-the-resurrection'
         }
       },
       parentOrder: 1
@@ -674,8 +670,8 @@ export async function nua1(): Promise<void> {
       label: 'A popular prophet',
       action: {
         create: {
-          gtmEventName: 'click',
-          journey: { connect: { id: '2' } }
+          gtmEventName: 'LinkAction',
+          url: '/what-about-the-resurrection'
         }
       },
       parentOrder: 2
@@ -691,10 +687,8 @@ export async function nua1(): Promise<void> {
       label: 'A fake historical figure',
       action: {
         create: {
-          gtmEventName: 'click',
-          journey: {
-            connect: { id: '2' }
-          }
+          gtmEventName: 'LinkAction',
+          url: '/what-about-the-resurrection'
         }
       },
       parentOrder: 3

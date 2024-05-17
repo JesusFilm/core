@@ -674,8 +674,8 @@ export async function nua2(): Promise<void> {
       label: 'One of many ways to God',
       action: {
         create: {
-          gtmEventName: 'click',
-          journeyId: '3'
+          gtmEventName: 'LinkAction',
+          url: '/whats-jesus-got-to-do-with-me'
         }
       },
       parentOrder: 0
@@ -689,8 +689,8 @@ export async function nua2(): Promise<void> {
       label: 'One great lie...',
       action: {
         create: {
-          gtmEventName: 'click',
-          journeyId: '3'
+          gtmEventName: 'LinkAction',
+          url: '/whats-jesus-got-to-do-with-me'
         }
       },
       parentOrder: 1
@@ -704,8 +704,8 @@ export async function nua2(): Promise<void> {
       label: 'One true way to God',
       action: {
         create: {
-          gtmEventName: 'click',
-          journeyId: '3'
+          gtmEventName: 'LinkAction',
+          url: '/whats-jesus-got-to-do-with-me'
         }
       },
       parentOrder: 2

@@ -14,6 +14,8 @@ export function handleAction(
     'your-stage.nextstep.is'
   ]
 
+  console.log('action', action)
+
   if (action == null) return
   switch (action.__typename) {
     case 'NavigateToBlockAction':

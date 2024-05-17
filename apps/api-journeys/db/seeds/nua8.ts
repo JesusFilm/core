@@ -658,8 +658,8 @@ export async function nua8(): Promise<void> {
       label: 'He loves me',
       action: {
         create: {
-          gtmEventName: 'click',
-          journeyId: '4'
+          gtmEventName: 'LinkAction',
+          url: '/decision'
         }
       },
       parentOrder: 0
@@ -673,8 +673,8 @@ export async function nua8(): Promise<void> {
       label: 'He came to free me from sin',
       action: {
         create: {
-          gtmEventName: 'click',
-          journeyId: '4'
+          gtmEventName: 'LinkAction',
+          url: '/decision'
         }
       },
       parentOrder: 1
@@ -688,8 +688,8 @@ export async function nua8(): Promise<void> {
       label: "He doesn't care about me",
       action: {
         create: {
-          gtmEventName: 'click',
-          journeyId: '4'
+          gtmEventName: 'LinkAction',
+          url: '/decision'
         }
       },
       parentOrder: 2
@@ -703,8 +703,8 @@ export async function nua8(): Promise<void> {
       label: "I'm not sure",
       action: {
         create: {
-          gtmEventName: 'click',
-          journeyId: '4'
+          gtmEventName: 'LinkAction',
+          url: '/decision'
         }
       },
       parentOrder: 3
