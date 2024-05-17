@@ -201,6 +201,16 @@ export async function nua1(): Promise<void> {
     }
   })
 
+  // third step
+  const step3 = await prisma.block.create({
+    data: {
+      journey: { connect: { id: journey.id } },
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 2
+    }
+  })
+
   const video = await prisma.block.create({
     data: {
       journey: { connect: { id: journey.id } },
@@ -213,17 +223,13 @@ export async function nua1(): Promise<void> {
       description:
         'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
       fullsize: true,
-      parentOrder: 0
-    }
-  })
-
-  // third step
-  const step3 = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 2
+      parentOrder: 0,
+      action: {
+        create: {
+          gtmEventName: 'NavigateToBlockAction',
+          blockId: step3.id
+        }
+      }
     }
   })
 
@@ -371,6 +377,16 @@ export async function nua1(): Promise<void> {
     }
   })
 
+  // fifth step
+  const step5 = await prisma.block.create({
+    data: {
+      journey: { connect: { id: journey.id } },
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 4
+    }
+  })
+
   const video1 = await prisma.block.create({
     data: {
       journey: { connect: { id: journey.id } },
@@ -382,17 +398,13 @@ export async function nua1(): Promise<void> {
       title: 'Fact or fiction',
       startAt: 134,
       fullsize: true,
-      parentOrder: 0
-    }
-  })
-
-  // fifth step
-  const step5 = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 4
+      parentOrder: 0,
+      action: {
+        create: {
+          gtmEventName: 'NavigateToBlockAction',
+          blockId: step5.id
+        }
+      }
     }
   })
 

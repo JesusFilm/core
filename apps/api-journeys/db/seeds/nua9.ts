@@ -206,6 +206,16 @@ export async function nua9(): Promise<void> {
     }
   })
 
+  // question step!
+  const questionStep = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 2
+    }
+  })
+
   const video = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -216,17 +226,13 @@ export async function nua9(): Promise<void> {
       autoplay: true,
       title: "What' Jesus Got to Do With Me?",
       parentOrder: 0,
-      fullsize: true
-    }
-  })
-
-  // question step!
-  const questionStep = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 2
+      fullsize: true,
+      action: {
+        create: {
+          gtmEventName: 'NavigateToBlockAction',
+          blockId: questionStep.id
+        }
+      }
     }
   })
 

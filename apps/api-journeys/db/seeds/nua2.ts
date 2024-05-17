@@ -195,6 +195,16 @@ export async function nua2(): Promise<void> {
     }
   })
 
+  // third step
+  const step3 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 2
+    }
+  })
+
   const video = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -205,17 +215,13 @@ export async function nua2(): Promise<void> {
       autoplay: true,
       title: 'What About The Ressurection?',
       fullsize: true,
-      parentOrder: 0
-    }
-  })
-
-  // third step
-  const step3 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 2
+      parentOrder: 0,
+      action: {
+        create: {
+          gtmEventName: 'NavigateToBlockAction',
+          blockId: step3.id
+        }
+      }
     }
   })
 
@@ -367,6 +373,16 @@ export async function nua2(): Promise<void> {
     }
   })
 
+  // fifth step
+  const step5 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 4
+    }
+  })
+
   const video1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -378,17 +394,13 @@ export async function nua2(): Promise<void> {
       title: 'What About The Ressurection?',
       startAt: 109,
       fullsize: true,
-      parentOrder: 0
-    }
-  })
-
-  // fifth step
-  const step5 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 4
+      parentOrder: 0,
+      action: {
+        create: {
+          gtmEventName: 'NavigateToBlockAction',
+          blockId: step5.id
+        }
+      }
     }
   })
 
@@ -537,6 +549,16 @@ export async function nua2(): Promise<void> {
     }
   })
 
+  // seventh step
+  const step7 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 6
+    }
+  })
+
   const video2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -548,17 +570,13 @@ export async function nua2(): Promise<void> {
       title: 'What About The Ressurection?',
       startAt: 272,
       fullsize: true,
-      parentOrder: 0
-    }
-  })
-
-  // seventh step
-  const step7 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 6
+      parentOrder: 0,
+      action: {
+        create: {
+          gtmEventName: 'NavigateToBlockAction',
+          blockId: step7.id
+        }
+      }
     }
   })
 

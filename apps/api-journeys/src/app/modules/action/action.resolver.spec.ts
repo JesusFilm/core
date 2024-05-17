@@ -54,7 +54,6 @@ describe('ActionResolver', () => {
     url: 'https://google.com',
     email: null
   }
-
   const navigateToBlockAction: Action = {
     parentBlockId: 'parentBlockId',
     gtmEventName: 'gtmEventName',
