@@ -19,6 +19,10 @@ describe('action', () => {
       push: jest.fn()
     } as unknown as NextRouter
 
+    beforeEach(() => {
+      jest.resetAllMocks()
+    })
+
     it('should handle empty action', () => {
       expect(() => handleAction(router)).not.toThrow()
     })
@@ -88,7 +92,7 @@ describe('action', () => {
       expect(window.open).not.toHaveBeenCalled()
     })
 
-    it('should handle empty link actions', () => {
+    it('should not redirect when url is an empty string', () => {
       window.open = jest.fn()
       handleAction(router, {
         __typename: 'LinkAction',
@@ -96,8 +100,8 @@ describe('action', () => {
         gtmEventName: null,
         url: ''
       })
-      expect(router.push).not.toHaveBeenCalled()
       expect(window.open).not.toHaveBeenCalled()
+      expect(router.push).not.toHaveBeenCalled()
     })
   })
 })
