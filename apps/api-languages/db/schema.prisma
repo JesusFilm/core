@@ -18,6 +18,12 @@ datasource db {
   url      = env("PG_DATABASE_URL_LANGUAGES")
 }
 
+generator pothos {
+  provider     = "prisma-pothos-types"
+  clientOutput = env("PRISMA_LOCATION_LANGUAGES")
+  output       = "../src/__generated__/pothos-types.ts"
+}
+
 model Language {
   id           String         @id
   createdAt    DateTime       @default(now())

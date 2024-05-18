@@ -1,30 +1,13 @@
-directive @cacheControl(maxAge: Int, scope: CacheControlScope, inheritMaxAge: Boolean) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
-
-directive @key(fields: _FieldSet!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
-
-directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
-
-directive @provides(fields: _FieldSet!) on FIELD_DEFINITION
-
-directive @external(reason: String) on OBJECT | FIELD_DEFINITION
-
-directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
-
-directive @extends on OBJECT | INTERFACE
-
-enum CacheControlScope {
-  PUBLIC
-  PRIVATE
-}
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@shareable"])
 
 type Language
   @key(fields: "id")
-  @cacheControl(maxAge: 86400)
 {
   id: ID!
   bcp47: String
   iso3: String
-  name(languageId: ID, primary: Boolean): [Translation!]! @cacheControl(maxAge: 86400)
+  name(languageId: ID, primary: Boolean): [Translation!]!
 }
 
 enum LanguageIdType {
@@ -37,24 +20,14 @@ input LanguagesFilter {
 }
 
 type Query {
-  languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @cacheControl(maxAge: 86400)
-  language(id: ID!, idType: LanguageIdType): Language @cacheControl(maxAge: 86400)
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
+  language(id: ID!, idType: LanguageIdType = databaseId): Language
+  languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]!
 }
 
-type Translation {
+type Translation
+  @shareable
+{
+  primary: Boolean!
   value: String!
   language: Language!
-  primary: Boolean!
 }
-
-scalar _FieldSet
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}
-
-union _Entity = Language

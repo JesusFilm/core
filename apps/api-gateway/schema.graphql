@@ -184,11 +184,10 @@ enum ButtonVariant
 }
 
 enum CacheControlScope
-  @join__type(graph: LANGUAGES)
   @join__type(graph: VIDEOS)
 {
-  PUBLIC @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
-  PRIVATE @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+  PUBLIC @join__enumValue(graph: VIDEOS)
+  PRIVATE @join__enumValue(graph: VIDEOS)
 }
 
 type CardBlock implements Block
@@ -1131,7 +1130,7 @@ enum LanguageIdType
 input LanguagesFilter
   @join__type(graph: LANGUAGES)
 {
-  ids: [ID!]
+  ids: [String!]
 }
 
 type LanguageWithSlug
@@ -1573,8 +1572,7 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
-  languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
-  language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
+  language(id: ID!, idType: LanguageIdType = databaseId): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
   getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)
   getMyCloudflareVideo(id: ID!): CloudflareVideo @join__field(graph: MEDIA)

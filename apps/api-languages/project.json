@@ -9,16 +9,8 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api-languages",
-        "main": "apps/api-languages/src/main.ts",
+        "main": "apps/api-languages/src/index.ts",
         "tsConfig": "apps/api-languages/tsconfig.app.json",
-        "assets": [
-          "apps/api-languages/src/assets",
-          {
-            "glob": "**/*.graphql",
-            "input": "apps/api-languages/src/app/",
-            "output": "./assets"
-          }
-        ],
         "generatePackageJson": true,
         "compiler": "tsc",
         "target": "node",
@@ -45,12 +37,6 @@
         "inspect": false
       }
     },
-    "watcher": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-languages --transpileOnly"
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
@@ -60,12 +46,6 @@
       "outputs": ["{workspaceRoot}/coverage/apps/api-languages"],
       "options": {
         "jestConfig": "apps/api-languages/jest.config.ts"
-      }
-    },
-    "generate-graphql": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "rover subgraph introspect http://localhost:4003/graphql > apps/api-languages/schema.graphql"
       }
     },
     "subgraph-check": {
