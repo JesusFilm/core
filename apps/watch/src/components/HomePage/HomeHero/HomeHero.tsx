@@ -3,7 +3,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { HeroOverlay } from '../../HeroOverlay'
@@ -11,7 +11,7 @@ import { HeroOverlay } from '../../HeroOverlay'
 import JesusHeader from './assets/jesus.jpg'
 
 export function HomeHero(): ReactElement {
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
 
   return (
     <Box
@@ -63,7 +63,7 @@ export function HomeHero(): ReactElement {
             >
               {t('Streaming')}
             </Box>{' '}
-            {t('Library.')}
+            {t('Library&#46;')}
           </Typography>
           <Typography
             variant="h5"

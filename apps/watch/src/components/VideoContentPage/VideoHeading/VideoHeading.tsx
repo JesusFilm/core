@@ -7,7 +7,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ReactElement, useMemo } from 'react'
 
 import { VideoLabel } from '../../../../__generated__/globalTypes'
@@ -32,7 +32,7 @@ export function VideoHeading({
   videos = []
 }: VideoHeadingProps): ReactElement {
   const { title, id, container } = useVideo()
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
   const activeVideoIndex = useMemo(() => {
     return container != null
       ? videos.findIndex((child) => child.id === id) + 1

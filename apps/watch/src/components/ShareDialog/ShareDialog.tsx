@@ -9,8 +9,8 @@ import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
+import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ComponentProps, ReactElement, SyntheticEvent, useState } from 'react'
 
@@ -31,9 +31,8 @@ export function ShareDialog({
   const { description, snippet, image, title, variant } = useVideo()
   const [value, setValue] = useState(0)
   const theme = useTheme()
-  const router = useRouter()
 
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
 
   const handleChange = (e: SyntheticEvent, newValue: number): void => {
     setValue(newValue)
@@ -46,12 +45,13 @@ export function ShareDialog({
       ? snippet[0].value
       : ''
 
+  const path = usePathname()
   const shareLink =
-    router?.query != null
+    path != null
       ? `${
           process.env.NEXT_PUBLIC_WATCH_URL ??
           'https://watch-jesusfilm.vercel.app'
-        }/${Object.values(router?.query).join('/')}`.trim()
+        }/${path}`.trim()
       : ''
 
   const handleShareLinkClick = async (): Promise<void> => {
@@ -91,7 +91,7 @@ export function ShareDialog({
         variant="contained"
         size="small"
         startIcon={<ContentCopyIcon />}
-        onClick={handleShareLinkClick}
+        onClick={handleShareLinkClick as () => void}
         sx={{ alignSelf: 'flex-end' }}
       >
         {t('Copy Link')}
@@ -195,7 +195,7 @@ export function ShareDialog({
                     variant="contained"
                     size="small"
                     startIcon={<ContentCopyIcon />}
-                    onClick={handleEmbedCodeClick}
+                    onClick={handleEmbedCodeClick as () => void} // Add type annotation
                     sx={{ alignSelf: 'flex-end' }}
                   >
                     {t('Copy Code')}

@@ -2,7 +2,7 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { FooterLink } from './FooterLink'
@@ -11,7 +11,7 @@ import { FooterLogos } from './FooterLogos'
 import { FooterSocials } from './FooterSocials'
 
 export function Footer(): ReactElement {
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
   return (
     <>
       <Divider sx={{ height: 2 }} />
@@ -33,7 +33,7 @@ export function Footer(): ReactElement {
           <Stack direction="row" spacing={4} justifyContent="space-between">
             <Stack direction="row" spacing={10} justifyContent="space-between">
               <Typography variant="body2">
-                {t('Copyright © 1995-{{date}}', {
+                {t('Copyright © 1995-{date}', {
                   date: new Date().getFullYear()
                 })}
               </Typography>

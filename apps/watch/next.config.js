@@ -1,10 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true'
-})
-const { composePlugins, withNx } = require('@nx/next')
+// @ts-check
 
-const { i18n } = require('./next-i18next.config')
+const { composePlugins, withNx } = require('@nx/next')
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
@@ -12,10 +8,18 @@ const { i18n } = require('./next-i18next.config')
 const nextConfig = {
   swcMinify: true,
   images: {
-    domains: ['localhost', 'd1wl257kev7hsz.cloudfront.net'],
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost'
+      },
+      {
+        protocol: 'https',
+        hostname: 'd1wl257kev7hsz.cloudfront.net'
+      }
+    ],
     minimumCacheTTL: 31536000
   },
-  i18n,
   modularizeImports: {
     lodash: {
       transform: 'lodash/{{member}}'
@@ -36,15 +40,9 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
-  transpilePackages: ['shared-ui'],
-  experimental: {
-    outputFileTracingExcludes: {
-      '*': [
-        'node_modules/@swc/core-linux-x64-gnu',
-        'node_modules/@swc/core-linux-x64-musl',
-        'node_modules/esbuild-linux-64/bin'
-      ]
-    }
+  compiler: {
+    // For other options, see https://nextjs.org/docs/architecture/nextjs-compiler#emotion
+    emotion: true
   },
   async redirects() {
     return [
@@ -68,4 +66,10 @@ const nextConfig = {
     ]
   }
 }
-module.exports = composePlugins(withBundleAnalyzer, withNx)(nextConfig)
+
+const plugins = [
+  // Add more Next.js plugins to this list if needed.
+  withNx
+]
+
+module.exports = composePlugins(...plugins)(nextConfig)

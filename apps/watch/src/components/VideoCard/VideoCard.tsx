@@ -8,7 +8,7 @@ import { SxProps, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
@@ -73,7 +73,7 @@ export function VideoCard({
   )
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
   return (
     <NextLink href={href} passHref legacyBehavior>
       <Link

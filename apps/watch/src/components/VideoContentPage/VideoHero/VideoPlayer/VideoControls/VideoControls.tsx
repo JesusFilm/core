@@ -18,7 +18,6 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import fscreen from 'fscreen'
 import debounce from 'lodash/debounce'
-import dynamic from 'next/dynamic'
 import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
 import Player from 'video.js/dist/types/player'
@@ -27,16 +26,8 @@ import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useVideo } from '../../../../../libs/videoContext'
-import { SubtitleDialogProps } from '../../../../SubtitleDialog/SubtitleDialog'
+import { SubtitleDialog } from '../../../../SubtitleDialog/SubtitleDialog'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
-
-const DynamicSubtitleDialog = dynamic<SubtitleDialogProps>(
-  async () =>
-    await import(
-      /* webpackChunkName: "SubtitleDialog" */
-      '../../../../SubtitleDialog'
-    ).then((mod) => mod.SubtitleDialog)
-)
 
 interface VideoControlProps {
   player: Player
@@ -514,7 +505,7 @@ export function VideoControls({
                   >
                     <SubtitlesOutlined />
                   </IconButton>
-                  <IconButton onClick={handleFullscreen}>
+                  <IconButton onClick={handleFullscreen as () => void}>
                     {fullscreen ? (
                       <FullscreenExitOutlined />
                     ) : (
@@ -524,7 +515,7 @@ export function VideoControls({
                 </Stack>
               </Stack>
               {loadSubtitleDialog && (
-                <DynamicSubtitleDialog
+                <SubtitleDialog
                   open={openSubtitleDialog}
                   player={player}
                   onClose={() => setOpenSubtitleDialog(false)}

@@ -1,3 +1,4 @@
+import { gql, useQuery } from '@apollo/client'
 import SubtitlesIcon from '@mui/icons-material/Subtitles'
 import TitleIcon from '@mui/icons-material/Title'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
@@ -5,14 +6,13 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
-import { VideoPageFilter } from '../utils/getQueryParameters'
 
 import { LanguagesFilter } from './LanguagesFilter'
 
@@ -72,20 +72,37 @@ const subtitleLanguageIds = [
   '184528'
 ]
 
+export const GET_LANGUAGES = gql`
+  query GetLanguages($languageId: ID) {
+    languages(limit: 5000) {
+      id
+      name(languageId: $languageId, primary: true) {
+        value
+        primary
+      }
+    }
+  }
+`
+export interface VideoPageFilter {
+  availableVariantLanguageIds?: string[]
+  subtitleLanguageIds?: string[]
+  title?: string
+}
+
 interface FilterListProps {
   filter: VideoPageFilter
   onChange: (filter: VideoPageFilter) => void
-  languagesData?: GetLanguages
-  languagesLoading: boolean
 }
 
 export function FilterList({
   filter,
-  onChange,
-  languagesData,
-  languagesLoading
+  onChange
 }: FilterListProps): ReactElement {
-  const { t } = useTranslation()
+  const t = useTranslations('apps-watch')
+  const { data: languagesData, loading: languagesLoading } =
+    useQuery<GetLanguages>(GET_LANGUAGES, {
+      variables: { languageId: '529' }
+    })
   const subtitleLanguages = languagesData?.languages.filter((language) =>
     subtitleLanguageIds.includes(language.id)
   )
@@ -143,9 +160,9 @@ export function FilterList({
               <Typography>{t('Languages')}</Typography>
             </Stack>
             <LanguagesFilter
-              onChange={async (language) =>
+              onChange={async (language) => {
                 await setFieldValue('language', language)
-              }
+              }}
               value={values.language}
               languages={languagesData?.languages}
               loading={languagesLoading}
@@ -157,9 +174,9 @@ export function FilterList({
               <Typography>{t('Subtitles')}</Typography>
             </Stack>
             <LanguagesFilter
-              onChange={async (subtitleLanguage) =>
+              onChange={async (subtitleLanguage) => {
                 await setFieldValue('subtitleLanguage', subtitleLanguage)
-              }
+              }}
               value={values.subtitleLanguage}
               languages={subtitleLanguages}
               loading={languagesLoading}

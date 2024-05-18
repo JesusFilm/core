@@ -291,14 +291,6 @@ export interface VideoStartEventCreateInput {
   value?: VideoBlockSource | null;
 }
 
-export interface VideosFilter {
-  availableVariantLanguageIds?: string[] | null;
-  title?: string | null;
-  labels?: VideoLabel[] | null;
-  ids?: string[] | null;
-  subtitleLanguageIds?: string[] | null;
-}
-
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

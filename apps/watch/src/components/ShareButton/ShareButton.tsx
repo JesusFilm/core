@@ -1,7 +1,7 @@
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 export interface ShareButtonProps {
@@ -13,7 +13,7 @@ export function ShareButton({
   variant,
   onClick
 }: ShareButtonProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
   return variant === 'button' ? (
     <Button
       variant="outlined"

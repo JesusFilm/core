@@ -32,7 +32,7 @@ describe('HeaderMenuPanel', () => {
   })
 
   it('should have Blog link', () => {
-    const { getByRole } = render(<HeaderMenuPanel onClose={jest.fn()} />)
+    const { getByRole } = render(<HeaderMenuPanel />)
     const el = getByRole('link', { name: 'Blog' })
     expect(el).toHaveAttribute('href', 'https://www.jesusfilm.org/blog/')
     expect(el).not.toHaveAttribute('target')

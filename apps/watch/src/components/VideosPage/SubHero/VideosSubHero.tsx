@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 function VideosSubHeroStats(): ReactElement {
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
   return (
     <Stack
       direction="row"
@@ -26,7 +26,7 @@ function VideosSubHeroStats(): ReactElement {
 }
 
 export function VideosSubHero(): ReactElement {
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
   return (
     <Stack
       py={12}

@@ -40,7 +40,8 @@ export const Default = {
   ...Template,
   args: {
     open: true,
-    mocks: [getSubtitleMock]
+    mocks: [getSubtitleMock],
+    languageId: 'en'
   }
 }
 

@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { useRouter } from 'next/navigation'
 
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
@@ -9,7 +10,7 @@ import { getLanguagesSlugMock } from './testData'
 
 import { AudioLanguageDialog } from '.'
 
-jest.mock('next/router', () => ({
+jest.mock('next/navigation', () => ({
   __esModule: true,
   useRouter: jest.fn()
 }))
@@ -47,7 +48,7 @@ describe('AudioLanguageDialog', () => {
 
   it('should redirect to the selected language', async () => {
     const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    mockUseRouter.mockReturnValue({ push } as unknown as AppRouterInstance)
     const { getByRole, queryAllByRole } = render(
       <MockedProvider mocks={[getLanguagesSlugMock]}>
         <VideoProvider value={{ content: videos[0] }}>
@@ -67,7 +68,7 @@ describe('AudioLanguageDialog', () => {
 
   it('should redirect to the selected language with container', async () => {
     const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    mockUseRouter.mockReturnValue({ push } as unknown as AppRouterInstance)
     const { getByRole, queryAllByRole } = render(
       <MockedProvider mocks={[getLanguagesSlugMock]}>
         <VideoProvider

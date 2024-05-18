@@ -6,7 +6,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'
@@ -29,7 +29,7 @@ export function VideoHeroOverlay({
   const { image, imageAlt, title, variant } = useVideo()
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
   return (
     <Box
       sx={{
@@ -145,7 +145,7 @@ export function VideoHeroOverlay({
                 <AccessTime sx={{ width: 17, height: 17 }} />
                 {variant !== null && (
                   <Typography variant="body1" sx={{ whiteSpace: 'nowrap' }}>
-                    {t('{{ duration }} min', {
+                    {t('{ duration } min', {
                       duration: secondsToMinutes(variant.duration)
                     })}
                   </Typography>

@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
@@ -13,7 +13,7 @@ import { useVideo } from '../../../libs/videoContext'
 export function VideoContent(): ReactElement {
   const { description, studyQuestions } = useVideo()
   const [tabValue, setTabValue] = useState(0)
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
   const handleTabChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number

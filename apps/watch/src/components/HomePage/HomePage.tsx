@@ -1,14 +1,17 @@
+'use client'
+
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { escapePeriods } from '../../libs/escapePeriods'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 
@@ -20,7 +23,7 @@ interface HomePageProps {
 }
 
 export function HomePage({ videos }: HomePageProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
 
   return (
     <PageWrapper hero={<HomeHero />}>

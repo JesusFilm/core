@@ -1,3 +1,5 @@
+'use client'
+
 import { ThemeOptions, createTheme } from '@mui/material/styles'
 
 export const baseSpacing: Required<Pick<ThemeOptions, 'spacing'>> = {

@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -11,7 +11,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import background from './assets/background.png'
 
 export function VideosHero(): ReactElement {
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
   return (
     <ThemeProvider
       themeMode={ThemeMode.dark}

@@ -19,6 +19,6 @@ const Template: StoryObj<typeof HomePage> = {
   render: ({ ...args }) => <HomePage {...args} />
 }
 
-export const Default = { ...Template, args: { videos } }
+export const Default = { ...Template, args: { videos, languageId: 'en' } }
 
 export default HomePageStory

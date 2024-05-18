@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import compact from 'lodash/compact'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { ComponentProps, ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -62,12 +62,12 @@ export function AudioLanguageDialog({
       )
     }
 
-    onClose?.()
+    void onClose?.()
   }
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
     return () => {
-      onClose?.()
+      void onClose?.()
       // wait for dialog animation to complete
       setTimeout(
         () =>

@@ -1,6 +1,5 @@
-import type { Config } from 'jest'
-
-const config: Config = {
+/* eslint-disable */
+export default {
   displayName: 'watch',
   moduleNameMapper: {
     'swiper/react': '<rootDir>/../__mocks__/swiper/react',
@@ -8,6 +7,7 @@ const config: Config = {
     'swiper/css': '<rootDir>/../__mocks__/swiper/css',
     'swiper/css/*': '<rootDir>/../__mocks__/swiper/css'
   },
+  preset: '../../jest.preset.js',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
     '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/next/babel'] }]
@@ -16,8 +16,5 @@ const config: Config = {
   coverageDirectory: '../../coverage/apps/watch',
   setupFilesAfterEnv: ['<rootDir>setupTests.tsx'],
   collectCoverage: true,
-  coverageReporters: ['cobertura'],
-  preset: '../../jest.preset.js'
+  coverageReporters: ['cobertura']
 }
-
-export default config

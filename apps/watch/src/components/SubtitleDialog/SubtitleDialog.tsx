@@ -95,7 +95,7 @@ export function SubtitleDialog({
       }
     }
 
-    onClose?.()
+    void onClose?.()
   }
 
   return (

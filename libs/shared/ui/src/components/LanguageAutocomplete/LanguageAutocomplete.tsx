@@ -24,7 +24,7 @@ export interface LanguageOption {
 }
 
 export interface LanguageAutocompleteProps {
-  onChange: (value?: LanguageOption) => void
+  onChange: (value?: LanguageOption) => Promise<void>
   value?: LanguageOption
   languages?: Language[]
   loading: boolean
@@ -116,7 +116,7 @@ export function LanguageAutocomplete({
       getOptionLabel={({ localName, nativeName }) =>
         localName ?? nativeName ?? ''
       }
-      onChange={(_event, option) => handleChange(option)}
+      onChange={async (_event, option) => await handleChange(option)}
       options={sortedOptions}
       loading={loading}
       disablePortal={process.env.NODE_ENV === 'test'}

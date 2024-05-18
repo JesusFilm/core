@@ -1,31 +1,14 @@
 import Box from '@mui/material/Box'
 import fscreen from 'fscreen'
-import dynamic from 'next/dynamic'
-import {
-  Dispatch,
-  ReactElement,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState
-} from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import Div100vh from 'react-div-100vh'
 
 import { Header } from '../../Header'
 
 import { VideoHeroOverlay } from './VideoHeroOverlay'
+import { VideoPlayer } from './VideoPlayer'
 
 const VIDEO_HERO_BOTTOM_SPACING = 150
-
-const DynamicVideoPlayer = dynamic<{
-  setControlsVisible: Dispatch<SetStateAction<boolean>>
-}>(
-  async () =>
-    await import(
-      /* webpackChunkName: "VideoPlayer" */
-      './VideoPlayer'
-    ).then((mod) => mod.VideoPlayer)
-)
 
 interface VideoHeroProps {
   onPlay?: () => void
@@ -59,7 +42,7 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
     <>
       <Header hideAbsoluteAppBar={!controlsVisible} />
       <Div100vh
-        css={{
+        style={{
           marginBottom: isFullscreen ? 0 : -VIDEO_HERO_BOTTOM_SPACING,
           paddingBottom: isFullscreen ? 0 : VIDEO_HERO_BOTTOM_SPACING,
           minHeight: 560
@@ -82,7 +65,7 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
           data-testid="VideoHero"
         >
           {hasPlayed === true ? (
-            <DynamicVideoPlayer setControlsVisible={setControlsVisible} />
+            <VideoPlayer setControlsVisible={setControlsVisible} />
           ) : (
             !isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />
           )}

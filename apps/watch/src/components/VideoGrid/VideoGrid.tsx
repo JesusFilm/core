@@ -74,7 +74,7 @@ export function VideoGrid({
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <LoadingButton
               variant="outlined"
-              onClick={onLoadMore}
+              onClick={onLoadMore as () => void}
               loading={loading}
               startIcon={<AddRounded />}
               disabled={hasNextPage !== true}

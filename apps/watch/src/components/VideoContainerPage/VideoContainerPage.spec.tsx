@@ -8,7 +8,7 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContainerPage } from '.'
 
-jest.mock('next/router', () => ({
+jest.mock('next/navigation', () => ({
   __esModule: true,
   useRouter: () => {
     return {

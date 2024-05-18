@@ -72,6 +72,7 @@ export const Basic = {
       ...video,
       childrenCount: 1
     },
+    languageId: 'en',
     routes
   }
 }

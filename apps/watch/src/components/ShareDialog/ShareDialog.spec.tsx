@@ -10,7 +10,7 @@ import { ShareDialog } from './ShareDialog'
 const onClose = jest.fn()
 const originalEnv = process.env
 
-jest.mock('next/router', () => ({
+jest.mock('next/navigation', () => ({
   __esModule: true,
   useRouter() {
     return {

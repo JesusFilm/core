@@ -15,7 +15,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
+import { useTranslations } from 'next-intl'
 import { ComponentProps, ReactElement, useEffect, useState } from 'react'
 import useDownloader from 'react-use-downloader'
 
@@ -49,7 +49,7 @@ export function DownloadDialog({
   const { title, image, imageAlt, variant } = useVideo()
   const { percentage, download, cancel, isInProgress } = useDownloader()
   const [openTerms, setOpenTerms] = useState<boolean>(false)
-  const { t } = useTranslation('apps-watch')
+  const t = useTranslations('apps-watch')
   const downloads = variant?.downloads ?? []
   const language = variant?.language ?? {
     __typename: 'Language',
@@ -60,7 +60,7 @@ export function DownloadDialog({
 
   useEffect(() => {
     if (percentage === 100) {
-      onClose?.()
+      void onClose?.()
     }
   }, [percentage, onClose])
 
@@ -74,7 +74,7 @@ export function DownloadDialog({
       open={open}
       onClose={() => {
         cancel()
-        onClose?.()
+        void onClose?.()
       }}
       dialogTitle={{
         title: 'Download Video',

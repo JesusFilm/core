@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 import { NextApiRequest, NextApiResponse } from 'next'
 
-import { GetVideo } from '../../../../../__generated__/GetVideo'
-import { createApolloClient } from '../../../../../src/libs/apolloClient'
+import { GetVideo } from '../../../../../../__generated__/GetVideo'
+import { createApolloClient } from '../../../../../../src/libs/apolloClient'
 
 export const GET_VIDEO = gql`
   query GetVideo($videoId: ID!, $languageId: ID) {
