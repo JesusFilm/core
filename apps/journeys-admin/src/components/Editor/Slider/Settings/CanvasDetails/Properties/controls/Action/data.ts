@@ -76,8 +76,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             endIconId: null,
             action: {
               parentBlockId: 'button.id',
-              __typename: 'NavigateAction',
-              gtmEventName: 'gtmEventName'
+              __typename: 'NavigateToBlockAction',
+              gtmEventName: 'gtmEventName',
+              blockId: 'step1.id'
             },
             children: []
           }
@@ -247,8 +248,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 label: 'One of many ways to God',
                 action: {
                   parentBlockId: 'radioOption1.id',
-                  __typename: 'NavigateAction',
-                  gtmEventName: 'gtmEventName'
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step2.id'
                 },
                 children: []
               },
@@ -260,8 +262,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 label: 'One great lie...',
                 action: {
                   parentBlockId: 'radioOption3.id',
-                  __typename: 'NavigateAction',
-                  gtmEventName: 'gtmEventName'
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step2.id'
                 },
                 children: []
               },
@@ -273,8 +276,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 label: 'One true way to God',
                 action: {
                   parentBlockId: 'radioOption4.id',
-                  __typename: 'NavigateAction',
-                  gtmEventName: 'gtmEventName'
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step2.id'
                 },
                 children: []
               }
@@ -339,8 +343,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             endIconId: null,
             action: {
               parentBlockId: 'button3.id',
-              __typename: 'NavigateAction',
-              gtmEventName: 'gtmEventName'
+              __typename: 'NavigateToBlockAction',
+              gtmEventName: 'gtmEventName',
+              blockId: 'step4.id'
             },
             children: []
           },
@@ -369,8 +374,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 label: 'Yes, God likes good people',
                 action: {
                   parentBlockId: 'radioOption1.id',
-                  __typename: 'NavigateAction',
-                  gtmEventName: 'gtmEventName'
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step4.id'
                 },
                 children: []
               },
@@ -382,8 +388,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 label: 'No, He will accept me as I am',
                 action: {
                   parentBlockId: 'radioOption3.id',
-                  __typename: 'NavigateAction',
-                  gtmEventName: 'gtmEventName'
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step4.id'
                 },
                 children: []
               }

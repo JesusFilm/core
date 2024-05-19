@@ -25,6 +25,8 @@ export function handleAction(
         !journeysUrls.some((substring) => action.url.includes(substring))
       ) {
         window.open(action.url, '_blank')
+      } else if (action.url === '') {
+        break
       } else {
         void router.push(action.url)
       }
