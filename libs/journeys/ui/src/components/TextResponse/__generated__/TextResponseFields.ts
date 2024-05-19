@@ -7,12 +7,6 @@
 // GraphQL fragment: TextResponseFields
 // ====================================================
 
-export interface TextResponseFields_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface TextResponseFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -34,7 +28,7 @@ export interface TextResponseFields_action_EmailAction {
   email: string;
 }
 
-export type TextResponseFields_action = TextResponseFields_action_NavigateAction | TextResponseFields_action_NavigateToBlockAction | TextResponseFields_action_LinkAction | TextResponseFields_action_EmailAction;
+export type TextResponseFields_action = TextResponseFields_action_NavigateToBlockAction | TextResponseFields_action_LinkAction | TextResponseFields_action_EmailAction;
 
 export interface TextResponseFields {
   __typename: "TextResponseBlock";

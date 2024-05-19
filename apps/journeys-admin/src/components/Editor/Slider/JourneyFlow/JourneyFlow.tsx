@@ -24,6 +24,7 @@ import {
   ReactFlow,
   ReactFlowInstance,
   ReactFlowProps,
+  updateEdge as reactFlowUpdateEdge,
   useEdgesState,
   useNodesState
 } from 'reactflow'
@@ -239,23 +240,27 @@ export function JourneyFlow(): ReactElement {
   }, [])
 
   const onEdgeUpdate = useCallback<OnEdgeUpdateFunc>(
-    (_, { source, sourceHandle, target }) => {
+    (oldEdge, newConnection) => {
+      const { source, sourceHandle, target } = newConnection
+      setEdges((prev) => reactFlowUpdateEdge(oldEdge, newConnection, prev))
       edgeUpdateSuccessful.current = true
       void updateEdge({ source, sourceHandle, target })
     },
-    [updateEdge]
+    [updateEdge, setEdges]
   )
 
   const onEdgeUpdateEnd = useCallback<
     NonNullable<ReactFlowProps['onEdgeUpdateEnd']>
   >(
-    (_, { source, sourceHandle }) => {
+    (_, edge) => {
+      const { source, sourceHandle } = edge
       if (edgeUpdateSuccessful.current === false) {
+        setEdges((eds) => eds.filter((e) => e.id !== edge.id))
         void deleteEdge({ source, sourceHandle })
       }
       edgeUpdateSuccessful.current = true
     },
-    [deleteEdge]
+    [deleteEdge, setEdges]
   )
 
   const nodeTypes = useMemo(

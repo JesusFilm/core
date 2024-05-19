@@ -24,12 +24,6 @@ export interface SignUpBlockCreate_submitIcon {
   iconColor: IconColor | null;
 }
 
-export interface SignUpBlockCreate_signUpBlockUpdate_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -51,7 +45,7 @@ export interface SignUpBlockCreate_signUpBlockUpdate_action_EmailAction {
   email: string;
 }
 
-export type SignUpBlockCreate_signUpBlockUpdate_action = SignUpBlockCreate_signUpBlockUpdate_action_NavigateAction | SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockUpdate_action_LinkAction | SignUpBlockCreate_signUpBlockUpdate_action_EmailAction;
+export type SignUpBlockCreate_signUpBlockUpdate_action = SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockUpdate_action_LinkAction | SignUpBlockCreate_signUpBlockUpdate_action_EmailAction;
 
 export interface SignUpBlockCreate_signUpBlockUpdate {
   __typename: "SignUpBlock";
