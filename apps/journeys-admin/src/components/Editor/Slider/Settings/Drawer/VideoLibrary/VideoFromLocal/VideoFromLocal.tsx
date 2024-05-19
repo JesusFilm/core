@@ -5,9 +5,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
-import { useVideoSearch } from './utils/useVideoSearch/useVideoSearch'
 import { VideoList } from '../VideoList'
 import { VideoSearch } from '../VideoSearch'
+
+import { useVideoSearch } from './utils/useVideoSearch/useVideoSearch'
 
 export const GET_VIDEOS = gql`
   query GetVideos($where: VideosFilter, $limit: Int!, $offset: Int!) {
