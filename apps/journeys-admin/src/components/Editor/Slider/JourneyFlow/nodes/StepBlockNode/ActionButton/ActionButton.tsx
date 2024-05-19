@@ -94,7 +94,7 @@ export function ActionButton({
       isSourceConnected = hasConnection(block)
       break
     case 'StepBlock':
-      title = t('Next Step →')
+      title = t('Default Next Step →')
       isSourceConnected = block.nextBlockId != null
       break
   }

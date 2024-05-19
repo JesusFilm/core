@@ -8,7 +8,6 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import GlobeIcon from '@core/shared/ui/icons/Globe'
 import MoreIcon from '@core/shared/ui/icons/More'
@@ -55,8 +54,6 @@ const DynamicCustomDomainDialog = dynamic(
 )
 
 export function TeamMenu(): ReactElement {
-  const flags = useFlags()
-
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -106,7 +103,7 @@ export function TeamMenu(): ReactElement {
           onClose={() => setTeamManageOpen(false)}
         />
       )}
-      {customDomainOpen != null && flags.customDomain && (
+      {customDomainOpen != null && (
         <DynamicCustomDomainDialog
           open={customDomainOpen}
           onClose={() => setCustomDomainOpen(false)}
@@ -185,19 +182,17 @@ export function TeamMenu(): ReactElement {
             setAnchorEl(null)
           }}
         />
-        {flags.customDomain && (
-          <MenuItem
-            disabled={activeTeam == null}
-            key="custom-domain"
-            label={t('Custom Domain')}
-            icon={<GlobeIcon />}
-            onClick={() => {
-              setRoute('custom-domain')
-              setCustomDomainOpen(true)
-              setAnchorEl(null)
-            }}
-          />
-        )}
+        <MenuItem
+          disabled={activeTeam == null}
+          key="custom-domain"
+          label={t('Custom Domain')}
+          icon={<GlobeIcon />}
+          onClick={() => {
+            setRoute('custom-domain')
+            setCustomDomainOpen(true)
+            setAnchorEl(null)
+          }}
+        />
         <MenuItem
           disabled={activeTeam == null}
           key="rename-team"
