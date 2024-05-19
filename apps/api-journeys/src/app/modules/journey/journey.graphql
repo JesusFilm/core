@@ -202,7 +202,3 @@ extend type Mutation {
   """
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
 }
-
-extend type NavigateToJourneyAction {
-  journey: Journey
-}

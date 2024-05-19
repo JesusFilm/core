@@ -1,0 +1,127 @@
+import { defaultEdgeProps, hiddenEdge, hiddenNode } from './transformSteps'
+
+import { transformSteps } from '.'
+
+describe('tranformSteps', () => {
+  it('should handle multiple steps without navigation actions', () => {
+    const steps = [
+      {
+        __typename: 'StepBlock' as const,
+        id: 'step1.id',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: 'step2.id',
+        children: []
+      },
+      {
+        __typename: 'StepBlock' as const,
+        id: 'step2.id',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: 'step3.id',
+        children: []
+      },
+      {
+        __typename: 'StepBlock' as const,
+        id: 'step3.id',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        children: []
+      }
+    ]
+
+    const positions = {
+      'step1.id': { x: 0, y: 0 },
+      'step2.id': { x: 0, y: 10 },
+      'step3.id': { x: 0, y: 20 }
+    }
+
+    const { nodes, edges } = transformSteps(steps, positions)
+
+    expect(nodes).toEqual([
+      {
+        data: {},
+        id: 'step1.id',
+        position: { x: 0, y: 0 },
+        type: 'StepBlock'
+      },
+      {
+        data: {},
+        id: 'step2.id',
+        position: { x: 0, y: 10 },
+        type: 'StepBlock'
+      },
+      {
+        data: {},
+        id: 'step3.id',
+        position: { x: 0, y: 20 },
+        type: 'StepBlock'
+      },
+      {
+        data: {},
+        draggable: false,
+        id: 'SocialPreview',
+        position: {
+          x: -365,
+          y: -46
+        },
+        type: 'SocialPreview'
+      },
+      hiddenNode
+    ])
+
+    expect(edges).toEqual([
+      {
+        id: 'step1.id->step2.id',
+        source: 'step1.id',
+        sourceHandle: undefined,
+        target: 'step2.id',
+        ...defaultEdgeProps
+      },
+      {
+        id: 'step2.id->step3.id',
+        source: 'step2.id',
+        sourceHandle: undefined,
+        target: 'step3.id',
+        ...defaultEdgeProps
+      },
+      {
+        id: 'SocialPreview->step1.id',
+        markerEnd: {
+          color: 'rgb(111, 111, 112)',
+          height: 10,
+          type: 'arrowclosed',
+          width: 10
+        },
+        source: 'SocialPreview',
+        target: 'step1.id',
+        type: 'Start'
+      },
+      hiddenEdge
+    ])
+  })
+
+  it('should handle empty steps and positions', () => {
+    const { nodes, edges } = transformSteps([], {})
+
+    expect(nodes).toEqual([
+      {
+        data: {},
+        draggable: false,
+        id: 'SocialPreview',
+        position: {
+          x: -365,
+          y: -46
+        },
+        type: 'SocialPreview'
+      },
+      hiddenNode
+    ])
+
+    expect(edges).toEqual([hiddenEdge])
+  })
+})

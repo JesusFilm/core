@@ -6,12 +6,12 @@ import Typography from '@mui/material/Typography'
 import capitalize from 'lodash/capitalize'
 import { ReactElement } from 'react'
 
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 
 interface NavigationCardProps {
   id: string
   title: string
-  destination: ActiveJourneyEditContent
+  destination: ActiveContent
   header?: ReactElement
   loading?: boolean
 }

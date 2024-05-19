@@ -14,6 +14,7 @@ import {
 } from 'react'
 import Player from 'video.js/dist/types/player'
 
+import { isIOS, isIPhone } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useBlocks } from '../../../libs/block'
@@ -33,24 +34,6 @@ interface VideoControlProps {
   autoplay?: boolean
   muted?: boolean
   activeStep?: boolean
-}
-
-function isIOS(): boolean {
-  if (typeof navigator === 'undefined') return false
-
-  const userAgent = navigator.userAgent
-  return /iPad|iPhone|Macintosh|iPod/.test(userAgent)
-}
-
-function iPhone(): boolean {
-  if (
-    typeof navigator === 'undefined' ||
-    typeof navigator.userAgent === 'undefined'
-  )
-    return false
-
-  const userAgent = navigator.userAgent
-  return userAgent.includes('iPhone')
 }
 
 export function VideoControls({
@@ -214,11 +197,11 @@ export function VideoControls({
         setShowHeaderFooter(!fullscreen)
       }
 
-      if (!fullscreen && variant === 'embed' && !iPhone() && activeStep) {
+      if (!fullscreen && variant === 'embed' && !isIPhone() && activeStep) {
         player.pause()
       }
 
-      if (fullscreen && variant === 'embed' && !iPhone() && activeStep) {
+      if (fullscreen && variant === 'embed' && !isIPhone() && activeStep) {
         void player.play()
       }
     }
@@ -273,7 +256,7 @@ export function VideoControls({
   }
 
   function handleFullscreen(): void {
-    if (variant === 'embed' && !iPhone()) return
+    if (variant === 'embed' && !isIPhone()) return
     if (fullscreen) {
       if (fscreen.fullscreenEnabled) {
         void fscreen.exitFullscreen()
@@ -421,7 +404,7 @@ export function VideoControls({
               progress={progress}
               handleSeek={handleSeek}
               disableProgress={!player.hasStarted_}
-              showFullscreenButton={variant !== 'embed' || iPhone()}
+              showFullscreenButton={variant !== 'embed' || isIPhone()}
               fullscreen={fullscreen}
               handleFullscreen={handleFullscreen}
             />
@@ -440,7 +423,7 @@ export function VideoControls({
               muted={state.muted}
               handleMute={handleMute}
               playerMuted={player.muted() ?? false}
-              showFullscreenButton={variant !== 'embed' || iPhone()}
+              showFullscreenButton={variant !== 'embed' || isIPhone()}
               fullscreen={fullscreen}
               handleFullscreen={handleFullscreen}
             />

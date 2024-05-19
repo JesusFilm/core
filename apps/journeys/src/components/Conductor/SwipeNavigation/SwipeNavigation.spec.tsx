@@ -50,7 +50,7 @@ describe('SwipeNavigation', () => {
     parentBlockId: null,
     parentOrder: 0,
     locked: false,
-    nextBlockId: null,
+    nextBlockId: 'step2.id',
     children: []
   }
   const step2: TreeBlock<StepBlock> = {

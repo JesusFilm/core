@@ -437,11 +437,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       submitLabel: null,
       submitIconId: null,
-      action: {
-        __typename: 'NavigateAction',
-        parentBlockId: 'signUp',
-        gtmEventName: 'gtmEventName'
-      },
+      action: null,
       children: []
     }
     const { getByLabelText } = render(
@@ -463,11 +459,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       submitLabel: null,
       submitIconId: null,
-      action: {
-        __typename: 'NavigateAction',
-        parentBlockId: 'signUp',
-        gtmEventName: 'gtmEventName'
-      },
+      action: null,
       children: []
     }
     const { getByTestId, getByLabelText } = render(
@@ -667,7 +659,8 @@ describe('BlockRenderer', () => {
           __typename: 'VideoVariant',
           id: '2_0-FallingPlates-529',
           hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-        }
+        },
+        variantLanguages: []
       },
       autoplay: false,
       muted: false,
@@ -717,7 +710,8 @@ describe('BlockRenderer', () => {
           __typename: 'VideoVariant',
           id: '2_0-FallingPlates-529',
           hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-        }
+        },
+        variantLanguages: []
       },
       autoplay: false,
       muted: false,
