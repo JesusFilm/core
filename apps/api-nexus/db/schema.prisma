@@ -166,11 +166,6 @@ model BatchTask {
     updatedAt DateTime        @updatedAt
 }
 
-model GoogleAccessToken {
-    id           String @id @default(uuid())
-    refreshToken String
-}
-
 enum Role {
     publisher
 }

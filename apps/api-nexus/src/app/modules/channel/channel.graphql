@@ -22,7 +22,6 @@ type ChannelYoutube {
   description: String
   youtubeId: String
   imageUrl: String
-  refreshToken: String
 }
 
 input ChannelCreateInput {

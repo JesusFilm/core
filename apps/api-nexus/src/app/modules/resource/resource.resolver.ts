@@ -6,13 +6,8 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { Prisma, Resource, ResourceStatus } from '.prisma/api-nexus-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { User } from '@core/nest/common/firebaseClient'
-import { CurrentUser } from '@core/nest/decorators/CurrentUser'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 import {
-  GoogleAuthInput,
-  GoogleAuthResponse,
   ResourceCreateInput,
   ResourceFilter,
   ResourceUpdateInput
@@ -177,8 +172,8 @@ export class ResourceResolver {
     @Args('spreadsheetId') spreadsheetId: string,
     @Args('drivefolderId') drivefolderId: string
   ): Promise<Resource[]> {
-    console.log('Resource From Template . . .');
-    const { templateType, spreadsheetData} =
+    console.log('Resource From Template . . .')
+    const { templateType, spreadsheetData } =
       await this.googleSheetsService.getSpreadSheetTemplateData(
         token,
         spreadsheetId,
@@ -193,35 +188,12 @@ export class ResourceResolver {
       )
     } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
       // PR OCESS LOCALIZATION TEMPLATE
-      console.log("LOCALIZATION");
+      console.log('LOCALIZATION')
       await this.googleSheetsService.processLocalizationTemplateBatches(
         token,
         spreadsheetData
       )
     }
     return []
-  }
-
-  @Mutation()
-  async getGoogleAccessToken(
-    @CurrentUserId() userId: string,
-    @CurrentUser() user: User,
-    @Args('input') input: GoogleAuthInput
-  ): Promise<GoogleAuthResponse> {
-    const { accessToken, refreshToken } =
-      await this.googleOAuthService.exchangeAuthCodeForTokens(
-        input.authCode,
-        input.url
-      )
-    const tokenRecord = await this.prismaService.googleAccessToken.create({
-      data: {
-        refreshToken
-      }
-    })
-
-    return {
-      id: tokenRecord.id,
-      accessToken
-    }
   }
 }
