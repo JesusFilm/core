@@ -97,7 +97,7 @@ interface PropertiesProps {
 export function Properties({ block, step }: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { state, dispatch } = useEditor()
-  const [showCardTemplates, setshowCardTemplates] = useState(true)
+  const [showCardTemplates, setShowCardTemplates] = useState(true)
   const selectedBlock = block ?? state.selectedBlock
   const selectedStep = step ?? state.selectedStep
 
@@ -162,15 +162,14 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
   }
 
   function onClose(): void {
-    if (title !== 'Card Templates') {
+    const isCardTemplates = title === 'Card Templates'
+    setShowCardTemplates(!isCardTemplates)
+
+    if (!isCardTemplates)
       dispatch({
         type: 'SetActiveSlideAction',
         activeSlide: ActiveSlide.JourneyFlow
       })
-      setshowCardTemplates(true)
-    } else {
-      setshowCardTemplates(false)
-    }
   }
 
   return block == null && step == null ? (
