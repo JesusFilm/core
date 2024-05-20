@@ -3,9 +3,16 @@ import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
+import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
+import { getLinkActionDetails } from '@core/journeys/ui/getLinkActionDetails'
+
 import { BaseNode } from '../BaseNode'
 
 export function LinkNode(): ReactElement {
+  const { label, icon } = getLinkActionDetails(GoalType.Chat, false)
+
+  console.log('label', label)
+
   return (
     <BaseNode id="id">
       <Box
@@ -17,19 +24,21 @@ export function LinkNode(): ReactElement {
             `1px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
           borderRadius: 2,
           height: 45,
-          width: 200
+          width: 200,
+          display: 'flex',
+          alignItems: 'center'
         }}
       >
+        {icon}
         <Typography
-          align="left"
           noWrap
           sx={{
             fontWeight: 'bold',
-            fontSize: 10
+            fontSize: 20
           }}
           variant="body2"
         >
-          Link Node
+          {label}
         </Typography>
       </Box>
     </BaseNode>

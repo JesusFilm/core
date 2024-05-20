@@ -317,6 +317,7 @@ export function JourneyFlow(): ReactElement {
       >
         <Panel position="top-right">
           <NewStepButton />
+          {/* remove after testing */}
           <Box sx={{ height: 50 }} />
           <LinkNode />
         </Panel>
