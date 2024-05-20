@@ -93,7 +93,7 @@ describe('transformSteps', () => {
       {
         id: 'SocialPreview->step1.id',
         markerEnd: {
-          color: 'rgb(111, 111, 112)',
+          color: '#d9d9dc',
           height: 10,
           type: 'arrowclosed',
           width: 10
@@ -214,7 +214,7 @@ describe('transformSteps', () => {
       {
         id: 'SocialPreview->step1.id',
         markerEnd: {
-          color: 'rgb(111, 111, 112)',
+          color: '#d9d9dc',
           height: 10,
           type: 'arrowclosed',
           width: 10
@@ -292,7 +292,7 @@ describe('transformSteps', () => {
       {
         id: 'SocialPreview->step1.id',
         markerEnd: {
-          color: 'rgb(111, 111, 112)',
+          color: '#d9d9dc',
           height: 10,
           type: 'arrowclosed',
           width: 10
