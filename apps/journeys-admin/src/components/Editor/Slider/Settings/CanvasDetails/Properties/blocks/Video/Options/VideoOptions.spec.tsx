@@ -1,4 +1,3 @@
-import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -7,14 +6,9 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  BlockFields_StepBlock as StepBlock,
-  BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../../../../../__generated__/BlockFields'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import {
-  ThemeMode,
-  ThemeName,
   VideoBlockSource,
   VideoLabel
 } from '../../../../../../../../../../__generated__/globalTypes'
@@ -23,11 +17,7 @@ import { videos } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 import { GET_VIDEOS } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/VideoFromLocal'
 
-import {
-  UPDATE_VIDEO_BLOCK_NEXT_STEP,
-  VIDEO_BLOCK_UPDATE,
-  VideoOptions
-} from './VideoOptions'
+import { VIDEO_BLOCK_UPDATE, VideoOptions } from './VideoOptions'
 
 const video: TreeBlock<VideoBlock> = {
   id: 'video1.id',
@@ -218,139 +208,5 @@ describe('VideoOptions', () => {
     await waitFor(() =>
       expect(videoBlockResult).toHaveBeenCalledWith(videoBlockUpdateVariables)
     )
-  })
-
-  it('updates video nextBlockId to the next step by default', async () => {
-    const selectedStep: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'prevCard.id',
-      parentBlockId: null,
-      parentOrder: 0,
-      locked: false,
-      nextBlockId: 'step1.id',
-      children: [
-        {
-          id: 'card1.id',
-          __typename: 'CardBlock',
-          parentBlockId: 'prevCard.id',
-          parentOrder: 0,
-          coverBlockId: null,
-          backgroundColor: null,
-          themeMode: null,
-          themeName: null,
-          fullscreen: false,
-          children: [video]
-        }
-      ]
-    }
-
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'VideoBlock:video1.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      },
-      'VideoBlock:video1.id': {
-        ...video
-      }
-    })
-
-    const result = jest.fn(() => ({
-      data: {
-        blockUpdateNavigateToBlockAction: {
-          parentBlockId: video.id,
-          gtmEventName: 'gtmEventName',
-          blockId: 'step1.id'
-        }
-      }
-    }))
-
-    const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
-
-    render(
-      <MockedProvider
-        mocks={[
-          { ...getVideoMock, result: getVideoResult },
-          getVideosMock,
-          {
-            request: {
-              query: VIDEO_BLOCK_UPDATE,
-              variables: {
-                id: video.id,
-                journeyId: 'journeyId',
-                input: {
-                  videoId: '2_0-Brand_Video',
-                  videoVariantLanguageId: '529',
-                  source: VideoBlockSource.internal,
-                  startAt: 0,
-                  endAt: 144,
-                  duration: 144
-                }
-              }
-            },
-            result: {
-              data: {
-                videoBlockUpdate: video
-              }
-            }
-          },
-          {
-            request: {
-              query: UPDATE_VIDEO_BLOCK_NEXT_STEP,
-              variables: {
-                id: video.id,
-                journeyId: 'journeyId',
-                input: {
-                  blockId: 'step1.id'
-                }
-              }
-            },
-            result
-          }
-        ]}
-        cache={cache}
-      >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.light,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <ThemeProvider>
-            <EditorProvider
-              initialState={{
-                selectedStep,
-                selectedBlock: { ...video, videoId: null },
-                selectedAttributeId: video.id
-              }}
-            >
-              <SnackbarProvider>
-                <VideoOptions />
-              </SnackbarProvider>
-            </EditorProvider>
-          </ThemeProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
-    )
-    await waitFor(() =>
-      expect(screen.getByText('Brand Video')).toBeInTheDocument()
-    )
-    fireEvent.click(screen.getByText('Brand Video'))
-    await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
-    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(cache.extract()['VideoBlock:video1.id']?.action).toEqual({
-      parentBlockId: 'video1.id',
-      gtmEventName: 'gtmEventName',
-      blockId: 'step1.id'
-    })
   })
 })
