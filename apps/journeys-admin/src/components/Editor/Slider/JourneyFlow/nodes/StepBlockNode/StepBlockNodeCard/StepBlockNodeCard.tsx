@@ -33,7 +33,7 @@ export function StepBlockNodeCard({
   const { t } = useTranslation('apps-journeys-admin')
 
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
-  const { title, subtitle, description, priorityBlock, bgImage } =
+  const { title, subtitle, description, priorityBlock, bgImage, multi } =
     getCardMetadata(card)
 
   function handleClick(): void {
@@ -97,7 +97,10 @@ export function StepBlockNodeCard({
           }}
         >
           {priorityBlock != null && (
-            <StepBlockNodeIcon typename={priorityBlock.__typename} />
+            <StepBlockNodeIcon
+              typename={priorityBlock.__typename}
+              hasMultiple={card != null && card.children.length > 1}
+            />
           )}
         </Box>
         <Box
