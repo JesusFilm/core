@@ -22,8 +22,11 @@ export enum GoalType {
   Chat = 'Chat',
   Bible = 'Bible',
   Website = 'Website',
-  Journey = 'Journey'
+  Email = 'Email'
 }
+
+// add support for email
+// extract to global library
 
 export function getLinkActionGoal(url: string): GoalType {
   if (messagePlatforms.find((platform) => url.includes(platform.url)) != null) {

@@ -8,13 +8,10 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import BibleIcon from '@core/shared/ui/icons/Bible'
+import { getLinkActionDetails } from '@core/journeys/ui/getLinkActionDetails'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
-import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
-import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 
 import type { Goal } from '../../Goals'
 
@@ -33,43 +30,7 @@ export function GoalsListItem({
   const { t } = useTranslation('apps-journeys-admin')
   const selected = selectedGoalUrl === url
 
-  let goalLabel: string, goalIcon: ReactElement
-
-  switch (goalType) {
-    case GoalType.Chat:
-      goalLabel = t('Start a Conversation')
-      goalIcon = (
-        <MessageChat1Icon
-          sx={{
-            color: selected ? 'primary.main' : 'secondary.light',
-            transition: (theme) => theme.transitions.create('color')
-          }}
-        />
-      )
-      break
-    case GoalType.Bible:
-      goalLabel = t('Link to Bible')
-      goalIcon = (
-        <BibleIcon
-          sx={{
-            color: selected ? 'primary.main' : 'secondary.light',
-            transition: (theme) => theme.transitions.create('color')
-          }}
-        />
-      )
-      break
-    default:
-      goalLabel = t('Visit a Website')
-      goalIcon = (
-        <LinkAngledIcon
-          sx={{
-            color: selected ? 'primary.main' : 'secondary.light',
-            transition: (theme) => theme.transitions.create('color')
-          }}
-        />
-      )
-      break
-  }
+  const { label, icon } = getLinkActionDetails(goalType, selected)
 
   function handleClick(): void {
     dispatch({
@@ -113,7 +74,7 @@ export function GoalsListItem({
             pl: 5
           }}
         >
-          {goalIcon}
+          {icon}
         </TableCell>
         <TableCell
           sx={{
@@ -144,9 +105,9 @@ export function GoalsListItem({
               color: selected ? 'primary.main' : 'secondary.light'
             }}
           >
-            <Box sx={{ display: { xs: 'block', sm: 'none' } }}>{goalIcon}</Box>
+            <Box sx={{ display: { xs: 'block', sm: 'none' } }}>{icon}</Box>
             <Typography variant="subtitle2" color="secondary.light">
-              {goalLabel}
+              {label}
             </Typography>
           </Stack>
           <Typography variant="body2" color="secondary.light">
