@@ -146,7 +146,7 @@ describe('NavigateToBlockActionResolver', () => {
       ).rejects.toThrow('user is not allowed to update block')
     })
 
-    it('throws an error for matching block IDs', async () => {
+    it('throws an error if user input block id matches parent step block id', async () => {
       const wrongInput = {
         gtmEventName: 'gtmEventName',
         blockId: stepBlock.id
