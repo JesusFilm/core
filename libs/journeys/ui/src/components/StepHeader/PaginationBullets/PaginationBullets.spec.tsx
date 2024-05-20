@@ -89,7 +89,7 @@ describe('PaginationBullets', () => {
   it('should paginate to last bullet if the current step does not have next step', () => {
     treeBlocksVar([step1, step2, step3, step4, step5, step6, step7])
     blockHistoryVar([step7])
-    const { getAllByTestId, getByRole } = render(<PaginationBullets />)
+    const { getAllByTestId } = render(<PaginationBullets />)
     expect(getAllByTestId('bullet-active')).toHaveLength(1)
     expect(getAllByTestId('bullet-adjacent')).toHaveLength(1)
     expect(getAllByTestId('bullet-default')).toHaveLength(5)
