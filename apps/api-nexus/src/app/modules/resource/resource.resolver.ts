@@ -168,14 +168,14 @@ export class ResourceResolver {
 
   @Mutation()
   async resourceFromTemplate(
-    @Args('token') token: string,
+    @Args('accessToken') accessToken: string,
     @Args('spreadsheetId') spreadsheetId: string,
     @Args('drivefolderId') drivefolderId: string
   ): Promise<Resource[]> {
     console.log('Resource From Template . . .')
     const { templateType, spreadsheetData } =
       await this.googleSheetsService.getSpreadSheetTemplateData(
-        token,
+        accessToken,
         spreadsheetId,
         drivefolderId
       )
@@ -183,14 +183,14 @@ export class ResourceResolver {
     if (templateType === SpreadsheetTemplateType.UPLOAD) {
       // PROCESS UPLOAD TEMPLATE
       return await this.googleSheetsService.processUploadSpreadsheetTemplate(
-        token,
+        accessToken,
         spreadsheetData
       )
     } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
       // PR OCESS LOCALIZATION TEMPLATE
       console.log('LOCALIZATION')
       await this.googleSheetsService.processLocalizationTemplateBatches(
-        token,
+        accessToken,
         spreadsheetData
       )
     }
