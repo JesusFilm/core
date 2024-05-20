@@ -37,7 +37,7 @@ function NexusAdminApp({
 
   const token = user?._token ?? ''
 
-  const apolloClient = useApollo(token)
+  const apolloClient = useApollo(token as string)
 
   return (
     <CacheProvider value={emotionCache}>

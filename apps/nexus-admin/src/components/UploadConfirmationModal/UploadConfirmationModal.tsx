@@ -13,13 +13,11 @@ import { Modal } from '../Modal'
 
 const GET_RESOUCE_FROM_TEMPLATE = gql`
   mutation ResourceFromTemplate(
-    $nexusId: String!
     $tokenId: String!
     $spreadsheetId: String!
     $drivefolderId: String!
   ) {
     resourceFromTemplate(
-      nexusId: $nexusId
       tokenId: $tokenId
       spreadsheetId: $spreadsheetId
       drivefolderId: $drivefolderId
@@ -45,8 +43,6 @@ export const UploadConfirmationModal: FC<UploadConfirmationModalProps> = ({
   googleAccessTokenId
 }) => {
   const router = useRouter()
-  const nexusId =
-    typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
   const { enqueueSnackbar } = useSnackbar()
   const [getResourceFromTemplate, { loading }] = useMutation(
     GET_RESOUCE_FROM_TEMPLATE
@@ -57,7 +53,6 @@ export const UploadConfirmationModal: FC<UploadConfirmationModalProps> = ({
   const uploadYoutubeTemplate = (): void => {
     void getResourceFromTemplate({
       variables: {
-        nexusId,
         tokenId: googleAccessTokenId,
         spreadsheetId: selectedTemplateFile?.id,
         drivefolderId: selectedVideosDirectory?.id

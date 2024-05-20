@@ -1,12 +1,12 @@
 import '@testing-library/jest-dom'
 
-import { TextEncoder } from 'util'
+import { TextDecoder, TextEncoder } from 'util'
 
 import { configure } from '@testing-library/react'
 
 import './test/i18n'
 
-global.TextEncoder = TextEncoder
+Object.assign(global, { TextDecoder, TextEncoder })
 
 configure({ asyncUtilTimeout: 2500 })
 

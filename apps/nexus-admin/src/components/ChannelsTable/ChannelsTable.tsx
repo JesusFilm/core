@@ -32,7 +32,7 @@ const CHANNEL_CONNECT = gql`
 
 interface ChannelsTableProps {
   data: Channels_channels[] | []
-  onEdit: (channelId: string) => void
+  onEdit: (channel: Channels_channels) => void
   onDelete: (channelId: string) => void
   loading: boolean
 }
@@ -45,6 +45,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
 }) => {
   const [morePopup, setMorePopup] = useState<HTMLElement | null>(null)
   const [channelId, setChannelId] = useState<string>('')
+  const [channel, setChannel] = useState<Channels_channels | null>(null)
   const [channelConnect] = useMutation<ConnectChannel>(CHANNEL_CONNECT, {
     refetchQueries: [GET_CHANNELS]
   })
@@ -83,7 +84,10 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
       field: 'image',
       headerName: 'Thumbnail',
       flex: 1,
+      sortable: false,
       renderCell: ({ row }: GridCellParams) => {
+        if (row.youtube === null) return null
+
         return row.youtube?.imageUrl !== '' ? (
           <Avatar src={row.youtube?.imageUrl} alt={row.name} />
         ) : null
@@ -115,7 +119,8 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
       field: 'connected',
       headerName: 'Status',
       flex: 1,
-      renderCell: ({ row }: GridCellParams) => {
+      sortable: false,
+      renderCell: ({ row }: GridCellParams<Channels_channels>) => {
         return (
           <Chip
             clickable={row.connected !== true}
@@ -134,11 +139,12 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
       headerName: 'Action',
       flex: 1,
       sortable: false,
-      renderCell: ({ row }: GridCellParams) => (
+      renderCell: ({ row }: GridCellParams<Channels_channels>) => (
         <IconButton
           onClick={(event) => {
             setMorePopup(event.currentTarget)
             setChannelId(row.id)
+            setChannel(row)
           }}
         >
           <MoreHorizIcon fontSize="small" />
@@ -181,7 +187,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
             spacing={2}
             sx={{ cursor: 'pointer' }}
             onClick={() => {
-              onEdit(channelId)
+              onEdit(channel as Channels_channels)
               setMorePopup(null)
             }}
           >

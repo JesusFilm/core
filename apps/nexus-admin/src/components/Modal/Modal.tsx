@@ -28,6 +28,7 @@ export const Modal: FC<ModalProps> = ({
       sx={{
         zIndex: 1000
       }}
+      disableAutoFocus
     >
       <Stack
         sx={{

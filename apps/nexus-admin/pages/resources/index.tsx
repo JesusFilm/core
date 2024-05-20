@@ -3,9 +3,9 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { useGoogleLogin } from '@react-oauth/google'
-import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
@@ -100,8 +100,6 @@ const ResourcesPage: FC = () => {
   const [resource, setResource] = useState<Resource_resource | null>(null)
   const [openUpdateResourceModal, setOpenUpdateResourceModal] =
     useState<boolean>(false)
-  const isSSRMode = typeof window !== 'undefined'
-  const nexusId = isSSRMode ? localStorage.getItem('nexusId') : ''
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation()
@@ -109,19 +107,12 @@ const ResourcesPage: FC = () => {
   const [googleAccessToken, setGoogleAccessToken] = useState('')
   const [googleAccessTokenId, setGoogleAccessTokenId] = useState('')
 
-  const { data, loading } = useQuery<Resources>(GET_RESOURCES, {
-    variables: {
-      where: {
-        nexusId
-      }
-    }
-  })
+  const { data, loading } = useQuery<Resources>(GET_RESOURCES)
 
   const { data: resourceData } = useQuery<Resource>(GET_RESOURCE, {
     skip: resourceId === '',
     variables: {
-      resourceId,
-      nexusId
+      resourceId
     }
   })
 

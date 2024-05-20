@@ -26,16 +26,9 @@ const GET_BATCHES = gql`
 `
 
 const BatchesPage: FC = () => {
-  const nexusId =
-    typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
   const [batches, setBatches] = useState([])
 
   const { data, loading } = useQuery(GET_BATCHES, {
-    variables: {
-      where: {
-        nexusId
-      }
-    },
     pollInterval: 2000
   })
 

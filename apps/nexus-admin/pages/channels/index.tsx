@@ -6,7 +6,7 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 
-import { Channel, Channel_channel } from '../../__generated__/Channel'
+import { Channel_channel } from '../../__generated__/Channel'
 import { ChannelCreate } from '../../__generated__/ChannelCreate'
 import { ChannelDelete } from '../../__generated__/ChannelDelete'
 import { Channels, Channels_channels } from '../../__generated__/Channels'
@@ -31,16 +31,6 @@ export const GET_CHANNELS = gql`
         channelId
         imageUrl
       }
-    }
-  }
-`
-
-const GET_CHANNEL = gql`
-  query Channel($channelID: ID!) {
-    channel(id: $channelID) {
-      id
-      name
-      platform
     }
   }
 `
@@ -83,8 +73,6 @@ const ChannelsPage: FC = () => {
   const [deleteChannelModal, setDeleteChannelModal] = useState<boolean>(false)
   const [channelId, setChannelId] = useState<string>('')
   const [channels, setChannels] = useState<Channels_channels[]>([])
-  const nexusId =
-    typeof window !== 'undefined' ? localStorage.getItem('nexusId') : ''
   const [channel, setChannel] = useState<Channel_channel | null>(null)
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation()
@@ -92,17 +80,8 @@ const ChannelsPage: FC = () => {
   const { data, loading } = useQuery<Channels>(GET_CHANNELS, {
     variables: {
       where: {
-        status: 'published',
-        nexusId
+        status: 'published'
       }
-    }
-  })
-
-  const { data: channelData } = useQuery<Channel>(GET_CHANNEL, {
-    skip: channelId === '',
-    variables: {
-      channelID: channelId,
-      nexusId
     }
   })
 
@@ -115,12 +94,6 @@ const ChannelsPage: FC = () => {
       setChannels(data?.channels as Channels_channels[])
     }
   }, [data])
-
-  useEffect(() => {
-    if (channelData !== undefined) {
-      setChannel(channelData?.channel)
-    }
-  }, [channelData])
 
   return (
     <MainLayout title="Channels">
@@ -141,8 +114,8 @@ const ChannelsPage: FC = () => {
         <ChannelsTable
           loading={loading}
           data={channels}
-          onEdit={(channelId) => {
-            setChannelId(channelId)
+          onEdit={(channel) => {
+            setChannel(channel)
             setOpenUpdateChannelModal(true)
           }}
           onDelete={(channelId) => {
@@ -157,7 +130,7 @@ const ChannelsPage: FC = () => {
         onCreate={(channelData) => {
           void channelCreate({
             variables: {
-              input: { nexusId, ...channelData }
+              input: channelData
             },
             onCompleted: () => {
               setOpenCreateChannelModal(false)

@@ -25,16 +25,8 @@ import { getOrigin } from '../../../utils/getOrigin'
 import { Modal } from '../Modal'
 
 const GET_GOOGLE_SHEET_DATA = gql`
-  mutation getSheetData(
-    $nexusId: String!
-    $tokenId: String!
-    $spreadsheetId: String!
-  ) {
-    getSheetData(
-      nexusId: $nexusId
-      tokenId: $tokenId
-      spreadsheetId: $spreadsheetId
-    )
+  mutation getSheetData($tokenId: String!, $spreadsheetId: String!) {
+    getSheetData(tokenId: $tokenId, spreadsheetId: $spreadsheetId)
   }
 `
 
@@ -70,9 +62,6 @@ export const CreateShortLinkModal: FC<CreateShortLinkModalProps> = ({
   const [openPicker] = useDrivePicker()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation()
-
-  const isSSRMode = typeof window !== 'undefined'
-  const nexusId = isSSRMode ? localStorage.getItem('nexusId') : ''
 
   const [getGoogleAccessToken] = useMutation(GET_GOOGLE_ACCESS_TOKEN)
   const [getGoogleSheetData] = useMutation(GET_GOOGLE_SHEET_DATA)
@@ -182,7 +171,6 @@ export const CreateShortLinkModal: FC<CreateShortLinkModalProps> = ({
 
           void getGoogleSheetData({
             variables: {
-              nexusId,
               tokenId: googleAccessTokenId,
               spreadsheetId: fileId
             },

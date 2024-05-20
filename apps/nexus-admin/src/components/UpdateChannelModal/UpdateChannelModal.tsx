@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useFormik } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { FC, useEffect } from 'react'
+import { FC } from 'react'
 import { object, string } from 'yup'
 
 import { Channel_channel } from '../../../__generated__/Channel'
@@ -44,15 +44,6 @@ export const UpdateChannelModal: FC<UpdateChannelModalProps> = ({
     }
   })
   const { t } = useTranslation()
-
-  useEffect(() => {
-    if (data !== undefined) {
-      void formik.setValues({
-        name: data?.name ?? '',
-        platform: data?.platform ?? ''
-      })
-    }
-  }, [data])
 
   const closeModal = (): void => {
     onClose()
