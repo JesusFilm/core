@@ -350,19 +350,18 @@ describe('ChannelResolver', () => {
       expect(
         await resolver.connectYoutubeChannel(ability, {
           channelId: 'channelId',
-          authCode: 'authCode',
-          redirectUri: 'redirectUri'
+          accessToken: 'accessToken'
         })
       ).toEqual({
         ...channel,
         connected: true
       })
 
-      expect(googleOAuthService.getAccessToken).toHaveBeenCalledWith({
-        code: 'authCode',
-        grant_type: 'authorization_code',
-        redirect_uri: 'redirectUri'
-      })
+      // expect(googleOAuthService.getAccessToken).toHaveBeenCalledWith({
+      //   code: 'authCode',
+      //   grant_type: 'authorization_code',
+      //   redirect_uri: 'redirectUri'
+      // })
       expect(googleYoutubeService.getChannels).toHaveBeenCalledWith({
         accessToken: authResponse.access_token
       })
@@ -387,8 +386,7 @@ describe('ChannelResolver', () => {
       await expect(
         resolver.connectYoutubeChannel(ability, {
           channelId: 'channelId',
-          authCode: 'authCode',
-          redirectUri: 'redirectUri'
+          accessToken: 'accessToken'
         })
       ).rejects.toThrow('channel not found')
     })

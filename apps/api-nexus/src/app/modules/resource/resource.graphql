@@ -103,7 +103,7 @@ extend type Mutation {
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
   resourceFromTemplate(
-    tokenId: String!
+    accessToken: String!
     spreadsheetId: String!
     drivefolderId: String!
   ): [Resource!]

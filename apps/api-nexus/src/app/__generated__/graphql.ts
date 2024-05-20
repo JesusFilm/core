@@ -277,7 +277,7 @@ export abstract class IMutation {
 
     abstract resourceDelete(id: string): Resource | Promise<Resource>;
 
-    abstract resourceFromTemplate(tokenId: string, spreadsheetId: string, drivefolderId: string): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
+    abstract resourceFromTemplate(accessToken: string, spreadsheetId: string, drivefolderId: string): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
 
     abstract uploadToYoutube(channelId: string, resourceId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 
