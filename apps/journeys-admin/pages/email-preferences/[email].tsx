@@ -5,6 +5,7 @@ import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
+import { GetServerSideProps } from 'next'
 import NextLink from 'next/link'
 import { withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -45,10 +46,15 @@ const UPDATE_EMAIL_PREFERENCE = gql`
   }
 `
 
+interface EmailPreferencesPageProps {
+  journeysEmailPreferenceData: JourneysEmailPreference
+  updatePrefs?: UpdateJourneysEmailPreference
+}
+
 function EmailPreferencesPage({
   journeysEmailPreferenceData,
   updatePrefs
-}): ReactElement {
+}: EmailPreferencesPageProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const [updateJourneysEmailPreference, { loading }] =
@@ -141,8 +147,8 @@ function EmailPreferencesPage({
   )
 }
 
-export const getServerSideProps = withUserTokenSSR()(
-  async ({ user, locale, resolvedUrl, query }) => {
+export const getServerSideProps: GetServerSideProps<EmailPreferencesPageProps> =
+  withUserTokenSSR()(async ({ user, locale, resolvedUrl, query }) => {
     const { apolloClient, translations } = await initAndAuthApp({
       user,
       locale,
@@ -190,23 +196,14 @@ export const getServerSideProps = withUserTokenSSR()(
       })
       if (updatePrefsData != null) updatePrefs = updatePrefsData
     }
-    if (updatePrefs == null)
-      return {
-        props: {
-          ...translations,
-          initialApolloState: apolloClient.cache.extract(),
-          journeysEmailPreferenceData
-        }
-      }
     return {
       props: {
         ...translations,
         initialApolloState: apolloClient.cache.extract(),
         journeysEmailPreferenceData,
-        updatePrefs
+        updatePrefs: updatePrefs ?? undefined
       }
     }
-  }
-)
+  })
 
 export default withUser()(EmailPreferencesPage)

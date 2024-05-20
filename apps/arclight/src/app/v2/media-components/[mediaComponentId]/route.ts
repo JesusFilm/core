@@ -51,9 +51,8 @@ interface GetParams {
 }
 export async function GET(
   req: NextRequest,
-  { params }: GetParams
+  { params: { mediaComponentId } }: GetParams
 ): Promise<Response> {
-  const mediaComponentId = params.mediaComponentId
   const query = req.nextUrl.searchParams
 
   const { data } = await getApolloClient().query<ResultOf<typeof GET_VIDEO>>({

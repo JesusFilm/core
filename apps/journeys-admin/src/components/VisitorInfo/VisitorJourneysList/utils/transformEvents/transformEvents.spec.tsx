@@ -64,7 +64,7 @@ const buttonClickEvent: ButtonClickEvent = {
   label: 'Button label - journey 1',
   value: 'Button  value - journey 1',
   createdAt: '2022-11-02T03:33:16.368Z',
-  action: ButtonAction.NavigateAction,
+  action: ButtonAction.NavigateToBlockAction,
   actionValue: null
 }
 const radioQuestionResponseEvent: Event = {
@@ -251,24 +251,24 @@ describe('transformEvents', () => {
   describe('getDuration', () => {
     it('should return duration', () => {
       const result = getDuration(
-        journeyViewEvent.createdAt,
-        chatOpenEvent.createdAt
+        String(journeyViewEvent.createdAt),
+        String(chatOpenEvent.createdAt)
       )
       expect(result).toBe('0:10')
     })
 
     it('should return duration with 2 digit seconds if singular', () => {
       const result = getDuration(
-        radioQuestionResponseEvent.createdAt,
-        signUpSubmissionEvent.createdAt
+        String(radioQuestionResponseEvent.createdAt),
+        String(signUpSubmissionEvent.createdAt)
       )
       expect(result).toBe('0:01')
     })
 
     it('should return < 0.01 if if duration is less than a second', () => {
       const result = getDuration(
-        videoCollapseEvent.createdAt,
-        videoCompleteEvent.createdAt
+        String(videoCollapseEvent.createdAt),
+        String(videoCompleteEvent.createdAt)
       )
       expect(result).toBe('< 0:01')
     })

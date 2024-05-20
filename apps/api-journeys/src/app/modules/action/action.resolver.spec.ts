@@ -54,32 +54,12 @@ describe('ActionResolver', () => {
     url: 'https://google.com',
     email: null
   }
-  const navigateAction: Action = {
-    parentBlockId: 'parentBlockId',
-    gtmEventName: 'gtmEventName',
-    updatedAt: new Date(),
-    blockId: null,
-    journeyId: null,
-    target: null,
-    url: null,
-    email: null
-  }
   const navigateToBlockAction: Action = {
     parentBlockId: 'parentBlockId',
     gtmEventName: 'gtmEventName',
     updatedAt: new Date(),
     blockId: '4',
     journeyId: null,
-    target: null,
-    url: null,
-    email: null
-  }
-  const navigateToJourneyAction: Action = {
-    parentBlockId: 'parentBlockId',
-    gtmEventName: 'gtmEventName',
-    updatedAt: new Date(),
-    blockId: null,
-    journeyId: '4',
     target: null,
     url: null,
     email: null
@@ -114,19 +94,9 @@ describe('ActionResolver', () => {
       expect(resolver.__resolveType(linkAction)).toBe('LinkAction')
     })
 
-    it('returns NavigateAction', () => {
-      expect(resolver.__resolveType(navigateAction)).toBe('NavigateAction')
-    })
-
     it('returns NavigateToBlockAction', () => {
       expect(resolver.__resolveType(navigateToBlockAction)).toBe(
         'NavigateToBlockAction'
-      )
-    })
-
-    it('returns NavigateToJourneyAction', () => {
-      expect(resolver.__resolveType(navigateToJourneyAction)).toBe(
-        'NavigateToJourneyAction'
       )
     })
   })
