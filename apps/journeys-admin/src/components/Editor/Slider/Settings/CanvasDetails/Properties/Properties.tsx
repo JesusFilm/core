@@ -97,7 +97,7 @@ interface PropertiesProps {
 export function Properties({ block, step }: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { state, dispatch } = useEditor()
-  const [showTemplates, setshowTemplates] = useState(true)
+  const [showCardTemplates, setshowCardTemplates] = useState(true)
   const selectedBlock = block ?? state.selectedBlock
   const selectedStep = step ?? state.selectedStep
 
@@ -113,7 +113,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       break
     case 'StepBlock': {
       const card = selectedBlock.children[0]
-      if (card?.children.length > 0 || !showTemplates) {
+      if (card?.children.length > 0 || !showCardTemplates) {
         title = t('Card Properties')
         component = card != null && (
           <Properties block={card} step={selectedStep} />
@@ -167,9 +167,9 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
         type: 'SetActiveSlideAction',
         activeSlide: ActiveSlide.JourneyFlow
       })
-      setshowTemplates(true)
+      setshowCardTemplates(true)
     } else {
-      setshowTemplates(false)
+      setshowCardTemplates(false)
     }
   }
 

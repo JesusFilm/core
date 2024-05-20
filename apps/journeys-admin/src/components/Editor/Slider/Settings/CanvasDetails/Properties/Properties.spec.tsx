@@ -411,11 +411,7 @@ describe('Properties', () => {
     await waitFor(() =>
       expect(screen.getByTestId('CardTemplates')).toBeInTheDocument()
     )
-
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
-    await waitFor(() =>
-      expect(screen.getByTestId('X2Icon')).toBeInTheDocument()
-    )
     await waitFor(
       async () => await userEvent.click(screen.getByTestId('X2Icon'))
     )
