@@ -6,7 +6,6 @@ import { useTranslation } from 'next-i18next'
 import { FC, useEffect, useState } from 'react'
 
 import { CreateShortLinkModal } from '../../src/components/CreateShortLinkModal'
-import { DeleteModal } from '../../src/components/DeleteModal'
 import { MainLayout } from '../../src/components/MainLayout'
 import { ShortLinksTable } from '../../src/components/ShortLinksTable'
 
@@ -31,7 +30,6 @@ export const GET_LINKS = gql`
 
 const ShortLinksPage: FC = () => {
   const [openCreateLinkModal, setOpenCreateLinkModal] = useState<boolean>(false)
-  const [deleteLinkModal, setDeleteLinkModal] = useState<boolean>(false)
   const [links, setLinks] = useState([])
   const { t } = useTranslation()
 
@@ -43,7 +41,7 @@ const ShortLinksPage: FC = () => {
       orderBy: { createdDate: 'desc' },
       where: {
         folderId: {
-          _is_null: true
+          _eq: process.env.NEXT_PUBLIC_SWITCHY_FOLDER_ID ?? 65091
         }
       }
     }
@@ -71,27 +69,12 @@ const ShortLinksPage: FC = () => {
             {t('Create short link')}
           </Button>
         </Stack>
-        <ShortLinksTable
-          loading={loading}
-          data={links}
-          onDelete={() => {
-            setDeleteLinkModal(true)
-          }}
-        />
+        <ShortLinksTable loading={loading} data={links} />
       </Stack>
       <CreateShortLinkModal
         open={openCreateLinkModal}
         onClose={() => setOpenCreateLinkModal(false)}
         refetch={refetch}
-      />
-      <DeleteModal
-        open={deleteLinkModal}
-        onClose={() => setDeleteLinkModal(false)}
-        content="Are you sure you would like to delete this link?"
-        onDelete={() => {
-          // TODO: integrate delete mutation
-          console.log(`Delete link here`)
-        }}
       />
     </MainLayout>
   )

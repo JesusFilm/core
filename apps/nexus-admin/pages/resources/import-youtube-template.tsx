@@ -45,22 +45,11 @@ const ImportYouTubeTemplatePage: FC = () => {
   const [consentOpen, setConsentOpen] = useState(false)
 
   const googleLogin = useGoogleLogin({
-    flow: 'auth-code',
+    flow: 'implicit',
     scope:
       'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/spreadsheets.readonly',
-    onSuccess: async ({ code }) => {
-      void getGoogleAccessToken({
-        variables: {
-          input: {
-            url: getOrigin(),
-            authCode: code
-          }
-        },
-        onCompleted: (data) => {
-          setGoogleAccessTokenId(data.getGoogleAccessToken.id)
-          setGoogleAccessToken(data.getGoogleAccessToken.accessToken)
-        }
-      })
+    onSuccess: async ({ access_token: accessToken }) => {
+      setGoogleAccessToken(accessToken)
     }
   })
 
@@ -210,7 +199,7 @@ const ImportYouTubeTemplatePage: FC = () => {
         onClose={() => setConsentOpen(false)}
         selectedTemplateFile={selectedTemplateFile}
         selectedVideosDirectory={selectedVideosDirectory}
-        googleAccessTokenId={googleAccessTokenId}
+        googleAccessToken={googleAccessToken}
       />
     </MainLayout>
   )

@@ -18,7 +18,6 @@ import { FC, useState } from 'react'
 import { Channels_channels } from '../../../__generated__/Channels'
 import { ConnectChannel } from '../../../__generated__/ConnectChannel'
 import { GET_CHANNELS } from '../../../pages/channels'
-import { getOrigin } from '../../../utils/getOrigin'
 
 import { ChannelsTableHeader } from './ChannelsTableHeader'
 
@@ -57,14 +56,13 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
   const { t } = useTranslation()
 
   const googleLogin = useGoogleLogin({
-    flow: 'auth-code',
-    onSuccess: ({ code }) => {
+    flow: 'implicit',
+    onSuccess: ({ access_token: accessToken }) => {
       void channelConnect({
         variables: {
           input: {
             channelId,
-            authCode: code,
-            redirectUri: getOrigin()
+            accessToken
           }
         },
         onCompleted: () => {

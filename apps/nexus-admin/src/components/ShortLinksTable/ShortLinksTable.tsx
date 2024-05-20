@@ -1,14 +1,7 @@
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
-import Popover from '@mui/material/Popover'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { DataGrid, GridCellParams } from '@mui/x-data-grid'
 import { formatISO, parseISO } from 'date-fns'
-import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { FC, useState } from 'react'
 
@@ -28,23 +21,18 @@ interface ShortLink {
 
 interface ShortLinksTableProps {
   data: ShortLink[] | []
-  onDelete: (channelId: string) => void
   loading: boolean
 }
 
 export const ShortLinksTable: FC<ShortLinksTableProps> = ({
   data,
-  onDelete,
   loading
 }) => {
-  const [morePopup, setMorePopup] = useState<HTMLElement | null>(null)
-  const [channelId, setChannelId] = useState<string>('')
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10
   })
   const { enqueueSnackbar } = useSnackbar()
-  const { t } = useTranslation()
 
   const copyToClipBoard = async (text: string): Promise<void> => {
     try {
@@ -68,7 +56,7 @@ export const ShortLinksTable: FC<ShortLinksTableProps> = ({
       headerName: 'Date',
       flex: 1,
       sortable: false,
-      renderCell: ({ row }: GridCellParams) => {
+      renderCell: ({ row }: GridCellParams<ShortLink>) => {
         return (
           <div>
             {formatISO(parseISO(row.createdDate), { representation: 'date' })}
@@ -87,32 +75,16 @@ export const ShortLinksTable: FC<ShortLinksTableProps> = ({
       headerName: 'Link to share',
       flex: 2,
       sortable: false,
-      renderCell: ({ row }: GridCellParams) => {
+      renderCell: ({ row }: GridCellParams<ShortLink>) => {
         return (
           <Box
             onClick={async () =>
-              await copyToClipBoard(`${row.domain}/${row.id}`)
+              await copyToClipBoard(`https://${row.domain}/${row.id}`)
             }
             sx={{ cursor: 'pointer' }}
-          >{`${row.domain}/${row.id}`}</Box>
+          >{`https://${row.domain}/${row.id}`}</Box>
         )
       }
-    },
-    {
-      field: 'action',
-      headerName: 'Action',
-      flex: 1,
-      sortable: false,
-      renderCell: ({ row }: GridCellParams) => (
-        <IconButton
-          onClick={(event) => {
-            setMorePopup(event.currentTarget)
-            setChannelId(row.id)
-          }}
-        >
-          <MoreHorizIcon fontSize="small" />
-        </IconButton>
-      )
     }
   ]
 
@@ -138,27 +110,6 @@ export const ShortLinksTable: FC<ShortLinksTableProps> = ({
           }
         }}
       />
-      <Popover
-        open={Boolean(morePopup)}
-        anchorEl={morePopup}
-        onClose={() => setMorePopup(null)}
-      >
-        <Stack sx={{ p: 4 }} spacing={4}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={2}
-            sx={{ cursor: 'pointer' }}
-            onClick={() => {
-              onDelete(channelId)
-              setMorePopup(null)
-            }}
-          >
-            <DeleteOutlineOutlinedIcon />
-            <Typography>{t('Delete')}</Typography>
-          </Stack>
-        </Stack>
-      </Popover>
     </Paper>
   )
 }

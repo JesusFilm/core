@@ -13,12 +13,12 @@ import { Modal } from '../Modal'
 
 const GET_RESOUCE_FROM_TEMPLATE = gql`
   mutation ResourceFromTemplate(
-    $tokenId: String!
+    $accessToken: String!
     $spreadsheetId: String!
     $drivefolderId: String!
   ) {
     resourceFromTemplate(
-      tokenId: $tokenId
+      accessToken: $accessToken
       spreadsheetId: $spreadsheetId
       drivefolderId: $drivefolderId
     ) {
@@ -32,7 +32,7 @@ interface UploadConfirmationModalProps {
   onClose: () => void
   selectedTemplateFile: CallbackDoc | null
   selectedVideosDirectory: CallbackDoc | null
-  googleAccessTokenId: string
+  googleAccessToken: string
 }
 
 export const UploadConfirmationModal: FC<UploadConfirmationModalProps> = ({
@@ -40,7 +40,7 @@ export const UploadConfirmationModal: FC<UploadConfirmationModalProps> = ({
   onClose,
   selectedTemplateFile,
   selectedVideosDirectory,
-  googleAccessTokenId
+  googleAccessToken
 }) => {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
@@ -53,7 +53,7 @@ export const UploadConfirmationModal: FC<UploadConfirmationModalProps> = ({
   const uploadYoutubeTemplate = (): void => {
     void getResourceFromTemplate({
       variables: {
-        tokenId: googleAccessTokenId,
+        accessToken: googleAccessToken,
         spreadsheetId: selectedTemplateFile?.id,
         drivefolderId: selectedVideosDirectory?.id
       },
