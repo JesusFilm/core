@@ -44,8 +44,7 @@ input ChannelFilter {
 
 input ConnectYoutubeChannelInput {
   channelId: String!
-  authCode: String!
-  redirectUri: String!
+  accessToken: String!
 }
 
 extend type Query {

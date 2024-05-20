@@ -20,7 +20,7 @@ export class AppCaslGuard extends CaslGuard {
     try {
       const userRole = await this.prismaService.userRole.upsert({
         where: { userId },
-        create: { userId },
+        create: { userId, roles: ['publisher'] },
         update: {}
       })
       return userRole.roles
