@@ -43,7 +43,6 @@ export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
   action: ButtonAction | null;
   /**
    * The label for each corresponding action, mapping below:
-   * NavigateAction - null
    * NavigateToBlockAction - StepName (generated in client) of the StepBlock
    * LinkAction - url of the link
    */

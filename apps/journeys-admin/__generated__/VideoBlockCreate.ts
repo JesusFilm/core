@@ -41,12 +41,6 @@ export interface VideoBlockCreate_videoBlockCreate_video {
   variantLanguages: VideoBlockCreate_videoBlockCreate_video_variantLanguages[];
 }
 
-export interface VideoBlockCreate_videoBlockCreate_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -68,7 +62,7 @@ export interface VideoBlockCreate_videoBlockCreate_action_EmailAction {
   email: string;
 }
 
-export type VideoBlockCreate_videoBlockCreate_action = VideoBlockCreate_videoBlockCreate_action_NavigateAction | VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | VideoBlockCreate_videoBlockCreate_action_LinkAction | VideoBlockCreate_videoBlockCreate_action_EmailAction;
+export type VideoBlockCreate_videoBlockCreate_action = VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | VideoBlockCreate_videoBlockCreate_action_LinkAction | VideoBlockCreate_videoBlockCreate_action_EmailAction;
 
 export interface VideoBlockCreate_videoBlockCreate {
   __typename: "VideoBlock";
