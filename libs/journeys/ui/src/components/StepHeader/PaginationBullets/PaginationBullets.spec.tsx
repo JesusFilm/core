@@ -80,7 +80,7 @@ describe('PaginationBullets', () => {
   it('should render the correct sized bullets', () => {
     treeBlocksVar([step1, step2, step3, step4, step5, step6, step7])
     blockHistoryVar([step1, step2, step3])
-    const { getAllByTestId, getByRole } = render(<PaginationBullets />)
+    const { getAllByTestId } = render(<PaginationBullets />)
     expect(getAllByTestId('bullet-active')).toHaveLength(1)
     expect(getAllByTestId('bullet-adjacent')).toHaveLength(2)
     expect(getAllByTestId('bullet-default')).toHaveLength(4)
