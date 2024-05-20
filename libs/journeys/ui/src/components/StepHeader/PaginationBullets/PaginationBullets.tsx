@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { ReactElement } from 'react'
+import sortBy from 'lodash/sortBy'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { TreeBlock, useBlocks } from '../../../libs/block'
 import { StepFields } from '../../Step/__generated__/StepFields'
@@ -9,20 +10,36 @@ import { Bullet } from './Bullet'
 
 export function PaginationBullets(): ReactElement {
   const { treeBlocks, blockHistory } = useBlocks()
-  const activeBlock = blockHistory[
-    blockHistory.length - 1
-  ] as TreeBlock<StepFields>
 
-  function isAdjacent(block: TreeBlock): boolean {
-    if (activeBlock.parentOrder !== null && block.parentOrder !== null)
-      if (
-        block.parentOrder - activeBlock.parentOrder === -1 ||
-        activeBlock.parentOrder - block.parentOrder === -1
-      ) {
-        return true
-      }
-    return false
-  }
+  const [activeIndex, setActiveIndex] = useState<number>(0)
+  const [activeBlock, setActiveBlock] = useState<TreeBlock<StepFields>>(
+    blockHistory[blockHistory.length - 1] as TreeBlock<StepFields>
+  )
+
+  // filter out orphan step blocks - sort by parent order
+  const bullets = sortBy(
+    treeBlocks.filter(
+      (blocks) =>
+        (blocks as StepFields).nextBlockId != null ||
+        treeBlocks.some(
+          (includesBlocks) =>
+            (includesBlocks as StepFields).nextBlockId === blocks.id
+        ) ||
+        blocks.parentOrder === 0
+    ),
+    ['parentOrder']
+  )
+
+  useEffect(() => {
+    const nextActiveBlock = blockHistory[
+      blockHistory.length - 1
+    ] as TreeBlock<StepFields>
+    setActiveBlock(nextActiveBlock)
+
+    nextActiveBlock?.nextBlockId != null
+      ? setActiveIndex(blockHistory.length - 1)
+      : setActiveIndex(bullets.length - 1)
+  }, [blockHistory, bullets.length])
 
   return (
     <Box
@@ -46,21 +63,24 @@ export function PaginationBullets(): ReactElement {
           overflow: 'hidden'
         }}
       >
-        {treeBlocks.map((block) => {
-          if (block.parentOrder == null || activeBlock.parentOrder == null)
-            return <></>
-
-          const isActive = block.id === activeBlock.id
+        {bullets.map((val, i) => {
           const gap = 16
-          const initial = 38
-          const distanceFromInitial = block.parentOrder * gap
-          const moveDistance = activeBlock.parentOrder * gap
+          const initial = 48
+          const distanceFromInitial = i * gap
+          const moveDistance =
+            activeBlock?.nextBlockId == null
+              ? bullets.length * gap
+              : blockHistory.length * gap
 
           return (
             <Bullet
-              key={block.id}
+              key={val.id}
               variant={
-                isActive ? 'active' : isAdjacent(block) ? 'adjacent' : 'default'
+                activeIndex === i
+                  ? 'active'
+                  : activeIndex + 1 === i || activeIndex - 1 === i
+                  ? 'adjacent'
+                  : 'default'
               }
               left={initial + distanceFromInitial - moveDistance}
             />
