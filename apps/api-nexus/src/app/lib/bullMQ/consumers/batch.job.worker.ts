@@ -28,9 +28,6 @@ export class BatchJobWorker {
     job: Job<UpdateVideoLocalizationJob>
   ): Promise<UploadResourceJob> {
     // GET VIDEO DRIVE TOKEN
-    const channelToken = await this.googleOAuthService.getNewAccessToken(
-      job.data.channel.refreshToken
-    )
 
     // DOWNLOAD THUMBNAIL FROM DRIVE
     console.log('UPLOAD THUMBNAIL FROM DRIVE')
@@ -38,14 +35,12 @@ export class BatchJobWorker {
     if (job.data.resource?.thumbnailDriveId != null) {
       thumnbnailFilePath = await this.googleDriveService.downloadDriveFile({
         fileId: job.data.resource.thumbnailDriveId,
-        accessToken: await this.googleOAuthService.getNewAccessToken(
-          job.data.resource.refreshToken
-        )
+        accessToken: job.data.accessToken
       })
 
       if (thumnbnailFilePath !== '') {
         await this.youtubeService.updateVideoThumbnail({
-          token: channelToken,
+          token: job.data.accessToken,
           videoId: job.data.localizations[0].videoId,
           mimeType: job.data.resource.thumbnailMimeType ?? '',
           thumbnailPath: thumnbnailFilePath
@@ -56,7 +51,7 @@ export class BatchJobWorker {
     // UPDATE YOUTUBE DATA
     console.log('UPDATE YOUTUBE')
     await this.youtubeService.updateVideo({
-      token: channelToken,
+      token: job.data.accessToken,
       title: job.data.localizations[0].title ?? '',
       description: job.data.localizations[0].description ?? '',
       category: job.data.resource.category,
@@ -65,9 +60,6 @@ export class BatchJobWorker {
       videoId: job.data.localizations[0].videoId,
       localizations: job.data.localizations
     })
-
-
-    console.log('channelToken', channelToken)
 
     await job.progress(100)
     return { ...job.returnvalue }
@@ -81,9 +73,7 @@ export class BatchJobWorker {
     const videoFilePath = await this.googleDriveService.downloadDriveFile(
       {
         fileId: job.data.resource.driveId,
-        accessToken: await this.googleOAuthService.getNewAccessToken(
-          job.data.resource.refreshToken
-        )
+        accessToken: job.data.accessToken
       },
       async (downloadProgress) => {
         await job.progress(0 + downloadProgress / 3)
@@ -100,9 +90,7 @@ export class BatchJobWorker {
     if (job.data.resource?.thumbnailDriveId != null) {
       thumnbnailFilePath = await this.googleDriveService.downloadDriveFile({
         fileId: job.data.resource.thumbnailDriveId,
-        accessToken: await this.googleOAuthService.getNewAccessToken(
-          job.data.resource.refreshToken
-        )
+        accessToken: job.data.accessToken
       })
     }
 
@@ -123,9 +111,7 @@ export class BatchJobWorker {
     // const youtubeData = { data: { id: null } }
     const youtubeData = await this.youtubeService.uploadVideo(
       {
-        token: await this.googleOAuthService.getNewAccessToken(
-          job.data.channel.refreshToken
-        ),
+        token: job.data.accessToken,
         filePath: videoFilePath,
         channelId: job.data.channel.channelId,
         title: job.data.resource.title ?? '',
@@ -155,12 +141,10 @@ export class BatchJobWorker {
     ) {
       if (thumnbnailFilePath != null) {
         await this.youtubeService.updateVideoThumbnail({
-          token: await this.googleOAuthService.getNewAccessToken(
-            job.data.channel.refreshToken
-          ),
+          token: job.data.accessToken,
           videoId: youtubeData?.data?.id,
           thumbnailPath: thumnbnailFilePath,
-          mimeType: 'image/jpeg'
+          mimeType: job.data.resource.thumbnailMimeType ?? 'image/jpeg'
         })
       }
     }

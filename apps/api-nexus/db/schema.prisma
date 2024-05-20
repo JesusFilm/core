@@ -27,14 +27,13 @@ model Channel {
 }
 
 model ChannelYoutube {
-    id           String  @id @default(uuid())
-    channelId    String  @unique
-    title        String
-    description  String
-    youtubeId    String
-    imageUrl     String
-    refreshToken String
-    channel      Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+    id          String  @id @default(uuid())
+    channelId   String  @unique
+    title       String
+    description String
+    youtubeId   String
+    imageUrl    String
+    channel     Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 }
 
 enum PrivacyStatus {
@@ -72,19 +71,17 @@ model Resource {
 }
 
 model ResourceSource {
-    id                               String   @id @default(uuid())
-    resourceId                       String   @unique
+    id                     String   @id @default(uuid())
+    resourceId             String   @unique
     // VIDEO
-    videoGoogleDriveId               String?
-    videoGoogleDriveRefreshToken     String?
-    videoCloudFlareId                String?
-    videoMimeType                    String?
+    videoGoogleDriveId     String?
+    videoCloudFlareId      String?
+    videoMimeType          String?
     // Thumbnail
-    thumbnailGoogleDriveId           String?
-    thumbnailGoogleDriveRefreshToken String?
-    thumbnailCloudFlareId            String?
-    thumbnailMimeType                String?
-    resource                         Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+    thumbnailGoogleDriveId String?
+    thumbnailCloudFlareId  String?
+    thumbnailMimeType      String?
+    resource               Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
 }
 
 model ResourceChannel {
@@ -111,19 +108,17 @@ model ResourceLocalization {
 }
 
 model ResourceLocalizationSource {
-    id                                String               @id @default(uuid())
-    reourceLocalizationId             String               @unique
+    id                      String               @id @default(uuid())
+    reourceLocalizationId   String               @unique
     // CAPTION
-    captionGoogleDriveId              String?
-    captionGoogleDriveRefreshToken    String?
-    captionCloudFlareId               String?
-    captionMimeType                   String?
+    captionGoogleDriveId    String?
+    captionCloudFlareId     String?
+    captionMimeType         String?
     // AUDIO TRACK
-    audioTrackGoogleDriveId           String?
-    audioTrackGoogleDriveRefreshToken String?
-    audioTrackCloudFlareId            String?
-    audioMimeType                     String?
-    resourceLocalization              ResourceLocalization @relation(fields: [reourceLocalizationId], references: [id], onDelete: Cascade)
+    audioTrackGoogleDriveId String?
+    audioTrackCloudFlareId  String?
+    audioMimeType           String?
+    resourceLocalization    ResourceLocalization @relation(fields: [reourceLocalizationId], references: [id], onDelete: Cascade)
 }
 
 enum BatchStatus {

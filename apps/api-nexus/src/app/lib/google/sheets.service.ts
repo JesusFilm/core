@@ -97,26 +97,13 @@ export class GoogleSheetsService {
   }
 
   async getSpreadSheetTemplateData(
-    tokenId: string,
+    accessToken: string,
     spreadsheetId: string,
     drivefolderId: string
   ): Promise<{
     templateType: SpreadsheetTemplateType
     spreadsheetData: SpreadsheetRow[]
-    googleAccessToken: { id: string; refreshToken: string }
   }> {
-    const googleAccessToken =
-      await this.prismaService.googleAccessToken.findUnique({
-        where: { id: tokenId }
-      })
-    if (googleAccessToken === null) {
-      throw new Error('Invalid tokenId')
-    }
-
-    const accessToken = await this.googleOAuthService.getNewAccessToken(
-      googleAccessToken.refreshToken
-    )
-
     const files = await this.googleDriveService.findFiles(
       this.googleOAuthService.authorize(
         accessToken,
@@ -138,13 +125,12 @@ export class GoogleSheetsService {
       spreadsheetData: spreadsheetRowData?.spreadsheetRows ?? [],
       templateType:
         spreadsheetRowData?.spreadsheetTemplateType ??
-        SpreadsheetTemplateType.UPLOAD,
-      googleAccessToken
+        SpreadsheetTemplateType.UPLOAD
     }
   }
 
   async processUploadSpreadsheetTemplate(
-    googleAccessToken: { id: string; refreshToken: string },
+    token: string,
     spreadsheetRows: SpreadsheetRow[]
   ): Promise<Resource[]> {
     // UPLOADING TEMPLATE DATA
@@ -160,12 +146,13 @@ export class GoogleSheetsService {
     )
     for (const channel of channels) {
       const resources = await this.createResourceFromSpreadsheet(
-        googleAccessToken.refreshToken,
+        token,
         spreadsheetRows.filter(
           (spreadsheetRow) => spreadsheetRow.channelData?.id === channel
         )
       )
       await this.bullMQService.createUploadResourceBatch(
+        token,
         uuidv4(),
         spreadsheetRows.find((item) => item.channelData?.id === channel)
           ?.channelData as Channel,
@@ -192,9 +179,13 @@ export class GoogleSheetsService {
           customThumbnail: row.customThumbnail,
           category: row.category,
           privacy: row.privacy as PrivacyStatus,
-          notifySubscribers:  ['1', 'true', 'yes', 'on'].includes(row.notifySubscribers ?? ''),
+          notifySubscribers: ['1', 'true', 'yes', 'on'].includes(
+            row.notifySubscribers ?? ''
+          ),
           playlistId: row.playlistId,
-          isMadeForKids:  ['1', 'true', 'yes', 'on'].includes(row.isMadeForKids ?? ''),
+          isMadeForKids: ['1', 'true', 'yes', 'on'].includes(
+            row.isMadeForKids ?? ''
+          ),
           mediaComponentId: row.mediaComponentId,
           language: row.language,
           resourceLocalizations: {
@@ -208,9 +199,7 @@ export class GoogleSheetsService {
               resourceLocalizationSource: {
                 create: {
                   captionGoogleDriveId: row.captionDriveFile?.id ?? '',
-                  captionGoogleDriveRefreshToken: refreshToken,
-                  audioTrackGoogleDriveId: row.audioTrackDriveFile?.id,
-                  audioTrackGoogleDriveRefreshToken: refreshToken
+                  audioTrackGoogleDriveId: row.audioTrackDriveFile?.id
                 }
               }
             }
@@ -219,10 +208,8 @@ export class GoogleSheetsService {
             create: {
               videoMimeType: row.videoDriveFile?.mimeType ?? '',
               videoGoogleDriveId: row.videoDriveFile?.id ?? '',
-              videoGoogleDriveRefreshToken: refreshToken,
               thumbnailGoogleDriveId: row.customThumbnailDriveFile?.id ?? '',
-              thumbnailMimeType: row.customThumbnailDriveFile?.mimeType ?? '',
-              thumbnailGoogleDriveRefreshToken: refreshToken
+              thumbnailMimeType: row.customThumbnailDriveFile?.mimeType ?? ''
             }
           }
         }
@@ -347,16 +334,17 @@ export class GoogleSheetsService {
   }
 
   async processLocalizationTemplateBatches(
-    googleAccessToken: { id: string; refreshToken: string },
+    accessToken: string,
     spreadsheetData: SpreadsheetRow[]
   ): Promise<void> {
     const preparedBatchJobs =
       await this.batchService.createUpdateResourcesLocalization(
-        googleAccessToken.refreshToken,
+        accessToken,
         spreadsheetData
       )
     for (const preparedBatchJob of preparedBatchJobs) {
       await this.bullMQService.createLocalizationBatch(
+        accessToken,
         uuidv4(),
         preparedBatchJob.channel,
         preparedBatchJob.resourceIds

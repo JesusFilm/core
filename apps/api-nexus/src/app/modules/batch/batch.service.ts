@@ -11,7 +11,7 @@ export class BatchService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createUpdateResourcesLocalization(
-    refreshToken: string,
+    token: string,
     spreadsheetRows: SpreadsheetRow[]
   ): Promise<
     Array<{
@@ -30,27 +30,33 @@ export class BatchService {
           resourceChannels: { where: { youtubeId: row.videoId } }
         }
       })
-      if(resource != null) {
+      if (resource != null) {
         // Update Resource
-      await this.prismaService.resource.update({
-        where: {id: row.resourceData?.id},
-        data: {
-          customThumbnail: row.customThumbnail,
-          isMadeForKids: row.isMadeForKids !== undefined?  ['1', 'true', 'on', 'yes'].includes(row.isMadeForKids) : undefined,
-          privacy: row.privacy as PrivacyStatus,
-          category: row.category,
-          notifySubscribers: row.notifySubscribers !== undefined?  ['1', 'true', 'on', 'yes'].includes(row.notifySubscribers) : undefined,
-          resourceSource: {
-            update: {
-              where: {resourceId: row.resourceData?.id},
-              data: {
-                thumbnailGoogleDriveId: row.customThumbnailDriveFile?.id,
-                thumbnailMimeType: row.customThumbnailDriveFile?.mimeType
+        await this.prismaService.resource.update({
+          where: { id: row.resourceData?.id },
+          data: {
+            customThumbnail: row.customThumbnail,
+            isMadeForKids:
+              row.isMadeForKids !== undefined
+                ? ['1', 'true', 'on', 'yes'].includes(row.isMadeForKids)
+                : undefined,
+            privacy: row.privacy as PrivacyStatus,
+            category: row.category,
+            notifySubscribers:
+              row.notifySubscribers !== undefined
+                ? ['1', 'true', 'on', 'yes'].includes(row.notifySubscribers)
+                : undefined,
+            resourceSource: {
+              update: {
+                where: { resourceId: row.resourceData?.id },
+                data: {
+                  thumbnailGoogleDriveId: row.customThumbnailDriveFile?.id,
+                  thumbnailMimeType: row.customThumbnailDriveFile?.mimeType
+                }
               }
             }
           }
-        }
-      });
+        })
       }
       if (resource?.resourceLocalizations.length === 0) {
         // Create Localization is it is not existing
@@ -68,10 +74,8 @@ export class BatchService {
               create: {
                 captionMimeType: row.captionDriveFile?.mimeType ?? '',
                 captionGoogleDriveId: row.captionDriveFile?.id ?? '',
-                captionGoogleDriveRefreshToken: refreshToken,
                 audioTrackGoogleDriveId: row.audioTrackDriveFile?.id ?? '',
-                audioMimeType: row.audioTrackDriveFile?.mimeType ?? '',
-                audioTrackGoogleDriveRefreshToken: refreshToken
+                audioMimeType: row.audioTrackDriveFile?.mimeType ?? ''
               }
             }
           },
@@ -96,23 +100,19 @@ export class BatchService {
                   // AUDIO
                   audioMimeType: row.audioTrackDriveFile?.mimeType,
                   audioTrackGoogleDriveId: row.audioTrackDriveFile?.id,
-                  audioTrackGoogleDriveRefreshToken: refreshToken,
 
                   // CAPTION
                   captionMimeType: row.captionDriveFile?.mimeType,
-                  captionGoogleDriveId: row.captionDriveFile?.id,
-                  captionGoogleDriveRefreshToken: refreshToken
+                  captionGoogleDriveId: row.captionDriveFile?.id
                 },
                 update: {
                   // AUDIO
                   audioMimeType: row.audioTrackDriveFile?.mimeType,
                   audioTrackGoogleDriveId: row.audioTrackDriveFile?.id,
-                  audioTrackGoogleDriveRefreshToken: refreshToken,
 
                   // CAPTION
                   captionMimeType: row.captionDriveFile?.mimeType,
-                  captionGoogleDriveId: row.captionDriveFile?.id,
-                  captionGoogleDriveRefreshToken: refreshToken
+                  captionGoogleDriveId: row.captionDriveFile?.id
                 }
               }
             }

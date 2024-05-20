@@ -54,7 +54,9 @@ export class GoogleOAuthService {
   private readonly serviceAccount: GoogleCredential
 
   constructor() {
-    this.serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_JSON ?? '') as GoogleCredential
+    this.serviceAccount = JSON.parse(
+      process.env.GOOGLE_APPLICATION_JSON ?? ''
+    ) as GoogleCredential
     this.credential = {
       client_secret: process.env.CLIENT_SECRET ?? '',
       client_id: process.env.CLIENT_ID ?? '',

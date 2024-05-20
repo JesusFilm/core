@@ -202,8 +202,7 @@ export class ChannelResolver {
         title: youtubeChannels.items[0].snippet.title,
         description: youtubeChannels.items[0].snippet.description,
         youtubeId: youtubeChannels.items[0].id,
-        imageUrl: youtubeChannels.items[0].snippet.thumbnails.high.url,
-        refreshToken: authResponse.refresh_token
+        imageUrl: youtubeChannels.items[0].snippet.thumbnails.high.url
       }
     })
 
