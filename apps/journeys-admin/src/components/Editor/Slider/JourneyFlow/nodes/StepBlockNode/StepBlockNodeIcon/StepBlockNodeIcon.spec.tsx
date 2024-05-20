@@ -52,7 +52,7 @@ describe('StepBlockNodeIcon', () => {
   })
 
   it('should render icon for multiple blocks', () => {
-    render(<StepBlockNodeIcon typename="ButtonBlock" hasMultiple />)
+    render(<StepBlockNodeIcon typename="ButtonBlock" showMultiIcon />)
 
     expect(screen.getByTestId('GitBranchIcon')).toBeInTheDocument()
   })

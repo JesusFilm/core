@@ -13,8 +13,10 @@ const StepBlockNodeIconStory: Meta<typeof StepBlockNodeIcon> = {
 }
 
 const Template: StoryObj<ComponentPropsWithoutRef<typeof StepBlockNodeIcon>> = {
-  render: ({ typename, hasMultiple }) => {
-    return <StepBlockNodeIcon typename={typename} hasMultiple={hasMultiple} />
+  render: ({ typename, showMultiIcon }) => {
+    return (
+      <StepBlockNodeIcon typename={typename} showMultiIcon={showMultiIcon} />
+    )
   }
 }
 
@@ -78,7 +80,7 @@ export const Multiple = {
   ...Template,
   args: {
     typename: 'ButtonBlock',
-    hasMultiple: true
+    showMultiIcon: true
   }
 }
 

@@ -14,12 +14,12 @@ import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 interface StepBlockNodeIconProps {
   typename: Block['__typename']
-  hasMultiple?: boolean
+  showMultiIcon?: boolean
 }
 
 export function StepBlockNodeIcon({
   typename,
-  hasMultiple = false
+  showMultiIcon = false
 }: StepBlockNodeIconProps): ReactElement {
   let background: string | undefined
   let Icon: typeof SvgIcon
@@ -60,7 +60,7 @@ export function StepBlockNodeIcon({
       Icon = FlexAlignBottom1Icon
   }
 
-  if (hasMultiple) {
+  if (showMultiIcon) {
     background = 'linear-gradient(to bottom, #4c9bf8, #1873de)'
     Icon = GitBranchIcon
   }
