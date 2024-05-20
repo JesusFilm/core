@@ -628,7 +628,6 @@ describe('BlockService', () => {
         .mockResolvedValueOnce(typographyBlock)
         .mockResolvedValueOnce(cardBlock)
         .mockResolvedValueOnce(stepBlock)
-
       expect(await service.findParentStepBlock(typographyBlock.id)).toEqual({
         id: 'step',
         journeyId: '1',
@@ -643,7 +642,6 @@ describe('BlockService', () => {
         ...typographyBlock,
         parentBlockId: null
       })
-
       expect(
         await service.findParentStepBlock(typographyBlock.id)
       ).toBeUndefined()
