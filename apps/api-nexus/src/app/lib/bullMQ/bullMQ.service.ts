@@ -10,34 +10,36 @@ import { PrismaService } from '../../lib/prisma.service'
 export interface UploadResourceJob {
   batchId: string
   batchTaskId: string
+  accessToken: string
   resource: {
     id: string
     driveId: string
-    refreshToken: string
     title: string
     description: string
     language?: string
     thumbnailDriveId?: string
+    thumbnailMimeType?: string
     captionDriveId?: string
     privacyStatus?: string
   }
   channel: {
     id: string
     channelId: string
-    refreshToken: string
   }
 }
 export interface UpdateVideoLocalizationJob {
   batchId: string
+  accessToken: string
   channel: {
     id: string
     channelId: string
-    refreshToken: string
   }
   resource: {
     category: string
-    refreshToken: string
     privacyStatus?: string
+    isMadeForKids: boolean
+    thumbnailDriveId?: string
+    thumbnailMimeType?: string
   }
   localizations: Array<{
     videoId: string
@@ -46,7 +48,6 @@ export interface UpdateVideoLocalizationJob {
     description?: string
     language: string
     captionDriveId?: string
-    captionDriveRefreshToken?: string
   }>
 }
 
@@ -76,6 +77,7 @@ export class BullMQService {
   ) {}
 
   private async createUploadResourceBatchJob(
+    accessToken: string,
     batchId: string,
     channel: Channel
   ): Promise<Array<Bull.Job<unknown>>> {
@@ -115,21 +117,20 @@ export class BullMQService {
         const jobData: UploadResourceJob = {
           batchId: batch.id,
           batchTaskId: batchTask.id,
+          accessToken,
           resource: {
             id: resource.id,
             driveId: resource.resourceSource?.videoGoogleDriveId ?? '',
-            refreshToken:
-              resource.resourceSource?.videoGoogleDriveRefreshToken ?? '',
             title: resource.resourceLocalizations[0]?.title ?? '',
             description: resource.resourceLocalizations[0]?.description ?? '',
             thumbnailDriveId:
               resource.resourceSource?.thumbnailGoogleDriveId ?? '',
+            thumbnailMimeType: resource.resourceSource?.thumbnailMimeType ?? '',
             privacyStatus: resource.privacy ?? PrivacyStatus.private
           },
           channel: {
             id: channel?.id ?? '',
-            channelId: channelData?.youtube?.youtubeId ?? '',
-            refreshToken: channelData?.youtube?.refreshToken ?? ''
+            channelId: channelData?.youtube?.youtubeId ?? ''
           }
         }
 
@@ -145,6 +146,7 @@ export class BullMQService {
   }
 
   async createUploadResourceBatch(
+    token: string,
     batchName: string,
     channel: Channel,
     resources: Resource[]
@@ -167,12 +169,13 @@ export class BullMQService {
       })
     })
 
-    await this.createUploadResourceBatchJob(batch.id, channel)
+    await this.createUploadResourceBatchJob(token, batch.id, channel)
 
     return batch as unknown as Batch
   }
 
   async createLocalizationBatch(
+    accessToken: string,
     batchName: string,
     channelId: string,
     resourceIds: string[]
@@ -219,16 +222,18 @@ export class BullMQService {
     for (const item of resources) {
       const job: UpdateVideoLocalizationJob = {
         batchId: batch.id,
+        accessToken,
         channel: {
           id: channel?.id ?? '',
-          channelId: channel?.resourceChannels[0].channelId ?? '',
-          refreshToken: channel?.youtube?.refreshToken ?? ''
+          channelId: channel?.resourceChannels[0].channelId ?? ''
         },
         resource: {
           category: item.category ?? '',
-          refreshToken:
-            item.resourceSource?.thumbnailGoogleDriveRefreshToken ?? '',
-          privacyStatus: item.privacy
+          privacyStatus: item.privacy,
+          isMadeForKids: item.isMadeForKids,
+          thumbnailDriveId:
+            item.resourceSource?.thumbnailGoogleDriveId ?? undefined,
+          thumbnailMimeType: item.resourceSource?.thumbnailMimeType ?? undefined
         },
         localizations: item.resourceLocalizations.map((loc) => {
           return {
@@ -238,10 +243,7 @@ export class BullMQService {
             description: loc.description ?? '',
             resourceId: loc.resourceId ?? '',
             captionDriveId:
-              loc.resourceLocalizationSource?.captionGoogleDriveId ?? '',
-            captionDriveRefreshToken:
-              loc.resourceLocalizationSource?.captionGoogleDriveRefreshToken ??
-              ''
+              loc.resourceLocalizationSource?.captionGoogleDriveId ?? ''
           }
         })
       }

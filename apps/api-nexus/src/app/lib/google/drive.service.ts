@@ -58,6 +58,8 @@ export class GoogleDriveService {
       fileId,
       fields: 'name, mimeType'
     })
+
+    
     const downloadFileName = driveFile.data.name ?? 'sample.mp4'
     const downloadDirectory = path.join(__dirname, '..', 'downloads')
     const fileName = uuidv4() + path.extname(downloadFileName)
@@ -68,6 +70,7 @@ export class GoogleDriveService {
       { fileId, alt: 'media' },
       { responseType: 'stream' }
     )
+    response.data.pipe(writer)
 
     const totalLength = response.headers['content-length']
     let downloadedLength = 0
@@ -77,8 +80,6 @@ export class GoogleDriveService {
       const percentage = (downloadedLength / totalLength) * 100
       void Promise.all([this.executeCallback(progressCallback, percentage)])
     })
-
-    response.data.pipe(writer)
 
     return await new Promise((resolve, reject) => {
       writer.on('finish', () => resolve(outputPath))

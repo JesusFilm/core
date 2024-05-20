@@ -340,8 +340,7 @@ describe('ChannelResolver', () => {
         title: 'YouTube Channel Title',
         description: 'YouTube Channel Description',
         youtubeId: 'youtubeChannelId',
-        imageUrl: 'thumbnailUrl',
-        refreshToken: 'refreshToken'
+        imageUrl: 'thumbnailUrl'
       })
       prismaService.channel.update.mockResolvedValue({
         ...channel,

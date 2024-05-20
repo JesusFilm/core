@@ -38,7 +38,7 @@ describe('ResourceResolver', () => {
     deletedAt: null,
     category: 'Example Category',
     privacy: PrivacyStatus.private,
-    spokenLanguage: null,
+    language: null,
     customThumbnail: null,
     isMadeForKids: false,
     playlistId: null,

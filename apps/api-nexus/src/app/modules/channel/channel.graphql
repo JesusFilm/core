@@ -22,7 +22,6 @@ type ChannelYoutube {
   description: String
   youtubeId: String
   imageUrl: String
-  refreshToken: String
 }
 
 input ChannelCreateInput {
@@ -45,8 +44,7 @@ input ChannelFilter {
 
 input ConnectYoutubeChannelInput {
   channelId: String!
-  authCode: String!
-  redirectUri: String!
+  accessToken: String!
 }
 
 extend type Query {

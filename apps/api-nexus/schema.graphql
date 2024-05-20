@@ -16,7 +16,6 @@ type Batch
   @key(fields: "id")
 {
   id: ID!
-  nexusId: String!
   channelId: String!
   channel: Channel
   resources: [BatchResource]
@@ -52,7 +51,6 @@ type BatchResource
 input BatchFilter {
   ids: [ID!]
   name: String
-  nexusId: String
   status: BatchStatus
   limit: Int
 }
@@ -99,7 +97,6 @@ type ChannelYoutube {
   description: String
   youtubeId: String
   imageUrl: String
-  refreshToken: String
 }
 
 input ChannelCreateInput {
@@ -138,7 +135,6 @@ extend type Mutation {
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
   resourceFromTemplate(tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!]
-  getGoogleAccessToken(input: GoogleAuthInput!): GoogleAuthResponse!
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
   resourceBatchJob(input: BatchJobInput!): String
 }
@@ -205,11 +201,6 @@ type ResourceLocalization
   description: String!
   keywords: String!
   language: String!
-}
-
-type GoogleAuthResponse {
-  id: ID!
-  accessToken: String!
 }
 
 enum PrivacyStatus {

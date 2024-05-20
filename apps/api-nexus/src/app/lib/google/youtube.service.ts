@@ -142,7 +142,8 @@ export class GoogleYoutubeService {
     description: string
     defaultLanguage?: string
     privacyStatus?: string
-    category: string
+    category: string,
+    isMadeForKids: boolean,
     localizations: Array<{
       resourceId?: string
       title?: string
@@ -167,13 +168,18 @@ export class GoogleYoutubeService {
           youtubeData.token,
           'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl'
         ),
-        part: ['snippet', 'localizations'],
+        part: ['snippet', 'localizations', 'status'],
         requestBody: {
           id: youtubeData.videoId,
           snippet: {
             title: youtubeData.title,
             description: youtubeData.description,
-            categoryId: youtubeData.category
+            categoryId: youtubeData.category,
+            defaultLanguage: youtubeData.defaultLanguage,
+          },
+          status: {
+            madeForKids: youtubeData.isMadeForKids,
+            privacyStatus: youtubeData.privacyStatus
           },
           localizations: convertedLocalizations
         }

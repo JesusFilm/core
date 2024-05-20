@@ -79,8 +79,7 @@ export class ChannelFilter {
 
 export class ConnectYoutubeChannelInput {
     channelId: string;
-    authCode: string;
-    redirectUri: string;
+    accessToken: string;
 }
 
 export class NexusCreateInput {
@@ -213,7 +212,6 @@ export class ChannelYoutube {
     description?: Nullable<string>;
     youtubeId?: Nullable<string>;
     imageUrl?: Nullable<string>;
-    refreshToken?: Nullable<string>;
 }
 
 export class Nexus {
@@ -251,12 +249,6 @@ export class ResourceLocalization {
     language: string;
 }
 
-export class GoogleAuthResponse {
-    __typename?: 'GoogleAuthResponse';
-    id: string;
-    accessToken: string;
-}
-
 export class Translation {
     __typename?: 'Translation';
     value: string;
@@ -286,8 +278,6 @@ export abstract class IMutation {
     abstract resourceDelete(id: string): Resource | Promise<Resource>;
 
     abstract resourceFromTemplate(tokenId: string, spreadsheetId: string, drivefolderId: string): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
-
-    abstract getGoogleAccessToken(input: GoogleAuthInput): GoogleAuthResponse | Promise<GoogleAuthResponse>;
 
     abstract uploadToYoutube(channelId: string, resourceId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 

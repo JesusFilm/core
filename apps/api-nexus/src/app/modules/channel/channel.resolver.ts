@@ -25,7 +25,7 @@ export class ChannelResolver {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly googleOAuth: GoogleOAuthService,
-    private readonly googleYoutube: GoogleYoutubeService
+    private readonly googleYoutubeService: GoogleYoutubeService
   ) {}
 
   @Query()
@@ -171,15 +171,10 @@ export class ChannelResolver {
         extensions: { code: 'FORBIDDEN' }
       })
 
-    const authResponse = await this.googleOAuth.getAccessToken({
-      code: input.authCode,
-      grant_type: 'authorization_code',
-      redirect_uri: input.redirectUri
+    const youtubeChannels = await this.googleYoutubeService.getChannels({
+      accessToken: input.accessToken
     })
 
-    const youtubeChannels = await this.googleYoutube.getChannels({
-      accessToken: authResponse.access_token
-    })
     if (youtubeChannels.items?.[0] == null)
       throw new GraphQLError('youtube channel not found', {
         extensions: { code: 'NOT_FOUND' }
@@ -202,8 +197,7 @@ export class ChannelResolver {
         title: youtubeChannels.items[0].snippet.title,
         description: youtubeChannels.items[0].snippet.description,
         youtubeId: youtubeChannels.items[0].id,
-        imageUrl: youtubeChannels.items[0].snippet.thumbnails.high.url,
-        refreshToken: authResponse.refresh_token
+        imageUrl: youtubeChannels.items[0].snippet.thumbnails.high.url
       }
     })
 

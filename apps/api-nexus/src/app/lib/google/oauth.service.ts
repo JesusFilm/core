@@ -35,14 +35,35 @@ interface Credential {
   redirect_uris: string[]
 }
 
+interface GoogleCredential {
+  type: string
+  project_id: string
+  private_key_id: string
+  private_key?: string
+  client_email?: string
+  client_id: string
+  auth_uri?: string
+  token_uri?: string
+  auth_provider_x509_cert_url?: string
+  client_x509_cert_url?: string
+}
+
 @Injectable()
 export class GoogleOAuthService {
   private readonly credential: Credential
+  private readonly serviceAccount: GoogleCredential
 
   constructor() {
+    this.serviceAccount = JSON.parse(
+      process.env.GOOGLE_APPLICATION_JSON ?? ''
+    ) as GoogleCredential
     this.credential = {
       client_secret: process.env.CLIENT_SECRET ?? '',
-      client_id: process.env.CLIENT_ID ?? '',
+      client_id: (
+        JSON.parse(process.env.GOOGLE_APPLICATION_JSON ?? '{}') as {
+          client_id: string
+        }
+      ).client_id,
       redirect_uris: ['https://localhost:4200']
     }
   }
@@ -62,8 +83,8 @@ export class GoogleOAuthService {
 
   async getAccessToken(req: AuthCodeRequest): Promise<AuthCodeResponse> {
     const reqBody = new FormData()
-    reqBody.append('client_id', process.env.GOOGLE_CLIENT_ID ?? '')
-    reqBody.append('client_secret', process.env.GOOGLE_CLIENT_SECRET ?? '')
+    reqBody.append('client_id', this.credential.client_id)
+    reqBody.append('client_secret', this.credential.client_secret)
     reqBody.append('redirect_uri', req.redirect_uri)
     reqBody.append('grant_type', req.grant_type)
     reqBody.append('code', req.code)
@@ -80,8 +101,8 @@ export class GoogleOAuthService {
     req: RefreshTokenRequest
   ): Promise<AuthRefreshedResponse> {
     const reqBody = new FormData()
-    reqBody.append('client_id', process.env.GOOGLE_CLIENT_ID ?? '')
-    reqBody.append('client_secret', process.env.GOOGLE_CLIENT_SECRET ?? '')
+    reqBody.append('client_id', this.credential.client_id)
+    reqBody.append('client_secret', this.credential.client_secret)
     reqBody.append('grant_type', req.grant_type)
     reqBody.append('refresh_token', req.refresh_token)
 
@@ -95,8 +116,8 @@ export class GoogleOAuthService {
 
   async getNewAccessToken(refreshToken: string): Promise<string> {
     const reqBody = new URLSearchParams({
-      client_id: process.env.GOOGLE_CLIENT_ID ?? '',
-      client_secret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+      client_id: this.credential.client_id,
+      client_secret: this.credential.client_secret,
       refresh_token: refreshToken,
       grant_type: 'refresh_token'
     })
@@ -119,8 +140,8 @@ export class GoogleOAuthService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const reqBody = new URLSearchParams({
       code: authCode,
-      client_id: process.env.GOOGLE_CLIENT_ID ?? '',
-      client_secret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+      client_id: this.credential.client_id,
+      client_secret: this.credential.client_secret,
       redirect_uri: redirectUri,
       grant_type: 'authorization_code'
     })
