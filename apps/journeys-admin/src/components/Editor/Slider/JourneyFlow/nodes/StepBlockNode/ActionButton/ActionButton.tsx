@@ -108,6 +108,7 @@ export function ActionButton({
       isSourceConnected={isSourceConnected}
     >
       <Box
+        data-testid={`ActionButton-${block.id}`}
         sx={{
           px: 3,
           opacity: selected ? 1 : 0.7,
