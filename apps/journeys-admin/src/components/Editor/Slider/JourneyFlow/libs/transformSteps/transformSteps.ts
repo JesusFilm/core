@@ -1,18 +1,17 @@
-import { darken } from '@mui/system/colorManipulator'
+import { lighten, rgbToHex } from '@mui/system/colorManipulator'
 import findIndex from 'lodash/findIndex'
 import { Edge, MarkerType, Node } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import {
-  BlockFields,
-  BlockFields_StepBlock as StepBlock
-} from '../../../../../../../__generated__/BlockFields'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { adminLight } from '../../../../../ThemeProvider/admin/theme'
 import { PositionMap } from '../arrangeSteps'
 import { filterActionBlocks } from '../filterActionBlocks'
 
-export const MARKER_END_DEFAULT_COLOR = darken(adminLight.palette.divider, 0.5)
+export const MARKER_END_DEFAULT_COLOR = rgbToHex(
+  lighten(adminLight.palette.secondary.main, 0.8)
+)
 export const MARKER_END_SELECTED_COLOR = adminLight.palette.primary.main
 export const defaultEdgeProps = {
   type: 'Custom',
@@ -23,6 +22,15 @@ export const defaultEdgeProps = {
     color: MARKER_END_DEFAULT_COLOR
   }
 }
+
+export const socialNode = {
+  id: 'SocialPreview',
+  type: 'SocialPreview',
+  data: {},
+  position: { x: -365, y: -46 },
+  draggable: false
+}
+
 export const hiddenEdge = {
   id: 'SocialPreview->hidden',
   source: 'SocialPreview',
@@ -45,12 +53,6 @@ export const hiddenNode = {
   hidden: true
 }
 
-interface Connection<T = BlockFields> {
-  block: TreeBlock<T>
-  step: TreeBlock<StepBlock>
-  steps: Array<TreeBlock<StepBlock>>
-}
-
 type TreeStepBlock = TreeBlock<StepBlock>
 
 export function transformSteps(
@@ -60,27 +62,37 @@ export function transformSteps(
   nodes: Node[]
   edges: Edge[]
 } {
-  const nodes: Node[] = []
-  const edges: Edge[] = []
+  const nodes: Node[] = [socialNode, hiddenNode]
+  const edges: Edge[] = [hiddenEdge]
 
-  function connectBlockToNextBlock({ block, step, steps }: Connection): void {
+  function connectStepToNextBlock(
+    step: TreeBlock<StepBlock>,
+    steps: Array<TreeBlock<StepBlock>>
+  ): void {
     const index = findIndex(steps, (child) => child.id === step.id)
     if (index < 0) return
+
     if (step.nextBlockId != null && step.nextBlockId !== step.id) {
       edges.push({
-        id: `${block.id}->${step.nextBlockId}`,
+        id: `${step.id}->${step.nextBlockId}`,
         source: step.id,
-        sourceHandle: block.id !== step.id ? block.id : undefined,
+        sourceHandle: undefined,
         target: step.nextBlockId,
         ...defaultEdgeProps
       })
     }
   }
 
-  function processActionBlock(block, step, steps): void {
-    if (block.action == null) return
+  function processActionBlock(
+    block: TreeBlock,
+    step: TreeBlock<StepBlock>
+  ): void {
+    if (!('action' in block) || block.action == null) return
 
-    if (block.action.__typename === 'NavigateToBlockAction') {
+    if (
+      block.action.__typename === 'NavigateToBlockAction' &&
+      block.action.blockId !== step.id
+    ) {
       edges.push({
         id: `${block.id}->${block.action.blockId}`,
         source: step.id,
@@ -92,23 +104,15 @@ export function transformSteps(
   }
 
   steps.forEach((step) => {
-    connectBlockToNextBlock({ block: step, step, steps })
+    connectStepToNextBlock(step, steps)
     const actionBlocks = filterActionBlocks(step)
-    actionBlocks.forEach((block) => processActionBlock(block, step, steps))
+    actionBlocks.forEach((block) => processActionBlock(block, step))
     nodes.push({
       id: step.id,
       type: 'StepBlock',
       data: {},
       position: positions[step.id]
     })
-  })
-
-  nodes.push({
-    id: 'SocialPreview',
-    type: 'SocialPreview',
-    data: {},
-    position: { x: -365, y: -46 },
-    draggable: false
   })
 
   if (steps[0] != null) {
@@ -119,12 +123,6 @@ export function transformSteps(
       ...defaultEdgeProps,
       type: 'Start'
     })
-  }
-
-  // hidden edge so the markerEnd style can be used
-  if (nodes.find((node) => node.id === 'hidden') == null) {
-    nodes.push(hiddenNode)
-    edges.push(hiddenEdge)
   }
 
   return { nodes, edges }
