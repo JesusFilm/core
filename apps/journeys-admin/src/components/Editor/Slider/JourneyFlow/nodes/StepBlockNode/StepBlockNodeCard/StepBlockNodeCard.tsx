@@ -54,6 +54,7 @@ export function StepBlockNodeCard({
 
   return (
     <Card
+      data-testid="StepBlockNodeCard"
       elevation={selected ? 6 : 1}
       title={t('Click to edit or drag')}
       onClick={handleClick}

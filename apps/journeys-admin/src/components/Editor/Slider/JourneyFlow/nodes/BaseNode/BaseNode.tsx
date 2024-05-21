@@ -164,7 +164,7 @@ export function BaseNode({
           }}
         >
           <ArrowRightIcon
-            data-testid="BaseNodeDownwardArrowIcon"
+            data-testid="BaseNodeConnectionArrowIcon"
             className="arrow"
             sx={{
               position: 'absolute',
