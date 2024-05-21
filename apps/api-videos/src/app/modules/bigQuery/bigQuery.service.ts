@@ -1,6 +1,8 @@
 import { BigQuery, Job, RowMetadata } from '@google-cloud/bigquery'
 import { Injectable } from '@nestjs/common'
 
+import { PrismaService } from '../../lib/prisma.service'
+
 interface QueryResults {
   data: RowMetadata[]
   pageToken?: string
@@ -10,7 +12,7 @@ interface QueryResults {
 export class BigQueryService {
   client: BigQuery
 
-  constructor() {
+  constructor(private readonly prismaService: PrismaService) {
     this.client = new BigQuery({
       credentials:
         process.env.BIG_QUERY_APPLICATION_JSON != null
@@ -34,7 +36,10 @@ export class BigQueryService {
 
   private async createQueryJob(table: string): Promise<Job> {
     try {
-      const query = `SELECT * FROM \`${table}\``
+      const importTime = this.prismaService.importTimes.findUnique({
+        where: { modelName: table }
+      })
+      const query = `SELECT * FROM \`${table}\` WHERE imoportTime > `
       const [job] = await this.client.createQueryJob({ query })
       return job
     } catch (e) {

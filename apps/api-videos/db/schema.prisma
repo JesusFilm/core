@@ -174,3 +174,8 @@ model VideoStudyQuestion {
   @@index(languageId(type: Hash))
   @@index(order)
 }
+
+model ImportTimes {
+  modelName  String   @id
+  lastImport DateTime
+}
