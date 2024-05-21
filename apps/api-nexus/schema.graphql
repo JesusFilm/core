@@ -12,40 +12,49 @@ directive @extends on OBJECT | INTERFACE
 
 scalar DateTime
 
+scalar Object
+
 type Batch
   @key(fields: "id")
 {
   id: ID!
-  channelId: String!
-  channel: Channel
-  resources: [BatchResource]
   name: String!
-  status: BatchStatus!
-  averagePercent: Float
+  status: BatchStatus
+  totalTasks: Int
+  completedTasks: Int
+  failedTasks: Int
+  progress: Float
+  batchTasks: [BatchTask]
   createdAt: DateTime!
+  updatedAt: DateTime
 }
 
 enum BatchStatus {
   pending
-  running
+  processing
   completed
   failed
-  cancelled
-  paused
-  error
-  warning
-  scheduled
 }
 
-type BatchResource
+type BatchTask
   @key(fields: "id")
 {
   id: ID!
   batchId: String!
-  resourceId: String!
-  isCompleted: Boolean
+  type: String
+  task: Object
+  progress: Int
   error: String
-  percent: Float
+  status: BatchTaskStatus
+  createdAt: DateTime!
+  updatedAt: DateTime
+}
+
+enum BatchTaskStatus {
+  pending
+  processing
+  completed
+  failed
 }
 
 input BatchFilter {
@@ -61,7 +70,7 @@ type Query {
 }
 
 extend type Query {
-  batches(where: BatchFilter): [Batch!]
+  batches(where: BatchFilter): [Batch]
   batch(id: ID!): Batch!
   channels(where: ChannelFilter): [Channel!]
   channel(id: ID!): Channel!
@@ -119,8 +128,7 @@ input ChannelFilter {
 
 input ConnectYoutubeChannelInput {
   channelId: String!
-  authCode: String!
-  redirectUri: String!
+  accessToken: String!
 }
 
 extend type Mutation {
@@ -134,9 +142,8 @@ extend type Mutation {
   resourceCreate(input: ResourceCreateInput!): Resource!
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
-  resourceFromTemplate(tokenId: String!, spreadsheetId: String!, drivefolderId: String!): [Resource!]
+  resourceFromTemplate(input: ResourceFromTemplateInput!): [Resource]
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
-  resourceBatchJob(input: BatchJobInput!): String
 }
 
 type Nexus
@@ -181,39 +188,36 @@ type Resource
 {
   id: ID!
   name: String!
-  status: ResourceStatus!
+  category: String
+  spokenLanguage: String
+  customThumbnail: String
+  playlistId: String
+  isMadeForKids: Boolean
+  mediaComponentId: String
+  notifySubscribers: Boolean
+  status: ResourceStatus
+  privacy: PrivacyStatus
+  resourceLocalizations: [ResourceLocalization]
   createdAt: DateTime!
   updatedAt: DateTime
   deletedAt: DateTime
-  googleDriveLink: String
-  category: String!
-  privacy: PrivacyStatus!
-  sourceType: SourceType!
-  localizations: [ResourceLocalization]!
 }
 
 type ResourceLocalization
   @key(fields: "id")
 {
   id: ID!
-  resourceId: String!
-  title: String!
-  description: String!
-  keywords: String!
-  language: String!
+  resourceId: String
+  title: String
+  description: String
+  keywords: String
+  language: String
 }
 
 enum PrivacyStatus {
   public
   unlisted
   private
-}
-
-enum SourceType {
-  googleDrive
-  template
-  archlight
-  other
 }
 
 enum ResourceStatus {
@@ -244,18 +248,10 @@ input ResourceFilter {
   limit: Int
 }
 
-input AddResourceFromGoogleDriveInput {
+input ResourceFromTemplateInput {
   accessToken: String!
-  fileId: String!
-}
-
-input ResourceFromSpreadsheetInput {
-  file: Upload
-}
-
-input GoogleAuthInput {
-  authCode: String!
-  url: String!
+  spreadsheetId: String!
+  drivefolderId: String!
 }
 
 input BatchJobBatch {
@@ -281,4 +277,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Batch | BatchResource | Channel | Nexus | Resource | ResourceLocalization
+union _Entity = Batch | BatchTask | Channel | Nexus | Resource | ResourceLocalization

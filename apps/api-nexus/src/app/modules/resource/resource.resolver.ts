@@ -10,14 +10,11 @@ import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import {
   ResourceCreateInput,
   ResourceFilter,
+  ResourceFromTemplateInput,
   ResourceUpdateInput
 } from '../../__generated__/graphql'
-import { BullMQService } from '../../lib/bullMQ/bullMQ.service'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
-import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
-import { GoogleDriveService } from '../../lib/google/drive.service'
-import { GoogleOAuthService } from '../../lib/google/oauth.service'
 import {
   GoogleSheetsService,
   SpreadsheetTemplateType
@@ -28,11 +25,7 @@ import { PrismaService } from '../../lib/prisma.service'
 export class ResourceResolver {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly googleOAuthService: GoogleOAuthService,
-    private readonly googleSheetsService: GoogleSheetsService,
-    private readonly googleDriveService: GoogleDriveService,
-    private readonly cloudFlareService: CloudFlareService,
-    private readonly bullMQService: BullMQService
+    private readonly googleSheetsService: GoogleSheetsService
   ) {}
 
   @Query()
@@ -168,29 +161,27 @@ export class ResourceResolver {
 
   @Mutation()
   async resourceFromTemplate(
-    @Args('accessToken') accessToken: string,
-    @Args('spreadsheetId') spreadsheetId: string,
-    @Args('drivefolderId') drivefolderId: string
+    @Args('input') input: ResourceFromTemplateInput
   ): Promise<Resource[]> {
     console.log('Resource From Template . . .')
     const { templateType, spreadsheetData } =
       await this.googleSheetsService.getSpreadSheetTemplateData(
-        accessToken,
-        spreadsheetId,
-        drivefolderId
+        input.accessToken,
+        input.spreadsheetId,
+        input.drivefolderId
       )
     // CHECK SPREADSHEET TEMPLATE TYPE
     if (templateType === SpreadsheetTemplateType.UPLOAD) {
       // PROCESS UPLOAD TEMPLATE
       return await this.googleSheetsService.processUploadSpreadsheetTemplate(
-        accessToken,
+        input.accessToken,
         spreadsheetData
       )
     } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
       // PR OCESS LOCALIZATION TEMPLATE
       console.log('LOCALIZATION')
       await this.googleSheetsService.processLocalizationTemplateBatches(
-        accessToken,
+        input.accessToken,
         spreadsheetData
       )
     }

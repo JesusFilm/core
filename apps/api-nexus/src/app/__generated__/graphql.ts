@@ -37,13 +37,6 @@ export enum PrivacyStatus {
     "private" = "private"
 }
 
-export enum SourceType {
-    googleDrive = "googleDrive",
-    template = "template",
-    archlight = "archlight",
-    other = "other"
-}
-
 export enum ResourceStatus {
     deleted = "deleted",
     published = "published",
@@ -121,18 +114,10 @@ export class ResourceFilter {
     limit?: Nullable<number>;
 }
 
-export class AddResourceFromGoogleDriveInput {
+export class ResourceFromTemplateInput {
     accessToken: string;
-    fileId: string;
-}
-
-export class ResourceFromSpreadsheetInput {
-    file?: Nullable<Upload>;
-}
-
-export class GoogleAuthInput {
-    authCode: string;
-    url: string;
+    spreadsheetId: string;
+    drivefolderId: string;
 }
 
 export class BatchJobBatch {
@@ -228,25 +213,29 @@ export class Resource {
     __typename?: 'Resource';
     id: string;
     name: string;
-    status: ResourceStatus;
+    category?: Nullable<string>;
+    spokenLanguage?: Nullable<string>;
+    customThumbnail?: Nullable<string>;
+    playlistId?: Nullable<string>;
+    isMadeForKids?: Nullable<boolean>;
+    mediaComponentId?: Nullable<string>;
+    notifySubscribers?: Nullable<boolean>;
+    status?: Nullable<ResourceStatus>;
+    privacy?: Nullable<PrivacyStatus>;
+    resourceLocalizations?: Nullable<Nullable<ResourceLocalization>[]>;
     createdAt: DateTime;
     updatedAt?: Nullable<DateTime>;
     deletedAt?: Nullable<DateTime>;
-    googleDriveLink?: Nullable<string>;
-    category: string;
-    privacy: PrivacyStatus;
-    sourceType: SourceType;
-    localizations: Nullable<ResourceLocalization>[];
 }
 
 export class ResourceLocalization {
     __typename?: 'ResourceLocalization';
     id: string;
-    resourceId: string;
-    title: string;
-    description: string;
-    keywords: string;
-    language: string;
+    resourceId?: Nullable<string>;
+    title?: Nullable<string>;
+    description?: Nullable<string>;
+    keywords?: Nullable<string>;
+    language?: Nullable<string>;
 }
 
 export class Translation {
@@ -277,11 +266,9 @@ export abstract class IMutation {
 
     abstract resourceDelete(id: string): Resource | Promise<Resource>;
 
-    abstract resourceFromTemplate(accessToken: string, spreadsheetId: string, drivefolderId: string): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
+    abstract resourceFromTemplate(input: ResourceFromTemplateInput): Nullable<Nullable<Resource>[]> | Promise<Nullable<Nullable<Resource>[]>>;
 
     abstract uploadToYoutube(channelId: string, resourceId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract resourceBatchJob(input: BatchJobInput): Nullable<string> | Promise<Nullable<string>>;
 }
 
 export class Language {
