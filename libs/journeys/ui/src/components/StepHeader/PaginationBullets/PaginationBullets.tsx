@@ -34,12 +34,15 @@ export function PaginationBullets(): ReactElement {
   )
 
   useEffect(() => {
-    const nextActiveBlock = blockHistory[
+    const currentActiveBlock = blockHistory[
       blockHistory.length - 1
     ] as TreeBlock<StepFields>
-    setActiveBlock(nextActiveBlock)
+    setActiveBlock(currentActiveBlock)
 
-    nextActiveBlock?.nextBlockId != null
+    // to prevent infinte card loops from running out of pagination dots
+    removeAlreadyVisitedBlocksFromHistory(blockHistory, currentActiveBlock)
+
+    currentActiveBlock?.nextBlockId != null
       ? setActiveIndex(blockHistory.length - 1)
       : setActiveIndex(bullets.length - 1)
   }, [blockHistory, bullets.length])
@@ -93,4 +96,22 @@ export function PaginationBullets(): ReactElement {
       </Stack>
     </Box>
   )
+}
+
+function removeAlreadyVisitedBlocksFromHistory(
+  blockHistory: TreeBlock[],
+  currentActiveBlock: TreeBlock<StepFields>
+): void {
+  if (currentActiveBlock?.id === blockHistory[0]?.id) {
+    blockHistory.splice(1, blockHistory.length - 1)
+  }
+  let prevCards = []
+  prevCards = blockHistory.filter((block) => block.id === currentActiveBlock.id)
+  if (prevCards.length > 1) {
+    blockHistory.forEach((block, i) => {
+      if (block.id === currentActiveBlock.id) {
+        blockHistory.splice(i + 1, blockHistory.length - i)
+      }
+    })
+  }
 }
