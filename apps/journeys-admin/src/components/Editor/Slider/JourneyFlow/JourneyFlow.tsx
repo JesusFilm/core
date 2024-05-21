@@ -149,6 +149,9 @@ export function JourneyFlow(): ReactElement {
     }
   })
 
+  console.log('edges', edges)
+  console.log('nodes', nodes)
+
   useEffect(() => {
     if (data?.blocks == null) return
     const positions: PositionMap =
@@ -268,7 +271,7 @@ export function JourneyFlow(): ReactElement {
     () => ({
       StepBlock: StepBlockNode,
       SocialPreview: SocialPreviewNode,
-      LinkAction: LinkNode
+      Link: LinkNode
     }),
     []
   )
@@ -318,9 +321,6 @@ export function JourneyFlow(): ReactElement {
       >
         <Panel position="top-right">
           <NewStepButton />
-          {/* remove after testing */}
-          <Box sx={{ height: 25 }} />
-          <LinkNode />
         </Panel>
         <Controls showInteractive={false}>
           <ControlButton onClick={async () => await blockPositionsUpdate({})}>

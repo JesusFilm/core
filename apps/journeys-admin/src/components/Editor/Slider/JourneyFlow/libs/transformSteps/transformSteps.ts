@@ -51,6 +51,12 @@ export const hiddenNode = {
   hidden: true
 }
 
+export const linkNode = {
+  id: 'LinkNode',
+  type: 'Link',
+  data: {}
+}
+
 type TreeStepBlock = TreeBlock<StepBlock>
 
 export function transformSteps(
@@ -83,7 +89,8 @@ export function transformSteps(
 
   function processActionBlock(
     block: TreeBlock,
-    step: TreeBlock<StepBlock>
+    step: TreeBlock<StepBlock>,
+    actionLength: number
   ): void {
     if (!('action' in block) || block.action == null) return
 
@@ -99,12 +106,24 @@ export function transformSteps(
         ...defaultEdgeProps
       })
     }
+
+    if (block.action.__typename === 'LinkAction') {
+      edges.push({
+        id: `${block.id}->LinkNode`,
+        source: step.id,
+        sourceHandle: block.id,
+        target: 'LinkNode',
+        ...defaultEdgeProps
+      })
+    }
   }
 
   steps.forEach((step) => {
     connectStepToNextBlock(step, steps)
     const actionBlocks = filterActionBlocks(step)
-    actionBlocks.forEach((block) => processActionBlock(block, step))
+    actionBlocks.forEach((block) =>
+      processActionBlock(block, step, actionBlocks.length)
+    )
     nodes.push({
       id: step.id,
       type: 'StepBlock',

@@ -13,10 +13,8 @@ export function LinkNode(): ReactElement {
 
   const url = 'https://bible.com'
 
-  console.log('label', label)
-
   return (
-    <BaseNode id="id">
+    <BaseNode id="LinkNode">
       <Stack
         gap={1}
         alignItems="center"
