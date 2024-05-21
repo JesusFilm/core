@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import sortBy from 'lodash/sortBy'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { TreeBlock, useBlocks } from '../../../libs/block'
@@ -19,19 +18,20 @@ export function PaginationBullets(): ReactElement {
     } as unknown as TreeBlock<StepFields>
   )
 
-  // filter out orphan step blocks - sort by parent order
-  const bullets = sortBy(
-    treeBlocks.filter(
-      (blocks) =>
-        (blocks as StepFields).nextBlockId != null ||
-        treeBlocks.some(
-          (includesBlocks) =>
-            (includesBlocks as StepFields).nextBlockId === blocks.id
-        ) ||
-        blocks.parentOrder === 0
-    ),
-    ['parentOrder']
-  )
+  // filter out orphan step blocks
+  const bullets = [
+    ...new Array(
+      treeBlocks.filter(
+        (blocks) =>
+          (blocks as StepFields).nextBlockId != null ||
+          treeBlocks.some(
+            (includesBlocks) =>
+              (includesBlocks as StepFields).nextBlockId === blocks.id
+          ) ||
+          blocks.parentOrder === 0
+      ).length
+    )
+  ]
 
   useEffect(() => {
     const currentActiveBlock = blockHistory[
@@ -81,7 +81,7 @@ export function PaginationBullets(): ReactElement {
 
           return (
             <Bullet
-              key={val.id}
+              key={val}
               variant={
                 activeIndex === i
                   ? 'active'
