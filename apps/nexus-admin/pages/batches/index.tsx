@@ -14,11 +14,11 @@ const GET_BATCHES = gql`
       status
       progress
       createdAt
-      tasks {
+      batchTasks {
         type
         status
         progress
-        metadata
+        task
         error
       }
     }

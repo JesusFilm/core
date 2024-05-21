@@ -8,8 +8,8 @@ import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { DataGrid, GridCellParams } from '@mui/x-data-grid'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 
 import { Resources_resources } from '../../../__generated__/Resources'
@@ -94,7 +94,7 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
       headerName: 'Title',
       flex: 1,
       renderCell: ({ row }) => (
-        <Typography>{row.localizations?.[0]?.title}</Typography>
+        <Typography>{row.resourceLocalizations?.[0]?.title}</Typography>
       )
     },
     {
@@ -102,7 +102,7 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
       headerName: 'Description',
       flex: 1,
       renderCell: ({ row }) => (
-        <Typography>{row.localizations?.[0]?.description}</Typography>
+        <Typography>{row.resourceLocalizations?.[0]?.description}</Typography>
       )
     },
     {
@@ -111,9 +111,11 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
       flex: 4,
       renderCell: ({ row }) => (
         <Stack direction="row" spacing={2}>
-          {row.localizations?.[0]?.keywords?.split(',')?.map((keyword) => (
-            <Chip key={keyword} label={keyword} variant="outlined" />
-          ))}
+          {row.resourceLocalizations?.[0]?.keywords
+            ?.split(',')
+            ?.map((keyword) => (
+              <Chip key={keyword} label={keyword} variant="outlined" />
+            ))}
         </Stack>
       )
     },

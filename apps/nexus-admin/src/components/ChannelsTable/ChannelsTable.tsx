@@ -22,8 +22,8 @@ import { GET_CHANNELS } from '../../../pages/channels'
 import { ChannelsTableHeader } from './ChannelsTableHeader'
 
 const CHANNEL_CONNECT = gql`
-  mutation ConnectChannel($input: ConnectYoutubeChannelInput!) {
-    connectYoutubeChannel(input: $input) {
+  mutation ChannelConnect($input: ConnectYoutubeChannelInput!) {
+    channelConnect(input: $input) {
       id
     }
   }

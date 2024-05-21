@@ -3,9 +3,9 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { useGoogleLogin } from '@react-oauth/google'
+import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
@@ -28,7 +28,7 @@ export const GET_RESOURCES = gql`
     resources(where: $where) {
       id
       name
-      localizations {
+      resourceLocalizations {
         id
         keywords
         language
@@ -46,7 +46,7 @@ export const GET_RESOURCE = gql`
     resource(id: $resourceId) {
       id
       name
-      localizations {
+      resourceLocalizations {
         id
         keywords
         language
@@ -64,7 +64,7 @@ const RESOURCE_UPDATE = gql`
     resourceUpdate(id: $resourceId, input: $input) {
       id
       name
-      localizations {
+      resourceLocalizations {
         id
         keywords
         language

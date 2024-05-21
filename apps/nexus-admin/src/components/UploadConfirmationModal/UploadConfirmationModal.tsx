@@ -2,8 +2,8 @@ import { gql, useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { FC } from 'react'
 import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
@@ -12,16 +12,8 @@ import { GET_RESOURCES } from '../../../pages/resources'
 import { Modal } from '../Modal'
 
 const GET_RESOUCE_FROM_TEMPLATE = gql`
-  mutation ResourceFromTemplate(
-    $accessToken: String!
-    $spreadsheetId: String!
-    $drivefolderId: String!
-  ) {
-    resourceFromTemplate(
-      accessToken: $accessToken
-      spreadsheetId: $spreadsheetId
-      drivefolderId: $drivefolderId
-    ) {
+  mutation ResourceFromTemplate($input: ResourceFromTemplateInput!) {
+    resourceFromTemplate(input: $input) {
       id
     }
   }
@@ -53,9 +45,11 @@ export const UploadConfirmationModal: FC<UploadConfirmationModalProps> = ({
   const uploadYoutubeTemplate = (): void => {
     void getResourceFromTemplate({
       variables: {
-        accessToken: googleAccessToken,
-        spreadsheetId: selectedTemplateFile?.id,
-        drivefolderId: selectedVideosDirectory?.id
+        input: {
+          accessToken: googleAccessToken,
+          spreadsheetId: selectedTemplateFile?.id,
+          drivefolderId: selectedVideosDirectory?.id
+        }
       },
       onCompleted: () => {
         onClose()

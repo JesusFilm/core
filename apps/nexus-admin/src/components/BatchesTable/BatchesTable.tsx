@@ -226,7 +226,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {batch.tasks.map((task) => (
+                {batch.batchTasks.map((task) => (
                   <TableRow key={task.type}>
                     <TableCell>{task.type}</TableCell>
                     <TableCell>
@@ -238,11 +238,9 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                     </TableCell>
                     <TableCell>{Number(task.progress).toFixed(2)}%</TableCell>
                     <TableCell>
-                      {task.metadata?.channel?.youtube?.youtubeId}
+                      {task.task?.channel?.youtube?.youtubeId}
                     </TableCell>
-                    <TableCell>
-                      {task.metadata?.localization?.videoId}
-                    </TableCell>
+                    <TableCell>{task.task?.localization?.videoId}</TableCell>
                     <TableCell>
                       {task.error !== undefined ? (
                         <Tooltip title={task.error}>
