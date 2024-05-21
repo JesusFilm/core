@@ -45,6 +45,7 @@ export function useVideoSearch(): UseVideoSearchResult {
   const [totalPages, setTotalPages] = useState(0)
   const [isEnd, setIsEnd] = useState(false)
   const [loading, setLoading] = useState(false)
+  const algoliaVideos = transformAlgoliaVideos(hits)
 
   useEffect(() => {
     if (currentPage === 0 && totalPages === 0) {
@@ -71,6 +72,8 @@ export function useVideoSearch(): UseVideoSearchResult {
         filters: 'languageId:529'
       })
 
+      console.log(resultHits)
+
       const newHits = loadMore === true ? [...hits, ...resultHits] : resultHits
       setHits(newHits)
       setCurrentPage(pageNumber)
@@ -86,8 +89,6 @@ export function useVideoSearch(): UseVideoSearchResult {
     if (isEnd || loading) return
     await handleSearch(searchQuery, currentPage + 1, true)
   }
-
-  const algoliaVideos = transformAlgoliaVideos(hits)
 
   return {
     isEnd,

@@ -2,6 +2,7 @@ import { VideoBlockSource } from '../../../../../../../../../../__generated__/gl
 import type { LocalVideoFields } from '../useVideoSearch/useVideoSearch'
 
 export function transformAlgoliaVideos(hits): LocalVideoFields {
+  console.log(hits)
   return hits.map((videoVariant) => {
     return {
       id: videoVariant.videoId,
