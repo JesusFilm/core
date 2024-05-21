@@ -80,6 +80,7 @@ export function StepBlockNodeCard({
         }}
       >
         <Box
+          data-testid="card-icon-background"
           sx={{
             height: '100%',
             width: 80,
@@ -139,6 +140,7 @@ export function StepBlockNodeCard({
               title
             ) : (
               <Skeleton
+                data-testid="StepBlockNodeCardTitleSkeleton"
                 animation={false}
                 sx={{
                   height: 16,
@@ -163,6 +165,7 @@ export function StepBlockNodeCard({
               subtitle
             ) : (
               <Skeleton
+                data-testid="StepBlockNodeCardSubtitleSkeleton"
                 animation={false}
                 sx={{
                   height: 16,
