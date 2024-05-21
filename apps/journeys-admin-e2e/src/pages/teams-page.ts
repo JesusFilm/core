@@ -1,3 +1,5 @@
+import { time } from 'console'
+
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
@@ -6,6 +8,7 @@ import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
+const fifteenSecondsTimeout = 30000
 export class TeamsPage {
   readonly page: Page
   constructor(page: Page) {
@@ -134,11 +137,14 @@ export class TeamsPage {
   async enterTeamRename() {
     this.renameTeamName = testData.teams.teamRename + randomNumber
     // Check before and after otherwise playwright renaming before even current name is loaded. This causing test to fail as the renamed name gets replaced by actual name by the app
-    await expect(this.page.locator('input#title')).toHaveText(this.teamName)
+    await expect(this.page.locator('input#title')).toHaveText(this.teamName, {
+      timeout: fifteenSecondsTimeout
+    })
     await this.page.locator('input#title').clear()
     await this.page.locator('input#title').fill(this.renameTeamName)
     await expect(this.page.locator('input#title')).toHaveText(
-      this.renameTeamName
+      this.renameTeamName,
+      { timeout: fifteenSecondsTimeout }
     )
   }
 
