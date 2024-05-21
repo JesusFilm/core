@@ -117,7 +117,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   useEffect(() => {
     setTreeBlocks(blocks)
-    // multiple re-renders causes block history to be incorrect so we want an empty dependency array
+    // multiple re-renders causes block history to be incorrect so do not pass in 'blocks' variable to deps array
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTreeBlocks])
 

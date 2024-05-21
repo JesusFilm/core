@@ -13,7 +13,10 @@ export function PaginationBullets(): ReactElement {
 
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const [activeBlock, setActiveBlock] = useState<TreeBlock<StepFields>>(
-    blockHistory[blockHistory.length - 1] as TreeBlock<StepFields>
+    // set initial object to stop pagination sliding on initialization
+    {
+      nextBlockId: 'initial'
+    } as unknown as TreeBlock<StepFields>
   )
 
   // filter out orphan step blocks - sort by parent order
@@ -67,6 +70,7 @@ export function PaginationBullets(): ReactElement {
           const gap = 16
           const initial = 48
           const distanceFromInitial = i * gap
+          // if on a card that has no next step - show end pagnination bullets state
           const moveDistance =
             activeBlock?.nextBlockId == null
               ? bullets.length * gap
