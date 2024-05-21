@@ -348,7 +348,7 @@ describe('ChannelResolver', () => {
       })
 
       expect(
-        await resolver.connectYoutubeChannel(ability, {
+        await resolver.channelConnect(ability, {
           channelId: 'channelId',
           accessToken: 'accessToken'
         })
@@ -384,7 +384,7 @@ describe('ChannelResolver', () => {
     it('throws error if not found', async () => {
       prismaService.channel.findUnique.mockResolvedValueOnce(null)
       await expect(
-        resolver.connectYoutubeChannel(ability, {
+        resolver.channelConnect(ability, {
           channelId: 'channelId',
           accessToken: 'accessToken'
         })

@@ -16,7 +16,6 @@ import {
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
-import { GoogleOAuthService } from '../../lib/google/oauth.service'
 import { GoogleYoutubeService } from '../../lib/google/youtube.service'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -24,7 +23,6 @@ import { PrismaService } from '../../lib/prisma.service'
 export class ChannelResolver {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly googleOAuth: GoogleOAuthService,
     private readonly googleYoutubeService: GoogleYoutubeService
   ) {}
 
@@ -155,7 +153,8 @@ export class ChannelResolver {
   }
 
   @Mutation()
-  async connectYoutubeChannel(
+  @UseGuards(AppCaslGuard)
+  async channelConnect(
     @CaslAbility() ability: AppAbility,
     @Args('input') input: ConnectYoutubeChannelInput
   ): Promise<Channel | null> {

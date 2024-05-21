@@ -10,14 +10,16 @@
 
 export enum BatchStatus {
     pending = "pending",
-    running = "running",
+    processing = "processing",
     completed = "completed",
-    failed = "failed",
-    cancelled = "cancelled",
-    paused = "paused",
-    error = "error",
-    warning = "warning",
-    scheduled = "scheduled"
+    failed = "failed"
+}
+
+export enum BatchTaskStatus {
+    pending = "pending",
+    processing = "processing",
+    completed = "completed",
+    failed = "failed"
 }
 
 export enum ChannelStatus {
@@ -138,29 +140,34 @@ export class BatchJobInput {
 export class Batch {
     __typename?: 'Batch';
     id: string;
-    channelId: string;
-    channel?: Nullable<Channel>;
-    resources?: Nullable<Nullable<BatchResource>[]>;
     name: string;
-    status: BatchStatus;
-    averagePercent?: Nullable<number>;
+    status?: Nullable<BatchStatus>;
+    totalTasks?: Nullable<number>;
+    completedTasks?: Nullable<number>;
+    failedTasks?: Nullable<number>;
+    progress?: Nullable<number>;
+    batchTasks?: Nullable<Nullable<BatchTask>[]>;
     createdAt: DateTime;
+    updatedAt?: Nullable<DateTime>;
 }
 
-export class BatchResource {
-    __typename?: 'BatchResource';
+export class BatchTask {
+    __typename?: 'BatchTask';
     id: string;
     batchId: string;
-    resourceId: string;
-    isCompleted?: Nullable<boolean>;
+    type?: Nullable<string>;
+    task?: Nullable<Object>;
+    progress?: Nullable<number>;
     error?: Nullable<string>;
-    percent?: Nullable<number>;
+    status?: Nullable<BatchTaskStatus>;
+    createdAt: DateTime;
+    updatedAt?: Nullable<DateTime>;
 }
 
 export abstract class IQuery {
     __typename?: 'IQuery';
 
-    abstract batches(where?: Nullable<BatchFilter>): Nullable<Batch[]> | Promise<Nullable<Batch[]>>;
+    abstract batches(where?: Nullable<BatchFilter>): Nullable<Nullable<Batch>[]> | Promise<Nullable<Nullable<Batch>[]>>;
 
     abstract batch(id: string): Batch | Promise<Batch>;
 
@@ -252,7 +259,7 @@ export abstract class IMutation {
 
     abstract channelDelete(id: string): Channel | Promise<Channel>;
 
-    abstract connectYoutubeChannel(input: ConnectYoutubeChannelInput): Channel | Promise<Channel>;
+    abstract channelConnect(input: ConnectYoutubeChannelInput): Channel | Promise<Channel>;
 
     abstract nexusCreate(input: NexusCreateInput): Nexus | Promise<Nexus>;
 
@@ -276,5 +283,6 @@ export class Language {
 }
 
 export type DateTime = String;
+export type Object = any;
 export type Upload = any;
 type Nullable<T> = T | null;
