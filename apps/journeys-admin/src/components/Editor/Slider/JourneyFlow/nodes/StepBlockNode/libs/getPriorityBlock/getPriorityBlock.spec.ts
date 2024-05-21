@@ -174,19 +174,19 @@ describe('getPriorityBlock', () => {
     expect(priorityBlock).toEqual(radioQuestion)
   })
 
-  it('should return typography block as priority', () => {
-    const priorityBlock = getPriorityBlock({
-      ...card,
-      children: [typography, image, signUp]
-    })
-    expect(priorityBlock).toEqual(typography)
-  })
-
-  it('should return any other block block as priority', () => {
+  it('should return signup block as priority', () => {
     const priorityBlock = getPriorityBlock({
       ...card,
       children: [image, signUp]
     })
-    expect(priorityBlock).toEqual(image)
+    expect(priorityBlock).toEqual(signUp)
+  })
+
+  it('should return typography block as priority', () => {
+    const priorityBlock = getPriorityBlock({
+      ...card,
+      children: [typography, image]
+    })
+    expect(priorityBlock).toEqual(typography)
   })
 })
