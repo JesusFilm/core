@@ -128,7 +128,7 @@ describe('SocialPreviewNode', () => {
     ).toBeInTheDocument()
   })
 
-  it('calls selected social media node on click', async () => {
+  it('calls select social media node on click', async () => {
     const state: EditorState = {
       activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
@@ -154,7 +154,7 @@ describe('SocialPreviewNode', () => {
     expect(screen.getByText('activeContent: social')).toBeInTheDocument()
   })
 
-  it('sets slide to content when clicking on a selected social node', () => {
+  it('sets active slide to content when clicking on a selected social node', () => {
     const state = {
       activeContent: ActiveContent.Social,
       activeSlide: ActiveSlide.JourneyFlow
