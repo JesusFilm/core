@@ -28,6 +28,7 @@ test.describe('verify custom journey page', () => {
     await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
   })
 
+  // TODO: Update this test after once journey flow diagram is implemented
   // Verify the user able to create a journey with 'Create custom journey' button
   test('Create journey via Create custom journey button', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
@@ -51,6 +52,7 @@ test.describe('verify custom journey page', () => {
     await cardLevelActionPage.verifyCardDeletedInCustomJournetPage() // verifying the card is deleted from the card list in the custom journey page
   })
 
+  // TODO: Update this test after once journey flow diagram is implemented
   // Verify the user able to copy the existing journey card in create journey page
   test('Duplicate journey card in custom journey page', async ({ page }) => {
     const journeyPage = new JourneyPage(page)

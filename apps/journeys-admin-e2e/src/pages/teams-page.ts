@@ -133,8 +133,13 @@ export class TeamsPage {
 
   async enterTeamRename() {
     this.renameTeamName = testData.teams.teamRename + randomNumber
+    // Check before and after otherwise playwright renaming before even current name is loaded. This causing test to fail as the renamed name gets replaced by actual name by the app
+    await expect(this.page.locator('input#title')).toHaveText(this.teamName)
     await this.page.locator('input#title').clear()
     await this.page.locator('input#title').fill(this.renameTeamName)
+    await expect(this.page.locator('input#title')).toHaveText(
+      this.renameTeamName
+    )
   }
 
   async clickSaveBtn() {
