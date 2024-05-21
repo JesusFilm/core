@@ -47,6 +47,7 @@ export class ResourceResolver {
   }
 
   @Query()
+  @UseGuards(AppCaslGuard)
   async resource(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string
@@ -71,6 +72,7 @@ export class ResourceResolver {
   }
 
   @Mutation()
+  @UseGuards(AppCaslGuard)
   async resourceCreate(
     @CaslAbility() ability: AppAbility,
     @Args('input') input: ResourceCreateInput
@@ -103,6 +105,7 @@ export class ResourceResolver {
   }
 
   @Mutation()
+  @UseGuards(AppCaslGuard)
   async resourceUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
@@ -131,6 +134,7 @@ export class ResourceResolver {
   }
 
   @Mutation()
+  @UseGuards(AppCaslGuard)
   async resourceDelete(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string
@@ -160,6 +164,7 @@ export class ResourceResolver {
   }
 
   @Mutation()
+  @UseGuards(AppCaslGuard)
   async resourceFromTemplate(
     @Args('input') input: ResourceFromTemplateInput
   ): Promise<Resource[]> {

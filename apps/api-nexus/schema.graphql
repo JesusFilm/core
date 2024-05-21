@@ -135,7 +135,7 @@ extend type Mutation {
   channelCreate(input: ChannelCreateInput!): Channel!
   channelUpdate(id: ID!, input: ChannelUpdateInput!): Channel!
   channelDelete(id: ID!): Channel!
-  connectYoutubeChannel(input: ConnectYoutubeChannelInput!): Channel!
+  channelConnect(input: ConnectYoutubeChannelInput!): Channel!
   nexusCreate(input: NexusCreateInput!): Nexus!
   nexusUpdate(id: ID!, input: NexusUpdateInput!): Nexus!
   nexusDelete(id: ID!): Boolean!
