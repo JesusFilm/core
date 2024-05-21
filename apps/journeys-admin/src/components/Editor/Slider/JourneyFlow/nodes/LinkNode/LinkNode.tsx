@@ -1,46 +1,51 @@
-import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
-import { getLinkActionDetails } from '@core/journeys/ui/getLinkActionDetails'
+import { useGoalDetails } from '@core/journeys/ui/useGoalDetails'
 
 import { BaseNode } from '../BaseNode'
 
 export function LinkNode(): ReactElement {
-  const { label, icon } = getLinkActionDetails(GoalType.Chat, false)
+  const { label, icon } = useGoalDetails(GoalType.Chat)
+
+  const url = 'https://bible.com'
 
   console.log('label', label)
 
   return (
     <BaseNode id="id">
-      <Box
+      <Stack
+        gap={1}
+        alignItems="center"
+        direction="row"
         sx={{
           px: 3,
-          transition: (theme) => theme.transitions.create('opacity'),
           margin: 0,
+          height: 45,
+          width: 224,
+          borderRadius: 2,
           border: (theme) =>
             `1px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
-          borderRadius: 2,
-          height: 45,
-          width: 200,
-          display: 'flex',
-          alignItems: 'center'
+          transition: (theme) => theme.transitions.create('opacity')
         }}
       >
         {icon}
-        <Typography
-          noWrap
-          sx={{
-            fontWeight: 'bold',
-            fontSize: 20
-          }}
-          variant="body2"
-        >
-          {label}
-        </Typography>
-      </Box>
+        <Stack sx={{ width: '100%' }}>
+          <Typography
+            noWrap
+            variant="body2"
+            sx={{ fontWeight: 'bold', fontSize: 11 }}
+          >
+            {label}
+          </Typography>
+          <Typography noWrap variant="body2" sx={{ fontSize: 10 }}>
+            {url}
+          </Typography>
+        </Stack>
+      </Stack>
     </BaseNode>
   )
 }

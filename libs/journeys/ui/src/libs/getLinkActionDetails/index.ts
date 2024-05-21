@@ -1,1 +1,0 @@
-export { getLinkActionDetails } from './getLinkActionDetails'

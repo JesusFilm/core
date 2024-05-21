@@ -1,5 +1,5 @@
 import { SxProps, Theme } from '@mui/material/styles'
-import { t } from 'i18next'
+import { useTranslation } from 'next-i18next'
 import React from 'react'
 
 import BibleIcon from '@core/shared/ui/icons/Bible'
@@ -14,20 +14,16 @@ interface GoalDetails {
   icon: React.ReactNode
 }
 
-export function getLinkActionDetails(
+export function useGoalDetails(
   goalType: GoalType,
-  selected: boolean,
   customIconStyle?: SxProps<Theme>
 ): GoalDetails {
-  const defaultIconStyle = {
-    color: selected ? 'primary.main' : 'secondary.light',
-    transition: (theme: Theme) => theme.transitions.create('color')
-  }
+  const { t } = useTranslation('journeys-admin')
 
-  const iconStyle =
-    customIconStyle != null
-      ? { ...defaultIconStyle, ...customIconStyle }
-      : defaultIconStyle
+  const defaultIconStyle = {
+    color: 'secondary.light'
+  }
+  const iconStyle = customIconStyle != null ? customIconStyle : defaultIconStyle
 
   switch (goalType) {
     case GoalType.Chat:

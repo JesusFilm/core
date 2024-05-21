@@ -267,7 +267,8 @@ export function JourneyFlow(): ReactElement {
   const nodeTypes = useMemo(
     () => ({
       StepBlock: StepBlockNode,
-      SocialPreview: SocialPreviewNode
+      SocialPreview: SocialPreviewNode,
+      LinkAction: LinkNode
     }),
     []
   )
@@ -318,7 +319,7 @@ export function JourneyFlow(): ReactElement {
         <Panel position="top-right">
           <NewStepButton />
           {/* remove after testing */}
-          <Box sx={{ height: 50 }} />
+          <Box sx={{ height: 25 }} />
           <LinkNode />
         </Panel>
         <Controls showInteractive={false}>

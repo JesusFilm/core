@@ -10,7 +10,7 @@ import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import { getLinkActionDetails } from '@core/journeys/ui/getLinkActionDetails'
+import { useGoalDetails } from '@core/journeys/ui/useGoalDetails'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import type { Goal } from '../../Goals'
@@ -30,7 +30,12 @@ export function GoalsListItem({
   const { t } = useTranslation('apps-journeys-admin')
   const selected = selectedGoalUrl === url
 
-  const { label, icon } = getLinkActionDetails(goalType, selected)
+  const iconStyles = {
+    color: selected ? 'primary.main' : 'secondary.light',
+    transition: (theme: Theme) => theme.transitions.create('color')
+  }
+
+  const { label, icon } = useGoalDetails(goalType, iconStyles)
 
   function handleClick(): void {
     dispatch({
