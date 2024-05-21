@@ -18,7 +18,7 @@ export function PaginationBullets(): ReactElement {
     } as unknown as TreeBlock<StepFields>
   )
 
-  // filter out orphan step blocks
+  // filter out orphan step blocks, then return number of cards in journey to render that many bullets
   const bullets = [
     ...new Array(
       treeBlocks.filter(
