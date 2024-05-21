@@ -102,9 +102,11 @@ function removeAlreadyVisitedBlocksFromHistory(
   blockHistory: TreeBlock[],
   currentActiveBlock: TreeBlock<StepFields>
 ): void {
+  // paginate to beginning if you are back at the starting point
   if (currentActiveBlock?.id === blockHistory[0]?.id) {
     blockHistory.splice(1, blockHistory.length - 1)
   }
+  // paginate back if you have already visited card
   let prevCards = []
   prevCards = blockHistory.filter((block) => block.id === currentActiveBlock.id)
   if (prevCards.length > 1) {

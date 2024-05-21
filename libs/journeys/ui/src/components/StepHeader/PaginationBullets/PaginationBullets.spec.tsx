@@ -94,4 +94,15 @@ describe('PaginationBullets', () => {
     expect(getAllByTestId('bullet-adjacent')).toHaveLength(1)
     expect(getAllByTestId('bullet-default')).toHaveLength(5)
   })
+
+  it('should paginate back if block history has already visited card', () => {
+    treeBlocksVar([step1, step2, step3, step4, step5, step6, step7])
+    const blockHistory = blockHistoryVar([step1, step2, step3, step4, step2])
+    expect(blockHistory).toHaveLength(5)
+    const { getAllByTestId } = render(<PaginationBullets />)
+    expect(getAllByTestId('bullet-active')).toHaveLength(1)
+    expect(getAllByTestId('bullet-adjacent')).toHaveLength(2)
+    expect(getAllByTestId('bullet-default')).toHaveLength(4)
+    expect(blockHistory).toHaveLength(2)
+  })
 })
