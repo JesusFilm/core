@@ -8,6 +8,7 @@ import { BodyWrapper } from './BodyWrapper'
 import { EmailContainer } from './EmailContainer'
 import { EmailLogo } from './EmailLogo'
 import { Footer } from './Footer'
+import { Head } from './Head'
 import { Header } from './Header'
 import { UnsubscribeLink } from './UnsubscribeLink'
 
@@ -23,5 +24,6 @@ export {
   UnsubscribeLink,
   ActionButton,
   ActionJourneyView,
-  ActionSender
+  ActionSender,
+  Head
 }
