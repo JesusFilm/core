@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/journeys",
   "projectType": "application",
-  "implicitDependencies": ["journeys-e2e"],
+  "implicitDependencies": ["locales", "journeys-e2e"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
