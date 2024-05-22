@@ -1,5 +1,5 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 
@@ -22,6 +22,9 @@ const useVideoSearchMock = useVideoSearch as jest.MockedFunction<
 >
 
 describe('VideoFromLocal', () => {
+  const handleLoadMore = jest.fn()
+  const handleSearch = jest.fn()
+
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   afterAll(() => {
@@ -29,8 +32,6 @@ describe('VideoFromLocal', () => {
   })
 
   it('should render a video list item', async () => {
-    const handleLoadMore = jest.fn()
-    const handleSearch = jest.fn()
     useVideoSearchMock.mockReturnValueOnce({
       isEnd: true,
       loading: false,
@@ -55,8 +56,6 @@ describe('VideoFromLocal', () => {
   })
 
   it('should call handleLoadMore and handleSearch if load more button is clicked', async () => {
-    const handleLoadMore = jest.fn()
-    const handleSearch = jest.fn()
     useVideoSearchMock.mockReturnValueOnce({
       isEnd: false,
       loading: false,
@@ -87,8 +86,6 @@ describe('VideoFromLocal', () => {
   })
 
   it('should render No More Videos if video length is 0', async () => {
-    const handleLoadMore = jest.fn()
-    const handleSearch = jest.fn()
     useVideoSearchMock.mockReturnValueOnce({
       isEnd: true,
       loading: false,
@@ -106,31 +103,82 @@ describe('VideoFromLocal', () => {
     expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
   })
 
-  it('should call handleSearch if filter changes', async () => {
-    const useVideoSearchMockTwo = useVideoSearch as jest.MockedFunction<
-      typeof useVideoSearch
-    >
-    const handleLoadMore = jest.fn()
-    const handleSearch = jest.fn()
-    useVideoSearchMockTwo.mockReturnValueOnce({
-      isEnd: true,
+  it('should render Load More if there are more videos', async () => {
+    useVideoSearchMock.mockReturnValueOnce({
+      isEnd: false,
       loading: false,
       handleSearch,
       handleLoadMore,
-      algoliaVideos: []
+      algoliaVideos: [
+        {
+          id: '9_0-TheSavior',
+          title: 'The Savior',
+          description: 'some description',
+          image:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/9_0-The_Savior.mobileCinematicHigh.jpg',
+          duration: 0,
+          source: VideoBlockSource.internal
+        }
+      ]
     })
-    const { getByRole } = render(<VideoFromLocal onSelect={jest.fn()} />)
+    const onSelect = jest.fn()
+    const { getByText, getByRole } = render(
+      <VideoFromLocal onSelect={onSelect} />
+    )
+    await waitFor(() => expect(getByText('Load More')).toBeInTheDocument())
+    expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
+  })
+
+  it('should call handleSearch if text in searchbox changes', async () => {
+    useVideoSearchMock
+      .mockReturnValueOnce({
+        isEnd: true,
+        loading: false,
+        handleSearch,
+        handleLoadMore,
+        algoliaVideos: []
+      })
+      .mockReturnValueOnce({
+        isEnd: false,
+        loading: false,
+        handleSearch,
+        handleLoadMore,
+        algoliaVideos: [
+          {
+            id: '9_0-TheSavior',
+            title: 'The Savior',
+            description: 'some description',
+            image:
+              'https://d1wl257kev7hsz.cloudfront.net/cinematics/9_0-The_Savior.mobileCinematicHigh.jpg',
+            duration: 0,
+            source: VideoBlockSource.internal
+          }
+        ]
+      })
+    render(<VideoFromLocal onSelect={jest.fn()} />)
+
+    await waitFor(() => {
+      expect(screen.getByText('No Results Found')).toBeInTheDocument()
+    })
 
     await waitFor(() =>
-      expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
+      expect(
+        screen.getByRole('button', { name: 'No More Videos' })
+      ).toBeDisabled()
     )
-    const textbox = getByRole('textbox', { name: 'Search' })
+
+    const textbox = screen.getByRole('textbox', { name: 'Search' })
     expect(textbox).toHaveValue('')
     fireEvent.change(textbox, {
-      target: { value: 'abc' }
+      target: { value: 'The Savior' }
     })
-    expect(textbox).toHaveValue('abc')
 
-    expect(handleSearch).toHaveBeenCalledWith('abc', 0)
+    expect(textbox).toHaveValue('The Savior')
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('VideoListItem-9_0-TheSavior')
+      ).toBeInTheDocument()
+    })
   })
 })
