@@ -28,7 +28,6 @@ test.describe('verify custom journey page', () => {
     await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
   })
 
-  // TODO: Update this test after once journey flow diagram is implemented
   // Verify the user able to create a journey with 'Create custom journey' button
   test('Create journey via Create custom journey button', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
