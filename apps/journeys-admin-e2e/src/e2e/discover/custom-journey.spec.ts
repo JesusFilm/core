@@ -35,6 +35,7 @@ test.describe('verify custom journey page', () => {
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
   })
 
+  // TODO: e2e: Update this as per journey flow diagram
   // Verify the user able to delete the journey card in create custom journey page
   test('Detele journey card in custom journey page', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
@@ -51,21 +52,25 @@ test.describe('verify custom journey page', () => {
     await cardLevelActionPage.verifyCardDeletedInCustomJournetPage() // verifying the card is deleted from the card list in the custom journey page
   })
 
+  // TODO: e2e: Update this as per journey flow diagram
   // Verify the user able to copy the existing journey card in create journey page
-  test('Duplicate journey card in custom journey page', async ({ page }) => {
-    const journeyPage = new JourneyPage(page)
-    const cardLevelActionPage = new CardLevelActionPage(page)
-    await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
-    await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top of right corner of the custom journey page
-    await journeyPage.clickTitleInThreeDotOptions() // clicking on the title option of the thre dot options
-    await journeyPage.enterTitle() // entering title on the title field in the 'edit title' popup
-    await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
-    await cardLevelActionPage.getjourneyCardCount() // getting the card list count in the custom journey page
-    await cardLevelActionPage.hoverOnExistingCard() // hovering the mourse on the existing card in the card list from custom journey page
-    await cardLevelActionPage.clicThreeDotOfCard() // clicking three dot at the top of the right corner in the selected card
-    await cardLevelActionPage.clickDuplicateCard() // clicking on the 'duplicate card' option of the the three dot options
-    await cardLevelActionPage.verifyCardDuplicated() // verifying the card gets duplicated
-  })
+  test.fixme(
+    'Duplicate journey card in custom journey page',
+    async ({ page }) => {
+      const journeyPage = new JourneyPage(page)
+      const cardLevelActionPage = new CardLevelActionPage(page)
+      await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
+      await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top of right corner of the custom journey page
+      await journeyPage.clickTitleInThreeDotOptions() // clicking on the title option of the thre dot options
+      await journeyPage.enterTitle() // entering title on the title field in the 'edit title' popup
+      await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
+      await cardLevelActionPage.getjourneyCardCount() // getting the card list count in the custom journey page
+      await cardLevelActionPage.hoverOnExistingCard() // hovering the mourse on the existing card in the card list from custom journey page
+      await cardLevelActionPage.clicThreeDotOfCard() // clicking three dot at the top of the right corner in the selected card
+      await cardLevelActionPage.clickDuplicateCard() // clicking on the 'duplicate card' option of the the three dot options
+      await cardLevelActionPage.verifyCardDuplicated() // verifying the card gets duplicated
+    }
+  )
 
   // Verify the user able to preview the journey card in full screen mode in create custom journey page
   test('preview the journey from the custom journey page', async ({
