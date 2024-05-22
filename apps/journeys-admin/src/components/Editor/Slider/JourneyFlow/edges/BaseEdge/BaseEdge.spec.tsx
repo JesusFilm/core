@@ -7,16 +7,12 @@ import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 
 import { BaseEdge } from './BaseEdge'
 
-// TODO: create test for base edge
-// colour for hover?
-// Find SVG in the dom
-
 describe('BaseEdge', () => {
   beforeEach(() => {
     mockReactFlow()
   })
 
-  it('should render baseedge', () => {
+  it('should render base edge', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
@@ -40,8 +36,6 @@ describe('BaseEdge', () => {
     expect(screen.getByTestId('BaseEdge-id').children[1]).toHaveClass(
       'react-flow__edge-interaction'
     )
-
-    // fireEvent.mouseOver(screen.getByTestId('BaseEdge-id'))
 
     expect(screen.getByTestId('BaseEdge-id').firstChild).toHaveStyle(
       'stroke-width: 2; stroke: rgba(123, 31, 162, 0.1);'
@@ -80,26 +74,24 @@ describe('BaseEdge', () => {
     )
   })
 
-  //   it('should change style on click', () => {
-  //     render(
-  //       <ReactFlowProvider>
-  //         <MockedProvider>
-  //           <BaseEdge
-  //             id="id"
-  //             style={{}}
-  //             edgePath="M-230.5,38 C-145.75,38 -145.75,48 -61,48"
-  //           >
-  //             <Typography>Children</Typography>
-  //           </BaseEdge>
-  //         </MockedProvider>
-  //       </ReactFlowProvider>
-  //     )
-  //     expect(screen.getByTestId('BaseEdge-id').firstChild).toHaveStyle(
-  //       'stroke-width: 2; stroke: #7b1fa21A; opacity: 1;'
-  //     )
-  //     fireEvent.click(screen.getByTestId('BaseEdge-id'))
-  //     expect(screen.getByTestId('BaseEdge-id').firstChild).toHaveStyle(
-  //       'stroke-width: 2; stroke: #7b1fa21A; opacity: 1;'
-  //     )
-  //   })
+  it('should show selected edge style', () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <BaseEdge
+            id="id"
+            style={{}}
+            edgePath="M-230.5,38 C-145.75,38 -145.75,48 -61,48"
+            isSelected
+          >
+            <Typography>Children</Typography>
+          </BaseEdge>
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    expect(screen.getByTestId('BaseEdge-id').firstChild).toHaveStyle(
+      'stroke-width: 2; stroke: #1976d2;'
+    )
+  })
 })

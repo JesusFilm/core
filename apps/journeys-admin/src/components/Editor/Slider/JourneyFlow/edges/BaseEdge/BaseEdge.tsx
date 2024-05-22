@@ -14,15 +14,17 @@ interface BaseEdgeProps {
   edgePath: string
   style: CSSProperties
   children: ReactNode
+  isSelected?: boolean // for testing only
 }
 
 export function BaseEdge({
   id,
   style,
   edgePath,
-  children
+  children,
+  isSelected = false
 }: BaseEdgeProps): ReactElement {
-  const [edgeSelected, setEdgeSelected] = useState(false)
+  const [edgeSelected, setEdgeSelected] = useState(isSelected)
   const [isHovering, setIsHovering] = useState(false)
   const theme = useTheme()
 

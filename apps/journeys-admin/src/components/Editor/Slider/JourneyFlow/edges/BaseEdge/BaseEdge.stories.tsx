@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentPropsWithoutRef } from 'react'
 import {
   Background,
   Node,
@@ -16,7 +17,7 @@ import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import { defaultEdgeProps } from '../../libs/transformSteps/transformSteps'
 import { CustomEdge } from '../CustomEdge'
 
-import { BaseEdge } from './BaseEdge'
+import { BaseEdge } from '.'
 
 const Demo: Meta<typeof BaseEdge> = {
   ...journeysAdminConfig,
@@ -24,12 +25,9 @@ const Demo: Meta<typeof BaseEdge> = {
   title: 'Journeys-Admin/Editor/Slider/JourneyFlow/edges/BaseEdge'
 }
 
-// const BaseEdge
-
 const initialNodes: Node[] = [
   {
     id: 'button-1',
-    type: 'input',
     data: { label: 'Button Edge 1' },
     position: { x: 125, y: 0 }
   },
@@ -39,62 +37,32 @@ const initialNodes: Node[] = [
     position: { x: 125, y: 200 }
   }
 ]
-const customEdge = {
-  id: 'customedgeid',
-
-  // source
-  sourceHandle: undefined,
-  // target
-  ...defaultEdgeProps
+const initialEdges = {
+  id: 'button-1->button-2',
+  source: 'button-2',
+  target: 'button-1',
+  type: 'Base'
 }
 
 const defaultFlowProps = {
-  nodes: [initialNodes],
+  nodes: initialNodes,
   nodeTypes: {},
-  edges: [customEdge],
-  edgeTypes: { Custom: CustomEdge },
+  edges: [initialEdges],
+  edgeTypes: { Base: BaseEdge },
   onConnectStart: () => undefined,
   onConnectEnd: () => undefined,
   fitView: true,
   proOptions: { hideAttribution: true }
 }
 
-// source/target x and y are numbers
-// source/target positions are Position enum
-// could maybe render edge without creating nodes ? and just using source/target
-
-const Template: StoryObj<typeof BaseEdge> = {
-  render: () => {
-    // return (
-    //   <ReactFlowProvider>
-    //     <MockedProvider>
-    //       <svg>
-    //         <BaseEdge
-    //           id="id"
-    //           style={{}}
-    //           edgePath="M230.5,38 C-145.75,38 -145.75,48 -61,48"
-    //         >
-    //           <Typography>Children</Typography>
-    //         </BaseEdge>
-    //       </svg>
-    //     </MockedProvider>
-    //   </ReactFlowProvider>
-    // )
-
+const Template: StoryObj<ComponentPropsWithoutRef<typeof BaseEdge>> = {
+  render: (args) => {
     return (
       <MockedProvider>
         <EditorProvider>
           <Box sx={{ height: 400, width: 600 }}>
-            <ReactFlow {...defaultFlowProps}>
-              {/* <ReactFlow> */}
+            <ReactFlow {...args}>
               <Background color="#aaa" gap={16} />
-              {/* <BaseEdge
-                id="id"
-                style={{}}
-                edgePath="M-230.5,38 C-145.75,38 -145.75,48 -61,48"
-              >
-                <Typography>Children</Typography>
-              </BaseEdge> */}
             </ReactFlow>
           </Box>
         </EditorProvider>
@@ -103,6 +71,11 @@ const Template: StoryObj<typeof BaseEdge> = {
   }
 }
 
-export const Default = { ...Template }
+export const Default = {
+  ...Template,
+  args: {
+    ...defaultFlowProps
+  }
+}
 
 export default Demo
