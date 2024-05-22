@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test'
 
-import { getEmail, getUser } from '../framework/helpers'
-import { LandingPage } from '../pages/landing-page'
-import { LeftNav } from '../pages/left-nav'
-import { LoginPage } from '../pages/login-page'
+import { getEmail, getUser } from '../../framework/helpers'
+import { LandingPage } from '../../pages/landing-page'
+import { LeftNav } from '../../pages/left-nav'
+import { LoginPage } from '../../pages/login-page'
 
 // Already created user should be able to login successfully
 test('Existing user can login and logout successfully', async ({ page }) => {

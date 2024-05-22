@@ -1,4 +1,4 @@
-import { darken } from '@mui/system/colorManipulator'
+import { lighten, rgbToHex } from '@mui/system/colorManipulator'
 import findIndex from 'lodash/findIndex'
 import { Edge, MarkerType, Node } from 'reactflow'
 
@@ -9,7 +9,9 @@ import { adminLight } from '../../../../../ThemeProvider/admin/theme'
 import { PositionMap } from '../arrangeSteps'
 import { filterActionBlocks } from '../filterActionBlocks'
 
-export const MARKER_END_DEFAULT_COLOR = darken(adminLight.palette.divider, 0.5)
+export const MARKER_END_DEFAULT_COLOR = rgbToHex(
+  lighten(adminLight.palette.secondary.main, 0.8)
+)
 export const MARKER_END_SELECTED_COLOR = adminLight.palette.primary.main
 export const defaultEdgeProps = {
   type: 'Custom',

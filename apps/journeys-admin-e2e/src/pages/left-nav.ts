@@ -1,7 +1,6 @@
-import exp from 'constants'
-
-import { expect } from '@playwright/test'
 import { Page } from 'playwright-core'
+
+const sixtySecondsTimeout = 60000
 
 export class LeftNav {
   readonly page: Page
@@ -14,7 +13,7 @@ export class LeftNav {
     try {
       const profileListItem = await this.page.waitForSelector(
         '[data-testid="NavigationListItemProfile"]',
-        { timeout: 60000 }
+        { timeout: sixtySecondsTimeout }
       )
 
       // Click on Profile
