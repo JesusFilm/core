@@ -81,7 +81,7 @@ export function StepBlockNodeCard({
         }}
       >
         <Box
-          data-testid="card-icon-background"
+          data-testid="CardIconBackground"
           sx={{
             height: '100%',
             width: 80,
