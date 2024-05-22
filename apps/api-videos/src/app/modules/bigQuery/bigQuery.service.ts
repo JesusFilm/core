@@ -39,8 +39,16 @@ export class BigQueryService {
       const importTime = this.prismaService.importTimes.findUnique({
         where: { modelName: table }
       })
-      const query = `SELECT * FROM \`${table}\` WHERE imoportTime > `
+      const updateTime = new Date()
+      const query = `SELECT * FROM \`${table}\`${
+        importTime != null ? ` WHERE updatedAt > \`${importTime}\`` : ``
+      }`
       const [job] = await this.client.createQueryJob({ query })
+      this.prismaService.importTimes.upsert({
+        where: { modelName: table },
+        create: { modelName: table, lastImport: updateTime },
+        update: { lastImport: updateTime }
+      })
       return job
     } catch (e) {
       throw new Error(`failed to create job in Big Query: ${e.message}`)
