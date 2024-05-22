@@ -28,6 +28,15 @@ type PrismaTransation = Omit<
 export class BlockService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async findParentStepBlock(id?: string): Promise<Block | undefined> {
+    const block = await this.prismaService.block.findUnique({ where: { id } })
+    if (block?.parentBlockId == null) {
+      if (block?.typename === 'StepBlock') return block
+      return
+    }
+    return await this.findParentStepBlock(block.parentBlockId)
+  }
+
   @FromPostgresql()
   async getSiblings(
     journeyId: string,
