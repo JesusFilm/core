@@ -71,7 +71,7 @@ export function PaginationBullets(): ReactElement {
       >
         {bullets.map((val, i) => {
           const gap = 16
-          const initial = 48
+          const initial = 38
           const distanceFromInitial = i * gap
           // if on a card that has no next step - show end pagnination bullets state
           const moveDistance =
