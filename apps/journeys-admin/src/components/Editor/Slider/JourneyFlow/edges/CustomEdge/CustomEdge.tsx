@@ -38,8 +38,8 @@ export function CustomEdge({
   })
 
   useOnSelectionChange({
-    onChange: (selected) =>
-      setSelected(selected.edges.find((edge) => edge.id === id) != null)
+    onChange: ({ edges }) =>
+      setSelected(edges.find((edge) => edge.id === id) != null)
   })
 
   const handleEdgeDelete = (): void => {
