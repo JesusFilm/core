@@ -16,6 +16,7 @@ import {
 import { getCardMetadata } from '../libs/getCardMetadata'
 import { STEP_NODE_CARD_HEIGHT, STEP_NODE_CARD_WIDTH } from '../libs/sizes'
 import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
+import { useSnackbar } from 'notistack'
 
 interface StepBlockNodeCardProps {
   step: TreeBlock<StepBlock>
@@ -31,13 +32,23 @@ export function StepBlockNodeCard({
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
 
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const { title, subtitle, description, priorityBlock, bgImage } =
     getCardMetadata(card)
 
   function handleClick(): void {
+    enqueueSnackbar(t('Handling click'), {
+      variant: 'success',
+      preventDuplicate: false
+    })
     if (selectedStep?.id === step?.id) {
+      enqueueSnackbar(t('Dispatching'), {
+        variant: 'warning',
+        preventDuplicate: false
+      })
+      // TODO: could these be replaced by one dispatch?
       dispatch({
         type: 'SetSelectedBlockAction',
         selectedBlock: selectedStep
@@ -60,10 +71,10 @@ export function StepBlockNodeCard({
       onClick={handleClick}
       sx={{
         width: STEP_NODE_CARD_WIDTH,
-        m: 1.5,
-        '&:hover': {
-          boxShadow: selected ? 6 : 3
-        }
+        m: 1.5
+        // '&:hover': {
+        //   boxShadow: selected ? 6 : 3
+        // }
       }}
     >
       <CardContent

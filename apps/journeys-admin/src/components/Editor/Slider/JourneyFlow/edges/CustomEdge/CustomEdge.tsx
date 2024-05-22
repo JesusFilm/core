@@ -36,10 +36,10 @@ export function CustomEdge({
     targetPosition
   })
 
-  useOnSelectionChange({
-    onChange: (selected) =>
-      setSelected(selected.edges.find((edge) => edge.id === id) != null)
-  })
+  // useOnSelectionChange({
+  //   onChange: (selected) =>
+  //     setSelected(selected.edges.find((edge) => edge.id === id) != null)
+  // })
 
   const onEdgeClick = (): void => {
     void deleteEdge({

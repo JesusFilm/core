@@ -26,16 +26,16 @@ export function BaseEdge({
   const [isHovering, setIsHovering] = useState(false)
   const theme = useTheme()
 
-  useOnSelectionChange({
-    onChange: (selected) => {
-      const selectedEdge = selected.edges.find((edge) => edge.id === id)
-      if (selectedEdge != null) {
-        setEdgeSelected(true)
-      } else {
-        setEdgeSelected(false)
-      }
-    }
-  })
+  // useOnSelectionChange({
+  //   onChange: (selected) => {
+  //     const selectedEdge = selected.edges.find((edge) => edge.id === id)
+  //     if (selectedEdge != null) {
+  //       setEdgeSelected(true)
+  //     } else {
+  //       setEdgeSelected(false)
+  //     }
+  //   }
+  // })
 
   const props = !hasTouchScreen() && {
     onMouseOver: () => setIsHovering(true),

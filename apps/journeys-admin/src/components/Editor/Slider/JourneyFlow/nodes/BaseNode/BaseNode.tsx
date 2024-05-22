@@ -25,6 +25,7 @@ import {
 } from '../StepBlockNode/libs/sizes'
 
 import { PulseWrapper } from './PulseWrapper'
+import { useSnackbar } from 'notistack'
 
 const StyledHandle = styled(Handle)(() => ({}))
 const connectionHandleIdSelector = (state): string | null =>
@@ -67,18 +68,23 @@ export function BaseNode({
     id !== connectionNodeId
   const [targetSelected, setTargetSelected] = useState(false)
   const [sourceSelected, setSourceSelected] = useState(false)
+  const { enqueueSnackbar } = useSnackbar()
 
-  useOnSelectionChange({
-    onChange: (selected) => {
-      const selectedEdge = selected.edges[0]
-      setTargetSelected(selectedEdge?.target === id)
-      setSourceSelected(
-        selectedEdge?.sourceHandle != null
-          ? selectedEdge.sourceHandle === id
-          : selectedEdge?.source === id
-      )
-    }
-  })
+  // useOnSelectionChange({
+  //   onChange: (selected) => {
+  //     enqueueSnackbar(t('useOnSelectionChange'), {
+  //       variant: 'default',
+  //       preventDuplicate: true
+  //     })
+  //     const selectedEdge = selected.edges[0]
+  //     setTargetSelected(selectedEdge?.target === id)
+  //     setSourceSelected(
+  //       selectedEdge?.sourceHandle != null
+  //         ? selectedEdge.sourceHandle === id
+  //         : selectedEdge?.source === id
+  //     )
+  //   }
+  // })
 
   return (
     <Box
@@ -89,46 +95,46 @@ export function BaseNode({
         '.arrow': {
           opacity: 0,
           transition: 'right 0.5s, opacity 0.4s'
-        },
-        ':hover .arrow': {
-          opacity: isSourceConnected ? 0 : 1,
-          right: -22 // animation travel length
         }
+        // ':hover .arrow': {
+        //   opacity: isSourceConnected ? 0 : 1,
+        //   right: -22 // animation travel length
+        // }
       }}
     >
       {isFunction(children) ? children({ selected }) : children}
       {isTargetConnectable && (
-        <PulseWrapper show={isConnecting}>
-          <StyledHandle
-            type="target"
-            data-testid="BaseNodeLeftHandle"
-            position={Position.Left}
-            isConnectableStart={isConnecting}
-            isConnectable={id !== connectionNodeId}
-            sx={{
-              width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
-              height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
-              left: -HANDLE_WITH_BORDER_DIAMETER / 2,
-              top: (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2,
-              background: (theme) => theme.palette.background.default,
-              border: (theme) =>
-                isConnecting || targetSelected
-                  ? `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.primary.main}`
-                  : `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.secondary.light}80`,
+        // <PulseWrapper show={isConnecting}>
+        <StyledHandle
+          type="target"
+          data-testid="BaseNodeLeftHandle"
+          position={Position.Left}
+          isConnectableStart={isConnecting}
+          isConnectable={id !== connectionNodeId}
+          sx={{
+            width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
+            height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
+            left: -HANDLE_WITH_BORDER_DIAMETER / 2,
+            top: (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2,
+            background: (theme) => theme.palette.background.default,
+            border: (theme) =>
+              isConnecting || targetSelected
+                ? `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.primary.main}`
+                : `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.secondary.light}80`,
 
-              '&:after': {
-                display: isConnecting ? 'block' : 'none',
-                position: 'absolute',
-                content: '""',
-                width: STEP_NODE_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
-                height: STEP_NODE_CARD_HEIGHT,
-                top: -STEP_NODE_CARD_HEIGHT / 2,
-                left: -NODE_EXTRA_DETECTION_WIDTH,
-                backgroundColor: 'transparent'
-              }
-            }}
-          />
-        </PulseWrapper>
+            '&:after': {
+              display: isConnecting ? 'block' : 'none',
+              position: 'absolute',
+              content: '""',
+              width: STEP_NODE_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
+              height: STEP_NODE_CARD_HEIGHT,
+              top: -STEP_NODE_CARD_HEIGHT / 2,
+              left: -NODE_EXTRA_DETECTION_WIDTH,
+              backgroundColor: 'transparent'
+            }
+          }}
+        />
+        // </PulseWrapper>
       )}
       {isSourceConnectable && (
         <StyledHandle
