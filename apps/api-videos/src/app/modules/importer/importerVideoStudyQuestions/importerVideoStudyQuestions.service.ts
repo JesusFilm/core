@@ -38,4 +38,13 @@ export class ImporterVideoStudyQuestionsService extends ImporterService<VideoStu
       create: videoStudyQuestions
     })
   }
+
+  protected async saveMany(
+    videoStudyQuestions: VideoStudyQuestions[]
+  ): Promise<void> {
+    await this.prismaService.videoStudyQuestion.createMany({
+      data: videoStudyQuestions,
+      skipDuplicates: true
+    })
+  }
 }

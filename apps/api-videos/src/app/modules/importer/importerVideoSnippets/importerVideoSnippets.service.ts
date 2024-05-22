@@ -32,4 +32,11 @@ export class ImporterVideoSnippetsService extends ImporterService<VideoSnippet> 
       create: videoSnippet
     })
   }
+
+  protected async saveMany(videoSnippets: VideoSnippet[]): Promise<void> {
+    await this.prismaService.videoSnippet.createMany({
+      data: videoSnippets,
+      skipDuplicates: true
+    })
+  }
 }

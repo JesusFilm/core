@@ -86,4 +86,14 @@ export class ImporterVideosService extends ImporterService<Video> {
       create: input
     })
   }
+
+  protected async saveMany(videos: Video[]): Promise<void> {
+    const inputs = await Promise.all(
+      videos.map(async (video) => await this.transform(video))
+    )
+    await this.prismaService.video.createMany({
+      data: inputs,
+      skipDuplicates: true
+    })
+  }
 }

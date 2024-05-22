@@ -60,4 +60,16 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
       create: transformedVideoVariant
     })
   }
+
+  protected async saveMany(videoVariants: VideoVariants[]): Promise<void> {
+    const transformedVideoVariants = await Promise.all(
+      videoVariants.map(
+        async (videoVariant) => await this.transform(videoVariant)
+      )
+    )
+    await this.prismaService.videoVariant.createMany({
+      data: transformedVideoVariants,
+      skipDuplicates: true
+    })
+  }
 }

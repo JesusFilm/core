@@ -33,4 +33,11 @@ export class ImporterVideoTitleService extends ImporterService<VideoTitle> {
       create: videoTitle
     })
   }
+
+  protected async saveMany(videoTitles: VideoTitle[]): Promise<void> {
+    await this.prismaService.videoTitle.createMany({
+      data: videoTitles,
+      skipDuplicates: true
+    })
+  }
 }

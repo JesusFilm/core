@@ -1,8 +1,6 @@
 import { BigQuery, Job, RowMetadata } from '@google-cloud/bigquery'
 import { Injectable } from '@nestjs/common'
 
-import { PrismaService } from '../../lib/prisma.service'
-
 interface QueryResults {
   data: RowMetadata[]
   pageToken?: string
@@ -12,7 +10,7 @@ interface QueryResults {
 export class BigQueryService {
   client: BigQuery
 
-  constructor(private readonly prismaService: PrismaService) {
+  constructor() {
     this.client = new BigQuery({
       credentials:
         process.env.BIG_QUERY_APPLICATION_JSON != null
@@ -22,9 +20,10 @@ export class BigQueryService {
   }
 
   async *getRowsFromTable(
-    table: string
+    table: string,
+    lastImport: Date | undefined
   ): AsyncGenerator<RowMetadata, void, unknown> {
-    const job = await this.createQueryJob(table)
+    const job = await this.createQueryJob(table, lastImport)
     let results: QueryResults = { data: [] }
 
     do {
@@ -34,21 +33,18 @@ export class BigQueryService {
     } while (results.data.length > 0 || results.pageToken != null)
   }
 
-  private async createQueryJob(table: string): Promise<Job> {
+  private async createQueryJob(
+    table: string,
+    lastImport: Date | undefined
+  ): Promise<Job> {
     try {
-      const importTime = this.prismaService.importTimes.findUnique({
-        where: { modelName: table }
-      })
-      const updateTime = new Date()
       const query = `SELECT * FROM \`${table}\`${
-        importTime != null ? ` WHERE updatedAt > \`${importTime}\`` : ``
+        lastImport != null
+          ? ` WHERE updatedAt > \`${lastImport.toISOString()}\``
+          : ``
       }`
       const [job] = await this.client.createQueryJob({ query })
-      this.prismaService.importTimes.upsert({
-        where: { modelName: table },
-        create: { modelName: table, lastImport: updateTime },
-        update: { lastImport: updateTime }
-      })
+
       return job
     } catch (e) {
       throw new Error(`failed to create job in Big Query: ${e.message}`)

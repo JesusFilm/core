@@ -40,4 +40,13 @@ export class ImporterVideoVariantDownloadsService extends ImporterService<VideoV
       create: videoVariantDownloads
     })
   }
+
+  protected async saveMany(
+    videoVariantDownloads: VideoVariantDownloads[]
+  ): Promise<void> {
+    await this.prismaService.videoVariantDownload.createMany({
+      data: videoVariantDownloads,
+      skipDuplicates: true
+    })
+  }
 }

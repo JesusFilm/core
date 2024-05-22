@@ -17,6 +17,24 @@ export class ImporterService<T extends AnyObject = AnyObject> {
     }
   }
 
+  async importMany(rows: unknown[]): Promise<void> {
+    const validRows: unknown[] = []
+    const inValidRowIds: string[] = []
+    for (const row of rows) {
+      if (await this.schema.isValid(row)) {
+        validRows.push(row)
+      } else {
+        inValidRowIds.push(get(row, 'id') ?? 'unknownId')
+      }
+    }
+    await this.saveMany(validRows as T[])
+    if (validRows.length !== rows.length) {
+      throw new Error(
+        'some rows do not match schema: ' + inValidRowIds.join(',')
+      )
+    }
+  }
+
   /**
    * Save the data to the database.
    * Should only receive validated and casted object by the schema.
@@ -24,5 +42,9 @@ export class ImporterService<T extends AnyObject = AnyObject> {
    */
   protected async save(data: T): Promise<void> {
     throw new Error('save not implemented')
+  }
+
+  protected async saveMany(data: T[]): Promise<void> {
+    throw new Error('saveMany not implemented')
   }
 }

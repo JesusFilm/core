@@ -32,4 +32,11 @@ export class ImporterVideoImageAltService extends ImporterService<VideoImageAlt>
       create: videoImageAlt
     })
   }
+
+  protected async saveMany(videoImageAlts: VideoImageAlt[]): Promise<void> {
+    await this.prismaService.videoImageAlt.createMany({
+      data: videoImageAlts,
+      skipDuplicates: true
+    })
+  }
 }

@@ -35,4 +35,13 @@ export class ImporterVideoVariantSubtitlesService extends ImporterService<VideoV
       create: videoVariantSubtitles
     })
   }
+
+  protected async saveMany(
+    videoVariantSubtitles: VideoVariantSubtitles[]
+  ): Promise<void> {
+    await this.prismaService.videoVariantSubtitle.createMany({
+      data: videoVariantSubtitles,
+      skipDuplicates: true
+    })
+  }
 }
