@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import ShareIcon from '@core/shared/ui/icons/Share'
 
@@ -13,7 +13,9 @@ export function ShareButton(): ReactElement {
   const { journey, variant } = useJourney()
   const { t } = useTranslation('libs-journeys-ui')
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
-  console.log(journey)
+  useEffect(() => {
+    console.log(journey)
+  })
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id ?? '' },
     skip: journey?.team?.id == null
