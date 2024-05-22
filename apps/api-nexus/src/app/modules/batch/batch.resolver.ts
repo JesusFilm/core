@@ -16,7 +16,6 @@ export class BatchResolver {
 
   @Query()
   async batches(
-    @CurrentUserId() userId: string,
     @Args('where') where?: BatchFilter
   ): Promise<BatchWithProgress[]> {
     const filter: Prisma.BatchWhereInput = {}

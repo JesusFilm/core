@@ -29,12 +29,16 @@ export interface UploadResourceJob {
 }
 export interface UpdateVideoLocalizationJob {
   batchId: string
+  batchTaskId: string
   accessToken: string
   channel: {
     id: string
     channelId: string
   }
   resource: {
+    language: string
+    title: string
+    description: string
     category: string
     privacyStatus?: string
     isMadeForKids: boolean
@@ -220,14 +224,19 @@ export class BullMQService {
     })
 
     for (const item of resources) {
+      const batchTask = await this.prismaService.batchTask.findFirst({where: {task: {path: ["resourceId"], equals: item.id}}})
       const job: UpdateVideoLocalizationJob = {
         batchId: batch.id,
+        batchTaskId: batchTask?.id ?? '', 
         accessToken,
         channel: {
           id: channel?.id ?? '',
           channelId: channel?.resourceChannels[0].channelId ?? ''
         },
         resource: {
+          language: item.language ?? 'en',
+          title: item.resourceLocalizations.find((localization) => localization.language === item.language)?.title ?? '',
+          description: item.resourceLocalizations.find((localization) => localization.language === item.language)?.description ?? '',
           category: item.category ?? '',
           privacyStatus: item.privacy,
           isMadeForKids: item.isMadeForKids,

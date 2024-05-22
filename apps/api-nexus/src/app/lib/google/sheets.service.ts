@@ -146,7 +146,6 @@ export class GoogleSheetsService {
     )
     for (const channel of channels) {
       const resources = await this.createResourceFromSpreadsheet(
-        token,
         spreadsheetRows.filter(
           (spreadsheetRow) => spreadsheetRow.channelData?.id === channel
         )
@@ -165,7 +164,6 @@ export class GoogleSheetsService {
   }
 
   async createResourceFromSpreadsheet(
-    refreshToken: string,
     spreadsheetRows: SpreadsheetRow[]
   ): Promise<Resource[]> {
     const resources: Resource[] = []
@@ -179,21 +177,21 @@ export class GoogleSheetsService {
           customThumbnail: row.customThumbnail,
           category: row.category,
           privacy: row.privacy as PrivacyStatus,
-          notifySubscribers: ['1', 'true', 'yes', 'on'].includes(
-            row.notifySubscribers ?? ''
+          notifySubscribers: ['1', 'true', 'yes', 'on', 'y'].includes(
+            row.notifySubscribers?.toLocaleUpperCase() ?? ''
           ),
           playlistId: row.playlistId,
-          isMadeForKids: ['1', 'true', 'yes', 'on'].includes(
-            row.isMadeForKids ?? ''
+          isMadeForKids: ['1', 'true', 'yes', 'on', 'y'].includes(
+            row.isMadeForKids?.toLocaleLowerCase() ?? ''
           ),
           mediaComponentId: row.mediaComponentId,
-          language: row.language,
+          language: row.language ?? 'en',
           resourceLocalizations: {
             create: {
               title: row.title ?? '',
               description: row.description ?? '',
               keywords: row.keywords ?? '',
-              language: row.textLanguage ?? '',
+              language: row.textLanguage ?? 'en',
               audioTrackFile: row.audioTrackFile ?? '',
               captionFile: row.captionFile ?? '',
               resourceLocalizationSource: {

@@ -27,10 +27,8 @@ export class BatchJobWorker {
   async process(
     job: Job<UpdateVideoLocalizationJob>
   ): Promise<UploadResourceJob> {
-    // GET VIDEO DRIVE TOKEN
-
     // DOWNLOAD THUMBNAIL FROM DRIVE
-    console.log('UPLOAD THUMBNAIL FROM DRIVE')
+    console.log('DOWNLOAD THUMBNAIL FROM DRIVE')
     let thumnbnailFilePath = ''
     if (job.data.resource?.thumbnailDriveId != null) {
       thumnbnailFilePath = await this.googleDriveService.downloadDriveFile({
@@ -39,6 +37,7 @@ export class BatchJobWorker {
       })
 
       if (thumnbnailFilePath !== '') {
+        console.log('UPDATE YOUTUBE THUMBNAIL')
         await this.youtubeService.updateVideoThumbnail({
           token: job.data.accessToken,
           videoId: job.data.localizations[0].videoId,
@@ -52,8 +51,8 @@ export class BatchJobWorker {
     console.log('UPDATE YOUTUBE')
     await this.youtubeService.updateVideo({
       token: job.data.accessToken,
-      title: job.data.localizations[0].title ?? '',
-      description: job.data.localizations[0].description ?? '',
+      title: job.data.resource.title,
+      description: job.data.resource.description,
       category: job.data.resource.category,
       privacyStatus: job.data.resource.privacyStatus,
       isMadeForKids: job.data.resource.isMadeForKids,
@@ -82,10 +81,7 @@ export class BatchJobWorker {
     )
 
     // DOWNLOAD THUMBNAIL FROM DRIVE
-    console.log(
-      'DOWNLOAD THUMBNAIL FROM DRIVE: ',
-      job.data?.resource?.thumbnailDriveId
-    )
+    console.log('DOWNLOAD THUMBNAIL FROM DRIVE')
     let thumnbnailFilePath = ''
     if (job.data.resource?.thumbnailDriveId != null) {
       thumnbnailFilePath = await this.googleDriveService.downloadDriveFile({
@@ -95,7 +91,7 @@ export class BatchJobWorker {
     }
 
     // UPLOAD FILE TO BUCKET
-    // console.log('UPLOADING FILE TO BUCKET: ', videoFilePath)
+    console.log('UPLOADING FILE TO BUCKET')
     const bucketFile = await this.bucketService.uploadFile(
       videoFilePath,
       process.env.BUCKET_NAME ?? 'bucket-name',
@@ -107,24 +103,24 @@ export class BatchJobWorker {
     )
 
     // UPLOAD VIDEO
-    // console.log('UPLOAD TO YOUTUBE NOW', videoFilePath)
-    // const youtubeData = { data: { id: null } }
-    const youtubeData = await this.youtubeService.uploadVideo(
-      {
-        token: job.data.accessToken,
-        filePath: videoFilePath,
-        channelId: job.data.channel.channelId,
-        title: job.data.resource.title ?? '',
-        description: job.data.resource.description ?? '',
-        defaultLanguage: job.data.resource.language ?? 'en',
-        privacyStatus: job.data.resource.privacyStatus
-      },
-      async (progress) => {
-        progress = 55 + progress / 3
-        await job.progress(progress)
-        return await Promise.resolve()
-      }
-    )
+    console.log('UPLOAD TO YOUTUBE')
+    const youtubeData = { data: { id: null } }
+    // const youtubeData = await this.youtubeService.uploadVideo(
+    //   {
+    //     token: job.data.accessToken,
+    //     filePath: videoFilePath,
+    //     channelId: job.data.channel.channelId,
+    //     title: job.data.resource.title ?? '',
+    //     description: job.data.resource.description ?? '',
+    //     defaultLanguage: job.data.resource.language ?? 'en',
+    //     privacyStatus: job.data.resource.privacyStatus
+    //   },
+    //   async (progress) => {
+    //     progress = 55 + progress / 3
+    //     await job.progress(progress)
+    //     return await Promise.resolve()
+    //   }
+    // )
 
     await unlink(videoFilePath, (err) => {
       if (err != null) {
@@ -139,6 +135,7 @@ export class BatchJobWorker {
       job?.data?.resource?.thumbnailDriveId != null &&
       youtubeData?.data?.id != null
     ) {
+      console.log('UPLOAD THUMBNAIL TO YOUTUBE')
       if (thumnbnailFilePath != null) {
         await this.youtubeService.updateVideoThumbnail({
           token: job.data.accessToken,
@@ -149,7 +146,8 @@ export class BatchJobWorker {
       }
     }
 
-    // UPDATE Data
+    // UPDATE Resources
+
     await this.prismaService.resourceSource.updateMany({
       where: { resourceId: job.data.resource?.id },
       data: {
