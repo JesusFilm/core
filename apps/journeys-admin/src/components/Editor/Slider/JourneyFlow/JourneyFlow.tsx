@@ -149,9 +149,6 @@ export function JourneyFlow(): ReactElement {
     }
   })
 
-  console.log('edges', edges)
-  console.log('nodes', nodes)
-
   useEffect(() => {
     if (data?.blocks == null) return
     const positions: PositionMap =

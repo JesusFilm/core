@@ -6,6 +6,10 @@ import { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { adminLight } from '../../../../../ThemeProvider/admin/theme'
+import {
+  ACTION_BUTTON_HEIGHT,
+  STEP_NODE_CARD_HEIGHT
+} from '../../nodes/StepBlockNode/libs/sizes'
 import { PositionMap } from '../arrangeSteps'
 import { filterActionBlocks } from '../filterActionBlocks'
 
@@ -90,7 +94,7 @@ export function transformSteps(
   function processActionBlock(
     block: TreeBlock,
     step: TreeBlock<StepBlock>,
-    actionLength: number
+    actionIndex: number
   ): void {
     if (!('action' in block) || block.action == null) return
 
@@ -121,9 +125,11 @@ export function transformSteps(
         type: 'Link',
         data: {},
         position: {
-          x: positions[step.id].x + 300,
-          y: positions[step.id].y + actionLength
-        }
+          x: 300,
+          y: STEP_NODE_CARD_HEIGHT + ACTION_BUTTON_HEIGHT * (actionIndex + 1)
+        },
+        parentNode: step.id,
+        draggable: false
       })
     }
   }
@@ -131,8 +137,8 @@ export function transformSteps(
   steps.forEach((step) => {
     connectStepToNextBlock(step, steps)
     const actionBlocks = filterActionBlocks(step)
-    actionBlocks.forEach((block) =>
-      processActionBlock(block, step, actionBlocks.length)
+    actionBlocks.forEach((block, index) =>
+      processActionBlock(block, step, index)
     )
     nodes.push({
       id: step.id,
