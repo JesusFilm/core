@@ -38,13 +38,13 @@ export class BatchService {
             customThumbnail: row.customThumbnail,
             isMadeForKids:
               row.isMadeForKids !== undefined
-                ? ['1', 'true', 'on', 'yes'].includes(row.isMadeForKids)
+                ? ['1', 'true', 'on', 'yes', 'y'].includes(row.isMadeForKids.toLocaleLowerCase())
                 : undefined,
             privacy: row.privacy as PrivacyStatus,
             category: row.category,
             notifySubscribers:
               row.notifySubscribers !== undefined
-                ? ['1', 'true', 'on', 'yes'].includes(row.notifySubscribers)
+                ? ['1', 'true', 'on', 'yes', 'y'].includes(row.notifySubscribers.toLocaleLowerCase())
                 : undefined,
             resourceSource: {
               update: {
@@ -66,7 +66,7 @@ export class BatchService {
             title: row.title ?? '',
             description: row.description ?? '',
             keywords: row.keywords ?? '',
-            language: row.language ?? '',
+            language: row.language ?? 'en',
             captionFile: row.captionFile ?? '',
             audioTrackFile: row.audioTrackFile ?? '',
             videoId: row.videoId ?? '',
@@ -90,6 +90,7 @@ export class BatchService {
             keywords: row.keywords,
             captionFile: row.captionFile,
             audioTrackFile: row.audioTrackFile,
+            language: row.language ?? 'en',
             videoId: row.videoId,
             resourceLocalizationSource: {
               upsert: {
@@ -97,26 +98,19 @@ export class BatchService {
                   reourceLocalizationId: resource?.resourceLocalizations[0].id
                 },
                 create: {
-                  // AUDIO
                   audioMimeType: row.audioTrackDriveFile?.mimeType,
                   audioTrackGoogleDriveId: row.audioTrackDriveFile?.id,
-
-                  // CAPTION
                   captionMimeType: row.captionDriveFile?.mimeType,
                   captionGoogleDriveId: row.captionDriveFile?.id
                 },
                 update: {
-                  // AUDIO
                   audioMimeType: row.audioTrackDriveFile?.mimeType,
                   audioTrackGoogleDriveId: row.audioTrackDriveFile?.id,
-
-                  // CAPTION
                   captionMimeType: row.captionDriveFile?.mimeType,
                   captionGoogleDriveId: row.captionDriveFile?.id
                 }
               }
             }
-            // create resourceLocalizationsource
           },
           include: { resource: true, resourceLocalizationSource: true }
         })

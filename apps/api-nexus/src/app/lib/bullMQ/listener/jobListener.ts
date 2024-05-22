@@ -3,7 +3,10 @@ import { Injectable, OnModuleInit } from '@nestjs/common'
 import { Job, Queue } from 'bull'
 
 import { PrismaService } from '../../prisma.service'
-import { UploadResourceJob } from '../bullMQ.service'
+import {
+  UpdateVideoLocalizationJob,
+  UploadResourceJob
+} from '../bullMQ.service'
 
 @Injectable()
 export class NexusJobListener implements OnModuleInit {
@@ -21,49 +24,85 @@ export class NexusJobListener implements OnModuleInit {
   private listenToProgressEvents(): void {
     this.uploadQueue.on(
       'progress',
-      (job: Job<UploadResourceJob>, progress: number) => {
-        // console.log('Job Progress:', job.id, progress);
-        // void Promise.all([
-        //   await this.prismaService.batchResource.updateMany({
-        //     data: {
-        //       percent: progress
-        //     },
-        //     where: {
-        //       batchId: job.data.batchId,
-        //       resourceId: job.data.resource.id
-        //     }
-        //   })
-        // ])
+      (
+        job: Job<UploadResourceJob | UpdateVideoLocalizationJob>,
+        progress: number
+      ) => {
+        console.log('Job Progress:', job.name, progress)
+        void Promise.all([
+          this.prismaService.batchTask.updateMany({
+            where: { id: job.data.batchTaskId },
+            data: { progress, status: 'processing' }
+          })
+        ])
       }
     )
   }
 
   private listenToCompletedEvents(): void {
-    this.uploadQueue.on('completed', (job: Job<UploadResourceJob>) => {
-      console.log('Job completed: ', job.id)
+    this.uploadQueue.on(
+      'completed',
+      (job: Job<UploadResourceJob | UpdateVideoLocalizationJob>) => {
+        console.log('Job completed: ', job.id)
+        void Promise.all([
+          this.prismaService.batchTask.updateMany({
+            where: { id: job.data.batchTaskId },
+            data: { progress: 100, status: 'completed' }
+          })
+        ])
+        void Promise.all([
+          this.prismaService.batch.updateMany({
+            where: {
+              id: job.data.batchId,
+              batchTasks: { every: { progress: 100 } }
+            },
+            data: { progress: 100, status: 'completed' }
+          })
+        ])
 
-      // void Promise.all([
-      //   await this.prismaService.batch.updateMany({
-      //     data: {
-      //       isCompleted: true,
-      //       percent: 100
-      //     },
-      //     where: {
-      //       batchId: job.data.batchId,
-      //       resourceId: job.data.resource.id
-      //     }
-      //   }),
-      //   await this.prismaService.resource.update({
-      //     data: { status: 'published' },
-      //     where: { id: job.data.resource.id }
-      //   })
-      // ])
-    })
+        if(job.name === 'processResourceUpload') {
+          const jobData = job.data as UploadResourceJob;
+          void Promise.all([
+            this.prismaService.resource.updateMany({
+              where: { id: jobData.resource.id },
+              data: {
+                status: 'published'
+              }
+            })
+          ])
+        }
+      }
+    )
   }
 
   private listenToFailedEvents(): void {
-    this.uploadQueue.on('failed', (job: Job<UploadResourceJob>) => {
-      console.log('TASK FAILED', job.stacktrace)
-    })
+    this.uploadQueue.on(
+      'failed',
+      (job: Job<UploadResourceJob | UpdateVideoLocalizationJob>) => {
+        void Promise.all([
+          this.prismaService.batchTask.updateMany({
+            where: { id: job.data.batchTaskId },
+            data: { progress: 0, status: 'failed', error: job.failedReason }
+          }),
+          this.prismaService.batch.updateMany({
+            where: { id: job.data.batchId },
+            data: { status: 'error' }
+          }),
+          
+        ])
+
+        if(job.name === 'processResourceUpload') {
+          const jobData = job.data as UploadResourceJob;
+          void Promise.all([
+            this.prismaService.resource.updateMany({
+              where: { id: jobData.resource.id },
+              data: {
+                status: 'error'
+              }
+            })
+          ])
+        }
+      }
+    )
   }
 }
