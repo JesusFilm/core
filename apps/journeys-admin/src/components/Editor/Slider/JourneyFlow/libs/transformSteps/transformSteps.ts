@@ -55,12 +55,6 @@ export const hiddenNode = {
   hidden: true
 }
 
-export const linkNode = {
-  id: 'LinkNode',
-  type: 'Link',
-  data: {}
-}
-
 type TreeStepBlock = TreeBlock<StepBlock>
 
 export function transformSteps(
@@ -111,23 +105,28 @@ export function transformSteps(
       })
     }
 
-    if (block.action.__typename === 'LinkAction') {
+    if (
+      block.action.__typename === 'LinkAction' ||
+      block.action.__typename === 'EmailAction'
+    ) {
       edges.push({
-        id: `${block.id}->LinkNode`,
+        id: `${block.id}->LinkNode-${block.id}`,
         source: step.id,
         sourceHandle: block.id,
-        target: 'LinkNode',
+        target: `LinkNode-${block.id}`,
         ...defaultEdgeProps
       })
 
+      const position = {
+        x: 300,
+        y: STEP_NODE_CARD_HEIGHT + ACTION_BUTTON_HEIGHT * (actionIndex + 1)
+      }
+
       nodes.push({
-        id: 'LinkNode',
+        id: `LinkNode-${block.id}`,
         type: 'Link',
         data: {},
-        position: {
-          x: 300,
-          y: STEP_NODE_CARD_HEIGHT + ACTION_BUTTON_HEIGHT * (actionIndex + 1)
-        },
+        position,
         parentNode: step.id,
         draggable: false
       })
