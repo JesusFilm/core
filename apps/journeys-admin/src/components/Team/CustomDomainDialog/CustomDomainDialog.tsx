@@ -8,6 +8,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
+import { useCustomDomainsQuery } from '@core/journeys/ui/useCustomDomainsQuery'
 import { Dialog } from '@core/shared/ui/Dialog/Dialog'
 import ComputerIcon from '@core/shared/ui/icons/Computer'
 import Globe2Icon from '@core/shared/ui/icons/Globe2'
@@ -15,7 +16,6 @@ import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCir
 import Lightning2Icon from '@core/shared/ui/icons/Lightning2'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
-import { useCustomDomainsQuery } from '../../../libs/useCustomDomainsQuery'
 import { useTeam } from '../TeamProvider'
 
 import { CustomDomainDialogTitle } from './CustomDomainDialogTitle'

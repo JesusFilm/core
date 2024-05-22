@@ -3,9 +3,9 @@ import { useSnackbar } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useCustomDomainsQuery } from '@core/journeys/ui/useCustomDomainsQuery'
 import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
 
-import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { Item } from '../Item/Item'
 
 interface CopyLinkItemProps {

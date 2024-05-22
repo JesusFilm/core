@@ -3,9 +3,10 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
+import { getCustomDomainMock } from '@core/journeys/ui/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider

@@ -7,6 +7,7 @@ import { ReactElement } from 'react'
 
 import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+import { GET_CUSTOM_DOMAINS } from '@core/journeys/ui/useCustomDomainsQuery/useCustomDomainsQuery'
 
 import {
   GetAdminJourney,
@@ -17,7 +18,6 @@ import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { GET_CUSTOM_DOMAINS } from '../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
 
 export const GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}

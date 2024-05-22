@@ -4,6 +4,7 @@ import { ReactElement, useState } from 'react'
 import ShareIcon from '@core/shared/ui/icons/Share'
 
 import { useJourney } from '../../../../libs/JourneyProvider'
+import { useCustomDomainsQuery } from '../../../../libs/useCustomDomainsQuery'
 import { StyledFooterButton } from '../StyledFooterButton'
 
 import { ShareDialog } from './ShareDialog'
@@ -12,11 +13,15 @@ export function ShareButton(): ReactElement {
   const { journey, variant } = useJourney()
   const { t } = useTranslation('libs-journeys-ui')
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
+  const { hostname } = useCustomDomainsQuery({
+    variables: { teamId: journey?.team?.id ?? '' },
+    skip: journey?.team?.id == null
+  })
 
   const url =
-    typeof window !== 'undefined' && journey?.slug != null
-      ? window.location.href
-      : undefined
+    hostname != null
+      ? `https://your.nextstep.is/${journey?.slug ?? ''}`
+      : `https://${hostname}/${journey?.slug ?? ''}`
 
   async function handleShare(): Promise<void> {
     if (variant === 'admin' || url == null) return

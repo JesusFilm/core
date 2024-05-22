@@ -3,9 +3,9 @@ import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useCustomDomainsQuery } from '@core/journeys/ui/useCustomDomainsQuery'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
-import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { Item } from '../Item/Item'
 
 interface PreviewItemProps {

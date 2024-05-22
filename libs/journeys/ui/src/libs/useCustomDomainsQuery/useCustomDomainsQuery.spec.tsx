@@ -1,13 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 
-import { GetCustomDomains_customDomains as CustomDomain } from '../../../__generated__/GetCustomDomains'
-
+import { GetCustomDomains_customDomains as CustomDomains } from './__generated__/GetCustomDomains'
 import { GET_CUSTOM_DOMAINS } from './useCustomDomainsQuery'
 
 import { useCustomDomainsQuery } from '.'
 
-const customDomains: CustomDomain[] = [
+const customDomains: CustomDomains[] = [
   {
     __typename: 'CustomDomain',
     name: 'example.com',

@@ -8,6 +8,7 @@ import { useTranslation } from 'next-i18next'
 import { ComponentProps, MouseEvent, ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useCustomDomainsQuery } from '@core/journeys/ui/useCustomDomainsQuery'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Code1Icon from '@core/shared/ui/icons/Code1'
@@ -15,7 +16,6 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
 
 import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
-import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { Item } from '../Item/Item'
 
 const EmbedJourneyDialog = dynamic(

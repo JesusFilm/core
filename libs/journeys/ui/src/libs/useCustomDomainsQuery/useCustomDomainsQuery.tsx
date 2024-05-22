@@ -3,7 +3,7 @@ import { QueryHookOptions, QueryResult, gql, useQuery } from '@apollo/client'
 import {
   GetCustomDomains,
   GetCustomDomainsVariables
-} from '../../../__generated__/GetCustomDomains'
+} from './__generated__/GetCustomDomains'
 
 export const GET_CUSTOM_DOMAINS = gql`
   query GetCustomDomains($teamId: ID!) {

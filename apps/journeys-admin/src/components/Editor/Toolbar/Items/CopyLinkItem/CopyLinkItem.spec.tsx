@@ -3,8 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { getCustomDomainMock } from '@core/journeys/ui/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
-import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { TeamProvider } from '../../../../Team/TeamProvider'
 import { defaultJourney } from '../../../data'
 

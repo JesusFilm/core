@@ -3,8 +3,7 @@ import { MockedResponse } from '@apollo/client/testing'
 import {
   GetCustomDomains,
   GetCustomDomainsVariables
-} from '../../../__generated__/GetCustomDomains'
-
+} from './__generated__/GetCustomDomains'
 import { GET_CUSTOM_DOMAINS } from './useCustomDomainsQuery'
 
 export const getCustomDomainMock: MockedResponse<

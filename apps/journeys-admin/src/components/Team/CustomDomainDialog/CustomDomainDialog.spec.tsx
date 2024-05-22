@@ -2,9 +2,10 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { getCustomDomainMock } from '@core/journeys/ui/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+
 import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { getCustomDomainMock } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider

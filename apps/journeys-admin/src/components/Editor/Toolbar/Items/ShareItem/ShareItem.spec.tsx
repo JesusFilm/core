@@ -4,8 +4,8 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { getCustomDomainMock } from '@core/journeys/ui/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
-import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { defaultJourney } from '../../../data'
 
 import { ShareItem } from './ShareItem'

@@ -3,6 +3,9 @@ import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
+import { GET_CUSTOM_DOMAINS } from '@core/journeys/ui/useCustomDomainsQuery/useCustomDomainsQuery'
+import { getCustomDomainMock } from '@core/journeys/ui/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+
 import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
 import {
   GetAdminJourneys,
@@ -13,8 +16,6 @@ import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastAc
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { GET_CUSTOM_DOMAINS } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
-import { getCustomDomainMock } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { defaultJourney } from '../../JourneyList/journeyListData'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
