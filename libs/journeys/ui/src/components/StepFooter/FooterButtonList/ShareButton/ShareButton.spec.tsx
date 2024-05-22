@@ -1,8 +1,10 @@
-import { fireEvent, render } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { getCustomDomainMock } from '../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
 import { ShareButton } from './ShareButton'
 
@@ -31,15 +33,17 @@ describe('ShareButton', () => {
     })
 
     const { getByRole } = render(
-      <SnackbarProvider>
-        <JourneyProvider
-          value={{
-            journey: { slug: 'test-slug' } as unknown as Journey
-          }}
-        >
-          <ShareButton />
-        </JourneyProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { slug: 'test-slug' } as unknown as Journey
+            }}
+          >
+            <ShareButton />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     fireEvent.click(getByRole('button'))
@@ -48,15 +52,17 @@ describe('ShareButton', () => {
 
   it('should open share dialog on desktop', () => {
     const { getByRole } = render(
-      <SnackbarProvider>
-        <JourneyProvider
-          value={{
-            journey: { slug: 'test-slug' } as unknown as Journey
-          }}
-        >
-          <ShareButton />
-        </JourneyProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { slug: 'test-slug' } as unknown as Journey
+            }}
+          >
+            <ShareButton />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     fireEvent.click(getByRole('button'))
@@ -65,19 +71,45 @@ describe('ShareButton', () => {
 
   it('should disable click on admin', () => {
     const { getByRole, queryByRole } = render(
-      <SnackbarProvider>
-        <JourneyProvider
-          value={{
-            journey: { slug: 'test-slug' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <ShareButton />
-        </JourneyProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { slug: 'test-slug' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <ShareButton />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     fireEvent.click(getByRole('button'))
     expect(queryByRole('dialog', { name: 'Share' })).not.toBeInTheDocument()
+  })
+
+  it('should get custom domain if there is one', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
+
+    render(
+      <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                slug: 'test-slug',
+                team: { id: 'teamId' }
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <ShareButton />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })
