@@ -72,7 +72,7 @@ export class BigQueryConsumer extends WorkerHost {
       if (importTime != null) {
         for await (const row of this.bigQueryService.getRowsFromTable(
           bigQueryTableName,
-          importTime?.lastImport
+          importTime.lastImport as Date
         )) {
           try {
             await service.import(row)
@@ -102,11 +102,11 @@ export class BigQueryConsumer extends WorkerHost {
           })
         }
       }
-      await this.prismaService.importTimes.upsert({
-        where: { modelName: bigQueryTableName },
-        create: { modelName: bigQueryTableName, lastImport: updateTime },
-        update: { lastImport: updateTime }
-      })
+      // await this.prismaService.importTimes.upsert({
+      //   where: { modelName: bigQueryTableName },
+      //   create: { modelName: bigQueryTableName, lastImport: updateTime },
+      //   update: { lastImport: updateTime }
+      // })
       console.log(`finished processing ${bigQueryTableName}`, errors)
     }
   }

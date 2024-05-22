@@ -22,7 +22,8 @@ export class ImporterService<T extends AnyObject = AnyObject> {
     const inValidRowIds: string[] = []
     for (const row of rows) {
       if (await this.schema.isValid(row)) {
-        validRows.push(row)
+        const data = this.schema.noUnknown().cast(row)
+        validRows.push(data)
       } else {
         inValidRowIds.push(get(row, 'id') ?? 'unknownId')
       }

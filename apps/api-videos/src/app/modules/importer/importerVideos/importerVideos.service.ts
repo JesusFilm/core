@@ -18,6 +18,8 @@ const videoSchema = object({
           return VideoLabel.featureFilm
         case 'behind_the_scenes':
           return VideoLabel.behindTheScenes
+        case 'segments':
+          return VideoLabel.segment
         default:
           return value
       }
@@ -88,9 +90,11 @@ export class ImporterVideosService extends ImporterService<Video> {
   }
 
   protected async saveMany(videos: Video[]): Promise<void> {
-    const inputs = await Promise.all(
-      videos.map(async (video) => await this.transform(video))
-    )
+    const inputs: Prisma.VideoCreateInput[] = []
+    for (const video of videos) {
+      inputs.push(await this.transform(video))
+    }
+    // console.log(inputs)
     await this.prismaService.video.createMany({
       data: inputs,
       skipDuplicates: true
