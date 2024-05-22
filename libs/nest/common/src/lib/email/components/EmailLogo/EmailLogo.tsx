@@ -20,7 +20,7 @@ export function EmailLogo(): ReactElement {
           lineHeight: '0px',
           visibility: 'hidden'
         }}
-        src="https://your.nextstep.is/LogoHorizontalDark.png"
+        src="https://your.nextstep.is/LogoHoriztonalDark.png"
       />
     </>
   )
