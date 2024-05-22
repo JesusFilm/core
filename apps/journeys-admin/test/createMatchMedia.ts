@@ -1,5 +1,5 @@
 import mediaQuery from 'css-mediaquery'
-// comment so it will create an env to run tests
+
 const createMatchMedia =
   (width: number) =>
   (query: string): MediaQueryList => ({
