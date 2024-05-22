@@ -56,6 +56,8 @@ describe('BaseNode', () => {
       </ReactFlowProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeDownwardArrowIcon')).toBeInTheDocument()
+    expect(
+      screen.getByTestId('BaseNodeConnectionArrowIcon')
+    ).toBeInTheDocument()
   })
 })
