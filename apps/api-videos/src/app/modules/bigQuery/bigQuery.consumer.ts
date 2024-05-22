@@ -88,7 +88,7 @@ export class BigQueryConsumer extends WorkerHost {
         const allRows: RowMetadata[] = []
         for await (const row of this.bigQueryService.getRowsFromTable(
           bigQueryTableName,
-          importTime?.lastImport
+          undefined
         )) {
           allRows.push(row)
         }
