@@ -20,7 +20,7 @@ export function ShareButton(): ReactElement {
   })
 
   const url =
-    hostname != null
+    hostname == null
       ? `https://your.nextstep.is/${journey?.slug ?? ''}`
       : `https://${hostname}/${journey?.slug ?? ''}`
 
