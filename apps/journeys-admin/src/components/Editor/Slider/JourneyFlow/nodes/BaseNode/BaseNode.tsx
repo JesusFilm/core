@@ -25,6 +25,7 @@ import {
 } from '../StepBlockNode/libs/sizes'
 
 import { PulseWrapper } from './PulseWrapper'
+import { useSnackbar } from 'notistack'
 
 const StyledHandle = styled(Handle)(() => ({}))
 const connectionHandleIdSelector = (state): string | null =>
@@ -67,18 +68,23 @@ export function BaseNode({
     id !== connectionNodeId
   const [targetSelected, setTargetSelected] = useState(false)
   const [sourceSelected, setSourceSelected] = useState(false)
+  const { enqueueSnackbar } = useSnackbar()
 
-  useOnSelectionChange({
-    onChange: (selected) => {
-      const selectedEdge = selected.edges[0]
-      setTargetSelected(selectedEdge?.target === id)
-      setSourceSelected(
-        selectedEdge?.sourceHandle != null
-          ? selectedEdge.sourceHandle === id
-          : selectedEdge?.source === id
-      )
-    }
-  })
+  // useOnSelectionChange({
+  //   onChange: (selected) => {
+  //     enqueueSnackbar(t('useOnSelectionChange'), {
+  //       variant: 'default',
+  //       preventDuplicate: true
+  //     })
+  //     const selectedEdge = selected.edges[0]
+  //     setTargetSelected(selectedEdge?.target === id)
+  //     setSourceSelected(
+  //       selectedEdge?.sourceHandle != null
+  //         ? selectedEdge.sourceHandle === id
+  //         : selectedEdge?.source === id
+  //     )
+  //   }
+  // })
 
   return (
     <Box
@@ -89,11 +95,11 @@ export function BaseNode({
         '.arrow': {
           opacity: 0,
           transition: 'right 0.5s, opacity 0.4s'
-        },
-        ':hover .arrow': {
-          opacity: isSourceConnected ? 0 : 1,
-          right: -22 // animation travel length
         }
+        // ':hover .arrow': {
+        //   opacity: isSourceConnected ? 0 : 1,
+        //   right: -22 // animation travel length
+        // }
       }}
     >
       {isFunction(children) ? children({ selected }) : children}
