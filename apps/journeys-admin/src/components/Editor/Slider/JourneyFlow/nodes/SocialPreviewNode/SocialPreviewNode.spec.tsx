@@ -128,7 +128,7 @@ describe('SocialPreviewNode', () => {
     ).toBeInTheDocument()
   })
 
-  it('calls dispatch on social media node click', async () => {
+  it('calls select social media node on click', async () => {
     const state: EditorState = {
       activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
@@ -152,5 +152,31 @@ describe('SocialPreviewNode', () => {
     expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('SocialPreviewNode'))
     expect(screen.getByText('activeContent: social')).toBeInTheDocument()
+  })
+
+  it('sets active slide to content when clicking on a selected social node', () => {
+    const state = {
+      activeContent: ActiveContent.Social,
+      activeSlide: ActiveSlide.JourneyFlow
+    }
+
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <JourneyProvider value={{ journey: blankSeoJourney }}>
+            <EditorProvider initialState={state}>
+              <TestEditorState />
+              <SocialPreviewNode />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    expect(screen.getByText('activeContent: social')).toBeInTheDocument()
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId('SocialPreviewNode'))
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
   })
 })
