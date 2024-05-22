@@ -14,7 +14,7 @@ export function LinkNode(): ReactElement {
   const url = 'https://bible.com'
 
   return (
-    <BaseNode id="LinkNode">
+    <BaseNode id="LinkNode" isTargetConnectable>
       <Stack
         gap={1}
         alignItems="center"

@@ -13,8 +13,7 @@ import { ActionFields as Action } from '../../../../../../../../__generated__/Ac
 import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
 import { useUpdateEdge } from '../../../libs/useUpdateEdge'
 import { BaseNode } from '../../BaseNode'
-import { LinkNode } from '../../LinkNode'
-import { ACTION_BUTTON_HEIGHT, STEP_NODE_WIDTH } from '../libs/sizes'
+import { ACTION_BUTTON_HEIGHT } from '../libs/sizes'
 
 interface ActionButtonProps {
   block: TreeBlock<Block>
@@ -110,41 +109,30 @@ export function ActionButton({
     >
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'row'
+          px: 3,
+          opacity: selected ? 1 : 0.7,
+          transition: (theme) => theme.transitions.create('opacity'),
+          margin: 0,
+          borderTop: (theme) =>
+            `1px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
+          height: ACTION_BUTTON_HEIGHT,
+          width: '100%'
         }}
       >
-        <Box
-          // need to set a specific width to this
+        {icon}
+        <Typography
+          align="left"
+          noWrap
           sx={{
-            px: 3,
-            opacity: selected ? 1 : 0.7,
-            transition: (theme) => theme.transitions.create('opacity'),
-            margin: 0,
-            borderTop: (theme) =>
-              `1px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
-            height: ACTION_BUTTON_HEIGHT,
-            width: STEP_NODE_WIDTH
+            fontWeight: 'bold',
+            fontSize: 10,
+            lineHeight: `${ACTION_BUTTON_HEIGHT - 1}px`,
+            mr: 5
           }}
+          variant="body2"
         >
-          {icon}
-          {/* so that this typography doesn't go past the line */}
-          <Typography
-            align="left"
-            noWrap
-            sx={{
-              fontWeight: 'bold',
-              fontSize: 10,
-              lineHeight: `${ACTION_BUTTON_HEIGHT - 1}px`,
-              mr: 5
-            }}
-            variant="body2"
-          >
-            {title}
-          </Typography>
-        </Box>
-        {/* then figure out why link node is not getting connected even when data is showing it is */}
-        <LinkNode />
+          {title}
+        </Typography>
       </Box>
     </BaseNode>
   )

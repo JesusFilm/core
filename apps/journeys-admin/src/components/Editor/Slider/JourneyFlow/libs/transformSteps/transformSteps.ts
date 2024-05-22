@@ -115,6 +115,16 @@ export function transformSteps(
         target: 'LinkNode',
         ...defaultEdgeProps
       })
+
+      nodes.push({
+        id: 'LinkNode',
+        type: 'Link',
+        data: {},
+        position: {
+          x: positions[step.id].x + 300,
+          y: positions[step.id].y + actionLength
+        }
+      })
     }
   }
 
