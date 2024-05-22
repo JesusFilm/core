@@ -2,19 +2,50 @@ import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { NodeProps } from 'reactflow'
 
-import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
+import { getLinkActionGoal } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useGoalDetails } from '@core/journeys/ui/useGoalDetails'
 
+import { filterActionBlocks } from '../../libs/filterActionBlocks'
 import { BaseNode } from '../BaseNode'
 
-export function LinkNode(): ReactElement {
-  const { label, icon } = useGoalDetails(GoalType.Chat)
+export function LinkNode({ id }: NodeProps): ReactElement {
+  const {
+    state: { steps }
+  } = useEditor()
+  const strippedNodeId = id.replace('LinkNode-', '')
 
-  const url = 'https://bible.com'
+  const actionBlocks = steps
+    ?.map((step) => filterActionBlocks(step))
+    .flat()
+    .filter(
+      (block) =>
+        block.action?.__typename === 'LinkAction' ||
+        block.action?.__typename === 'EmailAction'
+    )
+
+  const matchedActionBlock = actionBlocks?.find(
+    (block) => block.id === strippedNodeId
+  )
+
+  function getActionDetail(matchedActionBlock): string {
+    switch (matchedActionBlock?.action?.__typename) {
+      case 'LinkAction':
+        return matchedActionBlock.action.url
+      case 'EmailAction':
+        return matchedActionBlock.action.email
+      default:
+        return ''
+    }
+  }
+
+  const actionDetail = getActionDetail(matchedActionBlock)
+  const { label, icon } = useGoalDetails(getLinkActionGoal(actionDetail))
 
   return (
-    <BaseNode id="LinkNode" isTargetConnectable>
+    <BaseNode id={id} isTargetConnectable>
       <Stack
         gap={1}
         alignItems="center"
@@ -40,7 +71,7 @@ export function LinkNode(): ReactElement {
             {label}
           </Typography>
           <Typography noWrap variant="body2" sx={{ fontSize: 10 }}>
-            {url}
+            {actionDetail}
           </Typography>
         </Stack>
       </Stack>
