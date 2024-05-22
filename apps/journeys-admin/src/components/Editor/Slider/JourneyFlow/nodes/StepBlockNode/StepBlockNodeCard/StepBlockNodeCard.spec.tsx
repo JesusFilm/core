@@ -45,7 +45,7 @@ describe('StepBlockNodeCard', () => {
     expect(screen.getByText('card title')).toBeInTheDocument()
     expect(screen.getByText('card subtitle')).toBeInTheDocument()
     expect(screen.getByText('card description')).toBeInTheDocument()
-    expect(screen.getByTestId('card-icon-background')).toHaveStyle(`
+    expect(screen.getByTestId('CardIconBackground')).toHaveStyle(`
       background-image: url('bgImage');
     `)
     expect(screen.getByTestId('GitBranchIcon')).toBeInTheDocument()
