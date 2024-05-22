@@ -117,7 +117,7 @@ describe('useUpdateEdge', () => {
     expect(stepBlockResult).toHaveBeenCalled()
   })
 
-  it('should update navgiateAction for action edge', async () => {
+  it('should update navigateToBlockAction for action edge', async () => {
     const blockActionResult = jest
       .fn()
       .mockReturnValue(navigateToBlockActionUpdateMock.result)
