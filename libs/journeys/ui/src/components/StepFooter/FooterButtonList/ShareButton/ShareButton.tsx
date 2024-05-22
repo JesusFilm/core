@@ -13,6 +13,7 @@ export function ShareButton(): ReactElement {
   const { journey, variant } = useJourney()
   const { t } = useTranslation('libs-journeys-ui')
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
+  console.log(journey)
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id ?? '' },
     skip: journey?.team?.id == null
