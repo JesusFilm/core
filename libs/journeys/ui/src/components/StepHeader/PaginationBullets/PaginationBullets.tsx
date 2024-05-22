@@ -107,7 +107,7 @@ function removeAlreadyVisitedBlocksFromHistory(
     blockHistory.splice(1, blockHistory.length - 1)
   }
   // paginate back if you have already visited card
-  let prevCards = []
+  let prevCards: TreeBlock[] = []
   prevCards = blockHistory.filter((block) => block.id === currentActiveBlock.id)
   if (prevCards.length > 1) {
     blockHistory.forEach((block, i) => {
