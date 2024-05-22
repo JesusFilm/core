@@ -7,7 +7,7 @@ import { configure } from '@testing-library/react'
 
 import { mswServer } from './test/mswServer'
 import './test/i18n'
-// dummy text to create an env for e2e tests
+
 configure({ asyncUtilTimeout: 2500 })
 
 jest.mock('next/image', () => ({

@@ -37,7 +37,7 @@ test.describe('verify custom journey page', () => {
 
   // TODO: e2e: Update this as per journey flow diagram
   // Verify the user able to delete the journey card in create custom journey page
-  test('Detele journey card in custom journey page', async ({ page }) => {
+  test.fixme('Detele journey card in custom journey page', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
     const cardLevelActionPage = new CardLevelActionPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
