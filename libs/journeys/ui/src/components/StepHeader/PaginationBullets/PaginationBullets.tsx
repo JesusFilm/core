@@ -18,20 +18,7 @@ export function PaginationBullets(): ReactElement {
     } as unknown as TreeBlock<StepFields>
   )
 
-  // filter out orphan step blocks, then return number of cards in journey to render that many bullets
-  const bullets = [
-    ...new Array(
-      treeBlocks.filter(
-        (blocks) =>
-          (blocks as StepFields).nextBlockId != null ||
-          treeBlocks.some(
-            (includesBlocks) =>
-              (includesBlocks as StepFields).nextBlockId === blocks.id
-          ) ||
-          blocks.parentOrder === 0
-      ).length
-    )
-  ]
+  const bullets: number[] = bulletsToRender(treeBlocks)
 
   useEffect(() => {
     const currentActiveBlock = blockHistory[
@@ -39,12 +26,14 @@ export function PaginationBullets(): ReactElement {
     ] as TreeBlock<StepFields>
     setActiveBlock(currentActiveBlock)
 
-    // to prevent infinte card loops from running out of pagination dots
+    // to prevent infinite card loops from running out of pagination dots
     removeAlreadyVisitedBlocksFromHistory(blockHistory, currentActiveBlock)
 
-    currentActiveBlock?.nextBlockId != null
-      ? setActiveIndex(blockHistory.length - 1)
-      : setActiveIndex(bullets.length - 1)
+    setActiveIndex(
+      currentActiveBlock?.nextBlockId != null
+        ? blockHistory.length - 1
+        : bullets.length - 1
+    )
   }, [blockHistory, bullets.length])
 
   return (
@@ -73,7 +62,7 @@ export function PaginationBullets(): ReactElement {
           const gap = 16
           const initial = 52
           const distanceFromInitial = i * gap
-          // if on a card that has no next step - show end pagnination bullets state
+          // if on a card that has no next step - show end pagination bullets state
           const moveDistance =
             activeBlock?.nextBlockId == null
               ? bullets.length * gap
@@ -105,15 +94,24 @@ function removeAlreadyVisitedBlocksFromHistory(
   // paginate to beginning if you are back at the starting point
   if (currentActiveBlock?.id === blockHistory[0]?.id) {
     blockHistory.splice(1, blockHistory.length - 1)
+    return
   }
   // paginate back if you have already visited card
-  let prevCards: TreeBlock[] = []
-  prevCards = blockHistory.filter((block) => block.id === currentActiveBlock.id)
-  if (prevCards.length > 1) {
-    blockHistory.forEach((block, i) => {
-      if (block.id === currentActiveBlock.id) {
-        blockHistory.splice(i + 1, blockHistory.length - i)
-      }
-    })
-  }
+  blockHistory.forEach((block, i) => {
+    if (block.id === currentActiveBlock.id) {
+      blockHistory.splice(i + 1, blockHistory.length - i)
+    }
+  })
+}
+
+function bulletsToRender(treeBlocks: TreeBlock[]): number[] {
+  const treeBlocksWithoutOrphanBlocks = treeBlocks.filter(
+    (block) =>
+      (block as StepFields).nextBlockId != null ||
+      treeBlocks.some(
+        (someBlock) => (someBlock as StepFields).nextBlockId === block.id
+      ) ||
+      block.parentOrder === 0
+  )
+  return [...new Array(treeBlocksWithoutOrphanBlocks.length)]
 }
