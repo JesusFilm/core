@@ -150,9 +150,9 @@ export function transformSteps(
         block.action?.__typename === 'EmailAction'
 
       const priorAction = actionCount > 0
-      const currentCount = isLinkOrEmail ? actionCount : 0
+      const actionIndex = isLinkOrEmail ? actionCount : 0
 
-      processActionBlock(block, step, priorAction, currentCount, blockIndex)
+      processActionBlock(block, step, priorAction, actionIndex, blockIndex)
       return isLinkOrEmail ? actionCount + 1 : actionCount
     }, 0)
 
