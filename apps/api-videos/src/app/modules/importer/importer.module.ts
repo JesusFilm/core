@@ -10,7 +10,7 @@ import { ImporterVideoStudyQuestionsService } from './importerVideoStudyQuestion
 import { ImporterVideoTitleService } from './importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantDownloadsService } from './importerVideoVariantDownloads/importerVideoVariantDownloads.service'
 import { ImporterVideoVariantsService } from './importerVideoVariants/importerVideoVariants.service'
-import { ImporterVideoVariantSubtitlesService } from './importerVideoVariantSubtitle/importerVideovariantSubtitile.service'
+import { ImporterVideoVariantSubtitlesService } from './importerVideoVariantSubtitle/importerVideovariantSubtitle.service'
 
 @Module({
   providers: [

@@ -13,7 +13,7 @@ import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStu
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoVariantDownloads/importerVideoVariantDownloads.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
-import { ImporterVideoVariantSubtitlesService } from '../importer/importerVideoVariantSubtitle/importerVideovariantSubtitile.service'
+import { ImporterVideoVariantSubtitlesService } from '../importer/importerVideoVariantSubtitle/importerVideovariantSubtitle.service'
 
 import { BigQueryService } from './bigQuery.service'
 
@@ -68,7 +68,7 @@ export class BigQueryConsumer extends WorkerHost {
       const importTime = await this.prismaService.importTimes.findUnique({
         where: { modelName: bigQueryTableName }
       })
-      const updateTime = new Date()
+      // const updateTime = new Date()
       if (importTime != null) {
         for await (const row of this.bigQueryService.getRowsFromTable(
           bigQueryTableName,

@@ -3,17 +3,17 @@ import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
+import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoVariantDownloads/importerVideoVariantDownloads.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
-import { ImporterVideoVariantSubtitlesService } from '../importer/importerVideoVariantSubtitle/importerVideovariantSubtitile.service'
+import { ImporterVideoVariantSubtitlesService } from '../importer/importerVideoVariantSubtitle/importerVideovariantSubtitle.service'
 
 import { BigQueryConsumer } from './bigQuery.consumer'
 import { BigQueryService } from './bigQuery.service'
-import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 
 jest.mock('@google-cloud/bigquery')
 

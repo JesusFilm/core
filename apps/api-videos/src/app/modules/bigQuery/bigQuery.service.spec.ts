@@ -43,7 +43,8 @@ describe('bigQueryService', () => {
         ])
 
       for await (const row of service.getRowsFromTable(
-        'mockDataSetname.mockTableName'
+        'mockDataSetname.mockTableName',
+        undefined
       )) {
         expect(row).toEqual({
           mockKey: 'mockValue1'
@@ -79,7 +80,8 @@ describe('bigQueryService', () => {
 
       const rows: RowMetadata[] = []
       for await (const row of service.getRowsFromTable(
-        'mockDataSetname.mockTableName'
+        'mockDataSetname.mockTableName',
+        undefined
       )) {
         rows.push(row)
       }

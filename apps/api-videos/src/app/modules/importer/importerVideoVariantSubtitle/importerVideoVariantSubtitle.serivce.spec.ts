@@ -3,7 +3,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { PrismaService } from '../../../lib/prisma.service'
 
-import { ImporterVideoVariantSubtitlesService } from './importerVideovariantSubtitile.service'
+import { ImporterVideoVariantSubtitlesService } from './importerVideovariantSubtitle.service'
 
 describe('ImporterVideoVariantSubtitlesService', () => {
   let service: ImporterVideoVariantSubtitlesService,
