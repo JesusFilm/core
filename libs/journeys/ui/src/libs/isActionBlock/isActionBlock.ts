@@ -1,5 +1,4 @@
-import { TreeBlock } from '@core/journeys/ui/block'
-
+import { TreeBlock } from '../block'
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_FormBlock as FormBlock,
