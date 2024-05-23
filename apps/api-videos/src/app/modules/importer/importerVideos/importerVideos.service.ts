@@ -23,7 +23,7 @@ const videoSchema = z.object({
         return value as VideoLabel
     }
   }),
-  primaryLanguageId: z.string(),
+  primaryLanguageId: z.number().transform(String),
   slug: z.string(),
   childIds: z.string().nullable(),
   image: z.string().nullable()

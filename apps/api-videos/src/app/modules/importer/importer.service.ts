@@ -1,31 +1,30 @@
 import get from 'lodash/get'
-import { ZodSchema, ZodTypeAny } from 'zod'
-// import { AnyObject, ObjectSchema } from 'yup'
+import { ZodSchema } from 'zod'
 
-export class ImporterService<T extends ZodTypeAny = ZodTypeAny> {
-  schema: ZodSchema<T>
+export class ImporterService<T> {
+  schema: ZodSchema
 
   async import(row: unknown): Promise<void> {
-    // if (await this.schema.parse(row)) {
-    const data = this.schema.parse(row)
-    await this.save(data)
-    // } else {
-    //   throw new Error(
-    //     `row does not match schema: ${
-    //       get(row, 'id') ?? 'unknownId'
-    //     }\n${JSON.stringify(row, null, 2)}`
-    //   )
-    // }
+    const data = this.schema.safeParse(row)
+    if (!data.success) {
+      throw new Error(
+        `row does not match schema: ${
+          get(row, 'id') ?? 'unknownId'
+        }\n${JSON.stringify(row, null, 2)}`
+      )
+    }
+    await this.save(data.data as T)
   }
 
   async importMany(rows: unknown[]): Promise<void> {
     const validRows: unknown[] = []
     const inValidRowIds: string[] = []
     for (const row of rows) {
-      if (await this.schema.isValid(row)) {
-        const data = this.schema.noUnknown().cast(row)
-        validRows.push(data)
+      const data = this.schema.safeParse(row)
+      if (data.success) {
+        validRows.push(data.data)
       } else {
+        console.log(data.error)
         inValidRowIds.push(get(row, 'id') ?? 'unknownId')
       }
     }

@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common'
-import { InferType, boolean, object, string } from 'yup'
+import { z } from 'zod'
 
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 
-const videoImageAltSchema = object({
-  value: string().required(),
-  languageId: string().required(),
-  primary: boolean().required(),
-  videoId: string().required()
+const videoImageAltSchema = z.object({
+  value: z.string(),
+  languageId: z.string(),
+  primary: z.boolean(),
+  videoId: z.string()
 })
 
-type VideoImageAlt = InferType<typeof videoImageAltSchema>
+type VideoImageAlt = z.infer<typeof videoImageAltSchema>
 
 @Injectable()
 export class ImporterVideoImageAltService extends ImporterService<VideoImageAlt> {

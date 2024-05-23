@@ -24,7 +24,7 @@ interface BigQueryRowError {
 }
 @Processor('api-videos-arclight')
 export class BigQueryConsumer extends WorkerHost {
-  tables: Record<string, ImporterService> = {}
+  tables: Record<string, ImporterService<any>> = {}
 
   constructor(
     private readonly prismaService: PrismaService,
@@ -44,21 +44,21 @@ export class BigQueryConsumer extends WorkerHost {
       'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data':
         this.importerVideosService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoTitle_arclight_data':
-        this.importerVideoTitleService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoDescription_arclight_data':
-        this.importerVideoDescriptionService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoStudyQuestions_arclight_data':
-        this.importerVideoStudyQuestionsService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoSnippet_arclight_data':
-        this.importerVideoSnippetsService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoImageAlt_arclight_data':
-        this.importerVideoImageAltService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
-        this.importerVideoVariantsService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data':
-        this.importerVideoVariantsDownloadService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data':
-        this.importerVideoVariantsSubtitleService
+        this.importerVideoTitleService
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoDescription_arclight_data':
+      //   this.importerVideoDescriptionService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoStudyQuestions_arclight_data':
+      //   this.importerVideoStudyQuestionsService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoSnippet_arclight_data':
+      //   this.importerVideoSnippetsService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoImageAlt_arclight_data':
+      //   this.importerVideoImageAltService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
+      //   this.importerVideoVariantsService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data':
+      //   this.importerVideoVariantsDownloadService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data':
+      //   this.importerVideoVariantsSubtitleService
     }
   }
 
@@ -72,7 +72,7 @@ export class BigQueryConsumer extends WorkerHost {
       if (importTime != null) {
         for await (const row of this.bigQueryService.getRowsFromTable(
           bigQueryTableName,
-          importTime.lastImport as Date
+          importTime.lastImport
         )) {
           try {
             await service.import(row)

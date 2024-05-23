@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common'
-import { InferType, boolean, object, string } from 'yup'
+import { z } from 'zod'
 
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 
-const videoSnippetSchema = object({
-  value: string().required(),
-  languageId: string().required(),
-  primary: boolean().required(),
-  videoId: string().required()
+const videoSnippetSchema = z.object({
+  value: z.string(),
+  languageId: z.string(),
+  primary: z.boolean(),
+  videoId: z.string()
 })
 
-type VideoSnippet = InferType<typeof videoSnippetSchema>
+type VideoSnippet = z.infer<typeof videoSnippetSchema>
 
 @Injectable()
 export class ImporterVideoSnippetsService extends ImporterService<VideoSnippet> {

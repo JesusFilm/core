@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import omit from 'lodash/omit'
-import { InferType, number, object, string } from 'yup'
+import { z } from 'zod'
 
 import { Prisma } from '.prisma/api-videos-client'
 
@@ -8,17 +8,17 @@ import { convertToSlug } from '../../../../libs/slugify/slugify'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 
-const videoVariantsSchema = object({
-  id: string().required(),
-  hls: string().nullable(),
-  duration: number().required(),
-  languageId: string().required(),
-  videoId: string().required(),
-  slug: string().required(),
-  languageName: string().required()
+const videoVariantsSchema = z.object({
+  id: z.string(),
+  hls: z.string().nullable(),
+  duration: z.number(),
+  languageId: z.string(),
+  videoId: z.string(),
+  slug: z.string(),
+  languageName: z.string()
 })
 
-type VideoVariants = InferType<typeof videoVariantsSchema>
+type VideoVariants = z.infer<typeof videoVariantsSchema>
 
 @Injectable()
 export class ImporterVideoVariantsService extends ImporterService<VideoVariants> {

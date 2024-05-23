@@ -1,22 +1,23 @@
 import { Injectable } from '@nestjs/common'
-import { InferType, mixed, number, object, string } from 'yup'
+import { z } from 'zod'
 
 import { VideoVariantDownloadQuality } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 
-const videoVariantDownloadsSchema = object({
-  quality: mixed<VideoVariantDownloadQuality>()
-    .transform((value) => VideoVariantDownloadQuality[value])
-    .oneOf(Object.values(VideoVariantDownloadQuality))
-    .required(),
-  size: number().required(),
-  url: string().required(),
-  videoVariantId: string().required()
+const videoVariantDownloadsSchema = z.object({
+  quality: z
+    .custom()
+    .transform<VideoVariantDownloadQuality>(
+      (value: string) => VideoVariantDownloadQuality[value]
+    ),
+  size: z.number(),
+  url: z.string(),
+  videoVariantId: z.string()
 })
 
-type VideoVariantDownloads = InferType<typeof videoVariantDownloadsSchema>
+type VideoVariantDownloads = z.infer<typeof videoVariantDownloadsSchema>
 
 @Injectable()
 export class ImporterVideoVariantDownloadsService extends ImporterService<VideoVariantDownloads> {

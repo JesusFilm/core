@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common'
-import { InferType, boolean, number, object, string } from 'yup'
+import { z } from 'zod'
 
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 
-const videoStudyQuestions = object({
-  value: string().required(),
-  videoId: string().required(),
-  languageId: string().required(),
-  primary: boolean().required(),
-  order: number().required(),
-  crowdInId: string().required()
+const videoStudyQuestions = z.object({
+  value: z.string(),
+  videoId: z.string(),
+  languageId: z.string(),
+  primary: z.boolean(),
+  order: z.number(),
+  crowdInId: z.string()
 })
 
-type VideoStudyQuestions = InferType<typeof videoStudyQuestions>
+type VideoStudyQuestions = z.infer<typeof videoStudyQuestions>
 
 @Injectable()
 export class ImporterVideoStudyQuestionsService extends ImporterService<VideoStudyQuestions> {
