@@ -12,8 +12,44 @@ describe('PaginationBullets', () => {
     parentBlockId: null,
     parentOrder: 0,
     locked: false,
-    nextBlockId: 'step2.id',
-    children: []
+    nextBlockId: null,
+    children: [
+      {
+        __typename: 'CardBlock',
+        id: 'cardBlock.id',
+        parentBlockId: 'step8.id',
+        parentOrder: 0,
+        backgroundColor: null,
+        coverBlockId: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            __typename: 'RadioQuestionBlock',
+            id: 'radioQuestionBlock.id',
+            parentBlockId: 'cardBlock.id',
+            parentOrder: 0,
+            children: [
+              {
+                __typename: 'RadioOptionBlock',
+                id: 'radioOptionBlock.id',
+                parentBlockId: 'radioQuestionBlock.id',
+                parentOrder: 0,
+                label: 'Option 1',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  parentBlockId: 'radioQuestionBlock.id',
+                  gtmEventName: null,
+                  blockId: 'step2.id'
+                },
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
   const step2: TreeBlock<StepBlock> = {
     id: 'step2.id',

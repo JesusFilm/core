@@ -3,6 +3,7 @@ import reduce from 'lodash/reduce'
 import { XYPosition } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
@@ -13,7 +14,6 @@ import {
   STEP_NODE_OFFSET,
   STEP_NODE_WIDTH_GAP
 } from '../../nodes/StepBlockNode/libs/sizes'
-import { filterActionBlocks } from '../filterActionBlocks'
 
 export interface PositionMap {
   [id: string]: XYPosition

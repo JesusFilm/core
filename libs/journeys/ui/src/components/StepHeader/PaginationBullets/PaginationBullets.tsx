@@ -1,11 +1,17 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { TreeBlock, useBlocks } from '../../../libs/block'
+import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
+import { filterActionBlocks } from '../../../libs/filterActionBlocks'
 import { StepFields } from '../../Step/__generated__/StepFields'
 
 import { Bullet } from './Bullet'
+
+interface HasBlockId {
+  action: { blockId: string }
+}
 
 export function PaginationBullets(): ReactElement {
   const { treeBlocks, blockHistory } = useBlocks()
@@ -18,7 +24,10 @@ export function PaginationBullets(): ReactElement {
     } as unknown as TreeBlock<StepFields>
   )
 
-  const bullets: number[] = bulletsToRender(treeBlocks)
+  const bullets: number[] = useMemo(
+    () => bulletsToRender(treeBlocks),
+    [treeBlocks]
+  )
 
   useEffect(() => {
     const currentActiveBlock = blockHistory[
@@ -30,7 +39,10 @@ export function PaginationBullets(): ReactElement {
     removeAlreadyVisitedBlocksFromHistory(blockHistory, currentActiveBlock)
 
     setActiveIndex(
-      currentActiveBlock?.nextBlockId != null
+      currentActiveBlock?.nextBlockId != null ||
+        filterActionBlocks(currentActiveBlock).some(
+          (block) => (block as HasBlockId)?.action?.blockId != null
+        )
         ? blockHistory.length - 1
         : bullets.length - 1
     )
@@ -64,9 +76,12 @@ export function PaginationBullets(): ReactElement {
           const distanceFromInitial = i * gap
           // if on a card that has no next step - show end pagination bullets state
           const moveDistance =
-            activeBlock?.nextBlockId == null
-              ? bullets.length * gap
-              : blockHistory.length * gap
+            activeBlock?.nextBlockId != null ||
+            filterActionBlocks(activeBlock).some(
+              (block) => (block as HasBlockId)?.action?.blockId != null
+            )
+              ? blockHistory.length * gap
+              : bullets.length * gap
 
           return (
             <Bullet
@@ -107,9 +122,14 @@ function removeAlreadyVisitedBlocksFromHistory(
 function bulletsToRender(treeBlocks: TreeBlock[]): number[] {
   const treeBlocksWithoutOrphanBlocks = treeBlocks.filter(
     (block) =>
-      (block as StepFields).nextBlockId != null ||
+      (block as StepBlock).nextBlockId != null ||
       treeBlocks.some(
-        (someBlock) => (someBlock as StepFields).nextBlockId === block.id
+        (someBlock) =>
+          (someBlock as StepBlock)?.nextBlockId === block?.id ||
+          filterActionBlocks(someBlock as TreeBlock<StepBlock>).some(
+            (actionBlocks) =>
+              (actionBlocks as HasBlockId)?.action?.blockId === block.id
+          )
       ) ||
       block.parentOrder === 0
   )
