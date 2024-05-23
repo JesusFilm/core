@@ -9,7 +9,7 @@ import { ImporterService } from '../importer.service'
 
 const videoSchema = z.object({
   id: z.string(),
-  label: z.custom().transform<VideoLabel>((value) => {
+  label: z.string().transform<VideoLabel>((value) => {
     switch (value) {
       case 'short':
         return VideoLabel.shortFilm
@@ -59,19 +59,13 @@ export class ImporterVideosService extends ImporterService<Video> {
   }
 
   private async transform(video: Video): Promise<Prisma.VideoCreateInput> {
-    if (video.childIds == null) {
-      return {
-        ...video,
-        childIds: [],
-        slug: await this.slugify(video.id, video.slug),
-        noIndex: false
-      }
-    }
-    const string = video.childIds
-    const stringArray = string.substring(1, string.length - 1).split(',')
+    const childIds =
+      video.childIds == null
+        ? []
+        : video.childIds.substring(1, video.childIds.length - 1).split(',')
     return {
       ...video,
-      childIds: stringArray,
+      childIds,
       slug: await this.slugify(video.id, video.slug),
       noIndex: false
     }

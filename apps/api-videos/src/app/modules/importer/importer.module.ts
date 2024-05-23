@@ -5,6 +5,7 @@ import { PrismaService } from '../../lib/prisma.service'
 import { ImporterVideoDescriptionService } from './importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from './importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideosService } from './importerVideos/importerVideos.service'
+import { ImporterVideosChildrenService } from './importerVideosChildren/importerVideosChildren.service'
 import { ImporterVideoSnippetsService } from './importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from './importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoTitleService } from './importerVideoTitles/importerVideoTitle.service'
@@ -16,6 +17,7 @@ import { ImporterVideoVariantSubtitlesService } from './importerVideoVariantSubt
   providers: [
     PrismaService,
     ImporterVideosService,
+    ImporterVideosChildrenService,
     ImporterVideoTitleService,
     ImporterVideoDescriptionService,
     ImporterVideoStudyQuestionsService,
@@ -27,6 +29,7 @@ import { ImporterVideoVariantSubtitlesService } from './importerVideoVariantSubt
   ],
   exports: [
     ImporterVideosService,
+    ImporterVideosChildrenService,
     ImporterVideoTitleService,
     ImporterVideoDescriptionService,
     ImporterVideoStudyQuestionsService,

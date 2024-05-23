@@ -8,6 +8,7 @@ import { ImporterService } from '../importer/importer.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
@@ -37,7 +38,8 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideoVariantsService: ImporterVideoVariantsService,
     private readonly importerVideoImageAltService: ImporterVideoImageAltService,
     private readonly importerVideoVariantsDownloadService: ImporterVideoVariantDownloadsService,
-    private readonly importerVideoVariantsSubtitleService: ImporterVideoVariantSubtitlesService
+    private readonly importerVideoVariantsSubtitleService: ImporterVideoVariantSubtitlesService,
+    private readonly importerVideosChildrenService: ImporterVideosChildrenService
   ) {
     super()
     this.tables = {
@@ -107,7 +109,10 @@ export class BigQueryConsumer extends WorkerHost {
       //   create: { modelName: bigQueryTableName, lastImport: updateTime },
       //   update: { lastImport: updateTime }
       // })
+
       console.log(`finished processing ${bigQueryTableName}`, errors)
     }
+    await this.importerVideosChildrenService.process()
+    console.log('finished processing children')
   }
 }
