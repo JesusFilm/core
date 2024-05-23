@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { InferType, mixed, object, string } from 'yup'
+import { z } from 'zod'
 
 import { Prisma, VideoLabel } from '.prisma/api-videos-client'
 
@@ -7,32 +7,29 @@ import { slugify } from '../../../../libs/slugify'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 
-const videoSchema = object({
-  id: string().required(),
-  label: mixed<VideoLabel>()
-    .transform((value) => {
-      switch (value) {
-        case 'short':
-          return VideoLabel.shortFilm
-        case 'feature':
-          return VideoLabel.featureFilm
-        case 'behind_the_scenes':
-          return VideoLabel.behindTheScenes
-        case 'segments':
-          return VideoLabel.segment
-        default:
-          return value
-      }
-    })
-    .oneOf(Object.values(VideoLabel))
-    .required(),
-  primaryLanguageId: string().required(),
-  slug: string().required(),
-  childIds: string().nullable(),
-  image: string().nullable()
+const videoSchema = z.object({
+  id: z.string(),
+  label: z.custom().transform<VideoLabel>((value) => {
+    switch (value) {
+      case 'short':
+        return VideoLabel.shortFilm
+      case 'feature':
+        return VideoLabel.featureFilm
+      case 'behind_the_scenes':
+        return VideoLabel.behindTheScenes
+      case 'segments':
+        return VideoLabel.segment
+      default:
+        return value as VideoLabel
+    }
+  }),
+  primaryLanguageId: z.string(),
+  slug: z.string(),
+  childIds: z.string().nullable(),
+  image: z.string().nullable()
 })
 
-type Video = InferType<typeof videoSchema>
+type Video = z.infer<typeof videoSchema>
 
 @Injectable()
 export class ImporterVideosService extends ImporterService<Video> {
