@@ -52,11 +52,11 @@ export class BigQueryConsumer extends WorkerHost {
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoSnippet_arclight_data':
         this.importerVideoSnippetsService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoImageAlt_arclight_data':
-        this.importerVideoImageAltService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
-        this.importerVideoVariantsService
+        this.importerVideoImageAltService
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
+      //   this.importerVideoVariantsService
       // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data':
-      //   this.importerVideoVariantsDownloadService,
+      //   this.importerVideoVariantsDownloadService
       // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data':
       //   this.importerVideoVariantsSubtitleService
     }
