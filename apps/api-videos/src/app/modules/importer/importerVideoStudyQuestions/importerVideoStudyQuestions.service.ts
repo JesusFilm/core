@@ -7,10 +7,10 @@ import { ImporterService } from '../importer.service'
 const videoStudyQuestions = z.object({
   value: z.string(),
   videoId: z.string(),
-  languageId: z.string(),
-  primary: z.boolean(),
+  languageId: z.number().transform(String),
+  primary: z.number().transform(Boolean),
   order: z.number(),
-  crowdInId: z.string()
+  crowdInId: z.string().optional()
 })
 
 type VideoStudyQuestions = z.infer<typeof videoStudyQuestions>

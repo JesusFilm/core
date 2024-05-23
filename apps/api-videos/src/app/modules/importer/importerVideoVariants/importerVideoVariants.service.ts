@@ -12,7 +12,7 @@ const videoVariantsSchema = z.object({
   id: z.string(),
   hls: z.string().nullable(),
   duration: z.number(),
-  languageId: z.string(),
+  languageId: z.number().transform(String),
   videoId: z.string(),
   slug: z.string(),
   languageName: z.string()
@@ -23,6 +23,7 @@ type VideoVariants = z.infer<typeof videoVariantsSchema>
 @Injectable()
 export class ImporterVideoVariantsService extends ImporterService<VideoVariants> {
   schema = videoVariantsSchema
+  videoSlugs: Record<string, string> | undefined
   constructor(private readonly prismaService: PrismaService) {
     super()
   }
@@ -30,10 +31,16 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
   private async transform(
     videoVariant: VideoVariants
   ): Promise<Prisma.VideoVariantCreateInput> {
-    const video = await this.prismaService.video.findUnique({
-      where: { id: videoVariant.videoId }
-    })
-    if (video == null)
+    if (this.videoSlugs === undefined) {
+      const results = await this.prismaService.video.findMany({
+        select: { slug: true, id: true }
+      })
+      this.videoSlugs = {}
+      for (const video of results) {
+        if (video.slug != null) this.videoSlugs[video.id] = video.slug
+      }
+    }
+    if (this.videoSlugs[videoVariant.videoId] == null)
       throw new Error(
         `video for variant id: ${
           videoVariant.id
@@ -41,7 +48,9 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
       )
 
     const transformedLanguageName = convertToSlug(videoVariant.languageName)
-    const slug = `${video.slug}/${transformedLanguageName}`
+    const slug = `${
+      this.videoSlugs[videoVariant.videoId]
+    }/${transformedLanguageName}`
     const transformedVideoVariant = {
       ...videoVariant,
       slug,

@@ -8,7 +8,7 @@ const videoTitleSchema = z.object({
   value: z.string(),
   videoId: z.string(),
   languageId: z.number().transform(String),
-  primary: z.boolean()
+  primary: z.number().transform(Boolean)
 })
 
 type VideoTitle = z.infer<typeof videoTitleSchema>

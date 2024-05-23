@@ -7,8 +7,8 @@ import { ImporterService } from '../importer.service'
 const videoDescriptionSchema = z.object({
   value: z.string(),
   videoId: z.string(),
-  languageId: z.string(),
-  primary: z.boolean()
+  languageId: z.number().transform(String),
+  primary: z.number().transform(Boolean)
 })
 
 type VideoDescription = z.infer<typeof videoDescriptionSchema>

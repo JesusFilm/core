@@ -6,8 +6,8 @@ import { ImporterService } from '../importer.service'
 
 const videoSnippetSchema = z.object({
   value: z.string(),
-  languageId: z.string(),
-  primary: z.boolean(),
+  languageId: z.number().transform(String),
+  primary: z.number().transform(Boolean),
   videoId: z.string()
 })
 
