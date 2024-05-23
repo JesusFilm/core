@@ -12,6 +12,9 @@ export const NODE_EXTRA_DETECTION_WIDTH = 30
 
 export const ACTION_BUTTON_HEIGHT = 27
 
+export const LINK_NODE_WIDTH = 300
+export const LINK_NODE_GAP = 30
+
 export const HANDLE_DIAMETER = 6
 export const HANDLE_BORDER_WIDTH = 2
 export const HANDLE_WITH_BORDER_DIAMETER =

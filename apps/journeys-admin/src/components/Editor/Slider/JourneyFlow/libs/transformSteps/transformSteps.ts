@@ -8,6 +8,8 @@ import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__gener
 import { adminLight } from '../../../../../ThemeProvider/admin/theme'
 import {
   ACTION_BUTTON_HEIGHT,
+  LINK_NODE_GAP,
+  LINK_NODE_WIDTH,
   STEP_NODE_CARD_HEIGHT
 } from '../../nodes/StepBlockNode/libs/sizes'
 import { PositionMap } from '../arrangeSteps'
@@ -88,7 +90,9 @@ export function transformSteps(
   function processActionBlock(
     block: TreeBlock,
     step: TreeBlock<StepBlock>,
-    actionIndex: number
+    priorAction: boolean,
+    actionCount: number,
+    blockIndex: number
   ): void {
     if (!('action' in block) || block.action == null) return
 
@@ -118,8 +122,11 @@ export function transformSteps(
       })
 
       const position = {
-        x: 300,
-        y: STEP_NODE_CARD_HEIGHT + ACTION_BUTTON_HEIGHT * (actionIndex + 1)
+        x: LINK_NODE_WIDTH,
+        y:
+          STEP_NODE_CARD_HEIGHT +
+          ACTION_BUTTON_HEIGHT * (blockIndex + 1) +
+          (priorAction ? LINK_NODE_GAP * actionCount : 0)
       }
 
       nodes.push({
@@ -136,9 +143,19 @@ export function transformSteps(
   steps.forEach((step) => {
     connectStepToNextBlock(step, steps)
     const actionBlocks = filterActionBlocks(step)
-    actionBlocks.forEach((block, index) =>
-      processActionBlock(block, step, index)
-    )
+
+    actionBlocks.reduce((actionCount, block, blockIndex) => {
+      const isLinkOrEmail =
+        block.action?.__typename === 'LinkAction' ||
+        block.action?.__typename === 'EmailAction'
+
+      const priorAction = actionCount > 0
+      const currentCount = isLinkOrEmail ? actionCount : 0
+
+      processActionBlock(block, step, priorAction, currentCount, blockIndex)
+      return isLinkOrEmail ? actionCount + 1 : actionCount
+    }, 0)
+
     nodes.push({
       id: step.id,
       type: 'StepBlock',
