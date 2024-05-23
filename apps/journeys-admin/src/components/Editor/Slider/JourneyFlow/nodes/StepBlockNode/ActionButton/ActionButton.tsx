@@ -36,12 +36,12 @@ export function ActionButton({
   }
 
   function extractTitleAndConnection(block, defaultTitle): BlockUIProperties {
-    const hasConnection =
+    const isSourceConnected =
       block.action?.__typename === 'NavigateToBlockAction' &&
       block.action?.blockId != null
     const title = getTitle(block, defaultTitle)
 
-    return { title, isSourceConnected: hasConnection }
+    return { title, isSourceConnected }
   }
 
   function getTitleAndConnection(): BlockUIProperties {
