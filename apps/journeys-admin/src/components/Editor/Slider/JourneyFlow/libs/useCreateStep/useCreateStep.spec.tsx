@@ -114,9 +114,9 @@ const stepBlockNextBlockUpdateMock: MockedResponse<
 describe('useCreateStep', () => {
   it('should create a new step block', async () => {
     const cache = new InMemoryCache().restore({
-      'Journey:journey.id': {
+      'Journey:journey-id': {
         blocks: [{ __ref: `StepBlock:step.id` }],
-        id: 'journey.id',
+        id: 'journey-id',
         __typename: 'Journey'
       },
       'StepBlock:step1.id': {
@@ -151,6 +151,12 @@ describe('useCreateStep', () => {
     )
 
     expect(result).toHaveBeenCalled()
+
+    expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([
+      { __ref: 'StepBlock:step.id' },
+      { __ref: 'StepBlock:newStep.id' },
+      { __ref: 'CardBlock:newCard.id' }
+    ])
 
     expect(cache.extract()['StepBlock:newStep.id']).toEqual({
       __typename: 'StepBlock',
