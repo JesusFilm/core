@@ -1,4 +1,5 @@
 import { TreeBlock } from '@core/journeys/ui/block'
+import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import {
@@ -8,7 +9,6 @@ import {
 } from '../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { VideoFields_video_variantLanguages } from '../../../../../../../../../__generated__/VideoFields'
-import { isActionBlock } from '../../../../libs/isActionBlock'
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'
