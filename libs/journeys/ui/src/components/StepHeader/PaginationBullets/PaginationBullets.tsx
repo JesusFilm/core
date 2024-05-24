@@ -3,15 +3,11 @@ import Stack from '@mui/material/Stack'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { TreeBlock, useBlocks } from '../../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { filterActionBlocks } from '../../../libs/filterActionBlocks'
+import { ActionBlock } from '../../../libs/isActionBlock'
 import { StepFields } from '../../Step/__generated__/StepFields'
 
 import { Bullet } from './Bullet'
-
-interface HasBlockId {
-  action: { blockId: string }
-}
 
 export function PaginationBullets(): ReactElement {
   const { treeBlocks, blockHistory } = useBlocks()
@@ -40,9 +36,7 @@ export function PaginationBullets(): ReactElement {
 
     setActiveIndex(
       currentActiveBlock?.nextBlockId != null ||
-        filterActionBlocks(currentActiveBlock).some(
-          (block) => (block as HasBlockId)?.action?.blockId != null
-        )
+        filterActionBlocks(currentActiveBlock).some((block) => hasAction(block))
         ? blockHistory.length - 1
         : bullets.length - 1
     )
@@ -77,9 +71,7 @@ export function PaginationBullets(): ReactElement {
           // if on a card that has no next step - show end pagination bullets state
           const moveDistance =
             activeBlock?.nextBlockId != null ||
-            filterActionBlocks(activeBlock).some(
-              (block) => (block as HasBlockId)?.action?.blockId != null
-            )
+            filterActionBlocks(activeBlock).some((block) => hasAction(block))
               ? blockHistory.length * gap
               : bullets.length * gap
 
@@ -121,17 +113,40 @@ function removeAlreadyVisitedBlocksFromHistory(
 
 function bulletsToRender(treeBlocks: TreeBlock[]): number[] {
   const treeBlocksWithoutOrphanBlocks = treeBlocks.filter(
-    (block) =>
-      (block as StepBlock).nextBlockId != null ||
-      treeBlocks.some(
-        (someBlock) =>
-          (someBlock as StepBlock)?.nextBlockId === block?.id ||
-          filterActionBlocks(someBlock as TreeBlock<StepBlock>).some(
-            (actionBlocks) =>
-              (actionBlocks as HasBlockId)?.action?.blockId === block.id
-          )
-      ) ||
-      block.parentOrder === 0
+    (block, _, treeBlockArr) => {
+      const connectionExists = (id: string): boolean => {
+        const block = treeBlockArr.find((connectionBlock) => {
+          if (connectionBlock.__typename !== 'StepBlock') return undefined
+          const connectedByStep = connectionBlock.id === id
+          const connectedByAction =
+            filterActionBlocks(connectionBlock).find((actionBlock) =>
+              hasAction(actionBlock, id)
+            ) != null
+          if (connectedByStep || connectedByAction) {
+            return connectionBlock
+          }
+          return undefined
+        })
+        return block != null
+      }
+
+      if (
+        (block.__typename === 'StepBlock' && block.nextBlockId != null) ||
+        block.parentOrder === 0 ||
+        connectionExists(block.id)
+      ) {
+        return true
+      }
+      return false
+    }
   )
   return [...new Array(treeBlocksWithoutOrphanBlocks.length)]
+}
+
+function hasAction(block: ActionBlock, id?: string): boolean {
+  if (block?.action?.__typename !== 'NavigateToBlockAction') return false
+
+  return id != null
+    ? block.action.blockId === id
+    : block.action.blockId !== null
 }
