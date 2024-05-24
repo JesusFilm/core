@@ -1,26 +1,26 @@
 import Grid from '@mui/material/Grid'
 import { ReactElement, useState } from 'react'
 
+import Skeleton from '@mui/material/Skeleton'
 import { CardCta } from './Templates/CardCta'
 import { CardForm } from './Templates/CardForm'
 import { CardIntro } from './Templates/CardIntro'
 import { CardPoll } from './Templates/CardPoll'
 import { CardQuote } from './Templates/CardQuote'
 import { CardVideo } from './Templates/CardVideo'
-import Skeleton from '@mui/material/Skeleton'
-import { Button } from '@mui/material'
 
 export function CardTemplates(): ReactElement {
-  const [cardTemplatesLoading, setCardTemplatesLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   return (
     <Grid data-testid="CardTemplates" container spacing={5} sx={{ p: 5 }}>
-      {cardTemplatesLoading === true ? (
+      {loading === true ? (
         <>
           {Array.from({ length: 6 }).map(() => (
             <Grid item xs={6}>
               <Skeleton
                 variant="rectangular"
+                data-testid="card-template-skeleton"
                 width={126}
                 height={195}
                 sx={{ borderRadius: 4, marginLeft: 1 }}
@@ -31,40 +31,22 @@ export function CardTemplates(): ReactElement {
       ) : (
         <>
           <Grid item xs={6}>
-            <CardVideo
-              setCardTemplatesLoading={setCardTemplatesLoading}
-              cardTemplatesLoading={cardTemplatesLoading}
-            />
+            <CardVideo setCardTemplatesLoading={setLoading} />
           </Grid>
           <Grid item xs={6}>
-            <CardIntro
-              setCardTemplatesLoading={setCardTemplatesLoading}
-              cardTemplatesLoading={cardTemplatesLoading}
-            />
+            <CardIntro setCardTemplatesLoading={setLoading} />
           </Grid>
           <Grid item xs={6}>
-            <CardPoll
-              setCardTemplatesLoading={setCardTemplatesLoading}
-              cardTemplatesLoading={cardTemplatesLoading}
-            />
+            <CardPoll setCardTemplatesLoading={setLoading} />
           </Grid>
           <Grid item xs={6}>
-            <CardForm
-              setCardTemplatesLoading={setCardTemplatesLoading}
-              cardTemplatesLoading={cardTemplatesLoading}
-            />
+            <CardForm setCardTemplatesLoading={setLoading} />
           </Grid>
           <Grid item xs={6}>
-            <CardQuote
-              setCardTemplatesLoading={setCardTemplatesLoading}
-              cardTemplatesLoading={cardTemplatesLoading}
-            />
+            <CardQuote setCardTemplatesLoading={setLoading} />
           </Grid>
           <Grid item xs={6}>
-            <CardCta
-              setCardTemplatesLoading={setCardTemplatesLoading}
-              cardTemplatesLoading={cardTemplatesLoading}
-            />
+            <CardCta setCardTemplatesLoading={setLoading} />
           </Grid>
         </>
       )}

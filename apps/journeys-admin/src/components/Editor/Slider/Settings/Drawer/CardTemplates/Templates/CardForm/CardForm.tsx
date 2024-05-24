@@ -77,10 +77,7 @@ export const CARD_FORM_CREATE = gql`
   }
 `
 
-export function CardForm({
-  setCardTemplatesLoading,
-  cardTemplatesLoading
-}): ReactElement {
+export function CardForm({ setCardTemplatesLoading }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -207,22 +204,13 @@ export function CardForm({
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        {cardTemplatesLoading === true ? (
-          <Skeleton
-            variant="rectangular"
-            width={128}
-            height={195}
-            sx={{ borderRadius: 5 }}
-          />
-        ) : (
-          <Image
-            width={128}
-            height={195}
-            src={cardFormImage}
-            alt="Card Form Template"
-            draggable={false}
-          />
-        )}
+        <Image
+          width={128}
+          height={195}
+          src={cardFormImage}
+          alt="Card Form Template"
+          draggable={false}
+        />
       </ButtonBase>
     </Box>
   )

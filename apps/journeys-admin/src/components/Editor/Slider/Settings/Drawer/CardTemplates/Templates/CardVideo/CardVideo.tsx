@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Image from 'next/image'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -15,8 +15,6 @@ import {
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 
 import cardVideoImage from './cardVideo.svg'
-import CircularProgress from '@mui/material/CircularProgress'
-import Skeleton from '@mui/material/Skeleton'
 
 export const CARD_VIDEO_CREATE = gql`
   ${VIDEO_FIELDS}
@@ -27,10 +25,7 @@ export const CARD_VIDEO_CREATE = gql`
   }
 `
 
-export function CardVideo({
-  setCardTemplatesLoading,
-  cardTemplatesLoading
-}): ReactElement {
+export function CardVideo({ setCardTemplatesLoading }): ReactElement {
   const { journey } = useJourney()
   const {
     state: { selectedStep }
@@ -94,22 +89,13 @@ export function CardVideo({
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        {cardTemplatesLoading === true ? (
-          <Skeleton
-            variant="rectangular"
-            width={128}
-            height={195}
-            sx={{ borderRadius: 4 }}
-          />
-        ) : (
-          <Image
-            width={128}
-            height={195}
-            src={cardVideoImage}
-            alt="Card Video Template"
-            draggable={false}
-          />
-        )}
+        <Image
+          width={128}
+          height={195}
+          src={cardVideoImage}
+          alt="Card Video Template"
+          draggable={false}
+        />
       </ButtonBase>
     </Box>
   )

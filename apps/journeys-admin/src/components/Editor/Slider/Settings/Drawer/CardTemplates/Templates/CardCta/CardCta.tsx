@@ -1,8 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
-import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
+import Image from 'next/image'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -27,7 +27,6 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 
 import cardCtaImage from './cardCta.svg'
-import Skeleton from '@mui/material/Skeleton'
 
 export const CARD_CTA_CREATE = gql`
   ${IMAGE_FIELDS}
@@ -121,10 +120,7 @@ export const CARD_CTA_CREATE = gql`
   }
 `
 
-export function CardCta({
-  setCardTemplatesLoading,
-  cardTemplatesLoading
-}): ReactElement {
+export function CardCta({ setCardTemplatesLoading }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -331,22 +327,13 @@ export function CardCta({
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        {cardTemplatesLoading === true ? (
-          <Skeleton
-            variant="rectangular"
-            width={128}
-            height={195}
-            sx={{ borderRadius: 5 }}
-          />
-        ) : (
-          <Image
-            width={128}
-            height={195}
-            src={cardCtaImage}
-            alt="Card CTA Template"
-            draggable={false}
-          />
-        )}
+        <Image
+          width={128}
+          height={195}
+          src={cardCtaImage}
+          alt="Card CTA Template"
+          draggable={false}
+        />
       </ButtonBase>
     </Box>
   )

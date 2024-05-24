@@ -1,8 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
-import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
+import Image from 'next/image'
 import { ReactElement } from 'react'
 
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
@@ -21,7 +21,6 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 
 import cardQuoteImage from './cardQuote.svg'
-import Skeleton from '@mui/material/Skeleton'
 
 export const CARD_QUOTE_CREATE = gql`
   ${IMAGE_FIELDS}
@@ -53,10 +52,7 @@ export const CARD_QUOTE_CREATE = gql`
   }
 `
 
-export function CardQuote({
-  setCardTemplatesLoading,
-  cardTemplatesLoading
-}): ReactElement {
+export function CardQuote({ setCardTemplatesLoading }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -157,22 +153,13 @@ export function CardQuote({
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        {cardTemplatesLoading === true ? (
-          <Skeleton
-            variant="rectangular"
-            width={128}
-            height={195}
-            sx={{ borderRadius: 5 }}
-          />
-        ) : (
-          <Image
-            width={128}
-            height={195}
-            src={cardQuoteImage}
-            alt="Card Quote Template"
-            draggable={false}
-          />
-        )}
+        <Image
+          width={128}
+          height={195}
+          src={cardQuoteImage}
+          alt="Card Quote Template"
+          draggable={false}
+        />
       </ButtonBase>
     </Box>
   )

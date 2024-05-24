@@ -1,9 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
-import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect } from 'react'
+import Image from 'next/image'
+import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
@@ -25,7 +25,6 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 
 import cardIntroImage from './cardIntro.svg'
-import Skeleton from '@mui/material/Skeleton'
 
 export const CARD_INTRO_CREATE = gql`
   ${TYPOGRAPHY_FIELDS}
@@ -75,10 +74,7 @@ export const CARD_INTRO_CREATE = gql`
   }
 `
 
-export function CardIntro({
-  setCardTemplatesLoading,
-  cardTemplatesLoading
-}): ReactElement {
+export function CardIntro({ setCardTemplatesLoading }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -222,22 +218,13 @@ export function CardIntro({
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        {cardTemplatesLoading === true ? (
-          <Skeleton
-            variant="rectangular"
-            width={128}
-            height={195}
-            sx={{ borderRadius: 5 }}
-          />
-        ) : (
-          <Image
-            width={128}
-            height={195}
-            src={cardIntroImage}
-            alt="Card Intro Template"
-            draggable={false}
-          />
-        )}
+        <Image
+          width={128}
+          height={195}
+          src={cardIntroImage}
+          alt="Card Intro Template"
+          draggable={false}
+        />
       </ButtonBase>
     </Box>
   )
