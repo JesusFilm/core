@@ -1,5 +1,4 @@
-import { TreeBlock } from '@core/journeys/ui/block'
-
+import { TreeBlock } from '../block'
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_FormBlock as FormBlock,
@@ -7,7 +6,7 @@ import {
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_TextResponseBlock as TextResponseBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../../../../../../__generated__/BlockFields'
+} from '../block/__generated__/BlockFields'
 
 export type ActionBlock =
   | TreeBlock<RadioOptionBlock>
@@ -17,5 +16,5 @@ export type ActionBlock =
   | TreeBlock<FormBlock>
   | TreeBlock<VideoBlock>
 
-export const isActionBlock = (block): block is ActionBlock =>
+export const isActionBlock = (block: TreeBlock<any>): block is ActionBlock =>
   block?.action !== undefined
