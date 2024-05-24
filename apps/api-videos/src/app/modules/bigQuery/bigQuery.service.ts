@@ -21,15 +21,21 @@ export class BigQueryService {
 
   async *getRowsFromTable(
     table: string,
-    lastImport: Date | undefined
-  ): AsyncGenerator<RowMetadata, void, unknown> {
+    lastImport: Date | undefined,
+    singleRow = true
+  ): AsyncGenerator<RowMetadata | RowMetadata[], void, unknown> {
     const job = await this.createQueryJob(table, lastImport)
     let results: QueryResults = { data: [] }
 
     do {
       if (results.data.length === 0)
         results = await this.getQueryResults(job, results.pageToken)
-      yield results.data.shift()
+      if (singleRow) {
+        yield results.data.shift()
+      } else {
+        yield results.data
+        results.data = []
+      }
     } while (results.data.length > 0 || results.pageToken != null)
   }
 

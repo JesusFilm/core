@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
+import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
 const videoImageAltSchema = z.object({
   value: z.string(),
@@ -16,11 +17,20 @@ type VideoImageAlt = z.infer<typeof videoImageAltSchema>
 @Injectable()
 export class ImporterVideoImageAltService extends ImporterService<VideoImageAlt> {
   schema = videoImageAltSchema
-  constructor(private readonly prismaService: PrismaService) {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly importerVideosService: ImporterVideosService
+  ) {
     super()
   }
 
   protected async save(videoImageAlt: VideoImageAlt): Promise<void> {
+    if (
+      !Object.keys(
+        this.importerVideosService.usedSlugs as Record<string, string>
+      ).includes(videoImageAlt.videoId)
+    )
+      throw new Error(`Video with id ${videoImageAlt.videoId} not found`)
     await this.prismaService.videoImageAlt.upsert({
       where: {
         videoId_languageId: {
@@ -35,7 +45,11 @@ export class ImporterVideoImageAltService extends ImporterService<VideoImageAlt>
 
   protected async saveMany(videoImageAlts: VideoImageAlt[]): Promise<void> {
     await this.prismaService.videoImageAlt.createMany({
-      data: videoImageAlts,
+      data: videoImageAlts.filter(({ videoId }) =>
+        Object.keys(
+          this.importerVideosService.usedSlugs as Record<string, string>
+        )?.includes(videoId)
+      ),
       skipDuplicates: true
     })
   }

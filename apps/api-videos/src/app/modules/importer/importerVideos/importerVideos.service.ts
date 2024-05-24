@@ -41,7 +41,7 @@ export class ImporterVideosService extends ImporterService<Video> {
     super()
   }
 
-  private async slugify(id: string, title: string): Promise<string> {
+  async getUsedSlugs(): Promise<void> {
     if (this.usedSlugs == null) {
       const results = await this.prismaService.video.findMany({
         select: { slug: true, id: true }
@@ -52,13 +52,13 @@ export class ImporterVideosService extends ImporterService<Video> {
         if (video.slug != null) this.usedSlugs[video.slug] = video.id
       }
     }
-
-    const slug = slugify(id, title, this.usedSlugs)
-
-    return slug
   }
 
-  private async transform(video: Video): Promise<Prisma.VideoCreateInput> {
+  private slugify(id: string, title: string): string {
+    return slugify(id, title, this.usedSlugs)
+  }
+
+  private transform(video: Video): Prisma.VideoCreateInput {
     const childIds =
       video.childIds == null
         ? []
@@ -66,13 +66,13 @@ export class ImporterVideosService extends ImporterService<Video> {
     return {
       ...video,
       childIds,
-      slug: await this.slugify(video.id, video.slug),
+      slug: this.slugify(video.id, video.slug),
       noIndex: false
     }
   }
 
   protected async save(video: Video): Promise<void> {
-    const input = await this.transform(video)
+    const input = this.transform(video)
     await this.prismaService.video.upsert({
       where: { id: video.id },
       update: input,
@@ -81,13 +81,8 @@ export class ImporterVideosService extends ImporterService<Video> {
   }
 
   protected async saveMany(videos: Video[]): Promise<void> {
-    const inputs: Prisma.VideoCreateInput[] = []
-    for (const video of videos) {
-      inputs.push(await this.transform(video))
-    }
-    // console.log(inputs)
     await this.prismaService.video.createMany({
-      data: inputs,
+      data: videos.map((input) => this.transform(input)),
       skipDuplicates: true
     })
   }

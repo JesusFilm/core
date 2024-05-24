@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import omit from 'lodash/omit'
 import { z } from 'zod'
 
 import { Prisma } from '.prisma/api-videos-client'
@@ -7,11 +6,15 @@ import { Prisma } from '.prisma/api-videos-client'
 import { convertToSlug } from '../../../../libs/slugify/slugify'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
+import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
 const videoVariantsSchema = z.object({
   id: z.string(),
   hls: z.string().nullable(),
-  duration: z.number(),
+  duration: z
+    .custom()
+    .transform(String)
+    .transform<number>((value: string) => Math.round(Number(value))),
   languageId: z.number().transform(String),
   videoId: z.string(),
   slug: z.string(),
@@ -23,44 +26,43 @@ type VideoVariants = z.infer<typeof videoVariantsSchema>
 @Injectable()
 export class ImporterVideoVariantsService extends ImporterService<VideoVariants> {
   schema = videoVariantsSchema
-  videoSlugs: Record<string, string> | undefined
-  constructor(private readonly prismaService: PrismaService) {
+  ids: string[] = []
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly importerVideosService: ImporterVideosService
+  ) {
     super()
   }
 
-  private async transform(
+  private transform(
     videoVariant: VideoVariants
-  ): Promise<Prisma.VideoVariantCreateInput> {
-    if (this.videoSlugs === undefined) {
-      const results = await this.prismaService.video.findMany({
-        select: { slug: true, id: true }
-      })
-      this.videoSlugs = {}
-      for (const video of results) {
-        if (video.slug != null) this.videoSlugs[video.id] = video.slug
-      }
-    }
-    if (this.videoSlugs[videoVariant.videoId] == null)
-      throw new Error(
-        `video for variant id: ${
-          videoVariant.id
-        } - does not exist! \n${JSON.stringify(videoVariant, null, 2)}`
-      )
+  ): Prisma.VideoVariantUncheckedCreateInput | null {
+    if (this.importerVideosService.usedSlugs?.[videoVariant.videoId] == null)
+      return null
+    // throw new Error(
+    //   `video for variant id: ${
+    //     videoVariant.id
+    //   } - does not exist! \n${JSON.stringify(videoVariant, null, 2)}`
+    // )
 
     const transformedLanguageName = convertToSlug(videoVariant.languageName)
     const slug = `${
-      this.videoSlugs[videoVariant.videoId]
+      this.importerVideosService.usedSlugs[videoVariant.videoId]
     }/${transformedLanguageName}`
-    const transformedVideoVariant = {
-      ...videoVariant,
-      slug,
-      duration: Math.round(videoVariant.duration)
+    this.ids.push(videoVariant.id)
+    return {
+      id: videoVariant.id,
+      hls: videoVariant.hls,
+      duration: videoVariant.duration,
+      languageId: videoVariant.languageId,
+      videoId: videoVariant.videoId,
+      slug
     }
-    return omit(transformedVideoVariant, ['languageName'])
   }
 
   protected async save(videoVariant: VideoVariants): Promise<void> {
-    const transformedVideoVariant = await this.transform(videoVariant)
+    const transformedVideoVariant = this.transform(videoVariant)
+    if (transformedVideoVariant == null) return
     await this.prismaService.videoVariant.upsert({
       where: {
         id: videoVariant.id
@@ -71,13 +73,11 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
   }
 
   protected async saveMany(videoVariants: VideoVariants[]): Promise<void> {
-    const transformedVideoVariants = await Promise.all(
-      videoVariants.map(
-        async (videoVariant) => await this.transform(videoVariant)
-      )
-    )
+    const transformedVideoVariants = videoVariants
+      .map((videoVariant) => this.transform(videoVariant))
+      .filter((x) => x !== null)
     await this.prismaService.videoVariant.createMany({
-      data: transformedVideoVariants,
+      data: transformedVideoVariants as Prisma.VideoVariantCreateManyInput[],
       skipDuplicates: true
     })
   }

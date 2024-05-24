@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
+import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
 const videoStudyQuestions = z.object({
   value: z.string(),
@@ -19,13 +20,23 @@ type VideoStudyQuestions = z.infer<typeof videoStudyQuestions>
 export class ImporterVideoStudyQuestionsService extends ImporterService<VideoStudyQuestions> {
   schema = videoStudyQuestions
 
-  constructor(private readonly prismaService: PrismaService) {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly importerVideosService: ImporterVideosService
+  ) {
     super()
   }
 
   protected async save(
     videoStudyQuestions: VideoStudyQuestions
   ): Promise<void> {
+    if (
+      !Object.keys(
+        this.importerVideosService.usedSlugs as Record<string, string>
+      ).includes(videoStudyQuestions.videoId)
+    )
+      throw new Error(`Video with id ${videoStudyQuestions.videoId} not found`)
+
     await this.prismaService.videoStudyQuestion.upsert({
       where: {
         videoId_languageId_order: {
@@ -43,7 +54,11 @@ export class ImporterVideoStudyQuestionsService extends ImporterService<VideoStu
     videoStudyQuestions: VideoStudyQuestions[]
   ): Promise<void> {
     await this.prismaService.videoStudyQuestion.createMany({
-      data: videoStudyQuestions,
+      data: videoStudyQuestions.filter(({ videoId }) =>
+        Object.keys(
+          this.importerVideosService.usedSlugs as Record<string, string>
+        )?.includes(videoId)
+      ),
       skipDuplicates: true
     })
   }
