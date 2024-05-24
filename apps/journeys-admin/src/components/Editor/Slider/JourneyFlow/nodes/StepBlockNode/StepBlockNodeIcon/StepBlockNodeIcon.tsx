@@ -24,43 +24,44 @@ export function StepBlockNodeIcon({
   let background: string | undefined
   let Icon: typeof SvgIcon
   let color = 'background.paper'
-  switch (typename) {
-    case 'RadioQuestionBlock':
-      background = 'linear-gradient(to bottom, #4c9bf8, #1873de)'
-      Icon = GitBranchIcon
-      break
-    case 'VideoBlock':
-      background = 'linear-gradient(to bottom, #f89f4c, #de7818)'
-      Icon = Play3Icon
-      break
-    case 'TextResponseBlock':
-    case 'FormBlock':
-      background = 'linear-gradient(to bottom, #b849ec, #9415d1)'
-      Icon = TextInput1Icon
-      break
-    case 'ButtonBlock':
-      background = 'linear-gradient(to bottom, #d8b500, #a28800)'
-      Icon = Cursor6
-      break
-    case 'TypographyBlock':
-      background = 'linear-gradient(to bottom, #00C3C3, #03a3a3)'
-      Icon = AlignCenterIcon
-      break
-    case 'ImageBlock':
-      background = 'linear-gradient(to bottom, #e01e92, #a8176d)'
-      Icon = Image3
-      break
-    case 'SignUpBlock':
-      background = 'linear-gradient(to bottom, #18af27, #10751a)'
-      Icon = Mail1
-      break
-    default:
-      background = '#FFFFFF'
-      color = 'text.primary'
-      Icon = FlexAlignBottom1Icon
-  }
 
-  if (showMultiIcon) {
+  if (!showMultiIcon) {
+    switch (typename) {
+      case 'RadioQuestionBlock':
+        background = 'linear-gradient(to bottom, #4c9bf8, #1873de)'
+        Icon = GitBranchIcon
+        break
+      case 'VideoBlock':
+        background = 'linear-gradient(to bottom, #f89f4c, #de7818)'
+        Icon = Play3Icon
+        break
+      case 'TextResponseBlock':
+      case 'FormBlock':
+        background = 'linear-gradient(to bottom, #b849ec, #9415d1)'
+        Icon = TextInput1Icon
+        break
+      case 'ButtonBlock':
+        background = 'linear-gradient(to bottom, #d8b500, #a28800)'
+        Icon = Cursor6
+        break
+      case 'TypographyBlock':
+        background = 'linear-gradient(to bottom, #00C3C3, #03a3a3)'
+        Icon = AlignCenterIcon
+        break
+      case 'ImageBlock':
+        background = 'linear-gradient(to bottom, #e01e92, #a8176d)'
+        Icon = Image3
+        break
+      case 'SignUpBlock':
+        background = 'linear-gradient(to bottom, #18af27, #10751a)'
+        Icon = Mail1
+        break
+      default:
+        background = '#FFFFFF'
+        color = 'text.primary'
+        Icon = FlexAlignBottom1Icon
+    }
+  } else {
     background = 'linear-gradient(to bottom, #4c9bf8, #1873de)'
     Icon = GitBranchIcon
   }
