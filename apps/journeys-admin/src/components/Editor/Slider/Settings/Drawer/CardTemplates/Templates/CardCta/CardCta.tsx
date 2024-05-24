@@ -27,6 +27,7 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 
 import cardCtaImage from './cardCta.svg'
+import Skeleton from '@mui/material/Skeleton'
 
 export const CARD_CTA_CREATE = gql`
   ${IMAGE_FIELDS}
@@ -120,16 +121,27 @@ export const CARD_CTA_CREATE = gql`
   }
 `
 
-export function CardCta(): ReactElement {
+export function CardCta({
+  setCardTemplatesLoading,
+  cardTemplatesLoading
+}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
 
-  const [cardCtaCreate] = useMutation<CardCtaCreate, CardCtaCreateVariables>(
-    CARD_CTA_CREATE
-  )
+  const [cardCtaCreate, { loading }] = useMutation<
+    CardCtaCreate,
+    CardCtaCreateVariables
+  >(CARD_CTA_CREATE, {
+    onCompleted: () => setCardTemplatesLoading(false),
+    onError: () => setCardTemplatesLoading(false)
+  })
+
+  if (loading) {
+    setCardTemplatesLoading(loading)
+  }
 
   const handleClick = async (): Promise<void> => {
     const cardId = selectedStep?.children[0].id
@@ -319,13 +331,22 @@ export function CardCta(): ReactElement {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        <Image
-          width={128}
-          height={195}
-          src={cardCtaImage}
-          alt="Card CTA Template"
-          draggable={false}
-        />
+        {cardTemplatesLoading === true ? (
+          <Skeleton
+            variant="rectangular"
+            width={128}
+            height={195}
+            sx={{ borderRadius: 5 }}
+          />
+        ) : (
+          <Image
+            width={128}
+            height={195}
+            src={cardCtaImage}
+            alt="Card CTA Template"
+            draggable={false}
+          />
+        )}
       </ButtonBase>
     </Box>
   )

@@ -21,6 +21,7 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 
 import cardQuoteImage from './cardQuote.svg'
+import Skeleton from '@mui/material/Skeleton'
 
 export const CARD_QUOTE_CREATE = gql`
   ${IMAGE_FIELDS}
@@ -52,17 +53,27 @@ export const CARD_QUOTE_CREATE = gql`
   }
 `
 
-export function CardQuote(): ReactElement {
+export function CardQuote({
+  setCardTemplatesLoading,
+  cardTemplatesLoading
+}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
 
-  const [cardQuoteCreate] = useMutation<
+  const [cardQuoteCreate, { loading }] = useMutation<
     CardQuoteCreate,
     CardQuoteCreateVariables
-  >(CARD_QUOTE_CREATE)
+  >(CARD_QUOTE_CREATE, {
+    onCompleted: () => setCardTemplatesLoading(false),
+    onError: () => setCardTemplatesLoading(false)
+  })
+
+  if (loading) {
+    setCardTemplatesLoading(loading)
+  }
 
   const handleClick = async (): Promise<void> => {
     const cardId = selectedStep?.children[0].id
@@ -146,13 +157,22 @@ export function CardQuote(): ReactElement {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        <Image
-          width={128}
-          height={195}
-          src={cardQuoteImage}
-          alt="Card Quote Template"
-          draggable={false}
-        />
+        {cardTemplatesLoading === true ? (
+          <Skeleton
+            variant="rectangular"
+            width={128}
+            height={195}
+            sx={{ borderRadius: 5 }}
+          />
+        ) : (
+          <Image
+            width={128}
+            height={195}
+            src={cardQuoteImage}
+            alt="Card Quote Template"
+            draggable={false}
+          />
+        )}
       </ButtonBase>
     </Box>
   )

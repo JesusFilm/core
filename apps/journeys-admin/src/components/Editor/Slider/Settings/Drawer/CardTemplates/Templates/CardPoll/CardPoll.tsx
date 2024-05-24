@@ -24,6 +24,7 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 
 import cardPollImage from './cardPoll.svg'
+import Skeleton from '@mui/material/Skeleton'
 
 export const CARD_POLL_CREATE = gql`
   ${IMAGE_FIELDS}
@@ -78,16 +79,27 @@ export const CARD_POLL_CREATE = gql`
   }
 `
 
-export function CardPoll(): ReactElement {
+export function CardPoll({
+  setCardTemplatesLoading,
+  cardTemplatesLoading
+}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
 
-  const [cardPollCreate] = useMutation<CardPollCreate, CardPollCreateVariables>(
-    CARD_POLL_CREATE
-  )
+  const [cardPollCreate, { loading }] = useMutation<
+    CardPollCreate,
+    CardPollCreateVariables
+  >(CARD_POLL_CREATE, {
+    onCompleted: () => setCardTemplatesLoading(false),
+    onError: () => setCardTemplatesLoading(false)
+  })
+
+  if (loading) {
+    setCardTemplatesLoading(loading)
+  }
 
   const handleClick = async (): Promise<void> => {
     const cardId = selectedStep?.children[0].id
@@ -214,13 +226,22 @@ export function CardPoll(): ReactElement {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        <Image
-          width={128}
-          height={195}
-          src={cardPollImage}
-          alt="Card Poll Template"
-          draggable={false}
-        />
+        {cardTemplatesLoading === true ? (
+          <Skeleton
+            variant="rectangular"
+            width={128}
+            height={195}
+            sx={{ borderRadius: 5 }}
+          />
+        ) : (
+          <Image
+            width={128}
+            height={195}
+            src={cardPollImage}
+            alt="Card Poll Template"
+            draggable={false}
+          />
+        )}
       </ButtonBase>
     </Box>
   )
