@@ -283,5 +283,30 @@
   },
   "msw": {
     "workerDirectory": "./.storybook/static"
-  }
+  },
+  "trustedDependencies": [
+    "@apollo/protobufjs",
+    "@datadog/native-appsec",
+    "@datadog/native-metrics",
+    "@datadog/pprof",
+    "@nestjs/core",
+    "@prisma/client",
+    "@prisma/engines",
+    "@swc/core",
+    "canvas",
+    "core-js",
+    "core-js-pure",
+    "cypress",
+    "dd-trace",
+    "esbuild",
+    "msgpackr-extract",
+    "msw",
+    "nestjs-pino",
+    "nx",
+    "prisma",
+    "protobufjs",
+    "puppeteer",
+    "sharp",
+    "yarn"
+  ]
 }

@@ -25,7 +25,7 @@ npm install -g foreman
 npm install -g apollo graphql
 
 # install all dependencies
-npm i
+bun i
 
 # install github action runner
 curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
