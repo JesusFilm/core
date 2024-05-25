@@ -34,6 +34,15 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
     super()
   }
 
+  async getExistingIds(): Promise<void> {
+    if (this.ids.length === 0) {
+      const results = await this.prismaService.videoVariant.findMany({
+        select: { id: true }
+      })
+      this.ids = results.map(({ id }) => id)
+    }
+  }
+
   private transform(
     videoVariant: VideoVariants
   ): Prisma.VideoVariantUncheckedCreateInput | null {
@@ -49,7 +58,6 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
     const slug = `${
       this.importerVideosService.usedSlugs[videoVariant.videoId]
     }/${transformedLanguageName}`
-    this.ids.push(videoVariant.id)
     return {
       id: videoVariant.id,
       hls: videoVariant.hls,
@@ -63,6 +71,7 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
   protected async save(videoVariant: VideoVariants): Promise<void> {
     const transformedVideoVariant = this.transform(videoVariant)
     if (transformedVideoVariant == null) return
+    this.ids.push(videoVariant.id)
     await this.prismaService.videoVariant.upsert({
       where: {
         id: videoVariant.id
@@ -80,5 +89,6 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
       data: transformedVideoVariants as Prisma.VideoVariantCreateManyInput[],
       skipDuplicates: true
     })
+    this.ids = [...this.ids, ...videoVariants.map(({ id }) => id)]
   }
 }

@@ -26,11 +26,7 @@ export class ImporterVideoDescriptionService extends ImporterService<VideoDescri
   }
 
   protected async save(videoDescription: VideoDescription): Promise<void> {
-    if (
-      !Object.keys(
-        this.importerVideosService.usedSlugs as Record<string, string>
-      ).includes(videoDescription.videoId)
-    )
+    if (!this.importerVideosService.ids.includes(videoDescription.videoId))
       throw new Error(`Video with id ${videoDescription.videoId} not found`)
 
     await this.prismaService.videoDescription.upsert({
@@ -50,9 +46,7 @@ export class ImporterVideoDescriptionService extends ImporterService<VideoDescri
   ): Promise<void> {
     await this.prismaService.videoDescription.createMany({
       data: videoDescriptions.filter(({ videoId }) =>
-        Object.keys(
-          this.importerVideosService.usedSlugs as Record<string, string>
-        )?.includes(videoId)
+        this.importerVideosService.ids.includes(videoId)
       ),
       skipDuplicates: true
     })

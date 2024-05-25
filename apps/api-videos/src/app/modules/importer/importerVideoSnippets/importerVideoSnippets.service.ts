@@ -25,11 +25,7 @@ export class ImporterVideoSnippetsService extends ImporterService<VideoSnippet> 
   }
 
   protected async save(videoSnippet: VideoSnippet): Promise<void> {
-    if (
-      !Object.keys(
-        this.importerVideosService.usedSlugs as Record<string, string>
-      ).includes(videoSnippet.videoId)
-    )
+    if (!this.importerVideosService.ids.includes(videoSnippet.videoId))
       throw new Error(`Video with id ${videoSnippet.videoId} not found`)
     await this.prismaService.videoSnippet.upsert({
       where: {
@@ -46,9 +42,7 @@ export class ImporterVideoSnippetsService extends ImporterService<VideoSnippet> 
   protected async saveMany(videoSnippets: VideoSnippet[]): Promise<void> {
     await this.prismaService.videoSnippet.createMany({
       data: videoSnippets.filter(({ videoId }) =>
-        Object.keys(
-          this.importerVideosService.usedSlugs as Record<string, string>
-        )?.includes(videoId)
+        this.importerVideosService.ids.includes(videoId)
       ),
       skipDuplicates: true
     })

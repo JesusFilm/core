@@ -84,6 +84,7 @@ model VideoVariantDownload {
   videoVariant   VideoVariant?               @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
 
   @@unique([quality, videoVariantId])
+  @@index(videoVariantId(type: Hash))
 }
 
 model VideoVariant {
@@ -98,8 +99,8 @@ model VideoVariant {
   videoId    String?
 
   @@unique([languageId, videoId])
-  @@index(languageId)
-  @@index(videoId)
+  @@index(languageId(type: Hash))
+  @@index(videoId(type: Hash))
 }
 
 model VideoVariantSubtitle {
@@ -112,8 +113,8 @@ model VideoVariantSubtitle {
   variant VideoVariant @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
 
   @@unique([videoVariantId, languageId])
-  @@index(languageId)
-  @@index(videoVariantId)
+  @@index(languageId(type: Hash))
+  @@index(videoVariantId(type: Hash))
 }
 
 model VideoSnippet {

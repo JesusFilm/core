@@ -25,11 +25,7 @@ export class ImporterVideoImageAltService extends ImporterService<VideoImageAlt>
   }
 
   protected async save(videoImageAlt: VideoImageAlt): Promise<void> {
-    if (
-      !Object.keys(
-        this.importerVideosService.usedSlugs as Record<string, string>
-      ).includes(videoImageAlt.videoId)
-    )
+    if (!this.importerVideosService.ids.includes(videoImageAlt.videoId))
       throw new Error(`Video with id ${videoImageAlt.videoId} not found`)
     await this.prismaService.videoImageAlt.upsert({
       where: {
@@ -46,9 +42,7 @@ export class ImporterVideoImageAltService extends ImporterService<VideoImageAlt>
   protected async saveMany(videoImageAlts: VideoImageAlt[]): Promise<void> {
     await this.prismaService.videoImageAlt.createMany({
       data: videoImageAlts.filter(({ videoId }) =>
-        Object.keys(
-          this.importerVideosService.usedSlugs as Record<string, string>
-        )?.includes(videoId)
+        this.importerVideosService.ids.includes(videoId)
       ),
       skipDuplicates: true
     })

@@ -25,7 +25,12 @@ const videoSchema = z.object({
   }),
   primaryLanguageId: z.number().transform(String),
   slug: z.string(),
-  childIds: z.string().nullable(),
+  childIds: z
+    .string()
+    .nullable()
+    .transform((value) =>
+      value == null ? [] : value.substring(1, value.length - 1).split(',')
+    ),
   image: z.string().nullable()
 })
 
@@ -49,7 +54,7 @@ export class ImporterVideosService extends ImporterService<Video> {
       this.usedSlugs = {}
       for await (const video of results) {
         this.ids.push(video.id)
-        if (video.slug != null) this.usedSlugs[video.slug] = video.id
+        if (video.slug != null) this.usedSlugs[video.id] = video.slug
       }
     }
   }
@@ -58,14 +63,11 @@ export class ImporterVideosService extends ImporterService<Video> {
     return slugify(id, title, this.usedSlugs)
   }
 
-  private transform(video: Video): Prisma.VideoCreateInput {
-    const childIds =
-      video.childIds == null
-        ? []
-        : video.childIds.substring(1, video.childIds.length - 1).split(',')
+  private transform(
+    video: Video
+  ): Prisma.VideoCreateInput & { id: string; slug: string } {
     return {
       ...video,
-      childIds,
       slug: this.slugify(video.id, video.slug),
       noIndex: false
     }
@@ -73,6 +75,8 @@ export class ImporterVideosService extends ImporterService<Video> {
 
   protected async save(video: Video): Promise<void> {
     const input = this.transform(video)
+    this.ids.push(input.id)
+    ;(this.usedSlugs as Record<string, string>)[input.id] = input.slug
     await this.prismaService.video.upsert({
       where: { id: video.id },
       update: input,
@@ -81,9 +85,16 @@ export class ImporterVideosService extends ImporterService<Video> {
   }
 
   protected async saveMany(videos: Video[]): Promise<void> {
+    const transformedVideos = videos
+      .map((input) => this.transform(input))
+      .filter(({ id }) => !this.ids.includes(id))
     await this.prismaService.video.createMany({
-      data: videos.map((input) => this.transform(input)),
+      data: transformedVideos,
       skipDuplicates: true
     })
+    this.ids = [...this.ids, ...transformedVideos.map(({ id }) => id)]
+    for (const video of transformedVideos) {
+      ;(this.usedSlugs as Record<string, string>)[video.id] = video.slug
+    }
   }
 }

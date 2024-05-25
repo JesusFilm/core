@@ -24,8 +24,7 @@ interface BigQueryRowError {
 }
 @Processor('api-videos-arclight')
 export class BigQueryConsumer extends WorkerHost {
-  videoTables: Record<string, ImporterService<any>> = {}
-  videoVariantTables: Record<string, ImporterService<any>> = {}
+  tables: Record<string, ImporterService<any>> = {}
 
   constructor(
     private readonly prismaService: PrismaService,
@@ -42,9 +41,9 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideosChildrenService: ImporterVideosChildrenService
   ) {
     super()
-    this.videoTables = {
-      // 'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data':
-      //   this.importerVideosService,
+    this.tables = {
+      'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data':
+        this.importerVideosService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoTitle_arclight_data':
         this.importerVideoTitleService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoDescription_arclight_data':
@@ -56,30 +55,27 @@ export class BigQueryConsumer extends WorkerHost {
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoImageAlt_arclight_data':
         this.importerVideoImageAltService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
-        this.importerVideoVariantsService
-    }
-    this.videoVariantTables = {
+        this.importerVideoVariantsService,
       'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data':
-        this.importerVideoVariantsDownloadService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data':
-        this.importerVideoVariantsSubtitleService
+        this.importerVideoVariantsDownloadService
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data':
+      //   this.importerVideoVariantsSubtitleService
     }
   }
 
   async process(_job: Job): Promise<void> {
     await this.importerVideosService.getUsedSlugs()
-    await this.processTable(
-      'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data',
-      this.importerVideosService
-    )
+    await this.importerVideoVariantsService.getExistingIds()
 
-    for (const [bigQueryTableName, service] of Object.entries(
-      this.videoTables
-    )) {
+    for (const [bigQueryTableName, service] of Object.entries(this.tables)) {
       await this.processTable(bigQueryTableName, service)
     }
 
-    // await this.importerVideosChildrenService.process()
+    // cleanup for future runs
+    this.importerVideosService.usedSlugs = undefined
+    this.importerVideoVariantsService.ids = []
+
+    await this.importerVideosChildrenService.process()
     console.log('finished processing children')
   }
 
