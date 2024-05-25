@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/journeys",
   "projectType": "application",
+  "tags": ["doppler_config:stg_dev"],
   "implicitDependencies": ["locales"],
   "targets": {
     "build": {
@@ -112,10 +113,6 @@
         "jestConfig": "apps/journeys/jest.config.ts"
       }
     },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
-    },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
@@ -176,6 +173,5 @@
         "command": "codecov -f coverage/apps/journeys/cobertura-coverage.xml -F apps.journeys"
       }
     }
-  },
-  "tags": ["doppler_config:stg_dev"]
+  }
 }

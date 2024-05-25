@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/arclight",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
@@ -96,9 +97,6 @@
         "jestConfig": "apps/arclight/jest.config.ts"
       }
     },
-    "lint": {
-      "executor": "@nx/eslint:lint"
-    },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
@@ -115,6 +113,5 @@
         ]
       }
     }
-  },
-  "tags": []
+  }
 }
