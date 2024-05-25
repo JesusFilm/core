@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-videos/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
@@ -67,10 +68,6 @@
       "options": {
         "command": "npm run ts-node tools/scripts/generate-typings.ts api-videos --transpileOnly"
       }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -168,6 +165,5 @@
         "command": "codecov -f coverage/apps/api-videos/cobertura-coverage.xml -F apps.api-videos"
       }
     }
-  },
-  "tags": []
+  }
 }

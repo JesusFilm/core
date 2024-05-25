@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "sourceRoot": "apps/docs/src",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
@@ -48,10 +49,6 @@
         "cwd": "apps/docs"
       }
     },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
-    },
     "fetch-secrets": {
       "executor": "nx:run-commands",
       "options": {
@@ -72,6 +69,5 @@
         ]
       }
     }
-  },
-  "tags": []
+  }
 }

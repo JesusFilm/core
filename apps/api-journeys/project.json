@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-journeys/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
@@ -55,10 +56,6 @@
       "options": {
         "command": "npm run ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
       }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -176,6 +173,5 @@
         ]
       }
     }
-  },
-  "tags": []
+  }
 }
