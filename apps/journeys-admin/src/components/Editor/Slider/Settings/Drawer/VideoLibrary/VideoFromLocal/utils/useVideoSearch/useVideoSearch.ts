@@ -35,11 +35,11 @@ interface UseVideoSearchResult {
   isEnd: boolean
   loading: boolean
   handleSearch: (searchQuery: string, page: number) => Promise<void>
-  handleLoadMore: (searchQuery: string) => Promise<void>
+  handleLoadMore: () => Promise<void>
   algoliaVideos: LocalVideoFields
 }
 
-export function useVideoSearch(): UseVideoSearchResult {
+export function useVideoSearch(searchQuery: string): UseVideoSearchResult {
   const [hits, setHits] = useState<Hits>([])
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
@@ -54,6 +54,11 @@ export function useVideoSearch(): UseVideoSearchResult {
       setIsEnd(currentPage + 1 === totalPages)
     }
   }, [currentPage, totalPages])
+
+  useEffect(() => {
+    void handleSearch(searchQuery, 0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery])
 
   async function handleSearch(
     searchQuery: string,
@@ -83,7 +88,7 @@ export function useVideoSearch(): UseVideoSearchResult {
     }
   }
 
-  async function handleLoadMore(searchQuery: string): Promise<void> {
+  async function handleLoadMore(): Promise<void> {
     if (isEnd || loading) return
     await handleSearch(searchQuery, currentPage + 1, true)
   }

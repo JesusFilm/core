@@ -1,5 +1,4 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
-import algoliasearch from 'algoliasearch'
 
 import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
 import { transformAlgoliaVideos } from '../transformAlgoliaVideos/transformAlgoliaVideos'

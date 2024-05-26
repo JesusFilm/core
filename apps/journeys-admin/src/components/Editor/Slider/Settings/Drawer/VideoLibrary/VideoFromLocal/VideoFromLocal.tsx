@@ -1,35 +1,13 @@
-import { gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import { VideoList } from '../VideoList'
 import { VideoSearch } from '../VideoSearch'
 
 import { useVideoSearch } from './utils/useVideoSearch/useVideoSearch'
-
-export const GET_VIDEOS = gql`
-  query GetVideos($where: VideosFilter, $limit: Int!, $offset: Int!) {
-    videos(where: $where, limit: $limit, offset: $offset) {
-      id
-      image
-      snippet {
-        primary
-        value
-      }
-      title {
-        primary
-        value
-      }
-      variant(languageId: "529") {
-        id
-        duration
-      }
-    }
-  }
-`
 
 interface VideoFromLocalProps {
   onSelect: (block: VideoBlockUpdateInput) => void
@@ -41,13 +19,8 @@ export function VideoFromLocal({
   const [searchQuery, setSearchQuery] = useState<string>('')
   const { t } = useTranslation('apps-journeys-admin')
 
-  const { handleSearch, handleLoadMore, loading, isEnd, algoliaVideos } =
-    useVideoSearch()
-
-  useEffect(() => {
-    void handleSearch(searchQuery, 0)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery])
+  const { handleLoadMore, loading, isEnd, algoliaVideos } =
+    useVideoSearch(searchQuery)
 
   return (
     <>
@@ -69,7 +42,7 @@ export function VideoFromLocal({
           onSelect={onSelect}
           loading={loading}
           videos={algoliaVideos}
-          fetchMore={async () => await handleLoadMore(searchQuery)}
+          fetchMore={async () => await handleLoadMore()}
           hasMore={!isEnd}
         />
       </Box>
