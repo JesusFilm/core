@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -7,10 +7,6 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  CardFormCreate,
-  CardFormCreateVariables
-} from '../../../../../../../../../__generated__/CardFormCreate'
 import {
   IconName,
   TypographyColor,

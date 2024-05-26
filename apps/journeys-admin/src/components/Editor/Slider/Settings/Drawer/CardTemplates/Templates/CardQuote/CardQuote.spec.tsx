@@ -1,15 +1,11 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  CardQuoteCreate,
-  CardQuoteCreateVariables
-} from '../../../../../../../../../__generated__/CardQuoteCreate'
 import {
   TypographyColor,
   TypographyVariant

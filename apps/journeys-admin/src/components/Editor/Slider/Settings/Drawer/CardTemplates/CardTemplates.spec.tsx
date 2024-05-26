@@ -78,7 +78,7 @@ const cardTemplate = (
   </MockedProvider>
 )
 
-async function expectCardContentToBeUpdated(getByText) {
+async function expectCardContentToBeUpdated(getByText): Promise<void> {
   await waitFor(() =>
     expect(getByText('selectedBlock: stepId')).toBeInTheDocument()
   )

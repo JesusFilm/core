@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid'
+import Skeleton from '@mui/material/Skeleton'
 import { ReactElement, useState } from 'react'
 
-import Skeleton from '@mui/material/Skeleton'
 import { CardCta } from './Templates/CardCta'
 import { CardForm } from './Templates/CardForm'
 import { CardIntro } from './Templates/CardIntro'
@@ -14,10 +14,10 @@ export function CardTemplates(): ReactElement {
 
   return (
     <Grid data-testid="CardTemplates" container spacing={5} sx={{ p: 5 }}>
-      {loading === true ? (
+      {loading ? (
         <>
-          {Array.from({ length: 6 }).map(() => (
-            <Grid item xs={6}>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Grid item xs={6} key={index}>
               <Skeleton
                 variant="rectangular"
                 data-testid="card-template-skeleton"

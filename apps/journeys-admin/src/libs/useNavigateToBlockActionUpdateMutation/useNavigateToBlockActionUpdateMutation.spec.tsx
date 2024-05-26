@@ -1,7 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
-import { act } from 'react'
+import { act } from 'react-dom/test-utils'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 

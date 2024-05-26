@@ -25,7 +25,6 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 
 import cardFormImage from './cardForm.svg'
-import Skeleton from '@mui/material/Skeleton'
 
 export const CARD_FORM_CREATE = gql`
   ${IMAGE_FIELDS}
