@@ -1,10 +1,13 @@
-import { expect, test } from '@playwright/test'
+/* eslint-disable playwright/expect-expect */
+import { test } from '@playwright/test'
+
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
 import { ProfilePage } from '../../pages/profile-page'
 import { Register } from '../../pages/register-Page'
 
 let userEmail = ''
+
 test.describe('verify profile page functionalities', () => {
   test.beforeAll('Register new account', async ({ browser }) => {
     const page = await browser.newPage()
@@ -24,7 +27,7 @@ test.describe('verify profile page functionalities', () => {
     await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
   })
 
-  //Verify the user able to add the email notification in email preference page
+  // Verify the user able to add the email notification in email preference page
   test('verify email preference notification page', async ({ page }) => {
     const profilePage = new ProfilePage(page)
     await profilePage.clickProfileIconInNavBar() // clicking the profile icon in navigation list Item
@@ -35,7 +38,7 @@ test.describe('verify profile page functionalities', () => {
     await profilePage.clickDoneBtn() // clicking done button
   })
 
-  //Verify the user able to logout the account through logout link
+  // Verify the user able to logout the account through logout link
   test('logout', async ({ page }) => {
     const profilePage = new ProfilePage(page)
     await profilePage.clickProfileIconInNavBar() // clicking the profile icon in navigation list Item
