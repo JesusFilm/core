@@ -4,12 +4,11 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { step } from './CardTemplates.data'
-import { CARD_VIDEO_CREATE } from './Templates/CardVideo/CardVideo'
+import { cardVideoCreateMock } from './Templates/CardVideo/CardVideo.data'
 
 import { CardTemplates } from '.'
 
@@ -17,30 +16,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
-
-const cardVideoCreateMock = {
-  request: {
-    query: CARD_VIDEO_CREATE,
-    variables: {
-      videoInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        videoId: '1_jf-0-0',
-        videoVariantLanguageId: '529',
-        startAt: 2048,
-        endAt: 2058,
-        autoplay: true,
-        muted: false,
-        source: VideoBlockSource.internal
-      }
-    }
-  },
-  result: {
-    data: {
-      video: null
-    }
-  }
-}
 
 const cardTemplate = (
   <MockedProvider mocks={[cardVideoCreateMock]}>
