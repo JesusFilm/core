@@ -10,8 +10,8 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { CardFields } from '../../../../__generated__/CardFields'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { StepFields } from '../../../../__generated__/StepFields'
-import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
-import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
+import { CardWrapper } from '../../Editor/Slider/Content/Canvas/CardWrapper'
+import { VideoWrapper } from '../../Editor/Slider/Content/Canvas/VideoWrapper'
 import { FramePortal } from '../../FramePortal'
 
 interface CardProps {
