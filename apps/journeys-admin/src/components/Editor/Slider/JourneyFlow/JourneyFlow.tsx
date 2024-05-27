@@ -91,9 +91,10 @@ export function JourneyFlow(): ReactElement {
   const { onSelectionChange } = useDeleteOnKeyPress()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
 
-  async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
+  async function blockPositionsUpdate(): Promise<void> {
     if (journey == null || steps == null) return
-    positions = arrangeSteps(steps)
+    const positions = arrangeSteps(steps)
+
     Object.entries(positions).forEach(([id, position]) => {
       void stepBlockPositionUpdate({
         variables: {
@@ -131,7 +132,7 @@ export function JourneyFlow(): ReactElement {
         )
       ) {
         // some steps have no x or y coordinates
-        void blockPositionsUpdate(positions)
+        void blockPositionsUpdate()
       } else {
         data.blocks.forEach((block) => {
           if (
@@ -322,9 +323,7 @@ export function JourneyFlow(): ReactElement {
               <NewStepButton />
             </Panel>
             <Controls showInteractive={false}>
-              <ControlButton
-                onClick={async () => await blockPositionsUpdate({})}
-              >
+              <ControlButton onClick={blockPositionsUpdate}>
                 <ArrowRefresh6Icon />
               </ControlButton>
             </Controls>
