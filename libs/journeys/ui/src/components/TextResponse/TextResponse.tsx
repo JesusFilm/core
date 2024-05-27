@@ -1,9 +1,9 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { Form, Formik } from 'formik'
+import noop from 'lodash/noop'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -17,8 +17,6 @@ import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
-import { Icon } from '../Icon'
-import { IconFields } from '../Icon/__generated__/IconFields'
 import { TextField } from '../TextField'
 
 import { TextResponseFields } from './__generated__/TextResponseFields'
@@ -49,18 +47,9 @@ export const TextResponse = ({
   label,
   hint,
   minRows,
-  submitIconId,
-  submitLabel,
-  editableSubmitLabel,
-  action,
-  children,
-  sx
+  action
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
-
-  const submitIcon = children.find((block) => block.id === submitIconId) as
-    | TreeBlock<IconFields>
-    | undefined
 
   const { variant } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
@@ -124,16 +113,7 @@ export const TextResponse = ({
 
   return (
     <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
-      <Formik
-        initialValues={initialValues}
-        onSubmit={(values) => {
-          if (selectedBlock === undefined) {
-            void onSubmitHandler(values).then(() => {
-              handleAction(router, action)
-            })
-          }
-        }}
-      >
+      <Formik initialValues={initialValues} onSubmit={noop}>
         {({ values, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
             <Stack>
@@ -144,10 +124,16 @@ export const TextResponse = ({
                 value={values.response}
                 helperText={hint}
                 multiline
+                disabled={loading}
                 minRows={minRows ?? 3}
                 onClick={(e) => e.stopPropagation()}
                 onChange={handleChange}
-                onBlur={handleBlur}
+                onBlurCapture={(e) => {
+                  handleBlur(e)
+                  void onSubmitHandler(values).then(() => {
+                    handleAction(router, action)
+                  })
+                }}
                 inputProps={{
                   maxLength: 1000,
                   readOnly: selectedBlock !== undefined,
@@ -156,19 +142,6 @@ export const TextResponse = ({
                   }
                 }}
               />
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                loading={loading}
-                size="large"
-                startIcon={
-                  submitIcon != null ? <Icon {...submitIcon} /> : undefined
-                }
-                onClick={(e) => e.stopPropagation()}
-                sx={{ ...sx, mb: 0 }}
-              >
-                <span>{editableSubmitLabel ?? submitLabel ?? t('Submit')}</span>
-              </LoadingButton>
             </Stack>
           </Form>
         )}
