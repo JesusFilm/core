@@ -5,7 +5,7 @@ import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_ImageBlock as ImageBlock,
+  BlockFields_IconBlock as IconBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { TestEditorState } from '../../../../../../../libs/TestEditorState'
@@ -48,16 +48,16 @@ describe('StepBlockNodeCard', () => {
     expect(screen.getByTestId('CardIconBackground')).toHaveStyle(`
       background-image: url('bgImage');
     `)
-    expect(screen.getByTestId('GitBranchIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('Cursor6Icon')).toBeInTheDocument()
   })
 
   it('should render default card content', () => {
     const priorityBlock = {
-      __typename: 'ImageBlock'
-    } as unknown as TreeBlock<ImageBlock>
+      __typename: 'IconBlock'
+    } as unknown as TreeBlock<IconBlock>
     mockGetCardMetadata.mockReturnValue({
       title: undefined,
-      subtitle: '',
+      subtitle: undefined,
       description: '',
       priorityBlock,
       bgImage: undefined
@@ -70,7 +70,6 @@ describe('StepBlockNodeCard', () => {
 
     render(<StepBlockNodeCard step={step} selected={false} />)
 
-    expect(screen.getAllByRole('paragraph', { name: '' })).toHaveLength(2)
     expect(
       screen.getByTestId('StepBlockNodeCardTitleSkeleton')
     ).toBeInTheDocument()
