@@ -140,6 +140,8 @@ export class ChatOpenEventResolver {
       })
     )
 
+    // add logic to send visitor email for analytics
+
     const [chatOpenEvent] = await Promise.all(promises)
     return chatOpenEvent as ChatOpenEvent
   }
