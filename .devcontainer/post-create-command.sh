@@ -47,4 +47,4 @@ echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" |
 sudo apt-get update && sudo apt-get install doppler
 
 # update plausible db
-psql -U postgres -h db -d plausible_db < plausible.sql
+psql -U postgres -h db -d plausible_db < .devcontainer/plausible.sql
