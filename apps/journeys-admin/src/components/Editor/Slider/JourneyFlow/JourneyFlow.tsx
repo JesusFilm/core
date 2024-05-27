@@ -321,7 +321,6 @@ export function JourneyFlow(): ReactElement {
               <NewStepButton />
             </Panel>
             <Controls showInteractive={false}>
-              {/* <ControlButton onClick={async () => await blockPositionsUpdate()}> */}
               <ControlButton onClick={blockPositionsUpdate}>
                 <ArrowRefresh6Icon />
               </ControlButton>
