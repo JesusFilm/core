@@ -12,21 +12,39 @@ import { PlausibleStatsTimeseriesFilter, PlausibleStatsAggregateFilter } from ".
 export interface GetPlausibleChart_journeysPlausibleStatsTimeseries {
   __typename: "PlausibleStatsResponse";
   /**
-   * On breakdown queries, this is the property that was broken down by.
-   * On aggregate queries, this is the date the stats are for.
+   * Bounce rate percentage.
    */
-  property: string;
+  bounceRate: number | null;
+  /**
+   * The number of visits/sessions.
+   */
+  visits: number | null;
   /**
    * The number of unique visitors.
    */
   visitors: number | null;
   /**
+   * Visit duration in seconds.
+   */
+  visitDuration: number | null;
+  /**
+   * The number of pageviews divided by the number of visits.
+   * Returns a floating point number. Currently only supported in Aggregate and
+   * Timeseries endpoints.
+   */
+  viewsPerVisit: number | null;
+  /**
    * The number of pageview events.
    */
   pageviews: number | null;
+  /**
+   * On breakdown queries, this is the property that was broken down by.
+   * On aggregate queries, this is the date the stats are for.
+   */
+  property: string;
 }
 
-export interface GetPlausibleChart_journeysPlausibleStatsAggregate_bounceRate {
+export interface GetPlausibleChart_journeysPlausibleStatsAggregate_visitors {
   __typename: "PlausibleStatsAggregateValue";
   value: number;
   change: number | null;
@@ -38,13 +56,7 @@ export interface GetPlausibleChart_journeysPlausibleStatsAggregate_visits {
   change: number | null;
 }
 
-export interface GetPlausibleChart_journeysPlausibleStatsAggregate_visitors {
-  __typename: "PlausibleStatsAggregateValue";
-  value: number;
-  change: number | null;
-}
-
-export interface GetPlausibleChart_journeysPlausibleStatsAggregate_visitDuration {
+export interface GetPlausibleChart_journeysPlausibleStatsAggregate_pageviews {
   __typename: "PlausibleStatsAggregateValue";
   change: number | null;
   value: number;
@@ -56,7 +68,13 @@ export interface GetPlausibleChart_journeysPlausibleStatsAggregate_viewsPerVisit
   value: number;
 }
 
-export interface GetPlausibleChart_journeysPlausibleStatsAggregate_pageviews {
+export interface GetPlausibleChart_journeysPlausibleStatsAggregate_bounceRate {
+  __typename: "PlausibleStatsAggregateValue";
+  value: number;
+  change: number | null;
+}
+
+export interface GetPlausibleChart_journeysPlausibleStatsAggregate_visitDuration {
   __typename: "PlausibleStatsAggregateValue";
   change: number | null;
   value: number;
@@ -65,21 +83,17 @@ export interface GetPlausibleChart_journeysPlausibleStatsAggregate_pageviews {
 export interface GetPlausibleChart_journeysPlausibleStatsAggregate {
   __typename: "PlausibleStatsAggregateResponse";
   /**
-   * Bounce rate percentage.
+   * The number of unique visitors.
    */
-  bounceRate: GetPlausibleChart_journeysPlausibleStatsAggregate_bounceRate | null;
+  visitors: GetPlausibleChart_journeysPlausibleStatsAggregate_visitors | null;
   /**
    * The number of visits/sessions.
    */
   visits: GetPlausibleChart_journeysPlausibleStatsAggregate_visits | null;
   /**
-   * The number of unique visitors.
+   * The number of pageview events.
    */
-  visitors: GetPlausibleChart_journeysPlausibleStatsAggregate_visitors | null;
-  /**
-   * Visit duration in seconds.
-   */
-  visitDuration: GetPlausibleChart_journeysPlausibleStatsAggregate_visitDuration | null;
+  pageviews: GetPlausibleChart_journeysPlausibleStatsAggregate_pageviews | null;
   /**
    * The number of pageviews divided by the number of visits.
    * Returns a floating point number. Currently only supported in Aggregate and
@@ -87,9 +101,13 @@ export interface GetPlausibleChart_journeysPlausibleStatsAggregate {
    */
   viewsPerVisit: GetPlausibleChart_journeysPlausibleStatsAggregate_viewsPerVisit | null;
   /**
-   * The number of pageview events.
+   * Bounce rate percentage.
    */
-  pageviews: GetPlausibleChart_journeysPlausibleStatsAggregate_pageviews | null;
+  bounceRate: GetPlausibleChart_journeysPlausibleStatsAggregate_bounceRate | null;
+  /**
+   * Visit duration in seconds.
+   */
+  visitDuration: GetPlausibleChart_journeysPlausibleStatsAggregate_visitDuration | null;
 }
 
 export interface GetPlausibleChart {
