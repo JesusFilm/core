@@ -7,8 +7,8 @@ import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { getLinkActionGoal } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
+import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useGoalDetails } from '@core/journeys/ui/useGoalDetails'
 
 import { ActionFields_LinkAction as LinkAction } from '../../../../../../../__generated__/ActionFields'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/BlockFields'
@@ -105,7 +105,7 @@ export function ActionEditor({
   }
 
   const goalType = getLinkActionGoal(url)
-  const { label, icon } = useGoalDetails(goalType)
+  const { label, icon } = getGoalDetails(goalType, t)
 
   return (
     <Box sx={{ pt: 6 }} data-testid="ActionEditor">

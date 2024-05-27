@@ -1,6 +1,6 @@
 import { SxProps, Theme } from '@mui/material/styles'
-import { useTranslation } from 'next-i18next'
-import React from 'react'
+import { TFunction } from 'next-i18next'
+import { ReactNode } from 'react'
 
 import BibleIcon from '@core/shared/ui/icons/Bible'
 import EmailIcon from '@core/shared/ui/icons/Email'
@@ -11,15 +11,14 @@ import { GoalType } from '../../components/Button/utils/getLinkActionGoal'
 
 interface GoalDetails {
   label: string
-  icon: React.ReactNode
+  icon: ReactNode
 }
 
-export function useGoalDetails(
+export function getGoalDetails(
   goalType: GoalType,
+  t: TFunction,
   customIconStyle?: SxProps<Theme>
 ): GoalDetails {
-  const { t } = useTranslation('journeys-admin')
-
   const defaultIconStyle = {
     color: 'secondary.light'
   }

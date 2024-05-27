@@ -1,17 +1,19 @@
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { NodeProps } from 'reactflow'
 
 import { getLinkActionGoal } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
-import { useGoalDetails } from '@core/journeys/ui/useGoalDetails'
+import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
 
 import { BaseNode } from '../BaseNode'
 
 export function LinkNode({ id }: NodeProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { steps }
   } = useEditor()
@@ -42,7 +44,7 @@ export function LinkNode({ id }: NodeProps): ReactElement {
   }
 
   const actionDetail = getActionDetail(matchedActionBlock)
-  const { label, icon } = useGoalDetails(getLinkActionGoal(actionDetail))
+  const { label, icon } = getGoalDetails(getLinkActionGoal(actionDetail), t)
 
   return (
     <BaseNode id={id} isTargetConnectable>

@@ -10,7 +10,7 @@ import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import { useGoalDetails } from '@core/journeys/ui/useGoalDetails'
+import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
 import type { Goal } from '../../Goals'
@@ -35,7 +35,7 @@ export function GoalsListItem({
     transition: (theme: Theme) => theme.transitions.create('color')
   }
 
-  const { label, icon } = useGoalDetails(goalType, iconStyles)
+  const { label, icon } = getGoalDetails(goalType, t, iconStyles)
 
   function handleClick(): void {
     dispatch({
