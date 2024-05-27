@@ -38,7 +38,7 @@ export function StepBlockNode({
         yPos={yPos}
       />
       <Stack
-        data-testod={`StepBlockNode-${step.id}`}
+        data-testid={`StepBlockNode-${step.id}`}
         direction="column"
         sx={{
           background: (theme) =>

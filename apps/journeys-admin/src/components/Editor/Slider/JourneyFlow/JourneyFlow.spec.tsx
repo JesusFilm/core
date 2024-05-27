@@ -101,18 +101,18 @@ describe('JourneyFlow', () => {
   })
 
   it('should update step positions if any step does not have a position', async () => {
-    const mockUpdate = jest.fn()
-    const mockResult = jest.fn() as unknown as MutationResult
-    mockUseStepBlockPositionUpdateMutation.mockReturnValue([
-      mockUpdate,
-      mockResult
-    ])
     const blocks = blocksWithStepBlockPosition.map((block) => ({
       ...block,
       x: null,
       y: null
     }))
     const result = jest.fn().mockReturnValue({ data: { blocks } })
+    const mockUpdate = jest.fn()
+    const mockResult = jest.fn() as unknown as MutationResult
+    mockUseStepBlockPositionUpdateMutation.mockReturnValue([
+      mockUpdate,
+      mockResult
+    ])
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
