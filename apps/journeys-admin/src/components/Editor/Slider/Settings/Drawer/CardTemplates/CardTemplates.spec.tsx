@@ -8,7 +8,7 @@ import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
-import { step } from './CardTemplates.mocks'
+import { step } from './CardTemplates.data'
 import { CARD_VIDEO_CREATE } from './Templates/CardVideo/CardVideo'
 
 import { CardTemplates } from '.'

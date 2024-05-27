@@ -7,9 +7,9 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
-import { cachedJourney, step } from '../../CardTemplates.mocks'
+import { cachedJourney, step } from '../../CardTemplates.data'
 
-import { cardIntroCreateMock, cardIntroResult } from './CardIntro.mocks'
+import { cardIntroCreateMock, cardIntroResult } from './CardIntro.data'
 
 import { CardIntro } from '.'
 
