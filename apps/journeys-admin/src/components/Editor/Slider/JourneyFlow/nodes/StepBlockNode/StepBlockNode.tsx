@@ -27,6 +27,7 @@ export function StepBlockNode({
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
+  console.log('HERE')
 
   return step != null ? (
     <>
