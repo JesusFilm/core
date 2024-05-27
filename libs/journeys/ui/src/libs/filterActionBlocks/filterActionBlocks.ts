@@ -1,9 +1,8 @@
-import { TreeBlock } from '@core/journeys/ui/block'
-
+import { TreeBlock } from '../block'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
-} from '../../../../../../../__generated__/BlockFields'
+} from '../block/__generated__/BlockFields'
 import { ActionBlock, isActionBlock } from '../isActionBlock'
 
 export function filterActionBlocks(step?: TreeBlock<StepBlock>): ActionBlock[] {

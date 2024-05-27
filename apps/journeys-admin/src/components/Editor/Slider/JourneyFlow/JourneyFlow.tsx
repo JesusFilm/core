@@ -29,7 +29,7 @@ import {
   useNodesState
 } from 'reactflow'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
@@ -76,7 +76,7 @@ export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
   const theme = useTheme()
   const {
-    state: { steps }
+    state: { steps, activeSlide }
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -316,14 +316,20 @@ export function JourneyFlow(): ReactElement {
         }}
         elevateEdgesOnSelect
       >
-        <Panel position="top-right">
-          <NewStepButton />
-        </Panel>
-        <Controls showInteractive={false}>
-          <ControlButton onClick={async () => await blockPositionsUpdate({})}>
-            <ArrowRefresh6Icon />
-          </ControlButton>
-        </Controls>
+        {activeSlide === ActiveSlide.JourneyFlow && (
+          <>
+            <Panel position="top-right">
+              <NewStepButton />
+            </Panel>
+            <Controls showInteractive={false}>
+              <ControlButton
+                onClick={async () => await blockPositionsUpdate({})}
+              >
+                <ArrowRefresh6Icon />
+              </ControlButton>
+            </Controls>
+          </>
+        )}
         <Background color="#aaa" gap={16} />
       </ReactFlow>
     </Box>
