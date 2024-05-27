@@ -109,7 +109,9 @@ export function BaseNode({
               width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               left: -HANDLE_WITH_BORDER_DIAMETER / 2,
-              top: (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2,
+              top: isFunction(children)
+                ? (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2
+                : null,
               background: (theme) => theme.palette.background.default,
               border: (theme) =>
                 isConnecting || targetSelected

@@ -6,9 +6,9 @@ import { NodeProps } from 'reactflow'
 
 import { getLinkActionGoal } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { useGoalDetails } from '@core/journeys/ui/useGoalDetails'
 
-import { filterActionBlocks } from '../../libs/filterActionBlocks'
 import { BaseNode } from '../BaseNode'
 
 export function LinkNode({ id }: NodeProps): ReactElement {
