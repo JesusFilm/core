@@ -1,11 +1,15 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import {
+  CardVideoCreate,
+  CardVideoCreateVariables
+} from '../../../../../../../../../__generated__/CardVideoCreate'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 
@@ -43,34 +47,39 @@ const step: TreeBlock = {
   children: [card]
 }
 
-const cardVideoResult = jest.fn(() => ({
-  data: {
-    video: {
-      __typename: 'VideoBlock',
-      id: 'videoBlockId',
-      parentBlockId: 'cardId',
-      parentOrder: 0,
-      muted: false,
-      autoplay: true,
-      startAt: 2048,
-      endAt: 2058,
-      posterBlockId: null,
-      fullsize: true,
-      videoId: '1_jf-0-0',
-      videoVariantLanguageId: '529',
-      source: VideoBlockSource.internal,
-      title: null,
-      description: null,
-      image: null,
-      duration: null,
-      objectFit: null,
-      video: null,
-      action: null
-    }
+const cardVideoCreate: CardVideoCreate = {
+  video: {
+    __typename: 'VideoBlock',
+    id: 'videoBlockId',
+    parentBlockId: 'cardId',
+    parentOrder: 0,
+    muted: false,
+    autoplay: true,
+    startAt: 2048,
+    endAt: 2058,
+    posterBlockId: null,
+    fullsize: true,
+    videoId: '1_jf-0-0',
+    videoVariantLanguageId: '529',
+    source: VideoBlockSource.internal,
+    title: null,
+    description: null,
+    image: null,
+    duration: null,
+    objectFit: null,
+    video: null,
+    action: null
   }
+}
+
+const cardVideoResult = jest.fn(() => ({
+  data: cardVideoCreate
 }))
 
-const cardVideoCreateMock = {
+const cardVideoCreateMock: MockedResponse<
+  CardVideoCreate,
+  CardVideoCreateVariables
+> = {
   request: {
     query: CARD_VIDEO_CREATE,
     variables: {

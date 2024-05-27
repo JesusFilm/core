@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -7,6 +7,10 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import {
+  CardFormCreate,
+  CardFormCreateVariables
+} from '../../../../../../../../../__generated__/CardFormCreate'
 import {
   IconName,
   TypographyColor,
@@ -54,98 +58,103 @@ const step: TreeBlock = {
   children: [card]
 }
 
-const cardFormResult = jest.fn(() => ({
-  data: {
-    image: {
-      id: 'imageId',
-      parentBlockId: 'cardId',
-      parentOrder: null,
-      src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
-      alt: 'photo-1488048924544-c818a467dacd',
-      width: 5184,
-      height: 3456,
-      blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
-      __typename: 'ImageBlock'
-    },
-    subtitle: {
-      id: 'subtitleId',
-      parentBlockId: 'cardId',
-      parentOrder: 0,
-      align: null,
-      color: null,
-      content: 'Prayer Request',
-      variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
-    },
-    title: {
-      id: 'titleId',
-      parentBlockId: 'cardId',
-      parentOrder: 1,
-      align: null,
-      color: null,
-      content: 'How can we pray for you?',
-      variant: TypographyVariant.h1,
-      __typename: 'TypographyBlock'
-    },
-    textResponse: {
-      id: 'textResponseId',
-      parentBlockId: 'cardId',
-      parentOrder: 2,
-      label: 'Your answer here',
-      hint: null,
-      minRows: null,
-      submitLabel: 'Submit',
-      submitIconId: null,
-      action: null,
-      __typename: 'TextResponseBlock'
-    },
-    submitIcon: {
-      id: 'submitIconId',
-      parentBlockId: 'textResponseId',
-      parentOrder: null,
-      iconName: IconName.ArrowForwardRounded,
-      iconSize: null,
-      iconColor: null,
-      __typename: 'IconBlock'
-    },
-    textResponseBlockUpdate: {
-      id: 'textResponseId',
-      parentBlockId: 'cardId',
-      parentOrder: 2,
-      label: 'Your answer here',
-      hint: null,
-      minRows: null,
-      submitLabel: 'Submit',
-      submitIconId: 'submitIconId',
-      action: null,
-      __typename: 'TextResponseBlock'
-    },
-    body: {
-      id: 'bodyId',
-      parentBlockId: 'cardId',
-      parentOrder: 3,
-      align: null,
-      color: TypographyColor.secondary,
-      content:
-        "Each day, we pray for those in our city. We'd be grateful to include your personal needs.",
-      variant: TypographyVariant.caption,
-      __typename: 'TypographyBlock'
-    },
-    cardBlockUpdate: {
-      id: 'cardId',
-      parentBlockId: 'stepId',
-      parentOrder: 0,
-      backgroundColor: null,
-      coverBlockId: 'imageId',
-      themeMode: null,
-      themeName: null,
-      fullscreen: true,
-      __typename: 'CardBlock'
-    }
+const cardFormCreate: CardFormCreate = {
+  image: {
+    id: 'imageId',
+    parentBlockId: 'cardId',
+    parentOrder: null,
+    src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
+    alt: 'photo-1488048924544-c818a467dacd',
+    width: 5184,
+    height: 3456,
+    blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
+    __typename: 'ImageBlock'
+  },
+  subtitle: {
+    id: 'subtitleId',
+    parentBlockId: 'cardId',
+    parentOrder: 0,
+    align: null,
+    color: null,
+    content: 'Prayer Request',
+    variant: TypographyVariant.h6,
+    __typename: 'TypographyBlock'
+  },
+  title: {
+    id: 'titleId',
+    parentBlockId: 'cardId',
+    parentOrder: 1,
+    align: null,
+    color: null,
+    content: 'How can we pray for you?',
+    variant: TypographyVariant.h1,
+    __typename: 'TypographyBlock'
+  },
+  textResponse: {
+    id: 'textResponseId',
+    parentBlockId: 'cardId',
+    parentOrder: 2,
+    label: 'Your answer here',
+    hint: null,
+    minRows: null,
+    submitLabel: 'Submit',
+    submitIconId: null,
+    action: null,
+    __typename: 'TextResponseBlock'
+  },
+  submitIcon: {
+    id: 'submitIconId',
+    parentBlockId: 'textResponseId',
+    parentOrder: null,
+    iconName: IconName.ArrowForwardRounded,
+    iconSize: null,
+    iconColor: null,
+    __typename: 'IconBlock'
+  },
+  textResponseBlockUpdate: {
+    id: 'textResponseId',
+    parentBlockId: 'cardId',
+    parentOrder: 2,
+    label: 'Your answer here',
+    hint: null,
+    minRows: null,
+    submitLabel: 'Submit',
+    submitIconId: 'submitIconId',
+    action: null,
+    __typename: 'TextResponseBlock'
+  },
+  body: {
+    id: 'bodyId',
+    parentBlockId: 'cardId',
+    parentOrder: 3,
+    align: null,
+    color: TypographyColor.secondary,
+    content:
+      "Each day, we pray for those in our city. We'd be grateful to include your personal needs.",
+    variant: TypographyVariant.caption,
+    __typename: 'TypographyBlock'
+  },
+  cardBlockUpdate: {
+    id: 'cardId',
+    parentBlockId: 'stepId',
+    parentOrder: 0,
+    backgroundColor: null,
+    coverBlockId: 'imageId',
+    themeMode: null,
+    themeName: null,
+    fullscreen: true,
+    __typename: 'CardBlock'
   }
+}
+
+const cardFormResult = jest.fn(() => ({
+  data: cardFormCreate
 }))
 
-const cardFormCreateMock = {
+const cardFormCreateMock: MockedResponse<
+  CardFormCreate,
+  CardFormCreateVariables
+> = {
   request: {
     query: CARD_FORM_CREATE,
     variables: {

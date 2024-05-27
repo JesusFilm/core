@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -7,6 +7,10 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import {
+  CardIntroCreate,
+  CardIntroCreateVariables
+} from '../../../../../../../../../__generated__/CardIntroCreate'
 import {
   ButtonVariant,
   IconName,
@@ -55,126 +59,131 @@ const step: TreeBlock = {
   children: [card]
 }
 
-const cardIntroResult = jest.fn(() => ({
-  data: {
-    subtitle: {
-      id: 'subtitleId',
-      parentBlockId: 'cardId',
-      parentOrder: 0,
-      align: null,
-      color: null,
-      content: 'Interactive Video',
-      variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
-    },
-    title: {
-      id: 'titleId',
-      parentBlockId: 'cardId',
-      parentOrder: 1,
-      align: null,
-      color: null,
-      content: "Jesus: History's Most Influential Figure?",
-      variant: TypographyVariant.h1,
-      __typename: 'TypographyBlock'
-    },
-    body: {
-      id: 'bodyId',
-      parentBlockId: 'cardId',
-      parentOrder: 2,
-      align: null,
-      color: null,
-      content:
-        'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.',
-      variant: TypographyVariant.body1,
-      __typename: 'TypographyBlock'
-    },
-    button: {
-      id: 'buttonId',
-      parentBlockId: 'cardId',
-      parentOrder: 3,
-      label: 'Begin the Journey',
-      buttonVariant: ButtonVariant.contained,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      action: null,
-      __typename: 'ButtonBlock'
-    },
-    startIcon: {
-      id: 'startIconId',
-      parentBlockId: 'buttonId',
-      parentOrder: null,
-      iconName: null,
-      iconSize: null,
-      iconColor: null,
-      __typename: 'IconBlock'
-    },
-    endIcon: {
-      id: 'endIconId',
-      parentBlockId: 'buttonId',
-      parentOrder: null,
-      iconName: IconName.ArrowForwardRounded,
-      iconSize: null,
-      iconColor: null,
-      __typename: 'IconBlock'
-    },
-    buttonBlockUpdate: {
-      id: 'buttonId',
-      parentBlockId: 'cardId',
-      parentOrder: 3,
-      label: 'Begin the Journey',
-      buttonVariant: ButtonVariant.contained,
-      buttonColor: null,
-      size: null,
-      startIconId: 'startIconId',
-      endIconId: 'endIconId',
-      action: null,
-      __typename: 'ButtonBlock'
-    },
+const cardIntroCreate: CardIntroCreate = {
+  subtitle: {
+    id: 'subtitleId',
+    parentBlockId: 'cardId',
+    parentOrder: 0,
+    align: null,
+    color: null,
+    content: 'Interactive Video',
+    variant: TypographyVariant.h6,
+    __typename: 'TypographyBlock'
+  },
+  title: {
+    id: 'titleId',
+    parentBlockId: 'cardId',
+    parentOrder: 1,
+    align: null,
+    color: null,
+    content: "Jesus: History's Most Influential Figure?",
+    variant: TypographyVariant.h1,
+    __typename: 'TypographyBlock'
+  },
+  body: {
+    id: 'bodyId',
+    parentBlockId: 'cardId',
+    parentOrder: 2,
+    align: null,
+    color: null,
+    content:
+      'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.',
+    variant: TypographyVariant.body1,
+    __typename: 'TypographyBlock'
+  },
+  button: {
+    id: 'buttonId',
+    parentBlockId: 'cardId',
+    parentOrder: 3,
+    label: 'Begin the Journey',
+    buttonVariant: ButtonVariant.contained,
+    buttonColor: null,
+    size: null,
+    startIconId: null,
+    endIconId: null,
+    action: null,
+    __typename: 'ButtonBlock'
+  },
+  startIcon: {
+    id: 'startIconId',
+    parentBlockId: 'buttonId',
+    parentOrder: null,
+    iconName: null,
+    iconSize: null,
+    iconColor: null,
+    __typename: 'IconBlock'
+  },
+  endIcon: {
+    id: 'endIconId',
+    parentBlockId: 'buttonId',
+    parentOrder: null,
+    iconName: IconName.ArrowForwardRounded,
+    iconSize: null,
+    iconColor: null,
+    __typename: 'IconBlock'
+  },
+  buttonBlockUpdate: {
+    id: 'buttonId',
+    parentBlockId: 'cardId',
+    parentOrder: 3,
+    label: 'Begin the Journey',
+    buttonVariant: ButtonVariant.contained,
+    buttonColor: null,
+    size: null,
+    startIconId: 'startIconId',
+    endIconId: 'endIconId',
+    action: null,
+    __typename: 'ButtonBlock'
+  },
+  video: {
+    id: 'videoId',
+    parentBlockId: 'cardId',
+    parentOrder: null,
+    muted: null,
+    autoplay: null,
+    startAt: 2048,
+    endAt: 2058,
+    posterBlockId: null,
+    fullsize: null,
+    videoId: '1_jf-0-0',
+    videoVariantLanguageId: '529',
+    source: VideoBlockSource.internal,
+    title: null,
+    description: null,
+    image: null,
+    duration: null,
+    objectFit: null,
     video: {
-      id: 'videoId',
-      parentBlockId: 'cardId',
-      parentOrder: null,
-      muted: null,
-      autoplay: null,
-      startAt: 2048,
-      endAt: 2058,
-      posterBlockId: null,
-      fullsize: null,
-      videoId: '1_jf-0-0',
-      videoVariantLanguageId: '529',
-      source: VideoBlockSource.internal,
-      title: null,
-      description: null,
-      image: null,
-      duration: null,
-      objectFit: null,
-      video: {
-        id: '1_jf-0-0',
-        title: [
-          {
-            value: 'JESUS',
-            __typename: 'Translation'
-          }
-        ],
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg?version=2',
-        variant: {
-          id: '1_529-jf-0-0',
-          hls: 'https://arc.gt/j67rz',
-          __typename: 'VideoVariant'
-        },
-        variantLanguages: [],
-        __typename: 'Video'
+      id: '1_jf-0-0',
+      title: [
+        {
+          value: 'JESUS',
+          __typename: 'Translation'
+        }
+      ],
+      image:
+        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg?version=2',
+      variant: {
+        id: '1_529-jf-0-0',
+        hls: 'https://arc.gt/j67rz',
+        __typename: 'VideoVariant'
       },
-      action: null,
-      __typename: 'VideoBlock'
-    }
+      variantLanguages: [],
+      __typename: 'Video'
+    },
+    action: null,
+    __typename: 'VideoBlock'
   }
+}
+
+const cardIntroResult = jest.fn(() => ({
+  data: cardIntroCreate
 }))
 
-const cardIntroCreateMock = {
+const cardIntroCreateMock: MockedResponse<
+  CardIntroCreate,
+  CardIntroCreateVariables
+> = {
   request: {
     query: CARD_INTRO_CREATE,
     variables: {
