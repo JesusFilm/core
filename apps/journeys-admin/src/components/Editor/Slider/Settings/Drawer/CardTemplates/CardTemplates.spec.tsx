@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -9,6 +8,7 @@ import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
+import { step } from './CardTemplates.mocks'
 import { CARD_VIDEO_CREATE } from './Templates/CardVideo/CardVideo'
 
 import { CardTemplates } from '.'
@@ -17,29 +17,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
-
-const card: TreeBlock = {
-  id: 'cardId',
-  __typename: 'CardBlock',
-  parentBlockId: 'stepId',
-  coverBlockId: null,
-  parentOrder: 0,
-  backgroundColor: null,
-  themeMode: null,
-  themeName: null,
-  fullscreen: false,
-  children: []
-}
-
-const step: TreeBlock = {
-  id: 'stepId',
-  __typename: 'StepBlock',
-  parentBlockId: null,
-  parentOrder: 0,
-  locked: false,
-  nextBlockId: null,
-  children: [card]
-}
 
 const cardVideoCreateMock = {
   request: {
