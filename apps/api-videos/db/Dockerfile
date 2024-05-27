@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 ENV PRISMA_LOCATION_VIDEOS=/app/node_modules/.prisma/api-videos-client
 

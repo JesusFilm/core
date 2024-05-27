@@ -34,36 +34,11 @@ export interface ButtonBlockCreate_endIcon {
   iconColor: IconColor | null;
 }
 
-export interface ButtonBlockCreate_buttonBlockUpdate_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
-}
-
-export interface ButtonBlockCreate_buttonBlockUpdate_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface ButtonBlockCreate_buttonBlockUpdate_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: ButtonBlockCreate_buttonBlockUpdate_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface ButtonBlockCreate_buttonBlockUpdate_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: ButtonBlockCreate_buttonBlockUpdate_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface ButtonBlockCreate_buttonBlockUpdate_action_LinkAction {
@@ -80,7 +55,7 @@ export interface ButtonBlockCreate_buttonBlockUpdate_action_EmailAction {
   email: string;
 }
 
-export type ButtonBlockCreate_buttonBlockUpdate_action = ButtonBlockCreate_buttonBlockUpdate_action_NavigateAction | ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockUpdate_action_NavigateToJourneyAction | ButtonBlockCreate_buttonBlockUpdate_action_LinkAction | ButtonBlockCreate_buttonBlockUpdate_action_EmailAction;
+export type ButtonBlockCreate_buttonBlockUpdate_action = ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockUpdate_action_LinkAction | ButtonBlockCreate_buttonBlockUpdate_action_EmailAction;
 
 export interface ButtonBlockCreate_buttonBlockUpdate {
   __typename: "ButtonBlock";

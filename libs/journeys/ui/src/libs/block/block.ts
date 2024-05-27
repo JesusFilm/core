@@ -60,13 +60,6 @@ export function getNextBlock({
           block.__typename === 'StepBlock' &&
           block.id === activeBlock.nextBlockId
       ) as TreeBlock<StepFields> | undefined
-    } else if (
-      activeBlock.parentOrder != null &&
-      activeBlock.nextBlockId == null
-    ) {
-      block = blocks[activeBlock.parentOrder + 1] as
-        | TreeBlock<StepFields>
-        | undefined
     }
   }
 

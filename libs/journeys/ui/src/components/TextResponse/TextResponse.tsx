@@ -183,7 +183,7 @@ export const TextResponse = ({
                 onClick={(e) => e.stopPropagation()}
                 sx={{ ...sx, mb: 0 }}
               >
-                {editableSubmitLabel ?? submitLabel ?? t('Submit')}
+                <span>{editableSubmitLabel ?? submitLabel ?? t('Submit')}</span>
               </LoadingButton>
             </Stack>
           </Form>

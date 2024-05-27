@@ -4,6 +4,8 @@ import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
+import { isIPhone } from '@core/shared/ui/deviceUtils'
+
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
@@ -17,17 +19,6 @@ type VideoTriggerProps = (
 ) & {
   blockId: string
   player?: Player
-}
-
-function iPhone(): boolean {
-  if (
-    typeof navigator === 'undefined' ||
-    typeof navigator.userAgent === 'undefined'
-  )
-    return false
-
-  const userAgent = navigator.userAgent
-  return userAgent.includes('iPhone')
 }
 
 export function VideoTrigger({
@@ -51,7 +42,7 @@ export function VideoTrigger({
           setTriggered(true)
           player.pause()
 
-          if (variant === 'embed' && !iPhone()) {
+          if (variant === 'embed' && !isIPhone()) {
             handleAction(router, triggerAction)
             const input = { blockId }
             plausible('videoTrigger', {

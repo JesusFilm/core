@@ -1,6 +1,5 @@
 import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, ReactNode, useCallback } from 'react'
@@ -63,8 +62,6 @@ export function SwipeNavigation({
     previousActiveBlock
   } = useBlocks()
   const { t } = useTranslation('apps-journeys')
-  const onFirstStep = activeBlock === treeBlocks[0]
-  const onLastStep = activeBlock === last(treeBlocks)
 
   const handleNavigation = useCallback(
     (direction: 'next' | 'previous'): void => {
@@ -85,13 +82,16 @@ export function SwipeNavigation({
           t
         )
         const targetBlock = getNextBlock({ id: undefined, activeBlock })
+
         if (targetBlock == null) return
+
         const targetStepName = getStepHeading(
           targetBlock.id,
           targetBlock.children,
           treeBlocks,
           t
         )
+
         const input: StepNextEventCreateInput = {
           id,
           blockId: activeBlock.id,
@@ -104,6 +104,7 @@ export function SwipeNavigation({
             input
           }
         })
+
         if (journey != null)
           plausible('navigateNextStep', {
             u: `${journey.id}/${activeBlock.id}`,
@@ -112,6 +113,7 @@ export function SwipeNavigation({
               key: keyify('navigateNextStep', input, input.nextStepId)
             }
           })
+
         TagManager.dataLayer({
           dataLayer: {
             event: 'step_next',
@@ -179,10 +181,14 @@ export function SwipeNavigation({
         })
       }
 
-      if (direction === 'next' && !onLastStep && !activeBlock.locked) {
+      if (
+        direction === 'next' &&
+        activeBlock?.nextBlockId != null &&
+        !activeBlock.locked
+      ) {
         handleNextNavigationEventCreate()
         nextActiveBlock()
-      } else if (direction === 'previous' && !onFirstStep) {
+      } else if (direction === 'previous' && blockHistory.length > 1) {
         handlePreviousNavigationEventCreate()
         previousActiveBlock()
       }
@@ -191,8 +197,6 @@ export function SwipeNavigation({
       activeBlock,
       nextActiveBlock,
       previousActiveBlock,
-      onFirstStep,
-      onLastStep,
       variant,
       stepNextEventCreate,
       stepPreviousEventCreate,

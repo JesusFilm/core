@@ -1,7 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
-import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
@@ -89,8 +88,6 @@ export function Card({
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
-  const onFirstStep = activeBlock === treeBlocks[0]
-  const onLastStep = activeBlock === last(treeBlocks)
 
   const cardColor =
     backgroundColor != null
@@ -249,12 +246,12 @@ export function Card({
     if (rtl) {
       const divide = screenWidth * 0.66
       if (e.clientX <= divide) {
-        if (!activeBlock?.locked && !onLastStep) {
+        if (!activeBlock?.locked && activeBlock?.nextBlockId != null) {
           handleNextNavigationEventCreate()
           nextActiveBlock()
         }
       } else {
-        if (!onFirstStep) {
+        if (blockHistory.length > 1) {
           handlePreviousNavigationEventCreate()
           previousActiveBlock()
         }
@@ -262,12 +259,12 @@ export function Card({
     } else {
       const divide = screenWidth * 0.33
       if (e.clientX >= divide) {
-        if (!activeBlock?.locked && !onLastStep) {
+        if (!activeBlock?.locked && activeBlock?.nextBlockId != null) {
           handleNextNavigationEventCreate()
           nextActiveBlock()
         }
       } else {
-        if (!onFirstStep) {
+        if (blockHistory.length > 1) {
           handlePreviousNavigationEventCreate()
           previousActiveBlock()
         }
