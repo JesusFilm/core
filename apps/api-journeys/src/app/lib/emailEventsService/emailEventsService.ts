@@ -13,21 +13,17 @@ export class EmailEventsService {
     visitorId: string,
     journeyId: string
   ): Promise<void> {
-    const jobId = `visitor-event-${journeyId}`
+    const jobId = `visitor-event-${journeyId}-${visitorId}`
     const visitorEmailJob = await this.emailQueue.getJob(jobId)
-    const delay = 24 * 3600 * 1000
+    const delay = 5 * 60 * 1000
 
     if (visitorEmailJob != null) {
-      const visitorExists = visitorEmailJob?.data?.visitors?.includes(visitorId)
-
-      // TODO: check if actually gets updated
-      if (visitorExists !== true)
-        await visitorEmailJob.updateData({ visitors: [visitorId] })
+      await this.emailQueue.remove(jobId)
     } else {
       await this.emailQueue.add(
-        'visitor-email',
+        'visitor-event',
         {
-          visitors: [visitorId]
+          visitorId
         },
         { delay, jobId }
       )

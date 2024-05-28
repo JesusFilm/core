@@ -16,6 +16,7 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async process(job): Promise<void> {
+    console.log('job', job.name)
     switch (job.name) {
       case '':
         await this.sendAnalyticsNotification(job)
