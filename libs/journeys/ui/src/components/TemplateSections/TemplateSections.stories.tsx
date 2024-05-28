@@ -7,21 +7,21 @@ import {
   GetJourneys,
   GetJourneys_journeys as Journey,
   GetJourneys_journeys_tags as Tag
-} from '../../../__generated__/GetJourneys'
+} from '../../../../../../apps/journeys-admin/__generated__/GetJourneys'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../libs/storybook'
-import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
+} from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../../../apps/journeys-admin/src/libs/storybook'
+import { GET_JOURNEYS } from '../../../../../../apps/journeys-admin/src/libs/useJourneysQuery/useJourneysQuery'
 
 import { TemplateSections } from '.'
 
 const TemplateSectionsStory: Meta<typeof TemplateSections> = {
   ...journeysAdminConfig,
   component: TemplateSections,
-  title: 'Journeys-Admin/TemplateSections',
+  title: 'Journeys-Ui/TemplateSections',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'

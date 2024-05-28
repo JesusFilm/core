@@ -5,18 +5,18 @@ import {
   GetJourneysVariables,
   GetJourneys_journeys as Journey,
   GetJourneys_journeys_tags as Tag
-} from '../../../__generated__/GetJourneys'
-import { GetLanguages } from '../../../__generated__/GetLanguages'
-import { GetTags } from '../../../__generated__/GetTags'
+} from '../../../../../../apps/journeys-admin/__generated__/GetJourneys'
+import { GetLanguages } from '../../../../../../apps/journeys-admin/__generated__/GetLanguages'
+import { GetTags } from '../../../../../../apps/journeys-admin/__generated__/GetTags'
 import {
   JourneyStatus,
   Service,
   ThemeMode,
   ThemeName
-} from '../../../__generated__/globalTypes'
-import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
-import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
-import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
+} from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
+import { GET_JOURNEYS } from '../../../../../../apps/journeys-admin/src/libs/useJourneysQuery/useJourneysQuery'
+import { GET_LANGUAGES } from '../../../../../../apps/journeys-admin/src/libs/useLanguagesQuery'
+import { GET_TAGS } from '../../../../../../apps/journeys-admin/src/libs/useTagsQuery/useTagsQuery'
 
 const defaultTemplate: Journey = {
   __typename: 'Journey',

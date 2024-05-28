@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { journeysAdminConfig } from '../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../../apps/journeys-admin/src/libs/storybook'
 
 import {
   getJourneysMock,
@@ -13,7 +13,7 @@ import {
 
 import { TemplateGallery } from '.'
 
-import '../../../test/i18n'
+import '../../../../../../apps/journeys-admin/test/i18n'
 
 const TemplateGalleryStory: Meta<typeof TemplateGallery> = {
   ...journeysAdminConfig,

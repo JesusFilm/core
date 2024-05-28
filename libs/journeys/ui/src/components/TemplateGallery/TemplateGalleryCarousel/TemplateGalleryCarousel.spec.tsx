@@ -3,13 +3,13 @@ import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SwiperOptions } from 'swiper/types'
 
-import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
+import { GetJourneys_journeys as Journey } from '../../../../../../../apps/journeys-admin/__generated__/GetJourneys'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../__generated__/globalTypes'
-import { TemplateGalleryCard } from '../../TemplateGalleryCard'
+} from '../../../../../../../apps/journeys-admin/__generated__/globalTypes'
+import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 import { TemplateGalleryCarousel } from './TemplateGalleryCarousel'
 

@@ -14,9 +14,9 @@ import { ReactElement, useCallback } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { GetTags_tags as Tag } from '../../../../__generated__/GetTags'
-import { useTagsQuery } from '../../../libs/useTagsQuery'
-import { ParentTagIcon } from '../../ParentTagIcon'
+import { GetTags_tags as Tag } from '../../../../../../../apps/journeys-admin/__generated__/GetTags'
+import { useTagsQuery } from '../../../../../../../apps/journeys-admin/src/libs/useTagsQuery'
+import { ParentTagIcon } from '../../../../../../../apps/journeys-admin/src/components/ParentTagIcon'
 
 interface TagsFilterProps {
   label: string

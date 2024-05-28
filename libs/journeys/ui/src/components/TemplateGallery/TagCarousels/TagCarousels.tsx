@@ -3,7 +3,7 @@ import { useTheme } from '@mui/material/styles'
 import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
-import { useTagsQuery } from '../../../libs/useTagsQuery'
+import { useTagsQuery } from '../../../../../../../apps/journeys-admin/src/libs/useTagsQuery'
 import { TemplateGalleryCarousel } from '../TemplateGalleryCarousel'
 
 import { CollectionButton } from './CollectionButton'

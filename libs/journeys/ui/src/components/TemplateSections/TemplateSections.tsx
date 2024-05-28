@@ -8,10 +8,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
-import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
-import { useJourneysQuery } from '../../libs/useJourneysQuery'
+import { GetJourneys_journeys as Journey } from '../../../../../../apps/journeys-admin/__generated__/GetJourneys'
+import { useJourneysQuery } from '../../../../../../apps/journeys-admin/src/libs/useJourneysQuery'
 import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'
-import { TemplateGalleryCard } from '../TemplateGalleryCard'
+import { TemplateGalleryCard } from '../TemplateGallery/TemplateGalleryCard'
 
 interface Contents {
   [key: string]: { category: string; journeys: Journey[] }

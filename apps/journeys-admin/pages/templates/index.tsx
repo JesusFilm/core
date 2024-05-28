@@ -19,7 +19,7 @@ import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { useTeam } from '../../src/components/Team/TeamProvider'
-import { TemplateGallery } from '../../src/components/TemplateGallery'
+import { TemplateGallery } from '../../../../libs/journeys/ui/src/components/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_JOURNEYS } from '../../src/libs/useJourneysQuery/useJourneysQuery'
 import { GET_LANGUAGES } from '../../src/libs/useLanguagesQuery'
@@ -63,7 +63,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 
   await Promise.all([
     apolloClient.query<GetLanguages, GetLanguagesVariables>({
-      // from /workspaces/core/apps/journeys-admin/src/components/TemplateGallery/HeaderAndLanguageFilter/HeaderAndLanguageFilter.tsx useLanguagesQuery
+      // from /workspaces/core/libs/journeys/ui/src/components/TemplateGallery/HeaderAndLanguageFilter/HeaderAndLanguageFilter.tsx useLanguagesQuery
       query: GET_LANGUAGES,
       variables: {
         languageId: '529',
@@ -93,11 +93,11 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       }
     }),
     apolloClient.query<GetTags>({
-      // from apps/journeys-admin/src/components/TemplateGallery/TagsFilter/TagsFilter.tsx useJourneysQuery
+      // from libs/journeys/ui/src/components/TemplateGallery/TagsFilter/TagsFilter.tsx useJourneysQuery
       query: GET_TAGS
     }),
     apolloClient.query<GetJourneys, GetJourneysVariables>({
-      // from apps/journeys-admin/src/components/TemplateSections/TemplateSections.tsx useJourneysQuery
+      // from libs/journeys/ui/src/components/TemplateSections/TemplateSections.tsx useJourneysQuery
       query: GET_JOURNEYS,
       variables: {
         where: {

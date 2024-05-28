@@ -12,7 +12,11 @@ const { i18n } = require('./next-i18next.config')
 const nextConfig = {
   swcMinify: true,
   images: {
-    domains: ['localhost', 'd1wl257kev7hsz.cloudfront.net'],
+    domains: [
+      'localhost',
+      'd1wl257kev7hsz.cloudfront.net',
+      'imagedelivery.net'
+    ],
     minimumCacheTTL: 31536000
   },
   i18n,

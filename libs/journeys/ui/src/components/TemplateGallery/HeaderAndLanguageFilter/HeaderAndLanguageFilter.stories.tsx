@@ -3,9 +3,9 @@ import { screen, userEvent } from '@storybook/testing-library'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
-import '../../../../test/i18n'
+import '../../../../../../../apps/journeys-admin/test/i18n'
 
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../../../apps/journeys-admin/src/libs/storybook'
 import { getLanguagesMock } from '../data'
 
 import { HeaderAndLanguageFilter } from '.'
