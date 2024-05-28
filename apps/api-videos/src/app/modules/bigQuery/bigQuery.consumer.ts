@@ -73,6 +73,7 @@ export class BigQueryConsumer extends WorkerHost {
 
     // cleanup for future runs
     this.importerVideosService.usedSlugs = undefined
+    this.importerVideosService.ids = []
     this.importerVideoVariantsService.ids = []
 
     await this.importerVideosChildrenService.process()
