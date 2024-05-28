@@ -37,7 +37,7 @@ type TextResponseSubmissionEvent implements Event {
   """
   value: String
   """
-  the id of the block this event orignates from
+  the id of the block this event originates from
   """
   blockId: String
 }
