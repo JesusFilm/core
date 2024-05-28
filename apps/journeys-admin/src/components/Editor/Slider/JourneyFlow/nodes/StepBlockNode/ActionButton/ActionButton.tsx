@@ -60,49 +60,57 @@ export function ActionButton({
   let title = ''
   let icon: ReactNode
   let isSourceConnected = false
+  let isSourceConnectable = false
   switch (block.__typename) {
     case 'ButtonBlock':
       title =
         block.label != null && block.label !== '' ? block.label : t('Button')
       icon = getIcon(block.action)
       isSourceConnected = hasConnection(block)
+      isSourceConnectable = true
       break
     case 'FormBlock':
       title = t('Form')
       icon = getIcon(block.action)
       isSourceConnected = hasConnection(block)
+      isSourceConnectable = true
       break
     case 'RadioOptionBlock':
       title =
         block.label != null && block.label !== '' ? block.label : t('Option')
       icon = getIcon(block.action)
       isSourceConnected = hasConnection(block)
+      isSourceConnectable = true
       break
     case 'SignUpBlock':
       title = t('Subscribe')
       icon = getIcon(block.action)
       isSourceConnected = hasConnection(block)
+      isSourceConnectable = true
       break
     case 'TextResponseBlock':
       title = t('Feedback')
       icon = getIcon(block.action)
       isSourceConnected = hasConnection(block)
+      isSourceConnectable = false
       break
     case 'VideoBlock':
       title = block.video?.title?.[0]?.value ?? block.title ?? t('Video')
       icon = getIcon(block.action)
       isSourceConnected = hasConnection(block)
+      isSourceConnectable = true
       break
     case 'StepBlock':
       title = t('Default Next Step →')
       isSourceConnected = block.nextBlockId != null
+      isSourceConnectable = true
       break
   }
 
   return (
     <BaseNode
       id={block.id}
-      isSourceConnectable
+      isSourceConnectable={isSourceConnectable}
       onSourceConnect={updateEdge}
       selected={selected}
       isSourceConnected={isSourceConnected}

@@ -5,12 +5,10 @@ import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import LinkIcon from '@core/shared/ui/icons/Link'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
-import { Action, actions } from '../../controls/Action/Action'
 
 import { TextResponseFields } from './TextResponseFields'
 
@@ -41,17 +39,6 @@ export function TextResponse({
         <TextResponseFields />
       </Accordion>
       <Divider orientation="vertical" variant="middle" flexItem />
-      <Accordion
-        id={`${id}-text-field-action`}
-        icon={<LinkIcon />}
-        name={t('Action')}
-        value={
-          actions.find((act) => act.value === action?.__typename)?.label ??
-          'None'
-        }
-      >
-        <Action />
-      </Accordion>
     </Box>
   )
 }
