@@ -1,14 +1,13 @@
-import { TreeBlock } from '@core/journeys/ui/block'
-
+import { RadioOptionFields } from '../../components/RadioOption/__generated__/RadioOptionFields'
+import { RadioQuestionFields } from '../../components/RadioQuestion/__generated__/RadioQuestionFields'
+import { TreeBlock } from '../block'
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_ButtonBlock_action as ButtonBlockAction,
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_StepBlock as StepBlock
-} from '../../../../../../../__generated__/BlockFields'
-import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
-import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQuestionFields'
+} from '../block/__generated__/BlockFields'
 
 import { filterActionBlocks } from './filterActionBlocks'
 

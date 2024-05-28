@@ -6,7 +6,7 @@ import { darken, styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
@@ -27,8 +27,10 @@ import { JourneyFlow } from './JourneyFlow'
 import { Settings } from './Settings'
 
 export const UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED = gql`
-  mutation UpdateJourneyFlowBackButtonClicked {
-    journeyProfileUpdate(input: { journeyFlowBackButtonClicked: true }) {
+  mutation UpdateJourneyFlowBackButtonClicked(
+    $input: JourneyProfileUpdateInput!
+  ) {
+    journeyProfileUpdate(input: $input) {
       id
       journeyFlowBackButtonClicked
     }
@@ -52,6 +54,9 @@ const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
 export function Slider(): ReactElement {
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
+  const [showBackButtonHelp, setShowBackButtonHelp] = useState<
+    boolean | undefined
+  >(undefined)
   const {
     state: { activeSlide, activeContent, selectedStep },
     dispatch
@@ -59,14 +64,24 @@ export function Slider(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [updateBackButtonClick] =
     useMutation<UpdateJourneyFlowBackButtonClicked>(
-      UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED
+      UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED,
+      {
+        variables: {
+          input: {
+            journeyFlowBackButtonClicked: true
+          }
+        }
+      }
     )
-  const { data } = useQuery<getJourneyFlowBackButtonClicked>(
-    GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED
+  useQuery<getJourneyFlowBackButtonClicked>(
+    GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED,
+    {
+      onCompleted: (data) =>
+        setShowBackButtonHelp(
+          data?.getJourneyProfile?.journeyFlowBackButtonClicked !== true
+        )
+    }
   )
-
-  const showBackButtonHelp =
-    data?.getJourneyProfile?.journeyFlowBackButtonClicked !== true
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
@@ -105,7 +120,7 @@ export function Slider(): ReactElement {
   }
 
   function handlePrev(): void {
-    if (showBackButtonHelp) void updateBackButtonClick()
+    if (showBackButtonHelp === true) void updateBackButtonClick()
 
     if (
       activeSlide === ActiveSlide.Content &&
@@ -213,7 +228,9 @@ export function Slider(): ReactElement {
         >
           <ChevronLeftIcon />
           <Collapse
-            in={showBackButtonHelp && activeSlide === ActiveSlide.Content}
+            in={
+              showBackButtonHelp === true && activeSlide === ActiveSlide.Content
+            }
             orientation="horizontal"
             style={{ transitionDelay: '300ms' }}
           >
