@@ -2,9 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
+import { PrismaService } from '../../lib/prisma.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
@@ -21,7 +23,8 @@ describe('BigQueryConsumer', () => {
   const OLD_ENV = { ...process.env } // clone env
   let consumer: BigQueryConsumer,
     bigQueryService: BigQueryService,
-    videosService: DeepMockProxy<ImporterVideosService>
+    videosService: DeepMockProxy<ImporterVideosService>,
+    prisma: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     process.env = { ...OLD_ENV } // reset env before test
@@ -64,6 +67,14 @@ describe('BigQueryConsumer', () => {
         {
           provide: ImporterVideoVariantsService,
           useValue: mockDeep<ImporterVideoVariantsService>()
+        },
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: ImporterVideosChildrenService,
+          useValue: mockDeep<ImporterVideosChildrenService>()
         }
       ]
     }).compile()
@@ -73,6 +84,9 @@ describe('BigQueryConsumer', () => {
     videosService = module.get<ImporterVideosService>(
       ImporterVideosService
     ) as DeepMockProxy<ImporterVideosService>
+    prisma = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
 
   afterAll(() => {
@@ -86,6 +100,10 @@ describe('BigQueryConsumer', () => {
         { id: 'mockValue0', label: 'shortFilm', primaryLanguageId: 529 },
         { id: 'mockValue1', label: 'shortFilm', primaryLanguageId: 529 }
       ]
+      prisma.importTimes.findUnique.mockResolvedValue({
+        modelName: '',
+        lastImport: new Date()
+      })
       bigQueryService.getRowsFromTable = jest.fn(async function* generator() {
         for (let index = 0; index < data.length; index++) {
           yield data[index]

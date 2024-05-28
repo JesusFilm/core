@@ -24,7 +24,7 @@ interface BigQueryRowError {
 }
 @Processor('api-videos-arclight')
 export class BigQueryConsumer extends WorkerHost {
-  tables: Record<string, ImporterService<any>> = {}
+  tables: Record<string, ImporterService<unknown>> = {}
 
   constructor(
     private readonly prismaService: PrismaService,

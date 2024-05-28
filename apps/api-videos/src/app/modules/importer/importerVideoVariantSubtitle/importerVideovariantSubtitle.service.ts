@@ -30,7 +30,7 @@ export class ImporterVideoVariantSubtitlesService extends ImporterService<VideoV
   ): Promise<void> {
     if (
       !this.importerVideoVariantsService.ids.includes(
-        videoVariantSubtitles.videoVariantId
+        videoVariantSubtitles.videoVariantId as string
       )
     )
       throw new Error(
