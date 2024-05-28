@@ -1179,6 +1179,7 @@ export class TextResponseSubmissionEvent implements Event {
     createdAt: DateTime;
     label?: Nullable<string>;
     value?: Nullable<string>;
+    blockId?: Nullable<string>;
 }
 
 export class VideoStartEvent implements Event {

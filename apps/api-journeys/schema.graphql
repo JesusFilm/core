@@ -1595,6 +1595,7 @@ type TextResponseSubmissionEvent implements Event {
 
   """response from the TextResponseBlock form"""
   value: String
+  blockId: String
 }
 
 input VideoStartEventCreateInput {
