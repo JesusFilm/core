@@ -13,6 +13,7 @@ import { ReactElement } from 'react'
 
 import { GetJourneys_journeys as Journey } from '../../../../../../../apps/journeys-admin/__generated__/GetJourneys'
 import { abbreviateLanguageName } from '../../../../../../../apps/journeys-admin/src/libs/abbreviateLanguageName'
+import { useRouter } from 'next/router'
 
 interface HoverLayerProps {
   className?: string
@@ -48,6 +49,9 @@ export function TemplateGalleryCard({
   item: journey,
   priority
 }: TemplateGalleryCardProps): ReactElement {
+  const router = useRouter()
+  const journeyIdPath = `${router.pathname}/${journey?.id ?? ''}`
+
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
   )?.value
@@ -101,11 +105,7 @@ export function TemplateGalleryCard({
         }
       }}
     >
-      <NextLink
-        href={`/templates/${journey?.id ?? ''}`}
-        passHref
-        legacyBehavior
-      >
+      <NextLink href={journeyIdPath} passHref legacyBehavior>
         <Box
           component="a"
           tabIndex={-1}
