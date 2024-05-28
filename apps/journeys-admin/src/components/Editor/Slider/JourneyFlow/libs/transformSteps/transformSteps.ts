@@ -3,11 +3,11 @@ import findIndex from 'lodash/findIndex'
 import { Edge, MarkerType, Node } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { adminLight } from '../../../../../ThemeProvider/admin/theme'
 import { PositionMap } from '../arrangeSteps'
-import { filterActionBlocks } from '../filterActionBlocks'
 
 export const MARKER_END_DEFAULT_COLOR = rgbToHex(
   lighten(adminLight.palette.secondary.main, 0.8)

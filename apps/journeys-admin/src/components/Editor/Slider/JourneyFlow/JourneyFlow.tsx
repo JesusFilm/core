@@ -29,7 +29,7 @@ import {
   useNodesState
 } from 'reactflow'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
@@ -75,7 +75,7 @@ export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
   const theme = useTheme()
   const {
-    state: { steps }
+    state: { steps, activeSlide }
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -90,9 +90,10 @@ export function JourneyFlow(): ReactElement {
   const { onSelectionChange } = useDeleteOnKeyPress()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
 
-  async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
+  async function blockPositionsUpdate(): Promise<void> {
     if (journey == null || steps == null) return
-    positions = arrangeSteps(steps)
+    const positions = arrangeSteps(steps)
+
     Object.entries(positions).forEach(([id, position]) => {
       void stepBlockPositionUpdate({
         variables: {
@@ -130,7 +131,7 @@ export function JourneyFlow(): ReactElement {
         )
       ) {
         // some steps have no x or y coordinates
-        void blockPositionsUpdate(positions)
+        void blockPositionsUpdate()
       } else {
         data.blocks.forEach((block) => {
           if (
@@ -314,14 +315,18 @@ export function JourneyFlow(): ReactElement {
         }}
         elevateEdgesOnSelect
       >
-        <Panel position="top-right">
-          <NewStepButton />
-        </Panel>
-        <Controls showInteractive={false}>
-          <ControlButton onClick={async () => await blockPositionsUpdate({})}>
-            <ArrowRefresh6Icon />
-          </ControlButton>
-        </Controls>
+        {activeSlide === ActiveSlide.JourneyFlow && (
+          <>
+            <Panel position="top-right">
+              <NewStepButton />
+            </Panel>
+            <Controls showInteractive={false}>
+              <ControlButton onClick={blockPositionsUpdate}>
+                <ArrowRefresh6Icon />
+              </ControlButton>
+            </Controls>
+          </>
+        )}
         <Background color="#aaa" gap={16} />
       </ReactFlow>
     </Box>
