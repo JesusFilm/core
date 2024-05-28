@@ -39,7 +39,7 @@ export function LinkNode({ id }: NodeProps): ReactElement {
   const { label, icon } = getGoalDetails(getLinkActionGoal(actionDetail), t)
 
   return (
-    <BaseNode id={id} isTargetConnectable>
+    <BaseNode id={id} targetHandle="disabled">
       <Stack
         gap={1}
         alignItems="center"

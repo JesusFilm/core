@@ -70,7 +70,7 @@ export function ActionButton({
   return (
     <BaseNode
       id={block.id}
-      isSourceConnectable
+      sourceHandle="show"
       onSourceConnect={updateEdge}
       selected={selected}
       isSourceConnected={isSourceConnected}

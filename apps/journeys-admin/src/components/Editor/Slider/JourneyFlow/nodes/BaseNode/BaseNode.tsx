@@ -34,8 +34,8 @@ const connectionNodeIdSelector = (state): string | null =>
 
 interface BaseNodeProps {
   id?: string
-  isTargetConnectable?: boolean
-  isSourceConnectable?: boolean
+  targetHandle?: 'show' | 'hide' | 'disabled'
+  sourceHandle?: 'show' | 'hide' | 'disabled'
   onSourceConnect?: (
     params: { target: string } | Parameters<OnConnect>[0]
   ) => void
@@ -50,8 +50,8 @@ interface BaseNodeProps {
 
 export function BaseNode({
   id,
-  isTargetConnectable = false,
-  isSourceConnectable = false,
+  targetHandle = 'hide',
+  sourceHandle = 'hide',
   onSourceConnect,
   selected = false,
   isSourceConnected = false,
@@ -97,14 +97,20 @@ export function BaseNode({
       }}
     >
       {isFunction(children) ? children({ selected }) : children}
-      {isTargetConnectable && (
-        <PulseWrapper show={isConnecting}>
+      {(targetHandle === 'show' || targetHandle === 'disabled') && (
+        <PulseWrapper show={isConnecting && targetHandle !== 'disabled'}>
           <StyledHandle
             type="target"
-            data-testid="BaseNodeLeftHandle"
+            data-testid={
+              targetHandle === 'disabled'
+                ? 'BaseNodeLeftHandle-disabled'
+                : 'BaseNodeLeftHandle'
+            }
             position={Position.Left}
-            isConnectableStart={isConnecting}
-            isConnectable={id !== connectionNodeId}
+            isConnectableStart={isConnecting && targetHandle !== 'disabled'}
+            isConnectable={
+              id !== connectionNodeId && targetHandle !== 'disabled'
+            }
             sx={{
               width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
@@ -114,7 +120,7 @@ export function BaseNode({
                 : null,
               background: (theme) => theme.palette.background.default,
               border: (theme) =>
-                isConnecting || targetSelected
+                (isConnecting && targetHandle !== 'disabled') || targetSelected
                   ? `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.primary.main}`
                   : `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.secondary.light}80`,
 
@@ -132,7 +138,7 @@ export function BaseNode({
           />
         </PulseWrapper>
       )}
-      {isSourceConnectable && (
+      {sourceHandle === 'show' && (
         <StyledHandle
           id={id}
           type="source"
