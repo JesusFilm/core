@@ -15,6 +15,7 @@ import {
   ChatOpenEventCreateInput,
   MessagePlatform
 } from '../../../__generated__/graphql'
+import { EmailEventsService } from '../../../lib/emailEventsService'
 import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
 
@@ -87,7 +88,8 @@ export class ButtonClickEventResolver {
 export class ChatOpenEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly emailEventsService: EmailEventsService
   ) {}
 
   @Mutation()
@@ -140,7 +142,7 @@ export class ChatOpenEventResolver {
       })
     )
 
-    // add logic to send visitor email for analytics
+    await this.emailEventsService.sendAnalyticsEmail(visitor.id, journeyId)
 
     const [chatOpenEvent] = await Promise.all(promises)
     return chatOpenEvent as ChatOpenEvent

@@ -10,6 +10,7 @@ import {
   TextResponseSubmissionEvent,
   TextResponseSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
+import { EmailEventsService } from '../../../lib/emailEventsService'
 import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
 
@@ -17,7 +18,8 @@ import { EventService } from '../event.service'
 export class TextResponseSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly emailEventsService: EmailEventsService
   ) {}
 
   @Mutation()
@@ -62,6 +64,9 @@ export class TextResponseSubmissionEventResolver {
         }
       })
     ])
+
+    await this.emailEventsService.sendAnalyticsEmail(visitor.id, journeyId)
+
     return textResponseSubmissionEvent as TextResponseSubmissionEvent
   }
 }

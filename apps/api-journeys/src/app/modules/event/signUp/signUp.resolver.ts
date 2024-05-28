@@ -10,6 +10,7 @@ import {
   SignUpSubmissionEvent,
   SignUpSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
+import { EmailEventsService } from '../../../lib/emailEventsService'
 import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
 
@@ -17,7 +18,8 @@ import { EventService } from '../event.service'
 export class SignUpSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly emailEventsService: EmailEventsService
   ) {}
 
   @Mutation()
@@ -74,6 +76,8 @@ export class SignUpSubmissionEventResolver {
         })
       )
     }
+
+    await this.emailEventsService.sendAnalyticsEmail(visitor.id, journeyId)
 
     const [signUpSubmissionEvent] = await Promise.all(promises)
     return signUpSubmissionEvent as SignUpSubmissionEvent
