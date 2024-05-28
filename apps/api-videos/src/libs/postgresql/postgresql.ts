@@ -72,7 +72,8 @@ const jsondiffpatch = create({
   },
   textDiff: {
     minLength: 4096
-  }
+  },
+  propertyFilter: (name) => name !== 'editionId'
 })
 
 function getChangedValues<T>(obj): T {
