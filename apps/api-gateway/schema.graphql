@@ -2052,6 +2052,8 @@ type TextResponseSubmissionEvent implements Event
 
   """response from the TextResponseBlock form"""
   value: String
+
+  """the id of the block this event orignates from"""
   blockId: String
 }
 
