@@ -19,18 +19,10 @@ export function LinkNode({ id }: NodeProps): ReactElement {
   } = useEditor()
   const strippedNodeId = id.replace('LinkNode-', '')
 
-  const actionBlocks = steps
+  const matchedActionBlock = steps
     ?.map((step) => filterActionBlocks(step))
     .flat()
-    .filter(
-      (block) =>
-        block.action?.__typename === 'LinkAction' ||
-        block.action?.__typename === 'EmailAction'
-    )
-
-  const matchedActionBlock = actionBlocks?.find(
-    (block) => block.id === strippedNodeId
-  )
+    .find(({ id }) => id === strippedNodeId)
 
   function getActionDetail(matchedActionBlock): string {
     switch (matchedActionBlock?.action?.__typename) {
