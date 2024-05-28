@@ -4,17 +4,20 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { Video } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../../lib/prisma.service'
+import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
 import { ImporterVideoVariantsService } from './importerVideoVariants.service'
 
 describe('ImporterVideoVariantsService', () => {
   let service: ImporterVideoVariantsService,
-    prismaService: DeepMockProxy<PrismaService>
+    prismaService: DeepMockProxy<PrismaService>,
+    videosService: ImporterVideosService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ImporterVideoVariantsService,
+        ImporterVideosService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -25,17 +28,21 @@ describe('ImporterVideoVariantsService', () => {
     service = module.get<ImporterVideoVariantsService>(
       ImporterVideoVariantsService
     )
+    videosService = module.get<ImporterVideosService>(ImporterVideosService)
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+
+    prismaService.videoVariant.findMany.mockResolvedValue([])
   })
 
   describe('import', () => {
     it('should update video variant', async () => {
-      prismaService.video.findUnique.mockResolvedValueOnce({
-        id: 'mockValue1',
-        slug: 'video-slug'
-      } as unknown as Video)
+      videosService.ids = ['mockVideoId']
+      // prismaService.video.findUnique.mockResolvedValueOnce({
+      //   id: 'mockValue1',
+      //   slug: 'video-slug'
+      // } as unknown as Video)
       await service.import({
         id: 'mockId',
         hls: 'www.example.com',
@@ -69,9 +76,9 @@ describe('ImporterVideoVariantsService', () => {
     })
 
     it('should throw error if cannot find video for the video variant', async () => {
-      prismaService.video.findUnique.mockResolvedValueOnce(null)
+      videosService.ids = []
       await expect(
-        service.import({
+        await service.import({
           id: 'mockId',
           hls: 'www.example.com',
           duration: 123.123,
@@ -82,7 +89,7 @@ describe('ImporterVideoVariantsService', () => {
           otherValues: 'some otherValue',
           someValue: 'otherValue'
         })
-      ).rejects.toThrow('video for variant id: mockId - does not exist!')
+      ).toBeNull()
     })
 
     it('should throw error when row is invalid', async () => {

@@ -2,17 +2,20 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { PrismaService } from '../../../lib/prisma.service'
+import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
 import { ImporterVideoTitleService } from './importerVideoTitle.service'
 
 describe('ImporterVideoTitleService', () => {
   let service: ImporterVideoTitleService,
-    prismaService: DeepMockProxy<PrismaService>
+    prismaService: DeepMockProxy<PrismaService>,
+    videosService: ImporterVideosService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ImporterVideoTitleService,
+        ImporterVideosService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -21,6 +24,7 @@ describe('ImporterVideoTitleService', () => {
     }).compile()
 
     service = module.get<ImporterVideoTitleService>(ImporterVideoTitleService)
+    videosService = module.get<ImporterVideosService>(ImporterVideosService)
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
@@ -28,6 +32,7 @@ describe('ImporterVideoTitleService', () => {
 
   describe('import', () => {
     it('should upsert videoTitle', async () => {
+      videosService.ids = ['mockVideoId']
       await service.import({
         value: 'mockValue0',
         videoId: 'mockVideoId',

@@ -37,7 +37,8 @@ describe('ImporterVideosService', () => {
         primaryLanguageId: 529,
         slug: 'Some Title',
         extraStuff: 'randomData',
-        childIds: null
+        childIds: null,
+        image: null
       })
       expect(prismaService.video.upsert).toHaveBeenCalledWith({
         where: { id: 'mockValue0' },
@@ -66,7 +67,8 @@ describe('ImporterVideosService', () => {
         primaryLanguageId: 529,
         slug: 'Some Title',
         extraStuff: 'randomData',
-        childIds: '{6_GOMattFrench5101,6_GOMattFrench5102}'
+        childIds: '{6_GOMattFrench5101,6_GOMattFrench5102}',
+        image: null
       })
       expect(prismaService.video.upsert).toHaveBeenCalledWith({
         where: { id: 'mockValue0' },
@@ -95,6 +97,7 @@ describe('ImporterVideosService', () => {
         primaryLanguageId: 529,
         slug: 'Some Title',
         extraStuff: 'randomData',
+        image: null,
         childIds: null
       })
       expect(prismaService.video.upsert).toHaveBeenCalledWith({
@@ -128,7 +131,9 @@ describe('ImporterVideosService', () => {
         label: 'behind_the_scenes',
         primaryLanguageId: 529,
         slug: 'Some Title',
-        extraStuff: 'randomData'
+        extraStuff: 'randomData',
+        image: null,
+        childIds: null
       })
       expect(prismaService.video.upsert).toHaveBeenCalledWith({
         where: { id: 'mockValue0' },
