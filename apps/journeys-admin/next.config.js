@@ -53,30 +53,7 @@ const nextConfig = {
       }
     ]
   },
-  async rewrites() {
-    return [
-      {
-        source: '/share/:slug',
-        destination: `${process.env.PLAUSIBLE_URL}/share/:slug`
-      },
-      {
-        source: '/js/:slug',
-        destination: `${process.env.PLAUSIBLE_URL}/js/:slug`
-      },
-      {
-        source: '/css/:slug',
-        destination: `${process.env.PLAUSIBLE_URL}/css/:slug`
-      },
-      {
-        source: '/api/stats/:path*',
-        destination: `${process.env.PLAUSIBLE_URL}/api/stats/:path*`
-      },
-      {
-        source: '/favicon/sources/:slug',
-        destination: `${process.env.PLAUSIBLE_URL}/favicon/sources/:slug`
-      }
-    ]
-  },
+
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
@@ -86,7 +63,7 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
-  transpilePackages: ['shared-ui', 'shared-ui-dynamic', '@mui/x-charts'],
+  transpilePackages: ['shared-ui', 'shared-ui-dynamic'],
   experimental: {
     outputFileTracingExcludes: {
       '*': [
