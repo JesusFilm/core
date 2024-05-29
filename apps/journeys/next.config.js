@@ -1,5 +1,4 @@
 const { composePlugins, withNx } = require('@nx/next')
-const { withPlausibleProxy } = require('next-plausible')
 
 const { i18n } = require('./next-i18next.config')
 
@@ -59,10 +58,4 @@ const nextConfig = {
     ]
   }
 }
-module.exports = composePlugins(
-  withNx,
-  withPlausibleProxy({
-    subdirectory: 'plausible',
-    customDomain: process.env.PLAUSIBLE_URL
-  })
-)(nextConfig)
+module.exports = composePlugins(withNx)(nextConfig)

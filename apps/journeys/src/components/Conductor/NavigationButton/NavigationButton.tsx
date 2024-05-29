@@ -5,7 +5,6 @@ import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import capitalize from 'lodash/capitalize'
 import { useTranslation } from 'next-i18next'
-import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
@@ -18,26 +17,12 @@ import {
 } from '@core/journeys/ui/Card/Card'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import {
-  JourneyPlausibleEvents,
-  keyify
-} from '@core/journeys/ui/plausibleHelpers'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
-import {
-  StepNextEventCreateInput,
-  StepPreviousEventCreateInput
-} from '../../../../__generated__/globalTypes'
 import { StepFields } from '../../../../__generated__/StepFields'
-import {
-  StepNextEventCreate,
-  StepNextEventCreateVariables
-} from '../../../../__generated__/StepNextEventCreate'
-import {
-  StepPreviousEventCreate,
-  StepPreviousEventCreateVariables
-} from '../../../../__generated__/StepPreviousEventCreate'
+import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
+import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousEventCreate'
 
 const LeftNavigationContainer = styled(Box)`
   /* @noflip */
@@ -57,17 +42,14 @@ export function NavigationButton({
   variant,
   alignment
 }: NavigationButtonProps): ReactElement {
-  const [stepNextEventCreate] = useMutation<
-    StepNextEventCreate,
-    StepNextEventCreateVariables
-  >(STEP_NEXT_EVENT_CREATE)
-  const [stepPreviousEventCreate] = useMutation<
-    StepPreviousEventCreate,
-    StepPreviousEventCreateVariables
-  >(STEP_PREVIOUS_EVENT_CREATE)
+  const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
+    STEP_NEXT_EVENT_CREATE
+  )
+  const [stepPreviousEventCreate] = useMutation<StepPreviousEventCreate>(
+    STEP_PREVIOUS_EVENT_CREATE
+  )
   const { t } = useTranslation('apps-journeys')
-  const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant: journeyVariant, journey } = useJourney()
+  const { variant: journeyVariant } = useJourney()
   const {
     setShowNavigation,
     getNextBlock,
@@ -116,43 +98,34 @@ export function NavigationButton({
       t
     )
     const targetBlock = getNextBlock({ id: undefined, activeBlock })
-    if (targetBlock == null) return
-    const targetStepName = getStepHeading(
-      targetBlock.id,
-      targetBlock.children,
-      treeBlocks,
-      t
-    )
-    const input: StepNextEventCreateInput = {
-      id,
-      blockId: activeBlock.id,
-      label: stepName,
-      value: targetStepName,
-      nextStepId: targetBlock.id
-    }
-    void stepNextEventCreate({
-      variables: {
-        input
-      }
-    })
-    if (journey != null)
-      plausible('navigateNextStep', {
-        u: `${journey.id}/${activeBlock.id}`,
-        props: {
-          ...input,
-          key: keyify('navigateNextStep', input, input.nextStepId)
+    const targetStepName =
+      targetBlock != null &&
+      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
+
+    if (targetBlock != null) {
+      void stepNextEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId: activeBlock.id,
+            label: stepName,
+            value: targetStepName,
+            nextStepId: targetBlock.id
+          }
         }
       })
-    TagManager.dataLayer({
-      dataLayer: {
-        event: 'step_next',
-        eventId: id,
-        blockId: activeBlock.id,
-        stepName,
-        targetStepId: targetBlock.id,
-        targetStepName
-      }
-    })
+
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'step_next',
+          eventId: id,
+          blockId: activeBlock.id,
+          stepName,
+          targetStepId: targetBlock.id,
+          targetStepName
+        }
+      })
+    }
   }
   // should always be called with previousActiveBlock()
   // should match with other handlePreviousNavigationEventCreate functions
@@ -171,43 +144,34 @@ export function NavigationButton({
     const targetBlock = blockHistory[
       blockHistory.length - 2
     ] as TreeBlock<StepFields>
-    if (targetBlock == null) return
-    const targetStepName = getStepHeading(
-      targetBlock.id,
-      targetBlock.children,
-      treeBlocks,
-      t
-    )
-    const input: StepPreviousEventCreateInput = {
-      id,
-      blockId: activeBlock.id,
-      label: stepName,
-      value: targetStepName,
-      previousStepId: targetBlock.id
-    }
-    void stepPreviousEventCreate({
-      variables: {
-        input
-      }
-    })
-    if (journey != null)
-      plausible('navigatePreviousStep', {
-        u: `${journey.id}/${activeBlock.id}`,
-        props: {
-          ...input,
-          key: keyify('navigatePreviousStep', input, input.previousStepId)
+    const targetStepName =
+      targetBlock != null &&
+      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
+
+    if (targetBlock != null) {
+      void stepPreviousEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId: activeBlock.id,
+            label: stepName,
+            value: targetStepName,
+            previousStepId: targetBlock.id
+          }
         }
       })
-    TagManager.dataLayer({
-      dataLayer: {
-        event: 'step_prev',
-        eventId: id,
-        blockId: activeBlock.id,
-        stepName,
-        targetStepId: targetBlock.id,
-        targetStepName
-      }
-    })
+
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'step_prev',
+          eventId: id,
+          blockId: activeBlock.id,
+          stepName,
+          targetStepId: targetBlock.id,
+          targetStepName
+        }
+      })
+    }
   }
   function handleNavigation(direction: 'next' | 'previous'): void {
     if (journeyVariant === 'admin') return

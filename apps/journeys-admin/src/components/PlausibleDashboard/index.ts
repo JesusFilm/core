@@ -1,1 +1,0 @@
-export { PlausibleDashboard } from './PlausibleDashboard'

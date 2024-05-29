@@ -2,7 +2,6 @@ import { gql, useMutation } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import { usePlausible } from 'next-plausible'
 import { ReactElement } from 'react'
 
 import Facebook from '@core/shared/ui/icons/Facebook'
@@ -18,20 +17,13 @@ import Viber from '@core/shared/ui/icons/Viber'
 import Vk from '@core/shared/ui/icons/Vk'
 import WhatsApp from '@core/shared/ui/icons/WhatsApp'
 
-import {
-  ChatOpenEventCreateInput,
-  MessagePlatform
-} from '../../../../__generated__/globalTypes'
+import { MessagePlatform } from '../../../../__generated__/globalTypes'
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { JourneyPlausibleEvents, keyify } from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
 
-import {
-  ChatButtonEventCreate,
-  ChatButtonEventCreateVariables
-} from './__generated__/ChatButtonEventCreate'
+import { ChatButtonEventCreate } from './__generated__/ChatButtonEventCreate'
 
 export const CHAT_BUTTON_EVENT_CREATE = gql`
   mutation ChatButtonEventCreate($input: ChatOpenEventCreateInput!) {
@@ -47,7 +39,6 @@ interface ChatIconProps {
 }
 
 export function ChatButtons(): ReactElement {
-  const plausible = usePlausible<JourneyPlausibleEvents>()
   const { variant, journey } = useJourney()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -55,10 +46,9 @@ export function ChatButtons(): ReactElement {
   const { rtl } = getJourneyRTL(journey)
   const chatButtons = journey?.chatButtons
 
-  const [chatButtonEventCreate] = useMutation<
-    ChatButtonEventCreate,
-    ChatButtonEventCreateVariables
-  >(CHAT_BUTTON_EVENT_CREATE)
+  const [chatButtonEventCreate] = useMutation<ChatButtonEventCreate>(
+    CHAT_BUTTON_EVENT_CREATE
+  )
 
   const getColor = (
     primary: boolean,
@@ -78,25 +68,16 @@ export function ChatButtons(): ReactElement {
       chatButton.link != null
     ) {
       window.open(chatButton.link, '_blank')
-      const input: ChatOpenEventCreateInput = {
-        id: chatButton?.id,
-        blockId: activeBlock?.id,
-        stepId: activeBlock?.id,
-        value: chatButton?.platform
-      }
       void chatButtonEventCreate({
         variables: {
-          input
+          input: {
+            id: chatButton?.id,
+            blockId: activeBlock?.id,
+            stepId: activeBlock?.id,
+            value: chatButton?.platform
+          }
         }
       })
-      if (journey != null)
-        plausible('footerChatButtonClick', {
-          u: journey.id,
-          props: {
-            ...input,
-            key: keyify('footerChatButtonClick', input)
-          }
-        })
     }
   }
 

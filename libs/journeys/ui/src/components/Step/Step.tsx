@@ -1,25 +1,19 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { usePlausible } from 'next-plausible'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
-import { StepViewEventCreateInput } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
-import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 
 import { StepFields } from './__generated__/StepFields'
-import {
-  StepViewEventCreate,
-  StepViewEventCreateVariables
-} from './__generated__/StepViewEventCreate'
+import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
 
 export const STEP_VIEW_EVENT_CREATE = gql`
   mutation StepViewEventCreate($input: StepViewEventCreateInput!) {
@@ -38,11 +32,9 @@ export function Step({
   children,
   wrappers
 }: StepProps): ReactElement {
-  const [stepViewEventCreate] = useMutation<
-    StepViewEventCreate,
-    StepViewEventCreateVariables
-  >(STEP_VIEW_EVENT_CREATE)
-  const plausible = usePlausible<JourneyPlausibleEvents>()
+  const [stepViewEventCreate] = useMutation<StepViewEventCreate>(
+    STEP_VIEW_EVENT_CREATE
+  )
   const { variant, journey } = useJourney()
   const { treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
@@ -56,21 +48,9 @@ export function Step({
   useEffect(() => {
     if (activeJourneyStep && wrappers === undefined) {
       const id = uuidv4()
-      const input: StepViewEventCreateInput = {
-        id,
-        blockId,
-        value: heading
-      }
       void stepViewEventCreate({
-        variables: {
-          input
-        }
+        variables: { input: { id, blockId, value: heading } }
       })
-      if (journey != null)
-        plausible('pageview', {
-          u: `${journey.id}/${blockId}`,
-          props: { ...input, key: keyify('pageview', input) }
-        })
       TagManager.dataLayer({
         dataLayer: {
           event: 'step_view',
@@ -86,9 +66,7 @@ export function Step({
     variant,
     heading,
     activeJourneyStep,
-    wrappers,
-    journey,
-    plausible
+    wrappers
   ])
 
   return (

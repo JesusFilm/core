@@ -1,5 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
-import { styled } from '@mui/material/styles'
+import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -9,75 +8,23 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useCallback, useRef } from 'react'
+import { ReactElement } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-
-import {
-  GetAdminJourneyWithPlausibleToken,
-  GetAdminJourneyWithPlausibleTokenVariables
-} from '../../../__generated__/GetAdminJourneyWithPlausibleToken'
+import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
+import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { PageWrapper } from '../../../src/components/PageWrapper'
-import { PlausibleDashboard } from '../../../src/components/PlausibleDashboard'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
-import { USER_JOURNEY_OPEN } from '../[journeyId]'
-
-export const GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN = gql`
-  ${JOURNEY_FIELDS}
-  query GetAdminJourneyWithPlausibleToken($id: ID!) {
-    journey: adminJourney(id: $id, idType: databaseId) {
-      ...JourneyFields
-      plausibleToken
-    }
-  }
-`
-
-const StyledIFrame = styled('iframe')({
-  border: 0
-})
-
-function useHookWithRefCallback(): (node: HTMLIFrameElement | null) => void {
-  const ref = useRef<HTMLIFrameElement | null>(null)
-  const setRef = useCallback((node: HTMLIFrameElement | null) => {
-    if (ref.current != null) {
-      // Make sure to cleanup any events/references added to the last instance
-    }
-
-    if (node != null) {
-      // Check if a node is actually passed. Otherwise node would be null.
-      // You can now do what you need to, addEventListeners, measure, etc.
-      node.addEventListener('load', () => {
-        const cssLink = document.createElement('link')
-        cssLink.href = '/plausible.css'
-        cssLink.rel = 'stylesheet'
-        cssLink.type = 'text/css'
-        node.contentWindow?.document.head.appendChild(cssLink)
-      })
-    }
-
-    // Save a reference to the node
-    ref.current = node
-  }, [])
-
-  return setRef
-}
+import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 
 function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
 
-  const { data, loading } = useQuery<
-    GetAdminJourneyWithPlausibleToken,
-    GetAdminJourneyWithPlausibleTokenVariables
-  >(GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN, {
-    variables: { id: router.query.journeyId as string }
-  })
   const journeyId = router.query.journeyId as string
-  const ref = useHookWithRefCallback()
 
   return (
     <>
@@ -86,31 +33,18 @@ function JourneyReportsPage(): ReactElement {
         title={t('Journey Analytics')}
         user={user}
         backHref={`/journeys/${journeyId}`}
-        mainBodyPadding={false}
-        mainHeaderChildren={<ReportsNavigation journeyId={journeyId} />}
       >
-        <JourneyProvider value={{ journey: data?.journey, variant: 'admin' }}>
-          <PlausibleDashboard>
-            {loading && <p>{t('Loading')}</p>}
-            {!loading && data?.journey.plausibleToken != null && (
-              <>
-                <StyledIFrame
-                  plausible-embed
-                  src={`/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
-                  loading="lazy"
-                  ref={ref}
-                  sx={{
-                    height: {
-                      xs: 'calc(100vh - 96px)',
-                      md: 'calc(100vh - 48px)'
-                    }
-                  }}
-                />
-                <script async src="/js/embed.host.js" />
-              </>
-            )}
-          </PlausibleDashboard>
-        </JourneyProvider>
+        <Box sx={{ height: 'calc(100vh - 48px)' }}>
+          <ReportsNavigation
+            reportType={JourneysReportType.singleFull}
+            journeyId={journeyId}
+            selected="journeys"
+          />
+          <MemoizedDynamicReport
+            reportType={JourneysReportType.singleFull}
+            journeyId={journeyId}
+          />
+        </Box>
       </PageWrapper>
     </>
   )
@@ -131,13 +65,10 @@ export const getServerSideProps = withUserTokenSSR({
   if (redirect != null) return { redirect }
 
   try {
-    await apolloClient.query<
-      GetAdminJourneyWithPlausibleToken,
-      GetAdminJourneyWithPlausibleTokenVariables
-    >({
-      query: GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN,
+    await apolloClient.query<GetAdminJourney>({
+      query: GET_ADMIN_JOURNEY,
       variables: {
-        id: query?.journeyId as string
+        id: query?.journeyId
       }
     })
   } catch (error) {
