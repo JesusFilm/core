@@ -15,6 +15,8 @@ import { VideoGrid } from '../VideoGrid'
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
+import { TemplateSections } from '@core/journeys/ui/TemplateSections'
+
 interface HomePageProps {
   videos: VideoChildFields[]
 }
@@ -26,7 +28,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
     <PageWrapper hero={<HomeHero />}>
       <ThemeProvider
         themeName={ThemeName.website}
-        themeMode={ThemeMode.dark}
+        themeMode={ThemeMode.light}
         nested
       >
         <Box
@@ -34,6 +36,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
           data-testid="HomePage"
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
+            <TemplateSections />
             <VideoGrid videos={videos} variant="contained" />
             <SeeAllVideos />
             <Box
