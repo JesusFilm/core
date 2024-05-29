@@ -446,29 +446,6 @@ export interface NavigateToBlockActionInput {
   blockId: string;
 }
 
-export interface PlausibleStatsAggregateFilter {
-  period?: string | null;
-  date?: string | null;
-  filters?: string | null;
-  interval?: string | null;
-}
-
-export interface PlausibleStatsBreakdownFilter {
-  property: string;
-  period?: string | null;
-  date?: string | null;
-  limit?: number | null;
-  page?: number | null;
-  filters?: string | null;
-}
-
-export interface PlausibleStatsTimeseriesFilter {
-  period?: string | null;
-  date?: string | null;
-  filters?: string | null;
-  interval?: string | null;
-}
-
 export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
