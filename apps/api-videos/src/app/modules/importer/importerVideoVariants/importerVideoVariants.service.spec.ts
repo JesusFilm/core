@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Video } from '.prisma/api-videos-client'
-
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
@@ -38,22 +36,21 @@ describe('ImporterVideoVariantsService', () => {
 
   describe('import', () => {
     it('should update video variant', async () => {
-      videosService.ids = ['mockVideoId']
-      // prismaService.video.findUnique.mockResolvedValueOnce({
-      //   id: 'mockValue1',
-      //   slug: 'video-slug'
-      // } as unknown as Video)
+      videosService.ids = ['videoId']
+      videosService.usedSlugs = { videoId: 'Variant-Title' }
+
       await service.import({
         id: 'mockId',
         hls: 'www.example.com',
         duration: 123.123,
         languageId: 529,
         videoId: 'videoId',
-        slug: 'Variant Title',
+        slug: 'variant-title',
         languageName: 'english',
         otherValues: 'some otherValue',
         someValue: 'otherValue'
       })
+
       expect(prismaService.videoVariant.upsert).toHaveBeenCalledWith({
         where: { id: 'mockId' },
         create: {
@@ -61,7 +58,7 @@ describe('ImporterVideoVariantsService', () => {
           hls: 'www.example.com',
           id: 'mockId',
           languageId: '529',
-          slug: 'video-slug/english',
+          slug: 'Variant-Title/english',
           videoId: 'videoId'
         },
         update: {
@@ -69,27 +66,81 @@ describe('ImporterVideoVariantsService', () => {
           hls: 'www.example.com',
           id: 'mockId',
           languageId: '529',
-          slug: 'video-slug/english',
+          slug: 'Variant-Title/english',
           videoId: 'videoId'
         }
       })
     })
 
+    it('should save many video variants', async () => {
+      videosService.ids = ['videoId']
+      videosService.usedSlugs = { videoId: 'Variant-Title' }
+
+      await service.importMany([
+        {
+          id: 'mockId',
+          hls: 'www.example.com',
+          duration: 123.123,
+          languageId: 529,
+          videoId: 'videoId',
+          slug: 'variant-title',
+          languageName: 'english',
+          otherValues: 'some otherValue',
+          someValue: 'otherValue'
+        },
+        {
+          id: 'mockId',
+          hls: 'www.example.com',
+          duration: 123.123,
+          languageId: 3804,
+          videoId: 'videoId',
+          slug: 'variant-title',
+          languageName: 'korean',
+          otherValues: 'some otherValue',
+          someValue: 'otherValue'
+        }
+      ])
+
+      expect(prismaService.videoVariant.createMany).toHaveBeenCalledWith({
+        data: [
+          {
+            id: 'mockId',
+            hls: 'www.example.com',
+            duration: 123,
+            languageId: '529',
+            slug: 'Variant-Title/english',
+            videoId: 'videoId'
+          },
+          {
+            id: 'mockId',
+            hls: 'www.example.com',
+            duration: 123,
+            languageId: '3804',
+            slug: 'Variant-Title/korean',
+            videoId: 'videoId'
+          }
+        ],
+        skipDuplicates: true
+      })
+    })
+
     it('should throw error if cannot find video for the video variant', async () => {
       videosService.ids = []
-      await expect(
+      videosService.usedSlugs = {}
+
+      expect(
         await service.import({
           id: 'mockId',
           hls: 'www.example.com',
           duration: 123.123,
           languageId: 529,
           videoId: 'videoId',
-          slug: 'Variant Title',
+          slug: 'Variant-Title',
           languageName: 'english',
           otherValues: 'some otherValue',
           someValue: 'otherValue'
         })
-      ).toBeNull()
+      ).toBeUndefined()
     })
 
     it('should throw error when row is invalid', async () => {
