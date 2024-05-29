@@ -17,11 +17,13 @@ import logo from '../../Header/assets/logo.svg'
 interface ResourceAppBarProps {
   selectedTab: string
   showBreadcrumb: boolean
+  setTestButtonClicked: (boolean) => void
 }
 
 export function ResourceAppBar({
   selectedTab,
-  showBreadcrumb
+  showBreadcrumb,
+  setTestButtonClicked
 }: ResourceAppBarProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   return (
@@ -53,7 +55,13 @@ export function ResourceAppBar({
             </NextLink>
             {showBreadcrumb && (
               <Breadcrumbs sx={{ marginLeft: '20px' }}>
-                <Link color="inherit" href="/" underline="none">
+                <Link
+                  color="inherit"
+                  onClick={() => setTestButtonClicked(false)}
+                  // onClick={() => console.log('clicking')}
+                  underline="none"
+                  style={{ cursor: 'pointer' }}
+                >
                   {selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)}
                 </Link>
               </Breadcrumbs>
