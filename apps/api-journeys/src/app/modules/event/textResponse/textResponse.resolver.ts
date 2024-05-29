@@ -65,11 +65,7 @@ export class TextResponseSubmissionEventResolver {
       })
     ])
 
-    await this.emailEventsService.sendAnalyticsEmail(
-      journeyId,
-      userId,
-      visitor.id
-    )
+    await this.emailEventsService.sendAnalyticsEmail(journeyId, visitor.id)
 
     return textResponseSubmissionEvent as TextResponseSubmissionEvent
   }

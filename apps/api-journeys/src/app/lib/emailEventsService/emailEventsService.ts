@@ -13,8 +13,7 @@ export class EmailEventsService {
 
   async sendAnalyticsEmail(
     journeyId: string,
-    visitorId: string,
-    userId: string
+    visitorId: string
   ): Promise<void> {
     const jobId = `visitor-event-${journeyId}-${visitorId}`
     const visitorEmailJob = await this.emailQueue.getJob(jobId)
@@ -26,8 +25,7 @@ export class EmailEventsService {
       'visitor-event',
       {
         journeyId,
-        visitorId,
-        userId
+        visitorId
       },
       { jobId, delay }
     )

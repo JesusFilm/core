@@ -20,7 +20,6 @@ const apollo = new ApolloClient({
 export interface EventsNotificationJob {
   journeyId: string
   visitorId: string
-  userId: string
 }
 
 export type ApiUsersJob = EventsNotificationJob

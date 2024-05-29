@@ -142,11 +142,7 @@ export class ChatOpenEventResolver {
       })
     )
 
-    await this.emailEventsService.sendAnalyticsEmail(
-      journeyId,
-      visitor.id,
-      userId
-    )
+    await this.emailEventsService.sendAnalyticsEmail(journeyId, visitor.id)
 
     const [chatOpenEvent] = await Promise.all(promises)
     return chatOpenEvent as ChatOpenEvent

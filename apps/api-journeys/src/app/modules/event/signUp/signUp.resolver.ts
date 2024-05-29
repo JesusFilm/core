@@ -77,11 +77,7 @@ export class SignUpSubmissionEventResolver {
       )
     }
 
-    await this.emailEventsService.sendAnalyticsEmail(
-      journeyId,
-      visitor.id,
-      userId
-    )
+    await this.emailEventsService.sendAnalyticsEmail(journeyId, visitor.id)
 
     const [signUpSubmissionEvent] = await Promise.all(promises)
     return signUpSubmissionEvent as SignUpSubmissionEvent
