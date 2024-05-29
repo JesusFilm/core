@@ -11,7 +11,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
-import { GET_JOURNEYS } from '../../../../../../apps/journeys-admin/src/libs/useJourneysQuery/useJourneysQuery'
+import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 
 import { TemplateSections } from './TemplateSections'
 

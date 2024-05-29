@@ -12,7 +12,7 @@ import { SwiperOptions } from 'swiper/types'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { Role } from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
-import { useJourneysQuery } from '../../../../../../apps/journeys-admin/src/libs/useJourneysQuery'
+import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { useUserRoleQuery } from '../../../../../../apps/journeys-admin/src/libs/useUserRoleQuery'
 import { StrategySection } from '../../../../../../apps/journeys-admin/src/components/StrategySection'
 import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'

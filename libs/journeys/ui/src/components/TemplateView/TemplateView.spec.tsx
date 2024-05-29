@@ -9,7 +9,7 @@ import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag
 } from '../../../../../../apps/journeys-admin/__generated__/JourneyFields'
-import { GET_JOURNEYS } from '../../../../../../apps/journeys-admin/src/libs/useJourneysQuery/useJourneysQuery'
+import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '../../../../../../apps/journeys-admin/src/libs/useTagsQuery/useTagsQuery'
 import { defaultJourney } from '../../../../../../apps/journeys-admin/src/components/Editor/data'
 

@@ -21,7 +21,7 @@ import {
   GET_JOURNEY,
   useJourneyQuery
 } from '../../src/libs/useJourneyQuery/useJourneyQuery'
-import { GET_JOURNEYS } from '../../src/libs/useJourneysQuery/useJourneysQuery'
+import { GET_JOURNEYS } from '../../../../libs/journeys/ui/src/libs/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '../../src/libs/useTagsQuery/useTagsQuery'
 
 function TemplateDetailsPage(): ReactElement {
