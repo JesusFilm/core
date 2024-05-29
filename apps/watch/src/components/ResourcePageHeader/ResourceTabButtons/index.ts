@@ -1,0 +1,1 @@
+export { ResourceTabButtons } from './ResourceTabButtons'

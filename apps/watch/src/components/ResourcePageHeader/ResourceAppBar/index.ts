@@ -1,0 +1,1 @@
+export { ResourceAppBar } from './ResourceAppBar'
