@@ -4,13 +4,11 @@ import { Module } from '@nestjs/common'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
-import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
 import { PrismaService } from '../../lib/prisma.service'
-import { BlockService } from '../block/block.service'
-import { ChatButtonResolver } from '../chatButton/chatButton.resolver'
-import { PlausibleService } from '../plausible/plausible.service'
 
-import { JourneyResolver } from './journey.resolver'
+import { PlausibleConsumer } from './plausible.consumer'
+import { PlausibleResolver } from './plausible.resolver'
+import { PlausibleService } from './plausible.service'
 
 @Module({
   imports: [
@@ -18,12 +16,10 @@ import { JourneyResolver } from './journey.resolver'
     BullModule.registerQueue({ name: 'api-journeys-plausible' })
   ],
   providers: [
-    JourneyResolver,
-    BlockService,
-    DateTimeScalar,
-    ChatButtonResolver,
+    PlausibleResolver,
+    PlausibleService,
     PrismaService,
-    PlausibleService
+    PlausibleConsumer
   ]
 })
-export class JourneyModule {}
+export class PlausibleModule {}
