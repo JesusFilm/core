@@ -5,7 +5,9 @@ import { Job } from 'bullmq'
 
 import { EmailService } from '@core/nest/common/email/emailService'
 
+import { UserJourneyRole } from '../../../__generated__/graphql'
 import { VisitorInteraction } from '../../../emails/templates/VisitorInteraction'
+import { PrismaService } from '../../../lib/prisma.service'
 
 const apollo = new ApolloClient({
   uri: process.env.GATEWAY_URL,
@@ -25,7 +27,10 @@ export type ApiUsersJob = EventsNotificationJob
 
 @Processor('api-journeys-events-email')
 export class EmailConsumer extends WorkerHost {
-  constructor(private readonly emailService: EmailService) {
+  constructor(
+    private readonly emailService: EmailService,
+    private readonly prismaService: PrismaService
+  ) {
     super()
   }
 
@@ -38,25 +43,36 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async sendEventsNotification(job: Job<EventsNotificationJob>): Promise<void> {
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id: job.data.journeyId },
+      include: {
+        userJourneys: true
+      }
+    })
+
+    if (journey == null) return
+
+    const recipientUserId = journey?.userJourneys?.find(
+      (userJourney) => userJourney.role === UserJourneyRole.owner
+    )?.userId
+
     const { data } = await apollo.query({
       query: gql`
         query User($userId: ID!) {
           user(id: $userId) {
             id
-            email
             firstName
+            email
             imageUrl
           }
         }
       `,
-      variables: { userId: job.data.userId }
+      variables: { userId: recipientUserId }
     })
-
-    console.log('I got called')
 
     const text = render(
       VisitorInteraction({
-        journeyId: job.data.journeyId,
+        title: journey.title,
         visitorId: job.data.visitorId
       }),
       {
@@ -66,7 +82,7 @@ export class EmailConsumer extends WorkerHost {
 
     const html = render(
       VisitorInteraction({
-        journeyId: job.data.journeyId,
+        title: journey.title,
         visitorId: job.data.visitorId
       }),
       {
@@ -76,7 +92,7 @@ export class EmailConsumer extends WorkerHost {
 
     await this.emailService.sendEmail({
       to: data.user.email,
-      subject: `You have a new event notification`,
+      subject: `A visitor has interacted with your journey`,
       text,
       html
     })

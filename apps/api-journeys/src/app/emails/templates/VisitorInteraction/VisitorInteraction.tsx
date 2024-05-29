@@ -18,7 +18,7 @@ import {
 } from '@core/nest/common/email/components'
 
 interface VisitorInteractionProps {
-  journeyId: string
+  title: string
   visitorId: string
   story?: boolean
 }
@@ -28,7 +28,7 @@ interface WrapperProps {
 }
 
 export const VisitorInteraction = ({
-  journeyId,
+  title,
   visitorId,
   story = false
 }: VisitorInteractionProps): ReactElement => {
@@ -51,7 +51,7 @@ export const VisitorInteraction = ({
             <Section align="center">
               <Row className="px-[28px]">
                 <Text>
-                  {visitorId} have interacted with your journey: {journeyId}
+                  {visitorId} have interacted with your journey: {title}
                 </Text>
               </Row>
             </Section>

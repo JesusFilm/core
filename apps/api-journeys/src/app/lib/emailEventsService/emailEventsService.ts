@@ -29,7 +29,7 @@ export class EmailEventsService {
         visitorId,
         userId
       },
-      { jobId }
+      { jobId, delay }
     )
   }
 }
