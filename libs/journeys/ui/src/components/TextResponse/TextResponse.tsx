@@ -4,14 +4,12 @@ import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
-import { handleAction } from '../../libs/action'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
@@ -46,8 +44,7 @@ export const TextResponse = ({
   uuid = uuidv4,
   label,
   hint,
-  minRows,
-  action
+  minRows
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
 
@@ -61,7 +58,6 @@ export const TextResponse = ({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const router = useRouter()
   const [textResponseSubmissionEventCreate, { loading }] =
     useMutation<TextResponseSubmissionEventCreate>(
       TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
@@ -130,9 +126,7 @@ export const TextResponse = ({
                 onChange={handleChange}
                 onBlurCapture={(e) => {
                   handleBlur(e)
-                  void onSubmitHandler(values).then(() => {
-                    handleAction(router, action)
-                  })
+                  void onSubmitHandler(values)
                 }}
                 inputProps={{
                   maxLength: 1000,
