@@ -26,7 +26,7 @@ variable "internal_ecs_config" {
   })
 }
 
-variable "external_ecs_config" {
+variable "public_ecs_config" {
   type = object({
     vpc_id       = string
     is_public    = bool

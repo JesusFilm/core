@@ -26,7 +26,7 @@ variable "service_config" {
 
     alb_listener = object({
       alb_arn         = string
-      port            = number
+      port            = optional(number)
       protocol        = string
       certificate_arn = optional(string)
       dns_name        = optional(string)
