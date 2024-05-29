@@ -2,11 +2,13 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
+import { EventsNotificationJob } from '../../modules/event/email/email.consumer'
+
 @Injectable()
 export class EmailEventsService {
   constructor(
-    @InjectQueue('api-journeys-analytics-activity')
-    private readonly emailQueue: Queue
+    @InjectQueue('api-journeys-events-email')
+    private readonly emailQueue: Queue<EventsNotificationJob>
   ) {}
 
   async sendAnalyticsEmail(
@@ -17,16 +19,15 @@ export class EmailEventsService {
     const visitorEmailJob = await this.emailQueue.getJob(jobId)
     const delay = 5 * 60 * 1000
 
-    if (visitorEmailJob != null) {
-      await this.emailQueue.remove(jobId)
-    } else {
-      await this.emailQueue.add(
-        'visitor-event',
-        {
-          visitorId
-        },
-        { delay, jobId }
-      )
-    }
+    if (visitorEmailJob != null) await this.emailQueue.remove(jobId)
+
+    await this.emailQueue.add(
+      'visitor-event',
+      {
+        visitorId,
+        journeyId
+      },
+      { jobId }
+    )
   }
 }

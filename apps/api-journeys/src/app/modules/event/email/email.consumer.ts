@@ -1,12 +1,18 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq'
+import { Job } from 'bullmq'
 
 import { EmailService } from '@core/nest/common/email/emailService'
 
 import { PrismaService } from '../../../lib/prisma.service'
 
-// create the type for the job data
+export interface EventsNotificationJob {
+  visitorId: string
+  journeyId
+}
 
-@Processor('api-journeys-analytics-activity')
+export type ApiUsersJob = EventsNotificationJob
+
+@Processor('api-journeys-events-email')
 export class EmailConsumer extends WorkerHost {
   constructor(
     private readonly emailService: EmailService,
@@ -15,16 +21,15 @@ export class EmailConsumer extends WorkerHost {
     super()
   }
 
-  async process(job): Promise<void> {
-    console.log('job', job.name)
+  async process(job: Job<ApiUsersJob>): Promise<void> {
     switch (job.name) {
-      case '':
-        await this.sendAnalyticsNotification(job)
+      case 'visitor-event':
+        await this.sendEventsNotification(job)
         break
     }
   }
 
-  async sendAnalyticsNotification(job): Promise<void> {
+  async sendEventsNotification(job: Job<EventsNotificationJob>): Promise<void> {
     // get the user to send the email to
     //
   }

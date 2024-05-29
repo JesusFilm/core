@@ -1,6 +1,8 @@
 import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
 
+import { EmailService } from '@core/nest/common/email/emailService'
+
 import { EmailEventsService } from '../../lib/emailEventsService'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
@@ -10,6 +12,7 @@ import {
   ButtonClickEventResolver,
   ChatOpenEventResolver
 } from './button/button.resolver'
+import { EmailConsumer } from './email/email.consumer'
 import { EventResolver } from './event.resolver'
 import { EventService } from './event.service'
 import { JourneyViewEventResolver } from './journey/journey.resolver'
@@ -32,15 +35,15 @@ import {
 } from './video/video.resolver'
 
 @Module({
-  imports: [
-    BullModule.registerQueue({ name: 'api-journeys-analytics-activity' })
-  ],
+  imports: [BullModule.registerQueue({ name: 'api-journeys-events-email' })],
   providers: [
     BlockService,
     VisitorService,
     EventService,
     EventResolver,
     EmailEventsService,
+    EmailConsumer,
+    EmailService,
     ButtonClickEventResolver,
     ChatOpenEventResolver,
     JourneyViewEventResolver,
