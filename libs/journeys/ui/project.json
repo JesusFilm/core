@@ -6,6 +6,10 @@
   "tags": [],
   "implicitDependencies": ["locales"],
   "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {

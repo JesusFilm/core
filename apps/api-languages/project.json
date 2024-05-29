@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-languages/src",
   "projectType": "application",
-  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
@@ -51,6 +50,10 @@
       "options": {
         "command": "npm run ts-node tools/scripts/generate-typings.ts api-languages --transpileOnly"
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -137,5 +140,6 @@
         "command": "codecov -f coverage/apps/api-languages/cobertura-coverage.xml -F apps.api-languages"
       }
     }
-  }
+  },
+  "tags": []
 }

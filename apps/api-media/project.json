@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-media/src",
   "projectType": "application",
-  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
@@ -56,6 +55,10 @@
       "options": {
         "command": "npm run ts-node tools/scripts/generate-typings.ts api-media --transpileOnly"
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -142,5 +145,6 @@
         "command": "codecov -f coverage/apps/api-media/cobertura-coverage.xml -F apps.api-media"
       }
     }
-  }
+  },
+  "tags": []
 }
