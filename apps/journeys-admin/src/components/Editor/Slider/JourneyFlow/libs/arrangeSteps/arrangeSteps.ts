@@ -8,7 +8,7 @@ import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
   ACTION_BUTTON_HEIGHT,
-  LINK_NODE_STEP_GAP,
+  LINK_NODE_WIDTH_GAP_RIGHT,
   STEP_NODE_CARD_HEIGHT,
   STEP_NODE_CARD_WIDTH,
   STEP_NODE_HEIGHT_GAP,
@@ -80,8 +80,8 @@ export function arrangeSteps(steps: TreeStepBlock[]): PositionMap {
   blocks.reduce((prevActionBlock, column, index) => {
     const gap = hasActionBlocks
       ? prevActionBlock
-        ? LINK_NODE_STEP_GAP
-        : LINK_NODE_STEP_GAP / 2
+        ? LINK_NODE_WIDTH_GAP_RIGHT
+        : LINK_NODE_WIDTH_GAP_RIGHT / 2
       : 0
 
     const stepX = index * (STEP_NODE_CARD_WIDTH + STEP_NODE_WIDTH_GAP + gap)

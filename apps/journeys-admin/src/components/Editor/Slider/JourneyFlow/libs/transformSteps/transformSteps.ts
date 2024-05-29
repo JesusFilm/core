@@ -9,8 +9,8 @@ import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__gener
 import { adminLight } from '../../../../../ThemeProvider/admin/theme'
 import {
   ACTION_BUTTON_HEIGHT,
-  LINK_NODE_GAP,
-  LINK_NODE_WIDTH,
+  LINK_NODE_HEIGHT_GAP,
+  LINK_NODE_WIDTH_GAP_LEFT,
   STEP_NODE_CARD_HEIGHT
 } from '../../nodes/StepBlockNode/libs/sizes'
 import { PositionMap } from '../arrangeSteps'
@@ -124,11 +124,11 @@ export function transformSteps(
       })
 
       const position = {
-        x: LINK_NODE_WIDTH,
+        x: LINK_NODE_WIDTH_GAP_LEFT,
         y:
           STEP_NODE_CARD_HEIGHT +
           ACTION_BUTTON_HEIGHT * (blockIndex + 1) +
-          (priorAction ? LINK_NODE_GAP * actionCount : 0)
+          (priorAction ? LINK_NODE_HEIGHT_GAP * actionCount : 0)
       }
 
       nodes.push({
