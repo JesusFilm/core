@@ -53,7 +53,6 @@ const nextConfig = {
       }
     ]
   },
-
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
