@@ -71,7 +71,7 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
   protected async save(videoVariant: VideoVariants): Promise<void> {
     const transformedVideoVariant = this.transform(videoVariant)
     if (transformedVideoVariant == null) return
-    this.ids.push(videoVariant.id as string)
+    this.ids.push(videoVariant.id)
     await this.prismaService.videoVariant.upsert({
       where: {
         id: videoVariant.id
