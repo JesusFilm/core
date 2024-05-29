@@ -15,7 +15,7 @@ import {
 import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { useTeam } from '../../src/components/Team/TeamProvider'
-import { TemplateView } from '../../../../libs/journeys/ui/src/components/TemplateView'
+import { TemplateView } from '@core/journeys/ui/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import {
   GET_JOURNEY,
