@@ -1,16 +1,14 @@
 schema
   @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/join/v0.4", for: EXECUTION)
+  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
 {
   query: Query
   mutation: Mutation
 }
 
-directive @join__directive(graphs: [join__Graph!], name: String!, args: join__DirectiveArguments) repeatable on SCHEMA | OBJECT | INTERFACE | FIELD_DEFINITION
-
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
 
-directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean, overrideLabel: String) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
@@ -34,7 +32,6 @@ input AddResourceFromGoogleDriveInput
 {
   accessToken: String!
   fileId: String!
-  nexusId: String!
 }
 
 type Batch
@@ -334,7 +331,6 @@ type Channel
   @join__type(graph: NEXUS, key: "id")
 {
   id: ID!
-  nexusId: String!
   name: String!
   platform: String
   connected: Boolean
@@ -346,7 +342,6 @@ type Channel
 input ChannelCreateInput
   @join__type(graph: NEXUS)
 {
-  nexusId: String!
   name: String!
   platform: String!
 }
@@ -356,7 +351,6 @@ input ChannelFilter
 {
   ids: [ID!]
   name: String
-  nexusId: String
   limit: Int
   connected: Boolean
   status: ChannelStatus
@@ -365,6 +359,7 @@ input ChannelFilter
 enum ChannelStatus
   @join__type(graph: NEXUS)
 {
+  created @join__enumValue(graph: NEXUS)
   deleted @join__enumValue(graph: NEXUS)
   published @join__enumValue(graph: NEXUS)
 }
@@ -897,8 +892,6 @@ input ImageBlockUpdateInput
   width: Int
   height: Int
 }
-
-scalar join__DirectiveArguments
 
 scalar join__FieldSet
 
@@ -1633,6 +1626,49 @@ input NavigateToBlockActionInput
   blockId: String!
 }
 
+type Nexus
+  @join__type(graph: NEXUS, key: "id")
+{
+  id: ID!
+  name: String!
+  description: String
+  createdAt: DateTime!
+  deletedAt: DateTime
+  status: NexusStatus!
+}
+
+input NexusCreateInput
+  @join__type(graph: NEXUS)
+{
+  name: String!
+  description: String
+}
+
+input NexusFilter
+  @join__type(graph: NEXUS)
+{
+  ids: [ID!]
+  name: String
+  description: String
+  createdAt: DateTime
+  limit: Int
+  orderByRecent: Boolean
+}
+
+enum NexusStatus
+  @join__type(graph: NEXUS)
+{
+  deleted @join__enumValue(graph: NEXUS)
+  published @join__enumValue(graph: NEXUS)
+}
+
+input NexusUpdateInput
+  @join__type(graph: NEXUS)
+{
+  name: String
+  description: String
+}
+
 type OperatingSystem
   @join__type(graph: JOURNEYS)
 {
@@ -1870,8 +1906,6 @@ type Resource
   @join__type(graph: NEXUS, key: "id")
 {
   id: ID!
-  nexusId: String!
-  nexus: Nexus!
   name: String!
   status: ResourceStatus!
   createdAt: DateTime!
@@ -1887,7 +1921,6 @@ type Resource
 input ResourceCreateInput
   @join__type(graph: NEXUS)
 {
-  nexusId: String!
   name: String!
 }
 
@@ -1896,7 +1929,6 @@ input ResourceFilter
 {
   ids: [ID!]
   name: String
-  nexusId: String
   status: ResourceStatus
   limit: Int
 }
@@ -1906,14 +1938,12 @@ input ResourceFromGoogleDriveInput
 {
   fileIds: [String!]!
   authCode: String!
-  nexusId: String!
 }
 
 input ResourceFromSpreadsheetInput
   @join__type(graph: NEXUS)
 {
   file: Upload
-  nexusId: String!
 }
 
 type ResourceLocalization
