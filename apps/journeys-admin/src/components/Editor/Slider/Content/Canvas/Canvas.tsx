@@ -1,0 +1,309 @@
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import { useRouter } from 'next/router'
+import { ReactElement, useEffect, useRef, useState } from 'react'
+import { CSSTransition, TransitionGroup } from 'react-transition-group'
+
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import {
+  ActiveCanvasDetailsDrawer,
+  ActiveFab,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName } from '@core/shared/ui/themes'
+
+import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
+import { FramePortal } from '../../../../FramePortal'
+import { Fab } from '../../../Fab'
+
+import { CardWrapper } from './CardWrapper'
+import { FormWrapper } from './FormWrapper'
+import { InlineEditWrapper } from './InlineEditWrapper'
+import { SelectableWrapper } from './SelectableWrapper'
+import {
+  CARD_HEIGHT,
+  CARD_WIDTH,
+  calculateScale,
+  calculateScaledHeight,
+  calculateScaledMargin
+} from './utils/calculateDimensions'
+import { VideoWrapper } from './VideoWrapper'
+
+export function Canvas(): ReactElement {
+  const frameRef = useRef<HTMLIFrameElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  // this ref handles if the mouseDown event of the onClick event's target is the card component
+  const selectionRef = useRef(false)
+  const {
+    state: {
+      selectedStep,
+      selectedBlock,
+      activeSlide,
+      activeCanvasDetailsDrawer
+    },
+    dispatch
+  } = useEditor()
+  const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
+  const router = useRouter()
+
+  const initialScale =
+    typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
+  const [scale, setScale] = useState(initialScale)
+
+  useEffect(() => {
+    const handleResize = (): void => setScale(calculateScale(containerRef))
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  function handleFooterClick(): void {
+    dispatch({
+      type: 'SetActiveCanvasDetailsDrawerAction',
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
+    })
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Content
+    })
+    dispatch({
+      type: 'SetActiveFabAction',
+      activeFab: ActiveFab.Add
+    })
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      selectedAttributeId: undefined
+    })
+    const param = 'step-footer'
+    void router.push({ query: { ...router.query, param } }, undefined, {
+      shallow: true
+    })
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed(param)
+    })
+  }
+
+  function handleSelectCard(): void {
+    const iframeDocument =
+      frameRef.current?.contentDocument ??
+      frameRef.current?.contentWindow?.document
+
+    const selectedText = iframeDocument?.getSelection()?.toString()
+
+    // if user is copying from typog blocks or text, keep focus on typog blocks
+    if (selectedText != null && selectedText !== '' && !selectionRef.current) {
+      return
+    }
+    // Prevent losing focus on empty input
+    if (
+      selectedBlock?.__typename === 'TypographyBlock' &&
+      selectedBlock.content === ''
+    ) {
+      resetClickOrigin()
+      return
+    }
+    dispatch({
+      type: 'SetSelectedBlockAction',
+      selectedBlock: selectedStep
+    })
+    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
+    })
+    resetClickOrigin()
+  }
+
+  function resetClickOrigin(): void {
+    selectionRef.current = false
+  }
+
+  const theme =
+    selectedStep != null ? getStepTheme(selectedStep, journey) : null
+
+  return (
+    <Stack
+      ref={containerRef}
+      className="EditorCanvas"
+      onClick={handleSelectCard}
+      onMouseDown={() => {
+        // click target was the card component and not it's children blocks
+        selectionRef.current = true
+      }}
+      data-testid="EditorCanvas"
+      direction="row"
+      alignItems="flex-end"
+      sx={{
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexGrow: { xs: 1, sm: activeSlide === ActiveSlide.Content ? 1 : 0 },
+        transition: (theme) =>
+          theme.transitions.create('flex-grow', { duration: 300 })
+      }}
+    >
+      {selectedStep != null && theme != null && (
+        <Stack
+          direction="column"
+          alignItems={{ xs: 'center', sm: 'flex-end' }}
+          gap={1.5}
+          sx={{
+            flexGrow: { xs: 1, sm: 0 },
+            height: { xs: '100%', sm: 'auto' },
+            pb: { xs: 5, sm: 0 },
+            px: { xs: 3, sm: 0 },
+            justifyContent: 'center'
+          }}
+          data-testid="stack here"
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`
+            }}
+          >
+            <Box
+              data-testId="CanvasContainer"
+              sx={{
+                position: 'relative',
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
+                transform: `scale(${scale})`,
+                margin: `calc(${calculateScaledMargin(CARD_HEIGHT, scale)} + ${
+                  scale < 0.65 ? '20px' : '0px'
+                }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
+                borderRadius: 6,
+                transition: (theme) =>
+                  theme.transitions.create('border-color', {
+                    duration: 200,
+                    delay: 100,
+                    easing: 'ease-out'
+                  }),
+                border: (theme) =>
+                  selectedStep.id === selectedBlock?.id
+                    ? `2px solid ${theme.palette.primary.main}`
+                    : `2px solid ${theme.palette.background.default}`
+              }}
+            >
+              <FramePortal
+                width="100%"
+                height="100%"
+                dir={rtl ? 'rtl' : 'ltr'}
+                // frameRef assists to see if user is copying text from typog blocks
+                ref={frameRef}
+              >
+                <ThemeProvider {...theme} rtl={rtl} locale={locale}>
+                  <TransitionGroup
+                    component={Box}
+                    sx={{
+                      backgroundColor: 'background.default',
+                      borderRadius: 5,
+                      '& .card-enter': {
+                        zIndex: 1,
+                        opacity: 0
+                      },
+                      '& .card-enter-active': {
+                        zIndex: 1,
+                        opacity: 1
+                      },
+                      '& .card-enter-done': {
+                        zIndex: 1,
+                        opacity: 1
+                      },
+                      '& .card-exit': {
+                        zIndex: 0,
+                        opacity: 1
+                      },
+                      '& .card-exit-active': {
+                        opacity: 1,
+                        zIndex: 0
+                      },
+                      position: 'relative',
+                      width: 'calc(100% - 8px)',
+                      height: 'calc(100% - 8px)',
+                      m: '4px'
+                    }}
+                  >
+                    <CSSTransition
+                      key={selectedStep.id}
+                      timeout={300}
+                      classNames="card"
+                    >
+                      <Stack
+                        justifyContent="center"
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          bottom: 0,
+                          left: 0,
+                          transition: (theme) =>
+                            theme.transitions.create('opacity')
+                        }}
+                        data-testid={`step-${selectedStep.id}`}
+                      >
+                        <BlockRenderer
+                          block={selectedStep}
+                          wrappers={{
+                            Wrapper: SelectableWrapper,
+                            TypographyWrapper: InlineEditWrapper,
+                            ButtonWrapper: InlineEditWrapper,
+                            RadioQuestionWrapper: InlineEditWrapper,
+                            RadioOptionWrapper: InlineEditWrapper,
+                            TextResponseWrapper: InlineEditWrapper,
+                            SignUpWrapper: InlineEditWrapper,
+                            VideoWrapper,
+                            CardWrapper,
+                            FormWrapper
+                          }}
+                        />
+                        <ThemeProvider
+                          themeName={ThemeName.journeyUi}
+                          themeMode={theme.themeMode}
+                          rtl={rtl}
+                          locale={locale}
+                          nested
+                        >
+                          <StepFooter
+                            sx={{
+                              outline:
+                                activeCanvasDetailsDrawer ===
+                                ActiveCanvasDetailsDrawer.Footer
+                                  ? '2px solid #C52D3A'
+                                  : 'none',
+                              outlineOffset: -4,
+                              borderRadius: 5,
+                              cursor: 'pointer'
+                            }}
+                            onFooterClick={handleFooterClick}
+                          />
+                        </ThemeProvider>
+                      </Stack>
+                    </CSSTransition>
+                  </TransitionGroup>
+                </ThemeProvider>
+              </FramePortal>
+            </Box>
+            <Box
+              sx={{
+                mt: 4,
+                alignSelf: 'end',
+                transform: `scale(${scale})`
+              }}
+            >
+              <Fab variant="canvas" />
+            </Box>
+          </Box>
+        </Stack>
+      )}
+    </Stack>
+  )
+}

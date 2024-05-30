@@ -93,11 +93,7 @@ const block: TreeBlock<Block> = {
           size: ButtonSize.large,
           startIconId: 'icon',
           endIconId: null,
-          action: {
-            __typename: 'NavigateAction',
-            parentBlockId: 'button0.id',
-            gtmEventName: 'gtmEventName'
-          },
+          action: null,
           children: [
             {
               id: 'icon',

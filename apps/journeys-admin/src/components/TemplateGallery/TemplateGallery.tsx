@@ -34,20 +34,27 @@ export function TemplateGallery(): ReactElement {
       ...newSelectedTagIds
     ]
     setSelectedTagIds(tagIds)
-    router.query.tagIds = tagIds
-    void router.push(router)
+    void router.push({ query: { ...router.query, tagIds } }, undefined, {
+      shallow: true
+    })
   }
 
   function handleTagIdChange(selectedTagId: string): void {
     setSelectedTagIds([selectedTagId])
-    router.query.tagIds = selectedTagId
-    void router.push(router)
+    void router.push(
+      { query: { ...router.query, tagIds: selectedTagId } },
+      undefined,
+      { shallow: true }
+    )
   }
 
   function handleLanguageIdsChange(values: string[]): void {
     setSelectedLanguageIds(values)
-    router.query.languageIds = values
-    void router.push(router)
+    void router.push(
+      { query: { ...router.query, languageIds: values } },
+      undefined,
+      { shallow: true }
+    )
   }
 
   return (
