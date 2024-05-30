@@ -45,6 +45,7 @@
     "ghcr.io/devcontainers/features/node:1": {
       "nodeGypDependencies": true,
       "version": "lts"
-    }
+    },
+    "ghcr.io/lumenpink/devcontainer-features/bun:0": {}
   }
 }
