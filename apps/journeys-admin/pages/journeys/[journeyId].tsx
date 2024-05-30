@@ -1,16 +1,11 @@
 import { gql, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
 import {
@@ -21,9 +16,6 @@ import { GetCustomDomains } from '../../__generated__/GetCustomDomains'
 import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
-import { ControlPanel } from '../../src/components/Editor/ControlPanel'
-import { Drawer } from '../../src/components/Editor/Drawer'
-import { EditToolbar } from '../../src/components/Editor/EditToolbar'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_CUSTOM_DOMAINS } from '../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
 
@@ -47,7 +39,6 @@ export const USER_JOURNEY_OPEN = gql`
 function JourneyEditPage({ status }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const user = useUser()
   const { data } = useQuery<GetAdminJourney, GetAdminJourneyVariables>(
     GET_ADMIN_JOURNEY,
     {
@@ -73,15 +64,8 @@ function JourneyEditPage({ status }): ReactElement {
         <Editor
           journey={data?.journey ?? undefined}
           selectedStepId={router.query.stepId as string | undefined}
-          view={router.query.view as ActiveJourneyEditContent | undefined}
-          PageWrapperProps={{
-            title: data?.journey?.title ?? t('Edit Journey'),
-            backHref: '/',
-            mainHeaderChildren: <EditToolbar />,
-            mainBodyPadding: false,
-            bottomPanelChildren: <ControlPanel />,
-            customSidePanel: <Drawer />,
-            user
+          initialState={{
+            activeContent: router.query.view as ActiveContent | undefined
           }}
         />
       )}

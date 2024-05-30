@@ -16,36 +16,11 @@ export interface RadioQuestionBlockCreate_radioQuestionBlockCreate {
   parentOrder: number | null;
 }
 
-export interface RadioQuestionBlockCreate_radioOption1_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
-}
-
-export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption1_action_LinkAction {
@@ -62,7 +37,7 @@ export interface RadioQuestionBlockCreate_radioOption1_action_EmailAction {
   email: string;
 }
 
-export type RadioQuestionBlockCreate_radioOption1_action = RadioQuestionBlockCreate_radioOption1_action_NavigateAction | RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyAction | RadioQuestionBlockCreate_radioOption1_action_LinkAction | RadioQuestionBlockCreate_radioOption1_action_EmailAction;
+export type RadioQuestionBlockCreate_radioOption1_action = RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption1_action_LinkAction | RadioQuestionBlockCreate_radioOption1_action_EmailAction;
 
 export interface RadioQuestionBlockCreate_radioOption1 {
   __typename: "RadioOptionBlock";
@@ -73,36 +48,11 @@ export interface RadioQuestionBlockCreate_radioOption1 {
   action: RadioQuestionBlockCreate_radioOption1_action | null;
 }
 
-export interface RadioQuestionBlockCreate_radioOption2_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
-}
-
-export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_LinkAction {
@@ -119,7 +69,7 @@ export interface RadioQuestionBlockCreate_radioOption2_action_EmailAction {
   email: string;
 }
 
-export type RadioQuestionBlockCreate_radioOption2_action = RadioQuestionBlockCreate_radioOption2_action_NavigateAction | RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyAction | RadioQuestionBlockCreate_radioOption2_action_LinkAction | RadioQuestionBlockCreate_radioOption2_action_EmailAction;
+export type RadioQuestionBlockCreate_radioOption2_action = RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption2_action_LinkAction | RadioQuestionBlockCreate_radioOption2_action_EmailAction;
 
 export interface RadioQuestionBlockCreate_radioOption2 {
   __typename: "RadioOptionBlock";

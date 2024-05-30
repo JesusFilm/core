@@ -51,11 +51,7 @@ const textResponseProps: ComponentProps<typeof TextResponse> = {
   minRows: null,
   submitIconId: null,
   submitLabel: null,
-  action: {
-    __typename: 'NavigateAction',
-    parentBlockId: 'textResponseBlockId1',
-    gtmEventName: 'gtmEventName'
-  },
+  action: null,
   children: []
 }
 

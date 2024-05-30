@@ -170,12 +170,7 @@ export class VideoBlockResolver {
           coverBlockParent:
             input.isCover === true && input.parentBlockId != null
               ? { connect: { id: input.parentBlockId } }
-              : undefined,
-          action: {
-            create: {
-              gtmEventName: 'NavigateAction'
-            }
-          }
+              : undefined
         },
         include: {
           action: true,

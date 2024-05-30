@@ -1,1 +1,0 @@
-export { SocialShareAppearance } from './SocialShareAppearance'

@@ -172,13 +172,13 @@ jobs:
           PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
-      - uses: actions/upload-artifact@v4
+          EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
+      - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: ${{ matrix.app }}-playwright-report
           path: |
             playwright-report/
-            test-results/
           retention-days: 30
   deploy-status:
     runs-on: ubuntu-latest
