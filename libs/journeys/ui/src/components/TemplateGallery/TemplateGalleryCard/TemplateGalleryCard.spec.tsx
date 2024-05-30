@@ -1,11 +1,11 @@
 import { render } from '@testing-library/react'
 
-import { GetJourneys_journeys as Journey } from '../../../../../../../apps/journeys-admin/__generated__/GetJourneys'
+import { GetJourneys_journeys as Journey } from '../../../libs/useJourneysQuery/__generated__/GetJourneys'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../../../../apps/journeys-admin/__generated__/globalTypes'
+} from '../../../../__generated__/globalTypes'
 
 import { TemplateGalleryCard } from '.'
 

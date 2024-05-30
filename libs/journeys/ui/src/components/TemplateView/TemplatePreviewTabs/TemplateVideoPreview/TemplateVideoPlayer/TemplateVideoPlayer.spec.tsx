@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 
-import { VideoBlockSource } from '../../../../../../../../../apps/journeys-admin/__generated__/globalTypes'
+import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 
 import { TemplateVideoPlayer } from './TemplateVideoPlayer'
 

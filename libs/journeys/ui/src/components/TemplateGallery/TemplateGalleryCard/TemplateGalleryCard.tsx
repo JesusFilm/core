@@ -11,7 +11,7 @@ import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { GetJourneys_journeys as Journey } from '../../../../../../../apps/journeys-admin/__generated__/GetJourneys'
+import { GetJourneys_journeys as Journey } from '../../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { abbreviateLanguageName } from '../../../../../../../apps/journeys-admin/src/libs/abbreviateLanguageName'
 import { useRouter } from 'next/router'
 

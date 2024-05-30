@@ -10,8 +10,8 @@ import { SwiperOptions } from 'swiper/types'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../apps/journeys-admin/__generated__/GetJourney'
-import { VideoBlockSource } from '../../../../../../../../apps/journeys-admin/__generated__/globalTypes'
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 
 interface TemplateVideoPreviewProps {
   videoBlocks: Array<TreeBlock<VideoBlock>>

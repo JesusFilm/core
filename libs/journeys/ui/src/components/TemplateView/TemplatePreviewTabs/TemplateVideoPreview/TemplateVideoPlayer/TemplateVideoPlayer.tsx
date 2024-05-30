@@ -3,7 +3,7 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-import { VideoBlockSource } from '../../../../../../../../../apps/journeys-admin/__generated__/globalTypes'
+import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 
 interface TemplateVideoPreviewItemProps {
   id: string

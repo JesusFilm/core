@@ -7,7 +7,7 @@ import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../../../../apps/journeys-admin/__generated__/globalTypes'
+} from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../apps/journeys-admin/src/libs/storybook'
 
 import { TemplateGalleryCard } from '.'

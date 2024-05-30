@@ -8,7 +8,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
-import { GetJourneys_journeys as Journey } from '../../../../../../apps/journeys-admin/__generated__/GetJourneys'
+import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'
 import { TemplateGalleryCard } from '../TemplateGallery/TemplateGalleryCard'

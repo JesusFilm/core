@@ -5,7 +5,7 @@ import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../../../apps/journeys-admin/__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { simpleComponentConfig } from '../../../../../../../../apps/journeys-admin/src/libs/storybook'
 import { defaultJourney } from '../../../../../../../../apps/journeys-admin/src/components/Editor/data'
 

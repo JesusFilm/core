@@ -5,15 +5,15 @@ import {
   GetJourneysVariables,
   GetJourneys_journeys as Journey,
   GetJourneys_journeys_tags as Tag
-} from '../../../../../../apps/journeys-admin/__generated__/GetJourneys'
+} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { GetLanguages } from '../../../../../../apps/journeys-admin/__generated__/GetLanguages'
 import { GetTags } from '../../../../../../apps/journeys-admin/__generated__/GetTags'
+import { Service } from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
 import {
   JourneyStatus,
-  Service,
   ThemeMode,
   ThemeName
-} from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
+} from '../../../__generated__/globalTypes'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 import { GET_LANGUAGES } from '../../../../../../apps/journeys-admin/src/libs/useLanguagesQuery'
 import { GET_TAGS } from '../../../../../../apps/journeys-admin/src/libs/useTagsQuery/useTagsQuery'

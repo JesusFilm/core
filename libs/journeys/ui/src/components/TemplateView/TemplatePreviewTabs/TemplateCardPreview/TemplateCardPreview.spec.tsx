@@ -5,7 +5,7 @@ import { render, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../../apps/journeys-admin/__generated__/GetJourney'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 
 import { TemplateCardPreview } from './TemplateCardPreview'
 

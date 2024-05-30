@@ -9,7 +9,7 @@ import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../../../../apps/journeys-admin/__generated__/globalTypes'
+} from '../../../../__generated__/globalTypes'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider

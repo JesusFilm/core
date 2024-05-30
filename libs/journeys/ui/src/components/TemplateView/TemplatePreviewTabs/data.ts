@@ -1,5 +1,5 @@
-import { GetJourney_journey_blocks as Blocks } from '../../../../../../../apps/journeys-admin/__generated__/GetJourney'
-import { VideoBlockSource } from '../../../../../../../apps/journeys-admin/__generated__/globalTypes'
+import { GetJourney_journey_blocks as Blocks } from '../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 
 export const journeyVideoBlocks: Blocks[] = [
   {

@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../apps/journeys-admin/__generated__/GetJourney'
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { videoBlocksFiltered } from '../data'
 
 import { TemplateVideoPreview } from './TemplateVideoPreview'

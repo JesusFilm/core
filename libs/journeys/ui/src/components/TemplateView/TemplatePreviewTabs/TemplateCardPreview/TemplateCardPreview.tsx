@@ -20,11 +20,8 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
-} from '../../../../../../../../apps/journeys-admin/__generated__/GetJourney'
-import {
-  ThemeMode,
-  ThemeName
-} from '../../../../../../../../apps/journeys-admin/__generated__/globalTypes'
+} from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { CardWrapper } from '../../../../../../../../apps/journeys-admin/src/components/CardPreview/CardList/CardWrapper'
 import { VideoWrapper } from '../../../../../../../../apps/journeys-admin/src/components/Editor/Slider/Content/Canvas/VideoWrapper'
 import { FramePortal } from '../../../../../../../../apps/journeys-admin/src/components/FramePortal'

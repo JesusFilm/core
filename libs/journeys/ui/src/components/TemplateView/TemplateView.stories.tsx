@@ -6,11 +6,11 @@ import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '../../../../../../apps/journeys-admin/__generated__/GetJourney'
-import { GetJourneys } from '../../../../../../apps/journeys-admin/__generated__/GetJourneys'
+import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '../../libs/useJourneyQuery/__generated__/GetJourney'
+import { GetJourneys } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { GetTags } from '../../../../../../apps/journeys-admin/__generated__/GetTags'
 import { GetUserRole } from '../../../../../../apps/journeys-admin/__generated__/GetUserRole'
-import { Role } from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
+import { Role } from '../../../__generated__/globalTypes'
 import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag

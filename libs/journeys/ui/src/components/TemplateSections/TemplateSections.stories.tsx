@@ -7,12 +7,12 @@ import {
   GetJourneys,
   GetJourneys_journeys as Journey,
   GetJourneys_journeys_tags as Tag
-} from '../../../../../../apps/journeys-admin/__generated__/GetJourneys'
+} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
+} from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../apps/journeys-admin/src/libs/storybook'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 

@@ -11,7 +11,7 @@ import { SwiperOptions } from 'swiper/types'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { Role } from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
+import { Role } from '../../../__generated__/globalTypes'
 import { useJourneysQuery } from '@core/journeys/ui/useJourneysQuery'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import { StrategySection } from '../StrategySection'
