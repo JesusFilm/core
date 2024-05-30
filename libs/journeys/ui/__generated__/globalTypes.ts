@@ -93,6 +93,10 @@ export enum MessagePlatform {
   whatsApp = "whatsApp",
 }
 
+export enum Role {
+  publisher = "publisher",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
@@ -162,6 +166,16 @@ export interface ChatOpenEventCreateInput {
   blockId: string;
   stepId?: string | null;
   value?: MessagePlatform | null;
+}
+
+export interface JourneysFilter {
+  featured?: boolean | null;
+  template?: boolean | null;
+  ids?: string[] | null;
+  tagIds?: string[] | null;
+  languageIds?: string[] | null;
+  limit?: number | null;
+  orderByRecent?: boolean | null;
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {
