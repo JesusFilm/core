@@ -61,6 +61,41 @@ describe('ImporterVideoTitleService', () => {
       })
     })
 
+    it('should save many video titles', async () => {
+      videosService.ids = ['mockVideoId', 'mockVideoId2']
+      await service.importMany([
+        {
+          value: 'mockValue0',
+          videoId: 'mockVideoId',
+          languageId: 529,
+          primary: 1
+        },
+        {
+          value: 'mockValue0',
+          videoId: 'mockVideoId2',
+          languageId: 529,
+          primary: 1
+        }
+      ])
+      expect(prismaService.videoTitle.createMany).toHaveBeenCalledWith({
+        data: [
+          {
+            value: 'mockValue0',
+            videoId: 'mockVideoId',
+            languageId: '529',
+            primary: true
+          },
+          {
+            value: 'mockValue0',
+            videoId: 'mockVideoId2',
+            languageId: '529',
+            primary: true
+          }
+        ],
+        skipDuplicates: true
+      })
+    })
+
     it('should throw error when row is invalid', async () => {
       await expect(
         service.import({
@@ -69,6 +104,18 @@ describe('ImporterVideoTitleService', () => {
           primaryLanguageId: 529
         })
       ).rejects.toThrow('row does not match schema: mockValue0')
+    })
+
+    it('should throw error if video variant is not found', async () => {
+      videosService.ids = []
+      await expect(
+        service.import({
+          value: 'mockValue0',
+          videoId: 'mockVideoId',
+          languageId: 529,
+          primary: 1
+        })
+      ).rejects.toThrow('Video with id mockVideoId not found')
     })
   })
 })
