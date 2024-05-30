@@ -459,11 +459,7 @@ export const imageBlocks: TreeBlock[] = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
-            action: {
-              __typename: 'NavigateAction',
-              parentBlockId: 'button',
-              gtmEventName: 'gtmEventName'
-            },
+            action: null,
             children: [
               {
                 id: 'icon',
@@ -545,11 +541,7 @@ export const imageBlocks: TreeBlock[] = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
-            action: {
-              __typename: 'NavigateAction',
-              parentBlockId: 'button',
-              gtmEventName: 'gtmEventName'
-            },
+            action: null,
             children: [
               {
                 id: 'icon',
@@ -631,11 +623,7 @@ export const imageBlocks: TreeBlock[] = [
             submitLabel: null,
             submitIconId: null,
             children: [],
-            action: {
-              __typename: 'NavigateAction',
-              parentBlockId: 'textResponse.id',
-              gtmEventName: 'gtmEventName'
-            }
+            action: null
           },
           {
             id: 'image0.id',
@@ -706,11 +694,7 @@ export const imageBlocks: TreeBlock[] = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 0,
                 label: 'Yes, God likes good people',
-                action: {
-                  __typename: 'NavigateAction',
-                  parentBlockId: 'radioOption1.id',
-                  gtmEventName: 'gtmEventName'
-                },
+                action: null,
                 children: []
               },
               {
@@ -719,11 +703,7 @@ export const imageBlocks: TreeBlock[] = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
-                action: {
-                  __typename: 'NavigateAction',
-                  parentBlockId: 'radioOption3.id',
-                  gtmEventName: 'gtmEventName'
-                },
+                action: null,
                 children: []
               }
             ]
@@ -1662,11 +1642,7 @@ export const videoLoop: TreeBlock[] = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
-            action: {
-              __typename: 'NavigateAction',
-              parentBlockId: 'button',
-              gtmEventName: 'gtmEventName'
-            },
+            action: null,
             children: [
               {
                 id: 'icon',

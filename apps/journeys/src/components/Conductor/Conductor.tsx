@@ -117,7 +117,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   useEffect(() => {
     setTreeBlocks(blocks)
-  }, [setTreeBlocks, blocks])
+    // multiple re-renders causes block history to be incorrect so do not pass in 'blocks' variable to deps array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setTreeBlocks])
 
   const mobileNotchStyling: SxProps = {
     width: {
