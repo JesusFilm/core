@@ -38,12 +38,12 @@ describe('ResourceResolver', () => {
     deletedAt: null,
     category: 'Example Category',
     privacy: PrivacyStatus.private,
-    spokenLanguage: null,
-    customThumbnail: null,
     isMadeForKids: false,
     playlistId: null,
     mediaComponentId: null,
-    notifySubscribers: false
+    notifySubscribers: false,
+    spokenLanguage: null,
+    customThumbnail: null
   }
   const resourceWithNexusUserNexus = {
     ...resource

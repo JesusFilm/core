@@ -16,7 +16,6 @@ type Batch
   @key(fields: "id")
 {
   id: ID!
-  nexusId: String!
   channelId: String!
   channel: Channel
   resources: [BatchResource]
@@ -52,7 +51,6 @@ type BatchResource
 input BatchFilter {
   ids: [ID!]
   name: String
-  nexusId: String
   status: BatchStatus
   limit: Int
 }
