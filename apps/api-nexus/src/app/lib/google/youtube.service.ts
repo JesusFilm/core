@@ -142,8 +142,8 @@ export class GoogleYoutubeService {
     description: string
     defaultLanguage?: string
     privacyStatus?: string
-    category: string,
-    isMadeForKids: boolean,
+    category: string
+    isMadeForKids: boolean
     localizations: Array<{
       resourceId?: string
       title?: string
@@ -175,7 +175,7 @@ export class GoogleYoutubeService {
             title: youtubeData.title,
             description: youtubeData.description,
             categoryId: youtubeData.category,
-            defaultLanguage: youtubeData.defaultLanguage,
+            defaultLanguage: youtubeData.defaultLanguage
           },
           status: {
             madeForKids: youtubeData.isMadeForKids,

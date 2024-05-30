@@ -38,13 +38,17 @@ export class BatchService {
             customThumbnail: row.customThumbnail,
             isMadeForKids:
               row.isMadeForKids !== undefined
-                ? ['1', 'true', 'on', 'yes', 'y'].includes(row.isMadeForKids.toLocaleLowerCase())
+                ? ['1', 'true', 'on', 'yes', 'y'].includes(
+                    row.isMadeForKids.toLocaleLowerCase()
+                  )
                 : undefined,
             privacy: row.privacy as PrivacyStatus,
             category: row.category,
             notifySubscribers:
               row.notifySubscribers !== undefined
-                ? ['1', 'true', 'on', 'yes', 'y'].includes(row.notifySubscribers.toLocaleLowerCase())
+                ? ['1', 'true', 'on', 'yes', 'y'].includes(
+                    row.notifySubscribers.toLocaleLowerCase()
+                  )
                 : undefined,
             resourceSource: {
               update: {
