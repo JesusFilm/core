@@ -12,6 +12,8 @@ import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
+
 import logo from '../../Header/assets/logo.svg'
 
 interface ResourceAppBarProps {
@@ -53,18 +55,45 @@ export function ResourceAppBar({
                 }}
               />
             </NextLink>
+            {/* <ChevronRightIcon /> */}
             {showBreadcrumb && (
-              <Breadcrumbs sx={{ marginLeft: '20px' }}>
-                <Link
-                  color="inherit"
-                  onClick={() => setTestButtonClicked(false)}
-                  // onClick={() => console.log('clicking')}
-                  underline="none"
-                  style={{ cursor: 'pointer' }}
+              <>
+                {/* <ChevronRightIcon /> */}
+                <Breadcrumbs
+                  separator={<ChevronRightIcon />}
+                  sx={{ marginLeft: '20px' }}
                 >
-                  {selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)}
-                </Link>
-              </Breadcrumbs>
+                  {/* <ChevronRightIcon /> */}
+                  <Link
+                    color="inherit"
+                    onClick={() => setTestButtonClicked(false)}
+                    // onClick={() => console.log('clicking')}
+                    // TODO: add href funcionality
+                    // href=`/${selectedTab}`
+                    underline="none"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <ChevronRightIcon sx={{ mr: 0.5 }} />
+                    {t(
+                      `${
+                        selectedTab.charAt(0).toUpperCase() +
+                        selectedTab.slice(1)
+                      }`
+                    )}
+                  </Link>
+                  <Link
+                    color="inherit"
+                    onClick={() => setTestButtonClicked(false)}
+                    // onClick={() => console.log('clicking')}
+                    // TODO: add href funcionality
+                    // href=`/${selectedTab}`
+                    underline="none"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)}
+                  </Link>
+                </Breadcrumbs>
+              </>
             )}
           </Stack>
           <Stack spacing={0.5} direction="row">

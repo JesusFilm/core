@@ -58,6 +58,8 @@ function TestComponent({
 // create function which will show breadcrumbs if testComponent is clicked x
 // create function which navigates back to main page if breadcrumb is clicked x
 
+// add nextlink functionality on breadcrumb, and handleTabchange function
+
 export function ResourcePageHeader(): ReactElement {
   const [selectedTab, setSelectedTab] = useState('journeys')
   const [testButtonClicked, setTestButtonClicked] = useState(false)

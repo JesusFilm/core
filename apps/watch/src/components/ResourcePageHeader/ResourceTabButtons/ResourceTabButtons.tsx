@@ -49,18 +49,12 @@ export function ResourceTabButtons({
   return (
     <>
       <Container maxWidth="xxl" disableGutters>
-        {/* <Stack flexDirection="row" justifyContent="space-between">
-            <Button startIcon={<JourneysIcon />}>{t('Journeys')}</Button>
-            <Button startIcon={<Play1Icon />}>{t('Videos')}</Button>
-            <Button startIcon={<BulbIcon />}>{t('Strategies')}</Button>
-            <Button startIcon={<Calendar1Icon />}>{t('Calendar')}</Button>
-            <Button startIcon={<Grid1Icon />}>{t('Apps')}</Button>
-          </Stack> */}
         <ToggleButtonGroup
           value={selectedTab}
           onChange={handleTabChange}
           exclusive
           size="large"
+          fullWidth
           // sx={{ width: '100%' }}
         >
           <CustomToggleButton
@@ -98,7 +92,6 @@ export function ResourceTabButtons({
           </CustomToggleButton>
         </ToggleButtonGroup>
       </Container>
-      {/* <Typography position="absolute">{t('Buttons')}</Typography> */}
     </>
   )
 }
