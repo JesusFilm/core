@@ -7,7 +7,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../__generated__/globalTypes'
-import { GET_JOURNEY } from '../../../../libs/useJourneyQuery/useJourneyQuery'
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery/useJourneyQuery'
 
 import { OnboardingTemplateCard } from './OnboardingTemplateCard'
 

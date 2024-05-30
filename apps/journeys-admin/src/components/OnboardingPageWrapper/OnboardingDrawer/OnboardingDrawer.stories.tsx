@@ -7,7 +7,7 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { GET_JOURNEY } from '../../../libs/useJourneyQuery/useJourneyQuery'
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery/useJourneyQuery'
 
 import { OnboardingDrawer } from './OnboardingDrawer'
 

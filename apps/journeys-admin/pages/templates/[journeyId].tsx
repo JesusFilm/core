@@ -20,8 +20,8 @@ import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import {
   GET_JOURNEY,
   useJourneyQuery
-} from '../../src/libs/useJourneyQuery/useJourneyQuery'
-import { GET_JOURNEYS } from '../../../../libs/journeys/ui/src/libs/useJourneysQuery/useJourneysQuery'
+} from '@core/journeys/ui/useJourneyQuery/useJourneyQuery'
+import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '../../src/libs/useTagsQuery/useTagsQuery'
 
 function TemplateDetailsPage(): ReactElement {

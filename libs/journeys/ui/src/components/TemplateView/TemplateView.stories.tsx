@@ -16,9 +16,9 @@ import {
   JourneyFields_tags as Tag
 } from '../../../../../../apps/journeys-admin/__generated__/JourneyFields'
 import { journeysAdminConfig } from '../../../../../../apps/journeys-admin/src/libs/storybook'
-import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
+import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '../../../../../../apps/journeys-admin/src/libs/useTagsQuery/useTagsQuery'
-import { GET_USER_ROLE } from '../../../../../../apps/journeys-admin/src/libs/useUserRoleQuery/useUserRoleQuery'
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery/useUserRoleQuery'
 import {
   defaultJourney,
   publishedJourney

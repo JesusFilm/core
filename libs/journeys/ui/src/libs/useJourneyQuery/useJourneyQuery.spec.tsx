@@ -5,13 +5,13 @@ import { formatISO, startOfYear } from 'date-fns'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_language as Language
-} from '../../../__generated__/GetJourney'
+} from '../../../../../../apps/journeys-admin/__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName,
   UserJourneyRole
-} from '../../../__generated__/globalTypes'
+} from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
 
 import { GET_JOURNEY, useJourneyQuery } from './useJourneyQuery'
 

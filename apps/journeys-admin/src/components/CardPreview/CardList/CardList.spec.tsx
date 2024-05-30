@@ -13,7 +13,7 @@ import {
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
-import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery/useUserRoleQuery'
 
 import { CardList } from '.'
 

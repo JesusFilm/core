@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { journeysAdminConfig } from '../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../../apps/journeys-admin/src/libs/storybook'
 
 import { StrategySection } from './StrategySection'
 
