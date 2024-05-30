@@ -18,9 +18,6 @@ type Batch
   @key(fields: "id")
 {
   id: ID!
-  channelId: String!
-  channel: Channel
-  resources: [BatchResource]
   name: String!
   status: BatchStatus
   totalTasks: Int
