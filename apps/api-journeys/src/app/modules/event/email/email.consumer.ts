@@ -49,12 +49,22 @@ export class EmailConsumer extends WorkerHost {
       }
     })
 
+    const visitor = await this.prismaService.visitor.findUnique({
+      where: { id: job.data.visitorId },
+      include: { events: true }
+    })
+
     if (journey == null) return
 
-    const recipientUserId = journey?.userJourneys?.find(
-      (userJourney) => userJourney.role === UserJourneyRole.owner
-    )?.userId
+    // Update logic to be sending to either owner or members
+    const recipientUserIds = journey?.userJourneys
+      ?.filter(
+        (userJourney) => userJourney.role === UserJourneyRole.owner
+        // userJourney.role === UserJourneyRole.editor
+      )
+      ?.map((userJourney) => userJourney.userId)
 
+    // will have to loop throug all the recipients
     const { data } = await apollo.query({
       query: gql`
         query User($userId: ID!) {
@@ -66,13 +76,15 @@ export class EmailConsumer extends WorkerHost {
           }
         }
       `,
-      variables: { userId: recipientUserId }
+      variables: { userId: recipientUserIds[0] }
     })
 
     const text = render(
       VisitorInteraction({
         title: journey.title,
-        visitorId: job.data.visitorId
+        recipient: data.user,
+        url: '',
+        visitor: ''
       }),
       {
         plainText: true
@@ -82,7 +94,9 @@ export class EmailConsumer extends WorkerHost {
     const html = render(
       VisitorInteraction({
         title: journey.title,
-        visitorId: job.data.visitorId
+        recipient: data.user,
+        url: '',
+        visitor: ''
       }),
       {
         pretty: true

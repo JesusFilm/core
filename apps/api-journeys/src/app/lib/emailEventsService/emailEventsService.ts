@@ -27,7 +27,7 @@ export class EmailEventsService {
         journeyId,
         visitorId
       },
-      { jobId, delay }
+      { jobId }
     )
   }
 }
