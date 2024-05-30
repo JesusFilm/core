@@ -58,6 +58,9 @@ export interface GetJourneyVisitors_visitors_edges_node_events_TextResponseSubmi
    * response from the TextResponseBlock form
    */
   value: string | null;
+  /**
+   * the id of the block this event originates from
+   */
   blockId: string | null;
 }
 
