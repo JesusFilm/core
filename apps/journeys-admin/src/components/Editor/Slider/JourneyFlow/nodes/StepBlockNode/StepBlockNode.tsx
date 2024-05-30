@@ -20,7 +20,7 @@ export function StepBlockNode({
   dragging
 }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent }
+    state: { steps, selectedStep, activeContent, showJourneyFlowAnalytics }
   } = useEditor()
   const step = steps?.find((step) => step.id === id)
   const actionBlocks = filterActionBlocks(step)
@@ -30,13 +30,15 @@ export function StepBlockNode({
 
   return step != null ? (
     <>
-      <StepBlockNodeMenu
-        in={isSelected}
-        className="fab"
-        step={step}
-        xPos={xPos}
-        yPos={yPos}
-      />
+      {!showJourneyFlowAnalytics && (
+        <StepBlockNodeMenu
+          in={isSelected}
+          className="fab"
+          step={step}
+          xPos={xPos}
+          yPos={yPos}
+        />
+      )}
       <Stack
         data-testid={`StepBlockNode-${step.id}`}
         direction="column"
