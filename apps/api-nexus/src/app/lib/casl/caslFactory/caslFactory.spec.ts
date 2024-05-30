@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { Channel, Resource } from '.prisma/api-nexus-client'
 
-import { ChannelStatus } from '../../../__generated__/graphql'
+import { ResourceStatus } from '../../../__generated__/graphql'
 
 import { Action, AppAbility, AppCaslFactory } from '.'
 
@@ -26,7 +26,7 @@ describe('AppCaslFactory', () => {
           Action.Create,
           subject('Channel', {
             id: 'channelId',
-            status: ChannelStatus.created
+            deletedAt: null
           } as unknown as Channel)
         )
       ).toBe(true)
@@ -38,7 +38,7 @@ describe('AppCaslFactory', () => {
           Action.Manage,
           subject('Channel', {
             id: 'channelId',
-            status: ChannelStatus.created
+            deletedAt: null
           } as unknown as Channel)
         )
       ).toBe(true)
@@ -52,7 +52,7 @@ describe('AppCaslFactory', () => {
           Action.Create,
           subject('Resource', {
             id: 'resourceId',
-            status: ChannelStatus.created
+            status: ResourceStatus.created
           } as unknown as Resource)
         )
       ).toBe(true)
@@ -64,7 +64,7 @@ describe('AppCaslFactory', () => {
           Action.Manage,
           subject('Resource', {
             id: 'resourceId',
-            status: ChannelStatus.created
+            deletedAt: null
           } as unknown as Resource)
         )
       ).toBe(true)

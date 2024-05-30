@@ -66,7 +66,7 @@ export class NexusJobListener implements OnModuleInit {
             this.prismaService.resource.updateMany({
               where: { id: jobData.resource.id },
               data: {
-                status: 'published'
+                status: 'done'
               }
             })
           ])

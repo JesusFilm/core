@@ -8,32 +8,20 @@ datasource db {
     url      = env("PG_DATABASE_URL_NEXUS")
 }
 
-enum ChannelStatus {
-    created
-    published
-    deleted
-}
-
 model Channel {
     id               String            @id @default(uuid())
     name             String
     platform         String
+    title            String?
+    description      String?
+    youtubeId        String?
+    imageUrl         String?
     connected        Boolean           @default(false)
-    youtube          ChannelYoutube?
-    status           ChannelStatus     @default(created)
     createdAt        DateTime          @default(now())
+    updatedAt        DateTime?         @updatedAt
+    publishedAt      DateTime?
     deletedAt        DateTime?
     resourceChannels ResourceChannel[]
-}
-
-model ChannelYoutube {
-    id          String  @id @default(uuid())
-    channelId   String  @unique
-    title       String
-    description String
-    youtubeId   String
-    imageUrl    String
-    channel     Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 }
 
 enum PrivacyStatus {
@@ -43,11 +31,10 @@ enum PrivacyStatus {
 }
 
 enum ResourceStatus {
-    deleted
-    published
+    created
     processing
+    done
     error
-    uploaded
 }
 
 model Resource {
@@ -60,13 +47,14 @@ model Resource {
     isMadeForKids         Boolean                @default(false)
     mediaComponentId      String?
     notifySubscribers     Boolean                @default(false)
-    status                ResourceStatus         @default(published)
+    status                ResourceStatus         @default(created)
     privacy               PrivacyStatus          @default(private)
     resourceLocalizations ResourceLocalization[]
     resourceChannels      ResourceChannel[]
     resourceSource        ResourceSource?
     createdAt             DateTime               @default(now())
     updatedAt             DateTime?              @updatedAt
+    publishedAt           DateTime?
     deletedAt             DateTime?
 }
 

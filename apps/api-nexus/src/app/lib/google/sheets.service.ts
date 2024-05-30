@@ -172,7 +172,7 @@ export class GoogleSheetsService {
         data: {
           id: uuidv4(),
           name: row.filename ?? '',
-          status: row.channelData?.id !== null ? 'processing' : 'published',
+          status: row.channelData?.id !== null ? 'processing' : 'done',
           createdAt: new Date(),
           customThumbnail: row.customThumbnail,
           category: row.category,
@@ -297,7 +297,7 @@ export class GoogleSheetsService {
 
     if (row.channel != null) {
       row.channelData = (await this.prismaService.channel.findFirst({
-        where: { youtube: { youtubeId: row.channel } }
+        where: { youtubeId: row.channel }
       })) as Channel
     }
 

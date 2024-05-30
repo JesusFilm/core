@@ -100,7 +100,6 @@ export class BullMQService {
 
     const channelData = await this.prismaService.channel.findUnique({
       where: { id: channel.id },
-      include: { youtube: true }
     })
 
     const jobs = await Promise.all(
@@ -134,7 +133,7 @@ export class BullMQService {
           },
           channel: {
             id: channel?.id ?? '',
-            channelId: channelData?.youtube?.youtubeId ?? ''
+            channelId: channelData?.youtubeId ?? ''
           }
         }
 
@@ -194,7 +193,6 @@ export class BullMQService {
       where: { id: channelId },
       include: {
         resourceChannels: { where: { resourceId: { in: resourceIds } } },
-        youtube: true
       }
     })
 

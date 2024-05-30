@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { Channel, Prisma } from '.prisma/api-nexus-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
-import { ChannelStatus } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { GoogleOAuthService } from '../../lib/google/oauth.service'
 import { GoogleYoutubeService } from '../../lib/google/youtube.service'
@@ -30,11 +29,16 @@ describe('ChannelResolver', () => {
   const channel: Channel = {
     id: 'channelId',
     name: 'Channel Name',
-    status: ChannelStatus.created,
-    connected: true,
+    connected: false,
     platform: 'youtube',
     createdAt: new Date(),
-    deletedAt: null
+    deletedAt: null,
+    title: null,
+    description: null,
+    youtubeId: null,
+    imageUrl: null,
+    updatedAt: null,
+    publishedAt: null
   }
   const channelWithNexusUserNexus = { ...channel }
 
@@ -80,8 +84,7 @@ describe('ChannelResolver', () => {
       expect(prismaService.channel.findMany).toHaveBeenCalledWith({
         where: {
           AND: [accessibleChannels, {}]
-        },
-        include: { youtube: true }
+        }
       })
     })
 
@@ -93,8 +96,7 @@ describe('ChannelResolver', () => {
       expect(prismaService.channel.findMany).toHaveBeenCalledWith({
         where: {
           AND: [accessibleChannels, {}]
-        },
-        include: { youtube: true }
+        }
       })
     })
 
@@ -107,8 +109,7 @@ describe('ChannelResolver', () => {
         where: {
           AND: [accessibleChannels, {}]
         },
-        take: 1,
-        include: { youtube: true }
+        take: 1
       })
     })
   })
@@ -124,8 +125,7 @@ describe('ChannelResolver', () => {
       expect(prismaService.channel.findUnique).toHaveBeenCalledWith({
         where: {
           id: 'channelId'
-        },
-        include: { youtube: true }
+        }
       })
     })
 
@@ -136,12 +136,15 @@ describe('ChannelResolver', () => {
       )
     })
 
-    // it('throws error if not authorized', async () => {
-    //   prismaService.channel.findUnique.mockResolvedValueOnce(channel)
-    //   await expect(resolver.channel(ability, 'channelId')).rejects.toThrow(
-    //     'user is not allowed to view channel'
-    //   )
-    // })
+    it('throws error if not authorized', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce({
+        ...channel,
+        deletedAt: new Date()
+      })
+      await expect(resolver.channel(ability, 'channelId')).rejects.toThrow(
+        'user is not allowed to view channel'
+      )
+    })
   })
 
   describe('channelCreate', () => {
@@ -167,8 +170,7 @@ describe('ChannelResolver', () => {
         data: {
           id: 'channelId',
           name: 'New Channel',
-          platform: 'Youtube',
-          status: 'published'
+          platform: 'Youtube'
         }
       })
     })
@@ -183,17 +185,6 @@ describe('ChannelResolver', () => {
         })
       ).rejects.toThrow('channel not found')
     })
-
-    // it('throws error if not authorized', async () => {
-    //   prismaService.channel.create.mockResolvedValueOnce(channel)
-    //   prismaService.channel.findUnique.mockResolvedValue(channel)
-    //   await expect(
-    //     resolver.channelCreate(ability, {
-    //       name: 'New Channel',
-    //       platform: 'Youtube'
-    //     })
-    //   ).rejects.toThrow('user is not allowed to create channel')
-    // })
   })
 
   describe('channelUpdate', () => {
@@ -211,8 +202,7 @@ describe('ChannelResolver', () => {
       )
       expect(prismaService.channel.update).toHaveBeenCalledWith({
         where: { id: 'channelId' },
-        data: input,
-        include: { youtube: true }
+        data: input
       })
     })
 
@@ -229,17 +219,19 @@ describe('ChannelResolver', () => {
         data: {
           name: undefined,
           platform: undefined
-        },
-        include: { youtube: true }
+        }
       })
     })
 
-    // it('throws error if not authorized', async () => {
-    //   prismaService.channel.findUnique.mockResolvedValueOnce(channel)
-    //   await expect(
-    //     resolver.channelUpdate(ability, 'channelId', { name: 'new title' })
-    //   ).rejects.toThrow('user is not allowed to update channel')
-    // })
+    it('throws error if not authorized', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce({
+        ...channel,
+        deletedAt: new Date()
+      })
+      await expect(
+        resolver.channelUpdate(ability, 'channelId', { name: 'new title' })
+      ).rejects.toThrow('user is not allowed to update channel')
+    })
 
     it('throws error if not found', async () => {
       prismaService.channel.findUnique.mockResolvedValueOnce(null)
@@ -260,17 +252,22 @@ describe('ChannelResolver', () => {
       )
       expect(prismaService.channel.update).toHaveBeenCalledWith({
         where: { id: 'channelId' },
-        data: { status: ChannelStatus.deleted, connected: false },
-        include: { youtube: true }
+        data: {
+          connected: false,
+          deletedAt: expect.any(Date)
+        }
       })
     })
 
-    // it('throws error if not authorized', async () => {
-    //   prismaService.channel.findUnique.mockResolvedValueOnce(channel)
-    //   await expect(
-    //     resolver.channelDelete(ability, 'channelId')
-    //   ).rejects.toThrow('user is not allowed to delete channel')
-    // })
+    it('throws error if not authorized', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce({
+        ...channel,
+        deletedAt: new Date()
+      })
+      await expect(
+        resolver.channelDelete(ability, 'channelId')
+      ).rejects.toThrow('user is not allowed to delete channel')
+    })
 
     it('throws error if not found', async () => {
       prismaService.channel.findUnique.mockResolvedValueOnce(null)
@@ -334,14 +331,14 @@ describe('ChannelResolver', () => {
       )
       googleOAuthService.getAccessToken.mockResolvedValue(authResponse)
       googleYoutubeService.getChannels.mockResolvedValue(youtubeChannels)
-      prismaService.channelYoutube.create.mockResolvedValue({
-        id: 'channelYoutubeId',
-        channelId: 'channelId',
-        title: 'YouTube Channel Title',
-        description: 'YouTube Channel Description',
-        youtubeId: 'youtubeChannelId',
-        imageUrl: 'thumbnailUrl'
-      })
+      // prismaService.channelYoutube.create.mockResolvedValue({
+      //   id: 'channelYoutubeId',
+      //   channelId: 'channelId',
+      //   title: 'YouTube Channel Title',
+      //   description: 'YouTube Channel Description',
+      //   youtubeId: 'youtubeChannelId',
+      //   imageUrl: 'thumbnailUrl'
+      // })
       prismaService.channel.update.mockResolvedValue({
         ...channel,
         connected: true

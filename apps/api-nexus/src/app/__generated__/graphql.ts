@@ -40,6 +40,7 @@ export enum PrivacyStatus {
 }
 
 export enum ResourceStatus {
+    created = "created",
     deleted = "deleted",
     published = "published",
     processing = "processing",

@@ -39,7 +39,7 @@ export class BatchService {
             isMadeForKids:
               row.isMadeForKids !== undefined
                 ? ['1', 'true', 'on', 'yes', 'y'].includes(
-                    row.isMadeForKids.toLocaleLowerCase()
+                    row.isMadeForKids
                   )
                 : undefined,
             privacy: row.privacy as PrivacyStatus,
