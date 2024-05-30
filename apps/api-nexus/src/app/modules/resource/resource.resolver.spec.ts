@@ -43,7 +43,9 @@ describe('ResourceResolver', () => {
     isMadeForKids: false,
     playlistId: null,
     mediaComponentId: null,
-    notifySubscribers: false
+    notifySubscribers: false,
+    spokenLanguage: null,
+    customThumbnail: null
   }
   const resourceWithNexusUserNexus = {
     ...resource

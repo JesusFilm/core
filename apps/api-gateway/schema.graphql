@@ -27,6 +27,13 @@ interface Action
   gtmEventName: String
 }
 
+input AddResourceFromGoogleDriveInput
+  @join__type(graph: NEXUS)
+{
+  accessToken: String!
+  fileId: String!
+}
+
 type Batch
   @join__type(graph: NEXUS, key: "id")
 {
@@ -1932,9 +1939,7 @@ input ResourceFromGoogleDriveInput
 input ResourceFromTemplateInput
   @join__type(graph: NEXUS)
 {
-  accessToken: String!
-  spreadsheetId: String!
-  drivefolderId: String!
+  file: Upload
 }
 
 type ResourceLocalization
