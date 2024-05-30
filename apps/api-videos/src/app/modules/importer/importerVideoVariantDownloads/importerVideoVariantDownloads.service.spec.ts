@@ -68,6 +68,45 @@ describe('ImporterVideoVariantDownloadsService', () => {
       })
     })
 
+    it('should save many video variant downloads', async () => {
+      videoVariantsService.ids = ['mockVariantId', 'mockVariantId2']
+      await service.importMany([
+        {
+          quality: 'low',
+          size: 1111112,
+          url: 'www.example.com',
+          videoVariantId: 'mockVariantId',
+          extraStuff: 'randomData'
+        },
+        {
+          quality: 'low',
+          size: 1111112,
+          url: 'www.example.com',
+          videoVariantId: 'mockVariantId2',
+          extraStuff: 'randomData'
+        }
+      ])
+      expect(
+        prismaService.videoVariantDownload.createMany
+      ).toHaveBeenCalledWith({
+        data: [
+          {
+            quality: 'low',
+            size: 1111112,
+            url: 'www.example.com',
+            videoVariantId: 'mockVariantId'
+          },
+          {
+            quality: 'low',
+            size: 1111112,
+            url: 'www.example.com',
+            videoVariantId: 'mockVariantId2'
+          }
+        ],
+        skipDuplicates: true
+      })
+    })
+
     it('should throw error when row is invalid', async () => {
       await expect(
         service.import({
@@ -85,6 +124,19 @@ describe('ImporterVideoVariantDownloadsService', () => {
           primaryLanguageId: '529'
         })
       ).rejects.toThrow('row does not match schema: unknownId')
+    })
+
+    it('should throw error if video variant is not found', async () => {
+      videoVariantsService.ids = []
+      await expect(
+        service.import({
+          quality: 'low',
+          size: 1111112,
+          url: 'www.example.com',
+          videoVariantId: 'mockVariantId',
+          extraStuff: 'randomData'
+        })
+      ).rejects.toThrow('Video variant with id mockVariantId not found')
     })
   })
 })
