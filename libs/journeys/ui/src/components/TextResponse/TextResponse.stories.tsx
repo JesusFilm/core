@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
-import { fireEvent, screen, userEvent } from '@storybook/testing-library'
+import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
 
