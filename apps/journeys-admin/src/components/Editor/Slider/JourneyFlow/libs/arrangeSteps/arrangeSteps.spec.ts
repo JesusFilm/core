@@ -116,7 +116,7 @@ describe('arrangeSteps', () => {
     ])
     expect(positions).toEqual({
       'step0.id': { x: 0, y: -8 },
-      'step1.id': { x: 400, y: -8 }
+      'step1.id': { x: 600, y: -8 }
     })
   })
 })
