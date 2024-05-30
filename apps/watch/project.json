@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/watch",
   "projectType": "application",
-  "tags": ["doppler_config:stg_dev"],
   "implicitDependencies": ["locales"],
   "targets": {
     "build": {
@@ -116,6 +115,10 @@
         "jestConfig": "apps/watch/jest.config.ts"
       }
     },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
@@ -176,5 +179,6 @@
         "command": "codecov -f coverage/apps/watch/cobertura-coverage.xml -F apps.watch"
       }
     }
-  }
+  },
+  "tags": ["doppler_config:stg_dev"]
 }

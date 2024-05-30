@@ -92,35 +92,5 @@
     ]
   },
   "parallel": 1,
-  "defaultBase": "main",
-  "plugins": [
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint",
-        "extensions": ["ts", "tsx", "js", "jsx", "html", "vue"]
-      },
-      "include": [
-        "apps/api-journeys/**/*",
-        "apps/api-languages/**/*",
-        "apps/api-media/**/*",
-        "apps/api-tags/**/*",
-        "apps/api-users/**/*",
-        "apps/api-videos/**/*",
-        "apps/arclight/**/*",
-        "apps/docs/**/*",
-        "apps/journeys/**/*",
-        "apps/journeys-admin/**/*",
-        "apps/nexus-admin/**/*",
-        "apps/watch/**/*",
-        "libs/journeys/ui/**/*",
-        "libs/nest/common/**/*",
-        "libs/nest/decorators/**/*",
-        "libs/nest/gqlAuthGuard/**/*",
-        "libs/nest/powerBi/**/*",
-        "libs/shared/ui/**/*",
-        "libs/shared/ui-dynamic/**/*"
-      ]
-    }
-  ]
+  "defaultBase": "main"
 }
