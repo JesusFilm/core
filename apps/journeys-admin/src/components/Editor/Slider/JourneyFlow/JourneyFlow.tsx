@@ -39,6 +39,7 @@ import {
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
+import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
 import { CustomEdge } from './edges/CustomEdge'
 import { StartEdge } from './edges/StartEdge'
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
@@ -319,6 +320,9 @@ export function JourneyFlow(): ReactElement {
           <>
             <Panel position="top-right">
               <NewStepButton />
+            </Panel>
+            <Panel position="top-left">
+              <AnalyticsOverlaySwitch />
             </Panel>
             <Controls showInteractive={false}>
               <ControlButton onClick={blockPositionsUpdate}>

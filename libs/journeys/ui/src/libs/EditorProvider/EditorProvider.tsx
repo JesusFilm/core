@@ -59,6 +59,11 @@ export interface EditorState {
    * */
   activeSlide: ActiveSlide
   /**
+   * journeyFlowAnalytics indicates if the analytics overlay should be shown
+   * in the journey flow.
+   * */
+  showJourneyFlowAnalytics: boolean
+  /**
    * selectedAttributeId indicates which attribute is current expanded on
    * Properties. Each attribute is in a collapsible accordion.
    */
@@ -125,6 +130,10 @@ interface SetStepsAction {
   type: 'SetStepsAction'
   steps: Array<TreeBlock<StepBlock>>
 }
+interface SetShowJourneyFlowAnalyticsAction {
+  type: 'SetShowJourneyFlowAnalyticsAction'
+  showJourneyFlowAnalytics: boolean
+}
 type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
   | SetActiveContentAction
@@ -137,6 +146,7 @@ type EditorAction =
   | SetSelectedGoalUrlAction
   | SetSelectedStepAction
   | SetStepsAction
+  | SetShowJourneyFlowAnalyticsAction
 
 export const reducer = (
   state: EditorState,
@@ -212,6 +222,11 @@ export const reducer = (
             ? searchBlocks(action.steps, state.selectedBlock.id)
             : action.steps[0]
       }
+    case 'SetShowJourneyFlowAnalyticsAction':
+      return {
+        ...state,
+        showJourneyFlowAnalytics: action.showJourneyFlowAnalytics
+      }
   }
 }
 
@@ -224,7 +239,8 @@ export const EditorContext = createContext<{
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas
+    activeContent: ActiveContent.Canvas,
+    showJourneyFlowAnalytics: false
   },
   dispatch: () => null
 })
@@ -251,6 +267,7 @@ export function EditorProvider({
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
+    showJourneyFlowAnalytics: false,
     ...initialState
   })
 
