@@ -1,12 +1,15 @@
-import { createServer } from 'node:http'
-
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
+import { App, HttpRequest, HttpResponse } from 'uWebSockets.js'
 
 import { db } from './db'
 import { schema } from './schema'
 
+interface ServerContext {
+  req: HttpRequest
+  res: HttpResponse
+}
 // Create a Yoga instance with a GraphQL schema.
-const yoga = createYoga({
+const yoga = createYoga<ServerContext>({
   schema,
   plugins: [
     useReadinessCheck({
@@ -21,10 +24,9 @@ const yoga = createYoga({
 })
 
 // Pass it into a server to hook into request handlers.
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-const server = createServer(yoga)
-
-// Start the server and you're done!
-server.listen(4003, () => {
-  console.info('Server is running on http://localhost:4003/graphql')
-})
+App()
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  .any('/*', yoga)
+  .listen(4003, (token) => {
+    console.info('Server is running on http://localhost:4003/graphql')
+  })

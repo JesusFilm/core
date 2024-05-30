@@ -54,11 +54,6 @@ const Language = builder.prismaObject('Language', {
       }
     })
   })
-  //   directives: {
-  //     cacheControl: {
-  //       maxAge: 86400
-  //     }
-  //   }
 })
 
 builder.asEntity(Language, {

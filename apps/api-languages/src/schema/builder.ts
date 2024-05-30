@@ -1,4 +1,3 @@
-import { CacheScope } from '@apollo/cache-control-types'
 import SchemaBuilder from '@pothos/core'
 import DirectivesPlugin from '@pothos/plugin-directives'
 import FederationPlugin from '@pothos/plugin-federation'
@@ -12,18 +11,6 @@ export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes
   Scalars: {
     ID: { Input: string; Output: number | string }
-  }
-  Enums: {
-    CacheControlScope: {
-      PUBLIC
-      PRIVATE
-    }
-  }
-  Directives: {
-    cacheControl: {
-      locations: 'FIELD_DEFINITION' | 'OBJECT' | 'INTERFACE' | 'UNION'
-      args: { inheritMaxAge?: boolean; maxAge?: number; scope?: CacheScope }
-    }
   }
 }>({
   plugins: [DirectivesPlugin, PrismaPlugin, FederationPlugin],
