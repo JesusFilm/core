@@ -71,6 +71,11 @@ export enum IconSize {
   xl = "xl",
 }
 
+export enum IdType {
+  databaseId = "databaseId",
+  slug = "slug",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -444,6 +449,15 @@ export interface MeInput {
 export interface NavigateToBlockActionInput {
   gtmEventName?: string | null;
   blockId: string;
+}
+
+export interface PlausibleStatsBreakdownFilter {
+  property: string;
+  period?: string | null;
+  date?: string | null;
+  limit?: number | null;
+  page?: number | null;
+  filters?: string | null;
 }
 
 export interface RadioOptionBlockCreateInput {
