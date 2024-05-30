@@ -13,6 +13,7 @@ import {
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { searchBlocks } from '../searchBlocks'
+import { GetPlausibleStatsBreakdown_journeysPlausibleStatsBreakdown as StatsBreakdown } from '../../../../../../apps/journeys-admin/__generated__/GetPlausibleStatsBreakdown'
 
 export enum ActiveContent {
   Canvas = 'canvas',
@@ -85,6 +86,7 @@ export interface EditorState {
    */
   selectedStep?: TreeBlock<StepBlock>
   steps?: Array<TreeBlock<StepBlock>>
+  journeyStatsBreakdown: Array<StatsBreakdown>
 }
 interface SetActiveContentAction {
   type: 'SetActiveContentAction'
@@ -134,6 +136,12 @@ interface SetShowJourneyFlowAnalyticsAction {
   type: 'SetShowJourneyFlowAnalyticsAction'
   showJourneyFlowAnalytics: boolean
 }
+
+interface SetStatsBreakdownAction {
+  type: 'SetStatsBreakdownAction'
+  journeyStatsBreakdown: Array<StatsBreakdown>
+}
+
 type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
   | SetActiveContentAction
@@ -147,6 +155,7 @@ type EditorAction =
   | SetSelectedStepAction
   | SetStepsAction
   | SetShowJourneyFlowAnalyticsAction
+  | SetStatsBreakdownAction
 
 export const reducer = (
   state: EditorState,
@@ -227,6 +236,12 @@ export const reducer = (
         ...state,
         showJourneyFlowAnalytics: action.showJourneyFlowAnalytics
       }
+    case 'SetStatsBreakdownAction': {
+      return {
+        ...state,
+        journeyStatsBreakdown: action.journeyStatsBreakdown
+      }
+    }
   }
 }
 
@@ -240,7 +255,8 @@ export const EditorContext = createContext<{
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
-    showJourneyFlowAnalytics: false
+    showJourneyFlowAnalytics: false,
+    journeyStatsBreakdown: []
   },
   dispatch: () => null
 })
@@ -268,6 +284,7 @@ export function EditorProvider({
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
     showJourneyFlowAnalytics: false,
+    journeyStatsBreakdown: [],
     ...initialState
   })
 
@@ -275,6 +292,15 @@ export function EditorProvider({
     if (initialState?.steps != null)
       dispatch({ type: 'SetStepsAction', steps: initialState.steps })
   }, [initialState?.steps])
+
+  useEffect(() => {
+    if (initialState?.journeyStatsBreakdown != null) {
+      dispatch({
+        type: 'SetStatsBreakdownAction',
+        journeyStatsBreakdown: initialState.journeyStatsBreakdown
+      })
+    }
+  }, [initialState?.journeyStatsBreakdown])
 
   // only run once
   const stepRef = useRef(false)

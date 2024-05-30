@@ -11,6 +11,8 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 import { Fab } from './Fab'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
+import { usePlausibleStatsBreakdownQuery } from '../../libs/usePlausibleStatsBreakdownQuery'
+import { IdType } from '../../../__generated__/globalTypes'
 
 interface EditorProps {
   journey?: Journey
@@ -37,12 +39,19 @@ export function Editor({
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
 
+  const { data } = usePlausibleStatsBreakdownQuery({
+    id: journey!.id,
+    where: { property: 'event:page' },
+    idType: IdType.databaseId
+  })
+
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
       <EditorProvider
         initialState={{
           steps,
           selectedStep,
+          journeyStatsBreakdown: data?.journeysPlausibleStatsBreakdown ?? [],
           ...initialState
         }}
       >
