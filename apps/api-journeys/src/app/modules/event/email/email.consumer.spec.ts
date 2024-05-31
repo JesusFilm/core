@@ -1,5 +1,19 @@
+import { ApolloClient, ApolloQueryResult } from '@apollo/client'
+import { Test, TestingModule } from '@nestjs/testing'
+import { MailerService } from '@nestjs-modules/mailer'
 import { Job } from 'bullmq'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
+import {
+  Journey,
+  JourneyStatus,
+  MessagePlatform,
+  ThemeMode,
+  ThemeName,
+  UserJourney,
+  UserJourneyRole,
+  Visitor
+} from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
 
 import { PrismaService } from '../../../lib/prisma.service'
@@ -11,50 +25,154 @@ import {
 } from './email.consumer'
 
 describe('EmailConsumer', () => {
-  let emailConsumer: EmailConsumer
-  let emailService: EmailService
-  let prismaService: PrismaService
+  let emailConsumer: EmailConsumer,
+    emailService: EmailService,
+    prismaService: DeepMockProxy<PrismaService>
 
-  beforeEach(() => {
-    emailService = new EmailService()
-    prismaService = new PrismaService()
-    emailConsumer = new EmailConsumer(emailService, prismaService)
+  const userJourneys = [
+    {
+      id: 'userJourneyId',
+      userId: 'userId2',
+      journeyId: 'journeyId',
+      role: UserJourneyRole.owner
+    },
+    {
+      id: 'userJourneyId',
+      userId: 'userId3',
+      journeyId: 'journeyId',
+      role: UserJourneyRole.editor
+    }
+  ] as UserJourney[]
+
+  const journey: Journey & { userJourneys: UserJourney[] } = {
+    id: 'journeyId',
+    slug: 'journey-slug',
+    title: 'published',
+    status: JourneyStatus.published,
+    languageId: '529',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    creatorDescription: null,
+    creatorImageBlockId: null,
+    primaryImageBlockId: null,
+    teamId: 'teamId',
+    publishedAt: new Date('2021-11-19T12:34:56.647Z'),
+    createdAt: new Date('2021-11-19T12:34:56.647Z'),
+    updatedAt: new Date('2021-11-19T12:34:56.647Z'),
+    archivedAt: null,
+    trashedAt: null,
+    featuredAt: null,
+    deletedAt: null,
+    seoTitle: null,
+    seoDescription: null,
+    template: false,
+    hostId: null,
+    strategySlug: null,
+    userJourneys
+  }
+
+  const visitor: Visitor = {
+    id: 'visitorId',
+    countryCode: null,
+    email: 'bob@example.com',
+    lastChatStartedAt: null,
+    messagePlatformId: '555-000000',
+    messagePlatform: MessagePlatform.whatsApp,
+    name: 'Bob Smith',
+    notes: 'Bob called this afternoon to arrange a meet-up.',
+    status: 'star',
+    teamId: 'teamId',
+    userAgent: null,
+    createdAt: new Date(),
+    duration: 0,
+    lastChatPlatform: null,
+    lastStepViewedAt: null,
+    lastLinkAction: null,
+    lastTextResponse: null,
+    lastRadioQuestion: null,
+    lastRadioOptionSubmission: null,
+    referrer: null,
+    userId: 'visitorUserId',
+    updatedAt: new Date()
+  }
+
+  const job: Job<EventsNotificationJob, unknown, string> = {
+    data: {
+      journeyId: journey.id,
+      visitorId: visitor.id
+    }
+  } as unknown as Job<EventsNotificationJob, unknown, string>
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        EmailConsumer,
+        {
+          provide: MailerService,
+          useValue: mockDeep<MailerService>()
+        },
+        {
+          provide: EmailService,
+          useValue: mockDeep<EmailService>()
+        },
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
+    }).compile()
+    emailConsumer = module.get<EmailConsumer>(EmailConsumer)
+    emailService = module.get<EmailService>(EmailService)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
 
+  afterEach(() => jest.clearAllMocks())
+
   describe('process', () => {
-    it('should call sendEventsNotification with the correct job', async () => {
-      const job: Job<ApiUsersJob> = {
-        data: {
-          journeyId: 'journeyId',
-          visitorId: 'visitorId'
-        }
-      }
-
-      const sendEventsNotificationSpy = jest.spyOn(
-        emailConsumer,
-        'sendEventsNotification'
-      )
-
-      await emailConsumer.process(job)
-
-      expect(sendEventsNotificationSpy).toHaveBeenCalledWith(job)
+    it('should call sendEventsNotification', async () => {
+      emailConsumer.sendEventsNotification = jest.fn()
+      await emailConsumer.process(job as Job<ApiUsersJob>)
+      expect(emailConsumer.sendEventsNotification).toHaveBeenCalledWith(job)
     })
   })
 
   describe('sendEventsNotification', () => {
-    it('should send events notification email', async () => {
-      const job: Job<EventsNotificationJob> = {
-        data: {
-          journeyId: 'journeyId',
-          visitorId: 'visitorId'
-        }
-      }
+    it('should send events notification email successfully', async () => {
+      jest
+        .spyOn(emailService, 'sendEmail')
+        .mockImplementation(async () => await Promise.resolve())
 
-      const sendEmailSpy = jest.spyOn(emailService, 'sendEmail')
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'userId',
+                firstName: 'Joe',
+                imageUrl: null,
+                email: 'jron@example.com'
+              }
+            },
+            variables: {
+              userId: 'userId'
+            }
+          } as unknown as ApolloQueryResult<unknown>)
+      )
+
+      prismaService.journey.findUnique.mockResolvedValue(journey)
+      prismaService.visitor.findUnique.mockResolvedValue(visitor)
 
       await emailConsumer.sendEventsNotification(job)
 
-      expect(sendEmailSpy).toHaveBeenCalledWith(/* email parameters */)
+      expect(emailService.sendEmail).toHaveBeenCalledWith({
+        to: 'jron@example.com',
+        subject: 'A visitor has interacted with your journey',
+        text: expect.any(String),
+        html: expect.anything()
+      })
     })
   })
 })
