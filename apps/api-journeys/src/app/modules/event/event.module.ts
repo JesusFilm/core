@@ -3,7 +3,6 @@ import { Module } from '@nestjs/common'
 
 import { EmailService } from '@core/nest/common/email/emailService'
 
-import { EmailEventsService } from '../../lib/emailEventsService'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
@@ -13,6 +12,7 @@ import {
   ChatOpenEventResolver
 } from './button/button.resolver'
 import { EmailConsumer } from './email/email.consumer'
+import { EmailService as EmailEventsService } from './email/email.service'
 import { EventResolver } from './event.resolver'
 import { EventService } from './event.service'
 import { JourneyViewEventResolver } from './journey/journey.resolver'
