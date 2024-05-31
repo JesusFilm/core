@@ -83,14 +83,14 @@ export function ResourceAppBar({
                   </Link>
                   <Link
                     color="inherit"
-                    onClick={() => setTestButtonClicked(false)}
+                    // onClick={() => setTestButtonClicked(false)}
                     // onClick={() => console.log('clicking')}
                     // TODO: add href funcionality
                     // href=`/${selectedTab}`
                     underline="none"
                     style={{ cursor: 'pointer' }}
                   >
-                    {selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)}
+                    ...
                   </Link>
                 </Breadcrumbs>
               </>

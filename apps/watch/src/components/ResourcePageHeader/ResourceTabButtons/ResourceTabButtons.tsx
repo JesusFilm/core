@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import { styled, useTheme } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
 
@@ -24,8 +25,8 @@ export function ResourceTabButtons({
   selectedTab,
   handleTabChange
 }: ResourceTabButtonsProps): ReactElement {
-  const theme = useTheme()
-  console.log(theme.spacing(2))
+  // const theme = useTheme()
+  // console.log(theme.spacing(2))
   const CustomToggleButton = styled(ToggleButton)(({ theme }) => ({
     borderRadius: '40px !important',
     borderColor: 'transparent',
@@ -90,6 +91,52 @@ export function ResourceTabButtons({
             </Stack>
             {t('Apps')}
           </CustomToggleButton>
+
+          {/* <>
+            <NextLink href="/journeys" passHref>
+              <CustomToggleButton
+                value="journeys"
+                // onClick={() => console.log('Journeys click')}
+              >
+                <Stack sx={{ ml: 1, mr: 2 }}>
+                  <JourneysIcon />
+                </Stack>
+                {t('journeys')}
+              </CustomToggleButton>
+            </NextLink>
+            <NextLink href="/videos" passHref>
+              <CustomToggleButton value="videos">
+                <Stack sx={{ ml: 1, mr: 2 }}>
+                  <Play1Icon />
+                </Stack>
+                {t('Videos')}
+              </CustomToggleButton>
+            </NextLink>
+            <NextLink href="/strategies" passHref>
+              <CustomToggleButton value="strategies">
+                <Stack sx={{ ml: 1, mr: 2 }}>
+                  <BulbIcon />
+                </Stack>
+                {t('Strategies')}
+              </CustomToggleButton>
+            </NextLink>
+            <NextLink href="/calendar" passHref>
+              <CustomToggleButton value="calendar">
+                <Stack sx={{ ml: 1, mr: 2 }}>
+                  <Calendar1Icon />
+                </Stack>
+                {t('Calendar')}
+              </CustomToggleButton>
+            </NextLink>
+            <NextLink href="/apps" passHref>
+              <CustomToggleButton value="apps">
+                <Stack sx={{ ml: 1, mr: 2 }}>
+                  <Grid1Icon />
+                </Stack>
+                {t('Apps')}
+              </CustomToggleButton>
+            </NextLink>
+          </> */}
         </ToggleButtonGroup>
       </Container>
     </>
