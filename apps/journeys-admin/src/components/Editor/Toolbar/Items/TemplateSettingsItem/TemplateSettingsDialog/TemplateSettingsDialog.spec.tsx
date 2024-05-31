@@ -3,9 +3,9 @@ import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
-import { GET_LANGUAGES } from '../../../../../../libs/useLanguagesQuery'
 import { GET_TAGS } from '../../../../../../libs/useTagsQuery/useTagsQuery'
 import { defaultJourney } from '../../../../data'
 

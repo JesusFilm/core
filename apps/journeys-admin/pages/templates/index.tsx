@@ -22,7 +22,7 @@ import { useTeam } from '../../src/components/Team/TeamProvider'
 import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
-import { GET_LANGUAGES } from '../../src/libs/useLanguagesQuery'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '../../src/libs/useTagsQuery/useTagsQuery'
 
 function TemplateIndexPage(): ReactElement {
