@@ -129,7 +129,7 @@ describe('SocialPreviewNode', () => {
   })
 
   it('calls select social media node on click', async () => {
-    const state: EditorState = {
+    const state: Partial<EditorState> = {
       activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Canvas,

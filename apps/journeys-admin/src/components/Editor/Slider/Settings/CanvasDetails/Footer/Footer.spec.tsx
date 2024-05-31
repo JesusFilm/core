@@ -24,7 +24,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('Footer', () => {
-  const state: EditorState = {
+  const state: Partial<EditorState> = {
     steps: [],
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,

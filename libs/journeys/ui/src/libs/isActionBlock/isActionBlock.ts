@@ -19,4 +19,4 @@ export type ActionBlock =
 
 export const isActionBlock = (
   block: TreeBlock<BlockFields>
-): block is ActionBlock => (block as ActionBlock).action !== undefined
+): block is ActionBlock => (block as ActionBlock)?.action !== undefined

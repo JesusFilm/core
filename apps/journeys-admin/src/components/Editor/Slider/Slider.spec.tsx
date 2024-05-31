@@ -61,7 +61,9 @@ describe('Slider', () => {
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
       activeContent: ActiveContent.Canvas,
       activeFab: ActiveFab.Add,
-      activeSlide: ActiveSlide.JourneyFlow
+      activeSlide: ActiveSlide.JourneyFlow,
+      journeyStatsBreakdown: [],
+      showJourneyFlowAnalytics: false
     }
     mockUseMediaQuery.mockImplementation(() => true)
     mockReactFlow()

@@ -25,7 +25,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('GoalDetails', () => {
-  const state: EditorState = {
+  const state: Partial<EditorState> = {
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Goals,

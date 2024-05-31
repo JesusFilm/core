@@ -54,7 +54,7 @@ describe('SocialPreview', () => {
   })
 
   it('should dispatch active slide action on click', () => {
-    const state: EditorState = {
+    const state: Partial<EditorState> = {
       activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Social,

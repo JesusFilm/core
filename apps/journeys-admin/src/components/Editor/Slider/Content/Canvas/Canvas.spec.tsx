@@ -59,7 +59,7 @@ describe('Canvas', () => {
     nextBlockId: null,
     children: []
   }
-  const initialState: EditorState = {
+  const initialState: Partial<EditorState> = {
     steps: [step0, step1],
     selectedStep: step0,
     selectedBlock: step0,

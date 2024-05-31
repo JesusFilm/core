@@ -24,7 +24,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('Fab', () => {
-  const state: EditorState = {
+  const state: Partial<EditorState> = {
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.Content,
     activeContent: ActiveContent.Canvas,

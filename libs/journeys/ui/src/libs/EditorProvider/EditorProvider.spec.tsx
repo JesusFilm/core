@@ -38,7 +38,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Edit,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -60,7 +62,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -81,7 +85,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -102,7 +108,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.Content,
-          activeContent: ActiveContent.Social
+          activeContent: ActiveContent.Social,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -122,7 +130,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.Content,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -143,7 +153,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -173,7 +185,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Edit,
           activeSlide: ActiveSlide.Content,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -201,7 +215,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -244,7 +260,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
           activeFab: ActiveFab.Edit,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -285,7 +303,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -304,7 +324,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeContent: ActiveContent.Canvas,
           activeFab: ActiveFab.Add,
-          activeSlide: ActiveSlide.JourneyFlow
+          activeSlide: ActiveSlide.JourneyFlow,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -324,7 +346,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -354,7 +378,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -386,7 +412,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -438,7 +466,9 @@ describe('EditorContext', () => {
           activeSlide: ActiveSlide.JourneyFlow,
           selectedBlock: block,
           selectedStep: step,
-          activeContent: ActiveContent.Canvas
+          activeContent: ActiveContent.Canvas,
+          journeyStatsBreakdown: [],
+          showJourneyFlowAnalytics: false
         }
         expect(
           reducer(state, {
@@ -487,7 +517,9 @@ describe('EditorContext', () => {
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeFab: ActiveFab.Add,
         activeSlide: ActiveSlide.Content,
-        activeContent: ActiveContent.Canvas
+        activeContent: ActiveContent.Canvas,
+        journeyStatsBreakdown: [],
+        showJourneyFlowAnalytics: false
       })
     })
   })

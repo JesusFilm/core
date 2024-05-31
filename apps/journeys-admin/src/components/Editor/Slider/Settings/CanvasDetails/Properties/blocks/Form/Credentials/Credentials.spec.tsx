@@ -27,7 +27,7 @@ const block: TreeBlock<FormBlock> = {
   children: []
 }
 
-const state: EditorState = {
+const state: Partial<EditorState> = {
   selectedBlock: block,
   activeFab: ActiveFab.Add,
   activeSlide: ActiveSlide.Drawer,

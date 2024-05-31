@@ -21,7 +21,7 @@ import { StrategyItem } from '.'
 
 describe('StrategyItem', () => {
   it('should navigate to goals and close menu on click', async () => {
-    const state: EditorState = {
+    const state: Partial<EditorState> = {
       activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Canvas,
