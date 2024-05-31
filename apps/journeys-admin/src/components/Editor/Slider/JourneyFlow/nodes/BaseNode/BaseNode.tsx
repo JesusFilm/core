@@ -138,7 +138,7 @@ export function BaseNode({
           />
         </PulseWrapper>
       )}
-      {sourceHandle === 'show' && (
+      {(sourceHandle === 'show' || sourceHandle === 'disabled') && (
         <StyledHandle
           id={id}
           type="source"
@@ -146,6 +146,7 @@ export function BaseNode({
           data-testid="BaseNodeRightHandle"
           position={Position.Right}
           onConnect={onSourceConnect}
+          isConnectable={sourceHandle !== 'disabled'}
           {...sourceHandleProps}
           sx={{
             border: 'none',
@@ -171,20 +172,22 @@ export function BaseNode({
             }
           }}
         >
-          <ArrowRightIcon
-            data-testid="BaseNodeConnectionArrowIcon"
-            className="arrow"
-            sx={{
-              position: 'absolute',
-              borderRadius: '100%',
-              fontSize: 'large',
-              color: 'background.paper',
-              backgroundColor: 'primary.main',
-              top: -HANDLE_DIAMETER,
-              right: -HANDLE_DIAMETER,
-              pointerEvents: 'none'
-            }}
-          />
+          {sourceHandle === 'show' && (
+            <ArrowRightIcon
+              data-testid="BaseNodeConnectionArrowIcon"
+              className="arrow"
+              sx={{
+                position: 'absolute',
+                borderRadius: '100%',
+                fontSize: 'large',
+                color: 'background.paper',
+                backgroundColor: 'primary.main',
+                top: -HANDLE_DIAMETER,
+                right: -HANDLE_DIAMETER,
+                pointerEvents: 'none'
+              }}
+            />
+          )}
         </StyledHandle>
       )}
     </Box>

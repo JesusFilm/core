@@ -77,7 +77,7 @@ export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide }
+    state: { steps, activeSlide, showJourneyFlowAnalytics }
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -301,10 +301,12 @@ export function JourneyFlow(): ReactElement {
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
-        onEdgeUpdate={onEdgeUpdate}
+        onEdgeUpdate={showJourneyFlowAnalytics ? undefined : onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
-        onSelectionChange={onSelectionChange}
+        onSelectionChange={
+          showJourneyFlowAnalytics ? undefined : onSelectionChange
+        }
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
         nodeTypes={nodeTypes}

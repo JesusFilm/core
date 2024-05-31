@@ -56,7 +56,7 @@ export function StepBlockNode({
       >
         <BaseNode
           id={step.id}
-          targetHandle="show"
+          targetHandle={showJourneyFlowAnalytics ? 'disabled' : 'show'}
           selected={isSelected}
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}
