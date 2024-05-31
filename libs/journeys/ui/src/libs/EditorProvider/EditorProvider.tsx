@@ -14,6 +14,7 @@ import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { searchBlocks } from '../searchBlocks'
 import { GetPlausibleStatsBreakdown_journeysPlausibleStatsBreakdown as StatsBreakdown } from '../../../../../../apps/journeys-admin/__generated__/GetPlausibleStatsBreakdown'
+import { StatsBreakdownFields } from '../plausible/__generated__/StatsBreakdownFields'
 
 export enum ActiveContent {
   Canvas = 'canvas',
@@ -86,7 +87,7 @@ export interface EditorState {
    */
   selectedStep?: TreeBlock<StepBlock>
   steps?: Array<TreeBlock<StepBlock>>
-  journeyStatsBreakdown: Array<StatsBreakdown>
+  journeyStatsBreakdown: StatsBreakdownFields[]
 }
 interface SetActiveContentAction {
   type: 'SetActiveContentAction'
