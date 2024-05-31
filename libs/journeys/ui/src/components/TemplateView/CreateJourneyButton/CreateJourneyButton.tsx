@@ -7,7 +7,7 @@ import TagManager from 'react-gtm-module'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { useJourneyDuplicateMutation } from '../../../../../../../apps/journeys-admin/src/libs/useJourneyDuplicateMutation'
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface CreateJourneyButtonProps {

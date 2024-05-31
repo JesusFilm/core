@@ -8,7 +8,7 @@ import { GetTags } from '@core/journeys/ui/useTagsQuery/__generated__/GetTags'
 import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag
-} from '../../../../../../apps/journeys-admin/__generated__/JourneyFields'
+} from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
 import { defaultJourney } from '../../../../../../apps/journeys-admin/src/components/Editor/data'

@@ -8,7 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   JourneyFields as Journey,
   JourneyFields_primaryImageBlock as PrimaryImageBlock
-} from '../../../../../../../apps/journeys-admin/__generated__/JourneyFields'
+} from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { journey } from '../../../../../../../apps/journeys-admin/src/components/Editor/Slider/Settings/GoalDetails/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'

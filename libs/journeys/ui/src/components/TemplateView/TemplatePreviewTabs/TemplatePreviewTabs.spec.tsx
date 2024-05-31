@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields } from '../../../../../../../apps/journeys-admin/__generated__/JourneyFields'
+import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { publishedJourney } from '../../../../../../../apps/journeys-admin/src/components/Editor/data'
 
 import { journeyVideoBlocks } from './data'

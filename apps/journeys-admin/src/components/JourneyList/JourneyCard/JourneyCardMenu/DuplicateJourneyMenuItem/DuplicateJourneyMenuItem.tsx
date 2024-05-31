@@ -9,7 +9,7 @@ import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
 import { JourneyDuplicate } from '../../../../../../__generated__/JourneyDuplicate'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
-import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamDialog } from '../../../../Team/CopyToTeamDialog'
 import { useTeam } from '../../../../Team/TeamProvider'

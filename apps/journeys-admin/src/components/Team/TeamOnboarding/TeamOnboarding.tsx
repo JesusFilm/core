@@ -12,7 +12,7 @@ import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCir
 
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
-import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { TeamCreateForm } from '../TeamCreateForm'
 import { useTeam } from '../TeamProvider'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'

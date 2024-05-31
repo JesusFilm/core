@@ -14,7 +14,7 @@ import { Role } from '../../../__generated__/globalTypes'
 import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag
-} from '../../../../../../apps/journeys-admin/__generated__/JourneyFields'
+} from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { journeysAdminConfig } from '../../../../../../apps/journeys-admin/src/libs/storybook'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
