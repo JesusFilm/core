@@ -1,6 +1,6 @@
 import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { GetTags_tags as ParentTag } from '../../../../../../../apps/journeys-admin/__generated__/GetTags'
+import { GetTags_tags as ParentTag } from '@core/journeys/ui/useTagsQuery/__generated__/GetTags'
 
 export const parentTags: ParentTag[] = [
   {

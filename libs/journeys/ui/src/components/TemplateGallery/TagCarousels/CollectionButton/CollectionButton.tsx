@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import NextImage, { StaticImageData } from 'next/image'
 import { ReactElement } from 'react'
 
-import { GetTags_tags as Tag } from '../../../../../../../../apps/journeys-admin/__generated__/GetTags'
+import { GetTags_tags as Tag } from '@core/journeys/ui/useTagsQuery/__generated__/GetTags'
 
 import jesusFilmImage from './assets/jesusFilm.jpg'
 import nuaImage from './assets/nua.jpg'

@@ -7,7 +7,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { Service } from '../../../../../../../__generated__/globalTypes'
 import { JourneyFields_tags as Tag } from '../../../../../../../__generated__/JourneyFields'
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
-import { GET_TAGS } from '../../../../../../libs/useTagsQuery/useTagsQuery'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
 import { defaultJourney } from '../../../../data'
 
 import { TemplateSettingsDialog } from './TemplateSettingsDialog'

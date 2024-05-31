@@ -22,7 +22,7 @@ import {
   useJourneyQuery
 } from '@core/journeys/ui/useJourneyQuery/useJourneyQuery'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
-import { GET_TAGS } from '../../src/libs/useTagsQuery/useTagsQuery'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
 
 function TemplateDetailsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

@@ -23,7 +23,7 @@ import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
-import { GET_TAGS } from '../../src/libs/useTagsQuery/useTagsQuery'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
 
 function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

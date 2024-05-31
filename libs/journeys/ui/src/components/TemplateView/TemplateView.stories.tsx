@@ -8,7 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '../../libs/useJourneyQuery/__generated__/GetJourney'
 import { GetJourneys } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
-import { GetTags } from '../../../../../../apps/journeys-admin/__generated__/GetTags'
+import { GetTags } from '@core/journeys/ui/useTagsQuery/__generated__/GetTags'
 import { GetUserRole } from '../../../../../../apps/journeys-admin/__generated__/GetUserRole'
 import { Role } from '../../../__generated__/globalTypes'
 import {
@@ -17,7 +17,7 @@ import {
 } from '../../../../../../apps/journeys-admin/__generated__/JourneyFields'
 import { journeysAdminConfig } from '../../../../../../apps/journeys-admin/src/libs/storybook'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
-import { GET_TAGS } from '../../../../../../apps/journeys-admin/src/libs/useTagsQuery/useTagsQuery'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery/useUserRoleQuery'
 import {
   defaultJourney,

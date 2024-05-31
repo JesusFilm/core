@@ -4,13 +4,13 @@ import { User } from 'next-firebase-auth'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetTags } from '../../../../../../apps/journeys-admin/__generated__/GetTags'
+import { GetTags } from '@core/journeys/ui/useTagsQuery/__generated__/GetTags'
 import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag
 } from '../../../../../../apps/journeys-admin/__generated__/JourneyFields'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
-import { GET_TAGS } from '../../../../../../apps/journeys-admin/src/libs/useTagsQuery/useTagsQuery'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
 import { defaultJourney } from '../../../../../../apps/journeys-admin/src/components/Editor/data'
 
 import { parentTags, tags } from './TemplateTags/data'

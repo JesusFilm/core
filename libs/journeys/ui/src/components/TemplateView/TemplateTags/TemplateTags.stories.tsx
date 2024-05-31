@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../../../../../../apps/journeys-admin/src/libs/storybook'
-import { GET_TAGS } from '../../../../../../../apps/journeys-admin/src/libs/useTagsQuery/useTagsQuery'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
 
 import { parentTags, tags } from './data'
 import { TemplateTags } from './TemplateTags'

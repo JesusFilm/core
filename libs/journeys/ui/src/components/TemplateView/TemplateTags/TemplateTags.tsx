@@ -7,7 +7,7 @@ import { SwiperOptions } from 'swiper/types'
 
 import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { useTagsQuery } from '../../../../../../../apps/journeys-admin/src/libs/useTagsQuery'
+import { useTagsQuery } from '@core/journeys/ui/useTagsQuery'
 import { ParentTagIcon } from '../../../../../../../apps/journeys-admin/src/components/ParentTagIcon'
 
 import { getSortedTags } from './getSortedTags'
