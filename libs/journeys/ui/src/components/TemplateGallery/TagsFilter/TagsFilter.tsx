@@ -16,7 +16,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetTags_tags as Tag } from '@core/journeys/ui/useTagsQuery/__generated__/GetTags'
 import { useTagsQuery } from '@core/journeys/ui/useTagsQuery'
-import { ParentTagIcon } from '../../../../../../../apps/journeys-admin/src/components/ParentTagIcon'
+import { ParentTagIcon } from '@core/journeys/ui/ParentTagIcon'
 
 interface TagsFilterProps {
   label: string
