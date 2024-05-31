@@ -1,9 +1,11 @@
-import { gql, useQuery } from '@apollo/client'
+import { QueryResult, gql, useQuery } from '@apollo/client'
+
+import { STATS_BREAKDOWN_FIELDS } from '@core/journeys/ui/plausible/StatsBreakdownFields'
+
 import {
   GetPlausibleStatsBreakdown,
   GetPlausibleStatsBreakdownVariables
 } from '../../../__generated__/GetPlausibleStatsBreakdown'
-import { STATS_BREAKDOWN_FIELDS } from '@core/journeys/ui/plausible/StatsBreakdownFields'
 
 export const GET_PLAUSIBLE_STATS_BREAKDOWN = gql`
   ${STATS_BREAKDOWN_FIELDS}
@@ -20,7 +22,10 @@ export const GET_PLAUSIBLE_STATS_BREAKDOWN = gql`
 
 export function usePlausibleStatsBreakdownQuery(
   variables: GetPlausibleStatsBreakdownVariables
-) {
+): QueryResult<
+  GetPlausibleStatsBreakdown,
+  GetPlausibleStatsBreakdownVariables
+> {
   return useQuery<
     GetPlausibleStatsBreakdown,
     GetPlausibleStatsBreakdownVariables

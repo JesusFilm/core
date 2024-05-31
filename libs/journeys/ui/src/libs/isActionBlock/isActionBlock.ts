@@ -1,5 +1,6 @@
 import { TreeBlock } from '../block'
 import {
+  BlockFields,
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_FormBlock as FormBlock,
   BlockFields_RadioOptionBlock as RadioOptionBlock,
@@ -16,5 +17,6 @@ export type ActionBlock =
   | TreeBlock<FormBlock>
   | TreeBlock<VideoBlock>
 
-export const isActionBlock = (block: TreeBlock<any>): block is ActionBlock =>
-  block?.action !== undefined
+export const isActionBlock = (
+  block: TreeBlock<BlockFields>
+): block is ActionBlock => (block as ActionBlock).action !== undefined

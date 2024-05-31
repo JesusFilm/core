@@ -7,12 +7,12 @@ import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { IdType } from '../../../__generated__/globalTypes'
+import { usePlausibleStatsBreakdownQuery } from '../../libs/usePlausibleStatsBreakdownQuery'
 
 import { Fab } from './Fab'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
-import { usePlausibleStatsBreakdownQuery } from '../../libs/usePlausibleStatsBreakdownQuery'
-import { IdType } from '../../../__generated__/globalTypes'
 
 interface EditorProps {
   journey?: Journey
@@ -40,7 +40,7 @@ export function Editor({
       : undefined
 
   const { data } = usePlausibleStatsBreakdownQuery({
-    id: journey!.id,
+    id: journey?.id ?? '',
     where: { property: 'event:page' },
     idType: IdType.databaseId
   })

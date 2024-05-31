@@ -12,8 +12,8 @@ import {
 
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
-import { searchBlocks } from '../searchBlocks'
 import { StatsBreakdownFields } from '../plausible/__generated__/StatsBreakdownFields'
+import { searchBlocks } from '../searchBlocks'
 
 export enum ActiveContent {
   Canvas = 'canvas',
@@ -139,7 +139,7 @@ interface SetShowJourneyFlowAnalyticsAction {
 
 interface SetStatsBreakdownAction {
   type: 'SetStatsBreakdownAction'
-  journeyStatsBreakdown: Array<StatsBreakdownFields>
+  journeyStatsBreakdown: StatsBreakdownFields[]
 }
 
 type EditorAction =
