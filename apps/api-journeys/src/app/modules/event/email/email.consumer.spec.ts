@@ -24,25 +24,31 @@ import {
   EventsNotificationJob
 } from './email.consumer'
 
+jest.mock('@apollo/client')
+
 describe('EmailConsumer', () => {
   let emailConsumer: EmailConsumer,
     emailService: EmailService,
     prismaService: DeepMockProxy<PrismaService>
 
-  const userJourneys = [
+  const userJourneys: UserJourney[] = [
     {
-      id: 'userJourneyId',
-      userId: 'userId2',
+      id: 'userJourneyId1',
+      userId: 'userId1',
       journeyId: 'journeyId',
-      role: UserJourneyRole.owner
+      role: UserJourneyRole.owner,
+      updatedAt: new Date(),
+      openedAt: null
     },
     {
-      id: 'userJourneyId',
-      userId: 'userId3',
+      id: 'userJourneyId2',
+      userId: 'userId2',
       journeyId: 'journeyId',
-      role: UserJourneyRole.editor
+      role: UserJourneyRole.editor,
+      updatedAt: new Date(),
+      openedAt: null
     }
-  ] as UserJourney[]
+  ]
 
   const journey: Journey & { userJourneys: UserJourney[] } = {
     id: 'journeyId',
@@ -101,7 +107,8 @@ describe('EmailConsumer', () => {
     data: {
       journeyId: journey.id,
       visitorId: visitor.id
-    }
+    },
+    name: 'visitor-event'
   } as unknown as Job<EventsNotificationJob, unknown, string>
 
   beforeEach(async () => {
@@ -141,33 +148,38 @@ describe('EmailConsumer', () => {
 
   describe('sendEventsNotification', () => {
     it('should send events notification email successfully', async () => {
-      jest
-        .spyOn(emailService, 'sendEmail')
-        .mockImplementation(async () => await Promise.resolve())
-
       jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
         async () =>
           await Promise.resolve({
             data: {
               user: {
-                id: 'userId',
+                id: 'userJourneyId1',
                 firstName: 'Joe',
                 imageUrl: null,
                 email: 'jron@example.com'
               }
-            },
-            variables: {
-              userId: 'userId'
             }
           } as unknown as ApolloQueryResult<unknown>)
       )
 
-      prismaService.journey.findUnique.mockResolvedValue(journey)
-      prismaService.visitor.findUnique.mockResolvedValue(visitor)
+      jest
+        .spyOn(emailService, 'sendEmail')
+        .mockImplementation(async () => await Promise.resolve())
+
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      prismaService.visitor.findUnique.mockResolvedValueOnce(visitor)
+
+      let args = {}
+      emailService.sendEmail = jest
+        .fn()
+        .mockImplementation(async (callArgs) => {
+          args = callArgs
+          await Promise.resolve()
+        })
 
       await emailConsumer.sendEventsNotification(job)
-
-      expect(emailService.sendEmail).toHaveBeenCalledWith({
+      expect(emailService.sendEmail).toHaveBeenCalled()
+      expect(args).toHaveBeenCalledWith({
         to: 'jron@example.com',
         subject: 'A visitor has interacted with your journey',
         text: expect.any(String),
