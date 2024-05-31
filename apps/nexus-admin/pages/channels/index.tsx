@@ -25,12 +25,9 @@ export const GET_CHANNELS = gql`
       platform
       connected
       status
-      youtube {
-        title
-        youtubeId
-        channelId
-        imageUrl
-      }
+      title
+      youtubeId
+      imageUrl
     }
   }
 `
