@@ -12,7 +12,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { GetJourneys_journeys as Journey } from '@core/journeys/ui/useJourneysQuery/__generated__/GetJourneys'
-import { abbreviateLanguageName } from '../../../../../../../apps/journeys-admin/src/libs/abbreviateLanguageName'
+import { abbreviateLanguageName } from '@core/journeys/ui/abbreviateLanguageName'
 import { useRouter } from 'next/router'
 
 interface HoverLayerProps {
