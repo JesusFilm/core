@@ -11,23 +11,31 @@ export class EmailService {
     private readonly emailQueue: Queue<EventsNotificationJob>
   ) {}
 
-  async sendAnalyticsEmail(
-    journeyId: string,
-    visitorId: string
-  ): Promise<void> {
+  // Don't send email if user is watching video
+  async sendEventsEmail(journeyId: string, visitorId: string): Promise<void> {
     const jobId = `visitor-event-${journeyId}-${visitorId}`
     const visitorEmailJob = await this.emailQueue.getJob(jobId)
     const delay = 2 * 60 * 1000
 
-    if (visitorEmailJob != null) await this.emailQueue.remove(jobId)
-
-    await this.emailQueue.add(
-      'visitor-event',
-      {
-        journeyId,
-        visitorId
-      },
-      { jobId }
-    )
+    if (visitorEmailJob != null) {
+      await this.emailQueue.remove(jobId)
+      await this.emailQueue.add(
+        'visitor-event',
+        {
+          journeyId,
+          visitorId
+        },
+        { jobId, delay }
+      )
+    } else {
+      await this.emailQueue.add(
+        'visitor-event',
+        {
+          journeyId,
+          visitorId
+        },
+        { jobId, delay }
+      )
+    }
   }
 }

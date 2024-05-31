@@ -58,63 +58,66 @@ export class EmailConsumer extends WorkerHost {
       }
     })
 
-    console.log('visitor', visitor)
-
     if (journey == null) return
     if (visitor == null) return
 
-    // Update logic to be sending to either owner or members
     const recipientUserIds = journey?.userJourneys
       ?.filter(
-        (userJourney) => userJourney.role === UserJourneyRole.owner
-        // userJourney.role === UserJourneyRole.editor
+        (userJourney) =>
+          userJourney.role === UserJourneyRole.owner ||
+          userJourney.role === UserJourneyRole.editor
       )
       ?.map((userJourney) => userJourney.userId)
 
-    // will have to loop throug all the recipients
-    const { data } = await apollo.query({
-      query: gql`
-        query User($userId: ID!) {
-          user(id: $userId) {
-            id
-            firstName
-            email
-            imageUrl
+    if (recipientUserIds == null) return
+
+    await Promise.all(
+      recipientUserIds.map(async (userId) => {
+        const { data } = await apollo.query({
+          query: gql`
+            query User($userId: ID!) {
+              user(id: $userId) {
+                id
+                firstName
+                email
+                imageUrl
+              }
+            }
+          `,
+          variables: { userId }
+        })
+
+        const text = render(
+          VisitorInteraction({
+            title: journey.title,
+            recipient: data.user,
+            url: '',
+            visitor
+          }),
+          {
+            plainText: true
           }
-        }
-      `,
-      variables: { userId: recipientUserIds[0] }
-    })
+        )
 
-    const text = render(
-      VisitorInteraction({
-        title: journey.title,
-        recipient: data.user,
-        url: '',
-        visitor
-      }),
-      {
-        plainText: true
-      }
+        const html = render(
+          VisitorInteraction({
+            title: journey.title,
+            recipient: data.user,
+            url: '',
+            visitor
+          }),
+          {
+            pretty: true
+          }
+        )
+
+        await this.emailService.sendEmail({
+          to: data.user.email,
+          subject: `A visitor has interacted with your journey`,
+          text,
+          html
+        })
+      })
     )
-
-    const html = render(
-      VisitorInteraction({
-        title: journey.title,
-        recipient: data.user,
-        url: '',
-        visitor
-      }),
-      {
-        pretty: true
-      }
-    )
-
-    await this.emailService.sendEmail({
-      to: data.user.email,
-      subject: `A visitor has interacted with your journey`,
-      text,
-      html
-    })
   }
 }
