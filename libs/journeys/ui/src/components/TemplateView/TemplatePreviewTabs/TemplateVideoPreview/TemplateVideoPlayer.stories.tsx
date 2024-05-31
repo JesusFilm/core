@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../../../../../apps/journeys-admin/src/libs/storybook'
 import { videoBlocksFiltered } from '../data'
 

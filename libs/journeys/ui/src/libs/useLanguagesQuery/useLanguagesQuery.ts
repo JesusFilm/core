@@ -3,7 +3,7 @@ import { QueryResult, gql, useQuery } from '@apollo/client'
 import {
   GetLanguages,
   GetLanguagesVariables
-} from '../../libs/useLanguagesQuery/__generated__/GetLanguages'
+} from '@core/journeys/ui/useLanguagesQuery/__generated__/GetLanguages'
 
 export const GET_LANGUAGES = gql`
   query GetLanguages($languageId: ID, $where: LanguagesFilter) {

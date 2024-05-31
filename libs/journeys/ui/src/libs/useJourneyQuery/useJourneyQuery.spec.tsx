@@ -5,7 +5,7 @@ import { formatISO, startOfYear } from 'date-fns'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_language as Language
-} from '../../libs/useJourneyQuery/__generated__/GetJourney'
+} from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,

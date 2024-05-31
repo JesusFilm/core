@@ -17,9 +17,9 @@ import {
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { GetLanguages_languages } from '../../../libs/useLanguagesQuery/__generated__/GetLanguages'
+import { GetLanguages_languages } from '@core/journeys/ui/useLanguagesQuery/__generated__/GetLanguages'
 import { setBeaconPageViewed } from '../../../../../../../apps/journeys-admin/src/libs/setBeaconPageViewed'
-import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
+import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'

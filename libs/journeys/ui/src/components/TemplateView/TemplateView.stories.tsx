@@ -6,8 +6,8 @@ import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '../../libs/useJourneyQuery/__generated__/GetJourney'
-import { GetJourneys } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
+import { GetJourneys } from '@core/journeys/ui/useJourneysQuery/__generated__/GetJourneys'
 import { GetTags } from '@core/journeys/ui/useTagsQuery/__generated__/GetTags'
 import { GetUserRole } from '../../../../../../apps/journeys-admin/__generated__/GetUserRole'
 import { Role } from '../../../__generated__/globalTypes'

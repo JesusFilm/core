@@ -7,14 +7,14 @@ import {
   GetJourneys,
   GetJourneys_journeys as Journey,
   GetJourneys_journeys_tags as Tag
-} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+} from '@core/journeys/ui/useJourneysQuery/__generated__/GetJourneys'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../apps/journeys-admin/src/libs/storybook'
-import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
+import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
 
 import { TemplateSections } from '.'
 

@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 
-import { GetJourneys_journeys as Journey } from '../../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { GetJourneys_journeys as Journey } from '@core/journeys/ui/useJourneysQuery/__generated__/GetJourneys'
 import {
   JourneyStatus,
   ThemeMode,

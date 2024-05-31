@@ -5,7 +5,7 @@ import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import {
   GetJourney,
   GetJourneyVariables
-} from '../../libs/useJourneyQuery/__generated__/GetJourney'
+} from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}

@@ -4,7 +4,7 @@ import noop from 'lodash/noop'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../../../../../apps/journeys-admin/src/libs/storybook'
 import { journeyVideoBlocks } from '../data'
 

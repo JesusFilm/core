@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SwiperOptions } from 'swiper/types'
 
-import { GetJourneys_journeys as Journey } from '../../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { GetJourneys_journeys as Journey } from '@core/journeys/ui/useJourneysQuery/__generated__/GetJourneys'
 import {
   JourneyStatus,
   ThemeMode,

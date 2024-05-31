@@ -5,8 +5,8 @@ import {
   GetJourneysVariables,
   GetJourneys_journeys as Journey,
   GetJourneys_journeys_tags as Tag
-} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
-import { GetLanguages } from '../../libs/useLanguagesQuery/__generated__/GetLanguages'
+} from '@core/journeys/ui/useJourneysQuery/__generated__/GetJourneys'
+import { GetLanguages } from '@core/journeys/ui/useLanguagesQuery/__generated__/GetLanguages'
 import { GetTags } from '@core/journeys/ui/useTagsQuery/__generated__/GetTags'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
 import {
@@ -15,8 +15,8 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
-import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
+import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 const defaultTemplate: Journey = {
   __typename: 'Journey',

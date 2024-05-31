@@ -9,7 +9,7 @@ import {
 import {
   GetJourneys,
   GetJourneysVariables
-} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+} from '@core/journeys/ui/useJourneysQuery/__generated__/GetJourneys'
 
 export const GET_JOURNEYS = gql`
   query GetJourneys($where: JourneysFilter) {
