@@ -5,7 +5,7 @@ module "plausible" {
   env                   = var.env
   doppler_token         = var.doppler_token
   environment_variables = local.environment_variables
-  docker_image          = "plausible/analytics:v2"
+  docker_image          = "ghcr.io/plausible/community-edition:v2.1.0"
 }
 
 module "postgresql" {

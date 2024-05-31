@@ -23,10 +23,11 @@ variable "service_config" {
     alb_dns_name   = string
     zone_id        = string
     is_public      = bool
+    command        = optional(list(string))
 
     alb_listener = object({
       alb_arn         = string
-      port            = optional(number)
+      port            = number
       protocol        = string
       certificate_arn = optional(string)
       dns_name        = optional(string)

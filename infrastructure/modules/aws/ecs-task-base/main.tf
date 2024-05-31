@@ -28,10 +28,11 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     # app container
     {
       name      = "${local.ecs_task_definition_family}-app"
-      image     = "${var.docker_image}:latest"
+      image     = "${var.docker_image}"
       essential = true
       cpu       = var.service_config.cpu
       memory    = var.service_config.memory
+      command   = var.service_config.command
       portMappings = [
         {
           containerPort = var.service_config.container_port
