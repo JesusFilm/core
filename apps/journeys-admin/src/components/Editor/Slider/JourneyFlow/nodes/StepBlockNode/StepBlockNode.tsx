@@ -9,7 +9,9 @@ import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { BaseNode } from '../BaseNode'
 
 import { ActionButton } from './ActionButton'
+import { getStepAnalytics } from './libs/getStepAnalytics'
 import { STEP_NODE_WIDTH } from './libs/sizes'
+import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
 import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
@@ -20,16 +22,29 @@ export function StepBlockNode({
   dragging
 }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent, showJourneyFlowAnalytics }
+    state: {
+      steps,
+      selectedStep,
+      activeContent,
+      showJourneyFlowAnalytics,
+      journeyStatsBreakdown
+    }
   } = useEditor()
   const step = steps?.find((step) => step.id === id)
   const actionBlocks = filterActionBlocks(step)
+
+  const stepAnalytics = getStepAnalytics(
+    journeyStatsBreakdown?.find((step) => step.property.includes(id))
+  )
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
   return step != null ? (
-    <>
+    <Stack sx={{ position: 'relative' }}>
+      {showJourneyFlowAnalytics && (
+        <StepBlockNodeAnalytics {...stepAnalytics} />
+      )}
       {!showJourneyFlowAnalytics && (
         <StepBlockNodeMenu
           in={isSelected}
@@ -74,7 +89,7 @@ export function StepBlockNode({
           ))}
         </Stack>
       </Stack>
-    </>
+    </Stack>
   ) : (
     <></>
   )
