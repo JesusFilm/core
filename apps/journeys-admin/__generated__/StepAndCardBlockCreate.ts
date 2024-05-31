@@ -20,12 +20,20 @@ export interface StepAndCardBlockCreate_stepBlockCreate {
    */
   locked: boolean;
   /**
-   * nextBlockId contains the preferred block to navigate to when a
-   * NavigateAction occurs or if the user manually tries to advance to the next
-   * step. If no nextBlockId is set it will automatically navigate to the next
-   * step in the journey based on parentOrder.
+   * nextBlockId contains the preferred block to navigate to, users will have to
+   * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * x is used to position the block horizontally in the journey flow diagram on
+   * the editor.
+   */
+  x: number | null;
+  /**
+   * y is used to position the block vertically in the journey flow diagram on
+   * the editor.
+   */
+  y: number | null;
 }
 
 export interface StepAndCardBlockCreate_cardBlockCreate {

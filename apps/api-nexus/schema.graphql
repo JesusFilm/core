@@ -221,6 +221,7 @@ enum PrivacyStatus {
 }
 
 enum ResourceStatus {
+  created
   deleted
   published
   processing

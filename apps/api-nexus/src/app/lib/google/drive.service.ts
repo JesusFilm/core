@@ -59,7 +59,6 @@ export class GoogleDriveService {
       fields: 'name, mimeType'
     })
 
-    
     const downloadFileName = driveFile.data.name ?? 'sample.mp4'
     const downloadDirectory = path.join(__dirname, '..', 'downloads')
     const fileName = uuidv4() + path.extname(downloadFileName)

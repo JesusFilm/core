@@ -99,8 +99,7 @@ export class BullMQService {
     }
 
     const channelData = await this.prismaService.channel.findUnique({
-      where: { id: channel.id },
-      include: { youtube: true }
+      where: { id: channel.id }
     })
 
     const jobs = await Promise.all(
@@ -134,7 +133,7 @@ export class BullMQService {
           },
           channel: {
             id: channel?.id ?? '',
-            channelId: channelData?.youtube?.youtubeId ?? ''
+            channelId: channelData?.youtubeId ?? ''
           }
         }
 
@@ -193,8 +192,7 @@ export class BullMQService {
     const channel = await this.prismaService.channel.findFirst({
       where: { id: channelId },
       include: {
-        resourceChannels: { where: { resourceId: { in: resourceIds } } },
-        youtube: true
+        resourceChannels: { where: { resourceId: { in: resourceIds } } }
       }
     })
 
@@ -224,10 +222,12 @@ export class BullMQService {
     })
 
     for (const item of resources) {
-      const batchTask = await this.prismaService.batchTask.findFirst({where: {task: {path: ["resourceId"], equals: item.id}}})
+      const batchTask = await this.prismaService.batchTask.findFirst({
+        where: { task: { path: ['resourceId'], equals: item.id } }
+      })
       const job: UpdateVideoLocalizationJob = {
         batchId: batch.id,
-        batchTaskId: batchTask?.id ?? '', 
+        batchTaskId: batchTask?.id ?? '',
         accessToken,
         channel: {
           id: channel?.id ?? '',
@@ -235,8 +235,14 @@ export class BullMQService {
         },
         resource: {
           language: item.language ?? 'en',
-          title: item.resourceLocalizations.find((localization) => localization.language === item.language)?.title ?? '',
-          description: item.resourceLocalizations.find((localization) => localization.language === item.language)?.description ?? '',
+          title:
+            item.resourceLocalizations.find(
+              (localization) => localization.language === item.language
+            )?.title ?? '',
+          description:
+            item.resourceLocalizations.find(
+              (localization) => localization.language === item.language
+            )?.description ?? '',
           category: item.category ?? '',
           privacyStatus: item.privacy,
           isMadeForKids: item.isMadeForKids,

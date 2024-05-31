@@ -60,13 +60,13 @@ export class NexusJobListener implements OnModuleInit {
           })
         ])
 
-        if(job.name === 'processResourceUpload') {
-          const jobData = job.data as UploadResourceJob;
+        if (job.name === 'processResourceUpload') {
+          const jobData = job.data as UploadResourceJob
           void Promise.all([
             this.prismaService.resource.updateMany({
               where: { id: jobData.resource.id },
               data: {
-                status: 'published'
+                status: 'done'
               }
             })
           ])
@@ -87,12 +87,11 @@ export class NexusJobListener implements OnModuleInit {
           this.prismaService.batch.updateMany({
             where: { id: job.data.batchId },
             data: { status: 'error' }
-          }),
-          
+          })
         ])
 
-        if(job.name === 'processResourceUpload') {
-          const jobData = job.data as UploadResourceJob;
+        if (job.name === 'processResourceUpload') {
+          const jobData = job.data as UploadResourceJob
           void Promise.all([
             this.prismaService.resource.updateMany({
               where: { id: jobData.resource.id },

@@ -621,4 +621,30 @@ describe('BlockService', () => {
       ).toBe(false)
     })
   })
+
+  describe('findParentStepBlock', () => {
+    it('should return step block', async () => {
+      await prismaService.block.findUnique
+        .mockResolvedValueOnce(typographyBlock)
+        .mockResolvedValueOnce(cardBlock)
+        .mockResolvedValueOnce(stepBlock)
+      expect(await service.findParentStepBlock(typographyBlock.id)).toEqual({
+        id: 'step',
+        journeyId: '1',
+        nextBlockId: 'someId',
+        parentBlockId: null,
+        typename: 'StepBlock'
+      })
+    })
+
+    it('should return undefined if parentBlockId is null', async () => {
+      await prismaService.block.findUnique.mockResolvedValueOnce({
+        ...typographyBlock,
+        parentBlockId: null
+      })
+      expect(
+        await service.findParentStepBlock(typographyBlock.id)
+      ).toBeUndefined()
+    })
+  })
 })

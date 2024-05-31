@@ -32,7 +32,7 @@ describe('ResourceResolver', () => {
   const resource: Resource = {
     id: 'resourceId',
     name: 'Resource Name',
-    status: ResourceStatus.published,
+    status: ResourceStatus.created,
     createdAt: new Date(),
     updatedAt: new Date(),
     deletedAt: null,
@@ -43,7 +43,8 @@ describe('ResourceResolver', () => {
     isMadeForKids: false,
     playlistId: null,
     mediaComponentId: null,
-    notifySubscribers: false
+    notifySubscribers: false,
+    publishedAt: null
   }
   const resourceWithNexusUserNexus = {
     ...resource
@@ -156,12 +157,15 @@ describe('ResourceResolver', () => {
       )
     })
 
-    // it('throws error if not authorized', async () => {
-    //   prismaService.resource.findUnique.mockResolvedValueOnce(resource)
-    //   await expect(resolver.resource(ability, 'resourceId')).rejects.toThrow(
-    //     'user is not allowed to view resource'
-    //   )
-    // })
+    it('throws error if not authorized', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce({
+        ...resource,
+        deletedAt: new Date()
+      })
+      await expect(resolver.resource(ability, 'resourceId')).rejects.toThrow(
+        'user is not allowed to view resource'
+      )
+    })
   })
 
   describe('resourceCreate', () => {
@@ -186,7 +190,7 @@ describe('ResourceResolver', () => {
         data: {
           id: 'resourceId',
           name: 'New Resource',
-          status: 'published'
+          status: 'created'
         }
       })
     })
@@ -200,16 +204,6 @@ describe('ResourceResolver', () => {
         })
       ).rejects.toThrow('resource not found')
     })
-
-    // it('throws error if not authorized', async () => {
-    //   prismaService.resource.create.mockResolvedValueOnce(resource)
-    //   prismaService.resource.findUnique.mockResolvedValue(resource)
-    //   await expect(
-    //     resolver.resourceCreate(ability, {
-    //       name: 'New Resource'
-    //     })
-    //   ).rejects.toThrow('user is not allowed to create resource')
-    // })
   })
 
   describe('resourceUpdate', () => {
@@ -247,12 +241,15 @@ describe('ResourceResolver', () => {
       })
     })
 
-    // it('throws error if not authorized', async () => {
-    //   prismaService.resource.findUnique.mockResolvedValueOnce(resource)
-    //   await expect(
-    //     resolver.resourceUpdate(ability, 'resourceId', { name: 'new title' })
-    //   ).rejects.toThrow('user is not allowed to update resource')
-    // })
+    it('throws error if not authorized', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce({
+        ...resource,
+        deletedAt: new Date()
+      })
+      await expect(
+        resolver.resourceUpdate(ability, 'resourceId', { name: 'new title' })
+      ).rejects.toThrow('user is not allowed to update resource')
+    })
 
     it('throws error if not found', async () => {
       prismaService.resource.findUnique.mockResolvedValueOnce(null)
@@ -267,25 +264,32 @@ describe('ResourceResolver', () => {
       prismaService.resource.findUnique.mockResolvedValueOnce(
         resourceWithNexusUserNexus
       )
-      prismaService.resource.update.mockResolvedValueOnce(resource)
+      prismaService.resource.update.mockResolvedValueOnce({
+        ...resource
+      })
       expect(await resolver.resourceDelete(ability, 'resourceId')).toEqual(
         resource
       )
       expect(prismaService.resource.update).toHaveBeenCalledWith({
         where: { id: 'resourceId' },
-        data: { status: ResourceStatus.deleted },
+        data: {
+          deletedAt: expect.any(Date)
+        },
         include: {
           resourceLocalizations: true
         }
       })
     })
 
-    // it('throws error if not authorized', async () => {
-    //   prismaService.resource.findUnique.mockResolvedValueOnce(resource)
-    //   await expect(
-    //     resolver.resourceDelete(ability, 'resourceId')
-    //   ).rejects.toThrow('user is not allowed to delete resource')
-    // })
+    it('throws error if not authorized', async () => {
+      prismaService.resource.findUnique.mockResolvedValueOnce({
+        ...resource,
+        deletedAt: new Date()
+      })
+      await expect(
+        resolver.resourceDelete(ability, 'resourceId')
+      ).rejects.toThrow('user is not allowed to delete resource')
+    })
 
     it('throws error if not found', async () => {
       prismaService.resource.findUnique.mockResolvedValueOnce(null)

@@ -10,7 +10,6 @@ import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import {
   ChannelCreateInput,
   ChannelFilter,
-  ChannelStatus,
   ChannelUpdateInput,
   ConnectYoutubeChannelInput
 } from '../../__generated__/graphql'
@@ -37,8 +36,7 @@ export class ChannelResolver {
       where: {
         AND: [accessibleChannels, filter]
       },
-      take: where?.limit ?? undefined,
-      include: { youtube: true }
+      take: where?.limit ?? undefined
     })
   }
 
@@ -49,8 +47,7 @@ export class ChannelResolver {
     @Args('id') id: string
   ): Promise<Channel | null> {
     const channel = await this.prismaService.channel.findUnique({
-      where: { id },
-      include: { youtube: true }
+      where: { id }
     })
     if (channel == null)
       throw new GraphQLError('channel not found', {
@@ -74,13 +71,11 @@ export class ChannelResolver {
       await this.prismaService.channel.create({
         data: {
           ...input,
-          id,
-          status: ChannelStatus.published
+          id
         }
       })
       const channel = await tx.channel.findUnique({
-        where: { id },
-        include: { youtube: true }
+        where: { id }
       })
       if (channel == null)
         throw new GraphQLError('channel not found', {
@@ -102,8 +97,7 @@ export class ChannelResolver {
     @Args('input') input: ChannelUpdateInput
   ): Promise<Channel> {
     const channel = await this.prismaService.channel.findUnique({
-      where: { id },
-      include: { youtube: true }
+      where: { id }
     })
     if (channel == null)
       throw new GraphQLError('channel not found', {
@@ -118,8 +112,7 @@ export class ChannelResolver {
       data: {
         name: input.name ?? undefined,
         platform: input.platform ?? undefined
-      },
-      include: { youtube: true }
+      }
     })
   }
 
@@ -145,10 +138,9 @@ export class ChannelResolver {
         id
       },
       data: {
-        status: ChannelStatus.deleted,
-        connected: false
-      },
-      include: { youtube: true }
+        connected: false,
+        deletedAt: new Date()
+      }
     })
   }
 
@@ -190,9 +182,11 @@ export class ChannelResolver {
         extensions: { code: 'NOT_FOUND' }
       })
 
-    await this.prismaService.channelYoutube.create({
+    await this.prismaService.channel.update({
+      where: {
+        id: channel.id
+      },
       data: {
-        channelId: channel.id,
         title: youtubeChannels.items[0].snippet.title,
         description: youtubeChannels.items[0].snippet.description,
         youtubeId: youtubeChannels.items[0].id,
@@ -202,8 +196,7 @@ export class ChannelResolver {
 
     return await this.prismaService.channel.update({
       where: { id: input.channelId },
-      data: { connected: true },
-      include: { youtube: true }
+      data: { connected: true }
     })
   }
 }

@@ -83,7 +83,7 @@ export class ResourceResolver {
         data: {
           ...input,
           id,
-          status: ResourceStatus.published
+          status: ResourceStatus.created
         }
       })
       const resource = await tx.resource.findUnique({
@@ -155,7 +155,7 @@ export class ResourceResolver {
         id
       },
       data: {
-        status: ResourceStatus.deleted
+        deletedAt: new Date()
       },
       include: {
         resourceLocalizations: true
