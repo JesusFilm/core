@@ -3,8 +3,10 @@ type Channel @key(fields: "id") {
   name: String!
   platform: String
   connected: Boolean
-  youtube: ChannelYoutube
-  status: ChannelStatus!
+  title: String
+  description: String
+  youtubeId: String
+  imageUrl: String
   createdAt: DateTime!
 }
 
@@ -12,16 +14,6 @@ enum ChannelStatus {
   created
   deleted
   published
-}
-
-type ChannelYoutube {
-  id: ID!
-  channelId: String
-  channel: Channel
-  title: String
-  description: String
-  youtubeId: String
-  imageUrl: String
 }
 
 input ChannelCreateInput {
