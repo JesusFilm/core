@@ -70,42 +70,9 @@ function TestComponent({
 // create page for resourcepageheader, to deploy on watch x
 // use current pathname to highlight the selected button (eg '/journeys' pathname should highlight journeys button)
 
-// add nextLinks to toggle buttons
-// try to make buttons go full width of screen
-
 export function ResourcePageHeader(): ReactElement {
   const [selectedTab, setSelectedTab] = useState('journeys')
   const [testButtonClicked, setTestButtonClicked] = useState(false)
-  // console.log(testButtonClicked)
-  // console.log(selectedTab)
-
-  // const router = useRouter()
-  // console.log(router.pathname)
-  // const handleTabChange = async (_event, value: string): Promise<void> => {
-  //   // console.log(value)
-  //   setSelectedTab(value)
-  //   setTestButtonClicked(false)
-  //   // if (value !== null) {
-  //   //   setSelectedTab(value)
-  //   //   // console.log('pushing path')
-  //   //   try {
-  //   //     await router.push(`/${value}`)
-  //   //     console.log(router.pathname)
-  //   //   } catch (e) {
-  //   //     console.log(e)
-  //   //   }
-  //   }
-  //   // console.log(value, ': ', router.pathname)
-  //   // add logic for changing nextlink to selected tab value
-  // }
-
-  // function handleTabChange(_event, value: string): void {
-  //   console.log('handle tab change')
-  //   setSelectedTab(value)
-  //   setTestButtonClicked(false)
-  //   // add logic for changing nextlink to selected tab value
-  // }
-
   return (
     <>
       <Stack
