@@ -13,7 +13,6 @@ import {
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { searchBlocks } from '../searchBlocks'
-import { GetPlausibleStatsBreakdown_journeysPlausibleStatsBreakdown as StatsBreakdown } from '../../../../../../apps/journeys-admin/__generated__/GetPlausibleStatsBreakdown'
 import { StatsBreakdownFields } from '../plausible/__generated__/StatsBreakdownFields'
 
 export enum ActiveContent {
@@ -140,7 +139,7 @@ interface SetShowJourneyFlowAnalyticsAction {
 
 interface SetStatsBreakdownAction {
   type: 'SetStatsBreakdownAction'
-  journeyStatsBreakdown: Array<StatsBreakdown>
+  journeyStatsBreakdown: Array<StatsBreakdownFields>
 }
 
 type EditorAction =
