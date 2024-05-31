@@ -14,7 +14,7 @@ import Image3Icon from '@core/shared/ui/icons/Image3'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { setBeaconPageViewed } from '../../../../../../../../../libs/setBeaconPageViewed'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { palette } from '../../../../../../../../ThemeProvider/admin/tokens/colors'
 
 import { BackgroundMediaVideo } from './Video/BackgroundMediaVideo'

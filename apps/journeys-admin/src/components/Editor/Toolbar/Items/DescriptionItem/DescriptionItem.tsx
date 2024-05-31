@@ -6,7 +6,7 @@ import { ComponentProps, ReactElement, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import File5Icon from '@core/shared/ui/icons/File5'
 
-import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { Item } from '../Item/Item'
 
 const DescriptionDialog = dynamic(

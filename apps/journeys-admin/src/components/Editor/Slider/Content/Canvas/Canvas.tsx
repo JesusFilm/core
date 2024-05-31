@@ -18,7 +18,7 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
-import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { FramePortal } from '../../../../FramePortal'
 import { Fab } from '../../../Fab'
 

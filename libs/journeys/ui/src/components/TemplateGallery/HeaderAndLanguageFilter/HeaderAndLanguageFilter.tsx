@@ -18,7 +18,7 @@ import {
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetLanguages_languages } from '@core/journeys/ui/useLanguagesQuery/__generated__/GetLanguages'
-import { setBeaconPageViewed } from '../../../../../../../apps/journeys-admin/src/libs/setBeaconPageViewed'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'

@@ -14,7 +14,7 @@ import MoreIcon from '@core/shared/ui/icons/More'
 import Plus1Icon from '@core/shared/ui/icons/Plus1'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
-import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { MenuItem } from '../../MenuItem'
 import { TeamAvatars } from '../TeamAvatars'
 import { useTeam } from '../TeamProvider'

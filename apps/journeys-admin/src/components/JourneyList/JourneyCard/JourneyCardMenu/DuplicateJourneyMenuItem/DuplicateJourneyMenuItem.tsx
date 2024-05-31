@@ -8,7 +8,7 @@ import { ReactElement, useState } from 'react'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
 import { JourneyDuplicate } from '../../../../../../__generated__/JourneyDuplicate'
-import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamDialog } from '../../../../Team/CopyToTeamDialog'

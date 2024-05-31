@@ -13,7 +13,7 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
-import { setBeaconPageViewed } from '../../../../../../../libs/setBeaconPageViewed'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 
 const VideoLibrary = dynamic(
   async () =>
