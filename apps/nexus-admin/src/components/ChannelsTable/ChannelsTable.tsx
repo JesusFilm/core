@@ -100,18 +100,12 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
     {
       field: 'youtubeId',
       headerName: 'Youtube ID',
-      flex: 2,
-      renderCell: ({ row }: GridCellParams) => {
-        return <>{row.youtube?.youtubeId}</>
-      }
+      flex: 2
     },
     {
-      field: 'youtubeName',
+      field: 'title',
       headerName: 'Youtube name',
-      flex: 2,
-      renderCell: ({ row }: GridCellParams) => {
-        return <>{row.youtube?.title}</>
-      }
+      flex: 2
     },
     {
       field: 'connected',
