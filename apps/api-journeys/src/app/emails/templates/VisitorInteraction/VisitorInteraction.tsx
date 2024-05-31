@@ -74,7 +74,7 @@ export const VisitorInteraction = ({
                     style={{
                       font: '16px "Open Sans", sans-serif'
                     }}
-                    href=""
+                    href={url}
                   >
                     Open Full User Report
                   </Button>
@@ -196,7 +196,7 @@ VisitorInteraction.PreviewProps = {
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
-  url: ''
+  url: 'localhost:4200/bd62980f-3302-481d-8d66-a6ad2bdc936a/reports/visitor'
 } satisfies VisitorInteractionProps
 
 export default VisitorInteraction

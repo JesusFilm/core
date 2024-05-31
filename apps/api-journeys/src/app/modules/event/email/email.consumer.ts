@@ -87,11 +87,15 @@ export class EmailConsumer extends WorkerHost {
           variables: { userId }
         })
 
+        const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${
+          journey.id
+        }/reports/visitor`
+
         const text = render(
           VisitorInteraction({
             title: journey.title,
             recipient: data.user,
-            url: '',
+            url,
             visitor
           }),
           {
@@ -103,7 +107,7 @@ export class EmailConsumer extends WorkerHost {
           VisitorInteraction({
             title: journey.title,
             recipient: data.user,
-            url: '',
+            url,
             visitor
           }),
           {
