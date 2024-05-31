@@ -21,7 +21,7 @@ import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
-} from '../../../libs/useJourneyQuery/__generated__/GetJourney'
+} from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 import { TemplateCardPreview } from './TemplateCardPreview/TemplateCardPreview'
 import { TemplateVideoPreview } from './TemplateVideoPreview'
