@@ -4,22 +4,15 @@ import { ReactElement } from 'react'
 interface ActionButtonProps {
   buttonText: string
   url: string
-  style?: string
 }
 
 export function ActionButton({
   buttonText,
-  url,
-  style
+  url
 }: ActionButtonProps): ReactElement {
-  const className =
-    style != null
-      ? style
-      : 'bg-[#26262D] rounded-lg text-white text-[16px] font-semibold no-underline text-center px-5 py-3'
-
   return (
     <Button
-      className={className}
+      className="bg-[#26262D] rounded-lg text-white text-[16px] font-semibold no-underline text-center px-5 py-3'"
       style={{
         font: '16px "Open Sans", sans-serif'
       }}

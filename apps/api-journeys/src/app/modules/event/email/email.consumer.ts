@@ -42,7 +42,6 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async sendEventsNotification(job: Job<EventsNotificationJob>): Promise<void> {
-    console.log(' I got caklled')
     const journey = await this.prismaService.journey.findUnique({
       where: { id: job.data.journeyId },
       include: {
@@ -59,8 +58,7 @@ export class EmailConsumer extends WorkerHost {
       }
     })
 
-    console.log('visitor', visitor?.events)
-    console.log('type', typeof visitor?.events)
+    console.log('visitor', visitor)
 
     if (journey == null) return
     if (visitor == null) return
