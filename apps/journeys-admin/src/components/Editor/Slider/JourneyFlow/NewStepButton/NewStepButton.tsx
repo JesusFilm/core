@@ -2,6 +2,7 @@ import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement } from 'react'
 import { useReactFlow } from 'reactflow'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Plus3Icon from '@core/shared/ui/icons/Plus3'
 
@@ -15,6 +16,9 @@ import {
 export function NewStepButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const {
+    state: { showJourneyFlowAnalytics }
+  } = useEditor()
   const createStep = useCreateStep()
   const reactFlowInstance = useReactFlow()
 
@@ -37,6 +41,7 @@ export function NewStepButton(): ReactElement {
       icon={<Plus3Icon />}
       onClick={handleClick}
       ButtonProps={{
+        disabled: showJourneyFlowAnalytics,
         sx: {
           backgroundColor: 'background.paper',
           ':hover': {
