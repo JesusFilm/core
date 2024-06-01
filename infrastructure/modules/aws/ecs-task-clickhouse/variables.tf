@@ -26,8 +26,11 @@ variable "service_config" {
     command        = optional(list(string))
 
     alb_listener = object({
-      alb_arn  = string
-      protocol = string
+      alb_arn         = string
+      port            = number
+      protocol        = string
+      certificate_arn = optional(string)
+      dns_name        = optional(string)
     })
 
     alb_target_group = object({
