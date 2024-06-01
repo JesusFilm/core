@@ -193,7 +193,16 @@ module "journeys-admin" {
   })
   doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_prod_token.value
 }
-
+module "clickhouse" {
+  source = "../../../apps/analytics/infrastructure/clickhouse"
+  ecs_config = merge(local.internal_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/ping"
+      health_check_port = "8123"
+    })
+  })
+  doppler_token = data.aws_ssm_parameter.doppler_plausible_prod_token.value
+}
 module "plausible" {
   source = "../../../apps/analytics/infrastructure"
   ecs_config = merge(local.public_ecs_config, {
