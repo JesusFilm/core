@@ -12,7 +12,6 @@ export enum ButtonAction {
   LinkAction = "LinkAction",
   NavigateAction = "NavigateAction",
   NavigateToBlockAction = "NavigateToBlockAction",
-  NavigateToJourneyAction = "NavigateToJourneyAction",
 }
 
 export enum ButtonColor {

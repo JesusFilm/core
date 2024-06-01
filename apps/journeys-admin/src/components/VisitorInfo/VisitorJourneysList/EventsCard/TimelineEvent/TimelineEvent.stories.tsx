@@ -11,7 +11,6 @@ import {
   buttonClickLinkEvent,
   buttonClickNavigateEvent,
   buttonClickNavigateToBlockEvent,
-  buttonClickNavigateToJourneyEvent,
   chatOpenedEvent,
   journeyViewEvent,
   radioQuestionSubmissionEvent,
@@ -66,7 +65,6 @@ const Template: StoryObj<typeof TimelineEvent> = {
       />
       <StoryItem title="ButtonClickEvent" event={buttonClickNavigateEvent} />
       <StoryItem event={buttonClickNavigateToBlockEvent} />
-      <StoryItem event={buttonClickNavigateToJourneyEvent} />
       <StoryItem event={buttonClickLinkEvent} />
       <StoryItem
         title="RadioQuestionSubmissionEvent"

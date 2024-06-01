@@ -43,13 +43,6 @@ type NavigateToBlockAction implements Action {
   blockId: String!
 }
 
-type NavigateToJourneyAction implements Action {
-  parentBlockId: ID!
-  gtmEventName: String
-  journeyId: String!
-  journey: Journey
-}
-
 type LinkAction implements Action {
   parentBlockId: ID!
   gtmEventName: String
@@ -72,11 +65,6 @@ input NavigateToBlockActionInput {
   blockId: String!
 }
 
-input NavigateToJourneyActionInput {
-  gtmEventName: String
-  journeyId: String!
-}
-
 input LinkActionInput {
   gtmEventName: String
   url: String!
@@ -92,7 +80,6 @@ extend type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
-  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
   blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction!
 
@@ -1270,7 +1257,6 @@ type CustomDomainVerificationResponse {
 enum ButtonAction {
   NavigateAction
   NavigateToBlockAction
-  NavigateToJourneyAction
   LinkAction
   EmailAction
 }
@@ -1298,7 +1284,6 @@ input ButtonClickEventCreateInput {
   The label for each corresponding action, mapping below:
   NavigateAction - undefined
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
   """
   actionValue: String
@@ -1326,7 +1311,6 @@ type ButtonClickEvent implements Event {
   The label for each corresponding action, mapping below:
   NavigateAction - null
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
   """
   actionValue: String
@@ -2116,10 +2100,12 @@ type JourneyProfile
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
   onboardingFormCompletedAt: DateTime
+  journeyFlowBackButtonClicked: Boolean
 }
 
 input JourneyProfileUpdateInput {
   lastActiveTeamId: String
+  journeyFlowBackButtonClicked: Boolean
 }
 
 type JourneyVisitor

@@ -3,8 +3,7 @@ import { TreeBlock } from '../../../../libs/block'
 import {
   ButtonFields_action_LinkAction as LinkAction,
   ButtonFields_action_NavigateAction as NavigateAction,
-  ButtonFields_action_NavigateToBlockAction as NavigateToBlockAction,
-  ButtonFields_action_NavigateToJourneyAction as NavigateToJourneyAction
+  ButtonFields_action_NavigateToBlockAction as NavigateToBlockAction
 } from '../../__generated__/ButtonFields'
 
 import { getActionLabel } from './getActionLabel'
@@ -78,38 +77,6 @@ describe('getActionLabel', () => {
 
     const result = getActionLabel(action, treeBlocks, t)
     expect(result).toBe('Unknown Step')
-  })
-
-  it('should return journey slug for NavigateToJourneyAction', () => {
-    const action: NavigateToJourneyAction = {
-      __typename: 'NavigateToJourneyAction',
-      parentBlockId: 'parentBlock.id',
-      gtmEventName: 'click',
-      journey: {
-        __typename: 'Journey',
-        id: 'journey.id',
-        slug: 'journey-slug',
-        language: {
-          __typename: 'Language',
-          bcp47: 'language.id'
-        }
-      }
-    }
-
-    const result = getActionLabel(action)
-    expect(result).toEqual(action.journey?.slug)
-  })
-
-  it('should return Unknown Journey for NavigateToJourneyAction if journey is null', () => {
-    const action: NavigateToJourneyAction = {
-      __typename: 'NavigateToJourneyAction',
-      parentBlockId: 'parentBlock.id',
-      gtmEventName: 'click',
-      journey: null
-    }
-
-    const result = getActionLabel(action)
-    expect(result).toBe('Unknown Journey')
   })
 
   it('should return url for LinkAction', () => {

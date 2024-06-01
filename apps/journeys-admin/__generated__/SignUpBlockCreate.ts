@@ -37,25 +37,6 @@ export interface SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockActio
   blockId: string;
 }
 
-export interface SignUpBlockCreate_signUpBlockUpdate_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface SignUpBlockCreate_signUpBlockUpdate_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: SignUpBlockCreate_signUpBlockUpdate_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface SignUpBlockCreate_signUpBlockUpdate_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: SignUpBlockCreate_signUpBlockUpdate_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface SignUpBlockCreate_signUpBlockUpdate_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -70,7 +51,7 @@ export interface SignUpBlockCreate_signUpBlockUpdate_action_EmailAction {
   email: string;
 }
 
-export type SignUpBlockCreate_signUpBlockUpdate_action = SignUpBlockCreate_signUpBlockUpdate_action_NavigateAction | SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockUpdate_action_NavigateToJourneyAction | SignUpBlockCreate_signUpBlockUpdate_action_LinkAction | SignUpBlockCreate_signUpBlockUpdate_action_EmailAction;
+export type SignUpBlockCreate_signUpBlockUpdate_action = SignUpBlockCreate_signUpBlockUpdate_action_NavigateAction | SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockUpdate_action_LinkAction | SignUpBlockCreate_signUpBlockUpdate_action_EmailAction;
 
 export interface SignUpBlockCreate_signUpBlockUpdate {
   __typename: "SignUpBlock";

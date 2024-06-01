@@ -17,6 +17,7 @@ jest.mock('next/image', () => ({
     <img
       src={src}
       alt={alt}
+      role="img"
       rel={priority === true ? 'preload' : undefined}
       className={className}
     />

@@ -20,25 +20,6 @@ export interface SignUpFields_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface SignUpFields_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface SignUpFields_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: SignUpFields_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface SignUpFields_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: SignUpFields_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface SignUpFields_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -53,7 +34,7 @@ export interface SignUpFields_action_EmailAction {
   email: string;
 }
 
-export type SignUpFields_action = SignUpFields_action_NavigateAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_NavigateToJourneyAction | SignUpFields_action_LinkAction | SignUpFields_action_EmailAction;
+export type SignUpFields_action = SignUpFields_action_NavigateAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_LinkAction | SignUpFields_action_EmailAction;
 
 export interface SignUpFields {
   __typename: "SignUpBlock";

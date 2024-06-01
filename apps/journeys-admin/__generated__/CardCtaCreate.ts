@@ -60,25 +60,6 @@ export interface CardCtaCreate_button1_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface CardCtaCreate_button1_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardCtaCreate_button1_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardCtaCreate_button1_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardCtaCreate_button1_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardCtaCreate_button1_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardCtaCreate_button1_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -93,7 +74,7 @@ export interface CardCtaCreate_button1_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button1_action = CardCtaCreate_button1_action_NavigateAction | CardCtaCreate_button1_action_NavigateToBlockAction | CardCtaCreate_button1_action_NavigateToJourneyAction | CardCtaCreate_button1_action_LinkAction | CardCtaCreate_button1_action_EmailAction;
+export type CardCtaCreate_button1_action = CardCtaCreate_button1_action_NavigateAction | CardCtaCreate_button1_action_NavigateToBlockAction | CardCtaCreate_button1_action_LinkAction | CardCtaCreate_button1_action_EmailAction;
 
 export interface CardCtaCreate_button1 {
   __typename: "ButtonBlock";
@@ -142,25 +123,6 @@ export interface CardCtaCreate_button1Update_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface CardCtaCreate_button1Update_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardCtaCreate_button1Update_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardCtaCreate_button1Update_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardCtaCreate_button1Update_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardCtaCreate_button1Update_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardCtaCreate_button1Update_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -175,7 +137,7 @@ export interface CardCtaCreate_button1Update_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button1Update_action = CardCtaCreate_button1Update_action_NavigateAction | CardCtaCreate_button1Update_action_NavigateToBlockAction | CardCtaCreate_button1Update_action_NavigateToJourneyAction | CardCtaCreate_button1Update_action_LinkAction | CardCtaCreate_button1Update_action_EmailAction;
+export type CardCtaCreate_button1Update_action = CardCtaCreate_button1Update_action_NavigateAction | CardCtaCreate_button1Update_action_NavigateToBlockAction | CardCtaCreate_button1Update_action_LinkAction | CardCtaCreate_button1Update_action_EmailAction;
 
 export interface CardCtaCreate_button1Update {
   __typename: "ButtonBlock";
@@ -204,25 +166,6 @@ export interface CardCtaCreate_button2_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface CardCtaCreate_button2_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardCtaCreate_button2_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardCtaCreate_button2_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardCtaCreate_button2_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardCtaCreate_button2_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardCtaCreate_button2_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -237,7 +180,7 @@ export interface CardCtaCreate_button2_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button2_action = CardCtaCreate_button2_action_NavigateAction | CardCtaCreate_button2_action_NavigateToBlockAction | CardCtaCreate_button2_action_NavigateToJourneyAction | CardCtaCreate_button2_action_LinkAction | CardCtaCreate_button2_action_EmailAction;
+export type CardCtaCreate_button2_action = CardCtaCreate_button2_action_NavigateAction | CardCtaCreate_button2_action_NavigateToBlockAction | CardCtaCreate_button2_action_LinkAction | CardCtaCreate_button2_action_EmailAction;
 
 export interface CardCtaCreate_button2 {
   __typename: "ButtonBlock";
@@ -286,25 +229,6 @@ export interface CardCtaCreate_button2Update_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface CardCtaCreate_button2Update_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardCtaCreate_button2Update_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardCtaCreate_button2Update_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardCtaCreate_button2Update_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardCtaCreate_button2Update_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardCtaCreate_button2Update_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -319,7 +243,7 @@ export interface CardCtaCreate_button2Update_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button2Update_action = CardCtaCreate_button2Update_action_NavigateAction | CardCtaCreate_button2Update_action_NavigateToBlockAction | CardCtaCreate_button2Update_action_NavigateToJourneyAction | CardCtaCreate_button2Update_action_LinkAction | CardCtaCreate_button2Update_action_EmailAction;
+export type CardCtaCreate_button2Update_action = CardCtaCreate_button2Update_action_NavigateAction | CardCtaCreate_button2Update_action_NavigateToBlockAction | CardCtaCreate_button2Update_action_LinkAction | CardCtaCreate_button2Update_action_EmailAction;
 
 export interface CardCtaCreate_button2Update {
   __typename: "ButtonBlock";
@@ -348,25 +272,6 @@ export interface CardCtaCreate_button3_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface CardCtaCreate_button3_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardCtaCreate_button3_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardCtaCreate_button3_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardCtaCreate_button3_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardCtaCreate_button3_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardCtaCreate_button3_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -381,7 +286,7 @@ export interface CardCtaCreate_button3_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button3_action = CardCtaCreate_button3_action_NavigateAction | CardCtaCreate_button3_action_NavigateToBlockAction | CardCtaCreate_button3_action_NavigateToJourneyAction | CardCtaCreate_button3_action_LinkAction | CardCtaCreate_button3_action_EmailAction;
+export type CardCtaCreate_button3_action = CardCtaCreate_button3_action_NavigateAction | CardCtaCreate_button3_action_NavigateToBlockAction | CardCtaCreate_button3_action_LinkAction | CardCtaCreate_button3_action_EmailAction;
 
 export interface CardCtaCreate_button3 {
   __typename: "ButtonBlock";
@@ -430,25 +335,6 @@ export interface CardCtaCreate_button3Update_action_NavigateToBlockAction {
   blockId: string;
 }
 
-export interface CardCtaCreate_button3Update_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardCtaCreate_button3Update_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardCtaCreate_button3Update_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardCtaCreate_button3Update_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardCtaCreate_button3Update_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface CardCtaCreate_button3Update_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -463,7 +349,7 @@ export interface CardCtaCreate_button3Update_action_EmailAction {
   email: string;
 }
 
-export type CardCtaCreate_button3Update_action = CardCtaCreate_button3Update_action_NavigateAction | CardCtaCreate_button3Update_action_NavigateToBlockAction | CardCtaCreate_button3Update_action_NavigateToJourneyAction | CardCtaCreate_button3Update_action_LinkAction | CardCtaCreate_button3Update_action_EmailAction;
+export type CardCtaCreate_button3Update_action = CardCtaCreate_button3Update_action_NavigateAction | CardCtaCreate_button3Update_action_NavigateToBlockAction | CardCtaCreate_button3Update_action_LinkAction | CardCtaCreate_button3Update_action_EmailAction;
 
 export interface CardCtaCreate_button3Update {
   __typename: "ButtonBlock";

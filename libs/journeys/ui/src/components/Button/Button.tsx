@@ -21,7 +21,7 @@ import { ButtonFields } from './__generated__/ButtonFields'
 import { ChatOpenEventCreate } from './__generated__/ChatOpenEventCreate'
 import { findMessagePlatform } from './utils/findMessagePlatform'
 import { getActionLabel } from './utils/getActionLabel'
-import { GoalType, getLinkActionGoal } from './utils/getLinkActionGoal'
+import { getLinkActionGoal } from './utils/getLinkActionGoal'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -138,16 +138,6 @@ export function Button({
           buttonLabel: label,
           outboundActionType: getLinkActionGoal(action.url),
           outboundActionValue: action.url
-        }
-      })
-    } else if (action?.__typename === 'NavigateToJourneyAction') {
-      TagManager.dataLayer({
-        dataLayer: {
-          ...eventProperties,
-          event: 'outbound_action_click',
-          buttonLabel: label,
-          outboundActionType: GoalType.Journey,
-          outboundActionValue: action.journey?.id
         }
       })
     } else {
