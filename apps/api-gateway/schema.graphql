@@ -1,16 +1,14 @@
 schema
   @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/join/v0.4", for: EXECUTION)
+  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
 {
   query: Query
   mutation: Mutation
 }
 
-directive @join__directive(graphs: [join__Graph!], name: String!, args: join__DirectiveArguments) repeatable on SCHEMA | OBJECT | INTERFACE | FIELD_DEFINITION
-
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
 
-directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean, overrideLabel: String) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
@@ -738,8 +736,6 @@ input ImageBlockUpdateInput
   height: Int
 }
 
-scalar join__DirectiveArguments
-
 scalar join__FieldSet
 
 enum join__Graph {
@@ -1414,6 +1410,8 @@ type Mutation
     idType: IdType
   ): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyOpen(id: ID!): UserJourney @join__field(graph: JOURNEYS)
+  userJourneyNotificationUpdate(id: String!, input: UserJourneyNotificationInput): UserJourneyNotification! @join__field(graph: JOURNEYS)
+  userJourneyNotificationDelete(id: String!, input: UserJourneyNotificationInput): UserJourneyNotification! @join__field(graph: JOURNEYS)
   userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam! @join__field(graph: JOURNEYS)
   userTeamDelete(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
   userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite @join__field(graph: JOURNEYS)
@@ -1554,6 +1552,8 @@ type Query
   teams: [Team!]! @join__field(graph: JOURNEYS)
   team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
+  userJourneyNotification(userId: String!, journeyId: String!): UserJourneyNotification! @join__field(graph: JOURNEYS)
+  userJourneyNotifications(journeyId: String!): [UserJourneyNotification!]! @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]! @join__field(graph: JOURNEYS)
   userTeam(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
@@ -2350,6 +2350,23 @@ type UserJourney
 
   """Date time of when the journey was first opened"""
   openedAt: DateTime
+}
+
+type UserJourneyNotification
+  @join__type(graph: JOURNEYS)
+{
+  id: String!
+  userId: String!
+  journeyId: String!
+  value: Boolean!
+}
+
+input UserJourneyNotificationInput
+  @join__type(graph: JOURNEYS)
+{
+  userId: String!
+  journeyId: String!
+  value: Boolean!
 }
 
 enum UserJourneyRole

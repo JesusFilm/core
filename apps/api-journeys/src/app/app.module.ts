@@ -26,6 +26,7 @@ import { MailChimpModule } from './modules/mailChimp/mailChimp.module'
 import { TeamModule } from './modules/team/team.module'
 import { UserInviteModule } from './modules/userInvite/userInvite.module'
 import { UserJourneyModule } from './modules/userJourney/userJourney.module'
+import { UserJourneyNotificationModule } from './modules/userJourneyNotifications/userJourneyNotification.module'
 import { UserRoleModule } from './modules/userRole/userRole.module'
 import { UserTeamModule } from './modules/userTeam/userTeam.module'
 import { UserTeamInviteModule } from './modules/userTeamInvite/userTeamInvite.module'
@@ -48,6 +49,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     NestHealthModule,
     TeamModule,
     UserJourneyModule,
+    UserJourneyNotificationModule,
     UserInviteModule,
     UserRoleModule,
     UserTeamModule,

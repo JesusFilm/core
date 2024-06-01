@@ -63,7 +63,7 @@ input EmailActionInput {
   email: String!
 }
 
-extend type Mutation {
+type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
@@ -278,6 +278,8 @@ extend type Mutation {
     idType: IdType
   ): UserJourney!
   userJourneyOpen(id: ID!): UserJourney
+  userJourneyNotificationUpdate(id: String!, input: UserJourneyNotificationInput): UserJourneyNotification!
+  userJourneyNotificationDelete(id: String!, input: UserJourneyNotificationInput): UserJourneyNotification!
   userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam!
   userTeamDelete(id: ID!): UserTeam!
   userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite
@@ -339,11 +341,6 @@ input BlocksFilter {
 }
 
 type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
   blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block!
   customDomain(id: ID!): CustomDomain!
@@ -393,6 +390,8 @@ extend type Query {
   teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
+  userJourneyNotification(userId: String!, journeyId: String!): UserJourneyNotification!
+  userJourneyNotifications(journeyId: String!): [UserJourneyNotification!]!
   getUserRole: UserRole
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
@@ -412,6 +411,8 @@ extend type Query {
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor!
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 enum ButtonVariant {
@@ -2265,6 +2266,19 @@ extend type User
   @key(fields: "id")
 {
   id: ID! @external
+}
+
+type UserJourneyNotification {
+  id: String!
+  userId: String!
+  journeyId: String!
+  value: Boolean!
+}
+
+input UserJourneyNotificationInput {
+  userId: String!
+  journeyId: String!
+  value: Boolean!
 }
 
 type UserRole
