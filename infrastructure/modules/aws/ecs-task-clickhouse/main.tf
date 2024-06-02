@@ -54,7 +54,15 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       essential = true
       cpu       = var.service_config.cpu
       memory    = var.service_config.memory
-      command   = var.service_config.command
+      command = ["echo \"${templatefile("${path.module}/clickhouse-config.xml", {})}\" > /etc/clickhouse-server/config.xml",
+      "echo \"${templatefile("${path.module}/clickhouse-user-config.xml", {})}\" > /etc/clickhouse-server/users.d/logging.xml"]
+      ulimits = [
+        {
+          name      = "nofile"
+          softLimit = 65536
+          hardLimit = 65536
+        }
+      ]
       mountPoints : [
         {
           sourceVolume : "clickhouse-volume-${var.env}",
