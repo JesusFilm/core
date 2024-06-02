@@ -4,8 +4,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
@@ -109,13 +107,11 @@ describe('TeamMenu', () => {
     const { getByRole, getByText, queryByRole, getByTestId, queryByTestId } =
       render(
         <MockedProvider mocks={[getTeamsMock]}>
-          <FlagsProvider flags={{ customDomain: true }}>
-            <SnackbarProvider>
-              <TeamProvider>
-                <TeamMenu />
-              </TeamProvider>
-            </SnackbarProvider>
-          </FlagsProvider>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TeamMenu />
+            </TeamProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
     fireEvent.click(getByRole('button'))
@@ -128,11 +124,7 @@ describe('TeamMenu', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'create-team' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'create-team' }
         },
         undefined,
         { shallow: true }
@@ -151,11 +143,7 @@ describe('TeamMenu', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'rename-team' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'rename-team' }
         },
         undefined,
         { shallow: true }
@@ -174,11 +162,7 @@ describe('TeamMenu', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
-          query: { param: 'teams' },
-          push,
-          events: {
-            on
-          }
+          query: { param: 'teams' }
         },
         undefined,
         { shallow: true }
@@ -269,13 +253,11 @@ describe('TeamMenu', () => {
 
     const { getByText } = render(
       <MockedProvider mocks={[mockTeamWithCustomDomain]}>
-        <FlagsProvider flags={{ customDomain: true }}>
-          <SnackbarProvider>
-            <TeamProvider>
-              <TeamMenu />
-            </TeamProvider>
-          </SnackbarProvider>
-        </FlagsProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamMenu />
+          </TeamProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 

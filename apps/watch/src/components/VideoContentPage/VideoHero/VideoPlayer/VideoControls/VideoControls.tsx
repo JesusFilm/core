@@ -23,6 +23,7 @@ import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
 import Player from 'video.js/dist/types/player'
 
+import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useVideo } from '../../../../../libs/videoContext'
@@ -40,11 +41,6 @@ const DynamicSubtitleDialog = dynamic<SubtitleDialogProps>(
 interface VideoControlProps {
   player: Player
   onVisibleChanged?: (active: boolean) => void
-}
-
-function isMobile(): boolean {
-  const userAgent = navigator.userAgent
-  return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)
 }
 
 function evtToDataLayer(

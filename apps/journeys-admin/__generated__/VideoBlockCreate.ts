@@ -20,18 +20,25 @@ export interface VideoBlockCreate_videoBlockCreate_video_variant {
   hls: string | null;
 }
 
+export interface VideoBlockCreate_videoBlockCreate_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface VideoBlockCreate_videoBlockCreate_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: VideoBlockCreate_videoBlockCreate_video_variantLanguages_name[];
+}
+
 export interface VideoBlockCreate_videoBlockCreate_video {
   __typename: "Video";
   id: string;
   title: VideoBlockCreate_videoBlockCreate_video_title[];
   image: string | null;
   variant: VideoBlockCreate_videoBlockCreate_video_variant | null;
-}
-
-export interface VideoBlockCreate_videoBlockCreate_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
+  variantLanguages: VideoBlockCreate_videoBlockCreate_video_variantLanguages[];
 }
 
 export interface VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction {
@@ -55,7 +62,7 @@ export interface VideoBlockCreate_videoBlockCreate_action_EmailAction {
   email: string;
 }
 
-export type VideoBlockCreate_videoBlockCreate_action = VideoBlockCreate_videoBlockCreate_action_NavigateAction | VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | VideoBlockCreate_videoBlockCreate_action_LinkAction | VideoBlockCreate_videoBlockCreate_action_EmailAction;
+export type VideoBlockCreate_videoBlockCreate_action = VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | VideoBlockCreate_videoBlockCreate_action_LinkAction | VideoBlockCreate_videoBlockCreate_action_EmailAction;
 
 export interface VideoBlockCreate_videoBlockCreate {
   __typename: "VideoBlock";

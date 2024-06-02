@@ -20,18 +20,25 @@ export interface VideoFields_video_variant {
   hls: string | null;
 }
 
+export interface VideoFields_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface VideoFields_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: VideoFields_video_variantLanguages_name[];
+}
+
 export interface VideoFields_video {
   __typename: "Video";
   id: string;
   title: VideoFields_video_title[];
   image: string | null;
   variant: VideoFields_video_variant | null;
-}
-
-export interface VideoFields_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
+  variantLanguages: VideoFields_video_variantLanguages[];
 }
 
 export interface VideoFields_action_NavigateToBlockAction {
@@ -55,7 +62,7 @@ export interface VideoFields_action_EmailAction {
   email: string;
 }
 
-export type VideoFields_action = VideoFields_action_NavigateAction | VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction;
+export type VideoFields_action = VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction;
 
 export interface VideoFields {
   __typename: "VideoBlock";

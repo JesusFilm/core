@@ -19,6 +19,10 @@ describe('action', () => {
       push: jest.fn()
     } as unknown as NextRouter
 
+    beforeEach(() => {
+      jest.resetAllMocks()
+    })
+
     it('should handle empty action', () => {
       expect(() => handleAction(router)).not.toThrow()
     })
@@ -31,15 +35,6 @@ describe('action', () => {
         gtmEventName: null
       })
       expect(nextActiveBlock).toHaveBeenCalledWith({ id: 'block-id' })
-    })
-
-    it('should handle NavigateAction', () => {
-      handleAction(router, {
-        __typename: 'NavigateAction',
-        parentBlockId: 'parent-id',
-        gtmEventName: null
-      })
-      expect(nextActiveBlock).toHaveBeenCalledWith()
     })
 
     it('should handle EmailAction', () => {
@@ -95,6 +90,18 @@ describe('action', () => {
         'https://your.nextstep.is/fact-or-fiction'
       )
       expect(window.open).not.toHaveBeenCalled()
+    })
+
+    it('should not redirect when url is an empty string', () => {
+      window.open = jest.fn()
+      handleAction(router, {
+        __typename: 'LinkAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        url: ''
+      })
+      expect(window.open).not.toHaveBeenCalled()
+      expect(router.push).not.toHaveBeenCalled()
     })
   })
 })

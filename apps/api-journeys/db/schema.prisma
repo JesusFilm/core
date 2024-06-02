@@ -55,7 +55,6 @@ enum DeviceType {
 }
 
 enum ButtonAction {
-  NavigateAction
   NavigateToBlockAction
   LinkAction
   EmailAction

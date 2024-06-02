@@ -1,1 +1,0 @@
-export { JourneyLink } from './JourneyLink'

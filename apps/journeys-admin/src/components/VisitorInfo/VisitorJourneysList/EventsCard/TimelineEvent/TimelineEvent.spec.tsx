@@ -2,7 +2,6 @@ import { render } from '@testing-library/react'
 
 import {
   buttonClickLinkEvent,
-  buttonClickNavigateEvent,
   buttonClickNavigateToBlockEvent,
   chatOpenedEvent,
   journeyViewEvent,
@@ -53,15 +52,6 @@ describe('TimelineEvent', () => {
         'It was basically the worst. Stabbed, lost, hungry, betrayed, and I lost a finger.'
       )
     ).toBeInTheDocument()
-  })
-
-  it('shows buttonClickEvent for navigateAction', () => {
-    const { getByText } = render(
-      <TimelineEvent timelineItem={buttonClickNavigateEvent} />
-    )
-    expect(getByText('Button click:')).toBeInTheDocument()
-    expect(getByText('Next Card')).toBeInTheDocument()
-    expect(getByText('Navigate Action')).toBeInTheDocument()
   })
 
   it('shows buttonClickEvent for navigateToBlockAction', () => {

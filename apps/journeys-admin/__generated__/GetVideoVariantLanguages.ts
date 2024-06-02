@@ -7,6 +7,11 @@
 // GraphQL query operation: GetVideoVariantLanguages
 // ====================================================
 
+export interface GetVideoVariantLanguages_video_variant {
+  __typename: "VideoVariant";
+  id: string;
+}
+
 export interface GetVideoVariantLanguages_video_variantLanguages_name {
   __typename: "Translation";
   value: string;
@@ -22,6 +27,7 @@ export interface GetVideoVariantLanguages_video_variantLanguages {
 export interface GetVideoVariantLanguages_video {
   __typename: "Video";
   id: string;
+  variant: GetVideoVariantLanguages_video_variant | null;
   variantLanguages: GetVideoVariantLanguages_video_variantLanguages[];
 }
 

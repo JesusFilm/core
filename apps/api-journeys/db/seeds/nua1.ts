@@ -37,13 +37,63 @@ export async function nua1(): Promise<void> {
     update: journeyData
   })
 
+  const step6 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 5
+    }
+  })
+
+  const step5 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 4,
+      nextBlockId: step6.id
+    }
+  })
+
+  const step4 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 3,
+      nextBlockId: step5.id
+    }
+  })
+
+  const step3 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 2,
+      nextBlockId: step4.id
+    }
+  })
+
+  const step2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 1,
+      nextBlockId: step3.id
+    }
+  })
+
   // first step
   const step1 = await prisma.block.create({
     data: {
-      journey: { connect: { id: journey.id } },
+      journeyId: journey.id,
       typename: 'StepBlock',
       locked: false,
-      parentOrder: 0
+      parentOrder: 0,
+      nextBlockId: step2.id
     }
   })
 
@@ -139,15 +189,6 @@ export async function nua1(): Promise<void> {
   })
 
   // second step
-  const step2 = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 1
-    }
-  })
-
   const button1 = await prisma.block.create({
     data: {
       journey: { connect: { id: journey.id } },
@@ -201,6 +242,7 @@ export async function nua1(): Promise<void> {
     }
   })
 
+  // third step
   const video = await prisma.block.create({
     data: {
       journey: { connect: { id: journey.id } },
@@ -216,19 +258,10 @@ export async function nua1(): Promise<void> {
       parentOrder: 0,
       action: {
         create: {
-          gtmEventName: 'NavigateAction'
+          gtmEventName: 'NavigateToBlockAction',
+          blockId: step3.id
         }
       }
-    }
-  })
-
-  // third step
-  const step3 = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 2
     }
   })
 
@@ -315,15 +348,6 @@ export async function nua1(): Promise<void> {
   })
 
   // fourth step
-  const step4 = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 3
-    }
-  })
-
   await prisma.block.create({
     data: {
       journey: {
@@ -376,6 +400,7 @@ export async function nua1(): Promise<void> {
     }
   })
 
+  // fifth step
   const video1 = await prisma.block.create({
     data: {
       journey: { connect: { id: journey.id } },
@@ -390,19 +415,10 @@ export async function nua1(): Promise<void> {
       parentOrder: 0,
       action: {
         create: {
-          gtmEventName: 'NavigateAction'
+          gtmEventName: 'NavigateToBlockAction',
+          blockId: step5.id
         }
       }
-    }
-  })
-
-  // fifth step
-  const step5 = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 4
     }
   })
 
@@ -490,15 +506,6 @@ export async function nua1(): Promise<void> {
   })
 
   // sixth step
-  const step6 = await prisma.block.create({
-    data: {
-      journey: { connect: { id: journey.id } },
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 5
-    }
-  })
-
   const button2 = await prisma.block.create({
     data: {
       journey: { connect: { id: journey.id } },
@@ -627,10 +634,8 @@ export async function nua1(): Promise<void> {
       label: 'A great influencer',
       action: {
         create: {
-          gtmEventName: 'click',
-          journey: {
-            connect: { id: '2' }
-          }
+          gtmEventName: 'LinkAction',
+          url: '/what-about-the-resurrection'
         }
       },
       parentOrder: 0
@@ -646,10 +651,8 @@ export async function nua1(): Promise<void> {
       label: 'The Son of God',
       action: {
         create: {
-          gtmEventName: 'click',
-          journey: {
-            connect: { id: '2' }
-          }
+          gtmEventName: 'LinkAction',
+          url: '/what-about-the-resurrection'
         }
       },
       parentOrder: 1
@@ -667,8 +670,8 @@ export async function nua1(): Promise<void> {
       label: 'A popular prophet',
       action: {
         create: {
-          gtmEventName: 'click',
-          journey: { connect: { id: '2' } }
+          gtmEventName: 'LinkAction',
+          url: '/what-about-the-resurrection'
         }
       },
       parentOrder: 2
@@ -684,10 +687,8 @@ export async function nua1(): Promise<void> {
       label: 'A fake historical figure',
       action: {
         create: {
-          gtmEventName: 'click',
-          journey: {
-            connect: { id: '2' }
-          }
+          gtmEventName: 'LinkAction',
+          url: '/what-about-the-resurrection'
         }
       },
       parentOrder: 3

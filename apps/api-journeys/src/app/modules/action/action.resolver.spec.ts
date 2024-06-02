@@ -54,16 +54,6 @@ describe('ActionResolver', () => {
     url: 'https://google.com',
     email: null
   }
-  const navigateAction: Action = {
-    parentBlockId: 'parentBlockId',
-    gtmEventName: 'gtmEventName',
-    updatedAt: new Date(),
-    blockId: null,
-    journeyId: null,
-    target: null,
-    url: null,
-    email: null
-  }
   const navigateToBlockAction: Action = {
     parentBlockId: 'parentBlockId',
     gtmEventName: 'gtmEventName',
@@ -102,10 +92,6 @@ describe('ActionResolver', () => {
 
     it('returns LinkAction', () => {
       expect(resolver.__resolveType(linkAction)).toBe('LinkAction')
-    })
-
-    it('returns NavigateAction', () => {
-      expect(resolver.__resolveType(navigateAction)).toBe('NavigateAction')
     })
 
     it('returns NavigateToBlockAction', () => {

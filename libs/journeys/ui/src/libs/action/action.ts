@@ -19,15 +19,14 @@ export function handleAction(
     case 'NavigateToBlockAction':
       nextActiveBlock({ id: action.blockId })
       break
-    case 'NavigateAction':
-      nextActiveBlock()
-      break
     case 'LinkAction':
       if (
         action.url.startsWith('http') &&
         !journeysUrls.some((substring) => action.url.includes(substring))
       ) {
         window.open(action.url, '_blank')
+      } else if (action.url === '') {
+        break
       } else {
         void router.push(action.url)
       }

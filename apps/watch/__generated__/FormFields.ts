@@ -7,12 +7,6 @@
 // GraphQL fragment: FormFields
 // ====================================================
 
-export interface FormFields_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface FormFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -34,7 +28,7 @@ export interface FormFields_action_EmailAction {
   email: string;
 }
 
-export type FormFields_action = FormFields_action_NavigateAction | FormFields_action_NavigateToBlockAction | FormFields_action_LinkAction | FormFields_action_EmailAction;
+export type FormFields_action = FormFields_action_NavigateToBlockAction | FormFields_action_LinkAction | FormFields_action_EmailAction;
 
 export interface FormFields {
   __typename: "FormBlock";

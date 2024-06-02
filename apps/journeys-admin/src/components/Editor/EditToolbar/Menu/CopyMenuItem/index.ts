@@ -1,1 +1,0 @@
-export { CopyMenuItem } from './CopyMenuItem'

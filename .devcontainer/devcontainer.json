@@ -45,6 +45,11 @@
     "ghcr.io/devcontainers/features/node:1": {
       "nodeGypDependencies": true,
       "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+      "version": "1.23",
+      "helm": "latest",
+      "minikube": "none"
     }
   }
 }

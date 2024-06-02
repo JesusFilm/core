@@ -139,12 +139,7 @@ describe('VideoBlockResolver', () => {
           coverBlockParent: undefined,
           typename: 'VideoBlock',
           videoId: 'videoId',
-          videoVariantLanguageId: 'videoVariantLanguageId',
-          action: {
-            create: {
-              gtmEventName: 'NavigateAction'
-            }
-          }
+          videoVariantLanguageId: 'videoVariantLanguageId'
         },
         include: {
           action: true,
@@ -179,12 +174,7 @@ describe('VideoBlockResolver', () => {
           parentOrder: 2,
           typename: 'VideoBlock',
           videoId: 'videoId',
-          videoVariantLanguageId: 'videoVariantLanguageId',
-          action: {
-            create: {
-              gtmEventName: 'NavigateAction'
-            }
-          }
+          videoVariantLanguageId: 'videoVariantLanguageId'
         },
         include: {
           action: true,
@@ -217,12 +207,7 @@ describe('VideoBlockResolver', () => {
           coverBlockParent: { connect: { id: 'parentBlockId' } },
           parentOrder: null,
           videoId: 'videoId',
-          videoVariantLanguageId: 'videoVariantLanguageId',
-          action: {
-            create: {
-              gtmEventName: 'NavigateAction'
-            }
-          }
+          videoVariantLanguageId: 'videoVariantLanguageId'
         },
         include: {
           action: true,
@@ -285,11 +270,6 @@ describe('VideoBlockResolver', () => {
         ).toEqual(blockWithUserTeam)
         expect(prismaService.block.create).toHaveBeenCalledWith({
           data: {
-            action: {
-              create: {
-                gtmEventName: 'NavigateAction'
-              }
-            },
             id: 'blockId',
             videoId: 'videoId',
             videoVariantLanguageId: 'videoVariantLanguageId',
@@ -385,11 +365,6 @@ describe('VideoBlockResolver', () => {
         ).toEqual(blockWithUserTeam)
         expect(prismaService.block.create).toHaveBeenCalledWith({
           data: {
-            action: {
-              create: {
-                gtmEventName: 'NavigateAction'
-              }
-            },
             id: 'blockId',
             journey: { connect: { id: 'journeyId' } },
             videoId: 'ak06MSETeo4',

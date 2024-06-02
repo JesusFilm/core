@@ -1,5 +1,4 @@
 enum ButtonAction {
-  NavigateAction
   NavigateToBlockAction
   LinkAction
   EmailAction
@@ -29,7 +28,6 @@ input ButtonClickEventCreateInput {
   action: ButtonAction
   """
   The label for each corresponding action, mapping below:
-  NavigateAction - undefined
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
   LinkAction - url of the link
   """
@@ -60,7 +58,6 @@ type ButtonClickEvent implements Event {
   action: ButtonAction
   """
   The label for each corresponding action, mapping below:
-  NavigateAction - null
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
   LinkAction - url of the link
   """

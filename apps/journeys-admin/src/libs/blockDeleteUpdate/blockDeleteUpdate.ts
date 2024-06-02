@@ -48,6 +48,17 @@ export const blockDeleteUpdate = (
         }
       }
     })
+    if (selectedBlock.__typename === 'StepBlock') {
+      cache.modify({
+        fields: {
+          blocks(existingBlockRefs = []) {
+            return existingBlockRefs.filter(
+              (blockRef) => blockRef.__ref !== `StepBlock:${selectedBlock.id}`
+            )
+          }
+        }
+      })
+    }
     blockRefs.forEach((blockRef) => {
       cache.evict({
         id: blockRef

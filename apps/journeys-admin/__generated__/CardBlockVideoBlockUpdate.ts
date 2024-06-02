@@ -20,18 +20,25 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video_variant {
   hls: string | null;
 }
 
+export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: CardBlockVideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name[];
+}
+
 export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video {
   __typename: "Video";
   id: string;
   title: CardBlockVideoBlockUpdate_videoBlockUpdate_video_title[];
   image: string | null;
   variant: CardBlockVideoBlockUpdate_videoBlockUpdate_video_variant | null;
-}
-
-export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
+  variantLanguages: CardBlockVideoBlockUpdate_videoBlockUpdate_video_variantLanguages[];
 }
 
 export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
@@ -55,7 +62,7 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_EmailAction {
   email: string;
 }
 
-export type CardBlockVideoBlockUpdate_videoBlockUpdate_action = CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_LinkAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_EmailAction;
+export type CardBlockVideoBlockUpdate_videoBlockUpdate_action = CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_LinkAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_EmailAction;
 
 export interface CardBlockVideoBlockUpdate_videoBlockUpdate {
   __typename: "VideoBlock";

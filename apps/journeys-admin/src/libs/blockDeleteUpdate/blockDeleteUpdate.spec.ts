@@ -50,7 +50,8 @@ const video: TreeBlock<VideoBlock> = {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
       hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    }
+    },
+    variantLanguages: []
   },
   posterBlockId: null,
   children: []
@@ -135,5 +136,46 @@ describe('blockDeleteUpdate', () => {
     ])
     expect(extractedCache['VideoBlock:videoId']).toBeUndefined()
     expect(extractedCache['ImageBlock:imageId']?.parentOrder).toBe(0)
+  })
+
+  it('should handle deletion of StepBlocks', () => {
+    const step1 = {
+      __typename: 'StepBlock' as const,
+      id: 'step1.id',
+      locked: false,
+      nextBlockId: null,
+      parentBlockId: null,
+      parentOrder: 0,
+      children: []
+    }
+
+    const step2 = {
+      __typename: 'StepBlock',
+      id: 'step2.id',
+      locked: false,
+      nextBlockId: null,
+      parentBlockId: null,
+      parentOrder: 1,
+      children: []
+    }
+
+    const response = [step2]
+
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [
+          { __ref: 'StepBlock:step1.id' },
+          { __ref: 'StepBlock:step2.id' }
+        ],
+        id: journey.id,
+        __typename: 'Journey'
+      }
+    })
+    blockDeleteUpdate(step1, response, cache, journey.id)
+    const extractedCache = cache.extract()
+    expect(extractedCache['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'StepBlock:step2.id' }
+    ])
   })
 })

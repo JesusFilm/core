@@ -1,1 +1,0 @@
-export { BlocksTab } from './BlocksTab'
