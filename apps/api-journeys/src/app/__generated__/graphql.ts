@@ -1038,9 +1038,7 @@ export abstract class IQuery {
 
     abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
 
-    abstract userJourneyNotification(userId: string, journeyId: string): UserJourneyNotification | Promise<UserJourneyNotification>;
-
-    abstract userJourneyNotifications(journeyId: string): UserJourneyNotification[] | Promise<UserJourneyNotification[]>;
+    abstract userJourneyNotificationsByJourney(journeyId: string): UserJourneyNotification[] | Promise<UserJourneyNotification[]>;
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 

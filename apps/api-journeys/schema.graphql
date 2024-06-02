@@ -390,8 +390,7 @@ type Query {
   teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
-  userJourneyNotification(userId: String!, journeyId: String!): UserJourneyNotification!
-  userJourneyNotifications(journeyId: String!): [UserJourneyNotification!]!
+  userJourneyNotificationsByJourney(journeyId: String!): [UserJourneyNotification!]!
   getUserRole: UserRole
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
   userTeam(id: ID!): UserTeam!

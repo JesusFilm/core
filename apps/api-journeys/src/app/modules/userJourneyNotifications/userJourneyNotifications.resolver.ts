@@ -10,12 +10,11 @@ export class UserJourneyNotificationResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
-  async userJourneyNotification(
-    @Args('userId') userId: string,
+  async userJourneyNotificationsByJourney(
     @Args('journeyId') journeyId: string
-  ): Promise<UserJourneyNotification> {
-    const res = await this.prismaService.userJourneyNotification.findUnique({
-      where: { userId_journeyId: { userId, journeyId } }
+  ): Promise<UserJourneyNotification[]> {
+    const res = await this.prismaService.userJourneyNotification.findMany({
+      where: { journeyId }
     })
 
     if (res == null)

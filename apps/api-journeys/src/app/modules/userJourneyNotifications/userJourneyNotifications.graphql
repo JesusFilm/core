@@ -23,9 +23,7 @@ type Mutation {
 }
 
 type Query {
-  userJourneyNotification(
-    userId: String!
+  userJourneyNotificationsByJourney(
     journeyId: String!
-  ): UserJourneyNotification!
-  userJourneyNotifications(journeyId: String!): [UserJourneyNotification!]!
+  ): [UserJourneyNotification!]!
 }
