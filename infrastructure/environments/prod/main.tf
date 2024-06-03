@@ -218,3 +218,12 @@ module "plausible" {
   subnet_group_name     = module.prod.vpc.db_subnet_group_name
   vpc_security_group_id = module.prod.private_rds_security_group_id
 }
+
+module "eks" {
+  source             = "../../modules/aws/eks"
+  env                = "prod"
+  name               = "jfp-eks"
+  subnet_ids         = concat(module.prod.vpc.internal_subnets, module.prod.vpc.public_subnets)
+  security_group_ids = [module.prod.ecs.internal_ecs_security_group_id, module.prod.ecs.public_ecs_security_group_id]
+  vpc_id             = module.prod.vpc.id
+}

@@ -1,0 +1,3 @@
+baseUrl: https://plausible.central.jesusfilm.org
+postgresql:
+  url: <rds-url>
