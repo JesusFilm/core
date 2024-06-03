@@ -84,6 +84,12 @@ export function AccessDialog({
     )
   }, [data?.journey?.userJourneys, user])
 
+  // fetch notifs array - create custom hook
+  // turn fetch res in hash map
+  // loop over userJoryenys and get ntofis and add notifs into new array after users.push
+  // pass rest of array to userTEAMS component
+  // repeat
+
   const { users, requests, invites, emails } = useMemo(() => {
     const users: UserJourney[] = []
     const requests: UserJourney[] = []
