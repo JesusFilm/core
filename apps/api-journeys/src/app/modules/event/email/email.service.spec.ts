@@ -1,51 +1,85 @@
+import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
-import { Queue } from 'bullmq'
 
-import { EventsNotificationJob } from './email.consumer'
 import { EmailService } from './email.service'
 
-const sendEmailMock = jest.fn().mockReturnValue({})
-// Mock the SES sendEmail method
-jest.mock('@aws-sdk/client-ses', () => ({
-  SES: jest.fn().mockImplementation(() => ({
-    sendEmail: sendEmailMock
-  }))
-}))
-
 describe('EmailService', () => {
-  let service: EmailService
-  let emailQueue: Queue<EventsNotificationJob>
+  let emailService: EmailService
+
+  const journeyId = 'journey-id'
+  const visitorId = 'visitor-id'
+
+  let emailQueue
 
   beforeEach(async () => {
+    emailQueue = {
+      add: jest.fn(),
+      getJob: jest.fn(),
+      remove: jest.fn()
+    }
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EmailService,
         {
-          provide: 'api-journeys-events-email',
-          useValue: {
-            add: jest.fn()
-          }
+          provide: 'BullQueue_api-journeys-events-email',
+          useValue: emailQueue
         }
       ]
-    }).compile()
+    })
+      .overrideProvider(getQueueToken('api-journeys-event-email'))
+      .useValue(emailQueue)
+      .compile()
 
-    service = module.get<EmailService>(EmailService)
-    emailQueue = module.get<Queue<EventsNotificationJob>>(
-      'api-journeys-events-email'
+    emailService = module.get<EmailService>(EmailService)
+  })
+
+  it('should send events email', async () => {
+    await emailService.sendEventsEmail(journeyId, visitorId)
+    expect(emailQueue.add).toHaveBeenCalledWith(
+      'visitor-event',
+      {
+        journeyId,
+        visitorId
+      },
+      {
+        delay: 120000,
+        jobId: 'visitor-event-journey-id-visitor-id',
+        removeOnComplete: true,
+        removeOnFail: { age: 864000 }
+      }
     )
   })
 
-  describe('sendEventsEmail', () => {
-    it('should add a job to the email queue', async () => {
-      const journeyId = 'journeyId'
-      const visitorId = 'visitorId'
-
-      await service.sendEventsEmail(journeyId, visitorId)
-
-      expect(emailQueue.add).toHaveBeenCalledWith('sendEventsEmail', {
+  it('should remove the job if it exists and send events email', async () => {
+    emailQueue.getJob.mockResolvedValueOnce({})
+    await emailService.sendEventsEmail(journeyId, visitorId)
+    expect(emailQueue.remove).toHaveBeenCalledTimes(1)
+    expect(emailQueue.add).toHaveBeenCalledWith(
+      'visitor-event',
+      {
         journeyId,
         visitorId
-      })
-    })
+      },
+      {
+        delay: 120000,
+        jobId: 'visitor-event-journey-id-visitor-id',
+        removeOnComplete: true,
+        removeOnFail: { age: 864000 }
+      }
+    )
+  })
+
+  it('should remove the job if it exists and video event is start', async () => {
+    emailQueue.getJob.mockResolvedValueOnce({})
+    await emailService.sendEventsEmail(journeyId, visitorId, 'start')
+    expect(emailQueue.remove).toHaveBeenCalledTimes(1)
+    expect(emailQueue.add).not.toHaveBeenCalled()
+  })
+
+  it('should remove the job if it exists and video event is play', async () => {
+    emailQueue.getJob.mockResolvedValueOnce({})
+    await emailService.sendEventsEmail(journeyId, visitorId, 'play')
+    expect(emailQueue.remove).toHaveBeenCalledTimes(1)
+    expect(emailQueue.add).not.toHaveBeenCalled()
   })
 })

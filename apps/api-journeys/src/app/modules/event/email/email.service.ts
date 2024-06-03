@@ -4,6 +4,8 @@ import { Queue } from 'bullmq'
 
 import { EventsNotificationJob } from './email.consumer'
 
+type VideoEvent = 'start' | 'play'
+
 @Injectable()
 export class EmailService {
   constructor(
@@ -11,31 +13,45 @@ export class EmailService {
     private readonly emailQueue: Queue<EventsNotificationJob>
   ) {}
 
-  // Don't send email if user is watching video
-  async sendEventsEmail(journeyId: string, visitorId: string): Promise<void> {
+  async addVisitorEvent(
+    journeyId: string,
+    visitorId: string,
+    jobId: string,
+    delay: number
+  ): Promise<void> {
+    await this.emailQueue.add(
+      'visitor-event',
+      {
+        journeyId,
+        visitorId
+      },
+      {
+        jobId,
+        delay,
+        removeOnComplete: true,
+        removeOnFail: { age: 24 * 36000 } // keep up to 24 hours
+      }
+    )
+  }
+
+  async sendEventsEmail(
+    journeyId: string,
+    visitorId: string,
+    videoEvent?: VideoEvent
+  ): Promise<void> {
     const jobId = `visitor-event-${journeyId}-${visitorId}`
     const visitorEmailJob = await this.emailQueue.getJob(jobId)
     const delay = 2 * 60 * 1000
 
     if (visitorEmailJob != null) {
-      await this.emailQueue.remove(jobId)
-      await this.emailQueue.add(
-        'visitor-event',
-        {
-          journeyId,
-          visitorId
-        },
-        { jobId, delay }
-      )
+      const removeJob =
+        videoEvent == null || videoEvent === 'start' || videoEvent === 'play'
+      const addJob = videoEvent !== 'start' && videoEvent !== 'play'
+
+      if (removeJob) await this.emailQueue.remove(jobId)
+      if (addJob) await this.addVisitorEvent(journeyId, visitorId, jobId, delay)
     } else {
-      await this.emailQueue.add(
-        'visitor-event',
-        {
-          journeyId,
-          visitorId
-        },
-        { jobId, delay }
-      )
+      await this.addVisitorEvent(journeyId, visitorId, jobId, delay)
     }
   }
 }

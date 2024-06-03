@@ -78,7 +78,34 @@ describe('EmailConsumer', () => {
     userJourneys
   }
 
-  const visitor: Visitor = {
+  const event = {
+    id: 'event 1',
+    typename: 'event',
+    journeyId: 'bd62980f-3302-481d-8d66-a6ad2bdc936a',
+    blockId: '67094b1c-4446-44ec-8aa3-e3213ae6db34',
+    stepId: 'a9a10c4e-dfbc-4efd-ac98-7eea5ec615ad',
+    createdAt: new Date('2024-05-27T23:39:28.000Z'),
+    label: 'Step 1',
+    value: 'Test',
+    visitorId: 'dcb4aa5f-5672-4350-af5a-c08946a3560a',
+    action: null,
+    actionValue: null,
+    messagePlatform: null,
+    languageId: null,
+    radioOptionBlockId: null,
+    email: null,
+    nextStepId: null,
+    previousStepId: null,
+    position: null,
+    source: null,
+    progress: null,
+    userId: null,
+    journeyVisitorJourneyId: null,
+    journeyVisitorVisitorId: null,
+    updatedAt: new Date('2024-05-27T23:39:28.000Z')
+  }
+
+  const visitor: Visitor & { events } = {
     id: 'visitorId',
     countryCode: null,
     email: 'bob@example.com',
@@ -100,7 +127,36 @@ describe('EmailConsumer', () => {
     lastRadioOptionSubmission: null,
     referrer: null,
     userId: 'visitorUserId',
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    events: [
+      {
+        ...event,
+        typename: 'TextResponseSubmissionEvent',
+        id: 'event 1',
+        label: 'Text Response Submission Event',
+        value: 'My mom is sick'
+      },
+      {
+        ...event,
+        typename: 'ChatOpenEvent',
+        id: 'event 2',
+        label: 'Chat Open Event',
+        value: '12:00 PM'
+      },
+      {
+        ...event,
+        typename: 'RadioQuestionSubmissionEvent',
+        id: 'event 3',
+        label: 'Radio Question Submission Event',
+        value: 'Health'
+      },
+      {
+        ...event,
+        typename: 'StepViewEvent',
+        id: 'event 4',
+        label: 'Step View Event'
+      }
+    ]
   }
 
   const job: Job<EventsNotificationJob, unknown, string> = {
@@ -148,12 +204,12 @@ describe('EmailConsumer', () => {
 
   describe('sendEventsNotification', () => {
     it('should send events notification email successfully', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
         async () =>
           await Promise.resolve({
             data: {
               user: {
-                id: 'userJourneyId1',
+                id: 'userId1',
                 firstName: 'Joe',
                 imageUrl: null,
                 email: 'jron@example.com'
@@ -179,7 +235,7 @@ describe('EmailConsumer', () => {
 
       await emailConsumer.sendEventsNotification(job)
       expect(emailService.sendEmail).toHaveBeenCalled()
-      expect(args).toHaveBeenCalledWith({
+      expect(args).toEqual({
         to: 'jron@example.com',
         subject: 'A visitor has interacted with your journey',
         text: expect.any(String),
