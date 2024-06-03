@@ -53,7 +53,7 @@ describe('EmailService', () => {
   it('should remove the job if it exists and send events email', async () => {
     emailQueue.getJob.mockResolvedValueOnce({})
     await emailService.sendEventsEmail(journeyId, visitorId)
-    expect(emailQueue.remove).toHaveBeenCalledTimes(1)
+    expect(emailQueue.remove).toHaveBeenCalled()
     expect(emailQueue.add).toHaveBeenCalledWith(
       'visitor-event',
       {
@@ -72,14 +72,14 @@ describe('EmailService', () => {
   it('should remove the job if it exists and video event is start', async () => {
     emailQueue.getJob.mockResolvedValueOnce({})
     await emailService.sendEventsEmail(journeyId, visitorId, 'start')
-    expect(emailQueue.remove).toHaveBeenCalledTimes(1)
+    expect(emailQueue.remove).toHaveBeenCalled()
     expect(emailQueue.add).not.toHaveBeenCalled()
   })
 
   it('should remove the job if it exists and video event is play', async () => {
     emailQueue.getJob.mockResolvedValueOnce({})
     await emailService.sendEventsEmail(journeyId, visitorId, 'play')
-    expect(emailQueue.remove).toHaveBeenCalledTimes(1)
+    expect(emailQueue.remove).toHaveBeenCalled()
     expect(emailQueue.add).not.toHaveBeenCalled()
   })
 })

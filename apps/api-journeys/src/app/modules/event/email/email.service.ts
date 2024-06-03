@@ -16,8 +16,7 @@ export class EmailService {
   async addVisitorEvent(
     journeyId: string,
     visitorId: string,
-    jobId: string,
-    delay: number
+    jobId: string
   ): Promise<void> {
     await this.emailQueue.add(
       'visitor-event',
@@ -27,7 +26,7 @@ export class EmailService {
       },
       {
         jobId,
-        delay,
+        delay: 2 * 60 * 1000, // delay for 2 minutes
         removeOnComplete: true,
         removeOnFail: { age: 24 * 36000 } // keep up to 24 hours
       }
@@ -41,7 +40,6 @@ export class EmailService {
   ): Promise<void> {
     const jobId = `visitor-event-${journeyId}-${visitorId}`
     const visitorEmailJob = await this.emailQueue.getJob(jobId)
-    const delay = 2 * 60 * 1000
 
     if (visitorEmailJob != null) {
       const removeJob =
@@ -49,9 +47,9 @@ export class EmailService {
       const addJob = videoEvent !== 'start' && videoEvent !== 'play'
 
       if (removeJob) await this.emailQueue.remove(jobId)
-      if (addJob) await this.addVisitorEvent(journeyId, visitorId, jobId, delay)
+      if (addJob) await this.addVisitorEvent(journeyId, visitorId, jobId)
     } else {
-      await this.addVisitorEvent(journeyId, visitorId, jobId, delay)
+      await this.addVisitorEvent(journeyId, visitorId, jobId)
     }
   }
 }
