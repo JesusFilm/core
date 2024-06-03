@@ -8,7 +8,7 @@ import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
 
 import { TEAM_UPDATE } from './TeamUpdateDialog'
 

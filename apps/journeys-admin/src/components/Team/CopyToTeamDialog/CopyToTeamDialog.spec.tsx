@@ -9,7 +9,7 @@ import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActi
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 import { CopyToTeamDialog } from './CopyToTeamDialog'

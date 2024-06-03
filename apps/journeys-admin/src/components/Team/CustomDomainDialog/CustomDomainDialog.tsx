@@ -16,7 +16,7 @@ import Lightning2Icon from '@core/shared/ui/icons/Lightning2'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
 import { useCustomDomainsQuery } from '../../../libs/useCustomDomainsQuery'
-import { useTeam } from '../TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { CustomDomainDialogTitle } from './CustomDomainDialogTitle'
 import { DefaultJourneyForm } from './DefaultJourneyForm'

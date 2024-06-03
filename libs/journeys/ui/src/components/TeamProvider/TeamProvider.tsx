@@ -11,7 +11,7 @@ import TagManager from 'react-gtm-module'
 import {
   GetLastActiveTeamIdAndTeams,
   GetLastActiveTeamIdAndTeams_teams as Team
-} from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+} from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 
 interface Context {
   query: QueryResult<GetLastActiveTeamIdAndTeams, OperationVariables>

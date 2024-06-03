@@ -6,7 +6,7 @@ import {
   GetOnboardingJourneysVariables,
   GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys
 } from '../../../__generated__/GetOnboardingJourneys'
-import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '../Team/TeamProvider'
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '@core/journeys/ui/TeamProvider'
 
 import {
   GET_ONBOARDING_JOURNEYS,

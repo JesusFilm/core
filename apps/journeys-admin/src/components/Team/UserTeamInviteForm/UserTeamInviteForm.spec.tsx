@@ -11,7 +11,7 @@ import { TeamManageWrapper } from '../TeamManageDialog/TeamManageWrapper'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
 
 import { USER_TEAM_INVITE_CREATE } from './UserTeamInviteForm'
 

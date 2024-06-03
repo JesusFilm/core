@@ -19,7 +19,7 @@ import { defaultJourney } from '../../JourneyList/journeyListData'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
 
 import { CustomDomainDialog } from './CustomDomainDialog'
 import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection'

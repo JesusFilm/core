@@ -13,7 +13,7 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { CREATE_JOURNEY } from '../../libs/useJourneyCreateMutation'
-import { TeamProvider } from '../Team/TeamProvider'
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 
 import { getOnboardingJourneysMock, getTeamsMock } from './data'
 

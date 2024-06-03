@@ -5,7 +5,7 @@ import {
   CreateJourney,
   CreateJourney_journeyCreate as Journey
 } from '../../../__generated__/CreateJourney'
-import { useTeam } from '../../components/Team/TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 export const CREATE_JOURNEY = gql`
   mutation CreateJourney(

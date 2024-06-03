@@ -9,7 +9,7 @@ import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvites
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
 
 import { TeamManageDialog } from './TeamManageDialog'
 

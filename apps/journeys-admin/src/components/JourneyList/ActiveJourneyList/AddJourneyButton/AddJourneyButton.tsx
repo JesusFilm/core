@@ -6,7 +6,7 @@ import { ReactElement } from 'react'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { useJourneyCreateMutation } from '../../../../libs/useJourneyCreateMutation'
-import { useTeam } from '../../../Team/TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 export function AddJourneyButton(): ReactElement {
   const { createJourney } = useJourneyCreateMutation()

@@ -25,7 +25,7 @@ import { GetMe } from '../../__generated__/GetMe'
 import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerification/EmailVerification'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
-import { useTeam } from '../../src/components/Team/TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 

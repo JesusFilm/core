@@ -8,7 +8,7 @@ import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastAc
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
 
 import { TeamMenu } from '.'
 

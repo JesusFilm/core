@@ -18,7 +18,7 @@ import {
   UserTeamRole
 } from '../../../../__generated__/globalTypes'
 import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
-import { useTeam } from '../TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 export const USER_TEAM_INVITE_CREATE = gql`
   mutation UserTeamInviteCreate(

@@ -19,7 +19,7 @@ import Mail1 from '@core/shared/ui/icons/Mail1'
 import { GetMe_me as ApiUser } from '../../../../../../__generated__/GetMe'
 import { LanguageSwitcher } from '../../../../LanguageSwitcher'
 import { MenuItem } from '../../../../MenuItem'
-import { useTeam } from '../../../../Team/TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 export interface UserMenuProps {
   apiUser: ApiUser

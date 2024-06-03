@@ -17,7 +17,7 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { TeamAvatars } from '../TeamAvatars'
-import { useTeam } from '../TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 export const UPDATE_LAST_ACTIVE_TEAM_ID = gql`
   mutation UpdateLastActiveTeamId($input: JourneyProfileUpdateInput!) {

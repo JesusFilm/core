@@ -8,7 +8,7 @@ import { CREATE_JOURNEY } from '../../../../libs/useJourneyCreateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../../../Team/TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
 
 import { AddJourneyButton } from '.'
 

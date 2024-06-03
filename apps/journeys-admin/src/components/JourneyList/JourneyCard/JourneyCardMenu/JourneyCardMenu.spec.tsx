@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { TeamProvider } from '../../../Team/TeamProvider'
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { ThemeProvider } from '../../../ThemeProvider'
 
 import { JourneyCardMenu } from '.'

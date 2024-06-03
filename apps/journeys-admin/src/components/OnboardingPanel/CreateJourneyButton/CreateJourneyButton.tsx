@@ -7,7 +7,7 @@ import FilePlus1Icon from '@core/shared/ui/icons/FilePlus1'
 import { useJourneyCreateMutation } from '../../../libs/useJourneyCreateMutation'
 import { ContainedIconButton } from '../../ContainedIconButton'
 import { SidePanelContainer } from '../../PageWrapper/SidePanelContainer'
-import { useTeam } from '../../Team/TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 export function CreateJourneyButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

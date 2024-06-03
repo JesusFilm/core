@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { TeamOnboarding } from '../../src/components/Team/TeamOnboarding'
-import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '../../src/components/Team/TeamProvider'
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '@core/journeys/ui/TeamProvider'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../src/components/Team/TeamSelect/TeamSelect'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_CURRENT_USER } from '../../src/libs/useCurrentUserLazyQuery'

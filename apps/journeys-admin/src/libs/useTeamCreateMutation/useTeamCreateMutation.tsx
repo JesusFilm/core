@@ -9,7 +9,7 @@ import {
   TeamCreate,
   TeamCreateVariables
 } from '../../../__generated__/TeamCreate'
-import { useTeam } from '../../components/Team/TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 export const TEAM_CREATE = gql`
   mutation TeamCreate($input: TeamCreateInput!) {

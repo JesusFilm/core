@@ -11,7 +11,7 @@ import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 import { CopyToTeamMenuItem } from './CopyToTeamMenuItem'

@@ -12,7 +12,7 @@ import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamDialog } from '../../../../Team/CopyToTeamDialog'
-import { useTeam } from '../../../../Team/TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 interface DuplicateJourneyMenuItemProps {
   id?: string

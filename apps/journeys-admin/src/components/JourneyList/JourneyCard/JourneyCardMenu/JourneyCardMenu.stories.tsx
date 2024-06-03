@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
-import { TeamProvider } from '../../../Team/TeamProvider'
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { ThemeProvider } from '../../../ThemeProvider'
 
 import { JourneyCardMenu } from './JourneyCardMenu'

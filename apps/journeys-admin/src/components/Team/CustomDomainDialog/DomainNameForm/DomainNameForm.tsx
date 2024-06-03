@@ -17,7 +17,7 @@ import {
 } from '../../../../../__generated__/DeleteCustomDomain'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 import { CustomDomainCreateInput } from '../../../../../__generated__/globalTypes'
-import { useTeam } from '../../TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 interface DomainNameFormProps {
   customDomain?: CustomDomain

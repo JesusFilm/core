@@ -8,7 +8,7 @@ import {
 } from '../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
-import { TeamProvider } from '../../Team/TeamProvider'
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import {
   archiveddJourney,
   defaultJourney,

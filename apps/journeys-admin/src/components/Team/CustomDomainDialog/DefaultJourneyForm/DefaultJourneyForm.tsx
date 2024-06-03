@@ -28,7 +28,7 @@ import {
   UpdateJourneyCollectionVariables
 } from '../../../../../__generated__/UpdateJourneyCollection'
 import { useAdminJourneysQuery } from '../../../../libs/useAdminJourneysQuery'
-import { useTeam } from '../../TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { CustomDomainDialogTitle } from '../CustomDomainDialogTitle'
 
 interface DefaultJourneyFormProps {

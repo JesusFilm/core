@@ -13,7 +13,7 @@ import {
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../../../../../../../apps/journeys-admin/src/components/Team/TeamProvider'
+} from '../../TeamProvider'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
 

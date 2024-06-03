@@ -14,7 +14,7 @@ import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
-import { useTeam } from '../../../../Team/TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'

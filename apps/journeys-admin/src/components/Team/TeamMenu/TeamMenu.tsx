@@ -17,7 +17,7 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { MenuItem } from '../../MenuItem'
 import { TeamAvatars } from '../TeamAvatars'
-import { useTeam } from '../TeamProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 const DynamicTeamCreateDialog = dynamic(
   async () =>
