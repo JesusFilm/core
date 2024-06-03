@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ReactNode, useState } from 'react'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { journeysAdminConfig } from '../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUserLazyQuery'
 import { GET_USER_INVITES } from '../../libs/useUserInvitesLazyQuery/useUserInvitesLazyQuery'
 

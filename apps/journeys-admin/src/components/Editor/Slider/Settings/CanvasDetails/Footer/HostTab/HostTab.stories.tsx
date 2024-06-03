@@ -15,7 +15,7 @@ import {
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { GET_CURRENT_USER } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'

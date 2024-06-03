@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GoalsBanner } from './GoalsBanner'
 

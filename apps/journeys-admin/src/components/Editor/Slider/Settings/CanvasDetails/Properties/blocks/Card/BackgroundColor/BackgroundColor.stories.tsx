@@ -14,7 +14,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { BackgroundColor } from '.'
 

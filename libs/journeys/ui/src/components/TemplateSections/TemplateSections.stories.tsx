@@ -13,7 +13,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../apps/journeys-admin/src/libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
 
 import { TemplateSections } from '.'

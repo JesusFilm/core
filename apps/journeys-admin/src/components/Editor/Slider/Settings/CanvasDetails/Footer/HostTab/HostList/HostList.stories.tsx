@@ -8,7 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { GetAllTeamHosts } from '../../../../../../../../../__generated__/GetAllTeamHosts'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import { DRAWER_WIDTH } from '../../../../../../constants'
 

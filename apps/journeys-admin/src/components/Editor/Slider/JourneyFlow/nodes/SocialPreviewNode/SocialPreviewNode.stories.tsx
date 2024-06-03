@@ -20,7 +20,7 @@ import {
   StepAndCardBlockCreate,
   StepAndCardBlockCreateVariables
 } from '../../../../../../../__generated__/StepAndCardBlockCreate'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
 import { SocialPreviewNode } from './SocialPreviewNode'

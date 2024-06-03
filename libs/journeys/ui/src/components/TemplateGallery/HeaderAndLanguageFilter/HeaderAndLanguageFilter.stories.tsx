@@ -5,7 +5,7 @@ import { ComponentProps } from 'react'
 
 import '../../../../../../../apps/journeys-admin/test/i18n'
 
-import { journeysAdminConfig } from '../../../../../../../apps/journeys-admin/src/libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { getLanguagesMock } from '../data'
 
 import { HeaderAndLanguageFilter } from '.'

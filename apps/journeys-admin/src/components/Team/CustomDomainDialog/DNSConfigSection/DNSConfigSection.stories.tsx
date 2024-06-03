@@ -7,7 +7,7 @@ import {
   CheckCustomDomain_customDomainCheck as CustomDomainCheck
 } from '../../../../../__generated__/CheckCustomDomain'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { CHECK_CUSTOM_DOMAIN, DNSConfigSection } from '.'
 

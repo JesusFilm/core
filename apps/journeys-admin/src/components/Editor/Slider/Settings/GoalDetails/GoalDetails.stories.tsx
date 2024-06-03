@@ -6,7 +6,7 @@ import { ComponentProps } from 'react'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { journey } from './data'
 

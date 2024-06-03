@@ -6,7 +6,7 @@ import { ComponentPropsWithoutRef } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { ToggleOption } from '.'
 

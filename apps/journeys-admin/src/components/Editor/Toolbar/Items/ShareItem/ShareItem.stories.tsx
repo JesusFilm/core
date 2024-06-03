@@ -6,7 +6,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
-import { simpleComponentConfig } from '../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { publishedJourney } from '../../../data'
 
 import { ShareItem } from './ShareItem'

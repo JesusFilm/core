@@ -15,7 +15,7 @@ import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag
 } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { journeysAdminConfig } from '../../../../../../apps/journeys-admin/src/libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery/useUserRoleQuery'

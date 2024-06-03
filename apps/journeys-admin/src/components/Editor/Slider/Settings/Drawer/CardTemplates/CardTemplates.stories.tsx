@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { Drawer } from '../Drawer'
 
 import { CardTemplates } from '.'

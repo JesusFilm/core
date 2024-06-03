@@ -12,7 +12,7 @@ import {
   GetFormBlock,
   GetFormBlockVariables
 } from '../../../../../../../../../__generated__/GetFormBlock'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Drawer } from '../../../../Drawer'
 
 import { GET_FORM_BLOCK } from './Credentials/Credentials'

@@ -5,7 +5,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { TextResponseFields } from '.'
 

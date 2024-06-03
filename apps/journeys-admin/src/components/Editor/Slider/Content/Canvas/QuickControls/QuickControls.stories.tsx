@@ -6,7 +6,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { GetAdminJourney_journey_blocks as Block } from '../../../../../../../__generated__/GetAdminJourney'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { QuickControls } from '.'
 

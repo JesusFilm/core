@@ -6,7 +6,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Drawer } from '../../../../Drawer'
 
 import { Image } from './Image'

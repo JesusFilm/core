@@ -11,7 +11,7 @@ import {
   TypographyAlign,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { ToggleButtonGroup } from '.'
 

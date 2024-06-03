@@ -9,7 +9,7 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../__generated__/GetJourney'
 import { ThemeMode } from '../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { ImageThumbnail } from './ImageThumbnail'
 

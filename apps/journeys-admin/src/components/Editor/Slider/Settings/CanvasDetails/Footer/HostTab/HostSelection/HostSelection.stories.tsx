@@ -13,7 +13,7 @@ import {
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import { DRAWER_WIDTH } from '../../../../../../constants'
 

@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { simpleComponentConfig } from '../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import {
   getVisitorMock,

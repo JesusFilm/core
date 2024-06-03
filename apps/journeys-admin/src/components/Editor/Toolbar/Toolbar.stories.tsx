@@ -9,7 +9,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { Toolbar } from '.'
 

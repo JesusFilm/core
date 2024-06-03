@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { listUnsplashCollectionMock } from './data'
 import { UnsplashGallery } from './UnsplashGallery'

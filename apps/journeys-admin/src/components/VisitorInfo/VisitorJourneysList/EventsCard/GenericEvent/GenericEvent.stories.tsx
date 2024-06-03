@@ -7,7 +7,7 @@ import CircleIcon from '@core/shared/ui/icons/Circle'
 import Marker1Icon from '@core/shared/ui/icons/Marker1'
 import MessageText1Icon from '@core/shared/ui/icons/MessageText1'
 
-import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { EventVariant } from '../../utils'
 
 import { GenericEvent } from '.'

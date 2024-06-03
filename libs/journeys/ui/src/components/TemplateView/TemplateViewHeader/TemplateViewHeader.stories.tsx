@@ -8,7 +8,7 @@ import {
   JourneyFields as Journey,
   JourneyFields_primaryImageBlock as PrimaryImageBlock
 } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { journeysAdminConfig } from '../../../../../../../apps/journeys-admin/src/libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { journey } from '../../../../../../../apps/journeys-admin/src/components/Editor/Slider/Settings/GoalDetails/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'

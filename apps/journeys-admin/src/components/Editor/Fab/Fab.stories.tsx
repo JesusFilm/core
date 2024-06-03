@@ -12,7 +12,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 
 import { StepFields as StepBlock } from '../../../../__generated__/StepFields'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { Fab } from '.'
 

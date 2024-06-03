@@ -6,7 +6,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { UserTeamInviteForm } from './UserTeamInviteForm'
 

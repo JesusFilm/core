@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 import { TeamProvider } from '../TeamProvider'
 

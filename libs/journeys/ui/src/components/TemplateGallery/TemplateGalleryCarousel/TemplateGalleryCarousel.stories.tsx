@@ -4,7 +4,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
-import { journeysAdminConfig } from '../../../../../../../apps/journeys-admin/src/libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { TemplateGalleryCarousel } from './TemplateGalleryCarousel'
 

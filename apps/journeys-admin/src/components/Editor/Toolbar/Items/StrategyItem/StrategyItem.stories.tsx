@@ -5,7 +5,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
-import { simpleComponentConfig } from '../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { publishedJourney } from '../../../data'
 
 import { StrategyItem } from './StrategyItem'

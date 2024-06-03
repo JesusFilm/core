@@ -6,7 +6,7 @@ import { ComponentProps } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { simpleComponentConfig } from '../../../../../../../apps/journeys-admin/src/libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { journey } from '../../../../../../../apps/journeys-admin/src/components/Editor/Slider/Settings/GoalDetails/data'
 
 import { TemplateFooter } from './TemplateFooter'

@@ -4,7 +4,7 @@ import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { publishedJourney } from '../../../../data'
 
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'

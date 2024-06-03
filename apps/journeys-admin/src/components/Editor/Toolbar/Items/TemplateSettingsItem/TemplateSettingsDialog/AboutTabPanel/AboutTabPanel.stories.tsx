@@ -5,7 +5,7 @@ import { ComponentProps } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { defaultJourney } from '../../../../../data'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
