@@ -21,12 +21,16 @@ import {
   VideoStartEvent,
   VideoStartEventCreateInput
 } from '../../../__generated__/graphql'
+import { EmailService } from '../email/email.service'
 import { EventService } from '../event.service'
 
 @Resolver('VideoStartEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoStartEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly emailService: EmailService
+  ) {}
 
   @Mutation()
   async videoStartEventCreate(
@@ -38,6 +42,8 @@ export class VideoStartEventResolver {
       input.blockId,
       input.stepId
     )
+
+    await this.emailService.sendEventsEmail(journeyId, visitor.id, 'start')
 
     return await this.eventService.save({
       ...input,
@@ -57,7 +63,10 @@ export class VideoStartEventResolver {
 @Resolver('VideoPlayEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoPlayEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly emailService: EmailService
+  ) {}
 
   @Mutation()
   async videoPlayEventCreate(
@@ -69,6 +78,8 @@ export class VideoPlayEventResolver {
       input.blockId,
       input.stepId
     )
+
+    await this.emailService.sendEventsEmail(journeyId, visitor.id, 'play')
 
     return await this.eventService.save({
       ...input,
@@ -121,7 +132,10 @@ export class VideoPauseEventResolver {
 @Resolver('VideoCompleteEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoCompleteEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly emailService: EmailService
+  ) {}
 
   @Mutation()
   async videoCompleteEventCreate(
@@ -133,6 +147,8 @@ export class VideoCompleteEventResolver {
       input.blockId,
       input.stepId
     )
+
+    await this.emailService.sendEventsEmail(journeyId, visitor.id)
 
     return await this.eventService.save({
       ...input,

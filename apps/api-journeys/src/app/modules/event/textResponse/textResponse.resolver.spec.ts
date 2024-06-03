@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { TextResponseSubmissionEventCreateInput } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
+import { EmailService } from '../email/email.service'
 import { EventService } from '../event.service'
 
 import { TextResponseSubmissionEventResolver } from './textResponse.resolver'
@@ -27,6 +28,13 @@ describe('TextResponseEventResolver', () => {
     })
   }
 
+  const emailService = {
+    provide: EmailService,
+    useFactory: () => ({
+      sendEventsEmail: jest.fn().mockResolvedValue(null)
+    })
+  }
+
   const response = {
     visitor: { id: 'visitor.id' },
     journeyVisitor: {
@@ -42,6 +50,7 @@ describe('TextResponseEventResolver', () => {
       providers: [
         TextResponseSubmissionEventResolver,
         eventService,
+        emailService,
         PrismaService
       ]
     }).compile()

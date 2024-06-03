@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { PrismaService } from '../../../lib/prisma.service'
+import { EmailService } from '../email/email.service'
 import { EventService } from '../event.service'
 
 import { SignUpSubmissionEventResolver } from './signUp.resolver'
@@ -33,6 +34,13 @@ describe('SignUpEventResolver', () => {
             return newVisitorResponse
         }
       })
+    })
+  }
+
+  const emailService = {
+    provide: EmailService,
+    useFactory: () => ({
+      sendEventsEmail: jest.fn().mockResolvedValue(null)
     })
   }
 
@@ -78,7 +86,12 @@ describe('SignUpEventResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SignUpSubmissionEventResolver, eventService, PrismaService]
+      providers: [
+        SignUpSubmissionEventResolver,
+        eventService,
+        emailService,
+        PrismaService
+      ]
     }).compile()
     resolver = module.get<SignUpSubmissionEventResolver>(
       SignUpSubmissionEventResolver
