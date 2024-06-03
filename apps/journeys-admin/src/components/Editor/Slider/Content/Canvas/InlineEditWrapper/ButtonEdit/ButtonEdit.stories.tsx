@@ -15,7 +15,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Canvas } from '../../Canvas'
 
 const ButtonEditStory: Meta<typeof Canvas> = {

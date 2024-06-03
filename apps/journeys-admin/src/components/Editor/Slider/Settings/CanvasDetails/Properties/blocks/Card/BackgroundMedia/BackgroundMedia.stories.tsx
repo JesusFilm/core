@@ -18,7 +18,7 @@ import {
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 

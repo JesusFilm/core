@@ -3,7 +3,7 @@ import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Drawer } from '../Drawer'
 
 import { ImageBlockEditor } from './ImageBlockEditor'

@@ -11,7 +11,7 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Drawer } from '../../../../Drawer'
 
 import { SignUp } from '.'

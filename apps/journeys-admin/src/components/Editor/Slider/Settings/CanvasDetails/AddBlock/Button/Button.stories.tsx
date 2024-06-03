@@ -4,7 +4,7 @@ import { ComponentProps } from 'react'
 
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { Button } from '.'
 

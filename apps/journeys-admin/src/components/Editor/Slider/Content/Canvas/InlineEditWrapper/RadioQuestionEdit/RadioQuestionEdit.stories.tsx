@@ -14,7 +14,7 @@ import {
 } from '../../../../../../../../__generated__/globalTypes'
 import { RadioQuestionFields } from '../../../../../../../../__generated__/RadioQuestionFields'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Canvas } from '../../Canvas'
 
 const RadioQuestionEditStory: Meta<typeof Canvas> = {

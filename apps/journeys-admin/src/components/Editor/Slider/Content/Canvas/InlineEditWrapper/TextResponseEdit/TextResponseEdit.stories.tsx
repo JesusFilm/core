@@ -12,7 +12,7 @@ import {
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
 import { TextResponseFields } from '../../../../../../../../__generated__/TextResponseFields'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Canvas } from '../../Canvas'
 
 const TextResponseEditStory: Meta<typeof Canvas> = {

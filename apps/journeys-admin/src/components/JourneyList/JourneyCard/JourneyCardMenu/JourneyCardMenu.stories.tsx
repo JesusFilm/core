@@ -4,7 +4,7 @@ import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { TeamProvider } from '../../../Team/TeamProvider'
 import { ThemeProvider } from '../../../ThemeProvider'
 

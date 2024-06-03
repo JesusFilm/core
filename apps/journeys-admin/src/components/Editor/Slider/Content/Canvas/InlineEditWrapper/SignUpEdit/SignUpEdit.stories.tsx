@@ -12,7 +12,7 @@ import {
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
 import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Canvas } from '../../Canvas'
 
 const SignUpEditStory: Meta<typeof Canvas> = {

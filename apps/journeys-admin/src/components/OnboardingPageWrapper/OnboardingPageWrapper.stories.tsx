@@ -6,7 +6,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { GET_JOURNEY } from '../../libs/useJourneyQuery/useJourneyQuery'
 
 import { OnboardingPageWrapper } from '.'

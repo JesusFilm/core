@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { VideoListItem } from '.'
 

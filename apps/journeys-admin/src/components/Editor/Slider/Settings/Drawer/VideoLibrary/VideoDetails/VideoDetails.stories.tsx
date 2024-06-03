@@ -11,7 +11,7 @@ import {
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../../../../../../test/ApolloLoadingProvider'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
 
 import { VideoDetails } from '.'

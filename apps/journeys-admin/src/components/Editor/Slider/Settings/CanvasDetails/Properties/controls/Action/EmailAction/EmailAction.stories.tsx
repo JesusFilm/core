@@ -6,7 +6,7 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { simpleComponentConfig } from '../../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { steps } from '../data'
 
 import { EmailAction } from '.'

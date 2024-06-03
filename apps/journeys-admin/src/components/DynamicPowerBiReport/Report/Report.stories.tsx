@@ -5,7 +5,7 @@ import { ComponentProps } from 'react'
 
 import { JourneysReportType } from '../../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GET_ADMIN_JOURNEYS_REPORT } from './Report'
 

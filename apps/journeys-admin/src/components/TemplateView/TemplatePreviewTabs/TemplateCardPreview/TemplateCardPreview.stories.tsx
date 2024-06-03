@@ -5,7 +5,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { journeyVideoBlocks } from '../data'
 
 import { TemplateCardPreview } from './TemplateCardPreview'

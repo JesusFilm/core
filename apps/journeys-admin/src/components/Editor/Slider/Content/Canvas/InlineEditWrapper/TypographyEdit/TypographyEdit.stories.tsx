@@ -15,7 +15,7 @@ import {
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Canvas } from '../../Canvas'
 
 const TypographyEditStory: Meta<typeof Canvas> = {

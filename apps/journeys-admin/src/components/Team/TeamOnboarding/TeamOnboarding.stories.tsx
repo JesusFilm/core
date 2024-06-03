@@ -4,7 +4,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 import { TeamProvider } from '../TeamProvider'
 

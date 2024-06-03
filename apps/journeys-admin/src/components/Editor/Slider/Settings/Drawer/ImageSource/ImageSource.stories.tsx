@@ -8,7 +8,7 @@ import {
   BlockFields_ImageBlock as ImageBlock
 } from '../../../../../../../__generated__/BlockFields'
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { ImageSource } from './ImageSource'

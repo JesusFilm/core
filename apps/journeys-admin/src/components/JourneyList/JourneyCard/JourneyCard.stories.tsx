@@ -7,7 +7,7 @@ import {
   GetAdminJourneys_journeys_userJourneys as UserJourney
 } from '../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { TeamProvider } from '../../Team/TeamProvider'
 import {
   archiveddJourney,

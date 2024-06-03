@@ -6,7 +6,7 @@ import { Background, Node, Position, ReactFlow } from 'reactflow'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { defaultEdgeProps } from '../../libs/transformSteps/transformSteps'
 
 import { StartEdge } from '.'

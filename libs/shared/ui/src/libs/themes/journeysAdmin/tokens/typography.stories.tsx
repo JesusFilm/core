@@ -3,7 +3,7 @@ import MuiTypography, { TypographyTypeMap } from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { simpleComponentConfig } from '../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../storybook'
 
 const TypographyDemo: Meta<typeof MuiTypography> = {
   ...simpleComponentConfig,

@@ -6,7 +6,7 @@ import { ComponentProps } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
-import { simpleComponentConfig } from '../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { defaultJourney } from '../../../Editor/data'
 
 import { SocialImage } from './SocialImage'

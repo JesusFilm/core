@@ -5,7 +5,7 @@ import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import TargetIcon from '@core/shared/ui/icons/Target'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
-import { simpleComponentConfig } from '../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { NavigationCard } from '.'
 
