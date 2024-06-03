@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: UserJourneyNotificationsByJourney
+// GraphQL query operation: GetUserJourneyNotifications
 // ====================================================
 
-export interface UserJourneyNotificationsByJourney_userJourneyNotificationsByJourney {
+export interface GetUserJourneyNotifications_userJourneyNotificationsByJourney {
   __typename: "UserJourneyNotification";
   id: string;
   journeyId: string;
@@ -15,10 +15,10 @@ export interface UserJourneyNotificationsByJourney_userJourneyNotificationsByJou
   value: boolean;
 }
 
-export interface UserJourneyNotificationsByJourney {
-  userJourneyNotificationsByJourney: UserJourneyNotificationsByJourney_userJourneyNotificationsByJourney[];
+export interface GetUserJourneyNotifications {
+  userJourneyNotificationsByJourney: GetUserJourneyNotifications_userJourneyNotificationsByJourney[];
 }
 
-export interface UserJourneyNotificationsByJourneyVariables {
+export interface GetUserJourneyNotificationsVariables {
   journeyId: string;
 }

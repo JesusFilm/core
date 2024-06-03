@@ -1,4 +1,9 @@
-import { gql } from '@apollo/client'
+import { QueryResult, gql, useQuery } from '@apollo/client'
+
+import {
+  GetUserJourneyNotifications,
+  GetUserJourneyNotificationsVariables
+} from '../../../__generated__/GetUserJourneyNotifications'
 
 export const GET_USER_JOURNEY_NOTIFICATIONS = gql`
   query GetUserJourneyNotifications($journeyId: String!) {
@@ -11,6 +16,17 @@ export const GET_USER_JOURNEY_NOTIFICATIONS = gql`
   }
 `
 
-// const useUserJourneyNotificationsQueryf(): Promise<>{
+export function useUserJourneyNotificationsLazyQuery(
+  journeyId: string
+): QueryResult<GetUserJourneyNotifications> {
+  const query = useQuery<
+    GetUserJourneyNotifications,
+    GetUserJourneyNotificationsVariables
+  >(GET_USER_JOURNEY_NOTIFICATIONS, {
+    variables: { journeyId }
+  })
 
-// }
+  return {
+    ...query
+  }
+}
