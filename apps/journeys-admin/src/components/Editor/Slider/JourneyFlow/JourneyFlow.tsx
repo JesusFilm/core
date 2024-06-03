@@ -48,6 +48,7 @@ import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
 import { NewStepButton } from './NewStepButton'
+import { LinkNode } from './nodes/LinkNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
@@ -267,7 +268,8 @@ export function JourneyFlow(): ReactElement {
   const nodeTypes = useMemo(
     () => ({
       StepBlock: StepBlockNode,
-      SocialPreview: SocialPreviewNode
+      SocialPreview: SocialPreviewNode,
+      Link: LinkNode
     }),
     []
   )

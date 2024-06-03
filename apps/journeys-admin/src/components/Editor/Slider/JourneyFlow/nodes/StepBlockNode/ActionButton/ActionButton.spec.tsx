@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { ReactFlowProvider } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -203,56 +203,6 @@ describe('ActionButton', () => {
     )
 
     expect(screen.getByText('Default Next Step →')).toBeInTheDocument()
-  })
-
-  it('should render icon and tooltip for link action', async () => {
-    const block = {
-      __typename: 'ButtonBlock',
-      action: {
-        __typename: 'LinkAction',
-        url: 'https://example.com'
-      }
-    } as unknown as TreeBlock<ButtonBlock>
-
-    render(
-      <MockedProvider>
-        <ReactFlowProvider>
-          <ActionButton block={block} />
-        </ReactFlowProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('LinkIcon')).toBeInTheDocument()
-    fireEvent.mouseOver(screen.getByTestId('LinkIcon'))
-    await waitFor(() => {
-      expect(screen.getByRole('tooltip')).toHaveTextContent(
-        'https://example.com'
-      )
-    })
-  })
-
-  it('should render icon and tooltip for email action', async () => {
-    const block = {
-      __typename: 'ButtonBlock',
-      action: {
-        __typename: 'EmailAction',
-        email: 'example@email.com'
-      }
-    } as unknown as TreeBlock<ButtonBlock>
-
-    render(
-      <MockedProvider>
-        <ReactFlowProvider>
-          <ActionButton block={block} />
-        </ReactFlowProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('EmailIcon')).toBeInTheDocument()
-    fireEvent.mouseOver(screen.getByTestId('EmailIcon'))
-    await waitFor(() => {
-      expect(screen.getByRole('tooltip')).toHaveTextContent('example@email.com')
-    })
   })
 
   it('should hide hover arrow if connected to next card', () => {
