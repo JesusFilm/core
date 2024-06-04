@@ -12,10 +12,12 @@ import {
   GetJourneyWithPermissions,
   GetJourneyWithPermissions_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithPermissions'
+import { GetUserJourneyNotifications_userJourneyNotificationsByJourney as UserJourneyNotifications } from '../../../__generated__/GetUserJourneyNotifications'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../__generated__/GetUserTeamsAndInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { useUserInvitesLazyQuery } from '../../libs/useUserInvitesLazyQuery'
+import { useUserJourneyNotificationsLazyQuery } from '../../libs/useUserJourneyNotificationsLazyQuery/useUserJourneyNotificationsLazyQuery'
 import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
@@ -75,6 +77,8 @@ export function AccessDialog({
     useUserInvitesLazyQuery({ journeyId })
 
   const { loadUser, data: user } = useCurrentUserLazyQuery()
+  const [loadEmailPreferences, { data: emailPreferences }] =
+    useUserJourneyNotificationsLazyQuery(journeyId)
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
@@ -89,6 +93,16 @@ export function AccessDialog({
   // loop over userJoryenys and get ntofis and add notifs into new array after users.push
   // pass rest of array to userTEAMS component
   // repeat
+
+  const emailPreferencesMap: Map<string, UserJourneyNotifications> =
+    useMemo(() => {
+      return new Map(
+        emailPreferences?.userJourneyNotificationsByJourney.map((obj) => [
+          obj.userId,
+          obj
+        ])
+      )
+    }, [emailPreferences])
 
   const { users, requests, invites, emails } = useMemo(() => {
     const users: UserJourney[] = []
@@ -115,13 +129,16 @@ export function AccessDialog({
     return { users, requests, invites, emails }
   }, [data, userInviteData])
 
+  console.log(emailPreferencesMap.get(users?.[0]?.id))
+
   useEffect(() => {
     if (open === true) {
       void refetch()
       void refetchInvites()
       void loadUser()
+      void loadEmailPreferences()
     }
-  }, [open, refetch, refetchInvites, loadUser])
+  }, [open, refetch, refetchInvites, loadUser, loadEmailPreferences])
 
   return (
     <Dialog
