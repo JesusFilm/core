@@ -594,6 +594,12 @@ export class VideoProgressEventCreateInput {
     value?: Nullable<VideoBlockSource>;
 }
 
+export class EventEmailNotificationsInput {
+    userId: string;
+    journeyId: string;
+    value: boolean;
+}
+
 export class HostUpdateInput {
     title?: Nullable<string>;
     location?: Nullable<string>;
@@ -700,12 +706,6 @@ export class TeamUpdateInput {
 
 export class UserInviteCreateInput {
     email: string;
-}
-
-export class UserJourneyNotificationInput {
-    userId: string;
-    journeyId: string;
-    value: boolean;
 }
 
 export class UserTeamUpdateInput {
@@ -884,6 +884,10 @@ export abstract class IMutation {
 
     abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
 
+    abstract eventEmailNotificationsUpdate(id: string, input?: Nullable<EventEmailNotificationsInput>): EventEmailNotifications | Promise<EventEmailNotifications>;
+
+    abstract eventEmailNotificationsDelete(id: string, input?: Nullable<EventEmailNotificationsInput>): EventEmailNotifications | Promise<EventEmailNotifications>;
+
     abstract hostCreate(teamId: string, input: HostCreateInput): Host | Promise<Host>;
 
     abstract hostUpdate(id: string, teamId: string, input?: Nullable<HostUpdateInput>): Host | Promise<Host>;
@@ -946,10 +950,6 @@ export abstract class IMutation {
 
     abstract userJourneyOpen(id: string): Nullable<UserJourney> | Promise<Nullable<UserJourney>>;
 
-    abstract userJourneyNotificationUpdate(id: string, input?: Nullable<UserJourneyNotificationInput>): UserJourneyNotification | Promise<UserJourneyNotification>;
-
-    abstract userJourneyNotificationDelete(id: string, input?: Nullable<UserJourneyNotificationInput>): UserJourneyNotification | Promise<UserJourneyNotification>;
-
     abstract userTeamUpdate(id: string, input?: Nullable<UserTeamUpdateInput>): UserTeam | Promise<UserTeam>;
 
     abstract userTeamDelete(id: string): UserTeam | Promise<UserTeam>;
@@ -1008,6 +1008,8 @@ export abstract class IQuery {
 
     abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
 
+    abstract eventEmailNotificationsByJourney(journeyId: string): EventEmailNotifications[] | Promise<EventEmailNotifications[]>;
+
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
@@ -1037,8 +1039,6 @@ export abstract class IQuery {
     abstract team(id: string): Team | Promise<Team>;
 
     abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
-
-    abstract userJourneyNotificationsByJourney(journeyId: string): UserJourneyNotification[] | Promise<UserJourneyNotification[]>;
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
@@ -1460,6 +1460,14 @@ export class VideoProgressEvent implements Event {
     progress: number;
 }
 
+export class EventEmailNotifications {
+    __typename?: 'EventEmailNotifications';
+    id: string;
+    userId: string;
+    journeyId: string;
+    value: boolean;
+}
+
 export class Host {
     __typename?: 'Host';
     id: string;
@@ -1567,14 +1575,6 @@ export class UserInvite {
     email: string;
     acceptedAt?: Nullable<DateTime>;
     removedAt?: Nullable<DateTime>;
-}
-
-export class UserJourneyNotification {
-    __typename?: 'UserJourneyNotification';
-    id: string;
-    userId: string;
-    journeyId: string;
-    value: boolean;
 }
 
 export class UserRole {

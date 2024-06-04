@@ -1,19 +1,19 @@
 import { Args, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { UserJourneyNotification } from '.prisma/api-journeys-client'
+import { EventEmailNotifications } from '.prisma/api-journeys-client'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-@Resolver('UserJourneyNotification')
-export class UserJourneyNotificationResolver {
+@Resolver('eventEmailNotifications')
+export class eventEmailNotificationsResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
-  async userJourneyNotificationsByJourney(
+  async eventEmailNotificationsByJourney(
     @Args('journeyId') journeyId: string
-  ): Promise<UserJourneyNotification[]> {
-    const res = await this.prismaService.userJourneyNotification.findMany({
+  ): Promise<EventEmailNotifications[]> {
+    const res = await this.prismaService.eventEmailNotifications.findMany({
       where: { journeyId }
     })
 
