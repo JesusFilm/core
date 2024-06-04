@@ -1,6 +1,6 @@
 import { QueryResult, gql, useQuery } from '@apollo/client'
 
-import { GetUserRole } from '../../../../../../apps/journeys-admin/__generated__/GetUserRole'
+import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 
 export const GET_USER_ROLE = gql`
   query GetUserRole {

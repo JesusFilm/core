@@ -9,7 +9,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { GetJourneys } from '@core/journeys/ui/useJourneysQuery/__generated__/GetJourneys'
 import { GetTags } from '@core/journeys/ui/useTagsQuery/__generated__/GetTags'
-import { GetUserRole } from '../../../../../../apps/journeys-admin/__generated__/GetUserRole'
+import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 import { Role } from '../../../__generated__/globalTypes'
 import {
   JourneyFields as Journey,
