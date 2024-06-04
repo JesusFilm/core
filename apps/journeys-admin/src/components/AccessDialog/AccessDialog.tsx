@@ -129,8 +129,6 @@ export function AccessDialog({
     return { users, requests, invites, emails }
   }, [data, userInviteData])
 
-  console.log(emailPreferencesMap.get(users?.[0]?.id))
-
   useEffect(() => {
     if (open === true) {
       void refetch()

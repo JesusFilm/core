@@ -29,7 +29,5 @@ export function useUserJourneyNotificationsLazyQuery(
     variables: { journeyId }
   })
 
-  return {
-    ...query
-  }
+  return query
 }
