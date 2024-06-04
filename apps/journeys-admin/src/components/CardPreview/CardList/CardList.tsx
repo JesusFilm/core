@@ -32,7 +32,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
-import { FramePortal } from '../../FramePortal'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
 

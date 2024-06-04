@@ -24,7 +24,7 @@ import {
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
-import { FramePortal } from '../../../../../../../../apps/journeys-admin/src/components/FramePortal'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { CreateJourneyButton } from '../../CreateJourneyButton'
 
 interface TemplateCardPreviewProps {

@@ -20,7 +20,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import { FramePortal } from '../../../../../FramePortal'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 
 interface ActionCardsProps {
   url: string

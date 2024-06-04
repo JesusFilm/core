@@ -6,8 +6,8 @@ import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-import { BlockFields as Block } from '../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { BlockFields as Block } from '@core/journeys/ui/block/__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,

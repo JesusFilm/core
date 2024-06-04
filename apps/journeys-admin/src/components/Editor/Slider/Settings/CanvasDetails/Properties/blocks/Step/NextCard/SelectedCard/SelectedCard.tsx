@@ -22,7 +22,7 @@ import {
 } from '../../../../../../../../../../../__generated__/globalTypes'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
 import { StepFields } from '../../../../../../../../../../../__generated__/StepFields'
-import { FramePortal } from '../../../../../../../../../FramePortal'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { CardWrapper } from '../../../../../../../Content/Canvas/CardWrapper'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 
