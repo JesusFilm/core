@@ -42,8 +42,7 @@ export class EmailService {
     const visitorEmailJob = await this.emailQueue.getJob(jobId)
 
     if (visitorEmailJob != null) {
-      const removeJob =
-        videoEvent == null || videoEvent === 'start' || videoEvent === 'play'
+      const removeJob = ['start', 'play', null, undefined].includes(videoEvent)
       const addJob = videoEvent !== 'start' && videoEvent !== 'play'
 
       if (removeJob) await this.emailQueue.remove(jobId)

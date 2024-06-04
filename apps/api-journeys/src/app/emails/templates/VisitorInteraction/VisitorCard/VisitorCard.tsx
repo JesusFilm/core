@@ -13,10 +13,12 @@ import { Tailwind } from '@react-email/tailwind'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement, ReactNode } from 'react'
 
+import { Event } from '.prisma/api-journeys-client'
+
 interface VisitorCardProps {
   createdAt: Date
   duration: number
-  events
+  events: Event[]
   story?: boolean
 }
 

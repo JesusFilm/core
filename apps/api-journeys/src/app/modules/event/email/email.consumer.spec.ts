@@ -5,6 +5,7 @@ import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import {
+  Event,
   Journey,
   JourneyStatus,
   MessagePlatform,
@@ -78,7 +79,7 @@ describe('EmailConsumer', () => {
     userJourneys
   }
 
-  const event = {
+  const event: Event = {
     id: 'event 1',
     typename: 'event',
     journeyId: 'bd62980f-3302-481d-8d66-a6ad2bdc936a',

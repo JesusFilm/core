@@ -11,6 +11,7 @@ import {
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
+import { Event } from '.prisma/api-journeys-client'
 import {
   ActionCard,
   BodyWrapper,
@@ -24,7 +25,7 @@ import { VisitorCard } from './VisitorCard'
 interface Visitor {
   createdAt: Date
   duration: number
-  events
+  events: Event[]
 }
 
 interface VisitorInteractionProps {
