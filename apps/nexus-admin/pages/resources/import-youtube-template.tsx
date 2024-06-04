@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import DeleteIcon from '@mui/icons-material/Delete'
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined'
 import PublishOutlinedIcon from '@mui/icons-material/PublishOutlined'
@@ -17,15 +16,6 @@ import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
 
 import { MainLayout } from '../../src/components/MainLayout'
 import { UploadConfirmationModal } from '../../src/components/UploadConfirmationModal'
-
-export const GET_GOOGLE_ACCESS_TOKEN = gql`
-  mutation getGoogleAccessToken($input: GoogleAuthInput!) {
-    getGoogleAccessToken(input: $input) {
-      id
-      accessToken
-    }
-  }
-`
 
 const ImportYouTubeTemplatePage: FC = () => {
   const [selectedTemplateFile, setSelectedTemplateFile] =

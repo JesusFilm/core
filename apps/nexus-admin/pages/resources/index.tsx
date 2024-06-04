@@ -21,8 +21,6 @@ import { ResourcesTable } from '../../src/components/ResourcesTable'
 import { UpdateResourceModal } from '../../src/components/UpdateResourceModal'
 import { getOrigin } from '../../utils/getOrigin'
 
-import { GET_GOOGLE_ACCESS_TOKEN } from './import-youtube-template'
-
 export const GET_RESOURCES = gql`
   query Resources($where: ResourceFilter) {
     resources(where: $where) {
@@ -132,27 +130,13 @@ const ResourcesPage: FC = () => {
   const [resourceDelete] = useMutation<ResourceDelete>(RESOURCE_DELETE)
   const [resourceExport, { loading: isExporting }] =
     useMutation(RESOURCE_EXPORT)
-  const [getGoogleAccessToken] = useMutation<getGoogleAccessToken>(
-    GET_GOOGLE_ACCESS_TOKEN
-  )
 
   const googleLogin = useGoogleLogin({
-    flow: 'auth-code',
+    flow: 'implicit',
     scope:
       'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/spreadsheets.readonly',
-    onSuccess: async ({ code }) => {
-      void getGoogleAccessToken({
-        variables: {
-          input: {
-            url: getOrigin(),
-            authCode: code
-          }
-        },
-        onCompleted: (data) => {
-          setGoogleAccessTokenId(data.getGoogleAccessToken.id as string)
-          setGoogleAccessToken(data.getGoogleAccessToken.accessToken as string)
-        }
-      })
+    onSuccess: async ({ access_token: accessToken }) => {
+      setGoogleAccessToken(accessToken)
     }
   })
 

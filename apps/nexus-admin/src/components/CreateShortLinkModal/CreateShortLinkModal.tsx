@@ -20,7 +20,6 @@ import useDrivePicker from 'react-google-drive-picker'
 import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
 import { object, string } from 'yup'
 
-import { GET_GOOGLE_ACCESS_TOKEN } from '../../../pages/resources/import-youtube-template'
 import { getOrigin } from '../../../utils/getOrigin'
 import { Modal } from '../Modal'
 
@@ -63,7 +62,6 @@ export const CreateShortLinkModal: FC<CreateShortLinkModalProps> = ({
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation()
 
-  const [getGoogleAccessToken] = useMutation(GET_GOOGLE_ACCESS_TOKEN)
   const [getGoogleSheetData] = useMutation(GET_GOOGLE_SHEET_DATA)
 
   const availableDomains = ['link.myfp.ws', 'hi.switchy.io', 'swiy.io']
@@ -140,22 +138,11 @@ export const CreateShortLinkModal: FC<CreateShortLinkModalProps> = ({
   }
 
   const googleLogin = useGoogleLogin({
-    flow: 'auth-code',
+    flow: 'implicit',
     scope:
       'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/spreadsheets.readonly',
-    onSuccess: async ({ code }) => {
-      void getGoogleAccessToken({
-        variables: {
-          input: {
-            url: getOrigin(),
-            authCode: code
-          }
-        },
-        onCompleted: (data) => {
-          setGoogleAccessTokenId(data.getGoogleAccessToken.id as string)
-          setGoogleAccessToken(data.getGoogleAccessToken.accessToken as string)
-        }
-      })
+    onSuccess: async ({ access_token: accessToken }) => {
+      setGoogleAccessToken(accessToken)
     }
   })
 
