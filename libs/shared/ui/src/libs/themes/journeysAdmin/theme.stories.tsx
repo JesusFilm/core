@@ -9,7 +9,7 @@ import Typography, { TypographyProps } from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
 
-import { simpleComponentConfig } from '../../storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 const AdminThemeDemo: Meta<typeof Typography> = {
   ...simpleComponentConfig,
