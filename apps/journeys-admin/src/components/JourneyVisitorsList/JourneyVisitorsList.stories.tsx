@@ -6,7 +6,7 @@ import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { VisitorStatus } from '../../../__generated__/globalTypes'
 
 import { JourneyVisitorsList } from '.'
-import '../../../test/i18n'
+import '../../../../../libs/journeys/ui/test/i18n'
 
 const JourneyVisitorsListStory: Meta<typeof JourneyVisitorsList> = {
   ...journeysAdminConfig,

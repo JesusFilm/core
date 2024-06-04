@@ -11,7 +11,7 @@ import { publishedJourney } from '../../journeyListData'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
 import { JourneyCardInfo } from '.'
-import '../../../../../test/i18n'
+import '../../../../../../../libs/journeys/ui/test/i18n'
 
 describe('JourneyCardInfo', () => {
   it('should show the langauge name', () => {
