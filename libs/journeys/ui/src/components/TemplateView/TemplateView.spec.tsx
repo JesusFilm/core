@@ -11,7 +11,7 @@ import {
 } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
-import { defaultJourney } from '../../../../../../apps/journeys-admin/src/components/Editor/data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'

@@ -6,7 +6,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
-import { defaultJourney } from '../../../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'

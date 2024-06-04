@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery'
 
-import { defaultJourney } from '../../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
 

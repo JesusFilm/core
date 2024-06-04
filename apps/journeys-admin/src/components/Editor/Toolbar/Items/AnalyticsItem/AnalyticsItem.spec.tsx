@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
-import { defaultJourney } from '../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { AnalyticsItem } from './AnalyticsItem'
 

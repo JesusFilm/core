@@ -6,7 +6,7 @@ import { ReactElement, useState } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
-import { defaultJourney } from '../../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from './DescriptionDialog'
 

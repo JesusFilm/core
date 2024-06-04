@@ -22,7 +22,7 @@ import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery/useUserRoleQue
 import {
   defaultJourney,
   publishedJourney
-} from '../../../../../../apps/journeys-admin/src/components/Editor/data'
+} from '@core/journeys/ui/TemplateView/data'
 
 import { journeyVideoBlocks } from './TemplatePreviewTabs/data'
 import { parentTags, tags } from './TemplateTags/data'

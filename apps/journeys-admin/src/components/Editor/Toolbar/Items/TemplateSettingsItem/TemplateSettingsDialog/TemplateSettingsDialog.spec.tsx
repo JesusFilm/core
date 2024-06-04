@@ -7,7 +7,7 @@ import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
-import { defaultJourney } from '../../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import {
   JOURNEY_FEATURE_UPDATE,

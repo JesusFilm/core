@@ -8,7 +8,7 @@ import { Service } from '../../../../../../../__generated__/globalTypes'
 import { JourneyFields_tags as Tag } from '../../../../../../../__generated__/JourneyFields'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
-import { defaultJourney } from '../../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { TemplateSettingsDialog } from './TemplateSettingsDialog'
 

@@ -14,7 +14,11 @@ import {
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
-import { blocks, blocksWithStepBlockPosition, defaultJourney } from '../../data'
+import {
+  blocks,
+  blocksWithStepBlockPosition,
+  defaultJourney
+} from '@core/journeys/ui/TemplateView/data'
 
 import { GET_STEP_BLOCKS_WITH_POSITION, JourneyFlow } from './JourneyFlow'
 

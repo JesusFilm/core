@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { publishedJourney } from '../../../../../../../../apps/journeys-admin/src/components/Editor/data'
+import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { SocialImage } from './SocialImage'
 

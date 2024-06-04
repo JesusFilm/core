@@ -21,7 +21,7 @@ import {
   defaultJourney,
   edges,
   nodes
-} from '../../data'
+} from '@core/journeys/ui/TemplateView/data'
 
 import { GET_STEP_BLOCKS_WITH_POSITION } from './JourneyFlow'
 import { transformSteps } from './libs/transformSteps'

@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
-import { defaultJourney } from '../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { ShareItem } from './ShareItem'
 

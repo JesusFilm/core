@@ -6,7 +6,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
-import { publishedJourney } from '../../../data'
+import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { StrategyItem } from './StrategyItem'
 

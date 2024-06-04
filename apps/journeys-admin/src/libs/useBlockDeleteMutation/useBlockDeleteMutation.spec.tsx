@@ -6,7 +6,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../__generated__/GetJourney'
-import { defaultJourney } from '../../components/Editor/data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { deleteBlockMock } from './useBlockDeleteMutation.mock'
 

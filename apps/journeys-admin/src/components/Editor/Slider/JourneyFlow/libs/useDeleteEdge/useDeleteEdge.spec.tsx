@@ -11,7 +11,7 @@ import {
 } from '../../../../../../../__generated__/BlockFields'
 import { blockActionDeleteMock } from '../../../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation.mock'
 import { stepBlockNextBlockUpdateMock } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation/useStepBlockNextBlockUpdateMutation.mock'
-import { defaultJourney } from '../../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { useDeleteEdge } from './useDeleteEdge'
 

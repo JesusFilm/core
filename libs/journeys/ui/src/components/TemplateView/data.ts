@@ -1,8 +1,7 @@
 import { Edge, MarkerType, Node } from 'reactflow'
 
-import { BlockFields as Block } from '../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
-import { GetStepBlocksWithPosition_blocks_StepBlock as StepBlockWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
+import { BlockFields as Block } from '@core/journeys/ui/block/__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -16,6 +15,13 @@ import {
   UserJourneyRole,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
+
+export interface StepBlockWithPosition {
+  __typename: 'StepBlock'
+  id: string
+  x: number
+  y: number
+}
 
 export const defaultJourney: Journey = {
   __typename: 'Journey',

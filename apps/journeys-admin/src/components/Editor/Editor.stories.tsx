@@ -11,7 +11,10 @@ import {
 } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { blocks, blocksWithStepBlockPosition } from './data'
+import {
+  blocks,
+  blocksWithStepBlockPosition
+} from '@core/journeys/ui/TemplateView/data'
 import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
 
 import { Editor } from '.'

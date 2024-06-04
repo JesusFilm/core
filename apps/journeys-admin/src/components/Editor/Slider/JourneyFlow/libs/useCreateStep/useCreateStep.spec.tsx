@@ -19,7 +19,7 @@ import { blockOrderUpdateMock } from '../../../../../../libs/useBlockOrderUpdate
 import { navigateToBlockActionUpdateMock } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation/useNavigateToBlockActionUpdate.mock'
 import { stepAndCardBlockCreateMock } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation.mock'
 import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation/useStepBlockNextBlockUpdateMutation'
-import { defaultJourney } from '../../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { useCreateStep } from '.'
 

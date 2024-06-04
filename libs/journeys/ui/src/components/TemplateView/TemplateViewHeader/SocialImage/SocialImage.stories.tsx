@@ -7,7 +7,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
-import { defaultJourney } from '../../../../../../../../apps/journeys-admin/src/components/Editor/data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { SocialImage } from './SocialImage'
 

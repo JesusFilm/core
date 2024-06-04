@@ -6,7 +6,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
-import { defaultJourney } from '../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { CopyLinkItem } from './CopyLinkItem'
 
