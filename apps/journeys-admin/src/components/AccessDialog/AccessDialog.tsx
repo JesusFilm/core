@@ -172,6 +172,7 @@ export function AccessDialog({
           users={requests}
           currentUser={currentUser}
           journeyId={journeyId}
+          emailPreferences={emailPreferencesMap}
         />
         <UserList
           title={t('Editors')}

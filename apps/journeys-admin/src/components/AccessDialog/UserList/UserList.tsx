@@ -10,6 +10,7 @@ import { ReactElement, useMemo } from 'react'
 
 import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
+import { GetUserJourneyNotifications_userJourneyNotificationsByJourney as UserJourneyNotifications } from '../../../../__generated__/GetUserJourneyNotifications'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 
 import { UserListItem } from './UserListItem'
@@ -21,6 +22,7 @@ interface UserListProps {
   loading?: boolean
   currentUser?: UserJourney
   journeyId: string
+  emailPreferences?: Map<string, UserJourneyNotifications>
 }
 
 export function UserList({
@@ -29,7 +31,8 @@ export function UserList({
   invites = [],
   loading,
   currentUser,
-  journeyId
+  journeyId,
+  emailPreferences
 }: UserListProps): ReactElement {
   const sortedUsers: UserJourney[] = useMemo(() => {
     return sortBy(users, ({ role }) => {
@@ -76,14 +79,18 @@ export function UserList({
               <Typography variant="subtitle1">{title}</Typography>
 
               <List sx={{ py: 0 }}>
-                {sortedUsers.map((user) => (
-                  <UserListItem
-                    journeyId={journeyId}
-                    key={user.id}
-                    listItem={user}
-                    currentUser={currentUser}
-                  />
-                ))}
+                {sortedUsers.map((user) => {
+                  const emailPreference = emailPreferences?.get(user.id)
+                  return (
+                    <UserListItem
+                      journeyId={journeyId}
+                      key={user.id}
+                      listItem={user}
+                      currentUser={currentUser}
+                      emailPreference={emailPreference}
+                    />
+                  )
+                })}
                 {invites.map(
                   (invite) =>
                     invite.removedAt == null &&
