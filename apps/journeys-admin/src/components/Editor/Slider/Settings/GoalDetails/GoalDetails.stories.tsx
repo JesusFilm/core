@@ -8,7 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { journey } from './data'
+import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
 
 import { GoalDetails } from '.'
 

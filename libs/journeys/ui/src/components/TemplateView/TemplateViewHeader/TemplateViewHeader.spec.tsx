@@ -9,7 +9,7 @@ import {
   JourneyFields as Journey,
   JourneyFields_primaryImageBlock as PrimaryImageBlock
 } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { journey } from '../../../../../../../apps/journeys-admin/src/components/Editor/Slider/Settings/GoalDetails/data'
+import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
 

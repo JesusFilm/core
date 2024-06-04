@@ -5,7 +5,7 @@ import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { TestEditorState } from '../../../../../../../../../libs/TestEditorState'
-import { journey } from '../../../../../GoalDetails/data'
+import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
 import { steps } from '../data'
 
 import { NavigateToBlockAction } from './NavigateToBlockAction'

@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { journey } from '../../../../../../../../apps/journeys-admin/src/components/Editor/Slider/Settings/GoalDetails/data'
+import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
 
 import { TemplateEditButton } from './TemplateEditButton'
 

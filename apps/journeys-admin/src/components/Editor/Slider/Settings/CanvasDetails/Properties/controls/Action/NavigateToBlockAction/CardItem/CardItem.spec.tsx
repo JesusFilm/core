@@ -6,7 +6,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../../__generated__/globalTypes'
-import { journey } from '../../../../../../GoalDetails/data'
+import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
 
 import { CardItem } from './CardItem'
 

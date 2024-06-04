@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { journey } from '../data'
+import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
 
 import { MULTIPLE_LINK_ACTION_UPDATE } from './ActionEditor'
 
