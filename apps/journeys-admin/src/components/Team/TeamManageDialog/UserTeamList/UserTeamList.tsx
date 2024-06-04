@@ -8,6 +8,7 @@ import sortBy from 'lodash/sortBy'
 import { ReactElement, useMemo } from 'react'
 
 import { GetJourneyWithPermissions_journey_team as JourneyTeam } from '../../../../../__generated__/GetJourneyWithPermissions'
+import { GetUserJourneyNotifications_userJourneyNotificationsByJourney as UserJourneyNotifications } from '../../../../../__generated__/GetUserJourneyNotifications'
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
@@ -21,13 +22,15 @@ interface UserTeamListProps {
   currentUserTeam: UserTeam | undefined
   loading: boolean
   variant?: 'readonly' | 'default'
+  emailPreferences?: Map<string, UserJourneyNotifications>
 }
 
 export function UserTeamList({
   data,
   currentUserTeam,
   loading,
-  variant = 'default'
+  variant = 'default',
+  emailPreferences
 }: UserTeamListProps): ReactElement {
   const sortedUserTeams: UserTeam[] = useMemo(() => {
     if (variant === 'readonly') return data?.userTeams ?? []

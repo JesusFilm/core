@@ -14,6 +14,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../../__generated__/GetUserInvites'
+import { GetUserJourneyNotifications_userJourneyNotificationsByJourney as UserJourneyNotifications } from '../../../../../__generated__/GetUserJourneyNotifications'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 
 import { ApproveUser } from './ApproveUser'
@@ -35,12 +36,14 @@ interface UserListItemProps {
   listItem: UserJourney | UserInvite
   currentUser?: UserJourney
   journeyId: string
+  emailPreference?: UserJourneyNotifications
 }
 
 export function UserListItem({
   listItem,
   currentUser,
-  journeyId: journeyIdFromParent
+  journeyId: journeyIdFromParent,
+  emailPreference
 }: UserListItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)

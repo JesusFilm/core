@@ -164,13 +164,13 @@ export function AccessDialog({
           currentUserTeam={data?.journey?.team as unknown as UserTeam}
           loading={loading}
           variant="readonly"
+          emailPreferences={emailPreferencesMap}
         />
         <UserList
           title={t('Requested Access')}
           users={requests}
           currentUser={currentUser}
           journeyId={journeyId}
-          emailPreferences={emailPreferencesMap}
         />
         <UserList
           title={t('Editors')}
@@ -179,6 +179,7 @@ export function AccessDialog({
           invites={invites}
           currentUser={currentUser}
           journeyId={journeyId}
+          emailPreferences={emailPreferencesMap}
         />
       </Stack>
     </Dialog>
