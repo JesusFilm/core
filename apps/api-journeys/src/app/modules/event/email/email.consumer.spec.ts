@@ -38,7 +38,7 @@ describe('EmailConsumer', () => {
       userId: 'userId1',
       journeyId: 'journeyId',
       role: UserJourneyRole.owner,
-      updatedAt: new Date(),
+      updatedAt: new Date('2021-11-19T12:34:56.647Z'),
       openedAt: null
     },
     {
@@ -46,7 +46,7 @@ describe('EmailConsumer', () => {
       userId: 'userId2',
       journeyId: 'journeyId',
       role: UserJourneyRole.editor,
-      updatedAt: new Date(),
+      updatedAt: new Date('2021-11-19T12:34:56.647Z'),
       openedAt: null
     }
   ]
@@ -82,13 +82,13 @@ describe('EmailConsumer', () => {
   const event: Event = {
     id: 'event 1',
     typename: 'event',
-    journeyId: 'bd62980f-3302-481d-8d66-a6ad2bdc936a',
-    blockId: '67094b1c-4446-44ec-8aa3-e3213ae6db34',
-    stepId: 'a9a10c4e-dfbc-4efd-ac98-7eea5ec615ad',
+    journeyId: 'journeyId',
+    blockId: 'blockId',
+    stepId: 'stepId',
     createdAt: new Date('2024-05-27T23:39:28.000Z'),
     label: 'Step 1',
     value: 'Test',
-    visitorId: 'dcb4aa5f-5672-4350-af5a-c08946a3560a',
+    visitorId: 'visitorId',
     action: null,
     actionValue: null,
     messagePlatform: null,
@@ -106,7 +106,7 @@ describe('EmailConsumer', () => {
     updatedAt: new Date('2024-05-27T23:39:28.000Z')
   }
 
-  const visitor: Visitor & { events } = {
+  const visitor: Visitor & { events: Event[] } = {
     id: 'visitorId',
     countryCode: null,
     email: 'bob@example.com',
@@ -118,7 +118,7 @@ describe('EmailConsumer', () => {
     status: 'star',
     teamId: 'teamId',
     userAgent: null,
-    createdAt: new Date(),
+    createdAt: new Date('2021-11-19T12:34:56.647Z'),
     duration: 0,
     lastChatPlatform: null,
     lastStepViewedAt: null,
@@ -128,7 +128,7 @@ describe('EmailConsumer', () => {
     lastRadioOptionSubmission: null,
     referrer: null,
     userId: 'visitorUserId',
-    updatedAt: new Date(),
+    updatedAt: new Date('2021-11-19T12:34:56.647Z'),
     events: [
       {
         ...event,

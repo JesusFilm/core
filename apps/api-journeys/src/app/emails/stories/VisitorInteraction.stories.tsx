@@ -1,5 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 
+import { Event } from '.prisma/api-journeys-client'
+
 import { apiJourneysConfig } from '../../lib/apiJourneysConfig/apiJourneysConfig'
 import { VisitorInteraction } from '../templates/VisitorInteraction'
 
@@ -21,7 +23,7 @@ const Template: StoryObj<typeof VisitorInteraction> = {
   )
 }
 
-const event = {
+const event: Event = {
   id: 'event 1',
   typename: 'event',
   journeyId: 'bd62980f-3302-481d-8d66-a6ad2bdc936a',

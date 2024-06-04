@@ -10,6 +10,7 @@ import { EmailLogo } from './EmailLogo'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { UnsubscribeLink } from './UnsubscribeLink'
+import { VisitorCard } from './VisitorCard'
 
 export {
   ActionCard,
@@ -23,5 +24,6 @@ export {
   UnsubscribeLink,
   ActionButton,
   ActionJourneyView,
-  ActionSender
+  ActionSender,
+  VisitorCard
 }

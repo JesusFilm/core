@@ -1,17 +1,6 @@
-import {
-  Body,
-  Column,
-  Container,
-  Head,
-  Html,
-  Preview,
-  Row,
-  Section,
-  Text
-} from '@react-email/components'
-import { Tailwind } from '@react-email/tailwind'
+import { Column, Container, Row, Section, Text } from '@react-email/components'
 import { intlFormat, parseISO } from 'date-fns'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement } from 'react'
 
 import { Event } from '.prisma/api-journeys-client'
 
@@ -22,24 +11,20 @@ interface VisitorCardProps {
   story?: boolean
 }
 
-interface WrapperProps {
-  children: ReactElement
-}
-
 export const VisitorCard = ({
   createdAt,
   duration,
-  events,
-  story = false
+  events
 }: VisitorCardProps): ReactElement => {
-  const previewText = `Join on Next Steps`
-  const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
-    return (
-      <>
-        <Preview>{previewText}</Preview>
-        <Tailwind>{children}</Tailwind>
-      </>
-    )
+  function transformDuration(seconds?: number | null): string {
+    if (seconds == null) {
+      return '0 min'
+    } else if (seconds <= 60) {
+      return `${seconds} sec`
+    } else {
+      const minutes = Math.floor(seconds / 60)
+      return `${minutes} min`
+    }
   }
 
   const created = intlFormat(parseISO(createdAt.toISOString()), {
@@ -60,7 +45,7 @@ export const VisitorCard = ({
     eventsFilter.includes(event.typename)
   )
 
-  const emailBody: ReactNode = (
+  return (
     <Container className="bg-[#FFFFFF] mt-[20px]">
       <Section align="center">
         <Row className="px-[28px]">
@@ -108,51 +93,6 @@ export const VisitorCard = ({
         </Section>
       ))}
     </Container>
-  )
-
-  return (
-    <>
-      {story
-        ? tailwindWrapper({ children: emailBody })
-        : withHTML({
-            children: tailwindWrapper({
-              children: withBody({ children: emailBody })
-            })
-          })}
-    </>
-  )
-}
-
-function transformDuration(seconds?: number | null): string {
-  if (seconds == null) {
-    return '0 min'
-  } else if (seconds <= 60) {
-    return `${seconds} sec`
-  } else {
-    const minutes = Math.floor(seconds / 60)
-    return `${minutes} min`
-  }
-}
-
-const withHTML = ({ children }: WrapperProps): ReactElement => {
-  return (
-    <Html
-      style={{
-        height: '100%',
-        width: '100%'
-      }}
-    >
-      <Head />
-      {children}
-    </Html>
-  )
-}
-
-const withBody = ({ children }: WrapperProps): ReactElement => {
-  return (
-    <Body className="my-[0px] mx-[0px] font-sans h-full w-full">
-      {children}
-    </Body>
   )
 }
 
