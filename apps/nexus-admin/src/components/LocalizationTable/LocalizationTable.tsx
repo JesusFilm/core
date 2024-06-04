@@ -2,7 +2,7 @@ import Paper from '@mui/material/Paper'
 import { DataGrid } from '@mui/x-data-grid'
 import { FC, useState } from 'react'
 
-interface Localization {
+export interface Localization {
   id: string
   resourceId: string
   title: string

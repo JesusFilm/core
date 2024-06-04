@@ -9,7 +9,7 @@ import { Redirection } from '../CreateShortLinkModal'
 
 import { ShortLinksTableHeader } from './ShortLinksTableHeader'
 
-interface ShortLink {
+export interface ShortLink {
   id: string
   createdDate: string
   title: string

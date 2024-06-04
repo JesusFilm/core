@@ -119,7 +119,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
             label={row.connected === true ? 'Connected' : 'Connect now'}
             color={row.connected === true ? 'success' : 'default'}
             onClick={() => {
-              setChannelId(row.id)
+              setChannelId(row.id as string)
               googleLogin()
             }}
           />
@@ -135,7 +135,7 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
         <IconButton
           onClick={(event) => {
             setMorePopup(event.currentTarget)
-            setChannelId(row.id)
+            setChannelId(row.id as string)
             setChannel(row)
           }}
         >

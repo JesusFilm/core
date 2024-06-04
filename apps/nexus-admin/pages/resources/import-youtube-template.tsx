@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
 import DeleteIcon from '@mui/icons-material/Delete'
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined'
 import PublishOutlinedIcon from '@mui/icons-material/PublishOutlined'
@@ -17,7 +17,6 @@ import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
 
 import { MainLayout } from '../../src/components/MainLayout'
 import { UploadConfirmationModal } from '../../src/components/UploadConfirmationModal'
-import { getOrigin } from '../../utils/getOrigin'
 
 export const GET_GOOGLE_ACCESS_TOKEN = gql`
   mutation getGoogleAccessToken($input: GoogleAuthInput!) {
@@ -34,9 +33,7 @@ const ImportYouTubeTemplatePage: FC = () => {
   const [selectedVideosDirectory, setSelectedVideosDirectory] =
     useState<CallbackDoc | null>(null)
   const [openPicker] = useDrivePicker()
-  const [getGoogleAccessToken] = useMutation(GET_GOOGLE_ACCESS_TOKEN)
   const [googleAccessToken, setGoogleAccessToken] = useState('')
-  const [googleAccessTokenId, setGoogleAccessTokenId] = useState('')
   const [resourceType, setResourceType] = useState<'file' | 'directory' | ''>(
     ''
   )
@@ -67,7 +64,6 @@ const ImportYouTubeTemplatePage: FC = () => {
         if (data.action === 'picked') {
           setSelectedTemplateFile(data.docs[0])
           console.log(data.docs[0]?.id)
-          console.log(googleAccessTokenId)
         }
       }
     })
@@ -87,7 +83,6 @@ const ImportYouTubeTemplatePage: FC = () => {
 
         if (data.action === 'picked') {
           setSelectedVideosDirectory(data.docs[0])
-          console.log(googleAccessTokenId)
         }
       }
     })

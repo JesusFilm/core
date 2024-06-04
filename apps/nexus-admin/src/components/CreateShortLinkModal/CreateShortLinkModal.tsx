@@ -152,8 +152,8 @@ export const CreateShortLinkModal: FC<CreateShortLinkModalProps> = ({
           }
         },
         onCompleted: (data) => {
-          setGoogleAccessTokenId(data.getGoogleAccessToken.id)
-          setGoogleAccessToken(data.getGoogleAccessToken.accessToken)
+          setGoogleAccessTokenId(data.getGoogleAccessToken.id as string)
+          setGoogleAccessToken(data.getGoogleAccessToken.accessToken as string)
         }
       })
     }
@@ -181,7 +181,12 @@ export const CreateShortLinkModal: FC<CreateShortLinkModalProps> = ({
                 value: sheet.country_code
               }))
 
-              setRedirections(sheetData)
+              interface TSheetData {
+                url: string
+                value: string
+              }
+
+              setRedirections(sheetData as TSheetData[])
             }
           })
         }

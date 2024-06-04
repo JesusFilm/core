@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { FC, useEffect, useState } from 'react'
 
+import { Batches_batches } from '../../__generated__/Batches'
 import { BatchesTable } from '../../src/components/BatchesTable'
 import { MainLayout } from '../../src/components/MainLayout'
 
@@ -26,7 +27,7 @@ const GET_BATCHES = gql`
 `
 
 const BatchesPage: FC = () => {
-  const [batches, setBatches] = useState([])
+  const [batches, setBatches] = useState<Batches_batches[]>([])
 
   const { data, loading } = useQuery(GET_BATCHES, {
     pollInterval: 2000
@@ -34,7 +35,7 @@ const BatchesPage: FC = () => {
 
   useEffect(() => {
     if (data !== undefined) {
-      setBatches(data?.batches)
+      setBatches(data?.batches as Batches_batches[])
     }
   }, [data])
 

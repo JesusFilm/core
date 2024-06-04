@@ -7,7 +7,10 @@ import { FC, useEffect, useState } from 'react'
 
 import { CreateShortLinkModal } from '../../src/components/CreateShortLinkModal'
 import { MainLayout } from '../../src/components/MainLayout'
-import { ShortLinksTable } from '../../src/components/ShortLinksTable'
+import {
+  ShortLink,
+  ShortLinksTable
+} from '../../src/components/ShortLinksTable'
 
 export const GET_LINKS = gql`
   query getLinksWithFilters(
@@ -30,7 +33,7 @@ export const GET_LINKS = gql`
 
 const ShortLinksPage: FC = () => {
   const [openCreateLinkModal, setOpenCreateLinkModal] = useState<boolean>(false)
-  const [links, setLinks] = useState([])
+  const [links, setLinks] = useState<ShortLink[]>([])
   const { t } = useTranslation()
 
   const { data, loading, refetch } = useQuery(GET_LINKS, {
@@ -49,7 +52,7 @@ const ShortLinksPage: FC = () => {
 
   useEffect(() => {
     if (data !== undefined) {
-      setLinks(data?.links)
+      setLinks(data?.links as ShortLink[])
     }
   }, [data])
 

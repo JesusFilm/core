@@ -161,7 +161,9 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
         <TableCell>
           <CircularProgressWithLabel value={batch.progress ?? 0} />
         </TableCell>
-        <TableCell>{format(parseISO(batch.createdAt), 'yyyy-MM-dd')}</TableCell>
+        <TableCell>
+          {format(parseISO(batch.createdAt as string), 'yyyy-MM-dd')}
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -232,7 +234,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                     <TableCell>
                       <Chip
                         label={task.status}
-                        color={getChipColor(task.status)}
+                        color={getChipColor(task.status as string)}
                         variant="outlined"
                       />
                     </TableCell>

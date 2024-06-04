@@ -149,8 +149,8 @@ const ResourcesPage: FC = () => {
           }
         },
         onCompleted: (data) => {
-          setGoogleAccessTokenId(data.getGoogleAccessToken.id)
-          setGoogleAccessToken(data.getGoogleAccessToken.accessToken)
+          setGoogleAccessTokenId(data.getGoogleAccessToken.id as string)
+          setGoogleAccessToken(data.getGoogleAccessToken.accessToken as string)
         }
       })
     }

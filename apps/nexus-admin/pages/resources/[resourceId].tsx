@@ -14,7 +14,10 @@ import { useTranslation } from 'next-i18next'
 import { FC, SyntheticEvent, useEffect, useState } from 'react'
 
 import { ChannelTable } from '../../src/components/ChannelTable'
-import { LocalizationTable } from '../../src/components/LocalizationTable/LocalizationTable'
+import {
+  Localization,
+  LocalizationTable
+} from '../../src/components/LocalizationTable/LocalizationTable'
 import { MainLayout } from '../../src/components/MainLayout'
 
 import { GET_RESOURCE } from '.'
@@ -23,7 +26,7 @@ const ResourceDetailsPage: FC = () => {
   const [tabIndex, setTabIndex] = useState(0)
   const router = useRouter()
   const { resourceId } = router.query
-  const [localizations, setLocalizations] = useState([])
+  const [localizations, setLocalizations] = useState<Localization[]>([])
   const { t } = useTranslation()
 
   const { data, loading } = useQuery(GET_RESOURCE, {
@@ -35,7 +38,7 @@ const ResourceDetailsPage: FC = () => {
 
   useEffect(() => {
     if (data !== undefined) {
-      setLocalizations(data?.resource?.localizations)
+      setLocalizations(data?.resource?.localizations as Localization[])
     }
   }, [data])
 
