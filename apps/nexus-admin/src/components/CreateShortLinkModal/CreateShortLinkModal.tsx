@@ -1,4 +1,3 @@
-import { gql, useMutation } from '@apollo/client'
 import DeleteIcon from '@mui/icons-material/Delete'
 import PublishOutlinedIcon from '@mui/icons-material/PublishOutlined'
 import Button from '@mui/material/Button'
@@ -20,14 +19,13 @@ import useDrivePicker from 'react-google-drive-picker'
 import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
 import { object, string } from 'yup'
 
-import { getOrigin } from '../../../utils/getOrigin'
 import { Modal } from '../Modal'
 
-const GET_GOOGLE_SHEET_DATA = gql`
-  mutation getSheetData($tokenId: String!, $spreadsheetId: String!) {
-    getSheetData(tokenId: $tokenId, spreadsheetId: $spreadsheetId)
-  }
-`
+// const GET_GOOGLE_SHEET_DATA = gql`
+//   mutation getSheetData($tokenId: String!, $spreadsheetId: String!) {
+//     getSheetData(tokenId: $tokenId, spreadsheetId: $spreadsheetId)
+//   }
+// `
 
 interface CreateShortLinkModalProps {
   open: boolean
@@ -56,13 +54,13 @@ export const CreateShortLinkModal: FC<CreateShortLinkModalProps> = ({
     useState<CallbackDoc | null>(null)
   const [redirections, setRedirections] = useState<Redirection[]>([])
   const [googleAccessToken, setGoogleAccessToken] = useState('')
-  const [googleAccessTokenId, setGoogleAccessTokenId] = useState('')
+  // const [googleAccessTokenId, setGoogleAccessTokenId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [openPicker] = useDrivePicker()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation()
 
-  const [getGoogleSheetData] = useMutation(GET_GOOGLE_SHEET_DATA)
+  // const [getGoogleSheetData] = useMutation(GET_GOOGLE_SHEET_DATA)
 
   const availableDomains = ['link.myfp.ws', 'hi.switchy.io', 'swiy.io']
 
@@ -157,25 +155,27 @@ export const CreateShortLinkModal: FC<CreateShortLinkModalProps> = ({
           setSelectedTemplateFile(data.docs[0])
           const fileId = data.docs[0].id
 
-          void getGoogleSheetData({
-            variables: {
-              tokenId: googleAccessTokenId,
-              spreadsheetId: fileId
-            },
-            onCompleted: (data) => {
-              const sheetData = data.getSheetData.map((sheet) => ({
-                url: sheet.url,
-                value: sheet.country_code
-              }))
+          console.log(fileId)
 
-              interface TSheetData {
-                url: string
-                value: string
-              }
+          // void getGoogleSheetData({
+          //   variables: {
+          //     tokenId: googleAccessTokenId,
+          //     spreadsheetId: fileId
+          //   },
+          //   onCompleted: (data) => {
+          //     const sheetData = data.getSheetData.map((sheet) => ({
+          //       url: sheet.url,
+          //       value: sheet.country_code
+          //     }))
 
-              setRedirections(sheetData as TSheetData[])
-            }
-          })
+          //     interface TSheetData {
+          //       url: string
+          //       value: string
+          //     }
+
+          //     setRedirections(sheetData as TSheetData[])
+          //   }
+          // })
         }
       }
     })

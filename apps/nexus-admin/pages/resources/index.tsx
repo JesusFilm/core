@@ -10,7 +10,6 @@ import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 import useDrivePicker from 'react-google-drive-picker'
 
-import { getGoogleAccessToken } from '../../__generated__/getGoogleAccessToken'
 import { Resource, Resource_resource } from '../../__generated__/Resource'
 import { ResourceDelete } from '../../__generated__/ResourceDelete'
 import { Resources, Resources_resources } from '../../__generated__/Resources'
@@ -19,7 +18,6 @@ import { DeleteModal } from '../../src/components/DeleteModal'
 import { MainLayout } from '../../src/components/MainLayout'
 import { ResourcesTable } from '../../src/components/ResourcesTable'
 import { UpdateResourceModal } from '../../src/components/UpdateResourceModal'
-import { getOrigin } from '../../utils/getOrigin'
 
 export const GET_RESOURCES = gql`
   query Resources($where: ResourceFilter) {
@@ -83,13 +81,13 @@ const RESOURCE_DELETE = gql`
   }
 `
 
-const RESOURCE_EXPORT = gql`
-  mutation ResourceExportData($input: ResourceExportData) {
-    resourceExportData(input: $input) {
-      name
-    }
-  }
-`
+// const RESOURCE_EXPORT = gql`
+//   mutation ResourceExportData($input: ResourceExportData) {
+//     resourceExportData(input: $input) {
+//       name
+//     }
+//   }
+// `
 
 const ResourcesPage: FC = () => {
   const [deleteResourceModal, setDeleteResourceModal] = useState<boolean>(false)
@@ -103,7 +101,7 @@ const ResourcesPage: FC = () => {
   const { t } = useTranslation()
   const [openPicker] = useDrivePicker()
   const [googleAccessToken, setGoogleAccessToken] = useState('')
-  const [googleAccessTokenId, setGoogleAccessTokenId] = useState('')
+  // const [googleAccessTokenId, setGoogleAccessTokenId] = useState('')
 
   const { data, loading } = useQuery<Resources>(GET_RESOURCES)
 
@@ -128,8 +126,8 @@ const ResourcesPage: FC = () => {
 
   const [resourceUpdate] = useMutation<ResourceUpdate>(RESOURCE_UPDATE)
   const [resourceDelete] = useMutation<ResourceDelete>(RESOURCE_DELETE)
-  const [resourceExport, { loading: isExporting }] =
-    useMutation(RESOURCE_EXPORT)
+  // const [resourceExport, { loading: isExporting }] =
+  //   useMutation(RESOURCE_EXPORT)
 
   const googleLogin = useGoogleLogin({
     flow: 'implicit',
@@ -152,25 +150,22 @@ const ResourcesPage: FC = () => {
           // TODO: send to backend the access token id and the selected directory id
           const folderId = data.docs[0]?.id
 
-          console.log({
-            googleAccessTokenId,
-            folderId
-          })
+          console.log(folderId)
 
-          void resourceExport({
-            variables: {
-              input: {
-                id: googleAccessTokenId,
-                folderId
-              }
-            },
-            onCompleted: () => {
-              enqueueSnackbar('Data Exported', {
-                variant: 'success',
-                preventDuplicate: true
-              })
-            }
-          })
+          // void resourceExport({
+          //   variables: {
+          //     input: {
+          //       id: googleAccessTokenId,
+          //       folderId
+          //     }
+          //   },
+          //   onCompleted: () => {
+          //     enqueueSnackbar('Data Exported', {
+          //       variant: 'success',
+          //       preventDuplicate: true
+          //     })
+          //   }
+          // })
         }
       }
     })
