@@ -1410,8 +1410,8 @@ type Mutation
     idType: IdType
   ): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyOpen(id: ID!): UserJourney @join__field(graph: JOURNEYS)
-  userJourneyNotificationUpdate(id: String!, input: UserJourneyNotificationInput): UserJourneyNotification! @join__field(graph: JOURNEYS)
-  userJourneyNotificationDelete(id: String!, input: UserJourneyNotificationInput): UserJourneyNotification! @join__field(graph: JOURNEYS)
+  userJourneyNotificationUpdate(id: ID!, input: UserJourneyNotificationInput): UserJourneyNotification! @join__field(graph: JOURNEYS)
+  userJourneyNotificationDelete(id: ID!, input: UserJourneyNotificationInput): UserJourneyNotification! @join__field(graph: JOURNEYS)
   userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam! @join__field(graph: JOURNEYS)
   userTeamDelete(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
   userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite @join__field(graph: JOURNEYS)
@@ -1552,7 +1552,7 @@ type Query
   teams: [Team!]! @join__field(graph: JOURNEYS)
   team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
-  userJourneyNotificationsByJourney(journeyId: String!): [UserJourneyNotification!]! @join__field(graph: JOURNEYS)
+  userJourneyNotificationsByJourney(journeyId: ID!): [UserJourneyNotification!]! @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]! @join__field(graph: JOURNEYS)
   userTeam(id: ID!): UserTeam! @join__field(graph: JOURNEYS)
@@ -2354,17 +2354,17 @@ type UserJourney
 type UserJourneyNotification
   @join__type(graph: JOURNEYS)
 {
-  id: String!
-  userId: String!
-  journeyId: String!
+  id: ID!
+  userId: ID!
+  journeyId: ID!
   value: Boolean!
 }
 
 input UserJourneyNotificationInput
   @join__type(graph: JOURNEYS)
 {
-  userId: String!
-  journeyId: String!
+  userId: ID!
+  journeyId: ID!
   value: Boolean!
 }
 

@@ -1,29 +1,27 @@
 type UserJourneyNotification {
-  id: String!
-  userId: String!
-  journeyId: String!
+  id: ID!
+  userId: ID!
+  journeyId: ID!
   value: Boolean!
 }
 
 input UserJourneyNotificationInput {
-  userId: String!
-  journeyId: String!
+  userId: ID!
+  journeyId: ID!
   value: Boolean!
 }
 
 type Mutation {
   userJourneyNotificationUpdate(
-    id: String!
+    id: ID!
     input: UserJourneyNotificationInput
   ): UserJourneyNotification!
   userJourneyNotificationDelete(
-    id: String!
+    id: ID!
     input: UserJourneyNotificationInput
   ): UserJourneyNotification!
 }
 
 type Query {
-  userJourneyNotificationsByJourney(
-    journeyId: String!
-  ): [UserJourneyNotification!]!
+  userJourneyNotificationsByJourney(journeyId: ID!): [UserJourneyNotification!]!
 }

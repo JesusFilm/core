@@ -278,8 +278,8 @@ type Mutation {
     idType: IdType
   ): UserJourney!
   userJourneyOpen(id: ID!): UserJourney
-  userJourneyNotificationUpdate(id: String!, input: UserJourneyNotificationInput): UserJourneyNotification!
-  userJourneyNotificationDelete(id: String!, input: UserJourneyNotificationInput): UserJourneyNotification!
+  userJourneyNotificationUpdate(id: ID!, input: UserJourneyNotificationInput): UserJourneyNotification!
+  userJourneyNotificationDelete(id: ID!, input: UserJourneyNotificationInput): UserJourneyNotification!
   userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam!
   userTeamDelete(id: ID!): UserTeam!
   userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite
@@ -390,7 +390,7 @@ type Query {
   teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
-  userJourneyNotificationsByJourney(journeyId: String!): [UserJourneyNotification!]!
+  userJourneyNotificationsByJourney(journeyId: ID!): [UserJourneyNotification!]!
   getUserRole: UserRole
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
@@ -2268,15 +2268,15 @@ extend type User
 }
 
 type UserJourneyNotification {
-  id: String!
-  userId: String!
-  journeyId: String!
+  id: ID!
+  userId: ID!
+  journeyId: ID!
   value: Boolean!
 }
 
 input UserJourneyNotificationInput {
-  userId: String!
-  journeyId: String!
+  userId: ID!
+  journeyId: ID!
   value: Boolean!
 }
 
