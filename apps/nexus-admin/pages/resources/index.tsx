@@ -1,14 +1,11 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import { useGoogleLogin } from '@react-oauth/google'
 import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
-import useDrivePicker from 'react-google-drive-picker'
 
 import { Resource, Resource_resource } from '../../__generated__/Resource'
 import { ResourceDelete } from '../../__generated__/ResourceDelete'
@@ -99,9 +96,6 @@ const ResourcesPage: FC = () => {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation()
-  const [openPicker] = useDrivePicker()
-  const [googleAccessToken, setGoogleAccessToken] = useState('')
-  // const [googleAccessTokenId, setGoogleAccessTokenId] = useState('')
 
   const { data, loading } = useQuery<Resources>(GET_RESOURCES)
 
@@ -129,54 +123,6 @@ const ResourcesPage: FC = () => {
   // const [resourceExport, { loading: isExporting }] =
   //   useMutation(RESOURCE_EXPORT)
 
-  const googleLogin = useGoogleLogin({
-    flow: 'implicit',
-    scope:
-      'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/spreadsheets.readonly',
-    onSuccess: async ({ access_token: accessToken }) => {
-      setGoogleAccessToken(accessToken)
-    }
-  })
-
-  const directoryPicker = function (): void {
-    openPicker({
-      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
-      developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
-      token: googleAccessToken ?? '',
-      viewId: 'FOLDERS',
-      setSelectFolderEnabled: true,
-      callbackFunction: (data) => {
-        if (data.action === 'picked') {
-          // TODO: send to backend the access token id and the selected directory id
-          const folderId = data.docs[0]?.id
-
-          console.log(folderId)
-
-          // void resourceExport({
-          //   variables: {
-          //     input: {
-          //       id: googleAccessTokenId,
-          //       folderId
-          //     }
-          //   },
-          //   onCompleted: () => {
-          //     enqueueSnackbar('Data Exported', {
-          //       variant: 'success',
-          //       preventDuplicate: true
-          //     })
-          //   }
-          // })
-        }
-      }
-    })
-  }
-
-  useEffect(() => {
-    if (googleAccessToken !== '') {
-      directoryPicker()
-    }
-  }, [googleAccessToken])
-
   return (
     <MainLayout title="Resources">
       <Stack spacing={14}>
@@ -196,7 +142,7 @@ const ResourcesPage: FC = () => {
           >
             {t('Import from Youtube Template')}
           </Button>
-          <LoadingButton
+          {/* <LoadingButton
             variant="contained"
             onClick={() => {
               if (googleAccessToken === '') {
@@ -209,7 +155,7 @@ const ResourcesPage: FC = () => {
             loadingIndicator="Exporting..."
           >
             {t('Export database data')}
-          </LoadingButton>
+          </LoadingButton> */}
         </Stack>
         <ResourcesTable
           loading={loading}
