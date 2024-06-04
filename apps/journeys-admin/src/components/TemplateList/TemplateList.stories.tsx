@@ -13,7 +13,7 @@ import {
 } from './data'
 
 import { TemplateList } from '.'
-import '../../../test/i18n'
+import '../../../../../libs/journeys/ui/test/i18n'
 
 const TemplateListStory: Meta<typeof TemplateList> = {
   ...journeysAdminConfig,

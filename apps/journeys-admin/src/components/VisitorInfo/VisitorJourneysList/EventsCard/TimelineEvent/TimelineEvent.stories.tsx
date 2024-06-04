@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
-import '../../../../../../test/i18n'
+import '../../../../../../../../libs/journeys/ui/test/i18n'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { TimelineItem } from '../../utils'
