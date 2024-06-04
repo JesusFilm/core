@@ -4,7 +4,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { Card } from '@core/journeys/ui/Card'
 
-import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 
 import { CardWrapper } from '.'
 

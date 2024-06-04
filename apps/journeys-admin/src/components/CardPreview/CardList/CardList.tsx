@@ -36,7 +36,7 @@ import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
 
-import { CardWrapper } from './CardWrapper'
+import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 
 const Draggable = dynamic(
   async () =>

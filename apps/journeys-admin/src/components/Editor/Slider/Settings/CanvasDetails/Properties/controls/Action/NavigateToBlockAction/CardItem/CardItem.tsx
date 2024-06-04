@@ -13,7 +13,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../../__generated__/globalTypes'
-import { CardWrapper } from '../../../../../../../../../CardPreview/CardList/CardWrapper'
+import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { FramePortal } from '../../../../../../../../../FramePortal'
 import { VideoWrapper } from '../../../../../../../Content/Canvas/VideoWrapper'
 
