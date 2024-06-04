@@ -80,7 +80,9 @@ export function UserList({
 
               <List sx={{ py: 0 }}>
                 {sortedUsers.map((user) => {
-                  const emailPreference = emailPreferences?.get(user.id)
+                  const emailPreference = emailPreferences?.get(
+                    user.user?.id ?? ''
+                  )
                   return (
                     <UserListItem
                       journeyId={journeyId}
