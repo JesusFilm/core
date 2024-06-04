@@ -15,7 +15,7 @@ import {
 } from '../../../../../../../../../../../__generated__/globalTypes'
 import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { FramePortal } from '../../../../../../../../../FramePortal'
-import { VideoWrapper } from '../../../../../../../Content/Canvas/VideoWrapper'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 
 interface CardItemProps {
   step: TreeBlock<StepBlock>

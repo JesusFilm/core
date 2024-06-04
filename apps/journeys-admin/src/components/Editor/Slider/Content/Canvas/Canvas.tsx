@@ -33,7 +33,7 @@ import {
   calculateScaledHeight,
   calculateScaledMargin
 } from './utils/calculateDimensions'
-import { VideoWrapper } from './VideoWrapper'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)

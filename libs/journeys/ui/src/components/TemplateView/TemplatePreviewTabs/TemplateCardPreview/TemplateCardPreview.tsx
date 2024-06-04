@@ -23,7 +23,7 @@ import {
 } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import { CardWrapper } from '@core/journeys/ui/CardWrapper'
-import { VideoWrapper } from '../../../../../../../../apps/journeys-admin/src/components/Editor/Slider/Content/Canvas/VideoWrapper'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { FramePortal } from '../../../../../../../../apps/journeys-admin/src/components/FramePortal'
 import { CreateJourneyButton } from '../../CreateJourneyButton'
 

@@ -31,7 +31,7 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
-import { VideoWrapper } from '../../Editor/Slider/Content/Canvas/VideoWrapper'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'

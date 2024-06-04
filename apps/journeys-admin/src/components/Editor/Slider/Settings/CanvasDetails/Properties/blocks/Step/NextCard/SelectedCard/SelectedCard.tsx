@@ -24,7 +24,7 @@ import { StepBlockNextBlockUpdate } from '../../../../../../../../../../../__gen
 import { StepFields } from '../../../../../../../../../../../__generated__/StepFields'
 import { FramePortal } from '../../../../../../../../../FramePortal'
 import { CardWrapper } from '../../../../../../../Content/Canvas/CardWrapper'
-import { VideoWrapper } from '../../../../../../../Content/Canvas/VideoWrapper'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 
 export const STEP_BLOCK_DEFAULT_NEXT_BLOCK_UPDATE = gql`
   mutation StepBlockDefaultNextBlockUpdate(
