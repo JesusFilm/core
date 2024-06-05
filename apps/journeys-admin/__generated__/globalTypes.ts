@@ -301,6 +301,12 @@ export interface EmailActionInput {
   email: string;
 }
 
+export interface EventEmailNotificationsInput {
+  userId: string;
+  journeyId: string;
+  value: boolean;
+}
+
 export interface FormBlockCreateInput {
   id?: string | null;
   journeyId: string;

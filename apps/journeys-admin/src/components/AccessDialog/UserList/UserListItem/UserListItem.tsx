@@ -6,9 +6,17 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
-import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
+import {
+  MouseEvent,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -106,6 +114,30 @@ export function UserListItem({
     }
   }, [])
 
+  const secondaryAction: ReactNode = (
+    <>
+      <Switch
+        inputProps={{ 'aria-checked': emailPreference?.value ?? false }}
+        checked={emailPreference?.value ?? false}
+        onChange={() => console.log('I got called')}
+      />
+      <Button
+        aria-controls={open ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        onClick={handleClick}
+        disabled={disableAction}
+        endIcon={<ChevronDownIcon />}
+        sx={{
+          color: 'text.primary',
+          typography: 'body2'
+        }}
+      >
+        {isInvite ? t('Pending') : menuLabel}
+      </Button>
+    </>
+  )
+
   return (
     <>
       <ListItem
@@ -115,22 +147,7 @@ export function UserListItem({
             right: 0
           }
         }}
-        secondaryAction={
-          <Button
-            aria-controls={open ? 'basic-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick}
-            disabled={disableAction}
-            endIcon={<ChevronDownIcon />}
-            sx={{
-              color: 'text.primary',
-              typography: 'body2'
-            }}
-          >
-            {isInvite ? t('Pending') : menuLabel}
-          </Button>
-        }
+        secondaryAction={secondaryAction}
         data-testid="UserListItem"
       >
         <ListItemAvatar>
@@ -141,7 +158,18 @@ export function UserListItem({
           </Avatar>
         </ListItemAvatar>
 
-        <ListItemText primary={displayName} secondary={email} />
+        <ListItemText
+          primary={displayName}
+          secondary={email}
+          sx={{
+            '& > .MuiListItemText-secondary': {
+              width: { xs: '90%', sm: '90%' },
+              whiteSpace: 'nowrap',
+              overflow: 'clip',
+              textOverflow: 'ellipsis'
+            }
+          }}
+        />
       </ListItem>
 
       <Menu

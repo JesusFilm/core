@@ -12,6 +12,7 @@ import {
   GetJourneyWithPermissions,
   GetJourneyWithPermissions_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithPermissions'
+import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../__generated__/GetEventEmailNotifications'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../__generated__/GetUserTeamsAndInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
@@ -21,7 +22,6 @@ import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
 import { useEventEmailNotificationsLazyQuery } from '../../libs/useEventEmailNotificationsLazyQuery'
-import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../__generated__/GetEventEmailNotifications'
 
 export const GET_JOURNEY_WITH_PERMISSIONS = gql`
   query GetJourneyWithPermissions($id: ID!) {

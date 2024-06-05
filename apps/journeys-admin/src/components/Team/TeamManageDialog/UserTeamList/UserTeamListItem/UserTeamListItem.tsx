@@ -7,13 +7,15 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
-import { MouseEvent, ReactElement, useMemo, useState } from 'react'
+import { MouseEvent, ReactElement, ReactNode, useMemo, useState } from 'react'
 
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../../../../__generated__/GetEventEmailNotifications'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
 import { UserTeamUpdate } from '../../../../../../__generated__/UserTeamUpdate'
@@ -24,6 +26,7 @@ interface UserTeamListItemProps {
   user: UserTeam
   disabled?: boolean
   variant?: 'readonly' | 'default'
+  emailPreference?: EventEmailNotifications
 }
 
 export const USER_TEAM_UPDATE = gql`
@@ -40,7 +43,8 @@ export const USER_TEAM_UPDATE = gql`
 export function UserTeamListItem({
   user: listItem,
   disabled,
-  variant = 'default'
+  variant = 'default',
+  emailPreference
 }: UserTeamListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -76,6 +80,37 @@ export function UserTeamListItem({
     setAnchorEl(null)
   }
 
+  const secondaryAction: ReactNode = (
+    <>
+      <Switch
+        inputProps={{ 'aria-checked': emailPreference?.value ?? false }}
+        checked={emailPreference?.value ?? false}
+        onChange={() => console.log('I got called')}
+      />
+      <Button
+        aria-controls={open ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        onClick={handleClick}
+        disabled={disabled}
+        endIcon={<ChevronDownIcon />}
+        sx={{
+          color: 'text.primary',
+          typography: 'body2',
+          '& > .MuiButton-endIcon': {
+            display: variant === 'readonly' ? 'none' : 'inherit'
+          },
+          '&.Mui-disabled': {
+            color:
+              variant === 'readonly' ? 'text.primary' : 'rgba(0, 0, 0, 0.26)'
+          }
+        }}
+      >
+        {menuLabel}
+      </Button>
+    </>
+  )
+
   return (
     <>
       <ListItem
@@ -85,31 +120,7 @@ export function UserTeamListItem({
             right: 0
           }
         }}
-        secondaryAction={
-          <Button
-            aria-controls={open ? 'basic-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick}
-            disabled={disabled}
-            endIcon={<ChevronDownIcon />}
-            sx={{
-              color: 'text.primary',
-              typography: 'body2',
-              '& > .MuiButton-endIcon': {
-                display: variant === 'readonly' ? 'none' : 'inherit'
-              },
-              '&.Mui-disabled': {
-                color:
-                  variant === 'readonly'
-                    ? 'text.primary'
-                    : 'rgba(0, 0, 0, 0.26)'
-              }
-            }}
-          >
-            {menuLabel}
-          </Button>
-        }
+        secondaryAction={secondaryAction}
         data-testid={`UserTeamListItem-${listItem.id}`}
       >
         <ListItemAvatar>

@@ -7,8 +7,8 @@ import Skeleton from '@mui/material/Skeleton'
 import sortBy from 'lodash/sortBy'
 import { ReactElement, useMemo } from 'react'
 
+import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EmailEventNotifications } from '../../../../../__generated__/GetEventEmailNotifications'
 import { GetJourneyWithPermissions_journey_team as JourneyTeam } from '../../../../../__generated__/GetJourneyWithPermissions'
-import { GetUserJourneyNotifications_userJourneyNotificationsByJourney as UserJourneyNotifications } from '../../../../../__generated__/GetUserJourneyNotifications'
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
@@ -22,7 +22,7 @@ interface UserTeamListProps {
   currentUserTeam: UserTeam | undefined
   loading: boolean
   variant?: 'readonly' | 'default'
-  emailPreferences?: Map<string, UserJourneyNotifications>
+  emailPreferences?: Map<string, EmailEventNotifications>
 }
 
 export function UserTeamList({
@@ -71,6 +71,9 @@ export function UserTeamList({
           {sortedUserTeams.length > 0 && currentUserTeam != null && (
             <List sx={{ py: 0 }}>
               {sortedUserTeams.map((userTeam) => {
+                const emailPreference = emailPreferences?.get(
+                  userTeam.user.id ?? ''
+                )
                 return (
                   <UserTeamListItem
                     key={userTeam.id}
@@ -81,6 +84,7 @@ export function UserTeamList({
                       variant === 'readonly'
                     }
                     variant={variant}
+                    emailPreference={emailPreference}
                   />
                 )
               })}

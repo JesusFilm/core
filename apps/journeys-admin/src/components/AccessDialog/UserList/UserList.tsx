@@ -8,12 +8,12 @@ import Typography from '@mui/material/Typography'
 import sortBy from 'lodash/sortBy'
 import { ReactElement, useMemo } from 'react'
 
+import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../../__generated__/GetEventEmailNotifications'
 import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 
 import { UserListItem } from './UserListItem'
-import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../../__generated__/GetEventEmailNotifications'
 
 interface UserListProps {
   title: string
