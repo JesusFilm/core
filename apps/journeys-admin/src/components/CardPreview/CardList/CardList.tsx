@@ -17,6 +17,7 @@ import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CardWrapper } from '@core/journeys/ui/ResourcesHub/CardWrapper'
+import { VideoWrapper } from '@core/journeys/ui/ResourcesHub/VideoWrapper'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -32,11 +33,9 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
-import { VideoWrapper } from '../../Editor/Slider/Content/Canvas/VideoWrapper'
 import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
-
 
 const Draggable = dynamic(
   async () =>

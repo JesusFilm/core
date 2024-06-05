@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { Video } from '@core/journeys/ui/Video'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import type { TreeBlock } from '../../../libs/block'
+import { Video } from '../../Video'
 
-import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 
 import { VideoWrapper } from '.'
 

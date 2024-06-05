@@ -5,6 +5,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CardWrapper } from '@core/journeys/ui/ResourcesHub/CardWrapper'
+import { VideoWrapper } from '@core/journeys/ui/ResourcesHub/VideoWrapper'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
@@ -15,7 +16,6 @@ import {
   ThemeName
 } from '../../../../../../../../../../../__generated__/globalTypes'
 import { FramePortal } from '../../../../../../../../../FramePortal'
-import { VideoWrapper } from '../../../../../../../Content/Canvas/VideoWrapper'
 
 interface CardItemProps {
   step: TreeBlock<StepBlock>
