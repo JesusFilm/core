@@ -54,7 +54,7 @@ export function StepBlockNode({
       >
         <BaseNode
           id={step.id}
-          isTargetConnectable
+          targetHandle="show"
           selected={isSelected}
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}
