@@ -1,11 +1,11 @@
 import { QueryResult, gql, useQuery } from '@apollo/client'
 
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+import { JOURNEY_FIELDS } from '../JourneyProvider/journeyFields'
 
 import {
   GetJourney,
   GetJourneyVariables
-} from '../../../__generated__/GetJourney'
+} from "./__generated__/GetJourney"
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}

@@ -6,6 +6,7 @@ import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 
 import { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
 import {
@@ -17,10 +18,6 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import { useTeam } from '../../src/components/Team/TeamProvider'
 import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import {
-  GET_JOURNEY,
-  useJourneyQuery
-} from '../../src/libs/useJourneyQuery/useJourneyQuery'
 import { GET_JOURNEYS } from '../../src/libs/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '../../src/libs/useTagsQuery/useTagsQuery'
 
