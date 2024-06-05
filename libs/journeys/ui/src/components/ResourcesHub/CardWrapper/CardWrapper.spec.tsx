@@ -5,7 +5,6 @@ import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../../libs/block'
 import { Card } from '../../Card'
 
-
 import { CardWrapper } from '.'
 
 jest.mock('@core/journeys/ui/Card', () => ({
