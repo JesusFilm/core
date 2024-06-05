@@ -7,7 +7,6 @@ import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
-import { adminLight } from '../../../../../ThemeProvider/admin/theme'
 import {
   ACTION_BUTTON_HEIGHT,
   LINK_NODE_HEIGHT_GAP,
