@@ -6,7 +6,7 @@ import { PrismaService } from '../../lib/prisma.service'
 
 import { EventEmailNotificationsResolver } from './eventEmailNotifications.resolver'
 
-describe('EventEmailNotificationsResolver', () => {
+describe('EventEmailNotifications', () => {
   let resolver: EventEmailNotificationsResolver,
     prismaService: DeepMockProxy<PrismaService>
 

@@ -8,7 +8,7 @@ import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { EventEmailNotificationsInput } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
-@Resolver('eventEmailNotifications')
+@Resolver('EventEmailNotifications')
 export class EventEmailNotificationsResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
