@@ -1,6 +1,12 @@
 import { GoalType, getLinkActionGoal } from './getLinkActionGoal'
 
 describe('getLinkActionGoal', () => {
+  it('should return Email when url is a valid email', () => {
+    const url = 'example@email.com'
+    const result = getLinkActionGoal(url)
+    expect(result).toEqual(GoalType.Email)
+  })
+
   it('should return Chat when url includes chat platform', () => {
     const url = 'https://m.me/some-id'
     const result = getLinkActionGoal(url)
