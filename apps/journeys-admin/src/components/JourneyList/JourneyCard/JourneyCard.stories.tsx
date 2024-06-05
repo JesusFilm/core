@@ -22,7 +22,7 @@ import {
 import { JourneyCard } from './JourneyCard'
 import { JourneyCardVariant } from './journeyCardVariant'
 
-import '../../../../../../libs/journeys/ui/test/i18n'
+import '@core/journeys/ui/test/i18n'
 
 const TestStory: Meta<typeof JourneyCard> = {
   ...journeysAdminConfig,
