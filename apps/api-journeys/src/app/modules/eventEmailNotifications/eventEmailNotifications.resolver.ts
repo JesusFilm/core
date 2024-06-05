@@ -15,11 +15,9 @@ export class EventEmailNotificationsResolver {
   async eventEmailNotificationsByJourney(
     @Args('journeyId') journeyId: string
   ): Promise<EventEmailNotifications[]> {
-    const data = await this.prismaService.eventEmailNotifications.findMany({
+    return await this.prismaService.eventEmailNotifications.findMany({
       where: { journeyId }
     })
-
-    return data
   }
 
   @Mutation()
@@ -31,13 +29,11 @@ export class EventEmailNotificationsResolver {
     const { userId, journeyId } = input
     const where =
       id != null ? { id } : { userId_journeyId: { userId, journeyId } }
-    const data = await this.prismaService.eventEmailNotifications.upsert({
+    return await this.prismaService.eventEmailNotifications.upsert({
       where,
       update: input,
       create: input
     })
-
-    return data
   }
 
   @Mutation()
@@ -49,10 +45,8 @@ export class EventEmailNotificationsResolver {
     const { userId, journeyId } = input
     const where =
       id != null ? { id } : { userId_journeyId: { userId, journeyId } }
-    const data = await this.prismaService.eventEmailNotifications.delete({
+    return await this.prismaService.eventEmailNotifications.delete({
       where
     })
-
-    return data
   }
 }
