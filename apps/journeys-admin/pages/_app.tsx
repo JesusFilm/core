@@ -12,12 +12,11 @@ import TagManager from 'react-gtm-module'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { TeamProvider } from '../src/components/Team/TeamProvider'
+import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
@@ -73,10 +72,7 @@ function JourneysAdminApp({
   return (
     <FlagsProvider flags={pageProps.flags}>
       <CacheProvider value={emotionCache}>
-        <ThemeProvider
-          themeName={ThemeName.journeysAdmin}
-          themeMode={ThemeMode.light}
-        >
+        <ThemeProvider>
           <DefaultSeo
             titleTemplate={t('%s | Next Steps')}
             defaultTitle={t('Admin | Next Steps')}
