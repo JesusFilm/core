@@ -15,7 +15,7 @@ import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActi
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { TeamCreateForm } from '../TeamCreateForm'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
 export const ONBOARDING_TEMPLATE_ID = '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457'
 

@@ -12,7 +12,7 @@ import {
   useTeam
 } from '@core/journeys/ui/TeamProvider'
 
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from './TeamSelect'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
 import { TeamSelect } from '.'
 

@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -18,18 +18,12 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { TeamAvatars } from '../TeamAvatars'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-
-export const UPDATE_LAST_ACTIVE_TEAM_ID = gql`
-  mutation UpdateLastActiveTeamId($input: JourneyProfileUpdateInput!) {
-    journeyProfileUpdate(input: $input) {
-      id
-    }
-  }
-`
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
 interface TeamSelectProps {
   onboarding?: boolean
 }
+
 export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
   const { query, activeTeam, setActiveTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
