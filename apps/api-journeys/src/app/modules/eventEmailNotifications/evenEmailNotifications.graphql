@@ -16,10 +16,7 @@ type Mutation {
     id: ID!
     input: EventEmailNotificationsInput
   ): EventEmailNotifications!
-  eventEmailNotificationsDelete(
-    id: ID!
-    input: EventEmailNotificationsInput
-  ): EventEmailNotifications!
+  eventEmailNotificationsDelete(id: ID!): EventEmailNotifications!
 }
 
 type Query {

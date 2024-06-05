@@ -1376,7 +1376,7 @@ type Mutation
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @join__field(graph: JOURNEYS)
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
   eventEmailNotificationsUpdate(id: ID!, input: EventEmailNotificationsInput): EventEmailNotifications! @join__field(graph: JOURNEYS)
-  eventEmailNotificationsDelete(id: ID!, input: EventEmailNotificationsInput): EventEmailNotifications! @join__field(graph: JOURNEYS)
+  eventEmailNotificationsDelete(id: ID!): EventEmailNotifications! @join__field(graph: JOURNEYS)
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)

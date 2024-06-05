@@ -886,7 +886,7 @@ export abstract class IMutation {
 
     abstract eventEmailNotificationsUpdate(id: string, input?: Nullable<EventEmailNotificationsInput>): EventEmailNotifications | Promise<EventEmailNotifications>;
 
-    abstract eventEmailNotificationsDelete(id: string, input?: Nullable<EventEmailNotificationsInput>): EventEmailNotifications | Promise<EventEmailNotifications>;
+    abstract eventEmailNotificationsDelete(id: string): EventEmailNotifications | Promise<EventEmailNotifications>;
 
     abstract hostCreate(teamId: string, input: HostCreateInput): Host | Promise<Host>;
 
