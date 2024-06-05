@@ -884,9 +884,9 @@ export abstract class IMutation {
 
     abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
 
-    abstract eventEmailNotificationsUpdate(id: string, input?: Nullable<EventEmailNotificationsUpdateInput>): EventEmailNotifications | Promise<EventEmailNotifications>;
+    abstract eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput, id?: Nullable<string>): EventEmailNotifications | Promise<EventEmailNotifications>;
 
-    abstract eventEmailNotificationsDelete(id: string): EventEmailNotifications | Promise<EventEmailNotifications>;
+    abstract eventEmailNotificationsDelete(input: EventEmailNotificationsUpdateInput, id?: Nullable<string>): EventEmailNotifications | Promise<EventEmailNotifications>;
 
     abstract hostCreate(teamId: string, input: HostCreateInput): Host | Promise<Host>;
 
