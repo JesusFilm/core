@@ -11,7 +11,7 @@ import {
   BlockFields_ButtonBlock_action as Action,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { LinkNode } from '.'
 
