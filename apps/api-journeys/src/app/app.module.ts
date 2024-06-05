@@ -15,6 +15,7 @@ import { BlockModule } from './modules/block/block.module'
 import { CustomDomainModule } from './modules/customDomain/customDomain.module'
 import { EmailModule } from './modules/email/email.module'
 import { EventModule } from './modules/event/event.module'
+import { EventEmailNotificationsModule } from './modules/eventEmailNotifications/eventEmailNotifications.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
 import { JourneyModule } from './modules/journey/journey.module'
@@ -26,7 +27,6 @@ import { MailChimpModule } from './modules/mailChimp/mailChimp.module'
 import { TeamModule } from './modules/team/team.module'
 import { UserInviteModule } from './modules/userInvite/userInvite.module'
 import { UserJourneyModule } from './modules/userJourney/userJourney.module'
-import { UserJourneyNotificationModule } from './modules/userJourneyNotifications/userJourneyNotification.module'
 import { UserRoleModule } from './modules/userRole/userRole.module'
 import { UserTeamModule } from './modules/userTeam/userTeam.module'
 import { UserTeamInviteModule } from './modules/userTeamInvite/userTeamInvite.module'
@@ -39,6 +39,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     CustomDomainModule,
     EmailModule,
     EventModule,
+    EventEmailNotificationsModule,
     HostModule,
     JourneyCollectionModule,
     JourneysEmailPreferenceModule,
@@ -49,7 +50,6 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     NestHealthModule,
     TeamModule,
     UserJourneyModule,
-    UserJourneyNotificationModule,
     UserInviteModule,
     UserRoleModule,
     UserTeamModule,

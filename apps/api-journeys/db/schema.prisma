@@ -477,7 +477,7 @@ model JourneysEmailPreference {
   @@index(email)
 }
 
-model UserJourneyNotification {
+model EventEmailNotifications {
   id        String  @id @default(uuid())
   userId    String
   journeyId String

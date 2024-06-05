@@ -226,6 +226,8 @@ type Mutation {
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
+  eventEmailNotificationsUpdate(id: ID!, input: EventEmailNotificationsInput): EventEmailNotifications!
+  eventEmailNotificationsDelete(id: ID!): EventEmailNotifications!
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
@@ -278,8 +280,6 @@ type Mutation {
     idType: IdType
   ): UserJourney!
   userJourneyOpen(id: ID!): UserJourney
-  userJourneyNotificationUpdate(id: ID!, input: UserJourneyNotificationInput): UserJourneyNotification!
-  userJourneyNotificationDelete(id: ID!, input: UserJourneyNotificationInput): UserJourneyNotification!
   userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam!
   userTeamDelete(id: ID!): UserTeam!
   userTeamInviteCreate(teamId: ID!, input: UserTeamInviteCreateInput): UserTeamInvite
@@ -345,6 +345,7 @@ type Query {
   block(id: ID!): Block!
   customDomain(id: ID!): CustomDomain!
   customDomains(teamId: ID!): [CustomDomain!]!
+  eventEmailNotificationsByJourney(journeyId: ID!): [EventEmailNotifications!]!
   hosts(teamId: ID!): [Host!]!
 
   """
@@ -390,7 +391,6 @@ type Query {
   teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
-  userJourneyNotificationsByJourney(journeyId: ID!): [UserJourneyNotification!]!
   getUserRole: UserRole
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
@@ -1904,6 +1904,19 @@ type VideoProgressEvent implements Event {
   progress: Int!
 }
 
+type EventEmailNotifications {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  value: Boolean!
+}
+
+input EventEmailNotificationsInput {
+  userId: ID!
+  journeyId: ID!
+  value: Boolean!
+}
+
 type Host {
   id: ID!
   teamId: ID!
@@ -2265,19 +2278,6 @@ extend type User
   @key(fields: "id")
 {
   id: ID! @external
-}
-
-type UserJourneyNotification {
-  id: ID!
-  userId: ID!
-  journeyId: ID!
-  value: Boolean!
-}
-
-input UserJourneyNotificationInput {
-  userId: ID!
-  journeyId: ID!
-  value: Boolean!
 }
 
 type UserRole

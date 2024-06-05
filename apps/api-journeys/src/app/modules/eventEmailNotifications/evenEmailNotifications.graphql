@@ -1,0 +1,24 @@
+type EventEmailNotifications {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  value: Boolean!
+}
+
+input EventEmailNotificationsInput {
+  userId: ID!
+  journeyId: ID!
+  value: Boolean!
+}
+
+type Mutation {
+  eventEmailNotificationsUpdate(
+    id: ID!
+    input: EventEmailNotificationsInput
+  ): EventEmailNotifications!
+  eventEmailNotificationsDelete(id: ID!): EventEmailNotifications!
+}
+
+type Query {
+  eventEmailNotificationsByJourney(journeyId: ID!): [EventEmailNotifications!]!
+}
