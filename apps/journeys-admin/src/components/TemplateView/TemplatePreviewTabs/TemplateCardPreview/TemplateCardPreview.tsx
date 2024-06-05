@@ -14,6 +14,7 @@ import { SwiperOptions } from 'swiper/types'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { CardWrapper } from '@core/journeys/ui/ResourcesHub/CardWrapper'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
@@ -22,7 +23,6 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../__generated__/GetJourney'
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
-import { CardWrapper } from '../../../CardPreview/CardList/CardWrapper'
 import { VideoWrapper } from '../../../Editor/Slider/Content/Canvas/VideoWrapper'
 import { FramePortal } from '../../../FramePortal'
 import { CreateJourneyButton } from '../../CreateJourneyButton'

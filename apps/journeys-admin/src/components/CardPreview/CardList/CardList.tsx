@@ -16,6 +16,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { CardWrapper } from '@core/journeys/ui/ResourcesHub/CardWrapper'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -36,7 +37,6 @@ import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
 
-import { CardWrapper } from './CardWrapper'
 
 const Draggable = dynamic(
   async () =>

@@ -4,6 +4,7 @@ import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { CardWrapper } from '@core/journeys/ui/ResourcesHub/CardWrapper'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
@@ -13,7 +14,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../../__generated__/globalTypes'
-import { CardWrapper } from '../../../../../../../../../CardPreview/CardList/CardWrapper'
 import { FramePortal } from '../../../../../../../../../FramePortal'
 import { VideoWrapper } from '../../../../../../../Content/Canvas/VideoWrapper'
 
