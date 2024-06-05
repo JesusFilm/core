@@ -17,7 +17,7 @@ import {
 
 import { ArchivedTemplateList } from '.'
 
-import '../../../../../../libs/journeys/ui/test/i18n'
+import '@core/journeys/ui/test/i18n'
 
 const ArchivedTemplatesStory: Meta<typeof ArchivedTemplateList> = {
   component: ArchivedTemplateList,

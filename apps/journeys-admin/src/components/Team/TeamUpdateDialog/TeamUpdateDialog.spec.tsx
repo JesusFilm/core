@@ -14,7 +14,7 @@ import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
 import { TEAM_UPDATE } from './TeamUpdateDialog'
 
 import { TeamUpdateDialog } from '.'
-import '../../../../../../libs/journeys/ui/test/i18n'
+import '@core/journeys/ui/test/i18n'
 
 describe('TeamUpdateDialog', () => {
   const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {

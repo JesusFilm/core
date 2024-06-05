@@ -3,7 +3,7 @@ import { fireEvent, render } from '@testing-library/react'
 import { journey } from '../utils/data'
 
 import { EventsCard } from '.'
-import '../../../../../../../libs/journeys/ui/test/i18n'
+import '@core/journeys/ui/test/i18n'
 
 describe('EventsCard', () => {
   it('should show card header', () => {
