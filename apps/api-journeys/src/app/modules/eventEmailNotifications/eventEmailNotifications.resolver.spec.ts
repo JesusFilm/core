@@ -39,6 +39,7 @@ describe('EventEmailNotifications', () => {
     userId: 'userId1',
     value: false
   }
+  const input = { journeyId: 'journeyId', userId: 'userId1', value: true }
 
   describe('eventEmailNotificationsByJourney', () => {
     it('should return an array of event email notifications', async () => {
@@ -50,28 +51,23 @@ describe('EventEmailNotifications', () => {
       prismaService.eventEmailNotifications.findMany.mockResolvedValueOnce(
         eventEmailNotifications
       )
+
       expect(
         await resolver.eventEmailNotificationsByJourney('journeyId')
       ).toEqual(eventEmailNotifications)
-    })
-
-    it('should throw an error if no event email notifications are found', async () => {
-      prismaService.eventEmailNotifications.findMany.mockResolvedValueOnce([])
-      await expect(
-        resolver.eventEmailNotificationsByJourney('journeyId')
-      ).rejects.toThrow('No event email notifications found')
+      expect(
+        prismaService.eventEmailNotifications.findMany
+      ).toHaveBeenCalledWith({ where: { journeyId: 'journeyId' } })
     })
   })
 
   describe('eventEmailNotificationsUpdate', () => {
-    const input = { journeyId: 'journeyId', userId: 'userId1', value: true }
-
-    it('should upsert an event email notification', async () => {
+    it('should upsert an event email notification by id', async () => {
       prismaService.eventEmailNotifications.upsert.mockResolvedValueOnce({
         ...eventEmailNotification,
         value: true
       })
-      expect(await resolver.eventEmailNotificationsUpdate('1', input)).toEqual({
+      expect(await resolver.eventEmailNotificationsUpdate(input, '1')).toEqual({
         id: '1',
         journeyId: 'journeyId',
         userId: 'userId1',
@@ -86,26 +82,59 @@ describe('EventEmailNotifications', () => {
       )
     })
 
-    it('should throw an error if no event email notifications are found', async () => {
-      await expect(
-        resolver.eventEmailNotificationsUpdate('1', input)
-      ).rejects.toThrow('No event email notifications found')
+    it('should upsert an event email notification by userId and journeyId', async () => {
+      prismaService.eventEmailNotifications.upsert.mockResolvedValueOnce({
+        ...eventEmailNotification,
+        value: true
+      })
+      expect(await resolver.eventEmailNotificationsUpdate(input)).toEqual({
+        id: '1',
+        journeyId: 'journeyId',
+        userId: 'userId1',
+        value: true
+      })
+      expect(prismaService.eventEmailNotifications.upsert).toHaveBeenCalledWith(
+        {
+          where: {
+            userId_journeyId: { userId: 'userId1', journeyId: 'journeyId' }
+          },
+          create: input,
+          update: input
+        }
+      )
     })
   })
 
   describe('eventEmailNotificationsDelete', () => {
-    it('should delete an event email notification', async () => {
+    it('should delete an event email notification by id', async () => {
       prismaService.eventEmailNotifications.delete.mockResolvedValueOnce(
         eventEmailNotification
       )
-      expect(await resolver.eventEmailNotificationsDelete('1')).toEqual(
+      expect(await resolver.eventEmailNotificationsDelete(input, '1')).toEqual(
         eventEmailNotification
+      )
+      expect(prismaService.eventEmailNotifications.delete).toHaveBeenCalledWith(
+        {
+          where: {
+            id: '1'
+          }
+        }
       )
     })
 
-    it('should throw an error if no event email notifications are found', async () => {
-      await expect(resolver.eventEmailNotificationsDelete('1')).rejects.toThrow(
-        'Event email notifications not found'
+    it('should delete an event email notification by userId and journeyId', async () => {
+      prismaService.eventEmailNotifications.delete.mockResolvedValueOnce(
+        eventEmailNotification
+      )
+      expect(await resolver.eventEmailNotificationsDelete(input)).toEqual(
+        eventEmailNotification
+      )
+      expect(prismaService.eventEmailNotifications.delete).toHaveBeenCalledWith(
+        {
+          where: {
+            userId_journeyId: { userId: 'userId1', journeyId: 'journeyId' }
+          }
+        }
       )
     })
   })
