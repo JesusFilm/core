@@ -63,7 +63,7 @@ describe('EventEmailNotifications', () => {
     })
   })
 
-  describe('eventEmailNotificationsUpsert', () => {
+  describe('eventEmailNotificationsUpdate', () => {
     const input = { journeyId: 'journeyId', userId: 'userId1', value: true }
 
     it('should upsert an event email notification', async () => {
@@ -71,7 +71,7 @@ describe('EventEmailNotifications', () => {
         ...eventEmailNotification,
         value: true
       })
-      expect(await resolver.eventEmailNotificationsUpsert('1', input)).toEqual({
+      expect(await resolver.eventEmailNotificationsUpdate('1', input)).toEqual({
         id: '1',
         journeyId: 'journeyId',
         userId: 'userId1',
@@ -88,7 +88,7 @@ describe('EventEmailNotifications', () => {
 
     it('should throw an error if no event email notifications are found', async () => {
       await expect(
-        resolver.eventEmailNotificationsUpsert('1', input)
+        resolver.eventEmailNotificationsUpdate('1', input)
       ).rejects.toThrow('No event email notifications found')
     })
   })
