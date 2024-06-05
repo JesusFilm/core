@@ -42,6 +42,7 @@ interface UserItem {
   imageUrl?: string
   removedAt?: string
   acceptedAt?: string
+  userId?: string
 }
 
 interface UserListItemProps {
@@ -59,10 +60,11 @@ export function UserListItem({
 }: UserListItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const [eventEmailNotificationUpdate] = useEventEmailNotificationsUpdate()
+  const [eventEmailNotificationUpdate, { loading }] =
+    useEventEmailNotificationsUpdate()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
-  const { id, role, displayName, email, imageUrl, journeyId } =
+  const { id, role, displayName, email, imageUrl, journeyId, userId } =
     useMemo((): UserItem => {
       if (listItem.__typename === 'UserInvite') {
         return {
@@ -77,6 +79,7 @@ export function UserListItem({
           listItem.user?.firstName,
           listItem.user?.lastName
         ]).join(' '),
+        userId: listItem.user?.id,
         email: listItem.user?.email ?? '',
         imageUrl: listItem.user?.imageUrl ?? ''
       }
@@ -122,15 +125,15 @@ export function UserListItem({
 
   async function handleChange(): Promise<void> {
     if (journeyIdFromParent == null) return
+    if (userId == null) return
     const uuid = uuidv4()
     try {
       await eventEmailNotificationUpdate({
         variables: {
           id: emailPreference?.id ?? uuid,
           input: {
-            userId: id,
+            userId,
             journeyId: journeyIdFromParent,
-            // fix logic, can't always update to true
             value:
               emailPreference?.value != null ? !emailPreference.value : true
           }
@@ -160,11 +163,16 @@ export function UserListItem({
 
   const secondaryAction: ReactNode = (
     <>
-      <Switch
-        inputProps={{ 'aria-checked': emailPreference?.value }}
-        checked={emailPreference?.value}
-        onChange={handleChange}
-      />
+      {listItem.__typename !== 'UserInvite' && (
+        <Switch
+          inputProps={{ 'aria-checked': emailPreference?.value }}
+          checked={emailPreference?.value}
+          onChange={handleChange}
+          disabled={
+            loading || emailPreference?.userId !== currentUser?.user?.id
+          }
+        />
+      )}
       <Button
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"

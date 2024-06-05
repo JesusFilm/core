@@ -77,7 +77,7 @@ export function AccessDialog({
     useUserInvitesLazyQuery({ journeyId })
 
   const { loadUser, data: user } = useCurrentUserLazyQuery()
-  const [loadEmailPreferences, { data: emailPreferences }] =
+  const [, { data: emailPreferences, refetch: loadEmailPreferences }] =
     useEventEmailNotificationsLazyQuery(journeyId)
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))

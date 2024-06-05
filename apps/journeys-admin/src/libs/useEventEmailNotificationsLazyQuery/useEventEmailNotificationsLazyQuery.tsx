@@ -26,7 +26,8 @@ export function useEventEmailNotificationsLazyQuery(
     GetEventEmailNotifications,
     GetEventEmailNotificationsVariables
   >(GET_EVENT_EMAIL_NOTIFICATIONS, {
-    variables: { journeyId }
+    variables: { journeyId },
+    notifyOnNetworkStatusChange: true
   })
 
   return query
