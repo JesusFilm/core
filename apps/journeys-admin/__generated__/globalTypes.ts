@@ -301,7 +301,7 @@ export interface EmailActionInput {
   email: string;
 }
 
-export interface EventEmailNotificationsInput {
+export interface EventEmailNotificationsUpdateInput {
   userId: string;
   journeyId: string;
   value: boolean;

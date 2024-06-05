@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { EventEmailNotificationsInput } from "./globalTypes";
+import { EventEmailNotificationsUpdateInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: EventEmailNotificationsUpdate
@@ -23,5 +23,5 @@ export interface EventEmailNotificationsUpdate {
 
 export interface EventEmailNotificationsUpdateVariables {
   id: string;
-  input: EventEmailNotificationsInput;
+  input: EventEmailNotificationsUpdateInput;
 }

@@ -98,7 +98,7 @@ export function AccessDialog({
       )
     }, [emailPreferences])
 
-  console.log('emailPreferencesMap', emailPreferencesMap)
+  console.log('emailPreferencesMap', emailPreferences)
 
   const { users, requests, invites, emails } = useMemo(() => {
     const users: UserJourney[] = []

@@ -13,7 +13,7 @@ import {
 export const EVENT_EMAIL_NOTIFICATIONS_UPDATE = gql`
   mutation EventEmailNotificationsUpdate(
     $id: ID!
-    $input: EventEmailNotificationsInput!
+    $input: EventEmailNotificationsUpdateInput!
   ) {
     eventEmailNotificationsUpdate(id: $id, input: $input) {
       id

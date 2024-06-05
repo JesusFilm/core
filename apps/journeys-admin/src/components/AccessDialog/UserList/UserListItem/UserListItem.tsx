@@ -19,6 +19,7 @@ import {
   useMemo,
   useState
 } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -120,16 +121,18 @@ export function UserListItem({
   }, [])
 
   async function handleChange(): Promise<void> {
-    if (journeyId == null) return
-    if (emailPreference == null) return
+    if (journeyIdFromParent == null) return
+    const uuid = uuidv4()
     try {
       await eventEmailNotificationUpdate({
         variables: {
-          id: emailPreference?.id ?? '',
+          id: emailPreference?.id ?? uuid,
           input: {
-            journeyId: journeyIdFromParent,
             userId: id,
-            value: !emailPreference?.value
+            journeyId: journeyIdFromParent,
+            // fix logic, can't always update to true
+            value:
+              emailPreference?.value != null ? !emailPreference.value : true
           }
         }
       })
