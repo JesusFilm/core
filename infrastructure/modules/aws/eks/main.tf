@@ -38,6 +38,9 @@ resource "aws_security_group" "eks-cluster" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = {
+    "kubernetes.io/cluster/${var.name}-${var.env}" = "owned",
+  }
 }
 
 resource "aws_eks_cluster" "this" {
@@ -160,42 +163,75 @@ data "aws_ami" "eks-worker" {
   owners      = ["602401143452"] # Amazon EKS AMI Account ID
 }
 
-# This data source is included for ease of sample architecture deployment
-# and can be swapped out as necessary.
-data "aws_region" "current" {}
+# # This data source is included for ease of sample architecture deployment
+# # and can be swapped out as necessary.
+# data "aws_region" "current" {}
 
-# EKS currently documents this required userdata for EKS worker nodes to
-# properly configure Kubernetes applications on the EC2 instance.
-# We utilize a Terraform local here to simplify Base64 encoding this
-# information into the AutoScaling Launch Configuration.
-# More information: https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
-locals {
-  eks-node-userdata = <<USERDATA
-#!/bin/bash
-set -o xtrace
-/etc/eks/bootstrap.sh --apiserver-endpoint '${aws_eks_cluster.this.endpoint}' --b64-cluster-ca '${aws_eks_cluster.this.certificate_authority.0.data}' '${var.name}-${var.env}''
-USERDATA
-}
+# # EKS currently documents this required userdata for EKS worker nodes to
+# # properly configure Kubernetes applications on the EC2 instance.
+# # We utilize a Terraform local here to simplify Base64 encoding this
+# # information into the AutoScaling Launch Configuration.
+# # More information: https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
+# locals {
+#   eks-node-userdata = <<USERDATA
+# #!/bin/bash
+# set -o xtrace
+# /etc/eks/bootstrap.sh '${var.name}-${var.env}' --apiserver-endpoint '${aws_eks_cluster.this.endpoint}' --b64-cluster-ca '${aws_eks_cluster.this.certificate_authority.0.data}' 
+# USERDATA
+# }
 
-resource "aws_launch_configuration" "this" {
-  associate_public_ip_address = true
-  iam_instance_profile        = aws_iam_instance_profile.eks-node.name
-  image_id                    = data.aws_ami.eks-worker.id
-  instance_type               = "m3.medium"
-  name_prefix                 = "terraform-eks-${var.env}"
-  security_groups             = [aws_security_group.eks-node.id]
-  user_data_base64            = base64encode(local.eks-node-userdata)
+# resource "aws_launch_configuration" "this" {
+#   associate_public_ip_address = true
+#   iam_instance_profile        = aws_iam_instance_profile.eks-node.name
+#   image_id                    = data.aws_ami.eks-worker.id
+#   instance_type               = "t3.medium"
+#   name_prefix                 = "terraform-eks-${var.env}"
+#   security_groups             = [aws_security_group.eks-node.id]
+#   user_data_base64            = base64encode(local.eks-node-userdata)
 
-  lifecycle {
-    create_before_destroy = true
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
+
+# resource "aws_autoscaling_group" "this" {
+#   desired_capacity     = 1
+#   launch_configuration = aws_launch_configuration.this.id
+#   max_size             = 4
+#   min_size             = 1
+#   name                 = "terraform-eks-${var.env}"
+#   vpc_zone_identifier  = var.subnet_ids
+#   tag {
+#     key                 = "kubernetes.io/cluster/${var.name}-${var.env}"
+#     value               = "owned"
+#     propagate_at_launch = true
+#   }
+# }
+
+resource "aws_eks_node_group" "this" {
+  cluster_name    = aws_eks_cluster.this.name
+  node_group_name = "jfp-eks-node-group-${var.env}"
+  node_role_arn   = aws_iam_role.eks-node.arn
+  subnet_ids      = var.subnet_ids
+
+  scaling_config {
+    desired_size = 2
+    max_size     = 4
+    min_size     = 1
   }
-}
 
-resource "aws_autoscaling_group" "this" {
-  desired_capacity     = 1
-  launch_configuration = aws_launch_configuration.this.id
-  max_size             = 4
-  min_size             = 1
-  name                 = "terraform-eks-${var.env}"
-  vpc_zone_identifier  = var.subnet_ids
+  update_config {
+    max_unavailable = 2
+  }
+  capacity_type = "SPOT"
+
+  instance_types = ["t3.medium"]
+
+  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
+  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
+  depends_on = [
+    aws_iam_role_policy_attachment.eks-node-AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.eks-node-AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.eks-node-AmazonEC2ContainerRegistryReadOnly,
+  ]
 }

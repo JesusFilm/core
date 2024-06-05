@@ -47,9 +47,10 @@
       "version": "lts"
     },
     "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
-      "version": "1.23",
+      "version": "1.30",
       "helm": "latest",
       "minikube": "none"
-    }
+    },
+    "ghcr.io/casl0/devcontainer-features/eksctl:1": {}
   }
 }
