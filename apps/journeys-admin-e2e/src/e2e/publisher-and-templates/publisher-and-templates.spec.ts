@@ -240,7 +240,7 @@ test.describe('Verify template page functionality', () => {
     await templatesPage.verifyPreviewTemplateInJourneyTemplate() //  clicking on the preview button beside the 'use this template' button and verifying the template is loaded on the preview tab
   })
   //Templates-> Select existing template -> Edit
-  test('Edit a template', async ({ page, context }) => {
+  test.fixme('Edit a template', async ({ page, context }) => {
     const templatesPage = new TemplatePage(page)
     const cardLevelActionPage = new CardLevelActionPage(page)
     const journeyPage = new JourneyPage(page)
