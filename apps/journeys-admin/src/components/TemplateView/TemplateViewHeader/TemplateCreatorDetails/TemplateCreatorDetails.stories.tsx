@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { SocialImage } from '../SocialImage'
 
 import { TemplateCreatorDetails } from './TemplateCreatorDetails'

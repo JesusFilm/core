@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
-
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { TagItem } from './TagItem'

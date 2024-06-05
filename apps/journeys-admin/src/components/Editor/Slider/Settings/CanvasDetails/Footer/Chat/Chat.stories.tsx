@@ -3,6 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import { Drawer } from '../../../Drawer'
 
 import { Chat } from '.'

@@ -4,9 +4,9 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { publishedJourney } from '../../../data'
 
 import { ShareItem } from './ShareItem'

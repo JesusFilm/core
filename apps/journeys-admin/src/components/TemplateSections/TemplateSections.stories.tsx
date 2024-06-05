@@ -3,6 +3,8 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import {
   GetJourneys,
   GetJourneys_journeys as Journey,
@@ -13,7 +15,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 
 import { TemplateSections } from '.'

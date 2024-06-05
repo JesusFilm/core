@@ -2,6 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { SWRConfig } from 'swr'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import {
   getVideosLoading,
   getVideosWithOffsetAndUrl

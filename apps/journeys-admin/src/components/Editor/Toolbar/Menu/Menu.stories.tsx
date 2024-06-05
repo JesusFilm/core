@@ -4,11 +4,11 @@ import { screen, userEvent } from '@storybook/testing-library'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GET_ROLE } from './Menu'
 

@@ -4,6 +4,7 @@ import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import { TeamProvider } from '../../../../Team/TeamProvider'
 
 import { DeleteJourneyDialog } from '.'

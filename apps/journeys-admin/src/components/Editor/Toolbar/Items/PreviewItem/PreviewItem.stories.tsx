@@ -3,9 +3,9 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { publishedJourney } from '../../../data'
 
 import { PreviewItem } from './PreviewItem'
