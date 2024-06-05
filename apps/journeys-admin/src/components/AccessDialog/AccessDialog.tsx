@@ -12,16 +12,16 @@ import {
   GetJourneyWithPermissions,
   GetJourneyWithPermissions_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithPermissions'
-import { GetUserJourneyNotifications_userJourneyNotificationsByJourney as UserJourneyNotifications } from '../../../__generated__/GetUserJourneyNotifications'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../__generated__/GetUserTeamsAndInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { useUserInvitesLazyQuery } from '../../libs/useUserInvitesLazyQuery'
-import { useUserJourneyNotificationsLazyQuery } from '../../libs/useUserJourneyNotificationsLazyQuery/useUserJourneyNotificationsLazyQuery'
 import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
+import { useEventEmailNotificationsLazyQuery } from '../../libs/useEventEmailNotificationsLazyQuery'
+import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../__generated__/GetEventEmailNotifications'
 
 export const GET_JOURNEY_WITH_PERMISSIONS = gql`
   query GetJourneyWithPermissions($id: ID!) {
@@ -78,7 +78,7 @@ export function AccessDialog({
 
   const { loadUser, data: user } = useCurrentUserLazyQuery()
   const [loadEmailPreferences, { data: emailPreferences }] =
-    useUserJourneyNotificationsLazyQuery(journeyId)
+    useEventEmailNotificationsLazyQuery(journeyId)
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
@@ -94,15 +94,17 @@ export function AccessDialog({
   // pass rest of array to userTEAMS component
   // repeat
 
-  const emailPreferencesMap: Map<string, UserJourneyNotifications> =
+  const emailPreferencesMap: Map<string, EventEmailNotifications> =
     useMemo(() => {
       return new Map(
-        emailPreferences?.userJourneyNotificationsByJourney.map((obj) => [
+        emailPreferences?.eventEmailNotificationsByJourney.map((obj) => [
           obj.userId,
           obj
         ])
       )
     }, [emailPreferences])
+
+  console.log('emailPreferencesMap', emailPreferencesMap)
 
   const { users, requests, invites, emails } = useMemo(() => {
     const users: UserJourney[] = []

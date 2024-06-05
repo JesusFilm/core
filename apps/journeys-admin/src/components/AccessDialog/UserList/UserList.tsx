@@ -10,10 +10,10 @@ import { ReactElement, useMemo } from 'react'
 
 import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
-import { GetUserJourneyNotifications_userJourneyNotificationsByJourney as UserJourneyNotifications } from '../../../../__generated__/GetUserJourneyNotifications'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 
 import { UserListItem } from './UserListItem'
+import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../../__generated__/GetEventEmailNotifications'
 
 interface UserListProps {
   title: string
@@ -22,7 +22,7 @@ interface UserListProps {
   loading?: boolean
   currentUser?: UserJourney
   journeyId: string
-  emailPreferences?: Map<string, UserJourneyNotifications>
+  emailPreferences?: Map<string, EventEmailNotifications>
 }
 
 export function UserList({
