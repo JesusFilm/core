@@ -8,20 +8,20 @@ import { ReactElement, useEffect, useMemo } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../__generated__/GetEventEmailNotifications'
 import {
   GetJourneyWithPermissions,
   GetJourneyWithPermissions_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithPermissions'
-import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../__generated__/GetEventEmailNotifications'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../__generated__/GetUserTeamsAndInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
+import { useEventEmailNotificationsLazyQuery } from '../../libs/useEventEmailNotificationsLazyQuery'
 import { useUserInvitesLazyQuery } from '../../libs/useUserInvitesLazyQuery'
 import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
-import { useEventEmailNotificationsLazyQuery } from '../../libs/useEventEmailNotificationsLazyQuery'
 
 export const GET_JOURNEY_WITH_PERMISSIONS = gql`
   query GetJourneyWithPermissions($id: ID!) {
@@ -87,12 +87,6 @@ export function AccessDialog({
       (userJourney) => userJourney.user?.email === user.email
     )
   }, [data?.journey?.userJourneys, user])
-
-  // fetch notifs array - create custom hook
-  // turn fetch res in hash map
-  // loop over userJoryenys and get ntofis and add notifs into new array after users.push
-  // pass rest of array to userTEAMS component
-  // repeat
 
   const emailPreferencesMap: Map<string, EventEmailNotifications> =
     useMemo(() => {

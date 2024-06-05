@@ -1,3 +1,4 @@
+import { ApolloError } from '@apollo/client'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -9,6 +10,7 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import {
   MouseEvent,
   ReactElement,
@@ -24,6 +26,7 @@ import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEma
 import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
+import { useEventEmailNotificationsUpdate } from '../../../../libs/useEventEmailNotificationsUpdateMutation'
 
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
@@ -54,6 +57,8 @@ export function UserListItem({
   emailPreference
 }: UserListItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
+  const [eventEmailNotificationUpdate] = useEventEmailNotificationsUpdate()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
   const { id, role, displayName, email, imageUrl, journeyId } =
@@ -114,12 +119,48 @@ export function UserListItem({
     }
   }, [])
 
+  async function handleChange(): Promise<void> {
+    if (journeyId == null) return
+    if (emailPreference == null) return
+    try {
+      await eventEmailNotificationUpdate({
+        variables: {
+          id: emailPreference?.id ?? '',
+          input: {
+            journeyId: journeyIdFromParent,
+            userId: id,
+            value: !emailPreference?.value
+          }
+        }
+      })
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        if (error.networkError != null) {
+          enqueueSnackbar(
+            t('Notification update failed. Reload the page or try again.'),
+            {
+              variant: 'error',
+              preventDuplicate: true
+            }
+          )
+          return
+        }
+      }
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
+    }
+  }
+
   const secondaryAction: ReactNode = (
     <>
       <Switch
-        inputProps={{ 'aria-checked': emailPreference?.value ?? false }}
-        checked={emailPreference?.value ?? false}
-        onChange={() => console.log('I got called')}
+        inputProps={{ 'aria-checked': emailPreference?.value }}
+        checked={emailPreference?.value}
+        onChange={handleChange}
       />
       <Button
         aria-controls={open ? 'basic-menu' : undefined}
