@@ -77,6 +77,13 @@ describe('EventEmailNotifications', () => {
         userId: 'userId1',
         value: true
       })
+      expect(prismaService.eventEmailNotifications.upsert).toHaveBeenCalledWith(
+        {
+          where: { id: '1' },
+          create: input,
+          update: input
+        }
+      )
     })
 
     it('should throw an error if no event email notifications are found', async () => {
