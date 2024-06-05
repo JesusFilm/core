@@ -1,9 +1,8 @@
 import { Decorator } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 
-import { sharedUiConfig } from '../sharedUiConfig'
-
 import { ThemeProvider } from '../../components/ThemeProvider'
+import { sharedUiConfig } from '../sharedUiConfig'
 import { ThemeMode, ThemeName } from '../themes'
 
 // Must set parameters at component level for shared-storybook stories to work
