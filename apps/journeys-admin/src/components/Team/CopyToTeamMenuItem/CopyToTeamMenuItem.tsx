@@ -8,7 +8,7 @@ import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { MenuItem } from '../../MenuItem'
-import { CopyToTeamDialog } from '../CopyToTeamDialog'
+import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 
 interface DuplicateJourneyMenuItemProps {
   id?: string
