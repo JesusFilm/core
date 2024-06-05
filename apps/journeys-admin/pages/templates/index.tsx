@@ -6,6 +6,12 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
+import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
+
 import {
   GetJourneys,
   GetJourneysVariables
@@ -18,12 +24,8 @@ import { GetMe } from '../../__generated__/GetMe'
 import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
-import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
-import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
-import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
+
 
 function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

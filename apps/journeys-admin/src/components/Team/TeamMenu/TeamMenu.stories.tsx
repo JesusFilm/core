@@ -3,12 +3,13 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 
 import { TeamMenu } from '.'
 

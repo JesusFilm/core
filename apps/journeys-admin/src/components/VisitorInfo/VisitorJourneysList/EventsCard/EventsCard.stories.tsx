@@ -2,6 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { journey } from '../utils/data'
 
 import { EventsCard } from '.'

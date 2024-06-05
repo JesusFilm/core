@@ -11,7 +11,6 @@ import {
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
-
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { StepBlockNode } from '.'

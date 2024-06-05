@@ -3,12 +3,14 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
-import CopyToIcon from '@core/shared/ui/icons/CopyTo'
-
+import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import CopyToIcon from '@core/shared/ui/icons/CopyTo'
+
+
 import { MenuItem } from '../../MenuItem'
-import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
+
 
 interface DuplicateJourneyMenuItemProps {
   id?: string

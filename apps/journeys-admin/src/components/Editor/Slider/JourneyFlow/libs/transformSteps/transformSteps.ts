@@ -4,9 +4,9 @@ import { Edge, MarkerType, Node } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
+import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
-import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
 import { PositionMap } from '../arrangeSteps'
 
 export const MARKER_END_DEFAULT_COLOR = rgbToHex(

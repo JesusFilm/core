@@ -2,8 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
-import { MessagePlatform } from '../../../../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
+import { MessagePlatform } from '../../../../../../../../../__generated__/globalTypes'
 import { Drawer } from '../../../../Drawer'
 
 import { ChatOption } from '.'

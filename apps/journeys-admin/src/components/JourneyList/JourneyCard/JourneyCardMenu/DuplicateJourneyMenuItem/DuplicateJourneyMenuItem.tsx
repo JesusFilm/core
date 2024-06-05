@@ -5,14 +5,15 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { CopyToTeamDialog } from '@core/journeys/ui//CopyToTeamDialog'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
 import { JourneyDuplicate } from '../../../../../../__generated__/JourneyDuplicate'
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
-import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { MenuItem } from '../../../../MenuItem'
-import { CopyToTeamDialog } from '@core/journeys/ui//CopyToTeamDialog'
-import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 
 interface DuplicateJourneyMenuItemProps {
   id?: string

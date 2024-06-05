@@ -12,13 +12,13 @@ import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useRef, useState } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { TeamAvatars } from '../TeamAvatars'
-import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
 interface TeamSelectProps {
   onboarding?: boolean

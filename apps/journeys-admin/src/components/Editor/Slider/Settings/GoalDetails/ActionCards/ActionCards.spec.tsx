@@ -3,7 +3,6 @@ import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
 import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
 
 import { ActionCards } from './ActionCards'

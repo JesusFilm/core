@@ -2,7 +2,6 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
-
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { Item } from './Item'

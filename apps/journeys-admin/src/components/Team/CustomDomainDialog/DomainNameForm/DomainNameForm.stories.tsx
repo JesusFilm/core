@@ -3,13 +3,14 @@ import { MockedResponse } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
-import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
+import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
+import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 
 import { DomainNameForm } from '.'
 

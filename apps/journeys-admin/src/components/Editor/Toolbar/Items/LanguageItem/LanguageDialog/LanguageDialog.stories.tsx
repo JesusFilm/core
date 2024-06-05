@@ -4,10 +4,9 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
-
-import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
 

@@ -1,8 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
-import { VisitorStatus } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
+import { VisitorStatus } from '../../../__generated__/globalTypes'
 
 import { JourneyVisitorsList } from '.'
 import '../../../../../libs/journeys/ui/test/i18n'

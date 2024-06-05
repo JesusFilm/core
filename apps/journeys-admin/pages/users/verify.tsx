@@ -20,12 +20,13 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { number, object } from 'yup'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import { CreateVerificationRequest } from '../../__generated__/CreateVerificationRequest'
 import { GetMe } from '../../__generated__/GetMe'
 import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerification/EmailVerification'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
-import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 

@@ -3,10 +3,11 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
-import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
+
 
 import { StrategyItem } from './StrategyItem'
 

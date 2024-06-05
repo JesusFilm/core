@@ -10,8 +10,10 @@ import { ReactElement, useEffect, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import Lock1Icon from '@core/shared/ui/icons/Lock1'
 import MinusCircleContained from '@core/shared/ui/icons/MinusCircleContained'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -22,9 +24,8 @@ import {
 } from '../../../../../../../../../../../__generated__/globalTypes'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
 import { StepFields } from '../../../../../../../../../../../__generated__/StepFields'
-import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { CardWrapper } from '../../../../../../../Content/Canvas/CardWrapper'
-import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
+
 
 export const STEP_BLOCK_DEFAULT_NEXT_BLOCK_UPDATE = gql`
   mutation StepBlockDefaultNextBlockUpdate(

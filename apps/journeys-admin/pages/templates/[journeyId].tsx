@@ -6,6 +6,14 @@ import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { TemplateView } from '@core/journeys/ui/TemplateView'
+import {
+  GET_JOURNEY,
+  useJourneyQuery
+} from '@core/journeys/ui/useJourneyQuery/useJourneyQuery'
+import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
 
 import { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
 import {
@@ -14,15 +22,8 @@ import {
 } from '../../__generated__/GetJourneys'
 import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
-import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { TemplateView } from '@core/journeys/ui/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import {
-  GET_JOURNEY,
-  useJourneyQuery
-} from '@core/journeys/ui/useJourneyQuery/useJourneyQuery'
-import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery/useJourneysQuery'
-import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
+
 
 function TemplateDetailsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

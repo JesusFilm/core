@@ -3,6 +3,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -12,7 +13,6 @@ import {
   TypographyAlign,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Drawer } from '../../../../Drawer'
 
 import { Step } from '.'

@@ -5,14 +5,15 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider,
   useTeam
 } from '@core/journeys/ui/TeamProvider'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { TeamCreate } from '../../../../__generated__/TeamCreate'
+import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 
 import { TeamCreateDialog } from '.'
 

@@ -1,13 +1,14 @@
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery/useJourneyQuery'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
-import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery/useJourneyQuery'
 
 import { OnboardingDrawer } from './OnboardingDrawer'
 

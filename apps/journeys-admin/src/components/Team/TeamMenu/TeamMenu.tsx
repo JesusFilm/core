@@ -8,16 +8,17 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import GlobeIcon from '@core/shared/ui/icons/Globe'
 import MoreIcon from '@core/shared/ui/icons/More'
 import Plus1Icon from '@core/shared/ui/icons/Plus1'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { MenuItem } from '../../MenuItem'
 import { TeamAvatars } from '../TeamAvatars'
-import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 
 const DynamicTeamCreateDialog = dynamic(
   async () =>

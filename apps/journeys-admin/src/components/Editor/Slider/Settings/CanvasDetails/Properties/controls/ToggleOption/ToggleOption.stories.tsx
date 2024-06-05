@@ -5,7 +5,6 @@ import noop from 'lodash/noop'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { ToggleOption } from '.'

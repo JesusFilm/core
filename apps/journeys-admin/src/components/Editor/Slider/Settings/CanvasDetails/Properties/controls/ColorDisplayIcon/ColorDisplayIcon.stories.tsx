@@ -1,8 +1,9 @@
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { TypographyColor } from '../../../../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
+import { TypographyColor } from '../../../../../../../../../__generated__/globalTypes'
 
 import { ColorDisplayIcon } from '.'
 

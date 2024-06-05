@@ -3,6 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { descriptiveTemplate } from '../data'
 
 import { TemplateListItem } from '.'

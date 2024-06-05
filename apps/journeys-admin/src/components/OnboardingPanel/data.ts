@@ -1,12 +1,13 @@
 import { MockedResponse } from '@apollo/client/testing'
 
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '@core/journeys/ui/TeamProvider'
+
 import { GetLastActiveTeamIdAndTeams } from '../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GetOnboardingJourneys,
   GetOnboardingJourneysVariables,
   GetOnboardingJourneys_onboardingJourneys as OnboardingJourneys
 } from '../../../__generated__/GetOnboardingJourneys'
-import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '@core/journeys/ui/TeamProvider'
 
 import {
   GET_ONBOARDING_JOURNEYS,

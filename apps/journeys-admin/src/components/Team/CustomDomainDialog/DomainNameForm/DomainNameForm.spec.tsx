@@ -5,6 +5,11 @@ import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '@core/journeys/ui/TeamProvider'
+
 import { CheckCustomDomain } from '../../../../../__generated__/CheckCustomDomain'
 import {
   CreateCustomDomain,
@@ -16,10 +21,6 @@ import {
 } from '../../../../../__generated__/DeleteCustomDomain'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '@core/journeys/ui/TeamProvider'
 
 import {
   CREATE_CUSTOM_DOMAIN,

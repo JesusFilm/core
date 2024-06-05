@@ -3,9 +3,9 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
 
 import { TestEditorState } from '../../../../../../../../../libs/TestEditorState'
-import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
 import { steps } from '../data'
 
 import { NavigateToBlockAction } from './NavigateToBlockAction'

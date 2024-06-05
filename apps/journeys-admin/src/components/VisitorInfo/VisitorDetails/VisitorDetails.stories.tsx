@@ -2,8 +2,9 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { GetVisitorForDetails } from '../../../../__generated__/GetVisitorForDetails'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
+import { GetVisitorForDetails } from '../../../../__generated__/GetVisitorForDetails'
 
 import { GET_VISITOR_FOR_DETAILS } from './VisitorDetails'
 

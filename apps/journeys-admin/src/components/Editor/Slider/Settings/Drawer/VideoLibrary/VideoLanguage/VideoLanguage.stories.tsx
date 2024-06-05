@@ -2,9 +2,9 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps, ReactElement, useState } from 'react'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../../../__generated__/GetVideo'
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { VideoLanguage } from '.'
 

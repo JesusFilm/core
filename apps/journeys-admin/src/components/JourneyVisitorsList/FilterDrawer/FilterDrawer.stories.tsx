@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { PageWrapper } from '../../PageWrapper'
 
 import { ClearAllButton } from './ClearAllButton'

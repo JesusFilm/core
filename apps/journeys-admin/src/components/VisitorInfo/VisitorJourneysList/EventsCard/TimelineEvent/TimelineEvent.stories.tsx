@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 import '../../../../../../../../libs/journeys/ui/test/i18n'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { TimelineItem } from '../../utils'
 import {
   buttonClickLinkEvent,

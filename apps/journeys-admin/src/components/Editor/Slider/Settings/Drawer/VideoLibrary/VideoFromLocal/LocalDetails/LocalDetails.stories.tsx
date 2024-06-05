@@ -1,9 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../../../../__generated__/GetVideo'
 import { ApolloLoadingProvider } from '../../../../../../../../../test/ApolloLoadingProvider'
-import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GET_VIDEO } from './LocalDetails'
 

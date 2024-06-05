@@ -10,12 +10,12 @@ import { MouseEvent, ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
+import { palette } from '@core/shared/ui/themes/journeysAdmin/tokens/colors'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
-import { palette } from '@core/shared/ui/themes/journeysAdmin/tokens/colors'
 
 import { BackgroundMediaVideo } from './Video/BackgroundMediaVideo'
 
