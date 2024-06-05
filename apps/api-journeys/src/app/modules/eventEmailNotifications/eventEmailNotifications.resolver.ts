@@ -9,7 +9,7 @@ import { EventEmailNotificationsInput } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('eventEmailNotifications')
-export class eventEmailNotificationsResolver {
+export class EventEmailNotificationsResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
@@ -20,8 +20,8 @@ export class eventEmailNotificationsResolver {
       where: { journeyId }
     })
 
-    if (data == null)
-      throw new GraphQLError('user not found', {
+    if (data.length === 0)
+      throw new GraphQLError('No event email notifications found', {
         extensions: { code: 'NOT_FOUND' }
       })
 
@@ -41,7 +41,7 @@ export class eventEmailNotificationsResolver {
     })
 
     if (data == null)
-      throw new GraphQLError('user not found', {
+      throw new GraphQLError('No event email notifications found', {
         extensions: { code: 'NOT_FOUND' }
       })
 
@@ -58,7 +58,7 @@ export class eventEmailNotificationsResolver {
     })
 
     if (data == null)
-      throw new GraphQLError('user not found', {
+      throw new GraphQLError('Event email notifications not found', {
         extensions: { code: 'NOT_FOUND' }
       })
 
