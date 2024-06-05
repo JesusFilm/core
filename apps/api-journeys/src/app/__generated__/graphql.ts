@@ -594,7 +594,7 @@ export class VideoProgressEventCreateInput {
     value?: Nullable<VideoBlockSource>;
 }
 
-export class EventEmailNotificationsInput {
+export class EventEmailNotificationsUpdateInput {
     userId: string;
     journeyId: string;
     value: boolean;
@@ -884,7 +884,7 @@ export abstract class IMutation {
 
     abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
 
-    abstract eventEmailNotificationsUpdate(id: string, input?: Nullable<EventEmailNotificationsInput>): EventEmailNotifications | Promise<EventEmailNotifications>;
+    abstract eventEmailNotificationsUpdate(id: string, input?: Nullable<EventEmailNotificationsUpdateInput>): EventEmailNotifications | Promise<EventEmailNotifications>;
 
     abstract eventEmailNotificationsDelete(id: string): EventEmailNotifications | Promise<EventEmailNotifications>;
 

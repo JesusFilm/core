@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql'
 import { EventEmailNotifications } from '.prisma/api-journeys-client'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 
-import { EventEmailNotificationsInput } from '../../__generated__/graphql'
+import { EventEmailNotificationsUpdateInput } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('EventEmailNotifications')
@@ -30,14 +30,14 @@ export class EventEmailNotificationsResolver {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  async eventEmailNotificationsUpsert(
+  async eventEmailNotificationsUpdate(
     @Args('id') id: string,
-    @Args('input') input: EventEmailNotificationsInput
+    @Args('input') input: EventEmailNotificationsUpdateInput
   ): Promise<EventEmailNotifications> {
     const data = await this.prismaService.eventEmailNotifications.upsert({
       where: { id },
-      create: input,
-      update: input
+      update: input,
+      create: input
     })
 
     if (data == null)
