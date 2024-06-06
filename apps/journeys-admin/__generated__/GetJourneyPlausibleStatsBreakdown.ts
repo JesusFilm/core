@@ -49,6 +49,19 @@ export interface GetJourneyPlausibleStatsBreakdown_journeyReferrer {
   property: string;
 }
 
+export interface GetJourneyPlausibleStatsBreakdown_journeyAggregateVisitors_visitors {
+  __typename: "PlausibleStatsAggregateValue";
+  value: number;
+}
+
+export interface GetJourneyPlausibleStatsBreakdown_journeyAggregateVisitors {
+  __typename: "PlausibleStatsAggregateResponse";
+  /**
+   * The number of unique visitors.
+   */
+  visitors: GetJourneyPlausibleStatsBreakdown_journeyAggregateVisitors_visitors | null;
+}
+
 export interface GetJourneyPlausibleStatsBreakdown {
   /**
    * This endpoint allows you to break down your stats by some property.
@@ -116,6 +129,7 @@ export interface GetJourneyPlausibleStatsBreakdown {
    * make multiple queries for each date.
    */
   journeyReferrer: GetJourneyPlausibleStatsBreakdown_journeyReferrer[];
+  journeyAggregateVisitors: GetJourneyPlausibleStatsBreakdown_journeyAggregateVisitors;
 }
 
 export interface GetJourneyPlausibleStatsBreakdownVariables {
@@ -123,6 +137,7 @@ export interface GetJourneyPlausibleStatsBreakdownVariables {
   idType?: IdType | null;
   period?: string | null;
   date?: string | null;
+  interval?: string | null;
   limit?: number | null;
   page?: number | null;
 }

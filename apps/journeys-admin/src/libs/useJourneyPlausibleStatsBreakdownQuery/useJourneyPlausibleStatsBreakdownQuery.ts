@@ -11,6 +11,7 @@ export const GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN = gql`
     $idType: IdType
     $period: String
     $date: String
+    $interval: String
     $limit: Int
     $page: Int
   ) {
@@ -58,6 +59,15 @@ export const GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN = gql`
       }
     ) {
       property
+    }
+    journeyAggregateVisitors: journeysPlausibleStatsAggregate(
+      id: $id
+      idType: $idType
+      where: { period: $period, date: $date, interval: $interval }
+    ) {
+      visitors {
+        value
+      }
     }
   }
 `

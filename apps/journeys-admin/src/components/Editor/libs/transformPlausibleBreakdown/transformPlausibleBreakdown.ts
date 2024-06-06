@@ -9,9 +9,9 @@ import {
 } from '../../../../../__generated__/GetJourneyPlausibleStatsBreakdown'
 
 interface JourneyStatsBreakdown {
-  // totalVisitors: number
-  // chatsStarted: number
-  // linksVisited: number buttonClick -> link
+  totalVisitors: number
+  chatsStarted: number
+  linksVisited: number
   referrers: JourneyReferrer[]
   stepsStats: StepStats[]
 }
@@ -42,7 +42,12 @@ export function transformPlausibleBreakdown({
   data
 }: TransformPlausibleBreakdownProps): JourneyStatsBreakdown | undefined {
   if (journeyId == null || data == null) return
-  const { journeySteps, journeyStepsActions, journeyReferrer } = data
+  const {
+    journeySteps,
+    journeyStepsActions,
+    journeyReferrer,
+    journeyAggregateVisitors
+  } = data
 
   const journeyEvents: PlausibleEvent[] = journeyStepsActions.map((action) => {
     const { stepId, event, blockId, target } = reverseKeyify(action.property)
@@ -55,10 +60,24 @@ export function transformPlausibleBreakdown({
     }
   })
 
+  let chatsStarted = 0
+  let linksVisited = 0
+  journeyEvents.forEach((plausibleEvent) => {
+    const { event, target, events } = plausibleEvent
+    const isChatEvent = event === 'chatButtonClick'
+    const isLinkEvent =
+      event === 'buttonClick' && target != null && target.includes('link')
+
+    if (isChatEvent) {
+      chatsStarted += events
+    } else if (isLinkEvent) {
+      linksVisited += events
+    }
+  })
+
   const stepsStats: StepStats[] = journeySteps.map((step) => {
     const stepId = replace(step.property, `${journeyId}/`, '')
     return {
-      // regular events are counted in event:page property
       stepId,
       visitors: step.visitors ?? 0,
       bounceRate: step.bounceRate ?? 0, // bounce rate currently not being collected properly
@@ -68,6 +87,9 @@ export function transformPlausibleBreakdown({
   })
 
   return {
+    totalVisitors: journeyAggregateVisitors.visitors?.value ?? 0,
+    chatsStarted,
+    linksVisited,
     referrers: journeyReferrer,
     stepsStats
   }
