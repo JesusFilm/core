@@ -25,6 +25,7 @@ interface StepStats {
 }
 
 interface PlausibleEvent {
+  stepId: string
   event: keyof JourneyPlausibleEvents
   blockId: string
   target?: string // target step id or link
@@ -44,8 +45,9 @@ export function transformPlausibleBreakdown({
   const { journeySteps, journeyStepsActions, journeyReferrer } = data
 
   const journeyEvents: PlausibleEvent[] = journeyStepsActions.map((action) => {
-    const { event, blockId, target } = reverseKeyify(action.property)
+    const { stepId, event, blockId, target } = reverseKeyify(action.property)
     return {
+      stepId,
       event,
       blockId,
       target,
@@ -61,8 +63,7 @@ export function transformPlausibleBreakdown({
       visitors: step.visitors ?? 0,
       bounceRate: step.bounceRate ?? 0, // bounce rate currently not being collected properly
       timeOnPage: 0, // need to fix query to get this data
-      stepEvents:
-        journeyEvents.filter((event) => event.blockId === stepId) ?? []
+      stepEvents: journeyEvents.filter((event) => event.stepId === stepId) ?? []
     }
   })
 

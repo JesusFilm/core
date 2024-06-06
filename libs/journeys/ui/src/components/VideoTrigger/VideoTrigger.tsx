@@ -48,7 +48,12 @@ export function VideoTrigger({
             plausible('videoTrigger', {
               props: {
                 ...input,
-                key: keyify('videoTrigger', input, triggerAction)
+                key: keyify({
+                  stepId: input.blockId,
+                  event: 'videoTrigger',
+                  blockId: input.blockId,
+                  target: triggerAction
+                })
               }
             })
             return
@@ -60,7 +65,12 @@ export function VideoTrigger({
               plausible('videoTrigger', {
                 props: {
                   ...input,
-                  key: keyify('videoTrigger', input, triggerAction)
+                  key: keyify({
+                    stepId: input.blockId,
+                    event: 'videoTrigger',
+                    blockId: input.blockId,
+                    target: triggerAction
+                  })
                 }
               })
             })
@@ -73,7 +83,12 @@ export function VideoTrigger({
             plausible('videoTrigger', {
               props: {
                 ...input,
-                key: keyify('videoTrigger', input, triggerAction)
+                key: keyify({
+                  stepId: input.blockId,
+                  event: 'videoTrigger',
+                  blockId: input.blockId,
+                  target: triggerAction
+                })
               }
             })
           }

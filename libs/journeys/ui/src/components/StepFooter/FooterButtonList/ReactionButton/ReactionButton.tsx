@@ -39,7 +39,14 @@ export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
         }ButtonClick` as const
         plausible(event, {
           u: journey.id,
-          props: { ...input, key: keyify(event, input) }
+          props: {
+            ...input,
+            key: keyify({
+              stepId: input.blockId,
+              event,
+              blockId: input.blockId
+            })
+          }
         })
       }
     }

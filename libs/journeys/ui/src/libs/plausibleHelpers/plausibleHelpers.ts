@@ -59,11 +59,19 @@ export interface JourneyPlausibleEvents extends Events {
   videoTrigger: Props
 }
 
-export function keyify(
-  event: keyof JourneyPlausibleEvents,
-  input: { blockId: string },
+interface KeyifyProps {
+  stepId: string
+  event: keyof JourneyPlausibleEvents
+  blockId: string
   target?: string | Action | null
-): string {
+}
+
+export function keyify({
+  stepId,
+  event,
+  blockId,
+  target
+}: KeyifyProps): string {
   let targetId = ''
 
   if (typeof target === 'string' || target == null) {
@@ -81,24 +89,27 @@ export function keyify(
         break
     }
   }
-  return `${event}:${input.blockId}${targetId !== '' ? `:${targetId}` : ''}`
+  return `${stepId}:${event}:${blockId}${targetId !== '' ? `:${targetId}` : ''}`
 }
 
 export function reverseKeyify(key: string): {
+  stepId: string
   event: keyof JourneyPlausibleEvents
   blockId: string
   target?: string
 } {
   const decodedProperties = key.split(':')
 
-  const event = decodedProperties[0]
-  const blockId = decodedProperties[1]
+  const stepId = decodedProperties[0]
+  const event = decodedProperties[1]
+  const blockId = decodedProperties[2]
   const target =
-    decodedProperties[2] === 'link'
-      ? slice(decodedProperties, 2, decodedProperties.length).join(':')
-      : decodedProperties[2]
+    decodedProperties[3] === 'link' || decodedProperties[3] === 'email'
+      ? slice(decodedProperties, 3, decodedProperties.length).join(':')
+      : decodedProperties[3]
 
   return {
+    stepId,
     event: event as keyof JourneyPlausibleEvents,
     blockId,
     target

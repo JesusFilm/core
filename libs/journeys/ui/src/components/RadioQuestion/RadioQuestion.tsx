@@ -101,11 +101,12 @@ export function RadioQuestion({
         plausible('radioQuestionSubmit', {
           props: {
             ...input,
-            key: keyify(
-              'radioQuestionSubmit',
-              { blockId: radioOptionBlock.id },
-              radioOptionBlock.action
-            )
+            key: keyify({
+              stepId: input.stepId ?? '',
+              event: 'radioQuestionSubmit',
+              blockId: radioOptionBlock.id,
+              target: radioOptionBlock.action
+            })
           }
         })
       }

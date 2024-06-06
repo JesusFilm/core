@@ -185,7 +185,14 @@ export function VideoEvents({
         })
         if (journey != null)
           plausible('videoPlay', {
-            props: { ...input, key: keyify('videoPlay', input) }
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: 'videoPlay',
+                blockId: input.blockId
+              })
+            }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -234,7 +241,14 @@ export function VideoEvents({
       })
       if (journey != null)
         plausible('videoPause', {
-          props: { ...input, key: keyify('videoPause', input) }
+          props: {
+            ...input,
+            key: keyify({
+              stepId: input.stepId ?? '',
+              event: 'videoPause',
+              blockId: input.blockId
+            })
+          }
         })
       TagManager.dataLayer({
         dataLayer: {
@@ -283,7 +297,14 @@ export function VideoEvents({
         })
         if (journey != null)
           plausible('videoExpand', {
-            props: { ...input, key: keyify('videoExpand', input) }
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: 'videoExpand',
+                blockId: input.blockId
+              })
+            }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -332,7 +353,14 @@ export function VideoEvents({
         })
         if (journey != null)
           plausible('videoCollapse', {
-            props: { ...input, key: keyify('videoCollapse', input) }
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: 'videoCollapse',
+                blockId: input.blockId
+              })
+            }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -381,7 +409,14 @@ export function VideoEvents({
         })
         if (journey != null)
           plausible('videoStart', {
-            props: { ...input, key: keyify('videoStart', input) }
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: 'videoStart',
+                blockId: input.blockId
+              })
+            }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -433,7 +468,14 @@ export function VideoEvents({
         })
         if (journey != null)
           plausible('videoProgress25', {
-            props: { ...input, key: keyify('videoProgress25', input) }
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: 'videoProgress25',
+                blockId: input.blockId
+              })
+            }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -486,7 +528,14 @@ export function VideoEvents({
         })
         if (journey != null)
           plausible('videoProgress50', {
-            props: { ...input, key: keyify('videoProgress50', input) }
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: 'videoProgress50',
+                blockId: input.blockId
+              })
+            }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -539,7 +588,14 @@ export function VideoEvents({
         })
         if (journey != null)
           plausible('videoProgress75', {
-            props: { ...input, key: keyify('videoProgress75', input) }
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: 'videoProgress75',
+                blockId: input.blockId
+              })
+            }
           })
         TagManager.dataLayer({
           dataLayer: {
@@ -593,7 +649,14 @@ export function VideoEvents({
         })
         if (journey != null)
           plausible('videoComplete', {
-            props: { ...input, key: keyify('videoComplete', input) }
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: 'videoComplete',
+                blockId: input.blockId
+              })
+            }
           })
         TagManager.dataLayer({
           dataLayer: {

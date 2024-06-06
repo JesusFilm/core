@@ -124,7 +124,12 @@ export function Button({
         plausible('buttonClick', {
           props: {
             ...input,
-            key: keyify('buttonClick', input, action)
+            key: keyify({
+              stepId: input.stepId ?? '',
+              event: 'buttonClick',
+              blockId: input.blockId,
+              target: action
+            })
           }
         })
       }
@@ -148,7 +153,15 @@ export function Button({
       })
       if (journey != null)
         plausible('chatButtonClick', {
-          props: { ...input, key: keyify('chatButtonClick', input, action) }
+          props: {
+            ...input,
+            key: keyify({
+              stepId: input.stepId ?? '',
+              event: 'chatButtonClick',
+              blockId: input.blockId,
+              target: action
+            })
+          }
         })
       addEventToDataLayer(id)
     }
