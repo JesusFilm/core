@@ -194,32 +194,6 @@ module "journeys-admin" {
   doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_prod_token.value
 }
 
-# module "clickhouse" {
-#   source = "../../../apps/analytics/infrastructure/clickhouse"
-#   ecs_config = merge(local.internal_ecs_config, {
-#     alb_target_group = merge(local.alb_target_group, {
-#       health_check_path = "/ping"
-#       health_check_port = "8123"
-#     })
-#   })
-#   doppler_token = data.aws_ssm_parameter.doppler_plausible_prod_token.value
-# }
-module "plausible" {
-  source = "../../../apps/analytics/infrastructure"
-  ecs_config = merge(local.public_ecs_config, {
-    alb_target_group = merge(local.alb_target_group, {
-      health_check_path = "/"
-      health_check_port = "8000"
-    })
-    alb_listener = merge(local.public_ecs_config.alb_listener, {
-      dns_name = "plausible.central.jesusfilm.org"
-    })
-  })
-  doppler_token         = data.aws_ssm_parameter.doppler_plausible_prod_token.value
-  subnet_group_name     = module.prod.vpc.db_subnet_group_name
-  vpc_security_group_id = module.prod.private_rds_security_group_id
-}
-
 module "postgresql" {
   source                  = "../../modules/aws/aurora"
   name                    = "jfp-core"

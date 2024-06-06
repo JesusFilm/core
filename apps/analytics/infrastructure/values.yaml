@@ -148,20 +148,21 @@ service:
   port: 80
 
 ingress:
-  enabled: false
+  enabled: true
   annotations:
-    {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: 'true'
+    cert-manager.io/issuer: 'letsencrypt-prod'
   # You can specfy an ingressClassName
-  # className:
+  className: nginx
   hosts:
-    - host: chart-example.local
-      paths: []
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+    - host: analytics.jesusfilm.org
+      paths:
+        - /
+  tls:
+    - secretName: analytics-jesusfilm-tls
+      hosts:
+        - analytics.jesusfilm.org
 
 resources:
   {}

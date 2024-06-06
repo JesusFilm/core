@@ -231,12 +231,3 @@ module "journeys-admin" {
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
 }
-
-# module "eks" {
-#   source             = "../../modules/aws/eks"
-#   env                = "stage"
-#   name               = "jfp-eks"
-#   subnet_ids         = concat(module.stage.vpc.internal_subnets, module.stage.vpc.public_subnets)
-#   security_group_ids = [module.stage.ecs.internal_ecs_security_group_id, module.stage.ecs.public_ecs_security_group_id]
-#   vpc_id             = module.stage.vpc.id
-# }
