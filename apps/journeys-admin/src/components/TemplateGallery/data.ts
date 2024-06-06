@@ -1,5 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
 
+import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
+
 import {
   GetJourneys,
   GetJourneysVariables,
@@ -14,7 +16,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
 import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
 
