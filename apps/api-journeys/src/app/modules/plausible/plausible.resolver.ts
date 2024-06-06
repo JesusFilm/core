@@ -72,6 +72,9 @@ export class PlausibleResolver {
   ): Promise<PlausibleStatsResponse[]> {
     const journey = await this.loadJourney(ability, id, idType)
 
+    // console.log('INFO: ', info)
+    // console.log('WHERE: ', where)
+
     return await this.plausibleService.getStatsBreakdown(
       journey.id,
       'journey',
@@ -103,7 +106,8 @@ export class PlausibleResolver {
         snakeCase(item.name.value as string)
       ) as string[],
       'property',
-      'typename'
+      'typename',
+      'plausible_journey_referrer_fields'
     ).join(',')
     return metrics === '' ? 'visitors' : metrics
   }
