@@ -85,13 +85,15 @@ export function UserTeamListItem({
 
   const secondaryAction: ReactNode = (
     <>
-      <NotificationSwitch
-        id={emailPreference?.id}
-        userId={userId}
-        name={listItem?.user?.firstName}
-        journeyId={journeyId}
-        checked={emailPreference?.value}
-      />
+      {journeyId != null && (
+        <NotificationSwitch
+          id={emailPreference?.id}
+          userId={userId}
+          name={listItem?.user?.firstName}
+          journeyId={journeyId}
+          checked={emailPreference?.value}
+        />
+      )}
       <Button
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
