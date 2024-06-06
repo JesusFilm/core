@@ -114,7 +114,6 @@ export const SignUp = ({
         })
         if (journey != null) {
           plausible('signupSubmit', {
-            u: `${journey.id}/${blockId}`,
             props: {
               ...input,
               key: keyify('signupSubmit', input, action)

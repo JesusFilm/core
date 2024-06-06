@@ -168,7 +168,6 @@ export function Card({
     })
     if (journey != null)
       plausible('navigateNextStep', {
-        u: `${journey.id}/${activeBlock.id}`,
         props: {
           ...input,
           key: keyify('navigateNextStep', input, input.nextStepId)
@@ -223,7 +222,6 @@ export function Card({
     })
     if (journey != null)
       plausible('navigatePreviousStep', {
-        u: `${journey.id}/${activeBlock.id}`,
         props: {
           ...input,
           key: keyify('navigatePreviousStep', input, input.previousStepId)
