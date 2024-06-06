@@ -1,4 +1,5 @@
 import { ApolloError } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Switch from '@mui/material/Switch'
 import Tooltip from '@mui/material/Tooltip'
 import { useTranslation } from 'next-i18next'
@@ -68,12 +69,14 @@ export function NotificationSwitch({
 
   return (
     <Tooltip title={t('Only {{ name }} can change this', { name })}>
-      <Switch
-        inputProps={{ 'aria-checked': checked }}
-        checked={checked}
-        onChange={handleChange}
-        disabled={loading || disabled}
-      />
+      <Box>
+        <Switch
+          inputProps={{ 'aria-checked': checked }}
+          checked={checked}
+          onChange={handleChange}
+          disabled={loading || disabled}
+        />
+      </Box>
     </Tooltip>
   )
 }

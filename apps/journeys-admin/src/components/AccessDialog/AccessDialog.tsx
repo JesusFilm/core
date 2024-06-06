@@ -149,18 +149,20 @@ export function AccessDialog({
       <Stack spacing={4}>
         {data?.journey?.team?.userTeams != null &&
           data?.journey?.team?.userTeams.length > 0 && (
-            <Stack direction="row" alignItems="center" sx={{ mb: -4 }}>
-              <Typography variant="subtitle1">{t('Team Members')}</Typography>
-            </Stack>
+            <>
+              <Stack direction="row" alignItems="center" sx={{ mb: -4 }}>
+                <Typography variant="subtitle1">{t('Team Members')}</Typography>
+              </Stack>
+              <UserTeamList
+                data={data?.journey?.team ?? undefined}
+                currentUserTeam={data?.journey?.team as unknown as UserTeam}
+                loading={loading}
+                variant="readonly"
+                emailPreferences={emailPreferencesMap}
+                journeyId={journeyId}
+              />
+            </>
           )}
-        <UserTeamList
-          data={data?.journey?.team ?? undefined}
-          currentUserTeam={data?.journey?.team as unknown as UserTeam}
-          loading={loading}
-          variant="readonly"
-          emailPreferences={emailPreferencesMap}
-          journeyId={journeyId}
-        />
         <UserList
           title={t('Requested Access')}
           users={requests}
