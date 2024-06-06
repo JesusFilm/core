@@ -14,14 +14,13 @@ export const GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN = gql`
     $limit: Int
     $page: Int
   ) {
+    # TODO FIX: time_on_page not currently working
+    # TODO FIX: bounce_rate not currently being collected properly
     journeySteps: journeysPlausibleStatsBreakdown(
       id: $id
       idType: $idType
       where: {
         property: "event:page"
-        # TODO FIX: time_on_page not currently working
-        # filters: "visitors,bounce_rate/time_on_page"
-        # TODO FIX: bounce_rate not currently being collected properly
         filters: "visitors,bounce_rate"
         period: $period
         date: $date
@@ -31,7 +30,6 @@ export const GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN = gql`
     ) {
       property
       visitors
-      timeOnPage
       bounceRate
     }
     journeyStepsActions: journeysPlausibleStatsBreakdown(

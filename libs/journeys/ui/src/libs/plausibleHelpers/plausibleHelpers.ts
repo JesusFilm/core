@@ -1,3 +1,5 @@
+import slice from 'lodash/slice'
+
 import {
   ButtonClickEventCreateInput,
   ChatOpenEventCreateInput,
@@ -63,6 +65,7 @@ export function keyify(
   target?: string | Action | null
 ): string {
   let targetId = ''
+
   if (typeof target === 'string' || target == null) {
     targetId = target ?? ''
   } else {
@@ -79,4 +82,25 @@ export function keyify(
     }
   }
   return `${event}:${input.blockId}${targetId !== '' ? `:${targetId}` : ''}`
+}
+
+export function reverseKeyify(key: string): {
+  event: keyof JourneyPlausibleEvents
+  blockId: string
+  target?: string
+} {
+  const decodedProperties = key.split(':')
+
+  const event = decodedProperties[0]
+  const blockId = decodedProperties[1]
+  const target =
+    decodedProperties[2] === 'link'
+      ? slice(decodedProperties, 2, decodedProperties.length).join(':')
+      : decodedProperties[2]
+
+  return {
+    event: event as keyof JourneyPlausibleEvents,
+    blockId,
+    target
+  }
 }

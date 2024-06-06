@@ -21,11 +21,6 @@ export interface GetJourneyPlausibleStatsBreakdown_journeySteps {
    */
   visitors: number | null;
   /**
-   * The average time users spend on viewing a single page. Requires an
-   * `event:page` filter or `event:page` property in the breakdown endpoint.
-   */
-  timeOnPage: number | null;
-  /**
    * Bounce rate percentage.
    */
   bounceRate: number | null;
