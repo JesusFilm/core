@@ -95,19 +95,21 @@ describe('TeamOnboarding', () => {
       }
     }
   }
-  const updateLastActiveTeamIdMock = {
+
+  const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
     request: {
       query: UPDATE_LAST_ACTIVE_TEAM_ID,
       variables: {
         input: {
-          lastActiveTeamId: 'teamId'
+          lastActiveTeamId: 'teamId1'
         }
       }
     },
     result: {
       data: {
         journeyProfileUpdate: {
-          id: 'teamId'
+          __typename: 'JourneyProfile' as const,
+          id: 'teamId1'
         }
       }
     }
@@ -198,25 +200,13 @@ describe('TeamOnboarding', () => {
   it('should update last active team id', async () => {
     const result = jest.fn(() => ({
       data: {
-        journeyProfileUpdate: {
-          __typename: 'JourneyProfile' as const,
-          id: 'teamId1'
+        teams: [],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
         }
       }
     }))
-
-    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-      request: {
-        query: UPDATE_LAST_ACTIVE_TEAM_ID,
-        variables: {
-          input: {
-            lastActiveTeamId: 'teamId1'
-          }
-        }
-      },
-      result
-    }
-
     const { getByRole, getAllByRole } = render(
       <MockedProvider
         mocks={[
@@ -225,15 +215,7 @@ describe('TeamOnboarding', () => {
             request: {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
-            result: {
-              data: {
-                teams: [],
-                getJourneyProfile: {
-                  __typename: 'JourneyProfile',
-                  lastActiveTeamId: null
-                }
-              }
-            }
+            result
           },
           updateLastActiveTeamIdMock
         ]}
