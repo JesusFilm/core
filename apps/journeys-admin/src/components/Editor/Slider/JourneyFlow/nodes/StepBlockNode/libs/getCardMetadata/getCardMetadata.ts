@@ -12,6 +12,7 @@ import { VideoFields_video_variantLanguages } from '../../../../../../../../../_
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'
+import { getPriorityImage } from '../getPriorityImage/getPriorityImage'
 
 interface CardMetadata {
   title?: string
@@ -20,6 +21,8 @@ interface CardMetadata {
   priorityBlock?: TreeBlock
   bgImage?: string
   hasMultipleActions?: boolean
+  expanded?: boolean
+  priorityImage?: string
 }
 
 function getVideoVariantLanguage(
@@ -98,18 +101,31 @@ export function getCardMetadata(
       priorityBlock.image ??
       undefined
 
+    const expanded = card.fullscreen
+    const priorityImage = getPriorityImage(card.children)
     return {
       description,
       title,
       subtitle,
       priorityBlock,
       bgImage,
-      hasMultipleActions
+      hasMultipleActions,
+      expanded,
+      priorityImage
     }
   } else {
     const [title, subtitle] = getCardHeadings(card.children)
     const bgImage = getBackgroundImage(card)
-
-    return { title, subtitle, priorityBlock, bgImage, hasMultipleActions }
+    const expanded = card.fullscreen
+    const priorityImage = getPriorityImage(card.children)
+    return {
+      title,
+      subtitle,
+      priorityBlock,
+      bgImage,
+      hasMultipleActions,
+      expanded,
+      priorityImage
+    }
   }
 }

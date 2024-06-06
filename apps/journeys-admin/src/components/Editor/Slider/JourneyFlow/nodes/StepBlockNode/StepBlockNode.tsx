@@ -28,6 +28,7 @@ export function StepBlockNode({
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
+  console.log(steps)
   return step != null ? (
     <>
       <StepBlockNodeMenu
