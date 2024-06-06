@@ -95,6 +95,23 @@ describe('TeamOnboarding', () => {
       }
     }
   }
+  const updateLastActiveTeamIdMock = {
+    request: {
+      query: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: {
+        input: {
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    },
+    result: {
+      data: {
+        journeyProfileUpdate: {
+          id: 'teamId'
+        }
+      }
+    }
+  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 
@@ -146,7 +163,10 @@ describe('TeamOnboarding', () => {
     }
 
     const { getByRole, getByTestId, getByText, getAllByRole } = render(
-      <MockedProvider mocks={[teamMock, getTeams]} cache={cache}>
+      <MockedProvider
+        mocks={[teamMock, getTeams, updateLastActiveTeamIdMock]}
+        cache={cache}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <TeamOnboarding />
@@ -305,7 +325,10 @@ describe('TeamOnboarding', () => {
     }
 
     const { getByRole, getByTestId, getByText, getAllByRole } = render(
-      <MockedProvider mocks={[teamMock, getTeams]} cache={cache}>
+      <MockedProvider
+        mocks={[teamMock, getTeams, updateLastActiveTeamIdMock]}
+        cache={cache}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <TeamOnboarding />
