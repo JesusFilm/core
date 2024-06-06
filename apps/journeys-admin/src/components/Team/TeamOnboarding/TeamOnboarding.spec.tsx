@@ -95,25 +95,6 @@ describe('TeamOnboarding', () => {
       }
     }
   }
-
-  const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-    request: {
-      query: UPDATE_LAST_ACTIVE_TEAM_ID,
-      variables: {
-        input: {
-          lastActiveTeamId: 'teamId1'
-        }
-      }
-    },
-    result: {
-      data: {
-        journeyProfileUpdate: {
-          __typename: 'JourneyProfile' as const,
-          id: 'teamId1'
-        }
-      }
-    }
-  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 
@@ -165,10 +146,7 @@ describe('TeamOnboarding', () => {
     }
 
     const { getByRole, getByTestId, getByText, getAllByRole } = render(
-      <MockedProvider
-        mocks={[teamMock, getTeams, updateLastActiveTeamIdMock]}
-        cache={cache}
-      >
+      <MockedProvider mocks={[teamMock, getTeams]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
             <TeamOnboarding />
@@ -200,13 +178,25 @@ describe('TeamOnboarding', () => {
   it('should update last active team id', async () => {
     const result = jest.fn(() => ({
       data: {
-        teams: [],
-        getJourneyProfile: {
-          __typename: 'JourneyProfile',
-          lastActiveTeamId: null
+        journeyProfileUpdate: {
+          __typename: 'JourneyProfile' as const,
+          id: 'teamId1'
         }
       }
     }))
+
+    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId1'
+          }
+        }
+      },
+      result
+    }
+
     const { getByRole, getAllByRole } = render(
       <MockedProvider
         mocks={[
@@ -215,7 +205,15 @@ describe('TeamOnboarding', () => {
             request: {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
-            result
+            result: {
+              data: {
+                teams: [],
+                getJourneyProfile: {
+                  __typename: 'JourneyProfile',
+                  lastActiveTeamId: null
+                }
+              }
+            }
           },
           updateLastActiveTeamIdMock
         ]}
@@ -307,10 +305,7 @@ describe('TeamOnboarding', () => {
     }
 
     const { getByRole, getByTestId, getByText, getAllByRole } = render(
-      <MockedProvider
-        mocks={[teamMock, getTeams, updateLastActiveTeamIdMock]}
-        cache={cache}
-      >
+      <MockedProvider mocks={[teamMock, getTeams]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
             <TeamOnboarding />

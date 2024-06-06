@@ -1,4 +1,4 @@
-import { ApolloError, useMutation } from '@apollo/client'
+import { ApolloError } from '@apollo/client'
 import { Formik, FormikConfig, FormikHelpers } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -7,9 +7,7 @@ import { ObjectSchema, object, string } from 'yup'
 
 import { TeamCreateInput } from '../../../../__generated__/globalTypes'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { useTeamCreateMutation } from '../../../libs/useTeamCreateMutation'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 interface TeamCreateFormProps {
   onSubmit?: (
@@ -34,8 +32,6 @@ export function TeamCreateForm({
   })
   const [teamCreate] = useTeamCreateMutation()
   const { enqueueSnackbar } = useSnackbar()
-  const [updateLastActiveTeamId, { client }] =
-    useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
 
   async function handleSubmit(
     input: TeamCreateInput,
@@ -44,16 +40,6 @@ export function TeamCreateForm({
     try {
       const { data } = await teamCreate({
         variables: { input }
-      })
-      void updateLastActiveTeamId({
-        variables: {
-          input: {
-            lastActiveTeamId: data?.teamCreate.id ?? null
-          }
-        },
-        onCompleted() {
-          void client.refetchQueries({ include: ['GetAdminJourneys'] })
-        }
       })
       enqueueSnackbar(
         data !== null && data !== undefined && data?.teamCreate.title !== ''

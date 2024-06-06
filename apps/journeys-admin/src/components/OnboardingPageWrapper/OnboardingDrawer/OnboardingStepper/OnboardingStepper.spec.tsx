@@ -27,9 +27,7 @@ describe('OnboardingStepper', () => {
       getByRole('heading', { name: 'Terms and Conditions' })
     ).toBeInTheDocument()
     expect(getByRole('heading', { name: 'User Insights' })).toBeInTheDocument()
-    expect(
-      getByRole('heading', { name: 'Create Your Workspace' })
-    ).toBeInTheDocument()
+    expect(getByRole('heading', { name: 'Create a Team' })).toBeInTheDocument()
   })
 
   it('should indicate the active step based on pathname', () => {

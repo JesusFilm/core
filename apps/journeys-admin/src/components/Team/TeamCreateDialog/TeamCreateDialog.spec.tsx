@@ -13,7 +13,6 @@ import {
   TeamProvider,
   useTeam
 } from '../TeamProvider'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 import { TeamCreateDialog } from '.'
 
@@ -83,23 +82,6 @@ describe('TeamCreateDialog', () => {
       }
     }
   }
-  const updateLastActiveTeamIdMock = {
-    request: {
-      query: UPDATE_LAST_ACTIVE_TEAM_ID,
-      variables: {
-        input: {
-          lastActiveTeamId: 'teamId'
-        }
-      }
-    },
-    result: {
-      data: {
-        journeyProfileUpdate: {
-          id: 'teamId'
-        }
-      }
-    }
-  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 
@@ -117,10 +99,7 @@ describe('TeamCreateDialog', () => {
       }
     })
     const { getByRole, getByTestId, getByText, getAllByRole } = render(
-      <MockedProvider
-        mocks={[teamCreateMock, getTeamsMock, updateLastActiveTeamIdMock]}
-        cache={cache}
-      >
+      <MockedProvider mocks={[teamCreateMock, getTeamsMock]} cache={cache}>
         <SnackbarProvider>
           <TeamProvider>
             <TeamCreateDialog
