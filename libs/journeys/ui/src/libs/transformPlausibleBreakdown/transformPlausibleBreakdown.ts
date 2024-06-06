@@ -1,12 +1,18 @@
 import replace from 'lodash/replace'
 
-import { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
-import { reverseKeyify } from '@core/journeys/ui/plausibleHelpers/plausibleHelpers'
+import { JourneyPlausibleEvents, reverseKeyify } from '../plausibleHelpers'
 
-import {
-  GetJourneyPlausibleStatsBreakdown,
-  GetJourneyPlausibleStatsBreakdown_journeyReferrer as JourneyReferrer
-} from '../../../../../../apps/journeys-admin/__generated__/GetJourneyPlausibleStatsBreakdown'
+import { PlausibleJourneyAggregateVisitorsFields as JourneyAggregateVisitors } from './__generated__/PlausibleJourneyAggregateVisitorsFields'
+import { PlausibleJourneyReferrerFields as JourneyReferrer } from './__generated__/PlausibleJourneyReferrerFields'
+import { PlausibleJourneyStepsActionsFields as JourneyStepsActions } from './__generated__/PlausibleJourneyStepsActionsFields'
+import { PlausibleJourneyStepsFields as JourneySteps } from './__generated__/PlausibleJourneyStepsFields'
+
+interface StatsBreakdown {
+  journeySteps: JourneySteps[]
+  journeyStepsActions: JourneyStepsActions[]
+  journeyReferrer: JourneyReferrer[]
+  journeyAggregateVisitors: JourneyAggregateVisitors
+}
 
 export interface JourneyStatsBreakdown {
   totalVisitors: number
@@ -34,7 +40,7 @@ interface PlausibleEvent {
 
 interface TransformPlausibleBreakdownProps {
   journeyId?: string
-  data?: GetJourneyPlausibleStatsBreakdown
+  data?: StatsBreakdown
 }
 
 export function transformPlausibleBreakdown({
