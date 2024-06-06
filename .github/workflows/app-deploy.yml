@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18]
+        node-version: [20]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -55,7 +55,7 @@ jobs:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
         github-event-name: ['${{ github.event_name }}']
-        node-version: [18]
+        node-version: [20]
         exclude:
           # handled by production job below
           - app: journeys
@@ -172,13 +172,13 @@ jobs:
           PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
+          EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: ${{ matrix.app }}-playwright-report
           path: |
             playwright-report/
-            test-results/
           retention-days: 30
   deploy-status:
     runs-on: ubuntu-latest
@@ -205,7 +205,7 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-        node-version: [18]
+        node-version: [20]
         exclude:
           # handled by ecs-frontend-deploy-prod
           - app: journeys-admin

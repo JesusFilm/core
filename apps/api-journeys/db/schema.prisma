@@ -18,20 +18,6 @@ datasource db {
   url      = env("PG_DATABASE_URL_JOURNEYS")
 }
 
-enum ChatPlatform {
-  facebook
-  telegram
-  whatsApp
-  instagram
-  viber
-  vk
-  snapchat
-  skype
-  line
-  tikTok
-  custom
-}
-
 enum MessagePlatform {
   facebook
   telegram
@@ -69,9 +55,7 @@ enum DeviceType {
 }
 
 enum ButtonAction {
-  NavigateAction
   NavigateToBlockAction
-  NavigateToJourneyAction
   LinkAction
   EmailAction
 }
@@ -83,12 +67,12 @@ enum VideoBlockSource {
 }
 
 model ChatButton {
-  id        String        @id @default(uuid())
+  id        String           @id @default(uuid())
   journeyId String
   link      String?
-  updatedAt DateTime      @default(now()) @updatedAt
-  platform  ChatPlatform?
-  journey   Journey       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  updatedAt DateTime         @default(now()) @updatedAt
+  platform  MessagePlatform?
+  journey   Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index(journeyId)
 }
@@ -361,11 +345,12 @@ model UserRole {
 }
 
 model JourneyProfile {
-  id                        String    @id @default(uuid())
-  userId                    String    @unique
-  acceptedTermsAt           DateTime  @default(now())
-  lastActiveTeamId          String?
-  onboardingFormCompletedAt DateTime?
+  id                           String    @id @default(uuid())
+  userId                       String    @unique
+  acceptedTermsAt              DateTime  @default(now())
+  lastActiveTeamId             String?
+  onboardingFormCompletedAt    DateTime?
+  journeyFlowBackButtonClicked Boolean?
 
   @@index(userId)
 }

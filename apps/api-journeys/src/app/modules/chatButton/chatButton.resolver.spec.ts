@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { ChatPlatform } from '../../__generated__/graphql'
+import { MessagePlatform } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { ChatButtonResolver } from './chatButton.resolver'
@@ -45,7 +45,7 @@ describe('ChatButtonResolver', () => {
       {
         journeyId: 'journeyId',
         id: '1',
-        input: { platform: ChatPlatform.custom }
+        input: { platform: MessagePlatform.custom }
       }
     ])
 
@@ -54,7 +54,7 @@ describe('ChatButtonResolver', () => {
       {
         id: '1',
         journeyId: 'journeyId',
-        input: { platform: ChatPlatform.custom }
+        input: { platform: MessagePlatform.custom }
       }
     ])
   })
@@ -82,7 +82,7 @@ describe('ChatButtonResolver', () => {
 
     const result = await resolver.chatButtonUpdate('1', 'journeyId', {
       link: 'm.me/username',
-      platform: ChatPlatform.viber
+      platform: MessagePlatform.viber
     })
     expect(result).toEqual([
       {

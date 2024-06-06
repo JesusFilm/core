@@ -60,20 +60,6 @@ export const textResponseSubmissionEvent: TimelineItem = {
   duration: '0.01'
 }
 
-export const buttonClickNavigateEvent: TimelineItem = {
-  event: {
-    __typename: 'ButtonClickEvent',
-    id: 'ButtonClickEventId',
-    journeyId: 'journeyId',
-    label: 'Navigate Action',
-    value: 'Write a book',
-    createdAt: '2022-11-02T03:20:26.368Z',
-    action: ButtonAction.NavigateAction,
-    actionValue: null
-  },
-  duration: '0.01'
-}
-
 export const buttonClickNavigateToBlockEvent: TimelineItem = {
   event: {
     __typename: 'ButtonClickEvent',
@@ -84,20 +70,6 @@ export const buttonClickNavigateToBlockEvent: TimelineItem = {
     createdAt: '2022-11-02T03:20:26.368Z',
     action: ButtonAction.NavigateToBlockAction,
     actionValue: 'Step name'
-  },
-  duration: '0.01'
-}
-
-export const buttonClickNavigateToJourneyEvent: TimelineItem = {
-  event: {
-    __typename: 'ButtonClickEvent',
-    id: 'ButtonClickEventId',
-    journeyId: 'journeyId',
-    label: 'Navigate To Journey Action',
-    value: 'Write a book',
-    createdAt: '2022-11-02T03:20:26.368Z',
-    action: ButtonAction.NavigateToJourneyAction,
-    actionValue: 'Another jourey name'
   },
   duration: '0.01'
 }
@@ -300,7 +272,6 @@ const events = [
   journeyViewEvent.event,
   chatOpenedEvent.event,
   textResponseSubmissionEvent.event,
-  buttonClickNavigateEvent.event,
   radioQuestionSubmissionEvent.event,
   signUpSubmissionEvent.event,
   stepNextEvent.event,

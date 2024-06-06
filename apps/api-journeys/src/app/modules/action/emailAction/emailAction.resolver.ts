@@ -2,7 +2,6 @@ import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import includes from 'lodash/includes'
 import { object, string } from 'yup'
 
 import { Action } from '.prisma/api-journeys-client'
@@ -13,6 +12,7 @@ import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
+import { canBlockHaveAction } from '../canBlockHaveAction'
 
 const emailActionSchema = object({
   email: string().required('Required').email()
@@ -51,21 +51,7 @@ export class EmailActionResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    if (
-      block == null ||
-      !includes(
-        [
-          'SignUpBlock',
-          'RadioOptionBlock',
-          'ButtonBlock',
-          'VideoBlock',
-          'VideoTriggerBlock',
-          'TextResponseBlock',
-          'FormBlock'
-        ],
-        block.typename
-      )
-    ) {
+    if (block == null || !canBlockHaveAction(block)) {
       throw new GraphQLError('This block does not support email actions', {
         extensions: { code: 'BAD_USER_INPUT' }
       })

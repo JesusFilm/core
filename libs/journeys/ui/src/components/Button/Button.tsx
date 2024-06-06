@@ -19,9 +19,9 @@ import { IconFields } from '../Icon/__generated__/IconFields'
 import { ButtonClickEventCreate } from './__generated__/ButtonClickEventCreate'
 import { ButtonFields } from './__generated__/ButtonFields'
 import { ChatOpenEventCreate } from './__generated__/ChatOpenEventCreate'
-import { findChatPlatform } from './utils/findChatPlatform'
+import { findMessagePlatform } from './utils/findMessagePlatform'
 import { getActionLabel } from './utils/getActionLabel'
-import { GoalType, getLinkActionGoal } from './utils/getLinkActionGoal'
+import { getLinkActionGoal } from './utils/getLinkActionGoal'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -80,7 +80,7 @@ export function Button({
     | TreeBlock<IconFields>
     | undefined
 
-  const chatPlatform = useMemo(() => findChatPlatform(action), [action])
+  const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(
     () => getActionLabel(action, treeBlocks, t),
     [action, treeBlocks, t]
@@ -115,7 +115,7 @@ export function Button({
             id,
             blockId,
             stepId: activeBlock?.id,
-            value: chatPlatform
+            value: messagePlatform
           }
         }
       })
@@ -140,16 +140,6 @@ export function Button({
           outboundActionValue: action.url
         }
       })
-    } else if (action?.__typename === 'NavigateToJourneyAction') {
-      TagManager.dataLayer({
-        dataLayer: {
-          ...eventProperties,
-          event: 'outbound_action_click',
-          buttonLabel: label,
-          outboundActionType: GoalType.Journey,
-          outboundActionValue: action.journey?.id
-        }
-      })
     } else {
       TagManager.dataLayer({
         dataLayer: {
@@ -163,7 +153,7 @@ export function Button({
   const router = useRouter()
   const handleClick = async (e: MouseEvent): Promise<void> => {
     e.stopPropagation()
-    if (chatPlatform == null) {
+    if (messagePlatform == null) {
       void createClickEvent()
     } else {
       void createChatEvent()

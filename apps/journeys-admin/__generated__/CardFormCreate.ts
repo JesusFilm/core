@@ -47,36 +47,11 @@ export interface CardFormCreate_title {
   variant: TypographyVariant | null;
 }
 
-export interface CardFormCreate_textResponse_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface CardFormCreate_textResponse_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
-}
-
-export interface CardFormCreate_textResponse_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardFormCreate_textResponse_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardFormCreate_textResponse_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardFormCreate_textResponse_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardFormCreate_textResponse_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface CardFormCreate_textResponse_action_LinkAction {
@@ -93,7 +68,7 @@ export interface CardFormCreate_textResponse_action_EmailAction {
   email: string;
 }
 
-export type CardFormCreate_textResponse_action = CardFormCreate_textResponse_action_NavigateAction | CardFormCreate_textResponse_action_NavigateToBlockAction | CardFormCreate_textResponse_action_NavigateToJourneyAction | CardFormCreate_textResponse_action_LinkAction | CardFormCreate_textResponse_action_EmailAction;
+export type CardFormCreate_textResponse_action = CardFormCreate_textResponse_action_NavigateToBlockAction | CardFormCreate_textResponse_action_LinkAction | CardFormCreate_textResponse_action_EmailAction;
 
 export interface CardFormCreate_textResponse {
   __typename: "TextResponseBlock";
@@ -118,36 +93,11 @@ export interface CardFormCreate_submitIcon {
   iconColor: IconColor | null;
 }
 
-export interface CardFormCreate_textResponseBlockUpdate_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface CardFormCreate_textResponseBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
-}
-
-export interface CardFormCreate_textResponseBlockUpdate_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface CardFormCreate_textResponseBlockUpdate_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: CardFormCreate_textResponseBlockUpdate_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface CardFormCreate_textResponseBlockUpdate_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: CardFormCreate_textResponseBlockUpdate_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface CardFormCreate_textResponseBlockUpdate_action_LinkAction {
@@ -164,7 +114,7 @@ export interface CardFormCreate_textResponseBlockUpdate_action_EmailAction {
   email: string;
 }
 
-export type CardFormCreate_textResponseBlockUpdate_action = CardFormCreate_textResponseBlockUpdate_action_NavigateAction | CardFormCreate_textResponseBlockUpdate_action_NavigateToBlockAction | CardFormCreate_textResponseBlockUpdate_action_NavigateToJourneyAction | CardFormCreate_textResponseBlockUpdate_action_LinkAction | CardFormCreate_textResponseBlockUpdate_action_EmailAction;
+export type CardFormCreate_textResponseBlockUpdate_action = CardFormCreate_textResponseBlockUpdate_action_NavigateToBlockAction | CardFormCreate_textResponseBlockUpdate_action_LinkAction | CardFormCreate_textResponseBlockUpdate_action_EmailAction;
 
 export interface CardFormCreate_textResponseBlockUpdate {
   __typename: "TextResponseBlock";

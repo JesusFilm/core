@@ -1,9 +1,6 @@
 // version 12
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
-import { discoveryAdminCenter } from './seeds/discoveryAdminCenter'
-import { discoveryAdminLeft } from './seeds/discoveryAdminLeft'
-import { discoveryAdminRight } from './seeds/discoveryAdminRight'
 import { jfpTeam } from './seeds/jfpTeam'
 import { nua1 } from './seeds/nua1'
 import { nua2 } from './seeds/nua2'
@@ -23,9 +20,6 @@ async function main(): Promise<void> {
   await nua1()
   await onboarding()
   await onboardingTemplates()
-  await discoveryAdminLeft()
-  await discoveryAdminCenter()
-  await discoveryAdminRight()
   await playwrightUserAccess()
 }
 main().catch((e) => {

@@ -60,7 +60,9 @@ export class BlockResolver {
   async blockDuplicate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
-    @Args('parentOrder') parentOrder?: number
+    @Args('parentOrder') parentOrder?: number,
+    @Args('x') x?: number,
+    @Args('y') y?: number
   ): Promise<Block[]> {
     const block = await this.prismaService.block.findUnique({
       where: { id },
@@ -74,6 +76,7 @@ export class BlockResolver {
         }
       }
     })
+
     if (block == null)
       throw new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
@@ -82,7 +85,7 @@ export class BlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.duplicateBlock(block, parentOrder)
+    return await this.blockService.duplicateBlock(block, parentOrder, x, y)
   }
 
   @Mutation()

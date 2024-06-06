@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 ENV PRISMA_LOCATION_TAGS=/app/node_modules/.prisma/api-tags-client
 

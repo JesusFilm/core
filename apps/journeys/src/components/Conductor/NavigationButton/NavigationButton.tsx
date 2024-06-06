@@ -4,7 +4,6 @@ import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import capitalize from 'lodash/capitalize'
-import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
@@ -64,15 +63,10 @@ export function NavigationButton({
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
 
-  const onFirstStep = activeBlock === treeBlocks[0]
-  const onLastStep = activeBlock === last(treeBlocks)
-  const navigateToAnotherBlock =
-    activeBlock?.nextBlockId != null &&
-    activeBlock?.nextBlockId !== activeBlock.id
   const canNavigate =
     variant === 'previous'
-      ? !onFirstStep
-      : !onLastStep || (onLastStep && navigateToAnotherBlock)
+      ? blockHistory.length > 1
+      : activeBlock?.nextBlockId != null
   const disabled = variant === 'next' && activeBlock?.locked
 
   // Handle fade navigation after 3 seconds inactive
@@ -108,28 +102,30 @@ export function NavigationButton({
       targetBlock != null &&
       getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
 
-    void stepNextEventCreate({
-      variables: {
-        input: {
-          id,
-          blockId: activeBlock.id,
-          label: stepName,
-          value: targetStepName,
-          nextStepId: targetBlock?.id
+    if (targetBlock != null) {
+      void stepNextEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId: activeBlock.id,
+            label: stepName,
+            value: targetStepName,
+            nextStepId: targetBlock.id
+          }
         }
-      }
-    })
+      })
 
-    TagManager.dataLayer({
-      dataLayer: {
-        event: 'step_next',
-        eventId: id,
-        blockId: activeBlock.id,
-        stepName,
-        targetStepId: targetBlock?.id,
-        targetStepName
-      }
-    })
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'step_next',
+          eventId: id,
+          blockId: activeBlock.id,
+          stepName,
+          targetStepId: targetBlock.id,
+          targetStepName
+        }
+      })
+    }
   }
   // should always be called with previousActiveBlock()
   // should match with other handlePreviousNavigationEventCreate functions
@@ -152,35 +148,37 @@ export function NavigationButton({
       targetBlock != null &&
       getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
 
-    void stepPreviousEventCreate({
-      variables: {
-        input: {
-          id,
-          blockId: activeBlock.id,
-          label: stepName,
-          value: targetStepName,
-          previousStepId: targetBlock?.id
+    if (targetBlock != null) {
+      void stepPreviousEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId: activeBlock.id,
+            label: stepName,
+            value: targetStepName,
+            previousStepId: targetBlock.id
+          }
         }
-      }
-    })
+      })
 
-    TagManager.dataLayer({
-      dataLayer: {
-        event: 'step_prev',
-        eventId: id,
-        blockId: activeBlock.id,
-        stepName,
-        targetStepId: targetBlock?.id,
-        targetStepName
-      }
-    })
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'step_prev',
+          eventId: id,
+          blockId: activeBlock.id,
+          stepName,
+          targetStepId: targetBlock.id,
+          targetStepName
+        }
+      })
+    }
   }
   function handleNavigation(direction: 'next' | 'previous'): void {
     if (journeyVariant === 'admin') return
-    if (direction === 'next' && !onLastStep && !activeBlock.locked) {
+    if (direction === 'next' && !activeBlock.locked) {
       handleNextNavigationEventCreate()
       nextActiveBlock()
-    } else if (direction === 'previous' && !onFirstStep) {
+    } else if (direction === 'previous') {
       handlePreviousNavigationEventCreate()
       previousActiveBlock()
     }

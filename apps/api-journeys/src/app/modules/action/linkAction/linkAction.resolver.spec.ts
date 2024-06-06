@@ -16,6 +16,16 @@ describe('LinkActionResolver', () => {
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
 
+  const action: Action = {
+    parentBlockId: '1',
+    gtmEventName: 'LinkAction',
+    url: 'https://google.com',
+    blockId: null,
+    journeyId: null,
+    target: null,
+    email: null,
+    updatedAt: new Date()
+  }
   const journey = {
     team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
   } as unknown as Journey
@@ -30,23 +40,14 @@ describe('LinkActionResolver', () => {
       description: 'description',
       updatedAt: new Date()
     } as unknown as Block),
-    action: {
-      parentBlockId: '1',
-      gtmEventName: 'gtmEventName',
-      url: 'https://google.com',
-      blockId: null,
-      journeyId: null,
-      target: null,
-      email: null,
-      updatedAt: new Date()
-    }
+    action
   }
   const blockWithUserTeam = {
     ...block,
     journey
   }
   const input: LinkActionInput = {
-    gtmEventName: 'gtmEventName',
+    gtmEventName: 'LinkAction',
     url: 'https://google.com'
   }
 
@@ -66,6 +67,16 @@ describe('LinkActionResolver', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+  })
+
+  describe('url', () => {
+    it('should return url', async () => {
+      await expect(resolver.url(action)).toBe('https://google.com')
+    })
+
+    it('should return empty string if url is null', async () => {
+      await expect(resolver.url({ ...action, url: null })).toBe('')
+    })
   })
 
   describe('blockUpdateLinkAction', () => {

@@ -157,6 +157,18 @@ describe('StepBlockResolver', () => {
         resolver.stepBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('user is not allowed to update block')
     })
+
+    it('throws error if next block ID matches current block ID', async () => {
+      const wrongBlockUpdateInput = {
+        ...blockUpdateInput,
+        nextBlockId: block.id
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.stepBlockUpdate(ability, 'blockId', wrongBlockUpdateInput)
+      ).rejects.toThrow('nextBlockId cannot be the current step block id')
+    })
   })
 
   describe('locked', () => {

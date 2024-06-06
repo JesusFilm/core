@@ -2,8 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import {
-  ChatPlatform,
   JourneyStatus,
+  MessagePlatform,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
@@ -23,13 +23,13 @@ describe('ChatButtons', () => {
       __typename: 'ChatButton',
       id: '1',
       link: 'https://m.me/',
-      platform: ChatPlatform.facebook
+      platform: MessagePlatform.facebook
     },
     {
       __typename: 'ChatButton',
       id: '2',
       link: 'https://other.messagingplatform/',
-      platform: ChatPlatform.telegram
+      platform: MessagePlatform.telegram
     }
   ]
 

@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
 
@@ -9,7 +9,7 @@ WORKDIR /app
 COPY ./tsconfig.base.json /app/tsconfig.base.json
 COPY ./apps/api-journeys /app/apps/api-journeys
 
-RUN npm install --save-dev --silent ts-node@10.9.1 tslib@^2.6.2 uuid prisma@^5.2.0 @types/node@18.14.2 lodash@^4.17.21
+RUN npm install --save-dev --silent ts-node@10.9.1 tslib@^2.6.2 uuid prisma@^5.2.0 @types/node@20.12.2 lodash@^4.17.21
 RUN npm install --silent @prisma/client@^5.2.0 
 RUN npx prisma@^5.2.0 generate --schema /app/apps/api-journeys/db/schema.prisma --generator client
 

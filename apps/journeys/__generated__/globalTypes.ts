@@ -10,9 +10,7 @@
 export enum ButtonAction {
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
-  NavigateAction = "NavigateAction",
   NavigateToBlockAction = "NavigateToBlockAction",
-  NavigateToJourneyAction = "NavigateToJourneyAction",
 }
 
 export enum ButtonColor {
@@ -31,20 +29,6 @@ export enum ButtonSize {
 export enum ButtonVariant {
   contained = "contained",
   text = "text",
-}
-
-export enum ChatPlatform {
-  custom = "custom",
-  facebook = "facebook",
-  instagram = "instagram",
-  line = "line",
-  skype = "skype",
-  snapchat = "snapchat",
-  telegram = "telegram",
-  tikTok = "tikTok",
-  viber = "viber",
-  vk = "vk",
-  whatsApp = "whatsApp",
 }
 
 export enum IconColor {

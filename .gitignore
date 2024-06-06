@@ -36,6 +36,7 @@ testem.log
 **/public/locales
 apps/api-gateway/router
 /**/tsconfig.tsbuildinfo
+.history/
 
 # System Files
 .DS_Store

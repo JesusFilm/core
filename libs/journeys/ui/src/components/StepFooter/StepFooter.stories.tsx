@@ -5,8 +5,8 @@ import { SnackbarProvider } from 'notistack'
 import { ComponentProps } from 'react'
 
 import {
-  ChatPlatform,
   JourneyStatus,
+  MessagePlatform,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
@@ -184,7 +184,7 @@ export const WithChat = {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: ChatPlatform.facebook
+          platform: MessagePlatform.facebook
         }
       ]
     }
@@ -214,13 +214,13 @@ export const Long = {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: ChatPlatform.facebook
+          platform: MessagePlatform.facebook
         },
         {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: ChatPlatform.snapchat
+          platform: MessagePlatform.snapchat
         }
       ]
     }

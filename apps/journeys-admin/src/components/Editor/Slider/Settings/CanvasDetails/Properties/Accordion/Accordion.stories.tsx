@@ -1,0 +1,34 @@
+import { Meta, StoryObj } from '@storybook/react'
+
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import PaletteIcon from '@core/shared/ui/icons/Palette'
+
+import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+
+import { Accordion } from '.'
+
+const AttributeStory: Meta<typeof Accordion> = {
+  ...simpleComponentConfig,
+  component: Accordion,
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/Accordion'
+}
+
+export const Default: StoryObj<typeof Accordion> = {
+  render: () => {
+    return (
+      <EditorProvider>
+        <Accordion
+          id="custom-id"
+          icon={<PaletteIcon />}
+          name="Style"
+          value="Dark"
+        >
+          test
+        </Accordion>
+      </EditorProvider>
+    )
+  }
+}
+
+export default AttributeStory

@@ -311,6 +311,33 @@ describe('BlockService', () => {
       ])
     })
 
+    it('should duplicate step block with new x and y', async () => {
+      const newStepBlock = {
+        ...stepBlock,
+        action: null,
+        x: 0,
+        y: 0
+      }
+      service.getDuplicateBlockAndChildren = jest
+        .fn()
+        .mockReturnValue([newStepBlock])
+
+      await service.duplicateBlock(newStepBlock, 1, 2, 3)
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        where: { id: newStepBlock.id },
+        include: { action: true },
+        data: {
+          action: undefined,
+          coverBlockId: newStepBlock.coverBlockId,
+          nextBlockId: newStepBlock.nextBlockId,
+          parentBlockId: undefined,
+          posterBlockId: newStepBlock.posterBlockId,
+          x: 2,
+          y: 3
+        }
+      })
+    })
+
     it('should add duplicated block at end by default', async () => {
       await service.duplicateBlock(block)
 
@@ -592,6 +619,32 @@ describe('BlockService', () => {
       expect(
         await service.validateBlock('1', 'wrongJourney', 'journeyId')
       ).toBe(false)
+    })
+  })
+
+  describe('findParentStepBlock', () => {
+    it('should return step block', async () => {
+      await prismaService.block.findUnique
+        .mockResolvedValueOnce(typographyBlock)
+        .mockResolvedValueOnce(cardBlock)
+        .mockResolvedValueOnce(stepBlock)
+      expect(await service.findParentStepBlock(typographyBlock.id)).toEqual({
+        id: 'step',
+        journeyId: '1',
+        nextBlockId: 'someId',
+        parentBlockId: null,
+        typename: 'StepBlock'
+      })
+    })
+
+    it('should return undefined if parentBlockId is null', async () => {
+      await prismaService.block.findUnique.mockResolvedValueOnce({
+        ...typographyBlock,
+        parentBlockId: null
+      })
+      expect(
+        await service.findParentStepBlock(typographyBlock.id)
+      ).toBeUndefined()
     })
   })
 })

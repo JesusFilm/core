@@ -3,25 +3,10 @@ interface Action {
   gtmEventName: String
 }
 
-"""
-NavigateAction is an Action that navigates to the nextBlockId field set on the
-closest ancestor StepBlock.
-"""
-type NavigateAction implements Action {
-  parentBlockId: ID!
-  gtmEventName: String
-}
-
 type NavigateToBlockAction implements Action {
   parentBlockId: ID!
   gtmEventName: String
   blockId: String!
-}
-
-type NavigateToJourneyAction implements Action {
-  parentBlockId: ID!
-  gtmEventName: String
-  journeyId: String!
 }
 
 type LinkAction implements Action {
@@ -37,18 +22,9 @@ type EmailAction implements Action {
   email: String!
 }
 
-input NavigateActionInput {
-  gtmEventName: String
-}
-
 input NavigateToBlockActionInput {
   gtmEventName: String
   blockId: String!
-}
-
-input NavigateToJourneyActionInput {
-  gtmEventName: String
-  journeyId: String!
 }
 
 input LinkActionInput {
@@ -64,21 +40,11 @@ input EmailActionInput {
 
 extend type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
-  blockUpdateNavigateAction(
-    id: ID!
-    journeyId: ID!
-    input: NavigateActionInput!
-  ): NavigateAction!
   blockUpdateNavigateToBlockAction(
     id: ID!
     journeyId: ID!
     input: NavigateToBlockActionInput!
   ): NavigateToBlockAction!
-  blockUpdateNavigateToJourneyAction(
-    id: ID!
-    journeyId: ID!
-    input: NavigateToJourneyActionInput!
-  ): NavigateToJourneyAction!
   blockUpdateLinkAction(
     id: ID!
     journeyId: ID!

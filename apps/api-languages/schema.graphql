@@ -24,7 +24,7 @@ type Language
   id: ID!
   bcp47: String
   iso3: String
-  name(languageId: ID, primary: Boolean): [Translation!]!
+  name(languageId: ID, primary: Boolean): [Translation!]! @cacheControl(maxAge: 86400)
 }
 
 enum LanguageIdType {

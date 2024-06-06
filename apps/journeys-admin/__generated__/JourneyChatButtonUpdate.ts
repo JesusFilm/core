@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ChatButtonUpdateInput, ChatPlatform } from "./globalTypes";
+import { ChatButtonUpdateInput, MessagePlatform } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: JourneyChatButtonUpdate
@@ -13,7 +13,7 @@ export interface JourneyChatButtonUpdate_chatButtonUpdate {
   __typename: "ChatButton";
   id: string;
   link: string | null;
-  platform: ChatPlatform | null;
+  platform: MessagePlatform | null;
 }
 
 export interface JourneyChatButtonUpdate {

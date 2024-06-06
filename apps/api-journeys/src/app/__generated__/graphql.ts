@@ -131,24 +131,8 @@ export enum VideoBlockObjectFit {
     zoomed = "zoomed"
 }
 
-export enum ChatPlatform {
-    facebook = "facebook",
-    telegram = "telegram",
-    whatsApp = "whatsApp",
-    instagram = "instagram",
-    viber = "viber",
-    vk = "vk",
-    snapchat = "snapchat",
-    skype = "skype",
-    line = "line",
-    tikTok = "tikTok",
-    custom = "custom"
-}
-
 export enum ButtonAction {
-    NavigateAction = "NavigateAction",
     NavigateToBlockAction = "NavigateToBlockAction",
-    NavigateToJourneyAction = "NavigateToJourneyAction",
     LinkAction = "LinkAction",
     EmailAction = "EmailAction"
 }
@@ -230,18 +214,9 @@ export enum VisitorStatus {
     redQuestionMark = "redQuestionMark"
 }
 
-export class NavigateActionInput {
-    gtmEventName?: Nullable<string>;
-}
-
 export class NavigateToBlockActionInput {
     gtmEventName?: Nullable<string>;
     blockId: string;
-}
-
-export class NavigateToJourneyActionInput {
-    gtmEventName?: Nullable<string>;
-    journeyId: string;
 }
 
 export class LinkActionInput {
@@ -463,12 +438,12 @@ export class VideoBlockUpdateInput {
 
 export class ChatButtonCreateInput {
     link?: Nullable<string>;
-    platform?: Nullable<ChatPlatform>;
+    platform?: Nullable<MessagePlatform>;
 }
 
 export class ChatButtonUpdateInput {
     link?: Nullable<string>;
-    platform?: Nullable<ChatPlatform>;
+    platform?: Nullable<MessagePlatform>;
 }
 
 export class CustomDomainCreateInput {
@@ -694,6 +669,7 @@ export class JourneyCollectionUpdateInput {
 
 export class JourneyProfileUpdateInput {
     lastActiveTeamId?: Nullable<string>;
+    journeyFlowBackButtonClicked?: Nullable<boolean>;
 }
 
 export class JourneyVisitorFilter {
@@ -769,25 +745,11 @@ export interface Event {
     value?: Nullable<string>;
 }
 
-export class NavigateAction implements Action {
-    __typename?: 'NavigateAction';
-    parentBlockId: string;
-    gtmEventName?: Nullable<string>;
-}
-
 export class NavigateToBlockAction implements Action {
     __typename?: 'NavigateToBlockAction';
     parentBlockId: string;
     gtmEventName?: Nullable<string>;
     blockId: string;
-}
-
-export class NavigateToJourneyAction implements Action {
-    __typename?: 'NavigateToJourneyAction';
-    parentBlockId: string;
-    gtmEventName?: Nullable<string>;
-    journeyId: string;
-    journey?: Nullable<Journey>;
 }
 
 export class LinkAction implements Action {
@@ -1098,7 +1060,7 @@ export class ChatButton {
     __typename?: 'ChatButton';
     id: string;
     link?: Nullable<string>;
-    platform?: Nullable<ChatPlatform>;
+    platform?: Nullable<MessagePlatform>;
 }
 
 export class CustomDomain {
@@ -1217,6 +1179,7 @@ export class TextResponseSubmissionEvent implements Event {
     createdAt: DateTime;
     label?: Nullable<string>;
     value?: Nullable<string>;
+    blockId?: Nullable<string>;
 }
 
 export class VideoStartEvent implements Event {
@@ -1343,6 +1306,7 @@ export class JourneyProfile {
     acceptedTermsAt?: Nullable<DateTime>;
     lastActiveTeamId?: Nullable<string>;
     onboardingFormCompletedAt?: Nullable<DateTime>;
+    journeyFlowBackButtonClicked?: Nullable<boolean>;
 }
 
 export class JourneyVisitor {
@@ -1507,11 +1471,7 @@ export class Translation {
 export abstract class IMutation {
     abstract blockDeleteAction(id: string, journeyId: string): Block | Promise<Block>;
 
-    abstract blockUpdateNavigateAction(id: string, journeyId: string, input: NavigateActionInput): NavigateAction | Promise<NavigateAction>;
-
     abstract blockUpdateNavigateToBlockAction(id: string, journeyId: string, input: NavigateToBlockActionInput): NavigateToBlockAction | Promise<NavigateToBlockAction>;
-
-    abstract blockUpdateNavigateToJourneyAction(id: string, journeyId: string, input: NavigateToJourneyActionInput): NavigateToJourneyAction | Promise<NavigateToJourneyAction>;
 
     abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): LinkAction | Promise<LinkAction>;
 
@@ -1519,7 +1479,7 @@ export abstract class IMutation {
 
     abstract blockDelete(id: string, journeyId?: Nullable<string>, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
 
-    abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
+    abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, journeyId?: Nullable<string>, x?: Nullable<number>, y?: Nullable<number>): Block[] | Promise<Block[]>;
 
     abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
 

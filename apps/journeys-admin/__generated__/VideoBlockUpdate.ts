@@ -20,18 +20,25 @@ export interface VideoBlockUpdate_videoBlockUpdate_video_variant {
   hls: string | null;
 }
 
+export interface VideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: VideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name[];
+}
+
 export interface VideoBlockUpdate_videoBlockUpdate_video {
   __typename: "Video";
   id: string;
   title: VideoBlockUpdate_videoBlockUpdate_video_title[];
   image: string | null;
   variant: VideoBlockUpdate_videoBlockUpdate_video_variant | null;
-}
-
-export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
+  variantLanguages: VideoBlockUpdate_videoBlockUpdate_video_variantLanguages[];
 }
 
 export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
@@ -39,25 +46,6 @@ export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction 
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
-}
-
-export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: VideoBlockUpdate_videoBlockUpdate_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: VideoBlockUpdate_videoBlockUpdate_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface VideoBlockUpdate_videoBlockUpdate_action_LinkAction {
@@ -74,7 +62,7 @@ export interface VideoBlockUpdate_videoBlockUpdate_action_EmailAction {
   email: string;
 }
 
-export type VideoBlockUpdate_videoBlockUpdate_action = VideoBlockUpdate_videoBlockUpdate_action_NavigateAction | VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | VideoBlockUpdate_videoBlockUpdate_action_NavigateToJourneyAction | VideoBlockUpdate_videoBlockUpdate_action_LinkAction | VideoBlockUpdate_videoBlockUpdate_action_EmailAction;
+export type VideoBlockUpdate_videoBlockUpdate_action = VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | VideoBlockUpdate_videoBlockUpdate_action_LinkAction | VideoBlockUpdate_videoBlockUpdate_action_EmailAction;
 
 export interface VideoBlockUpdate_videoBlockUpdate {
   __typename: "VideoBlock";

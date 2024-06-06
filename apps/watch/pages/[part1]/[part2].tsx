@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { ApolloError, gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import dynamic from 'next/dynamic'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -72,33 +72,48 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     return {
       redirect: {
         permanent: false,
-        destination: `/${contentId}.html/${languageId}.html`
+        destination: `/${encodeURIComponent(contentId)}.html/${languageId}.html`
       }
     }
   }
 
   const client = createApolloClient()
-  const { data } = await client.query<GetVideoContent>({
-    query: GET_VIDEO_CONTENT,
-    variables: {
-      id: `${contentId}/${languageId}`
+  try {
+    const { data } = await client.query<GetVideoContent>({
+      query: GET_VIDEO_CONTENT,
+      variables: {
+        id: `${contentId}/${languageId}`
+      }
+    })
+    if (data.content == null) {
+      return {
+        revalidate: 1,
+        notFound: true
+      }
     }
-  })
-  if (data.content == null) {
     return {
-      notFound: true
+      revalidate: 3600,
+      props: {
+        content: data.content,
+        ...(await serverSideTranslations(
+          context.locale ?? 'en',
+          ['apps-watch'],
+          i18nConfig
+        ))
+      }
     }
-  }
-  return {
-    revalidate: 3600,
-    props: {
-      content: data.content,
-      ...(await serverSideTranslations(
-        context.locale ?? 'en',
-        ['apps-watch'],
-        i18nConfig
-      ))
-    }
+  } catch (error) {
+    if (
+      error instanceof ApolloError &&
+      error.graphQLErrors.some(
+        ({ extensions }) => extensions?.code === 'NOT_FOUND'
+      )
+    )
+      return {
+        revalidate: 1,
+        notFound: true
+      }
+    throw error
   }
 }
 

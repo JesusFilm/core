@@ -1,1 +1,0 @@
-export { LanguageMenuItem } from './LanguageMenuItem'
