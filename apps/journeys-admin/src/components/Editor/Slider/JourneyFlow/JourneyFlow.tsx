@@ -246,9 +246,13 @@ export function JourneyFlow(): ReactElement {
       const { source, sourceHandle, target } = newConnection
       setEdges((prev) => reactFlowUpdateEdge(oldEdge, newConnection, prev))
       edgeUpdateSuccessful.current = true
+      if (oldEdge.target === target) {
+        setEdges((eds) => eds.filter((e) => e.id !== oldEdge.id))
+        void deleteEdge(oldEdge)
+      }
       void updateEdge({ source, sourceHandle, target })
     },
-    [updateEdge, setEdges]
+    [setEdges, updateEdge, deleteEdge]
   )
 
   const onEdgeUpdateEnd = useCallback<
