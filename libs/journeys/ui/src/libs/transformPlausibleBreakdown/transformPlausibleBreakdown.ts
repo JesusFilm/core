@@ -6,9 +6,9 @@ import { reverseKeyify } from '@core/journeys/ui/plausibleHelpers/plausibleHelpe
 import {
   GetJourneyPlausibleStatsBreakdown,
   GetJourneyPlausibleStatsBreakdown_journeyReferrer as JourneyReferrer
-} from '../../../../../__generated__/GetJourneyPlausibleStatsBreakdown'
+} from '../../../../../../apps/journeys-admin/__generated__/GetJourneyPlausibleStatsBreakdown'
 
-interface JourneyStatsBreakdown {
+export interface JourneyStatsBreakdown {
   totalVisitors: number
   chatsStarted: number
   linksVisited: number

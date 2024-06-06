@@ -4,6 +4,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
+import { transformPlausibleBreakdown } from '@core/journeys/ui/transformPlausibleBreakdown'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
@@ -11,7 +12,6 @@ import { IdType } from '../../../__generated__/globalTypes'
 import { useJourneyPlausibleStatsBreakdownQuery } from '../../libs/useJourneyPlausibleStatsBreakdownQuery'
 
 import { Fab } from './Fab'
-import { transformPlausibleBreakdown } from './libs/transformPlausibleBreakdown'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
 
@@ -41,8 +41,6 @@ export function Editor({
     data
   })
 
-  console.log('journey stats: ', journeyStatsBreakdown)
-
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -58,6 +56,7 @@ export function Editor({
         initialState={{
           steps,
           selectedStep,
+          journeyStatsBreakdown,
           ...initialState
         }}
       >
