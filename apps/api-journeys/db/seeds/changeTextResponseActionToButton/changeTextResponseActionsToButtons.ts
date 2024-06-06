@@ -98,8 +98,8 @@ export async function changeTextResponseActionsToButtons(): Promise<void> {
           }
         },
         {
-          maxWait: 10000, // default: 2000
-          timeout: 20000 // default: 5000
+          maxWait: 1000000, // default: 2000
+          timeout: 2000000 // default: 5000
         }
       )
       bar1.increment()
