@@ -8,14 +8,7 @@ import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
-import {
-  MouseEvent,
-  ReactElement,
-  ReactNode,
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -116,35 +109,6 @@ export function UserListItem({
     }
   }, [])
 
-  const secondaryAction: ReactNode = (
-    <>
-      {listItem.__typename !== 'UserInvite' && (
-        <NotificationSwitch
-          id={emailPreference?.id}
-          userId={userId}
-          name={listItem?.user?.firstName}
-          journeyId={journeyIdFromParent}
-          checked={emailPreference?.value}
-          disabled={userId !== currentUser?.user?.id}
-        />
-      )}
-      <Button
-        aria-controls={open ? 'basic-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
-        disabled={disableAction}
-        endIcon={<ChevronDownIcon />}
-        sx={{
-          color: 'text.primary',
-          typography: 'body2'
-        }}
-      >
-        {isInvite ? t('Pending') : menuLabel}
-      </Button>
-    </>
-  )
-
   return (
     <>
       <ListItem
@@ -154,7 +118,6 @@ export function UserListItem({
             right: 0
           }
         }}
-        secondaryAction={secondaryAction}
         data-testid="UserListItem"
       >
         <ListItemAvatar>
@@ -164,7 +127,6 @@ export function UserListItem({
               : email.charAt(0).toUpperCase()}
           </Avatar>
         </ListItemAvatar>
-
         <ListItemText
           primary={displayName}
           secondary={email}
@@ -177,6 +139,31 @@ export function UserListItem({
             }
           }}
         />
+        {listItem.__typename !== 'UserInvite' && (
+          <NotificationSwitch
+            id={emailPreference?.id}
+            userId={userId}
+            name={listItem?.user?.firstName}
+            journeyId={journeyIdFromParent}
+            checked={emailPreference?.value}
+            disabled={userId !== currentUser?.user?.id}
+          />
+        )}
+        <Button
+          aria-controls={open ? 'basic-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}
+          onClick={handleClick}
+          disabled={disableAction}
+          endIcon={<ChevronDownIcon />}
+          sx={{
+            width: '20%',
+            color: 'text.primary',
+            typography: 'body2'
+          }}
+        >
+          {isInvite ? t('Pending') : menuLabel}
+        </Button>
       </ListItem>
 
       <Menu

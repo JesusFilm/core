@@ -9,7 +9,7 @@ import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
-import { MouseEvent, ReactElement, ReactNode, useMemo, useState } from 'react'
+import { MouseEvent, ReactElement, useMemo, useState } from 'react'
 
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -83,41 +83,6 @@ export function UserTeamListItem({
     setAnchorEl(null)
   }
 
-  const secondaryAction: ReactNode = (
-    <>
-      {journeyId != null && (
-        <NotificationSwitch
-          id={emailPreference?.id}
-          userId={userId}
-          name={listItem?.user?.firstName}
-          journeyId={journeyId}
-          checked={emailPreference?.value}
-        />
-      )}
-      <Button
-        aria-controls={open ? 'basic-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
-        disabled={disabled}
-        endIcon={<ChevronDownIcon />}
-        sx={{
-          color: 'text.primary',
-          typography: 'body2',
-          '& > .MuiButton-endIcon': {
-            display: variant === 'readonly' ? 'none' : 'inherit'
-          },
-          '&.Mui-disabled': {
-            color:
-              variant === 'readonly' ? 'text.primary' : 'rgba(0, 0, 0, 0.26)'
-          }
-        }}
-      >
-        {menuLabel}
-      </Button>
-    </>
-  )
-
   return (
     <>
       <ListItem
@@ -127,7 +92,6 @@ export function UserTeamListItem({
             right: 0
           }
         }}
-        secondaryAction={secondaryAction}
         data-testid={`UserTeamListItem-${listItem.id}`}
       >
         <ListItemAvatar>
@@ -137,7 +101,6 @@ export function UserTeamListItem({
               : email.charAt(0).toUpperCase()}
           </Avatar>
         </ListItemAvatar>
-
         <ListItemText
           primary={displayName}
           secondary={email}
@@ -150,6 +113,37 @@ export function UserTeamListItem({
             }
           }}
         />
+        {journeyId != null && (
+          <NotificationSwitch
+            id={emailPreference?.id}
+            userId={userId}
+            name={listItem?.user?.firstName}
+            journeyId={journeyId}
+            checked={emailPreference?.value}
+          />
+        )}
+        <Button
+          aria-controls={open ? 'basic-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}
+          onClick={handleClick}
+          disabled={disabled}
+          endIcon={<ChevronDownIcon />}
+          sx={{
+            color: 'text.primary',
+            width: '20%',
+            typography: 'body2',
+            '& > .MuiButton-endIcon': {
+              display: variant === 'readonly' ? 'none' : 'inherit'
+            },
+            '&.Mui-disabled': {
+              color:
+                variant === 'readonly' ? 'text.primary' : 'rgba(0, 0, 0, 0.26)'
+            }
+          }}
+        >
+          {menuLabel}
+        </Button>
       </ListItem>
 
       <Menu
