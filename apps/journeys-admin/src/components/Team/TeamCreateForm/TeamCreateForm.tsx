@@ -78,10 +78,13 @@ export function TeamCreateForm({
       }
     }
   }
+
   const initialValues: TeamCreateInput = onboarding
     ? {
-        title: `${user.displayName} & Team`,
-        publicTitle: `${user.displayName?.charAt(0)} Team`
+        title: t('{{ displayName }} & Team', { displayName: user.displayName }),
+        publicTitle: t('{{ displayName }} Team', {
+          displayName: user.displayName?.charAt(0)
+        })
       }
     : { title: '', publicTitle: '' }
 
