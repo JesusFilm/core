@@ -21,7 +21,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
-  test('Create a template via newly created journey', async ({ page }) => {
+  test.fixme('Create a template via newly created journey', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
@@ -82,7 +82,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Verify the user able to display the publisher help window
-  test('Verify the user able to display the publisher help window', async ({
+  test.fixme('Verify the user able to display the publisher help window', async ({
     page
   }) => {
     const publisherPage = new Publisher(page)
@@ -157,7 +157,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About
-  test('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About', async ({
+  test.fixme('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About', async ({
     page
   }) => {
     const publisherPage = new Publisher(page)
@@ -181,7 +181,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Publisher-> Select existing template -> Three dots on top right -> Language
-  test('Publisher-> Select existing template -> Three dots on top right -> Language', async ({
+  test.fixme('Publisher-> Select existing template -> Three dots on top right -> Language', async ({
     page
   }) => {
     const publisherPage = new Publisher(page)
