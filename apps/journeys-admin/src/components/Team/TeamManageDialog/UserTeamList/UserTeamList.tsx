@@ -23,6 +23,7 @@ interface UserTeamListProps {
   loading: boolean
   variant?: 'readonly' | 'default'
   emailPreferences?: Map<string, EmailEventNotifications>
+  journeyId?: string
 }
 
 export function UserTeamList({
@@ -30,7 +31,8 @@ export function UserTeamList({
   currentUserTeam,
   loading,
   variant = 'default',
-  emailPreferences
+  emailPreferences,
+  journeyId
 }: UserTeamListProps): ReactElement {
   const sortedUserTeams: UserTeam[] = useMemo(() => {
     if (variant === 'readonly') return data?.userTeams ?? []
@@ -85,6 +87,7 @@ export function UserTeamList({
                     }
                     variant={variant}
                     emailPreference={emailPreference}
+                    journeyId={journeyId}
                   />
                 )
               })}

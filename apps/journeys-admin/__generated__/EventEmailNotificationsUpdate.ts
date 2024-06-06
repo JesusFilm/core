@@ -22,6 +22,6 @@ export interface EventEmailNotificationsUpdate {
 }
 
 export interface EventEmailNotificationsUpdateVariables {
-  id: string;
+  id?: string | null;
   input: EventEmailNotificationsUpdateInput;
 }

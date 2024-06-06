@@ -98,8 +98,6 @@ export function AccessDialog({
       )
     }, [emailPreferences])
 
-  console.log('emailPreferencesMap', emailPreferences)
-
   const { users, requests, invites, emails } = useMemo(() => {
     const users: UserJourney[] = []
     const requests: UserJourney[] = []
@@ -161,6 +159,7 @@ export function AccessDialog({
           loading={loading}
           variant="readonly"
           emailPreferences={emailPreferencesMap}
+          journeyId={journeyId}
         />
         <UserList
           title={t('Requested Access')}

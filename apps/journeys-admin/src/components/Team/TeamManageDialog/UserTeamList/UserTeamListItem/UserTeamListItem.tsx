@@ -7,7 +7,6 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
-import Switch from '@mui/material/Switch'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, ReactNode, useMemo, useState } from 'react'
@@ -19,6 +18,7 @@ import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEma
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
 import { UserTeamUpdate } from '../../../../../../__generated__/UserTeamUpdate'
+import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
 import { MenuItem } from '../../../../MenuItem'
 import { UserTeamDeleteMenuItem } from '../../UserTeamDeleteMenuItem'
 
@@ -27,6 +27,7 @@ interface UserTeamListItemProps {
   disabled?: boolean
   variant?: 'readonly' | 'default'
   emailPreference?: EventEmailNotifications
+  journeyId?: string
 }
 
 export const USER_TEAM_UPDATE = gql`
@@ -44,14 +45,15 @@ export function UserTeamListItem({
   user: listItem,
   disabled,
   variant = 'default',
-  emailPreference
+  emailPreference,
+  journeyId
 }: UserTeamListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
   const { t } = useTranslation('apps-journeys-admin')
   const [userTeamUpdate] = useMutation<UserTeamUpdate>(USER_TEAM_UPDATE)
 
-  const { id, email, displayName, imageUrl, role } = useMemo(() => {
+  const { id, email, displayName, imageUrl, role, userId } = useMemo(() => {
     return {
       id: listItem.id,
       email: listItem?.user?.email,
@@ -59,6 +61,7 @@ export function UserTeamListItem({
         listItem?.user?.firstName,
         listItem?.user?.lastName
       ]).join(' '),
+      userId: listItem?.user?.id,
       imageUrl: listItem?.user?.imageUrl,
       role: listItem.role
     }
@@ -82,10 +85,12 @@ export function UserTeamListItem({
 
   const secondaryAction: ReactNode = (
     <>
-      <Switch
-        inputProps={{ 'aria-checked': emailPreference?.value ?? false }}
-        checked={emailPreference?.value ?? false}
-        onChange={() => console.log('I got called')}
+      <NotificationSwitch
+        id={emailPreference?.id}
+        userId={userId}
+        name={listItem?.user?.firstName}
+        journeyId={journeyId}
+        checked={emailPreference?.value}
       />
       <Button
         aria-controls={open ? 'basic-menu' : undefined}

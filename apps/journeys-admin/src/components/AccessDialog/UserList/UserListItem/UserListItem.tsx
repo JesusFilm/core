@@ -1,4 +1,3 @@
-import { ApolloError } from '@apollo/client'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -7,10 +6,8 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
-import Switch from '@mui/material/Switch'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
 import {
   MouseEvent,
   ReactElement,
@@ -19,7 +16,6 @@ import {
   useMemo,
   useState
 } from 'react'
-import { v4 as uuidv4 } from 'uuid'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -27,7 +23,7 @@ import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEma
 import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
-import { useEventEmailNotificationsUpdate } from '../../../../libs/useEventEmailNotificationsUpdateMutation'
+import { NotificationSwitch } from '../../NotificationSwitch'
 
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
@@ -59,9 +55,6 @@ export function UserListItem({
   emailPreference
 }: UserListItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { enqueueSnackbar } = useSnackbar()
-  const [eventEmailNotificationUpdate, { loading }] =
-    useEventEmailNotificationsUpdate()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
   const { id, role, displayName, email, imageUrl, journeyId, userId } =
@@ -123,54 +116,16 @@ export function UserListItem({
     }
   }, [])
 
-  async function handleChange(): Promise<void> {
-    if (journeyIdFromParent == null) return
-    if (userId == null) return
-    const uuid = uuidv4()
-    try {
-      await eventEmailNotificationUpdate({
-        variables: {
-          id: emailPreference?.id ?? uuid,
-          input: {
-            userId,
-            journeyId: journeyIdFromParent,
-            value:
-              emailPreference?.value != null ? !emailPreference.value : true
-          }
-        }
-      })
-    } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Notification update failed. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
-      }
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
-    }
-  }
-
   const secondaryAction: ReactNode = (
     <>
       {listItem.__typename !== 'UserInvite' && (
-        <Switch
-          inputProps={{ 'aria-checked': emailPreference?.value }}
+        <NotificationSwitch
+          id={emailPreference?.id}
+          userId={userId}
+          name={listItem?.user?.firstName}
+          journeyId={journeyIdFromParent}
           checked={emailPreference?.value}
-          onChange={handleChange}
-          disabled={
-            loading || emailPreference?.userId !== currentUser?.user?.id
-          }
+          disabled={userId !== currentUser?.user?.id}
         />
       )}
       <Button
