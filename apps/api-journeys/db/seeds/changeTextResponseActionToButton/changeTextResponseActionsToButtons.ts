@@ -37,12 +37,38 @@ export async function changeTextResponseActionsToButtons(): Promise<void> {
             parentBlock: {
               connect: { id: textResponse.parentBlockId }
             },
-            parentOrder: textResponse.parentOrder + 1,
+            // parentOrder: textResponse.parentOrder + 1,
             label: textResponse.submitLabel ?? 'Submit',
             startIconId: textResponse.submitIconId
-          }
+          },
+          include: { action: true }
         })
-
+        // re order blocks
+        const siblingBlocks = await tx.block.findMany({
+          where: {
+            journeyId: textResponse.journeyId,
+            parentBlockId: textResponse.parentBlockId,
+            parentOrder: { not: null }
+          },
+          orderBy: { parentOrder: 'asc' },
+          include: { action: true }
+        })
+        siblingBlocks.splice(textResponse.parentOrder + 1, 0, buttonBlock)
+        // update parentblockId
+        const updatedSiblings = siblingBlocks.map((block, index) => ({
+          ...block,
+          parentOrder: index
+        }))
+        await Promise.all(
+          updatedSiblings.map(
+            async (block) =>
+              await tx.block.update({
+                where: { id: block.id },
+                data: { parentOrder: block.parentOrder },
+                include: { action: true }
+              })
+          )
+        )
         // update action
         await tx.action.update({
           where: { parentBlockId: textResponse.action.parentBlockId },
