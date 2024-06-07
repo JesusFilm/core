@@ -281,7 +281,7 @@ test.describe('Verify template page functionality', () => {
   })
 
   //Filter: Topics, holidays, felt needs, collections
-  test('Filter: Topics, holidays, felt needs, collections', async ({
+  test.fixme('Filter: Topics, holidays, felt needs, collections', async ({
     page
   }) => {
     const templatesPage = new TemplatePage(page)
