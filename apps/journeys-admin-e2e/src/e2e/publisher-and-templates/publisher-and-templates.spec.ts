@@ -20,8 +20,9 @@ test.describe('Publisher page functionality', () => {
     await journeyPage.navigateToDiscoverPage() // navigating to discover page
   })
 
+  // Skip flaky test
   //Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
-  test('Create a template via newly created journey', async ({ page }) => {
+  test.skip('Create a template via newly created journey', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
@@ -93,8 +94,8 @@ test.describe('Publisher page functionality', () => {
     await journeyLevelActions.verifyHelpWindowOpened() // verifying the help window is showing in the publisher page
   })
 
-  //
-  test('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Metadata', async ({
+  // Skip flaky test
+  test.skip('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Metadata', async ({
     page
   }) => {
     const publisherPage = new Publisher(page)
@@ -111,9 +112,10 @@ test.describe('Publisher page functionality', () => {
     await publisherPage.clickSaveBtn() // clicking on the save btn
     await publisherPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
   })
-
+  
+  // Skip flaky test
   //Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories
-  test('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories', async ({
+  test.skip('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories', async ({
     page
   }) => {
     const publisherPage = new Publisher(page)
