@@ -15,10 +15,10 @@ import {
   useState
 } from 'react'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetLanguages_languages } from '../../../../__generated__/GetLanguages'
-import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
