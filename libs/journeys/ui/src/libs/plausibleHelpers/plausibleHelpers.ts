@@ -57,12 +57,21 @@ export interface JourneyPlausibleEvents extends Events {
   videoTrigger: Props
 }
 
-export function keyify(
-  event: keyof JourneyPlausibleEvents,
-  input: { blockId: string },
+interface KeyifyProps {
+  stepId: string
+  event: keyof JourneyPlausibleEvents
+  blockId: string
   target?: string | Action | null
-): string {
+}
+
+export function keyify({
+  stepId,
+  event,
+  blockId,
+  target
+}: KeyifyProps): string {
   let targetId = ''
+
   if (typeof target === 'string' || target == null) {
     targetId = target ?? ''
   } else {
@@ -78,5 +87,20 @@ export function keyify(
         break
     }
   }
-  return `${event}:${input.blockId}${targetId !== '' ? `:${targetId}` : ''}`
+
+  return JSON.stringify({
+    stepId,
+    event,
+    blockId,
+    target: targetId
+  })
+}
+
+export function reverseKeyify(key: string): {
+  stepId: string
+  event: keyof JourneyPlausibleEvents
+  blockId: string
+  target?: string
+} {
+  return JSON.parse(key)
 }
