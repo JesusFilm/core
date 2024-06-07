@@ -112,7 +112,7 @@ test.describe('Publisher page functionality', () => {
     await publisherPage.clickSaveBtn() // clicking on the save btn
     await publisherPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
   })
-  
+
   // Skip flaky test
   //Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories
   test.skip('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories', async ({
@@ -281,24 +281,25 @@ test.describe('Verify template page functionality', () => {
   })
 
   //Filter: Topics, holidays, felt needs, collections
-  test.fixme('Filter: Topics, holidays, felt needs, collections', async ({
-    page
-  }) => {
-    const templatesPage = new TemplatePage(page)
-    await templatesPage.navigateToTempalatePage() // navigating to templates page
-    await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
-      'Topics'
-    ) // Verifying that Topics templates are fetched by filtering the Topics.
-    await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
-      'Holidays'
-    ) // Verifying that holiday templates are fetched by filtering the holidays.
-    await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
-      'Felt Needs'
-    ) // Verifying that 'Felt Needs' templates are fetched by filtering the 'Felt Needs'.
-    await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
-      'Collections'
-    ) // Verifying that Collections templates are fetched by filtering the Collections.
-  })
+  test.fixme(
+    'Filter: Topics, holidays, felt needs, collections',
+    async ({ page }) => {
+      const templatesPage = new TemplatePage(page)
+      await templatesPage.navigateToTempalatePage() // navigating to templates page
+      await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
+        'Topics'
+      ) // Verifying that Topics templates are fetched by filtering the Topics.
+      await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
+        'Holidays'
+      ) // Verifying that holiday templates are fetched by filtering the holidays.
+      await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
+        'Felt Needs'
+      ) // Verifying that 'Felt Needs' templates are fetched by filtering the 'Felt Needs'.
+      await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
+        'Collections'
+      ) // Verifying that Collections templates are fetched by filtering the Collections.
+    }
+  )
 
   //Filter: Audience
   test.fixme('Filter: Audience', async ({ page }) => {
