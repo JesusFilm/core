@@ -1,5 +1,5 @@
 import type { Config } from 'jest'
-// change something so env can be created
+
 const config: Config = {
   displayName: 'journeys-admin',
   moduleNameMapper: {
