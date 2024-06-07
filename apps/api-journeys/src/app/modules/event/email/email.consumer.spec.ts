@@ -6,6 +6,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import {
   Event,
+  EventEmailNotifications,
   Journey,
   JourneyStatus,
   MessagePlatform,
@@ -160,6 +161,21 @@ describe('EmailConsumer', () => {
     ]
   }
 
+  const eventEmailNotifications: EventEmailNotifications[] = [
+    {
+      id: '1',
+      journeyId: 'journeyId',
+      userId: 'userId1',
+      value: true
+    },
+    {
+      id: '1',
+      journeyId: 'journeyId',
+      userId: 'userId1',
+      value: true
+    }
+  ]
+
   const job: Job<EventsNotificationJob, unknown, string> = {
     data: {
       journeyId: journey.id,
@@ -225,6 +241,9 @@ describe('EmailConsumer', () => {
 
       prismaService.journey.findUnique.mockResolvedValueOnce(journey)
       prismaService.visitor.findUnique.mockResolvedValueOnce(visitor)
+      prismaService.eventEmailNotifications.findMany.mockResolvedValueOnce(
+        eventEmailNotifications
+      )
 
       let args = {}
       emailService.sendEmail = jest

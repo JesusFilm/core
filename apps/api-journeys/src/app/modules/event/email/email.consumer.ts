@@ -3,6 +3,12 @@ import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 
+import {
+  Event,
+  EventEmailNotifications,
+  Journey,
+  Visitor
+} from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
 
 import { UserJourneyRole } from '../../../__generated__/graphql'
@@ -41,6 +47,64 @@ export class EmailConsumer extends WorkerHost {
     }
   }
 
+  async sendUserNotification(
+    userId: string,
+    journey: Journey,
+    visitor: Pick<Visitor, 'createdAt' | 'duration'> & { events: Event[] },
+    eventEmailNotifications: EventEmailNotifications[]
+  ): Promise<void> {
+    const receiveNotification = eventEmailNotifications.find(
+      (notification) => notification.userId === userId
+    )?.value
+
+    if (receiveNotification == null || !receiveNotification) return
+
+    const { data } = await apollo.query({
+      query: gql`
+        query User($userId: ID!) {
+          user(id: $userId) {
+            id
+            firstName
+            email
+            imageUrl
+          }
+        }
+      `,
+      variables: { userId }
+    })
+
+    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${
+      journey.id
+    }/reports/visitor`
+
+    const text = render(
+      VisitorInteraction({
+        title: journey.title,
+        recipient: data.user,
+        url,
+        visitor
+      }),
+      { plainText: true }
+    )
+
+    const html = render(
+      VisitorInteraction({
+        title: journey.title,
+        recipient: data.user,
+        url,
+        visitor
+      }),
+      { pretty: true }
+    )
+
+    await this.emailService.sendEmail({
+      to: data.user.email,
+      subject: `A visitor has interacted with your journey`,
+      text,
+      html
+    })
+  }
+
   async sendEventsNotification(job: Job<EventsNotificationJob>): Promise<void> {
     const journey = await this.prismaService.journey.findUnique({
       where: { id: job.data.journeyId },
@@ -58,8 +122,16 @@ export class EmailConsumer extends WorkerHost {
       }
     })
 
+    const eventEmailNotifications =
+      await this.prismaService.eventEmailNotifications.findMany({
+        where: {
+          journeyId: job.data.journeyId
+        }
+      })
+
     if (journey == null) return
     if (visitor == null) return
+    if (eventEmailNotifications.length === 0) return
 
     const recipientUserIds = journey?.userJourneys
       ?.filter(
@@ -69,58 +141,14 @@ export class EmailConsumer extends WorkerHost {
       )
       ?.map((userJourney) => userJourney.userId)
 
-    if (recipientUserIds == null) return
-
     await Promise.all(
       recipientUserIds.map(async (userId) => {
-        const { data } = await apollo.query({
-          query: gql`
-            query User($userId: ID!) {
-              user(id: $userId) {
-                id
-                firstName
-                email
-                imageUrl
-              }
-            }
-          `,
-          variables: { userId }
-        })
-
-        const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${
-          journey.id
-        }/reports/visitor`
-
-        const text = render(
-          VisitorInteraction({
-            title: journey.title,
-            recipient: data.user,
-            url,
-            visitor
-          }),
-          {
-            plainText: true
-          }
+        await this.sendUserNotification(
+          userId,
+          journey,
+          visitor,
+          eventEmailNotifications
         )
-
-        const html = render(
-          VisitorInteraction({
-            title: journey.title,
-            recipient: data.user,
-            url,
-            visitor
-          }),
-          {
-            pretty: true
-          }
-        )
-
-        await this.emailService.sendEmail({
-          to: data.user.email,
-          subject: `A visitor has interacted with your journey`,
-          text,
-          html
-        })
       })
     )
   }
