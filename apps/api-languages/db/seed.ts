@@ -5,7 +5,12 @@ import isEmpty from 'lodash/isEmpty'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
 
-import { LanguageName, PrismaClient } from '.prisma/api-languages-client'
+import {
+  LanguageName,
+  Prisma,
+  PrismaClient
+} from '.prisma/api-languages-client'
+import { Translation } from '@core/nest/common/TranslationModule'
 
 const prismaService = new PrismaClient()
 
@@ -23,6 +28,34 @@ interface MediaLanguage {
   nameNative: string
   metadataLanguageTag: string
   name: string
+}
+
+interface MediaCountry {
+  countryId: number
+  name: string
+  continentName: string
+  metadataLanguageTag: string
+  longitude: float
+  latitude: float
+  counts: {
+    languageCount: {
+      value: number
+    }
+    population: {
+      value: number
+    }
+  }
+  assets: {
+    flagUrls: {
+      png8: string
+      webpLossy50: string
+    }
+  }
+  languageIds: number[]
+}
+
+interface MetadataLanguageTag {
+  tag: string
 }
 
 async function getLanguage(languageId: string): Promise<Language | null> {
@@ -53,6 +86,19 @@ async function getMediaLanguages(): Promise<MediaLanguage[]> {
     )
   ).json()
   return response._embedded.mediaLanguages
+}
+
+async function getCountries(language = 'en'): Promise<MediaCountry[]> {
+  const response: {
+    _embedded: { mediaCountries: MediaCountry[] }
+  } = await (
+    await fetch(
+      `https://api.arclight.org/v2/media-countries?limit=5000&apiKey=${
+        process.env.ARCLIGHT_API_KEY ?? ''
+      }&metadataLanguageTags=${language}&expand=languageIds`
+    )
+  ).json()
+  return response._embedded.mediaCountries
 }
 
 async function digestMediaLanguage(
@@ -149,6 +195,96 @@ export function getSeoSlug(title: string, collection: string[]): string {
   return newSlug
 }
 
+interface TransformedCountries extends Prisma.CountryCreateInput {
+  name: Translation[]
+  continent: Translation[]
+}
+
+function digestCountries(countries: MediaCountry[]): TransformedCountries[] {
+  console.log('countries:', '529')
+  const transformedCountries: Prisma.CountryCreateInput[] = countries.map(
+    (country) => ({
+      id: country.countryId.toString(),
+      name: [{ value: country.name, languageId: '529', primary: true }],
+      population: country.counts.population.value,
+      continent: [
+        { value: country.continentName, languageId: '529', primary: true }
+      ],
+      languageIds: country.languageIds.map((l) => l.toString()),
+      latitude: country.latitude,
+      longitude: country.longitude,
+      flagPngSrc: country.assets.flagUrls.png8,
+      flagWebpSrc: country.assets.flagUrls.webpLossy50
+    })
+  )
+  return transformedCountries
+}
+
+function digestTranslatedCountries(
+  countries: MediaCountry[],
+  mappedCountries: Country[],
+  languageId: string
+): Country[] {
+  if (languageId === '529') return mappedCountries
+  console.log('countries:', languageId)
+  const transformedCountries: Country[] = countries.map((country) => ({
+    id: country.countryId.toString(),
+    name: [
+      {
+        value: isEmpty(country.name) ? '' : country.name,
+        languageId,
+        primary: false
+      }
+    ],
+    population: country.counts.population.value,
+    continent: [
+      {
+        value: isEmpty(country.continentName) ? '' : country.continentName,
+        languageId,
+        primary: false
+      }
+    ],
+    slug: [
+      {
+        value: isEmpty(country.name)
+          ? ''
+          : getSeoSlug(country.name, usedTitles),
+        languageId,
+        primary: false
+      }
+    ],
+    languageIds: country.languageIds.map((l) => l.toString()),
+    latitude: country.latitude,
+    longitude: country.longitude,
+    image: country.assets.flagUrls.png8
+  }))
+  transformedCountries.forEach((country) => {
+    const existing = mappedCountries.find((c) => c._key === country._key)
+    if (existing == null) mappedCountries.push(country)
+    else {
+      if (country.name[0].value !== '') existing.name.push(country.name[0])
+      if (country.continent[0].value !== '')
+        existing.continent.push(country.continent[0])
+      if (country.slug[0].value !== '') existing.slug.push(country.slug[0])
+    }
+  })
+
+  return mappedCountries
+}
+
+async function getMetadataLanguageTags(): Promise<MetadataLanguageTag[]> {
+  const response: {
+    _embedded: { metadataLanguageTags: MetadataLanguageTag[] }
+  } = await (
+    await fetch(
+      `https://api.arclight.org/v2/metadata-language-tags?limit=5000&apiKey=${
+        process.env.ARCLIGHT_API_KEY ?? ''
+      }`
+    )
+  ).json()
+  return response._embedded.metadataLanguageTags
+}
+
 async function main(): Promise<void> {
   const mediaLanguages = await getMediaLanguages()
 
@@ -159,6 +295,23 @@ async function main(): Promise<void> {
 
   for (const mediaLanguage of mediaLanguages) {
     await digestMediaLanguageMetadata(mediaLanguage)
+  }
+
+  const countries = await getCountries()
+  let mappedCountries = digestCountries(countries)
+
+  const metadataLanguages = await getMetadataLanguageTags()
+  for (const metaDataLanguage of metadataLanguages) {
+    const languageId = mediaLanguages.find(
+      (l) => l.bcp47 === metaDataLanguage.tag
+    )?.languageId
+    if (languageId == null) continue
+    const translatedCountries = await getCountries(metaDataLanguage.tag)
+    mappedCountries = digestTranslatedCountries(
+      translatedCountries,
+      mappedCountries,
+      languageId.toString()
+    )
   }
 }
 main().catch((e) => {

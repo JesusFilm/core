@@ -53,7 +53,6 @@ model Country {
   name        CountryName[]
   population  Int
   continent   CountryContinent[]
-  slug        String             @unique
   latitude    Float
   longitude   Float
   flagPngSrc  String
