@@ -41,12 +41,16 @@ export class EmailService {
     const jobId = `visitor-event-${journeyId}-${visitorId}`
     const visitorEmailJob = await this.emailQueue.getJob(jobId)
 
+    const removalFlags = ['start', 'play', null, undefined]
+    const removeJob = removalFlags.includes(videoEvent)
+    const isVideoEvent = videoEvent === 'start' || videoEvent === 'play'
+
     if (visitorEmailJob != null) {
-      const removeJob = ['start', 'play', null, undefined].includes(videoEvent)
-      const addJob = videoEvent !== 'start' && videoEvent !== 'play'
+      const jobState = await this.emailQueue.getJobState(jobId)
 
       if (removeJob) await this.emailQueue.remove(jobId)
-      if (addJob) await this.addVisitorEvent(journeyId, visitorId, jobId)
+      if (jobState !== 'completed' && !isVideoEvent)
+        await this.addVisitorEvent(journeyId, visitorId, jobId)
     } else {
       await this.addVisitorEvent(journeyId, visitorId, jobId)
     }

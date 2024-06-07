@@ -15,7 +15,8 @@ describe('EmailService', () => {
     emailQueue = {
       add: jest.fn(),
       getJob: jest.fn(),
-      remove: jest.fn()
+      remove: jest.fn(),
+      getJobState: jest.fn()
     }
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -31,6 +32,10 @@ describe('EmailService', () => {
       .compile()
 
     emailService = module.get<EmailService>(EmailService)
+  })
+
+  afterEach(async () => {
+    jest.clearAllMocks()
   })
 
   it('should send events email', async () => {
@@ -52,6 +57,7 @@ describe('EmailService', () => {
 
   it('should remove the job if it exists and send events email', async () => {
     emailQueue.getJob.mockResolvedValueOnce({})
+    emailQueue.getJobState.mockResolvedValueOnce('waiting')
     await emailService.sendEventsEmail(journeyId, visitorId)
     expect(emailQueue.remove).toHaveBeenCalled()
     expect(emailQueue.add).toHaveBeenCalledWith(
@@ -71,6 +77,7 @@ describe('EmailService', () => {
 
   it('should remove the job if it exists and video event is start', async () => {
     emailQueue.getJob.mockResolvedValueOnce({})
+    emailQueue.getJobState.mockResolvedValueOnce('completed')
     await emailService.sendEventsEmail(journeyId, visitorId, 'start')
     expect(emailQueue.remove).toHaveBeenCalled()
     expect(emailQueue.add).not.toHaveBeenCalled()
@@ -78,6 +85,7 @@ describe('EmailService', () => {
 
   it('should remove the job if it exists and video event is play', async () => {
     emailQueue.getJob.mockResolvedValueOnce({})
+    emailQueue.getJobState.mockResolvedValueOnce('completed')
     await emailService.sendEventsEmail(journeyId, visitorId, 'play')
     expect(emailQueue.remove).toHaveBeenCalled()
     expect(emailQueue.add).not.toHaveBeenCalled()
