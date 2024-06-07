@@ -1,8 +1,7 @@
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import ListItem from '@mui/material/ListItem'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
+
 import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
@@ -21,6 +20,7 @@ import { NotificationSwitch } from '../../NotificationSwitch'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
 import { RemoveUser } from './RemoveUser'
+import Grid from '@mui/material/Grid'
 
 interface UserItem {
   id: string
@@ -111,60 +111,58 @@ export function UserListItem({
 
   return (
     <>
-      <ListItem
-        sx={{
-          px: 0,
-          '& > .MuiListItemSecondaryAction-root': {
-            right: 0
-          }
-        }}
-        data-testid="UserListItem"
-      >
-        <ListItemAvatar>
+      <Grid container spacing={2}>
+        <Grid xs={1}>
           <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
             {displayName != null
               ? displayName.charAt(0)?.toUpperCase()
               : email.charAt(0).toUpperCase()}
           </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={displayName}
-          secondary={email}
-          sx={{
-            '& > .MuiListItemText-secondary': {
-              width: { xs: '90%', sm: '90%' },
-              whiteSpace: 'nowrap',
-              overflow: 'clip',
-              textOverflow: 'ellipsis'
-            }
-          }}
-        />
-        {listItem.__typename !== 'UserInvite' && (
-          <NotificationSwitch
-            id={emailPreference?.id}
-            userId={userId}
-            name={listItem?.user?.firstName}
-            journeyId={journeyIdFromParent}
-            checked={emailPreference?.value}
-            disabled={userId !== currentUser?.user?.id}
+        </Grid>
+        <Grid xs={7}>
+          <ListItemText
+            primary={displayName}
+            secondary={email}
+            sx={{
+              '& > .MuiListItemText-secondary': {
+                width: { xs: '90%', sm: '90%' },
+                whiteSpace: 'nowrap',
+                overflow: 'clip',
+                textOverflow: 'ellipsis'
+              }
+            }}
           />
-        )}
-        <Button
-          aria-controls={open ? 'basic-menu' : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : undefined}
-          onClick={handleClick}
-          disabled={disableAction}
-          endIcon={<ChevronDownIcon />}
-          sx={{
-            width: '20%',
-            color: 'text.primary',
-            typography: 'body2'
-          }}
-        >
-          {isInvite ? t('Pending') : menuLabel}
-        </Button>
-      </ListItem>
+        </Grid>
+        <Grid xs={2}>
+          {listItem.__typename !== 'UserInvite' && (
+            <NotificationSwitch
+              id={emailPreference?.id}
+              userId={userId}
+              name={listItem?.user?.firstName}
+              journeyId={journeyIdFromParent}
+              checked={emailPreference?.value}
+              disabled={userId !== currentUser?.user?.id}
+            />
+          )}
+        </Grid>
+        <Grid xs={2}>
+          <Button
+            aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleClick}
+            disabled={disableAction}
+            endIcon={<ChevronDownIcon />}
+            sx={{
+              width: '20%',
+              color: 'text.primary',
+              typography: 'body2'
+            }}
+          >
+            {isInvite ? t('Pending') : menuLabel}
+          </Button>
+        </Grid>
+      </Grid>
 
       <Menu
         anchorEl={anchorEl}

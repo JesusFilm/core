@@ -5,6 +5,11 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo } from 'react'
+import ListItemIcon from '@mui/material/ListItemIcon'
+
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
+import EmailIcon from '@mui/icons-material/Email'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -22,6 +27,10 @@ import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import Grid from '@mui/material/Grid'
 
 export const GET_JOURNEY_WITH_PERMISSIONS = gql`
   query GetJourneyWithPermissions($id: ID!) {
@@ -154,9 +163,21 @@ export function AccessDialog({
         {data?.journey?.team?.userTeams != null &&
           data?.journey?.team?.userTeams.length > 0 && (
             <>
-              <Stack direction="row" alignItems="center" sx={{ mb: -4 }}>
-                <Typography variant="subtitle1">{t('Team Members')}</Typography>
-              </Stack>
+              {/* TODO: move MUI icons to Stratis */}
+              <Grid container spacing={2}>
+                <Grid xs={1}>
+                  <PeopleAltIcon />
+                </Grid>
+                <Grid xs={7}>
+                  <ListItemText primary={t('Team Members')} />
+                </Grid>
+                <Grid xs={2}>
+                  <EmailIcon />
+                </Grid>
+                <Grid xs={2}>
+                  <VerifiedUserIcon />
+                </Grid>
+              </Grid>
               <UserTeamList
                 data={data?.journey?.team ?? undefined}
                 currentUserTeam={data?.journey?.team as unknown as UserTeam}
