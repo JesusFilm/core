@@ -195,69 +195,70 @@ export function getSeoSlug(title: string, collection: string[]): string {
   return newSlug
 }
 
-interface TransformedCountries extends Prisma.CountryCreateInput {
-  name: Translation[]
-  continent: Translation[]
+interface TransformedCountries
+  extends Omit<Prisma.CountryCreateInput, 'name' | 'continent'> {
+  names: Translation[]
+  continents: Translation[]
 }
 
 function digestCountries(countries: MediaCountry[]): TransformedCountries[] {
   console.log('countries:', '529')
-  const transformedCountries: Prisma.CountryCreateInput[] = countries.map(
-    (country) => ({
-      id: country.countryId.toString(),
-      name: [{ value: country.name, languageId: '529', primary: true }],
-      population: country.counts.population.value,
-      continent: [
-        { value: country.continentName, languageId: '529', primary: true }
-      ],
-      languageIds: country.languageIds.map((l) => l.toString()),
-      latitude: country.latitude,
-      longitude: country.longitude,
-      flagPngSrc: country.assets.flagUrls.png8,
-      flagWebpSrc: country.assets.flagUrls.webpLossy50
-    })
-  )
+  const transformedCountries = countries.map((country) => ({
+    id: country.countryId.toString(),
+    names: [{ value: country.name, languageId: '529', primary: true }],
+    population: country.counts.population.value,
+    continents: [
+      { value: country.continentName, languageId: '529', primary: true }
+    ],
+    languageIds: country.languageIds.map((l) => l.toString()),
+    latitude: country.latitude,
+    longitude: country.longitude,
+    flagPngSrc: country.assets.flagUrls.png8,
+    flagWebpSrc: country.assets.flagUrls.webpLossy50
+  }))
   return transformedCountries
 }
 
 function digestTranslatedCountries(
   countries: MediaCountry[],
-  mappedCountries: Country[],
+  mappedCountries: TransformedCountries[],
   languageId: string
-): Country[] {
+): TransformedCountries[] {
   if (languageId === '529') return mappedCountries
   console.log('countries:', languageId)
-  const transformedCountries: Country[] = countries.map((country) => ({
-    id: country.countryId.toString(),
-    name: [
-      {
-        value: isEmpty(country.name) ? '' : country.name,
-        languageId,
-        primary: false
-      }
-    ],
-    population: country.counts.population.value,
-    continent: [
-      {
-        value: isEmpty(country.continentName) ? '' : country.continentName,
-        languageId,
-        primary: false
-      }
-    ],
-    slug: [
-      {
-        value: isEmpty(country.name)
-          ? ''
-          : getSeoSlug(country.name, usedTitles),
-        languageId,
-        primary: false
-      }
-    ],
-    languageIds: country.languageIds.map((l) => l.toString()),
-    latitude: country.latitude,
-    longitude: country.longitude,
-    image: country.assets.flagUrls.png8
-  }))
+  const transformedCountries: TransformedCountries[] = countries.map(
+    (country) => ({
+      id: country.countryId.toString(),
+      name: [
+        {
+          value: isEmpty(country.name) ? '' : country.name,
+          languageId,
+          primary: false
+        }
+      ],
+      population: country.counts.population.value,
+      continent: [
+        {
+          value: isEmpty(country.continentName) ? '' : country.continentName,
+          languageId,
+          primary: false
+        }
+      ],
+      slug: [
+        {
+          value: isEmpty(country.name)
+            ? ''
+            : getSeoSlug(country.name, usedTitles),
+          languageId,
+          primary: false
+        }
+      ],
+      languageIds: country.languageIds.map((l) => l.toString()),
+      latitude: country.latitude,
+      longitude: country.longitude,
+      image: country.assets.flagUrls.png8
+    })
+  )
   transformedCountries.forEach((country) => {
     const existing = mappedCountries.find((c) => c._key === country._key)
     if (existing == null) mappedCountries.push(country)

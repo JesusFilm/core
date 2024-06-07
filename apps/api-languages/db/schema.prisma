@@ -19,15 +19,17 @@ datasource db {
 }
 
 model Language {
-  id           String         @id
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  bcp47        String?
-  iso3         String?
-  name         LanguageName[] @relation(name: "name")
-  nameLanguage LanguageName[] @relation(name: "nameLanguage")
-  Country      Country?       @relation(fields: [countryId], references: [id])
-  countryId    String?
+  id               String             @id
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  bcp47            String?
+  iso3             String?
+  name             LanguageName[]     @relation(name: "name")
+  nameLanguage     LanguageName[]     @relation(name: "nameLanguage")
+  countries        Country[]
+  countryId        String?
+  countryName      CountryName[]
+  countryContinent CountryContinent[]
 
   @@index(bcp47(type: Hash))
 }
@@ -61,12 +63,13 @@ model Country {
 }
 
 model CountryName {
-  id         String  @id @default(uuid())
+  id         String   @id @default(uuid())
   value      String
   countryId  String
   languageId String
   primary    Boolean
-  country    Country @relation(fields: [countryId], references: [id])
+  country    Country  @relation(fields: [countryId], references: [id])
+  language   Language @relation(fields: [languageId], references: [id])
 
   @@unique([languageId, countryId])
   @@unique([countryId, primary])
@@ -76,12 +79,13 @@ model CountryName {
 }
 
 model CountryContinent {
-  id         String  @id @default(uuid())
+  id         String   @id @default(uuid())
   value      String
   countryId  String
   languageId String
   primary    Boolean
-  country    Country @relation(fields: [countryId], references: [id])
+  country    Country  @relation(fields: [countryId], references: [id])
+  language   Language @relation(fields: [languageId], references: [id])
 
   @@unique([languageId, countryId])
   @@unique([countryId, primary])
