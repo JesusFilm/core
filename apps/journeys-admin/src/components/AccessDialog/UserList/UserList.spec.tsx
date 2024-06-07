@@ -1,4 +1,6 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
@@ -46,13 +48,17 @@ describe('UserList', () => {
 
   it('should display title and list of users', () => {
     const { getByRole, getAllByRole } = render(
-      <UserList
-        title="Users with Access"
-        users={[userJourney1, userJourney2]}
-        invites={[userInvite]}
-        currentUser={userJourney1}
-        journeyId="journey.id"
-      />
+      <MockedProvider>
+        <SnackbarProvider>
+          <UserList
+            title="Users with Access"
+            users={[userJourney1, userJourney2]}
+            invites={[userInvite]}
+            currentUser={userJourney1}
+            journeyId="journey.id"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(
       getByRole('heading', { name: 'Users with Access' })
@@ -69,13 +75,17 @@ describe('UserList', () => {
 
   it('should hide invites that have been removed', async () => {
     const { getByRole, getAllByRole } = render(
-      <UserList
-        title="Users with Access"
-        users={[userJourney1]}
-        invites={[{ ...userInvite, removedAt: 'dateTime' }]}
-        currentUser={userJourney1}
-        journeyId="journey.id"
-      />
+      <MockedProvider>
+        <SnackbarProvider>
+          <UserList
+            title="Users with Access"
+            users={[userJourney1]}
+            invites={[{ ...userInvite, removedAt: 'dateTime' }]}
+            currentUser={userJourney1}
+            journeyId="journey.id"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(
       getByRole('heading', { name: 'Users with Access' })
@@ -88,13 +98,17 @@ describe('UserList', () => {
 
   it('should hide invites that have been accepted', async () => {
     const { getByRole, getAllByRole } = render(
-      <UserList
-        title="Users with Access"
-        users={[userJourney1]}
-        invites={[{ ...userInvite, acceptedAt: 'dateTime' }]}
-        currentUser={userJourney1}
-        journeyId="journey.id"
-      />
+      <MockedProvider>
+        <SnackbarProvider>
+          <UserList
+            title="Users with Access"
+            users={[userJourney1]}
+            invites={[{ ...userInvite, acceptedAt: 'dateTime' }]}
+            currentUser={userJourney1}
+            journeyId="journey.id"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(
       getByRole('heading', { name: 'Users with Access' })

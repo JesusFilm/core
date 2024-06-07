@@ -99,6 +99,9 @@ export function AccessDialog({
     }, [emailPreferences])
 
   const { users, requests, invites, emails } = useMemo(() => {
+    const userTeamsMap = new Map(
+      data?.journey.team?.userTeams.map((obj) => [obj.user.id, obj])
+    )
     const users: UserJourney[] = []
     const requests: UserJourney[] = []
     const emails: string[] = []
@@ -107,7 +110,8 @@ export function AccessDialog({
       if (userJourney.role === UserJourneyRole.inviteRequested) {
         requests.push(userJourney)
       } else {
-        users.push(userJourney)
+        if (userTeamsMap.get(userJourney?.user?.id ?? '') == null)
+          users.push(userJourney)
       }
       if (userJourney.user != null) emails.push(userJourney.user.email)
     })
@@ -170,7 +174,7 @@ export function AccessDialog({
           journeyId={journeyId}
         />
         <UserList
-          title={t('Editors')}
+          title={t('Guests')}
           loading={loading}
           users={users}
           invites={invites}

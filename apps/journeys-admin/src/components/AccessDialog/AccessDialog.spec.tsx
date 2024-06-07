@@ -159,7 +159,7 @@ describe('AccessDialog', () => {
     )
 
     await waitFor(() => {
-      expect(getByRole('heading', { name: 'Editors' })).toBeInTheDocument()
+      expect(getByRole('heading', { name: 'Guests' })).toBeInTheDocument()
       expect(
         getByRole('heading', { name: 'Requested Access' })
       ).toBeInTheDocument()

@@ -74,9 +74,11 @@ export function UserList({
         </Box>
       ) : (
         <>
-          {users.length > 0 && (
+          {(users.length > 0 || invites.length > 0) && (
             <Box>
-              <Typography variant="subtitle1">{title}</Typography>
+              <Typography variant="subtitle1" sx={{ pb: 4 }}>
+                {title}
+              </Typography>
 
               <List sx={{ py: 0 }}>
                 {sortedUsers.map((user) => {
