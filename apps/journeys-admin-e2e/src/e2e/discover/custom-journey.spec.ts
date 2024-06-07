@@ -29,8 +29,7 @@ test.describe('verify custom journey page', () => {
   })
 
   // Verify the user able to create a journey with 'Create custom journey' button
-  test.fixme(
-    'Create journey via Create custom journey button',
+  test('Create journey via Create custom journey button',
     async ({ page }) => {
       const journeyPage = new JourneyPage(page)
       await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button

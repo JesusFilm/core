@@ -21,8 +21,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
-  test.fixme(
-    'Create a template via newly created journey',
+  test('Create a template via newly created journey',
     async ({ page }) => {
       const journeyPage = new JourneyPage(page)
       await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
@@ -85,8 +84,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Verify the user able to display the publisher help window
-  test.fixme(
-    'Verify the user able to display the publisher help window',
+  test('Verify the user able to display the publisher help window',
     async ({ page }) => {
       const publisherPage = new Publisher(page)
       const journeyLevelActions = new JourneyLevelActions(page)
@@ -116,7 +114,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories
-  test.fixme('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories', async ({
+  test('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories', async ({
     page
   }) => {
     const publisherPage = new Publisher(page)
@@ -161,7 +159,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About
-  test.fixme(
+  test(
     'Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About',
     async ({ page }) => {
       const publisherPage = new Publisher(page)
@@ -186,7 +184,7 @@ test.describe('Publisher page functionality', () => {
   )
 
   //Publisher-> Select existing template -> Three dots on top right -> Language
-  test.fixme(
+  test(
     'Publisher-> Select existing template -> Three dots on top right -> Language',
     async ({ page }) => {
       const publisherPage = new Publisher(page)
@@ -215,7 +213,7 @@ test.describe('Verify template page functionality', () => {
     await loginPage.login() // login as admin user
   })
   //Templates-> Select existing template -> Use This Template
-  test.fixme('create a new journey via use this template button', async ({
+  test('create a new journey via use this template button', async ({
     page
   }) => {
     const templatesPage = new TemplatePage(page)
@@ -247,8 +245,8 @@ test.describe('Verify template page functionality', () => {
   })
 
   // TODO: Skipping for now as template publishing taking about 5-7 mins to take effect
-  //Templates-> Select existing template -> Edit
-  test('Edit a template', async ({ page, context }) => {
+  // Templates-> Select existing template -> Edit
+  test.skip('Edit a template', async ({ page, context }) => {
     const templatesPage = new TemplatePage(page)
     const cardLevelActionPage = new CardLevelActionPage(page)
     const journeyPage = new JourneyPage(page)

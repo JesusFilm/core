@@ -148,8 +148,7 @@ test.describe('Journey level actions', () => {
   })
 
   // Discover page -> Select an existing journey -> Three dots on top right -> Copy Link
-  test.fixme(
-    'Verify copy link option from three dot options on top right in the selected journey page',
+  test('Verify copy link option from three dot options on top right in the selected journey page',
     async ({ page, context }) => {
       const journeyLevelActions = new JourneyLevelActions(page)
       const journeyPage = new JourneyPage(page)
