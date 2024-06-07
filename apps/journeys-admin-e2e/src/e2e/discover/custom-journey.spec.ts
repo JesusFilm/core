@@ -29,13 +29,11 @@ test.describe('verify custom journey page', () => {
   })
 
   // Verify the user able to create a journey with 'Create custom journey' button
-  test('Create journey via Create custom journey button',
-    async ({ page }) => {
-      const journeyPage = new JourneyPage(page)
-      await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
-      await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
-    }
-  )
+  test('Create journey via Create custom journey button', async ({ page }) => {
+    const journeyPage = new JourneyPage(page)
+    await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
+    await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+  })
 
   // TODO: e2e: Update this as per journey flow diagram
   // Verify the user able to delete the journey card in create custom journey page
