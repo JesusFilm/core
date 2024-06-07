@@ -1,15 +1,14 @@
 import { gql, useLazyQuery } from '@apollo/client'
+import EmailIcon from '@mui/icons-material/Email'
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
+import Grid from '@mui/material/Grid'
+import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo } from 'react'
-import ListItemIcon from '@mui/material/ListItemIcon'
-
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
-import EmailIcon from '@mui/icons-material/Email'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -27,10 +26,6 @@ import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
-import ListItem from '@mui/material/ListItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import Grid from '@mui/material/Grid'
 
 export const GET_JOURNEY_WITH_PERMISSIONS = gql`
   query GetJourneyWithPermissions($id: ID!) {
@@ -164,18 +159,24 @@ export function AccessDialog({
           data?.journey?.team?.userTeams.length > 0 && (
             <>
               {/* TODO: move MUI icons to Stratis */}
-              <Grid container spacing={2}>
+              <Grid container spacing={2} alignItems="center">
                 <Grid xs={1}>
-                  <PeopleAltIcon />
+                  <Stack sx={{ ml: 1 }}>
+                    <PeopleAltIcon />
+                  </Stack>
                 </Grid>
                 <Grid xs={7}>
-                  <ListItemText primary={t('Team Members')} />
+                  <ListItemText primary={t('Team Members')} sx={{ ml: 2 }} />
                 </Grid>
                 <Grid xs={2}>
-                  <EmailIcon />
+                  <Stack sx={{ ml: 4 }}>
+                    <EmailIcon />
+                  </Stack>
                 </Grid>
                 <Grid xs={2}>
-                  <VerifiedUserIcon />
+                  <Stack sx={{ ml: 5 }}>
+                    <VerifiedUserIcon />
+                  </Stack>
                 </Grid>
               </Grid>
               <UserTeamList

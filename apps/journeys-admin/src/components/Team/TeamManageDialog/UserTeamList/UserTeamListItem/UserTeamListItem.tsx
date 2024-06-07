@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import Grid from '@mui/material/Grid'
 import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
@@ -19,7 +20,6 @@ import { UserTeamUpdate } from '../../../../../../__generated__/UserTeamUpdate'
 import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
 import { MenuItem } from '../../../../MenuItem'
 import { UserTeamDeleteMenuItem } from '../../UserTeamDeleteMenuItem'
-import Grid from '@mui/material/Grid'
 
 interface UserTeamListItemProps {
   user: UserTeam
@@ -84,7 +84,7 @@ export function UserTeamListItem({
 
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid container spacing={1} alignItems="center">
         <Grid xs={1}>
           <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
             {displayName != null
@@ -97,6 +97,7 @@ export function UserTeamListItem({
             primary={displayName}
             secondary={email}
             sx={{
+              ml: 2,
               '& > .MuiListItemText-secondary': {
                 width: { xs: '90%', sm: '90%' },
                 whiteSpace: 'nowrap',
@@ -127,7 +128,6 @@ export function UserTeamListItem({
             endIcon={<ChevronDownIcon />}
             sx={{
               color: 'text.primary',
-              width: '20%',
               typography: 'body2',
               '& > .MuiButton-endIcon': {
                 display: variant === 'readonly' ? 'none' : 'inherit'

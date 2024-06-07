@@ -75,40 +75,37 @@ export function UserList({
       ) : (
         <>
           {(users.length > 0 || invites.length > 0) && (
-            <Box>
+            <>
               <Typography variant="subtitle1" sx={{ pb: 4 }}>
                 {title}
               </Typography>
-
-              <List sx={{ py: 0 }}>
-                {sortedUsers.map((user) => {
-                  const emailPreference = emailPreferences?.get(
-                    user.user?.id ?? ''
-                  )
-                  return (
+              {sortedUsers.map((user) => {
+                const emailPreference = emailPreferences?.get(
+                  user.user?.id ?? ''
+                )
+                return (
+                  <UserListItem
+                    journeyId={journeyId}
+                    key={user.id}
+                    listItem={user}
+                    currentUser={currentUser}
+                    emailPreference={emailPreference}
+                  />
+                )
+              })}
+              {invites.map(
+                (invite) =>
+                  invite.removedAt == null &&
+                  invite.acceptedAt == null && (
                     <UserListItem
                       journeyId={journeyId}
-                      key={user.id}
-                      listItem={user}
+                      key={invite.id}
+                      listItem={invite}
                       currentUser={currentUser}
-                      emailPreference={emailPreference}
                     />
                   )
-                })}
-                {invites.map(
-                  (invite) =>
-                    invite.removedAt == null &&
-                    invite.acceptedAt == null && (
-                      <UserListItem
-                        journeyId={journeyId}
-                        key={invite.id}
-                        listItem={invite}
-                        currentUser={currentUser}
-                      />
-                    )
-                )}
-              </List>
-            </Box>
+              )}
+            </>
           )}
         </>
       )}

@@ -71,7 +71,7 @@ export function UserTeamList({
       ) : (
         <>
           {sortedUserTeams.length > 0 && currentUserTeam != null && (
-            <List sx={{ py: 0 }}>
+            <>
               {sortedUserTeams.map((userTeam) => {
                 const emailPreference = emailPreferences?.get(
                   userTeam.user.id ?? ''
@@ -91,7 +91,7 @@ export function UserTeamList({
                   />
                 )
               })}
-            </List>
+            </>
           )}
         </>
       )}

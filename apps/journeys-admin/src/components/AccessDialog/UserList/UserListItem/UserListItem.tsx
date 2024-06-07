@@ -1,7 +1,7 @@
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-
+import Grid from '@mui/material/Grid'
 import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
@@ -20,7 +20,6 @@ import { NotificationSwitch } from '../../NotificationSwitch'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
 import { RemoveUser } from './RemoveUser'
-import Grid from '@mui/material/Grid'
 
 interface UserItem {
   id: string
@@ -111,7 +110,7 @@ export function UserListItem({
 
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid container spacing={1} alignItems="center">
         <Grid xs={1}>
           <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
             {displayName != null
@@ -124,6 +123,7 @@ export function UserListItem({
             primary={displayName}
             secondary={email}
             sx={{
+              ml: 2,
               '& > .MuiListItemText-secondary': {
                 width: { xs: '90%', sm: '90%' },
                 whiteSpace: 'nowrap',
@@ -154,7 +154,6 @@ export function UserListItem({
             disabled={disableAction}
             endIcon={<ChevronDownIcon />}
             sx={{
-              width: '20%',
               color: 'text.primary',
               typography: 'body2'
             }}
