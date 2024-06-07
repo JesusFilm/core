@@ -111,14 +111,14 @@ export function UserListItem({
   return (
     <>
       <Grid container spacing={1} alignItems="center">
-        <Grid xs={1}>
+        <Grid xs={2} sm={1}>
           <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
             {displayName != null
               ? displayName.charAt(0)?.toUpperCase()
               : email.charAt(0).toUpperCase()}
           </Avatar>
         </Grid>
-        <Grid xs={7}>
+        <Grid xs={6} sm={7}>
           <ListItemText
             primary={displayName}
             secondary={email}
@@ -133,7 +133,7 @@ export function UserListItem({
             }}
           />
         </Grid>
-        <Grid xs={2}>
+        <Grid xs={2} sm={2}>
           {listItem.__typename !== 'UserInvite' && (
             <NotificationSwitch
               id={emailPreference?.id}
@@ -145,7 +145,7 @@ export function UserListItem({
             />
           )}
         </Grid>
-        <Grid xs={2}>
+        <Grid xs={2} sm={2}>
           <Button
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"

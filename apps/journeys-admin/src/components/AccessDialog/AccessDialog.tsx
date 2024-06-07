@@ -159,21 +159,21 @@ export function AccessDialog({
           data?.journey?.team?.userTeams.length > 0 && (
             <>
               {/* TODO: move MUI icons to Stratis */}
-              <Grid container spacing={2} alignItems="center">
-                <Grid xs={1}>
+              <Grid container spacing={1} alignItems="center">
+                <Grid xs={2} sm={1}>
                   <Stack sx={{ ml: 1 }}>
                     <PeopleAltIcon />
                   </Stack>
                 </Grid>
-                <Grid xs={7}>
+                <Grid xs={6} sm={7}>
                   <ListItemText primary={t('Team Members')} sx={{ ml: 2 }} />
                 </Grid>
-                <Grid xs={2}>
+                <Grid xs={2} sm={2}>
                   <Stack sx={{ ml: 4 }}>
                     <EmailIcon />
                   </Stack>
                 </Grid>
-                <Grid xs={2}>
+                <Grid xs={2} sm={2}>
                   <Stack sx={{ ml: 5 }}>
                     <VerifiedUserIcon />
                   </Stack>
