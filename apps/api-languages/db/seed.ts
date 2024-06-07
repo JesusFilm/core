@@ -35,8 +35,8 @@ interface MediaCountry {
   name: string
   continentName: string
   metadataLanguageTag: string
-  longitude: float
-  latitude: float
+  longitude: number
+  latitude: number
   counts: {
     languageCount: {
       value: number
