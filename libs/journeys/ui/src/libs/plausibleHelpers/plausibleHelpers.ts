@@ -1,5 +1,3 @@
-import slice from 'lodash/slice'
-
 import {
   ButtonClickEventCreateInput,
   ChatOpenEventCreateInput,
@@ -89,7 +87,13 @@ export function keyify({
         break
     }
   }
-  return `${stepId}:${event}:${blockId}${targetId !== '' ? `:${targetId}` : ''}`
+
+  return JSON.stringify({
+    stepId,
+    event,
+    blockId,
+    target: targetId
+  })
 }
 
 export function reverseKeyify(key: string): {
@@ -98,20 +102,5 @@ export function reverseKeyify(key: string): {
   blockId: string
   target?: string
 } {
-  const decodedProperties = key.split(':')
-
-  const stepId = decodedProperties[0]
-  const event = decodedProperties[1]
-  const blockId = decodedProperties[2]
-  const target =
-    decodedProperties[3] === 'link' || decodedProperties[3] === 'email'
-      ? slice(decodedProperties, 3, decodedProperties.length).join(':')
-      : decodedProperties[3]
-
-  return {
-    stepId,
-    event: event as keyof JourneyPlausibleEvents,
-    blockId,
-    target
-  }
+  return JSON.parse(key)
 }

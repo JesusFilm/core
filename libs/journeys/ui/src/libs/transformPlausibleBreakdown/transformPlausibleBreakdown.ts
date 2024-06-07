@@ -56,12 +56,8 @@ export function transformPlausibleBreakdown({
   } = data
 
   const journeyEvents: PlausibleEvent[] = journeyStepsActions.map((action) => {
-    const { stepId, event, blockId, target } = reverseKeyify(action.property)
     return {
-      stepId,
-      event,
-      blockId,
-      target,
+      ...reverseKeyify(action.property),
       events: action.events ?? 0
     }
   })
