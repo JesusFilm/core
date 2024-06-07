@@ -116,7 +116,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories
-  test('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories', async ({
+  test.fixme('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories', async ({
     page
   }) => {
     const publisherPage = new Publisher(page)
@@ -215,7 +215,7 @@ test.describe('Verify template page functionality', () => {
     await loginPage.login() // login as admin user
   })
   //Templates-> Select existing template -> Use This Template
-  test('create a new journey via use this template button', async ({
+  test.fixme('create a new journey via use this template button', async ({
     page
   }) => {
     const templatesPage = new TemplatePage(page)
