@@ -1,6 +1,12 @@
 import camelCase from 'lodash/camelCase'
 import startCase from 'lodash/startCase'
 
+declare global {
+  interface Window {
+    Beacon?: any
+  }
+}
+
 export function setBeaconPageViewed(route: string): void {
   if (window.Beacon != null) {
     window.Beacon('event', {
