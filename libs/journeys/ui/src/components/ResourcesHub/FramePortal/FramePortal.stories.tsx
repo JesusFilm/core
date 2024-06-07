@@ -1,14 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-import { BlockFields as Block } from '../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -18,7 +13,12 @@ import {
   ThemeMode,
   ThemeName,
   TypographyVariant
-} from '../../../__generated__/globalTypes'
+} from '../../../../__generated__/globalTypes'
+import type { TreeBlock } from '../../../libs/block'
+import { BlockFields as Block } from '../../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { GetJourney_journey as Journey } from '../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { BlockRenderer } from '../../BlockRenderer'
 
 import { FramePortal } from '.'
 
