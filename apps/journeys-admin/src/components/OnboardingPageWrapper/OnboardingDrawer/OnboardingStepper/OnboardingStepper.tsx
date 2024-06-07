@@ -61,7 +61,7 @@ export function OnboardingStepper({
       label: t('User Insights')
     },
     {
-      label: t('Create a Team')
+      label: t('Create Your Workspace')
     }
   ]
 
