@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+import compact from 'lodash/compact'
 import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
@@ -77,7 +78,7 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
   return {
     revalidate: 3600,
     props: {
-      videos,
+      videos: compact(videos),
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],
