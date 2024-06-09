@@ -22,15 +22,25 @@ export enum GoalType {
   Chat = 'Chat',
   Bible = 'Bible',
   Website = 'Website',
-  Journey = 'Journey'
+  Email = 'Email'
+}
+
+function isMessagePlatform(url: string): boolean {
+  return messagePlatforms.some((platform) => url.includes(platform.url))
+}
+
+function isBiblePlatform(url: string): boolean {
+  return biblePlatforms.some((platform) => url.includes(platform))
 }
 
 export function getLinkActionGoal(url: string): GoalType {
-  if (messagePlatforms.find((platform) => url.includes(platform.url)) != null) {
+  const emailRegex = /\S+@\S+\.\S+/
+
+  if (emailRegex.test(url)) {
+    return GoalType.Email
+  } else if (isMessagePlatform(url)) {
     return GoalType.Chat
-  } else if (
-    biblePlatforms.find((platform) => url.includes(platform)) != null
-  ) {
+  } else if (isBiblePlatform(url)) {
     return GoalType.Bible
   } else {
     return GoalType.Website

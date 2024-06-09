@@ -1,0 +1,1 @@
+export { getGoalDetails } from './getGoalDetails'
