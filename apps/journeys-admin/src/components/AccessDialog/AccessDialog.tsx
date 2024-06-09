@@ -165,7 +165,7 @@ export function AccessDialog({
                     <PeopleAltIcon />
                   </Stack>
                 </Grid>
-                <Grid xs={6} sm={7}>
+                <Grid xs={5} sm={7}>
                   <ListItemText primary={t('Team Members')} sx={{ ml: 2 }} />
                 </Grid>
                 <Grid xs={2} sm={2}>
@@ -173,7 +173,7 @@ export function AccessDialog({
                     <EmailIcon />
                   </Stack>
                 </Grid>
-                <Grid xs={2} sm={2}>
+                <Grid xs={3} sm={2}>
                   <Stack sx={{ ml: 5 }}>
                     <VerifiedUserIcon />
                   </Stack>

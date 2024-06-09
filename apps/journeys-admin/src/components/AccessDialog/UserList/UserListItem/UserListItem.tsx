@@ -118,7 +118,7 @@ export function UserListItem({
               : email.charAt(0).toUpperCase()}
           </Avatar>
         </Grid>
-        <Grid xs={6} sm={7}>
+        <Grid xs={5} sm={7}>
           <ListItemText
             primary={displayName}
             secondary={email}
@@ -145,7 +145,7 @@ export function UserListItem({
             />
           )}
         </Grid>
-        <Grid xs={2} sm={2}>
+        <Grid xs={3} sm={2}>
           <Button
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
