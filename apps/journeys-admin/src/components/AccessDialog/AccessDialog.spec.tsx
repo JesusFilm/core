@@ -117,6 +117,20 @@ const mocks = [
                 imageUrl: 'https://bit.ly/3nlwUwJ',
                 email: 'coral@email.com'
               }
+            },
+            {
+              __typename: 'UserJourney',
+              id: 'userJourneyId4',
+              role: 'editor',
+              user: {
+                __typename: 'User',
+                email: 'kujojotaro@example.com',
+                firstName: 'Jotaro',
+                id: 'userId',
+                imageUrl:
+                  'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c',
+                lastName: 'Kujo'
+              }
             }
           ]
         }
@@ -165,6 +179,25 @@ describe('AccessDialog', () => {
       ).toBeInTheDocument()
     })
     expect(getByRole('heading', { name: 'Add editor by' })).toBeInTheDocument()
+  })
+
+  it('should not display users that are part of the team as guests', async () => {
+    const handleClose = jest.fn()
+    const { getByRole, getAllByText } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocks}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('heading', { name: 'Guests' })).toBeInTheDocument()
+      expect(
+        getByRole('heading', { name: 'Requested Access' })
+      ).toBeInTheDocument()
+    })
+    expect(getAllByText('Jotaro Kujo')).toHaveLength(1)
   })
 
   it('should display team members', async () => {
