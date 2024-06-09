@@ -1,5 +1,4 @@
 import cliProgress from 'cli-progress'
-import { v4 as uuid } from 'uuid'
 
 import prisma from './client'
 
@@ -8,8 +7,7 @@ export async function changeTextResponseActionsToButtons(): Promise<void> {
   const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic)
 
   const textResponseWithActions = await prisma.block.findMany({
-    where: { action: { isNot: null }, typename: 'TextResponseBlock' },
-    include: { action: true }
+    where: { action: { isNot: null }, typename: 'TextResponseBlock' }
   })
   if (!Array.isArray(textResponseWithActions)) {
     console.warn(
@@ -22,90 +20,81 @@ export async function changeTextResponseActionsToButtons(): Promise<void> {
   bar1.start(textResponseWithActions.length, 0)
 
   for (const textResponse of textResponseWithActions) {
-    try {
-      const id = uuid()
-      await prisma.$transaction(
-        async (tx) => {
-          if (textResponse.parentOrder == null)
-            throw new Error(`missing parentOrder for: ${textResponse.id}`)
-          if (textResponse.parentBlockId == null)
-            throw new Error(`missing parentBlockId for: ${textResponse.id}`)
-          if (textResponse.action == null)
-            throw new Error(`missing action for: ${textResponse.id}`)
+    await prisma.$transaction(
+      async (tx) => {
+        if (textResponse.parentOrder == null)
+          throw new Error(`missing parentOrder for: ${textResponse.id}`)
+        if (textResponse.parentBlockId == null)
+          throw new Error(`missing parentBlockId for: ${textResponse.id}`)
 
-          // create button block
-          const buttonBlock = await tx.block.create({
-            data: {
-              id,
-              typename: 'ButtonBlock',
-              journey: { connect: { id: textResponse.journeyId } },
-              parentBlock: {
-                connect: { id: textResponse.parentBlockId }
-              },
-              // parentOrder: textResponse.parentOrder + 1,
-              label: textResponse.submitLabel ?? 'Submit',
-              startIconId: textResponse.submitIconId
+        // create button block
+        const buttonBlock = await tx.block.create({
+          data: {
+            typename: 'ButtonBlock',
+            journey: { connect: { id: textResponse.journeyId } },
+            parentBlock: {
+              connect: { id: textResponse.parentBlockId }
             },
-            include: { action: true }
-          })
-          // re order blocks
-          const siblingBlocks = await tx.block.findMany({
-            where: {
-              journeyId: textResponse.journeyId,
-              parentBlockId: textResponse.parentBlockId,
-              parentOrder: { not: null }
-            },
-            orderBy: { parentOrder: 'asc' },
-            include: { action: true }
-          })
-          siblingBlocks.splice(textResponse.parentOrder + 1, 0, buttonBlock)
-          // update parentblockId
-          const updatedSiblings = siblingBlocks.map((block, index) => ({
-            ...block,
-            parentOrder: index
-          }))
-          await Promise.all(
-            updatedSiblings.map(
-              async (block) =>
-                await tx.block.update({
-                  where: { id: block.id },
-                  data: { parentOrder: block.parentOrder },
-                  include: { action: true }
-                })
-            )
+            label: textResponse.submitLabel ?? 'Submit',
+            startIconId: textResponse.submitIconId
+          }
+        })
+        // re order blocks
+        const siblingBlocks = await tx.block.findMany({
+          where: {
+            journeyId: textResponse.journeyId,
+            parentBlockId: textResponse.parentBlockId,
+            parentOrder: { not: null }
+          },
+          orderBy: { parentOrder: 'asc' }
+        })
+        siblingBlocks.splice(textResponse.parentOrder + 1, 0, buttonBlock)
+        // update parentblockId
+        const updatedSiblings = siblingBlocks.map((block, index) => ({
+          ...block,
+          parentOrder: index
+        }))
+        await Promise.all(
+          updatedSiblings.map(
+            async (block) =>
+              await tx.block.update({
+                where: { id: block.id },
+                data: { parentOrder: block.parentOrder }
+              })
           )
-          // update action
-          await tx.action.update({
-            where: { parentBlockId: textResponse.action.parentBlockId },
+        )
+        // update action
+        await tx.action.update({
+          where: { parentBlockId: textResponse.id },
+          data: {
+            parentBlockId: buttonBlock.id
+          }
+        })
+        // if submit icon exists, update icon block
+        if (textResponse.submitIconId != null) {
+          const iconBlock = await tx.block.update({
+            where: { id: textResponse.submitIconId },
+            data: { parentBlockId: buttonBlock.id }
+          })
+          await tx.block.update({
+            where: { id: buttonBlock.id },
+            data: { startIconId: iconBlock.id }
+          })
+          // finally update textResponse
+          await tx.block.update({
+            where: { id: textResponse.id },
             data: {
-              ...textResponse.action,
-              parentBlockId: buttonBlock.id
+              submitIconId: null
             }
           })
-          // if submit icon exists, update icon block
-          if (textResponse.submitIconId != null) {
-            await tx.block.update({
-              where: { id: textResponse.submitIconId },
-              data: { parentBlockId: buttonBlock.id }
-            })
-            // finally update textResponse
-            await tx.block.update({
-              where: { id: textResponse.id },
-              data: {
-                submitIconId: null
-              }
-            })
-          }
-        },
-        {
-          maxWait: 1000000, // default: 2000
-          timeout: 2000000 // default: 5000
         }
-      )
-      bar1.increment()
-    } catch (e) {
-      throw new Error(e.message as string)
-    }
+      },
+      {
+        maxWait: 1000000, // default: 2000
+        timeout: 2000000 // default: 5000
+      }
+    )
+    bar1.increment()
   }
   bar1.stop()
 }

@@ -35,7 +35,6 @@ describe('changeTextResponseActionsToButtons', () => {
     await changeTextResponseActionsToButtons()
 
     expect(prismaMock.block.findMany).toHaveBeenCalledWith({
-      include: { action: true },
       where: { action: { isNot: null }, typename: 'TextResponseBlock' }
     })
   })
@@ -53,22 +52,6 @@ describe('changeTextResponseActionsToButtons', () => {
 
     await expect(changeTextResponseActionsToButtons()).rejects.toThrow(
       'missing parentOrder for: someId'
-    )
-  })
-
-  it('should throw error if action is null', async () => {
-    prismaMock.block.findMany.mockResolvedValue([
-      {
-        id: 'someId',
-        typename: 'TextResponseBlock',
-        journeyId: 'journeyId',
-        parentBlockId: 'parentBlockId',
-        parentOrder: 'something'
-      } as unknown as TextResponseBlockWithAction
-    ])
-
-    await expect(changeTextResponseActionsToButtons()).rejects.toThrow(
-      'missing action for: someId'
     )
   })
 
@@ -150,7 +133,6 @@ describe('changeTextResponseActionsToButtons', () => {
 
     expect(prismaMock.block.create).toHaveBeenNthCalledWith(1, {
       data: {
-        id: 'id',
         journey: {
           connect: {
             id: 'journeyId'
@@ -164,12 +146,10 @@ describe('changeTextResponseActionsToButtons', () => {
         },
         startIconId: 'submitIconId',
         typename: 'ButtonBlock'
-      },
-      include: { action: true }
+      }
     })
     expect(prismaMock.block.create).toHaveBeenNthCalledWith(2, {
       data: {
-        id: 'id',
         journey: {
           connect: {
             id: 'journeyId'
@@ -183,8 +163,7 @@ describe('changeTextResponseActionsToButtons', () => {
         },
         startIconId: undefined,
         typename: 'ButtonBlock'
-      },
-      include: { action: true }
+      }
     })
 
     expect(prismaMock.action.update).toHaveBeenCalledWith({
@@ -199,7 +178,6 @@ describe('changeTextResponseActionsToButtons', () => {
       data: {
         parentOrder: 1
       },
-      include: { action: true },
       where: {
         id: 'buttonBlockId'
       }
@@ -215,17 +193,24 @@ describe('changeTextResponseActionsToButtons', () => {
     })
     expect(prismaMock.block.update).toHaveBeenNthCalledWith(4, {
       data: {
+        startIconId: 'updateResId'
+      },
+      where: {
+        id: 'buttonBlockId'
+      }
+    })
+    expect(prismaMock.block.update).toHaveBeenNthCalledWith(5, {
+      data: {
         submitIconId: null
       },
       where: {
         id: 'someId'
       }
     })
-    expect(prismaMock.block.update).toHaveBeenNthCalledWith(6, {
+    expect(prismaMock.block.update).toHaveBeenNthCalledWith(7, {
       data: {
         parentOrder: 1
       },
-      include: { action: true },
       where: {
         id: 'buttonBlockId'
       }
