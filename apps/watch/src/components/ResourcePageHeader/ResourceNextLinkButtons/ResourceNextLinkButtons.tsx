@@ -1,6 +1,7 @@
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
@@ -18,11 +19,11 @@ interface ResourceNextLinkButtonsProps {
 }
 
 const ResourceNextLinkButtonsData = [
-  { label: 'Journeys', icon: <JourneysIcon />, href: '/journeys' },
+  { label: 'Journeys', icon: <JourneysIcon />, href: '/' },
   { label: 'Videos', icon: <Play1Icon />, href: '/videos' },
   { label: 'Strategies', icon: <BulbIcon />, href: '/strategies' },
   { label: 'Calendar', icon: <Calendar1Icon />, href: '/calendar' },
-  { label: 'Apps', icon: <Grid1Icon />, href: '/apps' }
+  { label: 'Products', icon: <Grid1Icon />, href: '/products' }
 ]
 
 export function ResourceNextLinkButtons({
@@ -30,6 +31,7 @@ export function ResourceNextLinkButtons({
   setSelectedTab
 }: ResourceNextLinkButtonsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+  const router = useRouter()
   return (
     <>
       {/* <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}> */}
@@ -51,10 +53,9 @@ export function ResourceNextLinkButtons({
                 flexGrow: 1,
                 textAlign: 'center',
                 borderRadius: '40px !important',
-                backgroundColor:
-                  selectedTab === label.toLowerCase()
-                    ? 'lightgrey'
-                    : 'transparent'
+                backgroundColor: router.pathname.startsWith(href)
+                  ? 'lightgrey'
+                  : 'transparent'
                 // color: (theme) => theme.palette.secondary.main
               }}
               onClick={() => setSelectedTab(label.toLowerCase())}
