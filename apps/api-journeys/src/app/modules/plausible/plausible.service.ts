@@ -25,6 +25,20 @@ export class PlausibleService implements OnModuleInit {
         Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`
       }
     })
+    const jobs = await this.plausibleQueue.getJobs([
+      'wait',
+      'failed',
+      'delayed'
+    ])
+    for (const job of jobs) {
+      if (
+        job.id != null &&
+        (job.name === 'plausibleCreateJourneySite' ||
+          job.name === 'plausibleCreateTeamSite')
+      ) {
+        await this.plausibleQueue.remove(job.id)
+      }
+    }
 
     const journeys = await this.prismaService.journey.findMany({
       where: { plausibleToken: null }
