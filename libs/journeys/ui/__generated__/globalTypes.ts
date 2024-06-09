@@ -174,6 +174,12 @@ export interface JourneysFilter {
   orderByRecent?: boolean | null;
 }
 
+export interface JourneysQueryOptions {
+  hostname?: string | null;
+  embedded?: boolean | null;
+  journeyCollection?: boolean | null;
+}
+
 export interface RadioQuestionSubmissionEventCreateInput {
   id?: string | null;
   blockId: string;

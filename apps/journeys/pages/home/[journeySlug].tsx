@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -7,9 +6,9 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { transformer } from '@core/journeys/ui/transformer'
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
@@ -99,15 +98,6 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
     </>
   )
 }
-
-export const GET_JOURNEY = gql`
-  ${JOURNEY_FIELDS}
-  query GetJourney($id: ID!, $options: JourneysQueryOptions) {
-    journey(id: $id, idType: slug, options: $options) {
-      ...JourneyFields
-    }
-  }
-`
 
 export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
   context

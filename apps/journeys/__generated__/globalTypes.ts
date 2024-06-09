@@ -189,6 +189,16 @@ export interface JourneyViewEventCreateInput {
   value?: string | null;
 }
 
+export interface JourneysFilter {
+  featured?: boolean | null;
+  template?: boolean | null;
+  ids?: string[] | null;
+  tagIds?: string[] | null;
+  languageIds?: string[] | null;
+  limit?: number | null;
+  orderByRecent?: boolean | null;
+}
+
 export interface JourneysQueryOptions {
   hostname?: string | null;
   embedded?: boolean | null;
