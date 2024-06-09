@@ -196,7 +196,6 @@ model Team {
   publicTitle        String?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
-  plausibleToken     String?
   visitors           Visitor[]
   userTeams          UserTeam[]
   journeys           Journey[]
@@ -316,8 +315,6 @@ model Journey {
   themeMode                 ThemeMode?                  @default(light)
   themeName                 ThemeName?                  @default(base)
   updatedAt                 DateTime                    @default(now()) @updatedAt
-  strategySlug              String?
-  plausibleToken            String?
   userJourneys              UserJourney[]
   team                      Team                        @relation(fields: [teamId], references: [id])
   userInvites               UserInvite[]
@@ -329,6 +326,7 @@ model Journey {
   primaryImageBlock         Block?                      @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id], onDelete: SetNull)
   creatorImageBlock         Block?                      @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
   journeyVisitors           JourneyVisitor[]
+  strategySlug              String?
   journeyCollectionJourneys JourneyCollectionJourneys[]
 
   @@index(title)
