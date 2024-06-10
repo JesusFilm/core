@@ -166,6 +166,7 @@ import Tag from './Tag'
 import Target from './Target'
 import Target2 from './Target2'
 import Telegram from './Telegram'
+import Terminal from './Terminal'
 import TextInput1 from './TextInput1'
 import ThumbsDown from './ThumbsDown'
 import ThumbsUp from './ThumbsUp'
@@ -361,6 +362,7 @@ export type IconName =
   | 'Target'
   | 'Target2'
   | 'Telegram'
+  | 'Terminal'
   | 'TextInput1'
   | 'Trash2'
   | 'ThumbsDown'
@@ -560,6 +562,7 @@ const iconComponents: IconComponents = {
   Target,
   Target2,
   Telegram,
+  Terminal,
   TextInput1,
   Trash2,
   ThumbsDown,
