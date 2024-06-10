@@ -40,7 +40,7 @@ describe('useEventEmailNotificationsLazyQuery', () => {
       }
     )
 
-    await result.current[0]
+    await result.current[0]()
 
     await waitFor(() => {
       expect(result.current[1].data).toEqual({
