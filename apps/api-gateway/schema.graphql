@@ -2025,7 +2025,7 @@ type TextResponseBlock implements Block
   label: String!
   hint: String
   minRows: Int
-  action: Action
+  action: Action @deprecated(reason: "No longer supporting actions")
   submitIconId: ID
   submitLabel: String
 }
