@@ -27,6 +27,7 @@ interface UserTeamListItemProps {
   variant?: 'readonly' | 'default'
   emailPreference?: EventEmailNotifications
   journeyId?: string
+  currentUserTeam: UserTeam | undefined
 }
 
 export const USER_TEAM_UPDATE = gql`
@@ -45,7 +46,8 @@ export function UserTeamListItem({
   disabled,
   variant = 'default',
   emailPreference,
-  journeyId
+  journeyId,
+  currentUserTeam
 }: UserTeamListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -115,6 +117,7 @@ export function UserTeamListItem({
               name={listItem?.user?.firstName}
               journeyId={journeyId}
               checked={emailPreference?.value}
+              disabled={currentUserTeam?.user?.id !== userId}
             />
           )}
         </Grid>

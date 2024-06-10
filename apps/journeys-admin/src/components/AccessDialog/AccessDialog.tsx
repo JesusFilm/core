@@ -2,6 +2,7 @@ import { gql, useLazyQuery } from '@apollo/client'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
@@ -17,7 +18,6 @@ import {
   GetJourneyWithPermissions,
   GetJourneyWithPermissions_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithPermissions'
-import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../__generated__/GetUserTeamsAndInvites'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { useEventEmailNotificationsLazyQuery } from '../../libs/useEventEmailNotificationsLazyQuery'
@@ -102,10 +102,13 @@ export function AccessDialog({
       )
     }, [emailPreferences])
 
-  const { users, requests, invites, emails } = useMemo(() => {
-    const userTeamsMap = new Map(
+  const userTeamsMap = useMemo(() => {
+    return new Map(
       data?.journey.team?.userTeams.map((obj) => [obj.user.id, obj])
     )
+  }, [data])
+
+  const { users, requests, invites, emails } = useMemo(() => {
     const users: UserJourney[] = []
     const requests: UserJourney[] = []
     const emails: string[] = []
@@ -129,7 +132,7 @@ export function AccessDialog({
     })
 
     return { users, requests, invites, emails }
-  }, [data, userInviteData])
+  }, [data, userInviteData, userTeamsMap])
 
   useEffect(() => {
     if (open === true) {
@@ -175,18 +178,22 @@ export function AccessDialog({
                 </Grid>
                 <Grid xs={2} sm={2}>
                   <Stack sx={{ ml: 4 }}>
-                    <EmailIcon sx={{ color: 'secondary.light' }} />
+                    <Tooltip title={t('Email Notifications')}>
+                      <EmailIcon sx={{ color: 'secondary.light' }} />
+                    </Tooltip>
                   </Stack>
                 </Grid>
                 <Grid xs={3} sm={2}>
                   <Stack sx={{ ml: 7 }}>
-                    <ShieldCheck sx={{ color: 'secondary.light' }} />
+                    <Tooltip title={t('User Role')}>
+                      <ShieldCheck sx={{ color: 'secondary.light' }} />
+                    </Tooltip>
                   </Stack>
                 </Grid>
               </Grid>
               <UserTeamList
                 data={data?.journey?.team ?? undefined}
-                currentUserTeam={data?.journey?.team as unknown as UserTeam}
+                currentUserTeam={userTeamsMap.get(currentUser?.user?.id ?? '')}
                 loading={loading}
                 variant="readonly"
                 emailPreferences={emailPreferencesMap}

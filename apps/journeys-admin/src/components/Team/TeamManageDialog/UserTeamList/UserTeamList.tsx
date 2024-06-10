@@ -88,6 +88,7 @@ export function UserTeamList({
                     variant={variant}
                     emailPreference={emailPreference}
                     journeyId={journeyId}
+                    currentUserTeam={currentUserTeam}
                   />
                 )
               })}
