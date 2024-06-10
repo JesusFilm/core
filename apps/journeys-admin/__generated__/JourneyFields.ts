@@ -255,8 +255,6 @@ export interface JourneyFields_blocks_TextResponseBlock {
   label: string;
   hint: string | null;
   minRows: number | null;
-  submitLabel: string | null;
-  submitIconId: string | null;
 }
 
 export interface JourneyFields_blocks_TypographyBlock {

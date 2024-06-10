@@ -17,8 +17,6 @@ export interface TextResponseBlockCreate_textResponseBlockCreate {
   label: string;
   hint: string | null;
   minRows: number | null;
-  submitLabel: string | null;
-  submitIconId: string | null;
 }
 
 export interface TextResponseBlockCreate_submitIcon {
@@ -39,8 +37,6 @@ export interface TextResponseBlockCreate_textResponseBlockUpdate {
   label: string;
   hint: string | null;
   minRows: number | null;
-  submitLabel: string | null;
-  submitIconId: string | null;
 }
 
 export interface TextResponseBlockCreate {

@@ -55,8 +55,6 @@ export interface CardFormCreate_textResponse {
   label: string;
   hint: string | null;
   minRows: number | null;
-  submitLabel: string | null;
-  submitIconId: string | null;
 }
 
 export interface CardFormCreate_submitIcon {
@@ -77,8 +75,6 @@ export interface CardFormCreate_textResponseBlockUpdate {
   label: string;
   hint: string | null;
   minRows: number | null;
-  submitLabel: string | null;
-  submitIconId: string | null;
 }
 
 export interface CardFormCreate_body {
