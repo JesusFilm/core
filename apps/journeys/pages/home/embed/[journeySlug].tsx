@@ -16,6 +16,7 @@ import {
   GetJourneyVariables,
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
+import { IdType } from '../../../__generated__/globalTypes'
 import { StepFields } from '../../../__generated__/StepFields'
 import i18nConfig from '../../../next-i18next.config'
 import { EmbeddedPreview } from '../../../src/components/EmbeddedPreview'
@@ -99,6 +100,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
       query: GET_JOURNEY,
       variables: {
         id: context.params?.journeySlug?.toString() ?? '',
+        idType: IdType.slug,
         options: {
           embedded: true
         }

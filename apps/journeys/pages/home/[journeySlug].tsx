@@ -16,6 +16,7 @@ import {
   GetJourneyVariables,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
+import { IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import { Conductor } from '../../src/components/Conductor'
 import { createApolloClient } from '../../src/libs/apolloClient'
@@ -107,7 +108,8 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
     const { data } = await apolloClient.query<GetJourney, GetJourneyVariables>({
       query: GET_JOURNEY,
       variables: {
-        id: context.params?.journeySlug?.toString() ?? ''
+        id: context.params?.journeySlug?.toString() ?? '',
+        idType: IdType.slug
       }
     })
     const { rtl, locale } = getJourneyRTL(data.journey)

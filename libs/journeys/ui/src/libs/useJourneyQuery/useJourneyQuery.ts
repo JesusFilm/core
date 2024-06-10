@@ -6,13 +6,13 @@ import { GetJourney, GetJourneyVariables } from './__generated__/GetJourney'
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
-  query GetJourney($id: ID!, $options: JourneysQueryOptions) {
-    journey(id: $id, idType: databaseId, options: $options) {
+  query GetJourney($id: ID!, $idType: IdType, $options: JourneysQueryOptions) {
+    journey(id: $id, idType: $idType, options: $options) {
       ...JourneyFields
     }
   }
 `
-// useJourney in journeys-admin gets journey by databaseId
+
 export function useJourneyQuery(
   variables?: GetJourneyVariables
 ): QueryResult<GetJourney, GetJourneyVariables> {

@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
 import { GetJourney } from '../../__generated__/GetJourney'
+import { IdType } from '../../__generated__/globalTypes'
 import { createApolloClient } from '../../src/libs/apolloClient'
 
 const apolloClient = createApolloClient()
@@ -16,7 +17,8 @@ export default async function Handler(
     const { data } = await apolloClient.query<GetJourney>({
       query: GET_JOURNEY,
       variables: {
-        id: journeySlug
+        id: journeySlug,
+        idType: IdType.slug
       }
     })
 
