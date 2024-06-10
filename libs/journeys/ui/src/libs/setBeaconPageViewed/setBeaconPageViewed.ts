@@ -1,9 +1,31 @@
 import camelCase from 'lodash/camelCase'
 import startCase from 'lodash/startCase'
 
+export interface EventObject {
+  type: string
+  url: string
+  title: string
+}
+
+export interface FormObject {
+  name: string
+  email: string
+}
+
 declare global {
   interface Window {
-    Beacon?: any
+    Beacon?: ((fn: 'init', id: string) => void) &
+      ((
+        fn: 'config',
+        config: { mode: 'askFirst'; enableFabAnimation: boolean }
+      ) => void) &
+      ((fn: 'open') => void) &
+      ((fn: 'close') => void) &
+      ((fn: 'event', eventObject: EventObject) => void) &
+      ((fn: 'toggle') => void) &
+      ((fn: 'search', value: string) => void) &
+      ((fn: 'on', eventType: string, callback: () => void) => void) &
+      ((fn: 'prefill', formObject: FormObject) => void)
   }
 }
 
