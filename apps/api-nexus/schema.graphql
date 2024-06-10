@@ -87,8 +87,10 @@ type Channel
   name: String!
   platform: String
   connected: Boolean
-  youtube: ChannelYoutube
-  status: ChannelStatus!
+  title: String
+  description: String
+  youtubeId: String
+  imageUrl: String
   createdAt: DateTime!
 }
 
@@ -96,16 +98,6 @@ enum ChannelStatus {
   created
   deleted
   published
-}
-
-type ChannelYoutube {
-  id: ID!
-  channelId: String
-  channel: Channel
-  title: String
-  description: String
-  youtubeId: String
-  imageUrl: String
 }
 
 input ChannelCreateInput {
@@ -144,6 +136,7 @@ extend type Mutation {
   resourceDelete(id: ID!): Resource!
   resourceFromTemplate(input: ResourceFromTemplateInput!): [Resource]
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
+  resourceFromArray(input: ResourceFromArrayInput!): [Resource]
 }
 
 type Nexus
@@ -268,6 +261,33 @@ input BatchJobResource {
 input BatchJobInput {
   batch: BatchJobBatch!
   resources: [BatchJobResource]!
+}
+
+input ResourceFromArrayInput {
+  accessToken: String!
+  spreadsheetData: [SpreadsheetRowInput!]!
+}
+
+input SpreadsheetRowInput {
+  channel: String
+  filename: String
+  title: String
+  description: String
+  customThumbnail: String
+  keywords: String
+  category: String
+  privacy: String
+  spokenLanguage: String
+  videoId: String
+  captionFile: String
+  audioTrackFile: String
+  language: String
+  captionLanguage: String
+  notifySubscribers: String
+  playlistId: String
+  isMadeForKids: String
+  mediaComponentId: String
+  textLanguage: String
 }
 
 scalar _FieldSet

@@ -138,6 +138,33 @@ export class BatchJobInput {
     resources: Nullable<BatchJobResource>[];
 }
 
+export class ResourceFromArrayInput {
+    accessToken: string;
+    spreadsheetData: SpreadsheetRowInput[];
+}
+
+export class SpreadsheetRowInput {
+    channel?: Nullable<string>;
+    filename?: Nullable<string>;
+    title?: Nullable<string>;
+    description?: Nullable<string>;
+    customThumbnail?: Nullable<string>;
+    keywords?: Nullable<string>;
+    category?: Nullable<string>;
+    privacy?: Nullable<string>;
+    spokenLanguage?: Nullable<string>;
+    videoId?: Nullable<string>;
+    captionFile?: Nullable<string>;
+    audioTrackFile?: Nullable<string>;
+    language?: Nullable<string>;
+    captionLanguage?: Nullable<string>;
+    notifySubscribers?: Nullable<string>;
+    playlistId?: Nullable<string>;
+    isMadeForKids?: Nullable<string>;
+    mediaComponentId?: Nullable<string>;
+    textLanguage?: Nullable<string>;
+}
+
 export class Batch {
     __typename?: 'Batch';
     id: string;
@@ -191,20 +218,11 @@ export class Channel {
     name: string;
     platform?: Nullable<string>;
     connected?: Nullable<boolean>;
-    youtube?: Nullable<ChannelYoutube>;
-    status: ChannelStatus;
-    createdAt: DateTime;
-}
-
-export class ChannelYoutube {
-    __typename?: 'ChannelYoutube';
-    id: string;
-    channelId?: Nullable<string>;
-    channel?: Nullable<Channel>;
     title?: Nullable<string>;
     description?: Nullable<string>;
     youtubeId?: Nullable<string>;
     imageUrl?: Nullable<string>;
+    createdAt: DateTime;
 }
 
 export class Nexus {
@@ -277,6 +295,8 @@ export abstract class IMutation {
     abstract resourceFromTemplate(input: ResourceFromTemplateInput): Nullable<Nullable<Resource>[]> | Promise<Nullable<Nullable<Resource>[]>>;
 
     abstract uploadToYoutube(channelId: string, resourceId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+
+    abstract resourceFromArray(input: ResourceFromArrayInput): Nullable<Nullable<Resource>[]> | Promise<Nullable<Nullable<Resource>[]>>;
 }
 
 export class Language {

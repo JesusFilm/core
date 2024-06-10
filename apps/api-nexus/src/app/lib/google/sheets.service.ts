@@ -99,33 +99,89 @@ export class GoogleSheetsService {
   async getSpreadSheetTemplateData(
     accessToken: string,
     spreadsheetId: string,
-    drivefolderId: string
+    drivefolderId: string,
+    data: SpreadsheetRow[] = [],
+    isArray: boolean = false
   ): Promise<{
     templateType: SpreadsheetTemplateType
     spreadsheetData: SpreadsheetRow[]
   }> {
-    const files = await this.googleDriveService.findFiles(
-      this.googleOAuthService.authorize(
-        accessToken,
-        'https://www.googleapis.com/auth/drive'
-      ),
-      drivefolderId
-    )
+    if (isArray) {
+      for (const row of data) {
+        if (row.filename) {
+          const fileId = this.googleDriveService.extractFileIdFromUrl(
+            row.filename
+          )
+          if (fileId) {
+            row.videoDriveFile = await this.googleDriveService.getFileMetadata(
+              fileId,
+              accessToken
+            )
+          }
+        }
+        if (row.customThumbnail) {
+          const fileId = this.googleDriveService.extractFileIdFromUrl(
+            row.customThumbnail
+          )
+          if (fileId) {
+            row.customThumbnailDriveFile =
+              await this.googleDriveService.getFileMetadata(fileId, accessToken)
+          }
+        }
+        if (row.captionFile) {
+          const fileId = this.googleDriveService.extractFileIdFromUrl(
+            row.captionFile
+          )
+          if (fileId) {
+            row.captionDriveFile =
+              await this.googleDriveService.getFileMetadata(fileId, accessToken)
+          }
+        }
+        if (row.audioTrackFile) {
+          const fileId = this.googleDriveService.extractFileIdFromUrl(
+            row.audioTrackFile
+          )
+          if (fileId) {
+            row.audioTrackDriveFile =
+              await this.googleDriveService.getFileMetadata(fileId, accessToken)
+          }
+        }
+      }
 
-    const spreadsheetRowData = await this.getGoogleSheetRowsData({
-      auth: this.googleOAuthService.authorize(
-        accessToken,
-        'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets'
-      ),
-      spreadsheetId,
-      files: files ?? []
-    })
+      let templateType = SpreadsheetTemplateType.UPLOAD
+      if (data.length > 0 && data[0].videoId) {
+        templateType = SpreadsheetTemplateType.LOCALIZATION
+      }
 
-    return {
-      spreadsheetData: spreadsheetRowData?.spreadsheetRows ?? [],
-      templateType:
-        spreadsheetRowData?.spreadsheetTemplateType ??
-        SpreadsheetTemplateType.UPLOAD
+      return {
+        spreadsheetData: data,
+        templateType
+      }
+    } else {
+      // Process Google Sheets data
+      const files = await this.googleDriveService.findFiles(
+        this.googleOAuthService.authorize(
+          accessToken,
+          'https://www.googleapis.com/auth/drive'
+        ),
+        drivefolderId
+      )
+
+      const spreadsheetRowData = await this.getGoogleSheetRowsData({
+        auth: this.googleOAuthService.authorize(
+          accessToken,
+          'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets'
+        ),
+        spreadsheetId,
+        files: files ?? []
+      })
+
+      return {
+        spreadsheetData: spreadsheetRowData?.spreadsheetRows ?? [],
+        templateType:
+          spreadsheetRowData?.spreadsheetTemplateType ??
+          SpreadsheetTemplateType.UPLOAD
+      }
     }
   }
 
