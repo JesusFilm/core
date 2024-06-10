@@ -115,6 +115,8 @@ module "bastion" {
   subnet_id          = module.prod.vpc.public_subnets[0]
   zone_id            = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
   security_group_ids = [module.prod.public_bastion_security_group_id]
+  root_volume_size   = 128
+  instance_type      = "t3.medium"
 }
 
 

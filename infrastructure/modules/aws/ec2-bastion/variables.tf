@@ -21,3 +21,13 @@ variable "dns_name" {
 variable "zone_id" {
   type = string
 }
+
+variable "root_volume_size" {
+  type    = number
+  default = 8
+}
+
+variable "instance_type" {
+  type    = string
+  default = "t2.micro"
+}
