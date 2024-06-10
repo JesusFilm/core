@@ -11,13 +11,14 @@ import { PlausibleJob } from './plausible.consumer'
 
 @Injectable()
 export class PlausibleService implements OnModuleInit {
+  client: AxiosInstance
+
   constructor(
     @InjectQueue('api-journeys-plausible')
     private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly prismaService: PrismaService
   ) {}
 
-  client: AxiosInstance
   async onModuleInit(): Promise<void> {
     this.client = axios.create({
       baseURL: process.env.PLAUSIBLE_URL,
@@ -25,37 +26,43 @@ export class PlausibleService implements OnModuleInit {
         Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`
       }
     })
-    const jobs = await this.plausibleQueue.getJobs([
-      'wait',
-      'failed',
-      'delayed'
-    ])
-    for (const job of jobs) {
-      if (
-        job.id != null &&
-        (job.name === 'plausibleCreateJourneySite' ||
-          job.name === 'plausibleCreateTeamSite')
-      ) {
-        await this.plausibleQueue.remove(job.id)
-      }
+    await this.plausibleQueue.add('plausibleCreateSites', {
+      __typename: 'plausibleCreateSites'
+    })
+  }
+
+  async createSites(): Promise<void> {
+    while (true) {
+      const teams = await this.prismaService.team.findMany({
+        where: { plausibleToken: null },
+        select: { id: true },
+        take: 100
+      })
+      if (teams.length === 0) break
+      await Promise.all(
+        teams.map(async (team) => {
+          await this.createTeamSite({
+            teamId: team.id
+          })
+        })
+      )
     }
 
-    const journeys = await this.prismaService.journey.findMany({
-      where: { plausibleToken: null },
-      select: { id: true, teamId: true }
-    })
-    await Promise.all(
-      journeys.map(async (journey) => {
-        await this.plausibleQueue.add('plausibleCreateJourneySite', {
-          __typename: 'plausibleCreateJourneySite',
-          journeyId: journey.id
-        })
-        await this.plausibleQueue.add('plausibleCreateTeamSite', {
-          __typename: 'plausibleCreateTeamSite',
-          teamId: journey.teamId
-        })
+    while (true) {
+      const journeys = await this.prismaService.journey.findMany({
+        where: { plausibleToken: null },
+        select: { id: true },
+        take: 100
       })
-    )
+      if (journeys.length === 0) break
+      await Promise.all(
+        journeys.map(async (journey) => {
+          await this.createJourneySite({
+            journeyId: journey.id
+          })
+        })
+      )
+    }
   }
 
   async createJourneySite({ journeyId }: { journeyId: string }): Promise<void> {
