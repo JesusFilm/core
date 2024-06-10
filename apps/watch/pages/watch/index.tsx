@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+import compact from 'lodash/compact'
 import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
@@ -6,13 +7,13 @@ import { ReactElement } from 'react'
 import {
   GetHomeVideos,
   GetHomeVideos_videos as Video
-} from '../__generated__/GetHomeVideos'
-import { VideoChildFields } from '../__generated__/VideoChildFields'
-import i18nConfig from '../next-i18next.config'
-import { HomePage as VideoHomePage } from '../src/components/HomePage'
-import { ResourcePageHeader } from '../src/components/ResourcePageHeader'
-import { createApolloClient } from '../src/libs/apolloClient'
-import { VIDEO_CHILD_FIELDS } from '../src/libs/videoChildFields'
+} from '../../__generated__/GetHomeVideos'
+import { VideoChildFields } from '../../__generated__/VideoChildFields'
+import i18nConfig from '../../next-i18next.config'
+import { HomePage as VideoHomePage } from '../../src/components/HomePage'
+import { ResourcePageHeader } from '../../src/components/ResourcePageHeader'
+import { createApolloClient } from '../../src/libs/apolloClient'
+import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
 
 export const GET_HOME_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
@@ -40,6 +41,7 @@ const videoIds = [
   'GOMarkCollection',
   'GOLukeCollection',
   'GOJohnCollection',
+  '8_NBC',
   '1_cl1309-0-0',
   '1_jf6102-0-0',
   '2_0-FallingPlates',
@@ -78,7 +80,7 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
   return {
     revalidate: 3600,
     props: {
-      videos,
+      videos: compact(videos),
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],
