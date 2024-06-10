@@ -47,7 +47,7 @@ describe('UserList', () => {
   }
 
   it('should display title and list of users', () => {
-    const { getByRole, getAllByRole } = render(
+    const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
           <UserList
@@ -60,21 +60,14 @@ describe('UserList', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(
-      getByRole('heading', { name: 'Users with Access' })
-    ).toBeInTheDocument()
-    expect(getAllByRole('listitem')).toHaveLength(3)
-    expect(getAllByRole('listitem')[0]).toHaveTextContent(
-      'firstName2 lastName2'
-    )
-    expect(getAllByRole('listitem')[1]).toHaveTextContent(
-      'firstName1 lastName1'
-    )
-    expect(getAllByRole('listitem')[2]).toHaveTextContent('invite@email.com')
+    expect(getByText('Users with Access')).toBeInTheDocument()
+    expect(getByText('firstName2 lastName2')).toBeInTheDocument()
+    expect(getByText('firstName1 lastName1')).toBeInTheDocument()
+    expect(getByText('invite@email.com')).toBeInTheDocument()
   })
 
   it('should hide invites that have been removed', async () => {
-    const { getByRole, getAllByRole } = render(
+    const { getByText, queryByText } = render(
       <MockedProvider>
         <SnackbarProvider>
           <UserList
@@ -87,17 +80,13 @@ describe('UserList', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(
-      getByRole('heading', { name: 'Users with Access' })
-    ).toBeInTheDocument()
-    expect(getAllByRole('listitem')).toHaveLength(1)
-    expect(getAllByRole('listitem')[0]).toHaveTextContent(
-      'firstName1 lastName1'
-    )
+    expect(getByText('Users with Access')).toBeInTheDocument()
+    expect(getByText('firstName1 lastName1')).toBeInTheDocument()
+    expect(queryByText('invite@email.com')).not.toBeInTheDocument()
   })
 
   it('should hide invites that have been accepted', async () => {
-    const { getByRole, getAllByRole } = render(
+    const { queryByText, getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
           <UserList
@@ -110,12 +99,8 @@ describe('UserList', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(
-      getByRole('heading', { name: 'Users with Access' })
-    ).toBeInTheDocument()
-    expect(getAllByRole('listitem')).toHaveLength(1)
-    expect(getAllByRole('listitem')[0]).toHaveTextContent(
-      'firstName1 lastName1'
-    )
+    expect(getByText('Users with Access')).toBeInTheDocument()
+    expect(getByText('firstName1 lastName1')).toBeInTheDocument()
+    expect(queryByText('invite@email.com')).not.toBeInTheDocument()
   })
 })

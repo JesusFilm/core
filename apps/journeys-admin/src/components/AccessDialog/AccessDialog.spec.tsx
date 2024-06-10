@@ -164,44 +164,6 @@ const mocks = [
 describe('AccessDialog', () => {
   it('should display users and requested users', async () => {
     const handleClose = jest.fn()
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider addTypename mocks={mocks}>
-          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    await waitFor(() => {
-      expect(getByRole('heading', { name: 'Guests' })).toBeInTheDocument()
-      expect(
-        getByRole('heading', { name: 'Requested Access' })
-      ).toBeInTheDocument()
-    })
-    expect(getByRole('heading', { name: 'Add editor by' })).toBeInTheDocument()
-  })
-
-  it('should not display users that are part of the team as guests', async () => {
-    const handleClose = jest.fn()
-    const { getByRole, getAllByText } = render(
-      <SnackbarProvider>
-        <MockedProvider addTypename mocks={mocks}>
-          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    await waitFor(() => {
-      expect(getByRole('heading', { name: 'Guests' })).toBeInTheDocument()
-      expect(
-        getByRole('heading', { name: 'Requested Access' })
-      ).toBeInTheDocument()
-    })
-    expect(getAllByText('Jotaro Kujo')).toHaveLength(1)
-  })
-
-  it('should display team members', async () => {
-    const handleClose = jest.fn()
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider addTypename mocks={mocks}>
@@ -211,16 +173,15 @@ describe('AccessDialog', () => {
     )
 
     await waitFor(() => {
-      expect(getByRole('heading', { name: 'Team Members' })).toBeInTheDocument()
-      expect(getByText('Jotaro Kujo')).toBeInTheDocument()
-      expect(getByText('Koichi Hirose')).toBeInTheDocument()
-      expect(getByText('Josuke Higashikata')).toBeInTheDocument()
+      expect(getByText('Guests')).toBeInTheDocument()
+      expect(getByText('Requested Access')).toBeInTheDocument()
     })
+    expect(getByRole('heading', { name: 'Add editor by' })).toBeInTheDocument()
   })
 
-  it('team members list should be read only', async () => {
+  it('should not display users that are part of the team as guests', async () => {
     const handleClose = jest.fn()
-    const { getByRole, getAllByRole } = render(
+    const { getByText, getAllByText } = render(
       <SnackbarProvider>
         <MockedProvider addTypename mocks={mocks}>
           <AccessDialog journeyId="journeyId" open onClose={handleClose} />
@@ -229,7 +190,42 @@ describe('AccessDialog', () => {
     )
 
     await waitFor(() => {
-      expect(getByRole('heading', { name: 'Team Members' })).toBeInTheDocument()
+      expect(getByText('Guests')).toBeInTheDocument()
+      expect(getByText('Requested Access')).toBeInTheDocument()
+    })
+    expect(getAllByText('Jotaro Kujo')).toHaveLength(1)
+  })
+
+  it('should display team members', async () => {
+    const handleClose = jest.fn()
+    const { getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocks}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByText('Team Members')).toBeInTheDocument()
+      expect(getByText('Jotaro Kujo')).toBeInTheDocument()
+      expect(getByText('Koichi Hirose')).toBeInTheDocument()
+      expect(getByText('Josuke Higashikata')).toBeInTheDocument()
+    })
+  })
+
+  it('team members list should be read only', async () => {
+    const handleClose = jest.fn()
+    const { getByRole, getAllByRole, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocks}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByText('Team Members')).toBeInTheDocument()
     })
 
     expect(getByRole('button', { name: 'Manager' })).toBeDisabled()

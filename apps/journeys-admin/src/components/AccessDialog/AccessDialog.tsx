@@ -1,6 +1,5 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import Grid from '@mui/material/Grid'
-import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -166,19 +165,13 @@ export function AccessDialog({
                   </Stack>
                 </Grid>
                 <Grid xs={5} sm={7}>
-                  <ListItemText
-                    primary={
-                      <Typography
-                        variant="subtitle3"
-                        color="secondary.light"
-                        sx={{ opacity: 0.8 }}
-                      >
-                        {t('Team Members')}
-                      </Typography>
-                    }
-                    disableTypography
-                    sx={{ ml: 2 }}
-                  />
+                  <Typography
+                    variant="subtitle3"
+                    color="secondary.light"
+                    sx={{ opacity: 0.8, ml: 1 }}
+                  >
+                    {t('Team Members')}
+                  </Typography>
                 </Grid>
                 <Grid xs={2} sm={2}>
                   <Stack sx={{ ml: 4 }}>
