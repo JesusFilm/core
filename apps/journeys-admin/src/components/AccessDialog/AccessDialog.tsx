@@ -1,7 +1,4 @@
 import { gql, useLazyQuery } from '@apollo/client'
-import EmailIcon from '@mui/icons-material/Email'
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
 import Grid from '@mui/material/Grid'
 import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
@@ -11,6 +8,9 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import EmailIcon from '@core/shared/ui/icons/Email'
+import ShieldCheck from '@core/shared/ui/icons/ShieldCheck'
+import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
 
 import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../__generated__/GetEventEmailNotifications'
 import {
@@ -158,11 +158,10 @@ export function AccessDialog({
         {data?.journey?.team?.userTeams != null &&
           data?.journey?.team?.userTeams.length > 0 && (
             <>
-              {/* TODO: move MUI icons to Stratis */}
               <Grid container spacing={1} alignItems="center">
                 <Grid xs={2} sm={1}>
-                  <Stack sx={{ ml: 1 }}>
-                    <PeopleAltIcon />
+                  <Stack sx={{ ml: 2 }}>
+                    <UsersProfiles2 />
                   </Stack>
                 </Grid>
                 <Grid xs={5} sm={7}>
@@ -174,8 +173,8 @@ export function AccessDialog({
                   </Stack>
                 </Grid>
                 <Grid xs={3} sm={2}>
-                  <Stack sx={{ ml: 5 }}>
-                    <VerifiedUserIcon />
+                  <Stack sx={{ ml: 7 }}>
+                    <ShieldCheck />
                   </Stack>
                 </Grid>
               </Grid>

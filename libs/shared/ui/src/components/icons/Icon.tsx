@@ -151,6 +151,7 @@ import Search2 from './Search2'
 import Send1 from './Send1'
 import Settings from './Settings'
 import Share from './Share'
+import ShieldCheck from './ShieldCheck'
 import Skype from './Skype'
 import SmileyNeutral from './SmileyNeutral'
 import Snapchat from './Snapchat'
@@ -345,6 +346,7 @@ export type IconName =
   | 'Send1'
   | 'Settings'
   | 'Share'
+  | 'ShieldCheck'
   | 'Skype'
   | 'SmileyNeutral'
   | 'Snapchat'
@@ -543,6 +545,7 @@ const iconComponents: IconComponents = {
   Send1,
   Settings,
   Share,
+  ShieldCheck,
   Skype,
   SmileyNeutral,
   Snapchat,

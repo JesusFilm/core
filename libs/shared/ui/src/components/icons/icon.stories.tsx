@@ -159,6 +159,7 @@ const iconNames: IconName[] = [
   'Send1',
   'Settings',
   'Share',
+  'ShieldCheck',
   'Skype',
   'SmileyNeutral',
   'Snapchat',
