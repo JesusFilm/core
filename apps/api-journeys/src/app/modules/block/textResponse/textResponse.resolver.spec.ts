@@ -102,7 +102,6 @@ describe('TextResponseBlockResolver', () => {
           submitLabel: 'Submit'
         },
         include: {
-          action: true,
           journey: {
             include: {
               team: { include: { userTeams: true } },

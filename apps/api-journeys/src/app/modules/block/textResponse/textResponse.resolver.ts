@@ -44,7 +44,6 @@ export class TextResponseBlockResolver {
           parentOrder
         },
         include: {
-          action: true,
           journey: {
             include: {
               team: { include: { userTeams: true } },
@@ -82,7 +81,6 @@ export class TextResponseBlockResolver {
     const block = await this.prismaService.block.findUnique({
       where: { id },
       include: {
-        action: true,
         journey: {
           include: {
             team: { include: { userTeams: true } },
