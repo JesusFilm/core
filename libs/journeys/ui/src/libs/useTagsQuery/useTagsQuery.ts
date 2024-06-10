@@ -1,10 +1,7 @@
 import { QueryResult, gql, useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 
-import {
-  GetTags,
-  GetTags_tags as Tag
-} from "./__generated__/GetTags"
+import { GetTags, GetTags_tags as Tag } from './__generated__/GetTags'
 
 export const GET_TAGS = gql`
   query GetTags {
