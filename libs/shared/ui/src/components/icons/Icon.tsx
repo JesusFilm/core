@@ -34,6 +34,7 @@ import Book from './Book'
 import Box from './Box'
 import Bulb from './Bulb'
 import Calendar1 from './Calendar1'
+import Calendar2 from './Calendar2'
 import Calendar4 from './Calendar4'
 import Check from './Check'
 import CheckBroken from './CheckBroken'
@@ -228,6 +229,7 @@ export type IconName =
   | 'Box'
   | 'Bulb'
   | 'Calendar1'
+  | 'Calendar2'
   | 'Calendar4'
   | 'CheckBroken'
   | 'CheckContained'
@@ -426,6 +428,7 @@ const iconComponents: IconComponents = {
   Box,
   Bulb,
   Calendar1,
+  Calendar2,
   Calendar4,
   CheckBroken,
   CheckContained,
