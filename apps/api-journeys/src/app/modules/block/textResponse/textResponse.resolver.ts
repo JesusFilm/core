@@ -67,17 +67,6 @@ export class TextResponseBlockResolver {
     @Args('id') id: string,
     @Args('input') input: TextResponseBlockUpdateInput
   ): Promise<Block> {
-    if (input.submitIconId != null) {
-      const submitIcon = await this.blockService.validateBlock(
-        input.submitIconId,
-        id
-      )
-      if (!submitIcon) {
-        throw new GraphQLError('Submit icon does not exist', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      }
-    }
     const block = await this.prismaService.block.findUnique({
       where: { id },
       include: {
