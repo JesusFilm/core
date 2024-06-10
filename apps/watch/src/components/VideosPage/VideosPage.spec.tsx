@@ -115,9 +115,13 @@ describe('VideosPage', () => {
       fireEvent.click(getByRole('option', { name: 'French' }))
       expect(comboboxEl).toHaveValue('French')
       await waitFor(() =>
-        expect(push).toHaveBeenCalledWith('/videos?languages=496', undefined, {
-          shallow: true
-        })
+        expect(push).toHaveBeenCalledWith(
+          '/watch/videos?languages=496',
+          undefined,
+          {
+            shallow: true
+          }
+        )
       )
       expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
     })
@@ -163,9 +167,13 @@ describe('VideosPage', () => {
       fireEvent.click(getByRole('option', { name: 'French' }))
       expect(comboboxEl).toHaveValue('French')
       await waitFor(() =>
-        expect(push).toHaveBeenCalledWith('/videos?subtitles=496', undefined, {
-          shallow: true
-        })
+        expect(push).toHaveBeenCalledWith(
+          '/watch/videos?subtitles=496',
+          undefined,
+          {
+            shallow: true
+          }
+        )
       )
       expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
     })
@@ -181,7 +189,7 @@ describe('VideosPage', () => {
       })
       await waitFor(() =>
         expect(push).toHaveBeenCalledWith(
-          '/videos?title=The+Savior',
+          '/watch/videos?title=The+Savior',
           undefined,
           {
             shallow: true
@@ -214,7 +222,7 @@ describe('VideosPage', () => {
       })
       await waitFor(() =>
         expect(push).toHaveBeenCalledWith(
-          '/videos?title=The+Savior',
+          '/watch/videos?title=The+Savior',
           undefined,
           {
             shallow: true
