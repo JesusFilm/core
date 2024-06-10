@@ -118,7 +118,7 @@ export function TeamOnboarding(): ReactElement {
 
             <Typography gutterBottom>
               {t(
-                'Create a team to hold your NextStep journeys and collaborate with others.'
+                'Create your workspace to hold your NextStep journeys and collaborate with others.'
               )}
             </Typography>
             <Button

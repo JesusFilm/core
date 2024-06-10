@@ -58,3 +58,7 @@ data "aws_ssm_parameter" "cloudflared_stage_token" {
 data "aws_ssm_parameter" "doppler_journeys_admin_stage_token" {
   name = "/terraform/prd/DOPPLER_JOURNEYS_ADMIN_STAGE_TOKEN"
 }
+
+data "aws_ssm_parameter" "doppler_core_stage_token" {
+  name = "/terraform/prd/DOPPLER_CORE_STAGE_TOKEN"
+}

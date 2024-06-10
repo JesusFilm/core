@@ -6,9 +6,15 @@ type TextResponseBlock implements Block {
   label: String!
   hint: String
   minRows: Int
-  action: Action
+  action: Action @deprecated(reason: "This block no longer support actions")
   submitIconId: ID
+    @deprecated(
+      reason: "Submit icon relates to action, this block no longer support actions"
+    )
   submitLabel: String
+    @deprecated(
+      reason: "Submit label relates to action, this block no longer support actions"
+    )
 }
 
 input TextResponseBlockCreateInput {
