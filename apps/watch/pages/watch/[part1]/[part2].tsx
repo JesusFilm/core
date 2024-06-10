@@ -5,13 +5,13 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
-import { GetVideoContent } from '../../__generated__/GetVideoContent'
-import { VideoContentFields } from '../../__generated__/VideoContentFields'
-import i18nConfig from '../../next-i18next.config'
-import { createApolloClient } from '../../src/libs/apolloClient'
-import { LanguageProvider } from '../../src/libs/languageContext/LanguageContext'
-import { VIDEO_CONTENT_FIELDS } from '../../src/libs/videoContentFields'
-import { VideoProvider } from '../../src/libs/videoContext'
+import { GetVideoContent } from '../../../__generated__/GetVideoContent'
+import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import i18nConfig from '../../../next-i18next.config'
+import { createApolloClient } from '../../../src/libs/apolloClient'
+import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
+import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
+import { VideoProvider } from '../../../src/libs/videoContext'
 
 export const GET_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}
@@ -30,7 +30,7 @@ const DynamicVideoContentPage = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "VideoContentPage" */
-      '../../src/components/VideoContentPage'
+      '../../../src/components/VideoContentPage'
     )
 )
 
@@ -38,7 +38,7 @@ const DynamicVideoContainerPage = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "VideoContainerPage" */
-      '../../src/components/VideoContainerPage'
+      '../../../src/components/VideoContainerPage'
     )
 )
 
