@@ -19,7 +19,7 @@ import { useApolloClient } from '../src/libs/apolloClient'
 import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
-import '../public/fonts/fonts.css'
+import '../public/watch/assets/fonts/fonts.css'
 
 const clientSideEmotionCache = createEmotionCache({ prepend: false })
 
