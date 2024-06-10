@@ -115,7 +115,6 @@ export interface CardFormCreateVariables {
   subtitleInput: TypographyBlockCreateInput;
   titleInput: TypographyBlockCreateInput;
   textResponseInput: TextResponseBlockCreateInput;
-  textResponseId: string;
   bodyInput: TypographyBlockCreateInput;
   journeyId: string;
   cardId: string;

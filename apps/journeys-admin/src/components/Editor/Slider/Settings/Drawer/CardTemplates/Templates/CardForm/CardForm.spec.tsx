@@ -101,7 +101,6 @@ describe('CardForm', () => {
             parentBlockId: 'cardId',
             label: 'Your answer here'
           },
-          textResponseId: 'textResponseId',
           bodyInput: {
             journeyId: 'journeyId',
             parentBlockId: 'cardId',

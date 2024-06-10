@@ -8,7 +8,6 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
@@ -29,14 +28,12 @@ export const CARD_FORM_CREATE = gql`
   ${IMAGE_FIELDS}
   ${TYPOGRAPHY_FIELDS}
   ${TEXT_RESPONSE_FIELDS}
-  ${ICON_FIELDS}
   ${CARD_FIELDS}
   mutation CardFormCreate(
     $imageInput: ImageBlockCreateInput!
     $subtitleInput: TypographyBlockCreateInput!
     $titleInput: TypographyBlockCreateInput!
     $textResponseInput: TextResponseBlockCreateInput!
-    $textResponseId: ID!
     $bodyInput: TypographyBlockCreateInput!
     $journeyId: ID!
     $cardId: ID!
@@ -108,7 +105,6 @@ export function CardForm(): ReactElement {
           parentBlockId: cardId,
           label: t('Your answer here')
         },
-        textResponseId,
         bodyInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
