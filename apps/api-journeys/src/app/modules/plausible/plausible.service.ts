@@ -41,7 +41,8 @@ export class PlausibleService implements OnModuleInit {
     }
 
     const journeys = await this.prismaService.journey.findMany({
-      where: { plausibleToken: null }
+      where: { plausibleToken: null },
+      select: { id: true, teamId: true }
     })
     await Promise.all(
       journeys.map(async (journey) => {
