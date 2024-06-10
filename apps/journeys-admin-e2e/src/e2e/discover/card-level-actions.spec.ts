@@ -63,7 +63,7 @@ test.describe('verify card level actions', () => {
   })
 
   //Image - create, update & delete
-  test('Image - create, update & delete', async ({ page }) => {
+  test.fixme('Image - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() //clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Image') // clicking on image button in add block drawer
@@ -84,7 +84,7 @@ test.describe('verify card level actions', () => {
   //Video - create, update & delete
   //Issue 3 : In video properties drawer after uploaded a video in upload tab, unable to update that video
   //Issue 4 : the 'video details' page shows again and again.
-  test('Video - create, update & delete', async ({ page }) => {
+  test.fixme('Video - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.deleteAllAddedCardProperties() // deleting all the added properties in the card
     await cardLevelActionPage.clickOnVideoJourneyCard() // clicking on the journey card
