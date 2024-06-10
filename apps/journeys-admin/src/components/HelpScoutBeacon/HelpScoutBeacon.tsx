@@ -9,7 +9,6 @@ import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 
-
 interface HelpScoutBeaconProps {
   userInfo: FormObject
 }
