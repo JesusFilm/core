@@ -1,10 +1,10 @@
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-function AppsPage(): ReactElement {
+function ProductsPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
 
-  return <div>{t('Apps')}</div>
+  return <div>{t('Products')}</div>
 }
 
-export default AppsPage
+export default ProductsPage

@@ -19,8 +19,8 @@ interface ResourceNextLinkButtonsProps {
 }
 
 const ResourceNextLinkButtonsData = [
-  { label: 'Journeys', icon: <JourneysIcon />, href: '/' },
-  { label: 'Videos', icon: <Play1Icon />, href: '/videos' },
+  { label: 'Journeys', icon: <JourneysIcon />, href: '/journeys' },
+  { label: 'Videos', icon: <Play1Icon />, href: '/watch' },
   { label: 'Strategies', icon: <BulbIcon />, href: '/strategies' },
   { label: 'Calendar', icon: <Calendar1Icon />, href: '/calendar' },
   { label: 'Products', icon: <Grid1Icon />, href: '/products' }

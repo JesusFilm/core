@@ -55,8 +55,8 @@ interface HomePageProps {
 }
 
 function HomePage({ videos }: HomePageProps): ReactElement {
-  // return <VideoHomePage videos={videos} />
-  return <ResourcePageHeader />
+  return <VideoHomePage videos={videos} />
+  // return <ResourcePageHeader />
 }
 
 export const getStaticProps: GetStaticProps<HomePageProps> = async ({
