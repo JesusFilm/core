@@ -23,9 +23,7 @@ describe('TextResponse', () => {
     parentOrder: null,
     label: 'default label',
     hint: null,
-    submitLabel: 'Submit',
     minRows: null,
-    submitIconId: null,
     children: []
   }
 
@@ -37,8 +35,6 @@ describe('TextResponse', () => {
     label: 'complete label',
     hint: 'hint text',
     minRows: 2,
-    submitLabel: 'Submit',
-    submitIconId: 'icon.id',
     children: [
       {
         id: 'icon.id',

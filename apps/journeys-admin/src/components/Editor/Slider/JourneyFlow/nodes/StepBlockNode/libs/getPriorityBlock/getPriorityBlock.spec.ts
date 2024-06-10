@@ -84,8 +84,6 @@ const textResponse: TreeBlock<TextResponseBlock> = {
   label: 'Your answer here',
   hint: null,
   minRows: null,
-  submitIconId: null,
-  submitLabel: null,
   children: []
 }
 

@@ -19,7 +19,6 @@ import {
   CardFormCreateVariables
 } from '../../../../../../../../../__generated__/CardFormCreate'
 import {
-  IconName,
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
@@ -37,9 +36,7 @@ export const CARD_FORM_CREATE = gql`
     $subtitleInput: TypographyBlockCreateInput!
     $titleInput: TypographyBlockCreateInput!
     $textResponseInput: TextResponseBlockCreateInput!
-    $submitIconInput: IconBlockCreateInput!
     $textResponseId: ID!
-    $textResponseUpdateInput: TextResponseBlockUpdateInput!
     $bodyInput: TypographyBlockCreateInput!
     $journeyId: ID!
     $cardId: ID!
@@ -55,16 +52,6 @@ export const CARD_FORM_CREATE = gql`
       ...TypographyFields
     }
     textResponse: textResponseBlockCreate(input: $textResponseInput) {
-      ...TextResponseFields
-    }
-    submitIcon: iconBlockCreate(input: $submitIconInput) {
-      ...IconFields
-    }
-    textResponseBlockUpdate(
-      id: $textResponseId
-      journeyId: $journeyId
-      input: $textResponseUpdateInput
-    ) {
       ...TextResponseFields
     }
     body: typographyBlockCreate(input: $bodyInput) {
@@ -91,7 +78,6 @@ export function CardForm(): ReactElement {
     const cardId = selectedStep?.children[0].id
     if (journey == null || cardId == null) return
     const textResponseId = uuidv4()
-    const submitIconId = uuidv4()
     await cardFormCreate({
       variables: {
         imageInput: {
@@ -120,19 +106,9 @@ export function CardForm(): ReactElement {
           id: textResponseId,
           journeyId: journey.id,
           parentBlockId: cardId,
-          label: t('Your answer here'),
-          submitLabel: t('Submit')
-        },
-        submitIconInput: {
-          id: submitIconId,
-          journeyId: journey.id,
-          parentBlockId: textResponseId,
-          name: IconName.ArrowForwardRounded
+          label: t('Your answer here')
         },
         textResponseId,
-        textResponseUpdateInput: {
-          submitIconId
-        },
         bodyInput: {
           journeyId: journey.id,
           parentBlockId: cardId,
@@ -172,11 +148,7 @@ export function CardForm(): ReactElement {
                     fragment: NEW_BLOCK_FRAGMENT
                   }),
                   cache.writeFragment({
-                    data: data.textResponseBlockUpdate,
-                    fragment: NEW_BLOCK_FRAGMENT
-                  }),
-                  cache.writeFragment({
-                    data: data.submitIcon,
+                    data: data.textResponse,
                     fragment: NEW_BLOCK_FRAGMENT
                   }),
                   cache.writeFragment({

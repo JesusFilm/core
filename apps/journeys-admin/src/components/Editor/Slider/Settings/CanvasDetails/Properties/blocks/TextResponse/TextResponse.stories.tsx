@@ -34,8 +34,6 @@ const block: TreeBlock<TextResponseBlock> = {
   label: '',
   hint: null,
   minRows: null,
-  submitLabel: null,
-  submitIconId: null,
   children: []
 }
 

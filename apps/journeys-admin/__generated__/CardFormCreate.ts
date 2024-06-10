@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, IconBlockCreateInput, TextResponseBlockUpdateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardFormCreate
@@ -48,26 +48,6 @@ export interface CardFormCreate_title {
 }
 
 export interface CardFormCreate_textResponse {
-  __typename: "TextResponseBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  label: string;
-  hint: string | null;
-  minRows: number | null;
-}
-
-export interface CardFormCreate_submitIcon {
-  __typename: "IconBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  iconName: IconName | null;
-  iconSize: IconSize | null;
-  iconColor: IconColor | null;
-}
-
-export interface CardFormCreate_textResponseBlockUpdate {
   __typename: "TextResponseBlock";
   id: string;
   parentBlockId: string | null;
@@ -126,8 +106,6 @@ export interface CardFormCreate {
   subtitle: CardFormCreate_subtitle;
   title: CardFormCreate_title;
   textResponse: CardFormCreate_textResponse;
-  submitIcon: CardFormCreate_submitIcon;
-  textResponseBlockUpdate: CardFormCreate_textResponseBlockUpdate | null;
   body: CardFormCreate_body;
   cardBlockUpdate: CardFormCreate_cardBlockUpdate;
 }
@@ -137,9 +115,7 @@ export interface CardFormCreateVariables {
   subtitleInput: TypographyBlockCreateInput;
   titleInput: TypographyBlockCreateInput;
   textResponseInput: TextResponseBlockCreateInput;
-  submitIconInput: IconBlockCreateInput;
   textResponseId: string;
-  textResponseUpdateInput: TextResponseBlockUpdateInput;
   bodyInput: TypographyBlockCreateInput;
   journeyId: string;
   cardId: string;

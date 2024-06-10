@@ -620,8 +620,6 @@ export const imageBlocks: TreeBlock[] = [
             label: 'Your answer here',
             hint: null,
             minRows: null,
-            submitLabel: null,
-            submitIconId: null,
             children: []
           },
           {

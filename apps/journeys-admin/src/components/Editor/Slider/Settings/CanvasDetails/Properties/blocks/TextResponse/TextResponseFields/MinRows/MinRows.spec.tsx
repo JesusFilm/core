@@ -27,8 +27,6 @@ describe('MinRows', () => {
       label: 'Your answer here',
       hint: null,
       minRows: null,
-      submitIconId: null,
-      submitLabel: null,
       children: []
     }
     const { getByRole } = render(
@@ -60,8 +58,6 @@ describe('MinRows', () => {
       label: 'Your answer here',
       hint: null,
       minRows: null,
-      submitIconId: null,
-      submitLabel: null,
       children: []
     }
 
