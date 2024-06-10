@@ -63,12 +63,16 @@ export const VisitorCard = ({
         </Row>
       </Section>
       {filteredEvents.map((event) => (
-        <Section align="center" className="px-[28px]">
+        <Section key={event?.id} align="center" className="px-[28px]">
           <Row>
-            <Column style={{ width: '60%' }}>
+            <Column>
               <Text
                 className="font-sans text-[16px] leading-[24px] mb-[0px]"
                 style={{
+                  width: '250px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
                   font: '16px "Open Sans", sans-serif',
                   color:
                     event.typename === 'ChatOpenEvent' ? '#E43343' : '#6D6D7D'
@@ -77,10 +81,14 @@ export const VisitorCard = ({
                 {event.label}
               </Text>
             </Column>
-            <Column style={{ width: '40%' }} align="center">
+            <Column align="left">
               <Text
                 className="font-sans text-[16px] leading-[24px]  mb-[0px]"
                 style={{
+                  width: '100px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
                   font: '16px "Open Sans", sans-serif',
                   color:
                     event.typename === 'ChatOpenEvent' ? '#E43343' : '#6D6D7D'
