@@ -125,4 +125,31 @@ export class GoogleDriveService {
 
     return driveResponse.data.files
   }
+
+  async getFileMetadata(
+    fileId: string,
+    accessToken?: string
+  ): Promise<drive_v3.Schema$File> {
+    let client
+
+    if (accessToken) {
+      const auth = new google.auth.OAuth2()
+      auth.setCredentials({ access_token: accessToken })
+      client = google.drive({ version: 'v3', auth })
+    } else {
+      client = google.drive({ version: 'v3' })
+    }
+
+    const file = await client.files.get({
+      fileId,
+      fields: 'id, name, mimeType, kind'
+    })
+
+    return file.data
+  }
+
+  extractFileIdFromUrl(url: string): string | null {
+    const match = url.match(/[-\w]{25,}/)
+    return match ? match[0] : null
+  }
 }

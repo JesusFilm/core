@@ -173,7 +173,9 @@ export class ResourceResolver {
       await this.googleSheetsService.getSpreadSheetTemplateData(
         input.accessToken,
         input.spreadsheetId,
-        input.drivefolderId
+        input.drivefolderId,
+        [],
+        false
       )
     // CHECK SPREADSHEET TEMPLATE TYPE
     if (templateType === SpreadsheetTemplateType.UPLOAD) {
@@ -183,7 +185,40 @@ export class ResourceResolver {
         spreadsheetData
       )
     } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
-      // PR OCESS LOCALIZATION TEMPLATE
+      // PROCESS LOCALIZATION TEMPLATE
+      console.log('LOCALIZATION')
+      await this.googleSheetsService.processLocalizationTemplateBatches(
+        input.accessToken,
+        spreadsheetData
+      )
+    }
+    return []
+  }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async resourceFromArray(
+    // @Args('input') input: ResourceFromArrayInput
+    @Args('input') input: any
+  ): Promise<Resource[]> {
+    console.log('Resource From Array . . .')
+    const { templateType, spreadsheetData } =
+      await this.googleSheetsService.getSpreadSheetTemplateData(
+        input.accessToken,
+        '',
+        '',
+        input.spreadsheetData,
+        true
+      )
+    // CHECK SPREADSHEET TEMPLATE TYPE
+    if (templateType === SpreadsheetTemplateType.UPLOAD) {
+      // PROCESS UPLOAD TEMPLATE
+      return await this.googleSheetsService.processUploadSpreadsheetTemplate(
+        input.accessToken,
+        spreadsheetData
+      )
+    } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
+      // PROCESS LOCALIZATION TEMPLATE
       console.log('LOCALIZATION')
       await this.googleSheetsService.processLocalizationTemplateBatches(
         input.accessToken,
