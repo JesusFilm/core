@@ -32,6 +32,7 @@ export class PlausibleService implements OnModuleInit {
   }
 
   async createSites(): Promise<void> {
+    console.log('creating team sites...')
     while (true) {
       const teams = await this.prismaService.team.findMany({
         where: { plausibleToken: null },
@@ -48,6 +49,7 @@ export class PlausibleService implements OnModuleInit {
       )
     }
 
+    console.log('creating journey sites...')
     while (true) {
       const journeys = await this.prismaService.journey.findMany({
         where: { plausibleToken: null },
