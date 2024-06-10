@@ -1,3 +1,19 @@
+
+resource "aws_alb_listener" "alb_listener" {
+  load_balancer_arn = var.ecs_config.alb.arn
+  port              = local.port
+  protocol          = "HTTP"
+
+  default_action {
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "No routes defined"
+      status_code  = "200"
+    }
+  }
+}
+
 module "ecs-task" {
   source                = "../../../infrastructure/modules/aws/ecs-task"
   ecs_config            = var.ecs_config

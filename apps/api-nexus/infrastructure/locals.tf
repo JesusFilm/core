@@ -25,8 +25,11 @@ locals {
     cpu            = 1024
     memory         = 2048
     desired_count  = 1
-    alb_dns_name   = var.ecs_config.alb_dns_name
     zone_id        = var.ecs_config.zone_id
+    alb = {
+      arn      = var.ecs_config.alb.arn
+      dns_name = var.ecs_config.alb.dns_name
+    }
     alb_listener = merge(var.ecs_config.alb_listener, {
       port = local.port
     })

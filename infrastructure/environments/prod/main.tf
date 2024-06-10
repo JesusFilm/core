@@ -14,14 +14,17 @@ locals {
     security_group_id       = module.prod.ecs.public_ecs_security_group_id
     task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     cluster                 = module.prod.ecs.ecs_cluster
-    alb_dns_name            = module.prod.public_alb.dns_name
-    zone_id                 = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
+    alb = {
+      arn      = module.prod.public_alb.arn
+      dns_name = module.prod.public_alb.dns_name
+    }
+    zone_id = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
     alb_target_group = merge(local.alb_target_group, {
       health_check_path = "/health"
       health_check_port = "8088"
     })
     alb_listener = {
-      alb_arn         = module.prod.public_alb.arn
+      arn             = module.prod.public_alb.alb_listener.arn
       port            = 443
       protocol        = "HTTPS"
       certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
@@ -35,9 +38,12 @@ locals {
     security_group_id       = module.prod.ecs.internal_ecs_security_group_id
     task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     cluster                 = module.prod.ecs.ecs_cluster
-    alb_dns_name            = module.prod.internal_alb.dns_name
     zone_id                 = module.prod.route53_private_zone_id
-    alb_target_group        = local.alb_target_group
+    alb = {
+      arn      = module.prod.internal_alb.arn
+      dns_name = module.prod.internal_alb.dns_name
+    }
+    alb_target_group = local.alb_target_group
     alb_listener = {
       alb_arn  = module.prod.internal_alb.arn
       protocol = "HTTP"

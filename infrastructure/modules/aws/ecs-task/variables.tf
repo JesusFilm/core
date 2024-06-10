@@ -20,18 +20,19 @@ variable "service_config" {
     cpu            = number
     memory         = number
     desired_count  = number
-    alb_dns_name   = string
     zone_id        = string
     is_public      = bool
-
+    alb = object({
+      arn      = string
+      dns_name = string
+    })
     alb_listener = object({
-      alb_arn         = string
+      arn             = string
       port            = number
       protocol        = string
       certificate_arn = optional(string)
       dns_name        = optional(string)
     })
-
     alb_target_group = object({
       port              = number
       protocol          = string
