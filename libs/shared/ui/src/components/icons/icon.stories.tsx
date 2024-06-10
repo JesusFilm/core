@@ -42,6 +42,7 @@ const iconNames: IconName[] = [
   'Box',
   'Bulb',
   'Calendar1',
+  'Calendar2',
   'Calendar4',
   'CheckBroken',
   'CheckContained',
