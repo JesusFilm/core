@@ -1205,7 +1205,6 @@ export class TextResponseBlock implements Block {
     label: string;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
-    action?: Nullable<Action>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
 }
