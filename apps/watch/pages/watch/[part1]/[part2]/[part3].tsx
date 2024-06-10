@@ -4,14 +4,14 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
-import { GetVideoContainerAndVideoContent } from '../../../__generated__/GetVideoContainerAndVideoContent'
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import i18nConfig from '../../../next-i18next.config'
-import { VideoContentPage } from '../../../src/components/VideoContentPage'
-import { createApolloClient } from '../../../src/libs/apolloClient'
-import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
-import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
-import { VideoProvider } from '../../../src/libs/videoContext'
+import { GetVideoContainerAndVideoContent } from '../../../../__generated__/GetVideoContainerAndVideoContent'
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+import i18nConfig from '../../../../next-i18next.config'
+import { VideoContentPage } from '../../../../src/components/VideoContentPage'
+import { createApolloClient } from '../../../../src/libs/apolloClient'
+import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
+import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
+import { VideoProvider } from '../../../../src/libs/videoContext'
 
 export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}
