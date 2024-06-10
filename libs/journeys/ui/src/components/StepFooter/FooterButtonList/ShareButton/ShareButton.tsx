@@ -32,13 +32,13 @@ export function ShareButton(): ReactElement {
 
     if (journey != null) {
       const input = {
-        blockId: activeBlock.id
+        blockId: activeBlock?.id
       }
       plausible('shareButtonClick', {
         props: {
           ...input,
           key: keyify({
-            stepId: input.blockId,
+            stepId: input.blockId ?? '',
             event: 'shareButtonClick',
             blockId: input.blockId
           })
