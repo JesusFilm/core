@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
@@ -51,7 +52,15 @@ export function UserList({
     <>
       {loading === true ? (
         <Box data-testid="JourneysAdminUserList">
-          <Typography variant="subtitle1">{title}</Typography>
+          <Divider>
+            <Typography
+              variant="subtitle3"
+              color="secondary.light"
+              sx={{ opacity: 0.8 }}
+            >
+              {title}
+            </Typography>
+          </Divider>
           <List>
             {[0, 1, 2].map((i) => (
               <ListItem key={i} sx={{ px: 0 }}>
@@ -76,9 +85,16 @@ export function UserList({
         <>
           {(users.length > 0 || invites.length > 0) && (
             <>
-              <Typography variant="subtitle1" sx={{ pb: 4 }}>
-                {title}
-              </Typography>
+              <Divider sx={{ pb: 4 }}>
+                <Typography
+                  variant="subtitle3"
+                  color="secondary.light"
+                  sx={{ opacity: 0.8 }}
+                >
+                  {title}
+                </Typography>
+              </Divider>
+
               {sortedUsers.map((user) => {
                 const emailPreference = emailPreferences?.get(
                   user.user?.id ?? ''

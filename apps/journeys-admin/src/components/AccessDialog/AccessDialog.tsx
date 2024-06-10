@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid'
 import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo } from 'react'
@@ -158,23 +159,35 @@ export function AccessDialog({
         {data?.journey?.team?.userTeams != null &&
           data?.journey?.team?.userTeams.length > 0 && (
             <>
-              <Grid container spacing={1} alignItems="center">
+              <Grid container spacing={1} alignItems="center" sx={{ pb: 4 }}>
                 <Grid xs={2} sm={1}>
                   <Stack sx={{ ml: 2 }}>
-                    <UsersProfiles2 />
+                    <UsersProfiles2 sx={{ color: 'secondary.light' }} />
                   </Stack>
                 </Grid>
                 <Grid xs={5} sm={7}>
-                  <ListItemText primary={t('Team Members')} sx={{ ml: 2 }} />
+                  <ListItemText
+                    primary={
+                      <Typography
+                        variant="subtitle3"
+                        color="secondary.light"
+                        sx={{ opacity: 0.8 }}
+                      >
+                        {t('Team Members')}
+                      </Typography>
+                    }
+                    disableTypography
+                    sx={{ ml: 2 }}
+                  />
                 </Grid>
                 <Grid xs={2} sm={2}>
                   <Stack sx={{ ml: 4 }}>
-                    <EmailIcon />
+                    <EmailIcon sx={{ color: 'secondary.light' }} />
                   </Stack>
                 </Grid>
                 <Grid xs={3} sm={2}>
                   <Stack sx={{ ml: 7 }}>
-                    <ShieldCheck />
+                    <ShieldCheck sx={{ color: 'secondary.light' }} />
                   </Stack>
                 </Grid>
               </Grid>
