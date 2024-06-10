@@ -2,13 +2,16 @@ import {
   Body,
   Button,
   Column,
+  Container,
   Head,
   Html,
   Preview,
   Row,
-  Section
+  Section,
+  Text
 } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
+import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement, ReactNode } from 'react'
 
 import { Event } from '.prisma/api-journeys-client'
@@ -16,8 +19,7 @@ import {
   ActionCard,
   BodyWrapper,
   EmailContainer,
-  Header,
-  VisitorCard
+  Header
 } from '@core/nest/common/email/components'
 import { User } from '@core/nest/common/firebaseClient'
 
@@ -56,6 +58,35 @@ export const VisitorInteraction = ({
     )
   }
 
+  function transformDuration(seconds?: number | null): string {
+    if (seconds == null) {
+      return '0 min'
+    } else if (seconds <= 60) {
+      return `${seconds} sec`
+    } else {
+      const minutes = Math.floor(seconds / 60)
+      return `${minutes} min`
+    }
+  }
+
+  const created = intlFormat(parseISO(visitor.createdAt.toISOString()), {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true
+  })
+
+  const eventsFilter = [
+    'ChatOpenEvent',
+    'TextResponseSubmissionEvent',
+    'RadioQuestionSubmissionEvent'
+  ]
+
+  const filteredEvents = visitor.events.filter((event) =>
+    eventsFilter.includes(event.typename)
+  )
+
   const emailBody: ReactNode = (
     <>
       <Header />
@@ -81,11 +112,66 @@ export const VisitorInteraction = ({
                 </Column>
               </Row>
             </Section>
-            <VisitorCard
-              createdAt={visitor.createdAt}
-              duration={visitor.duration}
-              events={visitor.events}
-            />
+            <Container className="bg-[#FFFFFF] mt-[20px]">
+              <Section align="center">
+                <Row className="px-[28px]">
+                  <Column>
+                    <Text
+                      className="font-sans text-[16px] leading-[24px]"
+                      style={{
+                        font: '16px "Open Sans", sans-serif',
+                        color: '#6D6D7D'
+                      }}
+                    >
+                      {created} {'\u00A0\u00B7\u00A0'}{' '}
+                      {transformDuration(visitor.duration)}
+                    </Text>
+                  </Column>
+                </Row>
+              </Section>
+              {filteredEvents.map((event) => (
+                <Section key={event?.id} align="center" className="px-[28px]">
+                  <Row>
+                    <Column>
+                      <Text
+                        className="font-sans text-[16px] leading-[24px] mb-[0px]"
+                        style={{
+                          width: '250px',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          font: '16px "Open Sans", sans-serif',
+                          color:
+                            event.typename === 'ChatOpenEvent'
+                              ? '#E43343'
+                              : '#6D6D7D'
+                        }}
+                      >
+                        {event.label}
+                      </Text>
+                    </Column>
+                    <Column align="left">
+                      <Text
+                        className="font-sans text-[16px] leading-[24px]  mb-[0px]"
+                        style={{
+                          width: '100px',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          font: '16px "Open Sans", sans-serif',
+                          color:
+                            event.typename === 'ChatOpenEvent'
+                              ? '#E43343'
+                              : '#6D6D7D'
+                        }}
+                      >
+                        {'\u00B7\u00A0\u00A0'} {event.value}
+                      </Text>
+                    </Column>
+                  </Row>
+                </Section>
+              ))}
+            </Container>
           </ActionCard>
         </BodyWrapper>
       </EmailContainer>
