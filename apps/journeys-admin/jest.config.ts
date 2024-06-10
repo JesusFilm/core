@@ -1,5 +1,5 @@
 import type { Config } from 'jest'
-// add comment so admin can be deployed
+
 const config: Config = {
   displayName: 'journeys-admin',
   moduleNameMapper: {
