@@ -13,6 +13,7 @@ export function filterActionBlocks(step?: TreeBlock<StepBlock>): ActionBlock[] {
     .flatMap((block) =>
       block.__typename === 'RadioQuestionBlock' ? block.children : block
     )
+
     .filter(
       (child) => card.coverBlockId !== child.id && isActionBlock(child)
     ) as ActionBlock[]
