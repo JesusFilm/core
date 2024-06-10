@@ -52,10 +52,10 @@ export function getSlug(
     label !== undefined &&
     ![VideoLabel.collection, VideoLabel.series].includes(label)
   ) {
-    return `/${containerSlug}.html/${variantSlug ?? ''}.html`
+    return `/watch/${containerSlug}.html/${variantSlug ?? ''}.html`
   } else {
     const [videoId, languageId] = (variantSlug ?? '').split('/')
-    return `/${videoId}.html/${languageId}.html`
+    return `/watch/${videoId}.html/${languageId}.html`
   }
 }
 
