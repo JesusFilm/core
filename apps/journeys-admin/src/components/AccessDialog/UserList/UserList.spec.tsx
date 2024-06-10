@@ -103,4 +103,21 @@ describe('UserList', () => {
     expect(getByText('firstName1 lastName1')).toBeInTheDocument()
     expect(queryByText('invite@email.com')).not.toBeInTheDocument()
   })
+
+  it('should not allow update of email notifications of users that is not current user', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <UserList
+            title="Users with Access"
+            users={[userJourney2]}
+            invites={[{ ...userInvite, acceptedAt: 'dateTime' }]}
+            currentUser={userJourney1}
+            journeyId="journey.id"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('checkbox')).toBeDisabled()
+  })
 })
