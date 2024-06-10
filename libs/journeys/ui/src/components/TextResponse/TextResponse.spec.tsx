@@ -37,12 +37,6 @@ const block: TreeBlock<TextResponseFields> = {
   minRows: null,
   submitIconId: null,
   submitLabel: null,
-  action: {
-    __typename: 'LinkAction',
-    parentBlockId: 'textResponse0.id',
-    gtmEventName: 'textResponse',
-    url: '#'
-  },
   children: []
 }
 

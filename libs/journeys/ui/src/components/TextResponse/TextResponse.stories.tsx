@@ -51,7 +51,6 @@ const textResponseProps: ComponentProps<typeof TextResponse> = {
   minRows: null,
   submitIconId: null,
   submitLabel: null,
-  action: null,
   children: []
 }
 

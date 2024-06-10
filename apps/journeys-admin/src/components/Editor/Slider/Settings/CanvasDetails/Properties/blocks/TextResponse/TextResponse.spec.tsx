@@ -26,7 +26,6 @@ describe('TextResponse', () => {
     submitLabel: 'Submit',
     minRows: null,
     submitIconId: null,
-    action: null,
     children: []
   }
 
@@ -40,12 +39,6 @@ describe('TextResponse', () => {
     minRows: 2,
     submitLabel: 'Submit',
     submitIconId: 'icon.id',
-    action: {
-      __typename: 'LinkAction',
-      parentBlockId: 'responseAction.id',
-      gtmEventName: 'responseAction',
-      url: 'https://www.google.com'
-    },
     children: [
       {
         id: 'icon.id',

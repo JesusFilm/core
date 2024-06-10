@@ -29,7 +29,6 @@ describe('MinRows', () => {
       minRows: null,
       submitIconId: null,
       submitLabel: null,
-      action: null,
       children: []
     }
     const { getByRole } = render(
@@ -63,7 +62,6 @@ describe('MinRows', () => {
       minRows: null,
       submitIconId: null,
       submitLabel: null,
-      action: null,
       children: []
     }
 

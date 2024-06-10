@@ -170,7 +170,6 @@ describe('CardForm', () => {
             minRows: null,
             submitLabel: 'Submit',
             submitIconId: null,
-            action: null,
             __typename: 'TextResponseBlock'
           },
           submitIcon: {
@@ -191,7 +190,6 @@ describe('CardForm', () => {
             minRows: null,
             submitLabel: 'Submit',
             submitIconId: 'submitIconId',
-            action: null,
             __typename: 'TextResponseBlock'
           },
           body: {

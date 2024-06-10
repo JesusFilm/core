@@ -622,8 +622,7 @@ export const imageBlocks: TreeBlock[] = [
             minRows: null,
             submitLabel: null,
             submitIconId: null,
-            children: [],
-            action: null
+            children: []
           },
           {
             id: 'image0.id',
