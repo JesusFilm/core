@@ -180,6 +180,10 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface LanguagesFilter {
+  ids?: string[] | null;
+}
+
 export interface RadioQuestionSubmissionEventCreateInput {
   id?: string | null;
   blockId: string;
