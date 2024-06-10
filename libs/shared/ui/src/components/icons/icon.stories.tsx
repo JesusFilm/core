@@ -173,6 +173,7 @@ const iconNames: IconName[] = [
   'Target',
   'Target2',
   'Telegram',
+  'Terminal',
   'TextInput1',
   'Trash2',
   'ThumbsDown',
