@@ -247,29 +247,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_StepBlock {
   nextBlockId: string | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action = GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_EmailAction;
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
@@ -280,7 +257,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock
   minRows: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {

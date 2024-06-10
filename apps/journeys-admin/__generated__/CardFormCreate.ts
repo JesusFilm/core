@@ -47,29 +47,6 @@ export interface CardFormCreate_title {
   variant: TypographyVariant | null;
 }
 
-export interface CardFormCreate_textResponse_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface CardFormCreate_textResponse_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface CardFormCreate_textResponse_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type CardFormCreate_textResponse_action = CardFormCreate_textResponse_action_NavigateToBlockAction | CardFormCreate_textResponse_action_LinkAction | CardFormCreate_textResponse_action_EmailAction;
-
 export interface CardFormCreate_textResponse {
   __typename: "TextResponseBlock";
   id: string;
@@ -80,7 +57,6 @@ export interface CardFormCreate_textResponse {
   minRows: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: CardFormCreate_textResponse_action | null;
 }
 
 export interface CardFormCreate_submitIcon {
@@ -93,29 +69,6 @@ export interface CardFormCreate_submitIcon {
   iconColor: IconColor | null;
 }
 
-export interface CardFormCreate_textResponseBlockUpdate_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface CardFormCreate_textResponseBlockUpdate_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface CardFormCreate_textResponseBlockUpdate_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type CardFormCreate_textResponseBlockUpdate_action = CardFormCreate_textResponseBlockUpdate_action_NavigateToBlockAction | CardFormCreate_textResponseBlockUpdate_action_LinkAction | CardFormCreate_textResponseBlockUpdate_action_EmailAction;
-
 export interface CardFormCreate_textResponseBlockUpdate {
   __typename: "TextResponseBlock";
   id: string;
@@ -126,7 +79,6 @@ export interface CardFormCreate_textResponseBlockUpdate {
   minRows: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: CardFormCreate_textResponseBlockUpdate_action | null;
 }
 
 export interface CardFormCreate_body {

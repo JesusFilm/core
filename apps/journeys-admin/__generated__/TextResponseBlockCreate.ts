@@ -9,29 +9,6 @@ import { TextResponseBlockCreateInput, IconBlockCreateInput, TextResponseBlockUp
 // GraphQL mutation operation: TextResponseBlockCreate
 // ====================================================
 
-export interface TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface TextResponseBlockCreate_textResponseBlockCreate_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface TextResponseBlockCreate_textResponseBlockCreate_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type TextResponseBlockCreate_textResponseBlockCreate_action = TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToBlockAction | TextResponseBlockCreate_textResponseBlockCreate_action_LinkAction | TextResponseBlockCreate_textResponseBlockCreate_action_EmailAction;
-
 export interface TextResponseBlockCreate_textResponseBlockCreate {
   __typename: "TextResponseBlock";
   id: string;
@@ -42,7 +19,6 @@ export interface TextResponseBlockCreate_textResponseBlockCreate {
   minRows: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: TextResponseBlockCreate_textResponseBlockCreate_action | null;
 }
 
 export interface TextResponseBlockCreate_submitIcon {
@@ -55,29 +31,6 @@ export interface TextResponseBlockCreate_submitIcon {
   iconColor: IconColor | null;
 }
 
-export interface TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface TextResponseBlockCreate_textResponseBlockUpdate_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface TextResponseBlockCreate_textResponseBlockUpdate_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type TextResponseBlockCreate_textResponseBlockUpdate_action = TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToBlockAction | TextResponseBlockCreate_textResponseBlockUpdate_action_LinkAction | TextResponseBlockCreate_textResponseBlockUpdate_action_EmailAction;
-
 export interface TextResponseBlockCreate_textResponseBlockUpdate {
   __typename: "TextResponseBlock";
   id: string;
@@ -88,7 +41,6 @@ export interface TextResponseBlockCreate_textResponseBlockUpdate {
   minRows: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: TextResponseBlockCreate_textResponseBlockUpdate_action | null;
 }
 
 export interface TextResponseBlockCreate {

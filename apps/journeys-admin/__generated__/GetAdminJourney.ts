@@ -247,29 +247,6 @@ export interface GetAdminJourney_journey_blocks_StepBlock {
   nextBlockId: string | null;
 }
 
-export interface GetAdminJourney_journey_blocks_TextResponseBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface GetAdminJourney_journey_blocks_TextResponseBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface GetAdminJourney_journey_blocks_TextResponseBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type GetAdminJourney_journey_blocks_TextResponseBlock_action = GetAdminJourney_journey_blocks_TextResponseBlock_action_NavigateToBlockAction | GetAdminJourney_journey_blocks_TextResponseBlock_action_LinkAction | GetAdminJourney_journey_blocks_TextResponseBlock_action_EmailAction;
-
 export interface GetAdminJourney_journey_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
@@ -280,7 +257,6 @@ export interface GetAdminJourney_journey_blocks_TextResponseBlock {
   minRows: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: GetAdminJourney_journey_blocks_TextResponseBlock_action | null;
 }
 
 export interface GetAdminJourney_journey_blocks_TypographyBlock {
