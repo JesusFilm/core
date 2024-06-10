@@ -72,7 +72,9 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     return {
       redirect: {
         permanent: false,
-        destination: `/${encodeURIComponent(contentId)}.html/${languageId}.html`
+        destination: `/watch/${encodeURIComponent(
+          contentId
+        )}.html/${languageId}.html`
       }
     }
   }
