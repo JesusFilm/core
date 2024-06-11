@@ -44,21 +44,28 @@ export function ResourceNextLinkButtons(): ReactElement {
         sx={{
           display: 'flex',
           width: '100%',
-          justifyContent: 'space-between'
+          height: '48px',
+          justifyContent: 'space-between',
+          gap: '12px' // todo: reduce to 4px on smaller devices
         }}
       >
         {ResourceNextLinkButtonsData.map(({ label, icon, href }) => (
           <NextLink href={href} passHref legacyBehavior key={label}>
             <Button
               component="a"
-              color="secondary"
+              color="inherit"
               sx={{
                 flexGrow: 1,
                 textAlign: 'center',
                 borderRadius: '40px !important',
-                backgroundColor: router.pathname.startsWith(href)
-                  ? 'lightgrey'
+                border: '2px solid',
+                // backgroundColor: router.pathname.startsWith(href)
+                //   ? 'lightgrey'
+                //   : 'transparent',
+                borderColor: router.pathname.startsWith(href)
+                  ? 'red'
                   : 'transparent'
+                // borderColor: 'black'
 
                 // color: (theme) => theme.palette.secondary.main
               }}

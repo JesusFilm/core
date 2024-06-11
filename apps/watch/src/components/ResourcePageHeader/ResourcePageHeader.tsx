@@ -89,10 +89,10 @@ export function ResourcePageHeader(): ReactElement {
           selectedTab={selectedTab}
           handleTabChange={handleTabChange}
         /> */}
-        <ResourceNextLinkButtons
+        {/* <ResourceNextLinkButtons
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
-        />
+        /> */}
         <TestComponent
           selectedTab={selectedTab}
           buttonClicked={testButtonClicked}

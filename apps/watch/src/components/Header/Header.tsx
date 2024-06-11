@@ -15,6 +15,8 @@ import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import { ResourceNextLinkButtons } from '../ResourcePageHeader/ResourceNextLinkButtons'
+
 import logo from './assets/logo.svg'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 
@@ -49,6 +51,7 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
                 }}
               />
             </NextLink>
+            <ResourceNextLinkButtons />
             <Stack spacing={0.5} direction="row">
               <IconButton
                 color="inherit"

@@ -15,6 +15,8 @@ import { ReactElement } from 'react'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
 import logo from '../../Header/assets/logo.svg'
+import favicon from '../assets/favicon.png'
+import { ResourceNextLinkButtons } from '../ResourceNextLinkButtons'
 
 interface ResourceAppBarProps {
   selectedTab: string
@@ -44,9 +46,9 @@ export function ResourceAppBar({
           <Stack flexDirection="row">
             <NextLink href="/" passHref legacyBehavior>
               <Image
-                src={logo}
-                width="160"
-                height="40"
+                src={favicon}
+                width="64"
+                height="48" // todo: reduce to 56 x 42 on smaller devices
                 alt="Watch Logo"
                 style={{
                   cursor: 'pointer',
@@ -96,8 +98,9 @@ export function ResourceAppBar({
               </>
             )}
           </Stack>
+          <ResourceNextLinkButtons />
           <Stack spacing={0.5} direction="row">
-            <Button
+            {/* <Button
               sx={{
                 color: 'black',
                 borderRadius: '50%',
@@ -117,7 +120,7 @@ export function ResourceAppBar({
               }}
             >
               {t('Give now')}
-            </Button>
+            </Button> */}
             <IconButton
               color="secondary"
               aria-label="open header menu"
