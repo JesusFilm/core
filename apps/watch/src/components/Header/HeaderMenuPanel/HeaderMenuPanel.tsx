@@ -58,7 +58,7 @@ export function HeaderMenuPanel({
           justifyContent="space-between"
           p={8}
         >
-          <NextLink href="/" passHref legacyBehavior>
+          <NextLink href="/watch">
             <Image
               src={logo}
               width="160"
