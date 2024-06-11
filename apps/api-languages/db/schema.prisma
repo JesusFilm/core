@@ -27,7 +27,6 @@ model Language {
   name             LanguageName[]     @relation(name: "name")
   nameLanguage     LanguageName[]     @relation(name: "nameLanguage")
   countries        Country[]
-  countryId        String?
   countryName      CountryName[]
   countryContinent CountryContinent[]
 
@@ -44,7 +43,6 @@ model LanguageName {
   parent           Language @relation(name: "name", fields: [parentLanguageId], references: [id])
 
   @@unique([parentLanguageId, languageId])
-  @@unique([parentLanguageId, primary])
   @@index(parentLanguageId(type: Hash))
   @@index(primary(type: Hash))
   @@index(languageId(type: Hash))
@@ -53,12 +51,12 @@ model LanguageName {
 model Country {
   id          String             @id
   name        CountryName[]
-  population  Int
+  population  Int?
   continent   CountryContinent[]
-  latitude    Float
-  longitude   Float
-  flagPngSrc  String
-  flagWebpSrc String
+  latitude    Float?
+  longitude   Float?
+  flagPngSrc  String?
+  flagWebpSrc String?
   languages   Language[]
 }
 
@@ -72,7 +70,6 @@ model CountryName {
   language   Language @relation(fields: [languageId], references: [id])
 
   @@unique([languageId, countryId])
-  @@unique([countryId, primary])
   @@index(languageId(type: Hash))
   @@index(primary(type: Hash))
   @@index(countryId(type: Hash))
@@ -88,7 +85,6 @@ model CountryContinent {
   language   Language @relation(fields: [languageId], references: [id])
 
   @@unique([languageId, countryId])
-  @@unique([countryId, primary])
   @@index(languageId(type: Hash))
   @@index(primary(type: Hash))
   @@index(countryId(type: Hash))

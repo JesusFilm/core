@@ -7,9 +7,8 @@ import {
   Resolver
 } from '@nestjs/graphql'
 
-import { Country, Language } from '.prisma/api-languages-client'
+import { Country, Language, Prisma } from '.prisma/api-languages-client'
 import { Translation } from '@core/nest/common/TranslationModule'
-import { TranslationField } from '@core/nest/decorators'
 
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -23,13 +22,8 @@ export class CountryResolver {
   }
 
   @Query()
-  async country(
-    @Args('id') id: string,
-    @Args('idType') idType = IdType.databaseId
-  ): Promise<Country> {
-    return idType === IdType.databaseId
-      ? await this.prismaService.country.findUnique({ where: { id } })
-      : await this.prismaService.country.findUnique({ where: { slug: id } })
+  async country(@Args('id') id: string): Promise<Country | null> {
+    return await this.prismaService.country.findUnique({ where: { id } })
   }
 
   @ResolveField()
@@ -38,8 +32,16 @@ export class CountryResolver {
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
   ): Promise<Translation[]> {
+    const where: Prisma.CountryNameWhereInput = {
+      countryId: country.id,
+      OR: languageId == null && primary == null ? undefined : []
+    }
+    if (languageId != null) where.OR?.push({ languageId })
+    if (primary != null) where.OR?.push({ primary })
+
     return (await this.prismaService.countryName.findMany({
-      where: { countryId: country.id }
+      where,
+      orderBy: { primary: 'desc' }
     })) as Translation[]
   }
 
@@ -49,8 +51,16 @@ export class CountryResolver {
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
   ): Promise<Translation[]> {
+    const where: Prisma.CountryContinentWhereInput = {
+      countryId: country.id,
+      OR: languageId == null && primary == null ? undefined : []
+    }
+    if (languageId != null) where.OR?.push({ languageId })
+    if (primary != null) where.OR?.push({ primary })
+
     return (await this.prismaService.countryContinent.findMany({
-      where: { countryId: country.continentId }
+      where,
+      orderBy: { primary: 'desc' }
     })) as Translation[]
   }
 
@@ -67,7 +77,7 @@ export class CountryResolver {
   async resolveReference(reference: {
     __typename: 'Country'
     id: string
-  }): Promise<Country> {
+  }): Promise<Country | null> {
     return await this.prismaService.country.findUnique({
       where: { id: reference.id }
     })

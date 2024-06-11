@@ -2,6 +2,7 @@
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
 import isEmpty from 'lodash/isEmpty'
+import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
 
@@ -199,6 +200,7 @@ interface TransformedCountries
   extends Omit<Prisma.CountryCreateInput, 'name' | 'continent'> {
   names: Translation[]
   continents: Translation[]
+  languageIds: string[]
 }
 
 function digestCountries(countries: MediaCountry[]): TransformedCountries[] {
@@ -229,7 +231,7 @@ function digestTranslatedCountries(
   const transformedCountries: TransformedCountries[] = countries.map(
     (country) => ({
       id: country.countryId.toString(),
-      name: [
+      names: [
         {
           value: isEmpty(country.name) ? '' : country.name,
           languageId,
@@ -237,18 +239,9 @@ function digestTranslatedCountries(
         }
       ],
       population: country.counts.population.value,
-      continent: [
+      continents: [
         {
           value: isEmpty(country.continentName) ? '' : country.continentName,
-          languageId,
-          primary: false
-        }
-      ],
-      slug: [
-        {
-          value: isEmpty(country.name)
-            ? ''
-            : getSeoSlug(country.name, usedTitles),
           languageId,
           primary: false
         }
@@ -256,19 +249,20 @@ function digestTranslatedCountries(
       languageIds: country.languageIds.map((l) => l.toString()),
       latitude: country.latitude,
       longitude: country.longitude,
-      image: country.assets.flagUrls.png8
+      flagPngSrc: country.assets.flagUrls.png8,
+      flagWebpSrc: country.assets.flagUrls.webpLossy50
     })
   )
-  transformedCountries.forEach((country) => {
-    const existing = mappedCountries.find((c) => c._key === country._key)
-    if (existing == null) mappedCountries.push(country)
-    else {
-      if (country.name[0].value !== '') existing.name.push(country.name[0])
-      if (country.continent[0].value !== '')
-        existing.continent.push(country.continent[0])
-      if (country.slug[0].value !== '') existing.slug.push(country.slug[0])
+  for (const country of transformedCountries) {
+    const existing = mappedCountries.find((c) => c.id === country.id)
+    if (existing == null) {
+      mappedCountries.push(country)
+    } else {
+      if (country.names[0].value !== '') existing.names.push(country.names[0])
+      if (country.continents[0].value !== '')
+        existing.continents.push(country.continents[0])
     }
-  })
+  }
 
   return mappedCountries
 }
@@ -313,6 +307,50 @@ async function main(): Promise<void> {
       mappedCountries,
       languageId.toString()
     )
+  }
+  for (const country of mappedCountries) {
+    console.log('country:', country.id)
+    const data = {
+      ...omit(country, ['continents', 'names', 'languageIds']),
+      languages: {
+        connect: [...country.languageIds.map((l) => ({ id: l.toString() }))]
+      }
+    }
+    await prismaService.country.upsert({
+      where: { id: country.id },
+      update: data,
+      create: data as Prisma.CountryCreateInput
+    })
+    for (const name of country.names) {
+      await prismaService.countryName.upsert({
+        where: {
+          languageId_countryId: {
+            languageId: name.languageId,
+            countryId: country.id
+          }
+        },
+        update: name,
+        create: {
+          ...name,
+          countryId: country.id
+        }
+      })
+    }
+    for (const continent of country.continents) {
+      await prismaService.countryContinent.upsert({
+        where: {
+          languageId_countryId: {
+            languageId: continent.languageId,
+            countryId: country.id
+          }
+        },
+        update: continent,
+        create: {
+          ...continent,
+          countryId: country.id
+        }
+      })
+    }
   }
 }
 main().catch((e) => {
