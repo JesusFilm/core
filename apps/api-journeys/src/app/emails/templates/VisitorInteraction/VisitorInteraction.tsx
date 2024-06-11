@@ -136,38 +136,12 @@ export const VisitorInteraction = ({
                 <Section key={event?.id} align="center" className="px-[28px]">
                   <Row>
                     <Column>
-                      <Text
-                        className="font-sans text-[16px] leading-[24px] mb-[0px]"
-                        style={{
-                          width: '250px',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          font: '16px "Open Sans", sans-serif',
-                          color:
-                            event.typename === 'ChatOpenEvent'
-                              ? '#E43343'
-                              : '#6D6D7D'
-                        }}
-                      >
+                      <Text className="font-sans text-[16px] leading-[24px] mb-[0px]">
                         {event.label}
                       </Text>
                     </Column>
                     <Column align="left">
-                      <Text
-                        className="font-sans text-[16px] leading-[24px]  mb-[0px]"
-                        style={{
-                          width: '100px',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          font: '16px "Open Sans", sans-serif',
-                          color:
-                            event.typename === 'ChatOpenEvent'
-                              ? '#E43343'
-                              : '#6D6D7D'
-                        }}
-                      >
+                      <Text className="font-sans text-[16px] leading-[24px]  mb-[0px]">
                         {'\u00B7\u00A0\u00A0'} {event.value}
                       </Text>
                     </Column>
@@ -259,27 +233,27 @@ VisitorInteraction.PreviewProps = {
         id: 'event 1',
         label: 'Text Response Submission Event',
         value: 'My mom is sick'
-      },
-      {
-        ...event,
-        typename: 'ChatOpenEvent',
-        id: 'event 2',
-        label: 'Chat Open Event',
-        value: '12:00 PM'
-      },
-      {
-        ...event,
-        typename: 'RadioQuestionSubmissionEvent',
-        id: 'event 3',
-        label: 'Radio Question Submission Event',
-        value: 'Health'
-      },
-      {
-        ...event,
-        typename: 'StepViewEvent',
-        id: 'event 4',
-        label: 'Step View Event'
       }
+      // {
+      //   ...event,
+      //   typename: 'ChatOpenEvent',
+      //   id: 'event 2',
+      //   label: 'Chat Open Event',
+      //   value: '12:00 PM'
+      // },
+      // {
+      //   ...event,
+      //   typename: 'RadioQuestionSubmissionEvent',
+      //   id: 'event 3',
+      //   label: 'Radio Question Submission Event',
+      //   value: 'Health'
+      // },
+      // {
+      //   ...event,
+      //   typename: 'StepViewEvent',
+      //   id: 'event 4',
+      //   label: 'Step View Event'
+      // }
     ]
   },
   recipient: {
