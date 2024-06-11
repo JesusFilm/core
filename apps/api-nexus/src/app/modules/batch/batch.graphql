@@ -1,45 +1,54 @@
+scalar Object
+
 type Batch @key(fields: "id") {
   id: ID!
-  nexusId: String!
-  channelId: String!
-  channel: Channel
-  resources: [BatchResource]
   name: String!
-  status: BatchStatus!
-  averagePercent: Float
+  status: BatchStatus
+  totalTasks: Int
+  completedTasks: Int
+  failedTasks: Int
+  progress: Float
+  batchTasks: [BatchTask]
   createdAt: DateTime!
+  updatedAt: DateTime
 }
 
 enum BatchStatus {
   pending
-  running
+  processing
   completed
   failed
-  cancelled
-  paused
   error
-  warning
-  scheduled
 }
 
-type BatchResource @key(fields: "id") {
+type BatchTask @key(fields: "id") {
   id: ID!
   batchId: String!
-  resourceId: String!
-  isCompleted: Boolean
+  type: String
+  task: Object
+  progress: Int
   error: String
-  percent: Float
+  status: BatchTaskStatus
+  createdAt: DateTime!
+  updatedAt: DateTime
+}
+
+enum BatchTaskStatus {
+  pending
+  processing
+  completed
+  failed
+  error
 }
 
 input BatchFilter {
   ids: [ID!]
   name: String
-  nexusId: String
   status: BatchStatus
   limit: Int
 }
 
 extend type Query {
-  batches(where: BatchFilter): [Batch!]
+  batches(where: BatchFilter): [Batch]
   batch(id: ID!): Batch!
 }

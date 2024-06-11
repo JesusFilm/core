@@ -42,7 +42,8 @@
     {
       "files": ["next-env.d.ts"],
       "rules": {
-        "@typescript-eslint/triple-slash-reference": "off"
+        "@typescript-eslint/triple-slash-reference": "off",
+        "i18next/no-literal-string": "off"
       }
     }
   ],

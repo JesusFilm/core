@@ -1,15 +1,17 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import { InjectQueue } from '@nestjs/bull'
 import { Injectable, OnModuleInit } from '@nestjs/common'
 import { Job, Queue } from 'bull'
 
 import { PrismaService } from '../../prisma.service'
-import { UploadToBucketToYoutube } from '../bullMQ.service'
+import {
+  UpdateVideoLocalizationJob,
+  UploadResourceJob
+} from '../bullMQ.service'
 
 @Injectable()
 export class NexusJobListener implements OnModuleInit {
   constructor(
-    @InjectQueue('nexus-bucket') private readonly uploadQueue: Queue,
+    @InjectQueue('nexus-batch-worker') private readonly uploadQueue: Queue,
     private readonly prismaService: PrismaService
   ) {}
 
@@ -22,17 +24,15 @@ export class NexusJobListener implements OnModuleInit {
   private listenToProgressEvents(): void {
     this.uploadQueue.on(
       'progress',
-      async (job: Job<UploadToBucketToYoutube>, progress: number) => {
-        // console.log('Job Progress:', job.id, progress);
+      (
+        job: Job<UploadResourceJob | UpdateVideoLocalizationJob>,
+        progress: number
+      ) => {
+        console.log('Job Progress:', job.name, progress)
         void Promise.all([
-          await this.prismaService.batchResource.updateMany({
-            data: {
-              percent: progress
-            },
-            where: {
-              batchId: job.data.batchId,
-              resourceId: job.data.resource.id
-            }
+          this.prismaService.batchTask.updateMany({
+            where: { id: job.data.batchTaskId },
+            data: { progress, status: 'processing' }
           })
         ])
       }
@@ -42,47 +42,66 @@ export class NexusJobListener implements OnModuleInit {
   private listenToCompletedEvents(): void {
     this.uploadQueue.on(
       'completed',
-      async (job: Job<UploadToBucketToYoutube>) => {
+      (job: Job<UploadResourceJob | UpdateVideoLocalizationJob>) => {
         console.log('Job completed: ', job.id)
         void Promise.all([
-          await this.prismaService.batchResource.updateMany({
-            data: {
-              isCompleted: true,
-              percent: 100
-            },
-            where: {
-              batchId: job.data.batchId,
-              resourceId: job.data.resource.id
-            }
-          }),
-          await this.prismaService.resource.update({
-            data: { status: 'published' },
-            where: { id: job.data.resource.id }
+          this.prismaService.batchTask.updateMany({
+            where: { id: job.data.batchTaskId },
+            data: { progress: 100, status: 'completed' }
           })
         ])
+        void Promise.all([
+          this.prismaService.batch.updateMany({
+            where: {
+              id: job.data.batchId,
+              batchTasks: { every: { progress: 100 } }
+            },
+            data: { progress: 100, status: 'completed' }
+          })
+        ])
+
+        if (job.name === 'processResourceUpload') {
+          const jobData = job.data as UploadResourceJob
+          void Promise.all([
+            this.prismaService.resource.updateMany({
+              where: { id: jobData.resource.id },
+              data: {
+                status: 'done'
+              }
+            })
+          ])
+        }
       }
     )
   }
 
   private listenToFailedEvents(): void {
-    this.uploadQueue.on('failed', async (job: Job<UploadToBucketToYoutube>) => {
-      console.log('Job failed', job.id)
-      void Promise.all([
-        await this.prismaService.batchResource.updateMany({
-          data: {
-            isCompleted: false,
-            error: 'Job failed'
-          },
-          where: {
-            batchId: job.data.batchId,
-            resourceId: job.data.resource.id
-          }
-        }),
-        await this.prismaService.resource.update({
-          data: { status: 'error' },
-          where: { id: job.data.resource.id }
-        })
-      ])
-    })
+    this.uploadQueue.on(
+      'failed',
+      (job: Job<UploadResourceJob | UpdateVideoLocalizationJob>) => {
+        void Promise.all([
+          this.prismaService.batchTask.updateMany({
+            where: { id: job.data.batchTaskId },
+            data: { progress: 0, status: 'failed', error: job.failedReason }
+          }),
+          this.prismaService.batch.updateMany({
+            where: { id: job.data.batchId },
+            data: { status: 'error' }
+          })
+        ])
+
+        if (job.name === 'processResourceUpload') {
+          const jobData = job.data as UploadResourceJob
+          void Promise.all([
+            this.prismaService.resource.updateMany({
+              where: { id: jobData.resource.id },
+              data: {
+                status: 'error'
+              }
+            })
+          ])
+        }
+      }
+    )
   }
 }

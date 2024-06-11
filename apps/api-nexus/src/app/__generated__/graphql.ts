@@ -10,17 +10,20 @@
 
 export enum BatchStatus {
     pending = "pending",
-    running = "running",
+    processing = "processing",
     completed = "completed",
-    failed = "failed",
-    cancelled = "cancelled",
-    paused = "paused",
-    error = "error",
-    warning = "warning",
-    scheduled = "scheduled"
+    failed = "failed"
+}
+
+export enum BatchTaskStatus {
+    pending = "pending",
+    processing = "processing",
+    completed = "completed",
+    failed = "failed"
 }
 
 export enum ChannelStatus {
+    created = "created",
     deleted = "deleted",
     published = "published"
 }
@@ -36,14 +39,8 @@ export enum PrivacyStatus {
     "private" = "private"
 }
 
-export enum SourceType {
-    googleDrive = "googleDrive",
-    template = "template",
-    archlight = "archlight",
-    other = "other"
-}
-
 export enum ResourceStatus {
+    created = "created",
     deleted = "deleted",
     published = "published",
     processing = "processing",
@@ -54,13 +51,11 @@ export enum ResourceStatus {
 export class BatchFilter {
     ids?: Nullable<string[]>;
     name?: Nullable<string>;
-    nexusId?: Nullable<string>;
     status?: Nullable<BatchStatus>;
     limit?: Nullable<number>;
 }
 
 export class ChannelCreateInput {
-    nexusId: string;
     name: string;
     platform: string;
 }
@@ -73,7 +68,6 @@ export class ChannelUpdateInput {
 export class ChannelFilter {
     ids?: Nullable<string[]>;
     name?: Nullable<string>;
-    nexusId?: Nullable<string>;
     limit?: Nullable<number>;
     connected?: Nullable<boolean>;
     status?: Nullable<ChannelStatus>;
@@ -81,8 +75,7 @@ export class ChannelFilter {
 
 export class ConnectYoutubeChannelInput {
     channelId: string;
-    authCode: string;
-    redirectUri: string;
+    accessToken: string;
 }
 
 export class NexusCreateInput {
@@ -105,7 +98,6 @@ export class NexusFilter {
 }
 
 export class ResourceCreateInput {
-    nexusId: string;
     name: string;
 }
 
@@ -116,31 +108,19 @@ export class ResourceUpdateInput {
 export class ResourceFromGoogleDriveInput {
     fileIds: string[];
     authCode: string;
-    nexusId: string;
 }
 
 export class ResourceFilter {
     ids?: Nullable<string[]>;
     name?: Nullable<string>;
-    nexusId?: Nullable<string>;
     status?: Nullable<ResourceStatus>;
     limit?: Nullable<number>;
 }
 
-export class AddResourceFromGoogleDriveInput {
+export class ResourceFromTemplateInput {
     accessToken: string;
-    fileId: string;
-    nexusId: string;
-}
-
-export class ResourceFromSpreadsheetInput {
-    file?: Nullable<Upload>;
-    nexusId: string;
-}
-
-export class GoogleAuthInput {
-    authCode: string;
-    url: string;
+    spreadsheetId: string;
+    drivefolderId: string;
 }
 
 export class BatchJobBatch {
@@ -158,33 +138,64 @@ export class BatchJobInput {
     resources: Nullable<BatchJobResource>[];
 }
 
+export class ResourceFromArrayInput {
+    accessToken: string;
+    spreadsheetData: SpreadsheetRowInput[];
+}
+
+export class SpreadsheetRowInput {
+    channel?: Nullable<string>;
+    filename?: Nullable<string>;
+    title?: Nullable<string>;
+    description?: Nullable<string>;
+    customThumbnail?: Nullable<string>;
+    keywords?: Nullable<string>;
+    category?: Nullable<string>;
+    privacy?: Nullable<string>;
+    spokenLanguage?: Nullable<string>;
+    videoId?: Nullable<string>;
+    captionFile?: Nullable<string>;
+    audioTrackFile?: Nullable<string>;
+    language?: Nullable<string>;
+    captionLanguage?: Nullable<string>;
+    notifySubscribers?: Nullable<string>;
+    playlistId?: Nullable<string>;
+    isMadeForKids?: Nullable<string>;
+    mediaComponentId?: Nullable<string>;
+    textLanguage?: Nullable<string>;
+}
+
 export class Batch {
     __typename?: 'Batch';
     id: string;
-    nexusId: string;
-    channelId: string;
-    channel?: Nullable<Channel>;
-    resources?: Nullable<Nullable<BatchResource>[]>;
     name: string;
-    status: BatchStatus;
-    averagePercent?: Nullable<number>;
+    status?: Nullable<BatchStatus>;
+    totalTasks?: Nullable<number>;
+    completedTasks?: Nullable<number>;
+    failedTasks?: Nullable<number>;
+    progress?: Nullable<number>;
+    batchTasks?: Nullable<Nullable<BatchTask>[]>;
     createdAt: DateTime;
+    updatedAt?: Nullable<DateTime>;
 }
 
-export class BatchResource {
-    __typename?: 'BatchResource';
+export class BatchTask {
+    __typename?: 'BatchTask';
     id: string;
     batchId: string;
-    resourceId: string;
-    isCompleted?: Nullable<boolean>;
+    type?: Nullable<string>;
+    task?: Nullable<Object>;
+    progress?: Nullable<number>;
     error?: Nullable<string>;
-    percent?: Nullable<number>;
+    status?: Nullable<BatchTaskStatus>;
+    createdAt: DateTime;
+    updatedAt?: Nullable<DateTime>;
 }
 
 export abstract class IQuery {
     __typename?: 'IQuery';
 
-    abstract batches(where?: Nullable<BatchFilter>): Nullable<Batch[]> | Promise<Nullable<Batch[]>>;
+    abstract batches(where?: Nullable<BatchFilter>): Nullable<Nullable<Batch>[]> | Promise<Nullable<Nullable<Batch>[]>>;
 
     abstract batch(id: string): Batch | Promise<Batch>;
 
@@ -204,25 +215,14 @@ export abstract class IQuery {
 export class Channel {
     __typename?: 'Channel';
     id: string;
-    nexusId: string;
     name: string;
     platform?: Nullable<string>;
     connected?: Nullable<boolean>;
-    youtube?: Nullable<ChannelYoutube>;
-    status: ChannelStatus;
-    createdAt: DateTime;
-}
-
-export class ChannelYoutube {
-    __typename?: 'ChannelYoutube';
-    id: string;
-    channelId?: Nullable<string>;
-    channel?: Nullable<Channel>;
     title?: Nullable<string>;
     description?: Nullable<string>;
     youtubeId?: Nullable<string>;
     imageUrl?: Nullable<string>;
-    refreshToken?: Nullable<string>;
+    createdAt: DateTime;
 }
 
 export class Nexus {
@@ -238,34 +238,30 @@ export class Nexus {
 export class Resource {
     __typename?: 'Resource';
     id: string;
-    nexusId: string;
-    nexus: Nexus;
     name: string;
-    status: ResourceStatus;
+    category?: Nullable<string>;
+    spokenLanguage?: Nullable<string>;
+    customThumbnail?: Nullable<string>;
+    playlistId?: Nullable<string>;
+    isMadeForKids?: Nullable<boolean>;
+    mediaComponentId?: Nullable<string>;
+    notifySubscribers?: Nullable<boolean>;
+    status?: Nullable<ResourceStatus>;
+    privacy?: Nullable<PrivacyStatus>;
+    resourceLocalizations?: Nullable<Nullable<ResourceLocalization>[]>;
     createdAt: DateTime;
     updatedAt?: Nullable<DateTime>;
     deletedAt?: Nullable<DateTime>;
-    googleDriveLink?: Nullable<string>;
-    category: string;
-    privacy: PrivacyStatus;
-    sourceType: SourceType;
-    localizations: Nullable<ResourceLocalization>[];
 }
 
 export class ResourceLocalization {
     __typename?: 'ResourceLocalization';
     id: string;
-    resourceId: string;
-    title: string;
-    description: string;
-    keywords: string;
-    language: string;
-}
-
-export class GoogleAuthResponse {
-    __typename?: 'GoogleAuthResponse';
-    id: string;
-    accessToken: string;
+    resourceId?: Nullable<string>;
+    title?: Nullable<string>;
+    description?: Nullable<string>;
+    keywords?: Nullable<string>;
+    language?: Nullable<string>;
 }
 
 export class Translation {
@@ -282,7 +278,7 @@ export abstract class IMutation {
 
     abstract channelDelete(id: string): Channel | Promise<Channel>;
 
-    abstract connectYoutubeChannel(input: ConnectYoutubeChannelInput): Channel | Promise<Channel>;
+    abstract channelConnect(input: ConnectYoutubeChannelInput): Channel | Promise<Channel>;
 
     abstract nexusCreate(input: NexusCreateInput): Nexus | Promise<Nexus>;
 
@@ -296,15 +292,11 @@ export abstract class IMutation {
 
     abstract resourceDelete(id: string): Resource | Promise<Resource>;
 
-    abstract resourceFromGoogleDrive(input: ResourceFromGoogleDriveInput): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
-
-    abstract resourceFromTemplate(nexusId: string, tokenId: string, spreadsheetId: string, drivefolderId: string): Nullable<Resource[]> | Promise<Nullable<Resource[]>>;
-
-    abstract getGoogleAccessToken(input: GoogleAuthInput): GoogleAuthResponse | Promise<GoogleAuthResponse>;
+    abstract resourceFromTemplate(input: ResourceFromTemplateInput): Nullable<Nullable<Resource>[]> | Promise<Nullable<Nullable<Resource>[]>>;
 
     abstract uploadToYoutube(channelId: string, resourceId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
 
-    abstract resourceBatchJob(input: BatchJobInput): Nullable<string> | Promise<Nullable<string>>;
+    abstract resourceFromArray(input: ResourceFromArrayInput): Nullable<Nullable<Resource>[]> | Promise<Nullable<Nullable<Resource>[]>>;
 }
 
 export class Language {
@@ -312,5 +304,6 @@ export class Language {
 }
 
 export type DateTime = String;
+export type Object = any;
 export type Upload = any;
 type Nullable<T> = T | null;

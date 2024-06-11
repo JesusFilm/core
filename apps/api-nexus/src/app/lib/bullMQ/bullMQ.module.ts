@@ -1,6 +1,7 @@
 import { BullModule } from '@nestjs/bull'
 import { Global, Module } from '@nestjs/common'
 
+import { BatchService } from '../../modules/batch/batch.service'
 import { BucketService } from '../bucket/bucket.service'
 import { GoogleDriveService } from '../google/drive.service'
 import { GoogleOAuthService } from '../google/oauth.service'
@@ -9,8 +10,7 @@ import { GoogleYoutubeService } from '../google/youtube.service'
 import { PrismaService } from '../prisma.service'
 
 import { BullMQService } from './bullMQ.service'
-import { NexusBucketProcessor } from './consumers/nexusBucket.processor'
-import { NexusYoutubeProcessor } from './consumers/nexusYoutube.processor'
+import { BatchJobWorker } from './consumers/batch.job.worker'
 import { NexusJobListener } from './listener/jobListener'
 
 @Global()
@@ -22,19 +22,16 @@ import { NexusJobListener } from './listener/jobListener'
         port: 6379
       }
     }),
-    BullModule.registerQueue(
-      { name: 'nexus-youtube' },
-      { name: 'nexus-bucket' }
-    )
+    BullModule.registerQueue({ name: 'nexus-batch-worker' })
   ],
   providers: [
     BullMQService,
-    NexusBucketProcessor,
-    NexusYoutubeProcessor,
-    GoogleDriveService,
+    BatchJobWorker,
     GoogleOAuthService,
     GoogleSheetsService,
+    GoogleDriveService,
     GoogleYoutubeService,
+    BatchService,
     BucketService,
     PrismaService,
     NexusJobListener
