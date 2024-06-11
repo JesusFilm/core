@@ -1,9 +1,4 @@
-import {
-  ApolloClient,
-  ApolloLink,
-  HttpLink,
-  NormalizedCacheObject
-} from '@apollo/client'
+import { ApolloClient, HttpLink, NormalizedCacheObject } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
@@ -18,13 +13,6 @@ export function createApolloClient(
 
   const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL
-  })
-
-  const httpSwitchyLink = new HttpLink({
-    uri: process.env.NEXT_PUBLIC_SWITCHY_GATEWAY_URL,
-    headers: {
-      'Api-Authorization': process.env.NEXT_PUBLIC_SWITCHY_WORKSPACE_KEY ?? ''
-    }
   })
 
   const authLink = setContext(async (_, { headers }) => {
@@ -42,11 +30,7 @@ export function createApolloClient(
 
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: ApolloLink.split(
-      (operation) => operation.getContext().clientName === 'switchy',
-      httpSwitchyLink,
-      authLink.concat(httpLink)
-    ),
+    link: authLink.concat(httpLink),
     cache: cache(),
     name: 'nexus-admin',
     version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,

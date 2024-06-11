@@ -2,7 +2,6 @@ import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft'
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight'
 import CampaignIcon from '@mui/icons-material/Campaign'
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks'
-import LinkIcon from '@mui/icons-material/Link'
 import ListIcon from '@mui/icons-material/List'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
@@ -64,18 +63,6 @@ export const Sidebar: FC = () => {
         <ListIcon
           sx={{
             color: pathname.includes('/batches') ? 'primary.main' : '#fff'
-          }}
-        />
-      )
-    },
-    {
-      id: 4,
-      name: 'Short Links',
-      slug: '/short-links',
-      icon: (
-        <LinkIcon
-          sx={{
-            color: pathname.includes('/short-links') ? 'primary.main' : '#fff'
           }}
         />
       )
