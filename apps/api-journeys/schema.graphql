@@ -226,8 +226,9 @@ type Mutation {
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
-  eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput!, id: ID): EventEmailNotifications!
-  eventEmailNotificationsDelete(input: EventEmailNotificationsUpdateInput!, id: ID): EventEmailNotifications!
+  eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput!): EventEmailNotifications!
+  eventEmailNotificationsDelete(input: EventEmailNotificationsDeleteInput!): EventEmailNotifications!
+  eventEmailNotificationsDeleteByTeamId(input: EventEmailNotificationsDeleteByTeamInput!): [EventEmailNotifications!]!
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
@@ -1908,13 +1909,25 @@ type EventEmailNotifications {
   id: ID!
   userId: ID!
   journeyId: ID!
+  teamId: ID
   value: Boolean!
 }
 
 input EventEmailNotificationsUpdateInput {
   userId: ID!
   journeyId: ID!
+  teamId: ID
   value: Boolean!
+}
+
+input EventEmailNotificationsDeleteInput {
+  userId: ID!
+  journeyId: ID!
+}
+
+input EventEmailNotificationsDeleteByTeamInput {
+  userId: ID!
+  teamId: ID!
 }
 
 type Host {

@@ -481,6 +481,7 @@ model EventEmailNotifications {
   id        String  @id @default(uuid())
   userId    String
   journeyId String
+  teamId    String?
   value     Boolean @default(true)
 
   @@unique([userId, journeyId])
