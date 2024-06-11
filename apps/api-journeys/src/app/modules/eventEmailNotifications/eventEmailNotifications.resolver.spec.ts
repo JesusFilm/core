@@ -38,7 +38,8 @@ describe('EventEmailNotifications', () => {
     id: '1',
     journeyId: 'journeyId',
     userId: 'userId1',
-    teamId: 'teamId',
+    userJourneyId: 'userJourneyId',
+    userTeamId: null,
     value: false
   }
   const input = {
@@ -78,7 +79,8 @@ describe('EventEmailNotifications', () => {
         id: '1',
         journeyId: 'journeyId',
         userId: 'userId1',
-        teamId: 'teamId',
+        userJourneyId: 'userJourneyId',
+        userTeamId: null,
         value: true
       })
       expect(prismaService.eventEmailNotifications.upsert).toHaveBeenCalledWith(
@@ -90,48 +92,6 @@ describe('EventEmailNotifications', () => {
           update: input
         }
       )
-    })
-  })
-
-  describe('eventEmailNotificationsDelete', () => {
-    it('should delete an event email notification by userId and journeyId', async () => {
-      prismaService.eventEmailNotifications.delete.mockResolvedValueOnce(
-        eventEmailNotification
-      )
-      expect(await resolver.eventEmailNotificationsDelete(input)).toEqual(
-        eventEmailNotification
-      )
-      expect(prismaService.eventEmailNotifications.delete).toHaveBeenCalledWith(
-        {
-          where: {
-            userId_journeyId: { userId: 'userId1', journeyId: 'journeyId' }
-          }
-        }
-      )
-    })
-  })
-
-  describe('eventEmailNotificationsDeleteByTeamId', () => {
-    it('should delete all event email notification by userId and teamId', async () => {
-      prismaService.eventEmailNotifications.findMany.mockResolvedValueOnce(
-        eventEmailNotifications
-      )
-      prismaService.eventEmailNotifications.deleteMany.mockResolvedValueOnce({
-        count: 2
-      })
-      expect(
-        await resolver.eventEmailNotificationsDeleteByTeamId(input)
-      ).toEqual(eventEmailNotifications)
-      expect(
-        prismaService.eventEmailNotifications.findMany
-      ).toHaveBeenCalledWith({
-        where: { teamId: 'teamId', userId: 'userId1' }
-      })
-      expect(
-        prismaService.eventEmailNotifications.deleteMany
-      ).toHaveBeenCalledWith({
-        where: { teamId: 'teamId', userId: 'userId1' }
-      })
     })
   })
 })

@@ -457,22 +457,9 @@ type EventEmailNotifications
   id: ID!
   userId: ID!
   journeyId: ID!
-  teamId: ID
+  userTeamId: ID
+  userJourneyId: ID
   value: Boolean!
-}
-
-input EventEmailNotificationsDeleteByTeamInput
-  @join__type(graph: JOURNEYS)
-{
-  userId: ID!
-  teamId: ID!
-}
-
-input EventEmailNotificationsDeleteInput
-  @join__type(graph: JOURNEYS)
-{
-  userId: ID!
-  journeyId: ID!
 }
 
 input EventEmailNotificationsUpdateInput
@@ -480,7 +467,8 @@ input EventEmailNotificationsUpdateInput
 {
   userId: ID!
   journeyId: ID!
-  teamId: ID
+  userTeamId: ID
+  userJourneyId: ID
   value: Boolean!
 }
 
@@ -1392,8 +1380,6 @@ type Mutation
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @join__field(graph: JOURNEYS)
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
   eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput!): EventEmailNotifications! @join__field(graph: JOURNEYS)
-  eventEmailNotificationsDelete(input: EventEmailNotificationsDeleteInput!): EventEmailNotifications! @join__field(graph: JOURNEYS)
-  eventEmailNotificationsDeleteByTeamId(input: EventEmailNotificationsDeleteByTeamInput!): [EventEmailNotifications!]! @join__field(graph: JOURNEYS)
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
