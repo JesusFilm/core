@@ -39,7 +39,6 @@ locals {
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port
     })
-    alb_listener = var.ecs_config.alb_listener
     auto_scaling = {
       max_capacity = 4
       min_capacity = 1

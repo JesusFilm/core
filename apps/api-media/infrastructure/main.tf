@@ -1,3 +1,10 @@
+module "alb-listener" {
+  source   = "../../../infrastructure/modules/aws/alb-listener"
+  alb_arn  = var.ecs_config.alb.arn
+  port     = local.port
+  protocol = "HTTP"
+}
+
 module "ecs-task" {
   source                = "../../../infrastructure/modules/aws/ecs-task"
   ecs_config            = var.ecs_config
@@ -5,6 +12,7 @@ module "ecs-task" {
   env                   = var.env
   doppler_token         = var.doppler_token
   environment_variables = local.environment_variables
+  alb_listener_arn      = module.alb-listener.arn
 }
 
 module "database" {

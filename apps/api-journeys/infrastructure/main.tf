@@ -1,17 +1,8 @@
-
-resource "aws_alb_listener" "alb_listener" {
-  load_balancer_arn = var.ecs_config.alb.arn
-  port              = local.port
-  protocol          = "HTTP"
-
-  default_action {
-    type = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "No routes defined"
-      status_code  = "200"
-    }
-  }
+module "alb-listener" {
+  source   = "../../../infrastructure/modules/aws/alb-listener"
+  alb_arn  = var.ecs_config.alb.arn
+  port     = local.port
+  protocol = "HTTP"
 }
 
 module "ecs-task" {
@@ -21,6 +12,7 @@ module "ecs-task" {
   env                   = var.env
   doppler_token         = var.doppler_token
   environment_variables = local.environment_variables
+  alb_listener_arn      = module.alb-listener.arn
 }
 
 module "seed" {

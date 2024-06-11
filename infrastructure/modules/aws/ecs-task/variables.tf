@@ -26,13 +26,6 @@ variable "service_config" {
       arn      = string
       dns_name = string
     })
-    alb_listener = object({
-      arn             = string
-      port            = number
-      protocol        = string
-      certificate_arn = optional(string)
-      dns_name        = optional(string)
-    })
     alb_target_group = object({
       port              = number
       protocol          = string
@@ -73,4 +66,8 @@ variable "doppler_token" {
 # We are unable to for_each sensitive values, so we must provide a list of secret env vars
 variable "environment_variables" {
   type = list(string)
+}
+
+variable "alb_listener_arn" {
+  type = string
 }

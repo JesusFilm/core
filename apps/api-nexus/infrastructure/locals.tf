@@ -30,9 +30,6 @@ locals {
       arn      = var.ecs_config.alb.arn
       dns_name = var.ecs_config.alb.dns_name
     }
-    alb_listener = merge(var.ecs_config.alb_listener, {
-      port = local.port
-    })
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port
     })

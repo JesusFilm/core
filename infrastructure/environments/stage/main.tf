@@ -51,12 +51,6 @@ locals {
       health_check_path = "/health"
       health_check_port = "8088"
     })
-    alb_listener = {
-      arn             = module.stage.public_alb.alb_listener.arn
-      port            = 443
-      protocol        = "HTTPS"
-      certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
-    }
   }
 
   internal_ecs_config = {
@@ -68,19 +62,21 @@ locals {
     cluster                 = module.stage.ecs.ecs_cluster
     alb_dns_name            = module.stage.internal_alb.dns_name
     zone_id                 = module.stage.route53_private_zone_id
-    alb_target_group        = local.alb_target_group
-    alb_listener = {
-      alb_arn  = module.stage.internal_alb.arn
-      protocol = "HTTP"
+    alb = {
+      arn      = module.stage.internal_alb.arn
+      dns_name = module.stage.internal_alb.dns_name
     }
+    alb_listener     = module.stage.internal_alb.alb_listener
+    alb_target_group = local.alb_target_group
   }
 }
 
 module "api-gateway-stage" {
-  source        = "../../../apps/api-gateway/infrastructure"
-  ecs_config    = local.public_ecs_config
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_api_gateway_stage_token.value
+  source           = "../../../apps/api-gateway/infrastructure"
+  ecs_config       = local.public_ecs_config
+  env              = "stage"
+  doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_stage_token.value
+  alb_listener_arn = module.stage.public_alb.alb_listener.arn
 }
 
 module "api-journeys" {
@@ -226,11 +222,11 @@ module "journeys-admin" {
       health_check_path = "/api/health"
       health_check_port = "3000"
     })
-    alb_listener = merge(local.public_ecs_config.alb_listener, {
-      dns_name        = "admin-stage.nextstep.is"
-      certificate_arn = data.aws_acm_certificate.acm_nextstep_is.arn
+    alb = merge(local.public_ecs_config.alb, {
+      dns_name = "admin-stage.central.jesusfilm.org"
     })
   })
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
+  env              = "stage"
+  doppler_token    = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
+  alb_listener_arn = module.stage.public_alb.alb_listener.arn
 }

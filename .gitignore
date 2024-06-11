@@ -75,6 +75,7 @@ terraform.tfstate.backup
 # ignore old locale files
 /libs/locales/**/*_old.json
 
+/.nx
 .nx/cache
 
 # react-email

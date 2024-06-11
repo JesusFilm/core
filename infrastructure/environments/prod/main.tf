@@ -52,9 +52,10 @@ locals {
 }
 
 module "api-gateway" {
-  source        = "../../../apps/api-gateway/infrastructure"
-  ecs_config    = local.public_ecs_config
-  doppler_token = data.aws_ssm_parameter.doppler_api_gateway_prod_token.value
+  source           = "../../../apps/api-gateway/infrastructure"
+  ecs_config       = local.public_ecs_config
+  doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_prod_token.value
+  alb_listener_arn = module.prod.public_alb.alb_listener.arn
 }
 
 module "api-journeys" {
@@ -192,12 +193,12 @@ module "journeys-admin" {
       health_check_path = "/api/health"
       health_check_port = "3000"
     })
-    alb_listener = merge(local.public_ecs_config.alb_listener, {
-      dns_name        = "admin.nextstep.is"
-      certificate_arn = data.aws_acm_certificate.acm_nextstep_is.arn
+    alb = merge(local.public_ecs_config.alb, {
+      dns_name = "admin.central.jesusfilm.org"
     })
   })
-  doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_prod_token.value
+  doppler_token    = data.aws_ssm_parameter.doppler_journeys_admin_prod_token.value
+  alb_listener_arn = module.prod.public_alb.alb_listener.arn
 }
 
 module "postgresql" {

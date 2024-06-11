@@ -8,13 +8,6 @@ variable "ecs_config" {
       arn      = string
       dns_name = string
     })
-    alb_listener = object({
-      arn             = string
-      port            = number
-      protocol        = string
-      certificate_arn = string
-      dns_name        = string
-    })
     alb_target_group = object({
       port              = number
       protocol          = string
@@ -38,5 +31,9 @@ variable "env" {
 }
 
 variable "doppler_token" {
+  type = string
+}
+
+variable "alb_listener_arn" {
   type = string
 }
