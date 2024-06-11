@@ -7,6 +7,9 @@ import {
   Event,
   EventEmailNotifications,
   Journey,
+  Team,
+  UserJourney,
+  UserTeam,
   Visitor
 } from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
@@ -22,6 +25,11 @@ const apollo = new ApolloClient({
     'interop-token': process.env.INTEROP_TOKEN ?? ''
   }
 })
+
+export interface ExtendedJourneys extends Journey {
+  userJourneys: UserJourney[]
+  team: Team & { userTeams: UserTeam[] }
+}
 
 export interface EventsNotificationJob {
   journeyId: string
@@ -45,6 +53,26 @@ export class EmailConsumer extends WorkerHost {
         await this.sendEventsNotification(job)
         break
     }
+  }
+
+  proccesUserIds(journey: ExtendedJourneys): string[] {
+    const recipientUserIds = new Set<string>()
+
+    journey.userJourneys
+      .filter(
+        (userJourney) =>
+          userJourney.role === UserJourneyRole.owner ||
+          userJourney.role === UserJourneyRole.editor
+      )
+      .forEach((userJourney) => recipientUserIds.add(userJourney.userId))
+
+    if (journey.team != null) {
+      journey.team.userTeams.forEach((userTeam) =>
+        recipientUserIds.add(userTeam.userId)
+      )
+    }
+
+    return Array.from(recipientUserIds)
   }
 
   async sendUserNotification(
@@ -75,7 +103,7 @@ export class EmailConsumer extends WorkerHost {
 
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${
       journey.id
-    }/reports/visitor`
+    }/reports/visitors`
 
     const text = render(
       VisitorInteraction({
@@ -109,7 +137,12 @@ export class EmailConsumer extends WorkerHost {
     const journey = await this.prismaService.journey.findUnique({
       where: { id: job.data.journeyId },
       include: {
-        userJourneys: true
+        userJourneys: true,
+        team: {
+          include: {
+            userTeams: true
+          }
+        }
       }
     })
 
@@ -133,13 +166,7 @@ export class EmailConsumer extends WorkerHost {
     if (visitor == null) return
     if (eventEmailNotifications.length === 0) return
 
-    const recipientUserIds = journey?.userJourneys
-      ?.filter(
-        (userJourney) =>
-          userJourney.role === UserJourneyRole.owner ||
-          userJourney.role === UserJourneyRole.editor
-      )
-      ?.map((userJourney) => userJourney.userId)
+    const recipientUserIds = this.proccesUserIds(journey)
 
     await Promise.all(
       recipientUserIds.map(async (userId) => {

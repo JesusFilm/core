@@ -7,13 +7,14 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
   Event,
   EventEmailNotifications,
-  Journey,
   JourneyStatus,
   MessagePlatform,
+  Team,
   ThemeMode,
   ThemeName,
   UserJourney,
   UserJourneyRole,
+  UserTeam,
   Visitor
 } from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
@@ -23,7 +24,8 @@ import { PrismaService } from '../../../lib/prisma.service'
 import {
   ApiUsersJob,
   EmailConsumer,
-  EventsNotificationJob
+  EventsNotificationJob,
+  ExtendedJourneys
 } from './email.consumer'
 
 jest.mock('@apollo/client')
@@ -52,7 +54,26 @@ describe('EmailConsumer', () => {
     }
   ]
 
-  const journey: Journey & { userJourneys: UserJourney[] } = {
+  const team: Team & { userTeams: UserTeam[] } = {
+    id: 'teamId',
+    title: 'jfp',
+    publicTitle: null,
+    createdAt: new Date('2024-05-14T22:08:12.000Z'),
+    updatedAt: new Date('2024-05-14T22:08:12.000Z'),
+    plausibleToken: null,
+    userTeams: [
+      {
+        id: 'userTeamId',
+        teamId: 'teamId',
+        userId: 'userId',
+        role: 'manager',
+        createdAt: new Date('2024-05-14T22:08:12.000Z'),
+        updatedAt: new Date('2024-05-14T22:08:12.000Z')
+      }
+    ]
+  }
+
+  const journey: ExtendedJourneys = {
     id: 'journeyId',
     slug: 'journey-slug',
     title: 'published',
@@ -77,7 +98,9 @@ describe('EmailConsumer', () => {
     template: false,
     hostId: null,
     strategySlug: null,
-    userJourneys
+    userJourneys,
+    team,
+    plausibleToken: null
   }
 
   const event: Event = {
