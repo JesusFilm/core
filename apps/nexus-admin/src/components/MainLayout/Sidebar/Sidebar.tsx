@@ -166,6 +166,19 @@ export const Sidebar: FC = () => {
       >
         {miniVariant ? 'N' : 'Nexus'}
       </Typography>
+      <Typography
+        variant="caption"
+        component="a"
+        href="https://www.jesusfilm.org/privacy"
+        target="_blank"
+        sx={{
+          textAlign: 'center',
+          color: 'inherit',
+          mt: 2
+        }}
+      >
+        Privacy Policy
+      </Typography>
     </Drawer>
   )
 }

@@ -8,8 +8,8 @@ import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { DataGrid, GridCellParams } from '@mui/x-data-grid'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 
 import { Resources_resources } from '../../../__generated__/Resources'
@@ -74,6 +74,7 @@ export const ResourcesTable: FC<ResourcesTableProps> = ({
   }
 
   const statusColor = {
+    done: 'success',
     published: 'success',
     error: 'error',
     uploaded: 'info'

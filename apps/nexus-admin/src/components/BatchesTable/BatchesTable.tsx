@@ -132,6 +132,7 @@ const CircularProgressWithLabel = (
           variant="caption"
           component="div"
           color="text.secondary"
+          fontSize="10px"
         >{`${Math.round(props.value)}%`}</Typography>
       </Box>
     </Box>
@@ -223,7 +224,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                       fontFamily: 'Montserrat'
                     }}
                   >
-                    {t('Error')}
+                    {t('State')}
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -244,7 +245,7 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                     </TableCell>
                     <TableCell>{task.task?.localization?.videoId}</TableCell>
                     <TableCell>
-                      {task.error !== undefined ? (
+                      {task.error !== null ? (
                         <Tooltip title={task.error}>
                           <IconButton>
                             <CircleIcon

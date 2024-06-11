@@ -101,7 +101,7 @@ export class GoogleSheetsService {
     spreadsheetId: string,
     drivefolderId: string,
     data: SpreadsheetRow[] = [],
-    isArray: boolean = false
+    isArray = false
   ): Promise<{
     templateType: SpreadsheetTemplateType
     spreadsheetData: SpreadsheetRow[]
@@ -145,6 +145,42 @@ export class GoogleSheetsService {
             row.audioTrackDriveFile =
               await this.googleDriveService.getFileMetadata(fileId, accessToken)
           }
+        }
+
+        if (row.channel != null) {
+          row.channelData = (await this.prismaService.channel.findFirst({
+            where: { youtubeId: row.channel }
+          })) as Channel
+        }
+
+        if (row.videoId != null) {
+          // Populate Resource Data
+          row.resourceData = (await this.prismaService.resource.findFirst({
+            where: {
+              resourceLocalizations: { some: { videoId: row.videoId } }
+            },
+            include: {
+              resourceLocalizations: true,
+              resourceChannels: { where: { youtubeId: row.videoId } }
+            }
+          })) as Resource
+
+          // Populate Channel Data
+          row.channelData =
+            (
+              await this.prismaService.resource.findFirst({
+                where: {
+                  resourceLocalizations: { some: { videoId: row.videoId } }
+                },
+                include: {
+                  resourceLocalizations: true,
+                  resourceChannels: {
+                    where: { youtubeId: row.videoId },
+                    include: { channel: true }
+                  }
+                }
+              })
+            )?.resourceChannels[0]?.channel ?? undefined
         }
       }
 
@@ -200,6 +236,7 @@ export class GoogleSheetsService {
           .map((spreadsheetRow) => spreadsheetRow.channelData?.id)
       )
     )
+
     for (const channel of channels) {
       const resources = await this.createResourceFromSpreadsheet(
         spreadsheetRows.filter(

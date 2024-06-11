@@ -1,191 +1,249 @@
+import { gql, useMutation } from '@apollo/client'
 import DeleteIcon from '@mui/icons-material/Delete'
-import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined'
+import DownloadIcon from '@mui/icons-material/Download'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import PublishOutlinedIcon from '@mui/icons-material/PublishOutlined'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useGoogleLogin } from '@react-oauth/google'
-import { useRouter } from 'next/router'
+import { camelCase, mapKeys, pick } from 'lodash'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { FC, useEffect, useState } from 'react'
-import useDrivePicker from 'react-google-drive-picker'
-import { CallbackDoc } from 'react-google-drive-picker/dist/typeDefs'
+import { useRouter } from 'next/router'
+import { useSnackbar } from 'notistack'
+import Papa from 'papaparse'
+import { FC } from 'react'
 
 import { MainLayout } from '../../src/components/MainLayout'
-import { UploadConfirmationModal } from '../../src/components/UploadConfirmationModal'
+import { useCSVFileUpload } from '../../src/libs/useCSVFileUpload/useCSVFileUpload'
+
+import { GET_RESOURCES } from '.'
+// import { UploadConfirmationModal } from '../../src/components/UploadConfirmationModal'
+
+const RESOUCE_FROM_ARRAY = gql`
+  mutation ResourceFromArray($input: ResourceFromArrayInput!) {
+    resourceFromArray(input: $input) {
+      id
+    }
+  }
+`
 
 const ImportYouTubeTemplatePage: FC = () => {
-  const [selectedTemplateFile, setSelectedTemplateFile] =
-    useState<CallbackDoc | null>(null)
-  const [selectedVideosDirectory, setSelectedVideosDirectory] =
-    useState<CallbackDoc | null>(null)
-  const [openPicker] = useDrivePicker()
-  const [googleAccessToken, setGoogleAccessToken] = useState('')
-  const [resourceType, setResourceType] = useState<'file' | 'directory' | ''>(
-    ''
-  )
   const { t } = useTranslation()
   const router = useRouter()
-  const [consentOpen, setConsentOpen] = useState(false)
+  const [selectedTemplateFile, openFileDialog, resetTemplateFile] =
+    useCSVFileUpload()
+  const { enqueueSnackbar } = useSnackbar()
+
+  const [resourceFromArray] = useMutation(RESOUCE_FROM_ARRAY)
 
   const googleLogin = useGoogleLogin({
     flow: 'implicit',
     scope:
-      'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload',
+      'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.channel-memberships.creator',
     onSuccess: async ({ access_token: accessToken }) => {
-      setGoogleAccessToken(accessToken)
+      Papa.parse(selectedTemplateFile, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function (results) {
+          const parsedData = results.data
+
+          const modifiedData = parsedData.map((data) =>
+            pick(data, [
+              'channel',
+              'filename',
+              'title',
+              'description',
+              'custom_thumbnail',
+              'keywords',
+              'category',
+              'privacy',
+              'spoken_language',
+              'video_id',
+              'caption_file',
+              'audio_track_file',
+              'language',
+              'caption_language',
+              'notify_subscribers',
+              'playlist_id',
+              'is_made_for_kids',
+              'media_component_id',
+              'text_language'
+            ])
+          )
+
+          console.log(modifiedData)
+
+          const spreadsheetData = modifiedData.map((data) =>
+            mapKeys(data, (value, key) => camelCase(key))
+          )
+
+          void resourceFromArray({
+            variables: {
+              input: {
+                accessToken,
+                spreadsheetData
+              }
+            },
+            onCompleted: () => {
+              enqueueSnackbar('Resource Created', {
+                variant: 'success',
+                preventDuplicate: true
+              })
+
+              void router.push('/resources')
+            },
+            refetchQueries: [GET_RESOURCES]
+          })
+        }
+      })
     }
   })
 
-  const filePicker = function (): void {
-    openPicker({
-      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
-      developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
-      token: googleAccessToken ?? '',
-      viewId: 'SPREADSHEETS',
-      callbackFunction: (data) => {
-        if (data.action === 'cancel') {
-          console.log('User clicked cancel/close button')
-        }
-
-        if (data.action === 'picked') {
-          setSelectedTemplateFile(data.docs[0])
-          console.log(data.docs[0]?.id)
-        }
-      }
-    })
-  }
-
-  const directoryPicker = function (): void {
-    openPicker({
-      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
-      developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY ?? '',
-      token: googleAccessToken ?? '',
-      viewId: 'FOLDERS',
-      setSelectFolderEnabled: true,
-      callbackFunction: (data) => {
-        if (data.action === 'cancel') {
-          console.log('User clicked cancel/close button')
-        }
-
-        if (data.action === 'picked') {
-          setSelectedVideosDirectory(data.docs[0])
-        }
-      }
-    })
-  }
-
-  useEffect(() => {
-    if (googleAccessToken !== '') {
-      if (resourceType === 'file') {
-        filePicker()
-      }
-
-      if (resourceType === 'directory') {
-        directoryPicker()
-      }
-    }
-  }, [googleAccessToken])
-
   return (
     <MainLayout title="Import Youtube Template">
-      <Paper elevation={0} sx={{ px: 4, py: 8, mt: 4 }}>
-        <Stack spacing={8}>
-          <Stack alignItems="flex-start" spacing={2}>
-            <Typography variant="h6">
-              {t('Pick Template From Google Drive')}
-            </Typography>
-            {selectedTemplateFile === null && (
+      <Box sx={{ p: 10 }}>
+        <Paper elevation={0} sx={{ mt: 4 }}>
+          <Typography variant="h6" sx={{ p: 4 }}>
+            Template and Directory Picker
+          </Typography>
+          <Divider />
+          <Stack spacing={8} sx={{ p: 4 }}>
+            <Stack spacing={1}>
+              <Typography variant="subtitle2">
+                Download Sample Templates
+              </Typography>
+              <Typography variant="caption">
+                Get pre-made templates to help you get started with
+                [Upload/Modify/Localization]
+              </Typography>
+              <Stack direction="row" spacing={3}>
+                <Button startIcon={<DownloadIcon />} color="info">
+                  Upload template
+                </Button>
+                <Button startIcon={<DownloadIcon />} color="info">
+                  Modify template
+                </Button>
+                <Button startIcon={<DownloadIcon />} color="info">
+                  Localization template
+                </Button>
+              </Stack>
+            </Stack>
+            <Stack spacing={1}>
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <InfoOutlinedIcon color="info" />
+                <Typography variant="subtitle2">
+                  Editing your spreadsheet template
+                </Typography>
+              </Stack>
+              <Typography variant="body2">
+                To ensure a smooth import process, please make sure the
+                following fields are included and editable within your
+                spreadsheet template:
+              </Typography>
+              <ul>
+                <li>
+                  <Typography variant="body2">
+                    Video Title: This will be the title viewers see for your
+                    video.
+                  </Typography>
+                </li>
+                <li>
+                  <Typography variant="body2">
+                    Video Description: Add details about your video to capture
+                    viewers' attention.
+                  </Typography>
+                </li>
+                <li>
+                  <Typography variant="body2">
+                    Privacy Settings: Choose public, private, or unlisted for
+                    who can see your video.
+                  </Typography>
+                </li>
+              </ul>
+              <Typography variant="body2">
+                Note: The template you upload must be in CSV format (.csv)
+              </Typography>
+            </Stack>
+            <Stack alignItems="flex-start" spacing={2}>
+              <Typography variant="subtitle2">
+                Pick template from local drive
+              </Typography>
+              {selectedTemplateFile === null && (
+                <Button
+                  variant="outlined"
+                  startIcon={<PublishOutlinedIcon />}
+                  onClick={() => openFileDialog()}
+                >
+                  {t('Upload Youtube Template')}
+                </Button>
+              )}
+              {selectedTemplateFile !== null && (
+                <Stack direction="row" alignItems="center" spacing={4}>
+                  <PublishOutlinedIcon />
+                  <Typography>{selectedTemplateFile.name}</Typography>
+                  <IconButton onClick={() => resetTemplateFile(null)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Stack>
+              )}
+            </Stack>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="flex-end"
+              spacing={4}
+            >
+              <Button sx={{ alignSelf: 'flex-end' }} onClick={router.back}>
+                {t('Cancel')}
+              </Button>
               <Button
-                variant="outlined"
-                startIcon={<PublishOutlinedIcon />}
-                onClick={() => {
-                  setResourceType('file')
-
-                  if (googleAccessToken === '') {
-                    googleLogin()
-                  } else {
-                    filePicker()
-                  }
-                }}
+                variant="contained"
+                sx={{ alignSelf: 'flex-end' }}
+                disabled={selectedTemplateFile === null}
+                onClick={() => googleLogin()}
               >
                 {t('Upload Youtube Template')}
               </Button>
-            )}
-            {selectedTemplateFile !== null && (
-              <Stack direction="row" alignItems="center" spacing={4}>
-                <PublishOutlinedIcon />
-                <Typography>{selectedTemplateFile.name}</Typography>
-                <IconButton onClick={() => setSelectedTemplateFile(null)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Stack>
-            )}
+            </Stack>
           </Stack>
-          <Stack alignItems="flex-start" spacing={2}>
-            <Typography variant="h6">
-              {t('Pick Google Drive Directory For Videos')}
-            </Typography>
-            {selectedVideosDirectory === null && (
-              <Button
-                variant="outlined"
-                startIcon={<FolderOutlinedIcon />}
-                onClick={() => {
-                  setResourceType('directory')
-
-                  if (googleAccessToken === '') {
-                    googleLogin()
-                  } else {
-                    directoryPicker()
-                  }
-                }}
-              >
-                {t('Choose Video Folder')}
-              </Button>
-            )}
-            {selectedVideosDirectory !== null && (
-              <Stack direction="row" alignItems="center" spacing={4}>
-                <FolderOutlinedIcon />
-                <Typography>{selectedVideosDirectory.name}</Typography>
-                <IconButton onClick={() => setSelectedVideosDirectory(null)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Stack>
-            )}
-          </Stack>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="flex-end"
-            spacing={4}
-          >
-            <Button sx={{ alignSelf: 'flex-end' }} onClick={router.back}>
-              {t('Cancel')}
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ alignSelf: 'flex-end' }}
-              disabled={
-                selectedTemplateFile === null ||
-                selectedVideosDirectory === null
-              }
-              onClick={() => setConsentOpen(true)}
+          <Divider />
+          <Typography variant="body1" sx={{ p: 4 }}>
+            This software application uses YouTube API Services. If you use this
+            application, you agree to be bound by{' '}
+            <a href="https://www.youtube.com/t/terms" target="__blank">
+              YouTube's Terms of Service
+            </a>
+            , the{' '}
+            <a href="http://www.google.com/policies/privacy" target="__blank">
+              Google Privacy Policy
+            </a>{' '}
+            and{' '}
+            <a
+              href="https://security.google.com/settings/security/permissions"
+              target="__blank"
             >
-              {t('Upload Youtube Template')}
-            </Button>
-          </Stack>
-        </Stack>
-      </Paper>
-      <UploadConfirmationModal
-        open={consentOpen}
-        onClose={() => setConsentOpen(false)}
-        selectedTemplateFile={selectedTemplateFile}
-        selectedVideosDirectory={selectedVideosDirectory}
-        googleAccessToken={googleAccessToken}
-      />
+              Google Security Settings
+            </a>
+            . Further, if this application uses Authorized Data, then in
+            addition to the application's normal procedure for deleting stored
+            data, users can revoke that application's access to their data via
+            the{' '}
+            <a
+              href="https://security.google.com/settings/security/permissions"
+              target="__blank"
+            >
+              Google Security Settings
+            </a>
+            .
+          </Typography>
+        </Paper>
+      </Box>
     </MainLayout>
   )
 }

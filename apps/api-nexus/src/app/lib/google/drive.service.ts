@@ -49,10 +49,7 @@ export class GoogleDriveService {
   ): Promise<string> {
     const drive = google.drive({
       version: 'v3',
-      auth: this.googleOAuthService.authorize(
-        accessToken,
-        'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file'
-      )
+      auth: process.env.GOOGLE_API_KEY
     })
     const driveFile = await drive.files.get({
       fileId,
@@ -130,15 +127,10 @@ export class GoogleDriveService {
     fileId: string,
     accessToken?: string
   ): Promise<drive_v3.Schema$File> {
-    let client
-
-    if (accessToken) {
-      const auth = new google.auth.OAuth2()
-      auth.setCredentials({ access_token: accessToken })
-      client = google.drive({ version: 'v3', auth })
-    } else {
-      client = google.drive({ version: 'v3' })
-    }
+    const client = google.drive({
+      version: 'v3',
+      auth: process.env.GOOGLE_API_KEY
+    })
 
     const file = await client.files.get({
       fileId,
