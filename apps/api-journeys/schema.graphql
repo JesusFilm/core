@@ -226,8 +226,7 @@ type Mutation {
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
-  eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput!, id: ID): EventEmailNotifications!
-  eventEmailNotificationsDelete(input: EventEmailNotificationsUpdateInput!, id: ID): EventEmailNotifications!
+  eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput!): EventEmailNotifications!
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
@@ -854,9 +853,9 @@ type TextResponseBlock implements Block {
   label: String!
   hint: String
   minRows: Int
-  action: Action
-  submitIconId: ID
-  submitLabel: String
+  action: Action @deprecated(reason: "This block no longer support actions")
+  submitIconId: ID @deprecated(reason: "Submit icon relates to action, this block no longer support actions")
+  submitLabel: String @deprecated(reason: "Submit label relates to action, this block no longer support actions")
 }
 
 input TextResponseBlockCreateInput {
@@ -1908,12 +1907,16 @@ type EventEmailNotifications {
   id: ID!
   userId: ID!
   journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
   value: Boolean!
 }
 
 input EventEmailNotificationsUpdateInput {
   userId: ID!
   journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
   value: Boolean!
 }
 
