@@ -2,23 +2,22 @@ type EventEmailNotifications {
   id: ID!
   userId: ID!
   journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
   value: Boolean!
 }
 
 input EventEmailNotificationsUpdateInput {
   userId: ID!
   journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
   value: Boolean!
 }
 
 type Mutation {
   eventEmailNotificationsUpdate(
     input: EventEmailNotificationsUpdateInput!
-    id: ID
-  ): EventEmailNotifications!
-  eventEmailNotificationsDelete(
-    input: EventEmailNotificationsUpdateInput!
-    id: ID
   ): EventEmailNotifications!
 }
 
