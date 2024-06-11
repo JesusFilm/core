@@ -31,6 +31,14 @@ export interface ExtendedJourneys extends Journey {
   team: Team & { userTeams: UserTeam[] }
 }
 
+interface EmailDetailsResult {
+  journey: ExtendedJourneys | null
+  visitor:
+    | (Pick<Visitor, 'createdAt' | 'duration'> & { events: Event[] })
+    | null
+  eventEmailNotifications: EventEmailNotifications[]
+}
+
 export interface EventsNotificationJob {
   journeyId: string
   visitorId: string
@@ -73,6 +81,40 @@ export class EmailConsumer extends WorkerHost {
     }
 
     return Array.from(recipientUserIds)
+  }
+
+  async fetchEmailDetails(
+    journeyId: string,
+    visitorId: string
+  ): Promise<EmailDetailsResult> {
+    const [journey, visitor, eventEmailNotifications] = await Promise.all([
+      this.prismaService.journey.findUnique({
+        where: { id: journeyId },
+        include: {
+          userJourneys: true,
+          team: {
+            include: {
+              userTeams: true
+            }
+          }
+        }
+      }),
+      this.prismaService.visitor.findUnique({
+        where: { id: visitorId },
+        select: {
+          createdAt: true,
+          duration: true,
+          events: true
+        }
+      }),
+      this.prismaService.eventEmailNotifications.findMany({
+        where: {
+          journeyId
+        }
+      })
+    ])
+
+    return { journey, visitor, eventEmailNotifications }
   }
 
   async sendUserNotification(
@@ -134,33 +176,8 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async sendEventsNotification(job: Job<EventsNotificationJob>): Promise<void> {
-    const journey = await this.prismaService.journey.findUnique({
-      where: { id: job.data.journeyId },
-      include: {
-        userJourneys: true,
-        team: {
-          include: {
-            userTeams: true
-          }
-        }
-      }
-    })
-
-    const visitor = await this.prismaService.visitor.findUnique({
-      where: { id: job.data.visitorId },
-      select: {
-        createdAt: true,
-        duration: true,
-        events: true
-      }
-    })
-
-    const eventEmailNotifications =
-      await this.prismaService.eventEmailNotifications.findMany({
-        where: {
-          journeyId: job.data.journeyId
-        }
-      })
+    const { journey, visitor, eventEmailNotifications } =
+      await this.fetchEmailDetails(job.data.journeyId, job.data.visitorId)
 
     if (journey == null) return
     if (visitor == null) return
