@@ -479,6 +479,17 @@ model JourneysEmailPreference {
   @@index(email)
 }
 
+model EventEmailNotifications {
+  id        String  @id @default(uuid())
+  userId    String
+  journeyId String
+  value     Boolean @default(true)
+
+  @@unique([userId, journeyId])
+  @@index(userId)
+  @@index(journeyId)
+}
+
 model CustomDomain {
   id                   String             @id @default(uuid())
   teamId               String

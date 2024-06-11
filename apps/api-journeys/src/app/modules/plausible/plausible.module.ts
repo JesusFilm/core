@@ -7,7 +7,6 @@ import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { PlausibleConsumer } from './plausible.consumer'
-import { PlausibleResolver } from './plausible.resolver'
 import { PlausibleService } from './plausible.service'
 
 @Module({
@@ -15,11 +14,6 @@ import { PlausibleService } from './plausible.service'
     CaslAuthModule.register(AppCaslFactory),
     BullModule.registerQueue({ name: 'api-journeys-plausible' })
   ],
-  providers: [
-    PlausibleResolver,
-    PlausibleService,
-    PrismaService,
-    PlausibleConsumer
-  ]
+  providers: [PlausibleService, PrismaService, PlausibleConsumer]
 })
 export class PlausibleModule {}
