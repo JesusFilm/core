@@ -17,6 +17,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { ResourceNextLinkButtons } from '../ResourcePageHeader/ResourceNextLinkButtons'
 
+import favicon from './assets/favicon.png'
 import logo from './assets/logo.svg'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 
@@ -40,9 +41,9 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
           <Toolbar sx={{ justifyContent: 'space-between' }}>
             <NextLink href="/" passHref legacyBehavior>
               <Image
-                src={logo}
-                width="160"
-                height="40"
+                src={favicon}
+                width="64"
+                height="48" // todo: reduce width/height to 56 x 42 on smaller devices
                 alt="Watch Logo"
                 style={{
                   cursor: 'pointer',
@@ -51,8 +52,13 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
                 }}
               />
             </NextLink>
-            <ResourceNextLinkButtons />
-            <Stack spacing={0.5} direction="row">
+
+            <Stack
+              data-testid="ButtonsAndMenuStack"
+              spacing={0.5}
+              direction="row"
+            >
+              <ResourceNextLinkButtons />
               <IconButton
                 color="inherit"
                 aria-label="open header menu"
