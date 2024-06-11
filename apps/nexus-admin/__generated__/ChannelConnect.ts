@@ -6,18 +6,18 @@
 import { ConnectYoutubeChannelInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: ConnectChannel
+// GraphQL mutation operation: ChannelConnect
 // ====================================================
 
-export interface ConnectChannel_connectYoutubeChannel {
+export interface ChannelConnect_channelConnect {
   __typename: "Channel";
   id: string;
 }
 
-export interface ConnectChannel {
-  connectYoutubeChannel: ConnectChannel_connectYoutubeChannel;
+export interface ChannelConnect {
+  channelConnect: ChannelConnect_channelConnect;
 }
 
-export interface ConnectChannelVariables {
+export interface ChannelConnectVariables {
   input: ConnectYoutubeChannelInput;
 }

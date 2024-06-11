@@ -9,22 +9,22 @@ import { ResourceFilter, ResourceStatus } from "./globalTypes";
 // GraphQL query operation: Resources
 // ====================================================
 
-export interface Resources_resources_localizations {
+export interface Resources_resources_resourceLocalizations {
   __typename: "ResourceLocalization";
   id: string;
-  keywords: string;
-  language: string;
-  resourceId: string;
-  title: string;
-  description: string;
+  keywords: string | null;
+  language: string | null;
+  resourceId: string | null;
+  title: string | null;
+  description: string | null;
 }
 
 export interface Resources_resources {
   __typename: "Resource";
   id: string;
   name: string;
-  localizations: (Resources_resources_localizations | null)[];
-  status: ResourceStatus;
+  resourceLocalizations: (Resources_resources_resourceLocalizations | null)[] | null;
+  status: ResourceStatus | null;
 }
 
 export interface Resources {

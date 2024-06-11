@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { ResourceFromTemplateInput } from "./globalTypes";
+
 // ====================================================
 // GraphQL mutation operation: ResourceFromTemplate
 // ====================================================
@@ -13,12 +15,9 @@ export interface ResourceFromTemplate_resourceFromTemplate {
 }
 
 export interface ResourceFromTemplate {
-  resourceFromTemplate: ResourceFromTemplate_resourceFromTemplate[] | null;
+  resourceFromTemplate: (ResourceFromTemplate_resourceFromTemplate | null)[] | null;
 }
 
 export interface ResourceFromTemplateVariables {
-  nexusId: string;
-  tokenId: string;
-  spreadsheetId: string;
-  drivefolderId: string;
+  input: ResourceFromTemplateInput;
 }

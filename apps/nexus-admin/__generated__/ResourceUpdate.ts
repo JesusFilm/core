@@ -9,22 +9,22 @@ import { ResourceUpdateInput, ResourceStatus } from "./globalTypes";
 // GraphQL mutation operation: ResourceUpdate
 // ====================================================
 
-export interface ResourceUpdate_resourceUpdate_localizations {
+export interface ResourceUpdate_resourceUpdate_resourceLocalizations {
   __typename: "ResourceLocalization";
   id: string;
-  keywords: string;
-  language: string;
-  resourceId: string;
-  title: string;
-  description: string;
+  keywords: string | null;
+  language: string | null;
+  resourceId: string | null;
+  title: string | null;
+  description: string | null;
 }
 
 export interface ResourceUpdate_resourceUpdate {
   __typename: "Resource";
   id: string;
   name: string;
-  localizations: (ResourceUpdate_resourceUpdate_localizations | null)[];
-  status: ResourceStatus;
+  resourceLocalizations: (ResourceUpdate_resourceUpdate_resourceLocalizations | null)[] | null;
+  status: ResourceStatus | null;
 }
 
 export interface ResourceUpdate {
