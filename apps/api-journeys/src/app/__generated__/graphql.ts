@@ -597,6 +597,8 @@ export class VideoProgressEventCreateInput {
 export class EventEmailNotificationsUpdateInput {
     userId: string;
     journeyId: string;
+    userTeamId?: Nullable<string>;
+    userJourneyId?: Nullable<string>;
     value: boolean;
 }
 
@@ -884,9 +886,7 @@ export abstract class IMutation {
 
     abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
 
-    abstract eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput, id?: Nullable<string>): EventEmailNotifications | Promise<EventEmailNotifications>;
-
-    abstract eventEmailNotificationsDelete(input: EventEmailNotificationsUpdateInput, id?: Nullable<string>): EventEmailNotifications | Promise<EventEmailNotifications>;
+    abstract eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput): EventEmailNotifications | Promise<EventEmailNotifications>;
 
     abstract hostCreate(teamId: string, input: HostCreateInput): Host | Promise<Host>;
 
@@ -1465,6 +1465,8 @@ export class EventEmailNotifications {
     id: string;
     userId: string;
     journeyId: string;
+    userTeamId?: Nullable<string>;
+    userJourneyId?: Nullable<string>;
     value: boolean;
 }
 
