@@ -63,7 +63,7 @@ input EmailActionInput {
   email: String!
 }
 
-extend type Mutation {
+type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
@@ -226,6 +226,7 @@ extend type Mutation {
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
+  eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput!): EventEmailNotifications!
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
@@ -339,15 +340,11 @@ input BlocksFilter {
 }
 
 type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
   blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block!
   customDomain(id: ID!): CustomDomain!
   customDomains(teamId: ID!): [CustomDomain!]!
+  eventEmailNotificationsByJourney(journeyId: ID!): [EventEmailNotifications!]!
   hosts(teamId: ID!): [Host!]!
 
   """
@@ -412,6 +409,8 @@ extend type Query {
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor!
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 enum ButtonVariant {
@@ -854,9 +853,9 @@ type TextResponseBlock implements Block {
   label: String!
   hint: String
   minRows: Int
-  action: Action
-  submitIconId: ID
-  submitLabel: String
+  action: Action @deprecated(reason: "This block no longer support actions")
+  submitIconId: ID @deprecated(reason: "Submit icon relates to action, this block no longer support actions")
+  submitLabel: String @deprecated(reason: "Submit label relates to action, this block no longer support actions")
 }
 
 input TextResponseBlockCreateInput {
@@ -1902,6 +1901,23 @@ type VideoProgressEvent implements Event {
   progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
   """
   progress: Int!
+}
+
+type EventEmailNotifications {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  value: Boolean!
+}
+
+input EventEmailNotificationsUpdateInput {
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  value: Boolean!
 }
 
 type Host {
