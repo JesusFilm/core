@@ -63,7 +63,7 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     setQueryParam('subtitles', filter.subtitleLanguageIds?.[0])
     setQueryParam('title', filter.title)
 
-    void router.push(`/videos?${params.toString()}`, undefined, {
+    void router.push(`/watch/videos?${params.toString()}`, undefined, {
       shallow: true
     })
     void handleSearch(filter, 0)
