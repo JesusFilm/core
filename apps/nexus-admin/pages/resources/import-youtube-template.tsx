@@ -11,10 +11,12 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useGoogleLogin } from '@react-oauth/google'
-import { camelCase, mapKeys, pick } from 'lodash'
+import camelCase from 'lodash/camelCase'
+import mapKeys from 'lodash/mapKeys'
+import pick from 'lodash/pick'
+import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import Papa from 'papaparse'
 import { FC } from 'react'
@@ -23,7 +25,6 @@ import { MainLayout } from '../../src/components/MainLayout'
 import { useCSVFileUpload } from '../../src/libs/useCSVFileUpload/useCSVFileUpload'
 
 import { GET_RESOURCES } from '.'
-// import { UploadConfirmationModal } from '../../src/components/UploadConfirmationModal'
 
 const RESOUCE_FROM_ARRAY = gql`
   mutation ResourceFromArray($input: ResourceFromArrayInput!) {
@@ -110,27 +111,28 @@ const ImportYouTubeTemplatePage: FC = () => {
       <Box sx={{ p: 10 }}>
         <Paper elevation={0} sx={{ mt: 4 }}>
           <Typography variant="h6" sx={{ p: 4 }}>
-            Template and Directory Picker
+            {t('Template and Directory Picker')}
           </Typography>
           <Divider />
           <Stack spacing={8} sx={{ p: 4 }}>
             <Stack spacing={1}>
               <Typography variant="subtitle2">
-                Download Sample Templates
+                {t('Download Sample Templates')}
               </Typography>
               <Typography variant="caption">
-                Get pre-made templates to help you get started with
-                [Upload/Modify/Localization]
+                {t(
+                  'Get pre-made templates to help you get started with [Upload/Modify/Localization]'
+                )}
               </Typography>
               <Stack direction="row" spacing={3}>
                 <Button startIcon={<DownloadIcon />} color="info">
-                  Upload template
+                  {t('Upload template')}
                 </Button>
                 <Button startIcon={<DownloadIcon />} color="info">
-                  Modify template
+                  {t('Modify template')}
                 </Button>
                 <Button startIcon={<DownloadIcon />} color="info">
-                  Localization template
+                  {t('Localization template')}
                 </Button>
               </Stack>
             </Stack>
@@ -138,41 +140,46 @@ const ImportYouTubeTemplatePage: FC = () => {
               <Stack direction="row" alignItems="center" spacing={2}>
                 <InfoOutlinedIcon color="info" />
                 <Typography variant="subtitle2">
-                  Editing your spreadsheet template
+                  {t('Editing your spreadsheet template')}
                 </Typography>
               </Stack>
               <Typography variant="body2">
-                To ensure a smooth import process, please make sure the
-                following fields are included and editable within your
-                spreadsheet template:
+                {t(
+                  'To ensure a smooth import process, please make sure the following fields are included and editable within your spreadsheet template:'
+                )}
               </Typography>
               <ul>
                 <li>
                   <Typography variant="body2">
-                    Video Title: This will be the title viewers see for your
-                    video.
+                    {t(
+                      'Video Title: This will be the title viewers see for your video.'
+                    )}
                   </Typography>
                 </li>
                 <li>
                   <Typography variant="body2">
-                    Video Description: Add details about your video to capture
-                    viewers' attention.
+                    {t(
+                      "Video Description: Add details about your video to capture viewers' attention."
+                    )}
                   </Typography>
                 </li>
                 <li>
                   <Typography variant="body2">
-                    Privacy Settings: Choose public, private, or unlisted for
-                    who can see your video.
+                    {t(
+                      'Privacy Settings: Choose public, private, or unlisted for who can see your video.'
+                    )}
                   </Typography>
                 </li>
               </ul>
               <Typography variant="body2">
-                Note: The template you upload must be in CSV format (.csv)
+                {t(
+                  'Note: The template you upload must be in CSV format (.csv)'
+                )}
               </Typography>
             </Stack>
             <Stack alignItems="flex-start" spacing={2}>
               <Typography variant="subtitle2">
-                Pick template from local drive
+                {t('Pick template from local drive')}
               </Typography>
               {selectedTemplateFile === null && (
                 <Button
@@ -187,7 +194,7 @@ const ImportYouTubeTemplatePage: FC = () => {
                 <Stack direction="row" alignItems="center" spacing={4}>
                   <PublishOutlinedIcon />
                   <Typography>{selectedTemplateFile.name}</Typography>
-                  <IconButton onClick={() => resetTemplateFile(null)}>
+                  <IconButton onClick={() => resetTemplateFile()}>
                     <DeleteIcon />
                   </IconButton>
                 </Stack>
@@ -213,35 +220,15 @@ const ImportYouTubeTemplatePage: FC = () => {
             </Stack>
           </Stack>
           <Divider />
-          <Typography variant="body1" sx={{ p: 4 }}>
-            This software application uses YouTube API Services. If you use this
-            application, you agree to be bound by{' '}
-            <a href="https://www.youtube.com/t/terms" target="__blank">
-              YouTube's Terms of Service
-            </a>
-            , the{' '}
-            <a href="http://www.google.com/policies/privacy" target="__blank">
-              Google Privacy Policy
-            </a>{' '}
-            and{' '}
-            <a
-              href="https://security.google.com/settings/security/permissions"
-              target="__blank"
-            >
-              Google Security Settings
-            </a>
-            . Further, if this application uses Authorized Data, then in
-            addition to the application's normal procedure for deleting stored
-            data, users can revoke that application's access to their data via
-            the{' '}
-            <a
-              href="https://security.google.com/settings/security/permissions"
-              target="__blank"
-            >
-              Google Security Settings
-            </a>
-            .
-          </Typography>
+          <Typography
+            variant="body1"
+            sx={{ p: 4 }}
+            dangerouslySetInnerHTML={{
+              __html: t(
+                'This software application uses YouTube API Services. If you use this application, you agree to be bound by <a href="https://www.youtube.com/t/terms" target="_blank">YouTube\'s Terms of Service</a>, the <a href="http://www.google.com/policies/privacy" target="_blank">Google Privacy Policy</a> and <a href="https://security.google.com/settings/security/permissions" target="_blank">Google Security Settings</a>. Further, if this application uses Authorized Data, then in addition to the application\'s normal procedure for deleting stored data, users can revoke that application\'s access to their data via the <a href="https://security.google.com/settings/security/permissions" target="_blank">Google Security Settings</a>.'
+              )
+            }}
+          />
         </Paper>
       </Box>
     </MainLayout>

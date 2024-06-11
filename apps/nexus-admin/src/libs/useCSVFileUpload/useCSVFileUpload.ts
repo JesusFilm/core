@@ -1,13 +1,13 @@
 import { useState } from 'react'
 
-export const useCSVFileUpload = () => {
+export const useCSVFileUpload = (): [File | null, () => void, () => void] => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
-  const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0])
+  const handleFileChange = (event: Event): void => {
+    setSelectedFile((event.target as HTMLInputElement).files?.[0] ?? null)
   }
 
-  const openFileDialog = () => {
+  const openFileDialog = (): void => {
     const input = document.createElement('input')
     input.setAttribute('type', 'file')
     input.setAttribute('accept', '.csv')
@@ -15,7 +15,7 @@ export const useCSVFileUpload = () => {
     input.click()
   }
 
-  const resetFile = () => {
+  const resetFile = (): void => {
     setSelectedFile(null)
   }
 

@@ -15,6 +15,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslation } from 'next-i18next'
 import { FC, ReactElement, useState } from 'react'
 
 interface SidebarLink {
@@ -29,6 +30,8 @@ export const Sidebar: FC = () => {
   const [miniVariant, setMiniVariant] = useState<boolean>(false)
   const drawerWidth = 240
   const miniDrawerWidth = 56
+
+  const { t } = useTranslation()
 
   const sidebarLinks: SidebarLink[] = [
     {
@@ -164,7 +167,7 @@ export const Sidebar: FC = () => {
           mt: 2
         }}
       >
-        Privacy Policy
+        {t('Privacy Policy')}
       </Typography>
     </Drawer>
   )
