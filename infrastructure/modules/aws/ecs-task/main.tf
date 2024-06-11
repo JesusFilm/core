@@ -235,7 +235,7 @@ resource "aws_alb_target_group" "alb_target_group" {
 }
 
 resource "aws_alb_listener_rule" "alb_listener_rule" {
-  listener_arn = var.service_config.alb.arn
+  listener_arn = var.service_config.alb_listener.arn
   action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.alb_target_group.arn

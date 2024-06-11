@@ -45,7 +45,7 @@ locals {
     }
     alb_target_group = local.alb_target_group
     alb_listener = {
-      alb_arn  = module.prod.internal_alb.arn
+      arn      = module.prod.internal_alb.alb_listener.arn
       protocol = "HTTP"
     }
   }
