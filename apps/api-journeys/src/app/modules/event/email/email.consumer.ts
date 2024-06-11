@@ -143,15 +143,16 @@ export class EmailConsumer extends WorkerHost {
       variables: { userId }
     })
 
-    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${
-      journey.id
-    }/reports/visitors`
+    const baseUrl = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys`
+    const analyticsUrl = `${baseUrl}/${journey.id}/reports/visitors`
+    const unsubscribeUrl = `${baseUrl}/${journey.id}?manageAccess=true`
 
     const text = render(
       VisitorInteraction({
         title: journey.title,
         recipient: data.user,
-        url,
+        analyticsUrl,
+        unsubscribeUrl,
         visitor
       }),
       { plainText: true }
@@ -161,7 +162,8 @@ export class EmailConsumer extends WorkerHost {
       VisitorInteraction({
         title: journey.title,
         recipient: data.user,
-        url,
+        analyticsUrl,
+        unsubscribeUrl,
         visitor
       }),
       { pretty: true }

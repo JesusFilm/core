@@ -19,7 +19,8 @@ import {
   ActionCard,
   BodyWrapper,
   EmailContainer,
-  Header
+  Header,
+  UnsubscribeLink
 } from '@core/nest/common/email/components'
 import { User } from '@core/nest/common/firebaseClient'
 
@@ -31,9 +32,10 @@ interface Visitor {
 
 interface VisitorInteractionProps {
   title: string
-  url: string
   visitor: Visitor
   recipient: Omit<User, 'id' | 'emailVerified'>
+  analyticsUrl: string
+  unsubscribeUrl: string
   story?: boolean
 }
 
@@ -43,8 +45,9 @@ interface WrapperProps {
 
 export const VisitorInteraction = ({
   title,
-  url,
   recipient,
+  analyticsUrl,
+  unsubscribeUrl,
   visitor,
   story = false
 }: VisitorInteractionProps): ReactElement => {
@@ -105,7 +108,7 @@ export const VisitorInteraction = ({
                     style={{
                       font: '16px "Open Sans", sans-serif'
                     }}
-                    href={url}
+                    href={analyticsUrl}
                   >
                     Open Full User Report
                   </Button>
@@ -174,6 +177,10 @@ export const VisitorInteraction = ({
             </Container>
           </ActionCard>
         </BodyWrapper>
+        <UnsubscribeLink
+          recipientEmail={recipient.email}
+          url={unsubscribeUrl}
+        />
       </EmailContainer>
     </>
   )
@@ -282,7 +289,8 @@ VisitorInteraction.PreviewProps = {
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
-  url: 'localhost:4200/journeyId/reports/visitor'
+  analyticsUrl: 'localhost:4200/journeys/journeyId/reports/visitors',
+  unsubscribeUrl: 'localhost:4200/journeys/journeyId?manageAccess'
 } satisfies VisitorInteractionProps
 
 export default VisitorInteraction

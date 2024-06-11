@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ComponentProps, ReactElement, useState } from 'react'
+import { ComponentProps, ReactElement, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
@@ -52,6 +52,14 @@ export function AccessItem({
   function handleClose(): void {
     setAccessDialogOpen(false)
   }
+
+  // Only for testing purpose - move to its own pr if the right solution
+  useEffect(() => {
+    const manageAccessQuery = router.query.manageAccess as string
+    if (manageAccessQuery === 'true') {
+      setAccessDialogOpen(true)
+    }
+  }, [router])
 
   return (
     <>

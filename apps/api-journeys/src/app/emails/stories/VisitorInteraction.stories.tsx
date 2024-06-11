@@ -15,7 +15,8 @@ const Template: StoryObj<typeof VisitorInteraction> = {
   render: ({ ...args }) => (
     <VisitorInteraction
       title={args.title}
-      url={args.url}
+      analyticsUrl={args.analyticsUrl}
+      unsubscribeUrl={args.unsubscribeUrl}
       visitor={args.visitor}
       recipient={args.recipient}
       story
@@ -94,7 +95,8 @@ export const Default = {
       imageUrl:
         'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
     },
-    url: 'localhost:4200/bd62980f-3302-481d-8d66-a6ad2bdc936a/reports/visitor'
+    analyticsUrl: 'localhost:4200/journeys/journeyId/reports/visitors',
+    unsubscribeUrl: 'localhost:4200/journeys/journeyId?manageAccess'
   }
 }
 
