@@ -193,7 +193,9 @@ export function AccessDialog({
               </Grid>
               <UserTeamList
                 data={data?.journey?.team ?? undefined}
-                currentUserTeam={userTeamsMap.get(currentUser?.user?.id ?? '')}
+                currentUserTeam={data.journey.team.userTeams.find(
+                  (userTeam) => userTeam.user.id === currentUser?.user?.id
+                )}
                 loading={loading}
                 variant="readonly"
                 emailPreferences={emailPreferencesMap}
