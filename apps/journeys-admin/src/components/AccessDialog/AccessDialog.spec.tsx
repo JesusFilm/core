@@ -11,7 +11,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-const user1 = { id: 'userId1', email: 'admin@email.com' }
+const user1 = { id: 'userTeamId', email: 'kujojotaro@example.com' }
 
 jest.mock('../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
