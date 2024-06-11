@@ -26,6 +26,7 @@ import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
+import { GetUserTeamsAndInvites_userTeams as UserTeams } from '../../../__generated__/GetUserTeamsAndInvites'
 
 export const GET_JOURNEY_WITH_PERMISSIONS = gql`
   query GetJourneyWithPermissions($id: ID!) {
@@ -86,11 +87,17 @@ export function AccessDialog({
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  const currentUser = useMemo(() => {
+  const currentUserJourney = useMemo(() => {
     return data?.journey?.userJourneys?.find(
       (userJourney) => userJourney.user?.email === user.email
     )
   }, [data?.journey?.userJourneys, user])
+
+  const currentUserTeam: UserTeams | undefined = useMemo(() => {
+    return data?.journey?.team?.userTeams.find(({ user: { email } }) => {
+      return email === user?.email
+    })
+  }, [data, user])
 
   const emailPreferencesMap: Map<string, EventEmailNotifications> =
     useMemo(() => {
@@ -193,9 +200,7 @@ export function AccessDialog({
               </Grid>
               <UserTeamList
                 data={data?.journey?.team ?? undefined}
-                currentUserTeam={data.journey.team.userTeams.find(
-                  (userTeam) => userTeam.user.id === currentUser?.user?.id
-                )}
+                currentUserTeam={currentUserTeam}
                 loading={loading}
                 variant="readonly"
                 emailPreferences={emailPreferencesMap}
@@ -206,7 +211,7 @@ export function AccessDialog({
         <UserList
           title={t('Requested Access')}
           users={requests}
-          currentUser={currentUser}
+          currentUser={currentUserJourney}
           journeyId={journeyId}
         />
         <UserList
@@ -214,7 +219,7 @@ export function AccessDialog({
           loading={loading}
           users={users}
           invites={invites}
-          currentUser={currentUser}
+          currentUser={currentUserJourney}
           journeyId={journeyId}
           emailPreferences={emailPreferencesMap}
         />
