@@ -208,14 +208,14 @@ model Team {
 }
 
 model UserTeam {
-  id                      String                    @id @default(uuid())
-  teamId                  String
-  team                    Team                      @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  userId                  String
-  role                    UserTeamRole              @default(member)
-  createdAt               DateTime                  @default(now())
-  updatedAt               DateTime                  @updatedAt
-  EventEmailNotifications EventEmailNotifications[]
+  id                  String                @id @default(uuid())
+  teamId              String
+  team                Team                  @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId              String
+  role                UserTeamRole          @default(member)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  journeyNotification JourneyNotification[]
 
   @@unique([teamId, userId])
   @@index(role)
@@ -252,14 +252,14 @@ enum UserJourneyRole {
 }
 
 model UserJourney {
-  id                      String                    @id @default(uuid())
-  userId                  String
-  journeyId               String
-  updatedAt               DateTime                  @default(now()) @updatedAt
-  journey                 Journey                   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-  role                    UserJourneyRole
-  openedAt                DateTime?
-  EventEmailNotifications EventEmailNotifications[]
+  id                  String                @id @default(uuid())
+  userId              String
+  journeyId           String
+  updatedAt           DateTime              @default(now()) @updatedAt
+  journey             Journey               @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  role                UserJourneyRole
+  openedAt            DateTime?
+  journeyNotification JourneyNotification[]
 
   @@unique([journeyId, userId])
   @@index(journeyId)
@@ -330,6 +330,7 @@ model Journey {
   journeyVisitors           JourneyVisitor[]
   strategySlug              String?
   journeyCollectionJourneys JourneyCollectionJourneys[]
+  journeyNotification       JourneyNotification[]
 
   @@index(title)
 }
@@ -479,15 +480,16 @@ model JourneysEmailPreference {
   @@index(email)
 }
 
-model EventEmailNotifications {
-  id            String       @id @default(uuid())
-  userId        String
-  journeyId     String
-  userTeamId    String?
-  userJourneyId String?
-  userTeam      UserTeam?    @relation(fields: [userTeamId], references: [id], onDelete: Cascade)
-  userJourney   UserJourney? @relation(fields: [userJourneyId], references: [id], onDelete: Cascade)
-  value         Boolean      @default(true)
+model JourneyNotification {
+  id                      String       @id @default(uuid())
+  userId                  String
+  journeyId               String
+  journey                 Journey      @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  userTeamId              String?
+  userJourneyId           String?
+  userTeam                UserTeam?    @relation(fields: [userTeamId], references: [id], onDelete: Cascade)
+  userJourney             UserJourney? @relation(fields: [userJourneyId], references: [id], onDelete: Cascade)
+  visitorInteractionEmail Boolean      @default(false)
 
   @@unique([userId, journeyId])
   @@index(userId)

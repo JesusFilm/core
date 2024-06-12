@@ -9,6 +9,8 @@ import { UserJourneyRole } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
+import { Prisma } from '.prisma/api-journeys-client'
+
 import { UserJourneyResolver } from './userJourney.resolver'
 import { UserJourneyService } from './userJourney.service'
 
@@ -278,6 +280,45 @@ describe('UserJourneyResolver', () => {
         __typename: 'User',
         id: 'userId'
       })
+    })
+  })
+
+  describe('journeyNotification', () => {
+    it('returns associated journeyNotification', async () => {
+      const userJourneyWithJourneyNotification = {
+        ...userJourney,
+        journeyNotification: [
+          {
+            id: 'journeyNotification',
+            userId: 'userId',
+            journeyId: 'journeyId',
+            userTeamId: null,
+            userJourneyId: 'userJourneyId',
+            visitorInteractionEmail: false
+          }
+        ]
+      }
+
+      const journeyNotification = jest
+        .fn()
+        .mockResolvedValue(
+          userJourneyWithJourneyNotification.journeyNotification
+        )
+
+      prismaService.userJourney.findUnique.mockReturnValue({
+        ...userJourneyWithJourneyNotification,
+        journeyNotification
+      } as unknown as Prisma.Prisma__UserJourneyClient<UserJourney>)
+      expect(await resolver.journeyNotification(userJourney)).toEqual([
+        {
+          id: 'journeyNotification',
+          journeyId: 'journeyId',
+          userId: 'userId',
+          userJourneyId: 'userJourneyId',
+          userTeamId: null,
+          visitorInteractionEmail: false
+        }
+      ])
     })
   })
 })

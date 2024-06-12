@@ -15,7 +15,8 @@ import {
   Journey,
   Prisma,
   UserJourney,
-  UserJourneyRole
+  UserJourneyRole,
+  JourneyNotification
 } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
@@ -256,5 +257,16 @@ export class UserJourneyResolver {
     @Parent() userJourney: UserJourney
   ): Promise<{ __typename: string; id: string }> {
     return { __typename: 'User', id: userJourney.userId }
+  }
+
+  @ResolveField('journeyNotification')
+  async journeyNotification(
+    @Parent() userJourney: UserJourney
+  ): Promise<JourneyNotification[] | null> {
+    return this.prismaService.userJourney
+      .findUnique({
+        where: { id: userJourney.id }
+      })
+      .journeyNotification()
   }
 }
