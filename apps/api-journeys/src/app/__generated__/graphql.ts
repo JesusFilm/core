@@ -373,7 +373,6 @@ export class TextResponseBlockCreateInput {
     journeyId: string;
     parentBlockId: string;
     label: string;
-    submitLabel: string;
 }
 
 export class TextResponseBlockUpdateInput {
@@ -381,8 +380,6 @@ export class TextResponseBlockUpdateInput {
     label?: Nullable<string>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
-    submitIconId?: Nullable<string>;
-    submitLabel?: Nullable<string>;
 }
 
 export class TypographyBlockCreateInput {
@@ -1202,9 +1199,6 @@ export class TextResponseBlock implements Block {
     label: string;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
-    action?: Nullable<Action>;
-    submitIconId?: Nullable<string>;
-    submitLabel?: Nullable<string>;
 }
 
 export class TypographyBlock implements Block {
