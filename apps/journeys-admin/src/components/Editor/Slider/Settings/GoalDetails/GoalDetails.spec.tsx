@@ -29,7 +29,8 @@ describe('GoalDetails', () => {
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Goals,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+    showJourneyFlowAnalytics: false
   }
 
   it('should return placeholder text', () => {

@@ -28,7 +28,8 @@ describe('Fab', () => {
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.Content,
     activeContent: ActiveContent.Canvas,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+    showJourneyFlowAnalytics: false
   }
 
   describe('smUp', () => {

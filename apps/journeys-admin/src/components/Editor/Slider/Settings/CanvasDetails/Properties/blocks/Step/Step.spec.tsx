@@ -30,7 +30,8 @@ describe('Step', () => {
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+    showJourneyFlowAnalytics: false
   }
 
   it('shows default messages', () => {
