@@ -139,6 +139,7 @@ export class PlausibleService implements OnModuleInit {
       }
     })
   }
+
   async getStatsRealtimeVisitors(
     id: string,
     type: 'journey' | 'team'
