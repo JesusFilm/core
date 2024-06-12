@@ -989,17 +989,6 @@ export class JourneyResolver {
     )
   }
 
-  @ResolveField('plausibleToken')
-  @UseGuards(AppCaslGuard)
-  async plausibleToken(
-    @CaslAbility() ability: AppAbility,
-    @Parent() journey: Journey
-  ): Promise<string | null> {
-    if (ability.cannot(Action.Manage, subject('Journey', journey))) return null
-
-    return journey.plausibleToken
-  }
-
   @ResolveField('language')
   async language(
     @Parent() journey: Journey

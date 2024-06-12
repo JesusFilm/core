@@ -1,1 +1,1 @@
-export { JourneyPlausibleEvents, keyify } from './plausibleHelpers'
+export { JourneyPlausibleEvents } from './plausibleHelpers'
