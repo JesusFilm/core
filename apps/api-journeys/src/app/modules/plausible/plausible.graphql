@@ -55,7 +55,6 @@ input PlausibleStatsAggregateFilter {
   period: String
   """
   date in the standard ISO-8601 format (YYYY-MM-DD).
-
   When using a custom range, the date parameter expects two ISO-8601 formatted
   dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
   for the whole date range inclusive of the start and end dates.
@@ -87,7 +86,6 @@ input PlausibleStatsBreakdownFilter {
   period: String
   """
   date in the standard ISO-8601 format (YYYY-MM-DD).
-
   When using a custom range, the date parameter expects two ISO-8601 formatted
   dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
   for the whole date range inclusive of the start and end dates.
@@ -169,7 +167,6 @@ input PlausibleStatsTimeseriesFilter {
   period: String
   """
   date in the standard ISO-8601 format (YYYY-MM-DD).
-
   When using a custom range, the date parameter expects two ISO-8601 formatted
   dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
   for the whole date range inclusive of the start and end dates.
@@ -200,13 +197,10 @@ extend type Query {
   If you are familiar with SQL family databases, this endpoint corresponds to
   running `GROUP BY` on a certain property in your stats, then ordering by the
   count.
-
   Check out the [properties](https://plausible.io/docs/stats-api#properties)
   section for a reference of all the properties you can use in this query.
-
   This endpoint can be used to fetch data for `Top sources`, `Top pages`,
   `Top countries` and similar reports.
-
   Currently, it is only possible to break down on one property at a time.
   Using a list of properties with one query is not supported. So if you want
   a breakdown by both `event:page` and `visit:source` for example, you would
