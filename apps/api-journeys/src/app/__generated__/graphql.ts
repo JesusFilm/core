@@ -1473,7 +1473,7 @@ export class PowerBiEmbed {
 export class UserJourney {
     __typename?: 'UserJourney';
     journey?: Nullable<Journey>;
-    journeyNotification: JourneyNotification;
+    journeyNotification: JourneyNotification[];
     id: string;
     userId: string;
     journeyId: string;
@@ -1503,7 +1503,7 @@ export class JourneyNotification {
 
 export class UserTeam {
     __typename?: 'UserTeam';
-    journeyNotification?: JourneyNotification;
+    journeyNotification?: JourneyNotification[];
     id: string;
     user: User;
     role: UserTeamRole;

@@ -333,7 +333,10 @@ describe('UserTeamResolver', () => {
         .fn()
         .mockReturnValue({ ...userTeam, journeyNotification })
       await expect(
-        userTeamResolver.journeyNotification(userTeam as unknown as UserTeam)
+        userTeamResolver.journeyNotification(
+          userTeam as unknown as UserTeam,
+          'journeyId'
+        )
       ).resolves.toEqual([
         {
           id: 'journeyNotification',
@@ -344,6 +347,11 @@ describe('UserTeamResolver', () => {
           visitorInteractionEmail: false
         }
       ])
+      expect(journeyNotification).toHaveBeenCalledWith({
+        where: {
+          journeyId: 'journeyId'
+        }
+      })
     })
   })
 })

@@ -2035,7 +2035,7 @@ type UserJourney
   @key(fields: "id")
 {
   journey: Journey
-  journeyNotification: JourneyNotification!
+  journeyNotification: [JourneyNotification!]!
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2082,7 +2082,7 @@ type JourneyNotification {
 type UserTeam
   @key(fields: "id")
 {
-  journeyNotification(journeyId: ID!): JourneyNotification!
+  journeyNotification(journeyId: ID!): [JourneyNotification!]!
   id: ID!
   user: User!
   role: UserTeamRole!

@@ -2368,7 +2368,7 @@ type UserJourney
   @join__type(graph: JOURNEYS, key: "id")
 {
   journey: Journey
-  journeyNotification: JourneyNotification!
+  journeyNotification: [JourneyNotification!]!
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2398,7 +2398,7 @@ type UserRole
 type UserTeam
   @join__type(graph: JOURNEYS, key: "id")
 {
-  journeyNotification(journeyId: ID!): JourneyNotification!
+  journeyNotification(journeyId: ID!): [JourneyNotification!]!
   id: ID!
   user: User!
   role: UserTeamRole!
