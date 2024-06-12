@@ -125,13 +125,28 @@ const ImportYouTubeTemplatePage: FC = () => {
                 )}
               </Typography>
               <Stack direction="row" spacing={3}>
-                <Button startIcon={<DownloadIcon />} color="info">
+                <Button
+                  startIcon={<DownloadIcon />}
+                  color="info"
+                  href="https://docs.google.com/spreadsheets/d/1FJ_oaVvj7E2ZnIfUTNBWAYw8uouh00GZ2LnTTqbEPPk/copy"
+                  target="__blank"
+                >
                   {t('Upload template')}
                 </Button>
-                <Button startIcon={<DownloadIcon />} color="info">
+                <Button
+                  startIcon={<DownloadIcon />}
+                  color="info"
+                  href="https://docs.google.com/spreadsheets/d/1NSNFw8SU3tZglXpgvTtueWWG1KlKVFc2bbVe5duj5ko/copy"
+                  target="__blank"
+                >
                   {t('Modify template')}
                 </Button>
-                <Button startIcon={<DownloadIcon />} color="info">
+                <Button
+                  startIcon={<DownloadIcon />}
+                  color="info"
+                  href="https://docs.google.com/spreadsheets/d/1Hb-tV5nxEeinPUQDMJsGohMHVrJpCj-GFMKGk-LxX7U/copy"
+                  target="__blank"
+                >
                   {t('Localization template')}
                 </Button>
               </Stack>
