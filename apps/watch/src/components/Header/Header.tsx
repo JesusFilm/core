@@ -1,5 +1,7 @@
 import MenuIcon from '@mui/icons-material/Menu'
 import AppBar, { AppBarProps } from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
@@ -40,10 +42,9 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
         <Container maxWidth="xxl" disableGutters>
           <Toolbar sx={{ justifyContent: 'space-between' }}>
             <NextLink href="/watch">
+              <Box sx={{ width: { xs: '64px', sm: '76px', md: '88px' } }}>
               <Image
                 src={favicon}
-                width="64"
-                height="48" // todo: reduce width/height to 56 x 42 on smaller devices
                 alt="Watch Logo"
                 style={{
                   cursor: 'pointer',
@@ -51,6 +52,7 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
                   height: 'auto'
                 }}
               />
+              </Box>
             </NextLink>
 
             <Stack
