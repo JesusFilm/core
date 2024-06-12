@@ -96,83 +96,94 @@ export class GoogleSheetsService {
     return res.data.values ?? undefined
   }
 
-  async getSpreadSheetTemplateData(
-    accessToken: string,
-    spreadsheetId: string,
-    drivefolderId: string,
-    data: SpreadsheetRow[] = [],
-    isArray: boolean = false
-  ): Promise<{
+  async getSpreadSheetTemplateData(input: {
+    accessToken: string
+    spreadsheetId?: string
+    drivefolderId?: string
+    data?: SpreadsheetRow[]
+    isArray: boolean
+  }): Promise<{
     templateType: SpreadsheetTemplateType
     spreadsheetData: SpreadsheetRow[]
   }> {
-    if (isArray) {
-      for (const row of data) {
-        if (row.filename) {
+    if (input.isArray) {
+      for (const row of input.data ?? []) {
+        const fileNameValue = row.filename ?? '';
+        if (fileNameValue.length > 0) {
           const fileId = this.googleDriveService.extractFileIdFromUrl(
-            row.filename
+            row.filename ?? ''
           )
-          if (fileId) {
+          if (fileId != null) {
             row.videoDriveFile = await this.googleDriveService.getFileMetadata(
               fileId,
-              accessToken
+              input.accessToken
             )
           }
         }
-        if (row.customThumbnail) {
+        const customThumbnailValue = row.customThumbnail ?? '';
+        if (customThumbnailValue.length > 0) {
           const fileId = this.googleDriveService.extractFileIdFromUrl(
-            row.customThumbnail
+            row.customThumbnail ?? ''
           )
-          if (fileId) {
+          if (fileId != null) {
             row.customThumbnailDriveFile =
-              await this.googleDriveService.getFileMetadata(fileId, accessToken)
+              await this.googleDriveService.getFileMetadata(
+                fileId,
+                input.accessToken
+              )
           }
         }
-        if (row.captionFile) {
+        const captionFileValue = row.captionFile ?? '';
+        if (captionFileValue.length > 0) {
           const fileId = this.googleDriveService.extractFileIdFromUrl(
-            row.captionFile
+            row.captionFile ?? ''
           )
-          if (fileId) {
+          if (fileId != null) {
             row.captionDriveFile =
-              await this.googleDriveService.getFileMetadata(fileId, accessToken)
+              await this.googleDriveService.getFileMetadata(
+                fileId,
+                input.accessToken
+              )
           }
         }
-        if (row.audioTrackFile) {
+        const audioTrackFileValue = row.audioTrackFile ?? '';
+        if (audioTrackFileValue.length > 0) {
           const fileId = this.googleDriveService.extractFileIdFromUrl(
-            row.audioTrackFile
+            row.audioTrackFile ?? ''
           )
-          if (fileId) {
+          if (fileId != null) {
             row.audioTrackDriveFile =
-              await this.googleDriveService.getFileMetadata(fileId, accessToken)
+              await this.googleDriveService.getFileMetadata(fileId, input.accessToken)
           }
         }
       }
 
       let templateType = SpreadsheetTemplateType.UPLOAD
-      if (data.length > 0 && data[0].videoId) {
+      const inputData = input.data ?? []
+      if (inputData?.length > 0 && inputData[0]?.videoId != null) {
         templateType = SpreadsheetTemplateType.LOCALIZATION
       }
 
       return {
-        spreadsheetData: data,
+        spreadsheetData: inputData,
         templateType
       }
     } else {
       // Process Google Sheets data
       const files = await this.googleDriveService.findFiles(
         this.googleOAuthService.authorize(
-          accessToken,
+          input.accessToken,
           'https://www.googleapis.com/auth/drive'
         ),
-        drivefolderId
+        input.drivefolderId ?? ''
       )
 
       const spreadsheetRowData = await this.getGoogleSheetRowsData({
         auth: this.googleOAuthService.authorize(
-          accessToken,
+          input.accessToken,
           'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets'
         ),
-        spreadsheetId,
+        spreadsheetId: input.spreadsheetId ?? '',
         files: files ?? []
       })
 

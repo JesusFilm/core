@@ -331,14 +331,6 @@ describe('ChannelResolver', () => {
       )
       googleOAuthService.getAccessToken.mockResolvedValue(authResponse)
       googleYoutubeService.getChannels.mockResolvedValue(youtubeChannels)
-      // prismaService.channelYoutube.create.mockResolvedValue({
-      //   id: 'channelYoutubeId',
-      //   channelId: 'channelId',
-      //   title: 'YouTube Channel Title',
-      //   description: 'YouTube Channel Description',
-      //   youtubeId: 'youtubeChannelId',
-      //   imageUrl: 'thumbnailUrl'
-      // })
       prismaService.channel.update.mockResolvedValue({
         ...channel,
         connected: true
@@ -354,29 +346,27 @@ describe('ChannelResolver', () => {
         connected: true
       })
 
-      // expect(googleOAuthService.getAccessToken).toHaveBeenCalledWith({
-      //   code: 'authCode',
-      //   grant_type: 'authorization_code',
-      //   redirect_uri: 'redirectUri'
-      // })
       expect(googleYoutubeService.getChannels).toHaveBeenCalledWith({
         accessToken: authResponse.access_token
       })
+
       expect(prismaService.channel.update).toHaveBeenCalledWith(
         expect.any(Object)
       )
     })
 
-    // it('throws error if not authorized', async () => {
-    //   prismaService.channel.findUnique.mockResolvedValueOnce(channel)
-    //   await expect(
-    //     resolver.connectYoutubeChannel(ability, {
-    //       channelId: 'channelId',
-    //       authCode: 'authCode',
-    //       redirectUri: 'redirectUri'
-    //     })
-    //   ).rejects.toThrow('user is not allowed to manage channel')
-    // })
+    it('throws error if not authorized', async () => {
+      prismaService.channel.findUnique.mockResolvedValueOnce({
+        ...channel,
+        deletedAt: new Date()
+      })
+      await expect(
+        resolver.channelConnect(ability, {
+          channelId: 'channelId',
+          accessToken: 'accessToken'
+        })
+      ).rejects.toThrow('user is not allowed to manage channel')
+    })
 
     it('throws error if not found', async () => {
       prismaService.channel.findUnique.mockResolvedValueOnce(null)

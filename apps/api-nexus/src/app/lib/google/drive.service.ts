@@ -131,8 +131,8 @@ export class GoogleDriveService {
     accessToken?: string
   ): Promise<drive_v3.Schema$File> {
     let client
-
-    if (accessToken) {
+    const accessTokenValue = accessToken ?? ''
+    if (accessTokenValue.length > 0) {
       const auth = new google.auth.OAuth2()
       auth.setCredentials({ access_token: accessToken })
       client = google.drive({ version: 'v3', auth })
@@ -150,6 +150,6 @@ export class GoogleDriveService {
 
   extractFileIdFromUrl(url: string): string | null {
     const match = url.match(/[-\w]{25,}/)
-    return match ? match[0] : null
+    return match != null ? match[0] : null
   }
 }
