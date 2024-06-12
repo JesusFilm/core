@@ -66,7 +66,8 @@ describe('Canvas', () => {
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+    showJourneyFlowAnalytics: false
   }
 
   it('should show border around selected step', () => {
