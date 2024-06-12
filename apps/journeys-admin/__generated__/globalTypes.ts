@@ -558,7 +558,6 @@ export interface TextResponseBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   label: string;
-  submitLabel: string;
 }
 
 export interface TextResponseBlockUpdateInput {
@@ -566,8 +565,6 @@ export interface TextResponseBlockUpdateInput {
   label?: string | null;
   hint?: string | null;
   minRows?: number | null;
-  submitIconId?: string | null;
-  submitLabel?: string | null;
 }
 
 export interface TextResponseSubmissionEventCreateInput {

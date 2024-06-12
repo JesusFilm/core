@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { EventEmailNotifications } from '../../__generated__/graphql'
+import { EventEmailNotifications } from '.prisma/api-journeys-client'
+
 import { PrismaService } from '../../lib/prisma.service'
 
 import { EventEmailNotificationsResolver } from './eventEmailNotifications.resolver'
@@ -37,17 +38,24 @@ describe('EventEmailNotifications', () => {
     id: '1',
     journeyId: 'journeyId',
     userId: 'userId1',
+    userJourneyId: 'userJourneyId',
+    userTeamId: null,
     value: false
   }
-  const input = { journeyId: 'journeyId', userId: 'userId1', value: true }
+  const input = {
+    journeyId: 'journeyId',
+    userId: 'userId1',
+    value: true,
+    teamId: 'teamId'
+  }
+
+  const eventEmailNotifications: EventEmailNotifications[] = [
+    eventEmailNotification,
+    { ...eventEmailNotification, id: '2' }
+  ]
 
   describe('eventEmailNotificationsByJourney', () => {
     it('should return an array of event email notifications', async () => {
-      const eventEmailNotifications: EventEmailNotifications[] = [
-        eventEmailNotification,
-        { ...eventEmailNotification, id: '2' }
-      ]
-
       prismaService.eventEmailNotifications.findMany.mockResolvedValueOnce(
         eventEmailNotifications
       )
@@ -62,26 +70,6 @@ describe('EventEmailNotifications', () => {
   })
 
   describe('eventEmailNotificationsUpdate', () => {
-    it('should upsert an event email notification by id', async () => {
-      prismaService.eventEmailNotifications.upsert.mockResolvedValueOnce({
-        ...eventEmailNotification,
-        value: true
-      })
-      expect(await resolver.eventEmailNotificationsUpdate(input, '1')).toEqual({
-        id: '1',
-        journeyId: 'journeyId',
-        userId: 'userId1',
-        value: true
-      })
-      expect(prismaService.eventEmailNotifications.upsert).toHaveBeenCalledWith(
-        {
-          where: { id: '1' },
-          create: input,
-          update: input
-        }
-      )
-    })
-
     it('should upsert an event email notification by userId and journeyId', async () => {
       prismaService.eventEmailNotifications.upsert.mockResolvedValueOnce({
         ...eventEmailNotification,
@@ -91,6 +79,8 @@ describe('EventEmailNotifications', () => {
         id: '1',
         journeyId: 'journeyId',
         userId: 'userId1',
+        userJourneyId: 'userJourneyId',
+        userTeamId: null,
         value: true
       })
       expect(prismaService.eventEmailNotifications.upsert).toHaveBeenCalledWith(
@@ -100,40 +90,6 @@ describe('EventEmailNotifications', () => {
           },
           create: input,
           update: input
-        }
-      )
-    })
-  })
-
-  describe('eventEmailNotificationsDelete', () => {
-    it('should delete an event email notification by id', async () => {
-      prismaService.eventEmailNotifications.delete.mockResolvedValueOnce(
-        eventEmailNotification
-      )
-      expect(await resolver.eventEmailNotificationsDelete(input, '1')).toEqual(
-        eventEmailNotification
-      )
-      expect(prismaService.eventEmailNotifications.delete).toHaveBeenCalledWith(
-        {
-          where: {
-            id: '1'
-          }
-        }
-      )
-    })
-
-    it('should delete an event email notification by userId and journeyId', async () => {
-      prismaService.eventEmailNotifications.delete.mockResolvedValueOnce(
-        eventEmailNotification
-      )
-      expect(await resolver.eventEmailNotificationsDelete(input)).toEqual(
-        eventEmailNotification
-      )
-      expect(prismaService.eventEmailNotifications.delete).toHaveBeenCalledWith(
-        {
-          where: {
-            userId_journeyId: { userId: 'userId1', journeyId: 'journeyId' }
-          }
         }
       )
     })
