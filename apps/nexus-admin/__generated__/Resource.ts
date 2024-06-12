@@ -23,6 +23,7 @@ export interface Resource_resource {
   __typename: "Resource";
   id: string;
   name: string;
+  customThumbnail: string | null;
   resourceLocalizations: (Resource_resource_resourceLocalizations | null)[] | null;
   status: ResourceStatus | null;
 }
@@ -32,5 +33,5 @@ export interface Resource {
 }
 
 export interface ResourceVariables {
-  resourceId: string;
+  id: string;
 }
