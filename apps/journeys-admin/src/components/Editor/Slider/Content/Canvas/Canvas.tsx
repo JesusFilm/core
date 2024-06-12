@@ -13,9 +13,9 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { VideoWrapper } from '@core/journeys/ui/ResourcesHub/VideoWrapper'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 

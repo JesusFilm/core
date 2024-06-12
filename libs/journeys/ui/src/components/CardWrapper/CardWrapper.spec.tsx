@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react'
 import { ReactElement } from 'react'
 
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-import type { TreeBlock } from '../../../libs/block'
-import { Card } from '../../Card'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
+import type { TreeBlock } from '../../libs/block'
+import { Card } from '../Card'
 
 import { CardWrapper } from '.'
 

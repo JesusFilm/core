@@ -13,10 +13,10 @@ import { SwiperOptions } from 'swiper/types'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { CardWrapper } from '@core/journeys/ui/ResourcesHub/CardWrapper'
-import { VideoWrapper } from '@core/journeys/ui/ResourcesHub/VideoWrapper'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {

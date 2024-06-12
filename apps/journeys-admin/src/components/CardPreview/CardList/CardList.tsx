@@ -14,11 +14,11 @@ import type {
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { CardWrapper } from '@core/journeys/ui/ResourcesHub/CardWrapper'
-import { VideoWrapper } from '@core/journeys/ui/ResourcesHub/VideoWrapper'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import TargetIcon from '@core/shared/ui/icons/Target'
