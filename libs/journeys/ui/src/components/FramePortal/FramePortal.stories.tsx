@@ -13,12 +13,12 @@ import {
   ThemeMode,
   ThemeName,
   TypographyVariant
-} from '../../../../__generated__/globalTypes'
-import type { TreeBlock } from '../../../libs/block'
-import { BlockFields as Block } from '../../../libs/block/__generated__/BlockFields'
-import { JourneyProvider } from '../../../libs/JourneyProvider'
-import { GetJourney_journey as Journey } from '../../../libs/useJourneyQuery/__generated__/GetJourney'
-import { BlockRenderer } from '../../BlockRenderer'
+} from '../../../__generated__/globalTypes'
+import type { TreeBlock } from '../../libs/block'
+import { BlockFields as Block } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
+import { BlockRenderer } from '../BlockRenderer'
 
 import { FramePortal } from '.'
 

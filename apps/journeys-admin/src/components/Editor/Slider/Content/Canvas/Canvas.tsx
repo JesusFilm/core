@@ -11,9 +11,9 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { FramePortal } from '@core/journeys/ui/ResourcesHub/FramePortal'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
