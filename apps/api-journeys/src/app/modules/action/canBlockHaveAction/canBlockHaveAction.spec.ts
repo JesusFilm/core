@@ -23,25 +23,19 @@ describe('canBlockHaveAction', () => {
 
   it('should return true for video block', () => {
     expect(
-      canBlockHaveAction({ typename: 'VideoTriggerBlock' } as unknown as Block)
+      canBlockHaveAction({ typename: 'VideoBlock' } as unknown as Block)
     ).toBe(true)
   })
 
   it('should return true for video trigger block', () => {
     expect(
-      canBlockHaveAction({ typename: 'TextResponseBlock' } as unknown as Block)
-    ).toBe(true)
-  })
-
-  it('should return true for text response block', () => {
-    expect(
-      canBlockHaveAction({ typename: 'TextResponseBlock' } as unknown as Block)
+      canBlockHaveAction({ typename: 'VideoTriggerBlock' } as unknown as Block)
     ).toBe(true)
   })
 
   it('should return true for form block', () => {
     expect(
-      canBlockHaveAction({ typename: 'TextResponseBlock' } as unknown as Block)
+      canBlockHaveAction({ typename: 'FormBlock' } as unknown as Block)
     ).toBe(true)
   })
 

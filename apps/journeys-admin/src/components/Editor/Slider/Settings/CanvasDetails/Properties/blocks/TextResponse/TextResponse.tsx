@@ -14,7 +14,6 @@ import { TextResponseFields } from './TextResponseFields'
 
 export function TextResponse({
   id,
-  action,
   label
 }: TreeBlock<TextResponseBlock>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
