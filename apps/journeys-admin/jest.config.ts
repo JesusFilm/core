@@ -1,5 +1,5 @@
 import type { Config } from 'jest'
-
+// Add a comment just so admin app can be deployed to test e2e's
 const config: Config = {
   displayName: 'journeys-admin',
   moduleNameMapper: {
