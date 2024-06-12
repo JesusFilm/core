@@ -4,9 +4,18 @@ metadata:
   name: datadog
 spec:
   global:
+    containerStrategy: single
     clusterName: jfp-eks-prod
     site: datadoghq.com
     credentials:
       apiSecret:
         secretName: datadog-secret
         keyName: api-key
+  features:
+    apm:
+      enabled: true
+    logCollection:
+      enabled: true
+      containerCollectAll: true
+    clusterChecks:
+      enabled: true

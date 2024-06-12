@@ -208,13 +208,14 @@ model Team {
 }
 
 model UserTeam {
-  id        String       @id @default(uuid())
-  teamId    String
-  team      Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  userId    String
-  role      UserTeamRole @default(member)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id                      String                    @id @default(uuid())
+  teamId                  String
+  team                    Team                      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId                  String
+  role                    UserTeamRole              @default(member)
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  EventEmailNotifications EventEmailNotifications[]
 
   @@unique([teamId, userId])
   @@index(role)
@@ -251,13 +252,14 @@ enum UserJourneyRole {
 }
 
 model UserJourney {
-  id        String          @id @default(uuid())
-  userId    String
-  journeyId String
-  updatedAt DateTime        @default(now()) @updatedAt
-  journey   Journey         @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-  role      UserJourneyRole
-  openedAt  DateTime?
+  id                      String                    @id @default(uuid())
+  userId                  String
+  journeyId               String
+  updatedAt               DateTime                  @default(now()) @updatedAt
+  journey                 Journey                   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  role                    UserJourneyRole
+  openedAt                DateTime?
+  EventEmailNotifications EventEmailNotifications[]
 
   @@unique([journeyId, userId])
   @@index(journeyId)
@@ -478,10 +480,14 @@ model JourneysEmailPreference {
 }
 
 model EventEmailNotifications {
-  id        String  @id @default(uuid())
-  userId    String
-  journeyId String
-  value     Boolean @default(true)
+  id            String       @id @default(uuid())
+  userId        String
+  journeyId     String
+  userTeamId    String?
+  userJourneyId String?
+  userTeam      UserTeam?    @relation(fields: [userTeamId], references: [id], onDelete: Cascade)
+  userJourney   UserJourney? @relation(fields: [userJourneyId], references: [id], onDelete: Cascade)
+  value         Boolean      @default(true)
 
   @@unique([userId, journeyId])
   @@index(userId)
