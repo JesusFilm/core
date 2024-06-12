@@ -108,7 +108,7 @@ export class GoogleSheetsService {
   }> {
     if (input.isArray) {
       for (const row of input.data ?? []) {
-        const fileNameValue = row.filename ?? '';
+        const fileNameValue = row.filename ?? ''
         if (fileNameValue.length > 0) {
           const fileId = this.googleDriveService.extractFileIdFromUrl(
             row.filename ?? ''
@@ -120,7 +120,7 @@ export class GoogleSheetsService {
             )
           }
         }
-        const customThumbnailValue = row.customThumbnail ?? '';
+        const customThumbnailValue = row.customThumbnail ?? ''
         if (customThumbnailValue.length > 0) {
           const fileId = this.googleDriveService.extractFileIdFromUrl(
             row.customThumbnail ?? ''
@@ -133,7 +133,7 @@ export class GoogleSheetsService {
               )
           }
         }
-        const captionFileValue = row.captionFile ?? '';
+        const captionFileValue = row.captionFile ?? ''
         if (captionFileValue.length > 0) {
           const fileId = this.googleDriveService.extractFileIdFromUrl(
             row.captionFile ?? ''
@@ -146,14 +146,17 @@ export class GoogleSheetsService {
               )
           }
         }
-        const audioTrackFileValue = row.audioTrackFile ?? '';
+        const audioTrackFileValue = row.audioTrackFile ?? ''
         if (audioTrackFileValue.length > 0) {
           const fileId = this.googleDriveService.extractFileIdFromUrl(
             row.audioTrackFile ?? ''
           )
           if (fileId != null) {
             row.audioTrackDriveFile =
-              await this.googleDriveService.getFileMetadata(fileId, input.accessToken)
+              await this.googleDriveService.getFileMetadata(
+                fileId,
+                input.accessToken
+              )
           }
         }
       }
