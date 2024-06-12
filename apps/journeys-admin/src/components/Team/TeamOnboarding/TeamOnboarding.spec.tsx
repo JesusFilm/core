@@ -207,7 +207,6 @@ describe('TeamOnboarding', () => {
         }
       }
     }))
-
     const { getByRole, getAllByRole } = render(
       <MockedProvider
         mocks={[

@@ -135,7 +135,6 @@ export function NavigationButton({
         input
       }
     })
-
     if (journey != null)
       plausible('navigateNextStep', {
         props: {
