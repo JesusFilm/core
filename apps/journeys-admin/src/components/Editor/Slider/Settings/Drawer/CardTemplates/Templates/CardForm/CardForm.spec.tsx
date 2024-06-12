@@ -12,7 +12,6 @@ import {
   CardFormCreateVariables
 } from '../../../../../../../../../__generated__/CardFormCreate'
 import {
-  IconName,
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
@@ -100,18 +99,7 @@ describe('CardForm', () => {
             id: 'textResponseId',
             journeyId: 'journeyId',
             parentBlockId: 'cardId',
-            label: 'Your answer here',
-            submitLabel: 'Submit'
-          },
-          submitIconInput: {
-            id: 'submitIconId',
-            journeyId: 'journeyId',
-            parentBlockId: 'textResponseId',
-            name: IconName.ArrowForwardRounded
-          },
-          textResponseId: 'textResponseId',
-          textResponseUpdateInput: {
-            submitIconId: 'submitIconId'
+            label: 'Your answer here'
           },
           bodyInput: {
             journeyId: 'journeyId',
@@ -168,30 +156,6 @@ describe('CardForm', () => {
             label: 'Your answer here',
             hint: null,
             minRows: null,
-            submitLabel: 'Submit',
-            submitIconId: null,
-            action: null,
-            __typename: 'TextResponseBlock'
-          },
-          submitIcon: {
-            id: 'submitIconId',
-            parentBlockId: 'textResponseId',
-            parentOrder: null,
-            iconName: IconName.ArrowForwardRounded,
-            iconSize: null,
-            iconColor: null,
-            __typename: 'IconBlock'
-          },
-          textResponseBlockUpdate: {
-            id: 'textResponseId',
-            parentBlockId: 'cardId',
-            parentOrder: 2,
-            label: 'Your answer here',
-            hint: null,
-            minRows: null,
-            submitLabel: 'Submit',
-            submitIconId: 'submitIconId',
-            action: null,
             __typename: 'TextResponseBlock'
           },
           body: {
@@ -239,7 +203,6 @@ describe('CardForm', () => {
         { __ref: 'TypographyBlock:subtitleId' },
         { __ref: 'TypographyBlock:titleId' },
         { __ref: 'TextResponseBlock:textResponseId' },
-        { __ref: 'IconBlock:submitIconId' },
         { __ref: 'TypographyBlock:bodyId' }
       ])
     })
