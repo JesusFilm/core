@@ -35,10 +35,11 @@ export const GET_RESOURCES = gql`
 `
 
 export const GET_RESOURCE = gql`
-  query Resource($resourceId: ID!) {
-    resource(id: $resourceId) {
+  query Resource($id: ID!) {
+    resource(id: $id) {
       id
       name
+      customThumbnail
       resourceLocalizations {
         id
         keywords

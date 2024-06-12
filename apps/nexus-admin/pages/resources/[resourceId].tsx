@@ -1,12 +1,10 @@
 import { useQuery } from '@apollo/client'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
@@ -32,13 +30,13 @@ const ResourceDetailsPage: FC = () => {
   const { data, loading } = useQuery(GET_RESOURCE, {
     skip: String(resourceId) === '',
     variables: {
-      resourceID: resourceId
+      id: resourceId
     }
   })
 
   useEffect(() => {
     if (data !== undefined) {
-      setLocalizations(data?.resource?.localizations as Localization[])
+      setLocalizations(data?.resource?.resourceLocalizations as Localization[])
     }
   }, [data])
 
@@ -85,21 +83,6 @@ const ResourceDetailsPage: FC = () => {
               <Typography variant="subtitle3">
                 {t('Additional description if required')}
               </Typography>
-            </Stack>
-            <Stack
-              direction="row"
-              sx={{
-                width: '400px'
-              }}
-            >
-              <TextField
-                variant="filled"
-                placeholder="Lorem ipsum"
-                sx={{
-                  flex: 1
-                }}
-              />
-              <Button variant="contained">{t('Search')}</Button>
             </Stack>
           </Stack>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
