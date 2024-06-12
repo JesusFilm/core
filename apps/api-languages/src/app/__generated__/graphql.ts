@@ -22,20 +22,37 @@ export class LanguagesFilter {
     ids?: Nullable<string[]>;
 }
 
+export class Country {
+    __typename?: 'Country';
+    id: string;
+    name?: Translation[];
+    population?: Nullable<number>;
+    continent?: Translation[];
+    languages: Language[];
+    latitude?: Nullable<number>;
+    longitude?: Nullable<number>;
+    flagPngSrc?: Nullable<string>;
+    flagWebpSrc?: Nullable<string>;
+}
+
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract countries(): Country[] | Promise<Country[]>;
+
+    abstract country(id: string): Country | Promise<Country>;
+
+    abstract languages(offset?: Nullable<number>, limit?: Nullable<number>, where?: Nullable<LanguagesFilter>): Language[] | Promise<Language[]>;
+
+    abstract language(id: string, idType?: Nullable<LanguageIdType>): Nullable<Language> | Promise<Nullable<Language>>;
+}
+
 export class Language {
     __typename?: 'Language';
     id: string;
     bcp47?: Nullable<string>;
     iso3?: Nullable<string>;
     name?: Translation[];
-}
-
-export abstract class IQuery {
-    __typename?: 'IQuery';
-
-    abstract languages(offset?: Nullable<number>, limit?: Nullable<number>, where?: Nullable<LanguagesFilter>): Language[] | Promise<Language[]>;
-
-    abstract language(id: string, idType?: Nullable<LanguageIdType>): Nullable<Language> | Promise<Nullable<Language>>;
 }
 
 export class Translation {
