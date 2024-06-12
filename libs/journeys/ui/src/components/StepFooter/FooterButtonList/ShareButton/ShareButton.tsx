@@ -35,7 +35,6 @@ export function ShareButton(): ReactElement {
         blockId: activeBlock.id
       }
       plausible('shareButtonClick', {
-        u: journey.id,
         props: {
           ...input,
           key: keyify({

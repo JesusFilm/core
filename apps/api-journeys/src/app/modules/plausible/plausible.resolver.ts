@@ -37,10 +37,11 @@ export class PlausibleResolver {
     @Args('idType') idType: IdType = IdType.slug
   ): Promise<number> {
     const journey = await this.loadJourney(ability, id, idType)
-    return await this.plausibleService.getStatsRealtimeVisitors(
+    const result = await this.plausibleService.getStatsRealtimeVisitors(
       journey.id,
       'journey'
     )
+    return result
   }
 
   @Query()
@@ -54,11 +55,12 @@ export class PlausibleResolver {
   ): Promise<PlausibleStatsAggregateResponse> {
     const journey = await this.loadJourney(ability, id, idType)
 
-    return await this.plausibleService.getStatsAggregate(
+    const result = await this.plausibleService.getStatsAggregate(
       journey.id,
       'journey',
       { metrics: this.getMetrics(info), ...where }
     )
+    return result
   }
 
   @Query()
@@ -72,11 +74,12 @@ export class PlausibleResolver {
   ): Promise<PlausibleStatsResponse[]> {
     const journey = await this.loadJourney(ability, id, idType)
 
-    return await this.plausibleService.getStatsBreakdown(
+    const result = await this.plausibleService.getStatsBreakdown(
       journey.id,
       'journey',
       { metrics: this.getMetrics(info), ...where }
     )
+    return result
   }
 
   @Query()
@@ -90,11 +93,12 @@ export class PlausibleResolver {
   ): Promise<PlausibleStatsResponse[]> {
     const journey = await this.loadJourney(ability, id, idType)
 
-    return await this.plausibleService.getStatsTimeseries(
+    const result = await this.plausibleService.getStatsTimeseries(
       journey.id,
       'journey',
       { metrics: this.getMetrics(info), ...where }
     )
+    return result
   }
 
   private getMetrics(info): string {
