@@ -2,11 +2,11 @@ import replace from 'lodash/replace'
 
 import { JourneyPlausibleEvents, reverseKeyify } from '../plausibleHelpers'
 
-import { PlausibleJourneyAggregateVisitorsFields as JourneyAggregateVisitors } from './__generated__/PlausibleJourneyAggregateVisitorsFields'
-import { PlausibleJourneyReferrerFields as JourneyReferrer } from './__generated__/PlausibleJourneyReferrerFields'
-import { PlausibleJourneyStepsActionsFields as JourneyStepsAction } from './__generated__/PlausibleJourneyStepsActionsFields'
-import { PlausibleJourneyStepsFields as JourneyStep } from './__generated__/PlausibleJourneyStepsFields'
-import { PlausibleJourneyVisitorsPageExitsFields as JourneyVisitorsPageExit } from './__generated__/PlausibleJourneyVisitorsPageExitsFields'
+import { PlausibleJourneyAggregateVisitorsFields as JourneyAggregateVisitors } from './plausibleFields/__generated__/PlausibleJourneyAggregateVisitorsFields'
+import { PlausibleJourneyReferrerFields as JourneyReferrer } from './plausibleFields/__generated__/PlausibleJourneyReferrerFields'
+import { PlausibleJourneyStepsActionsFields as JourneyStepsAction } from './plausibleFields/__generated__/PlausibleJourneyStepsActionsFields'
+import { PlausibleJourneyStepsFields as JourneyStep } from './plausibleFields/__generated__/PlausibleJourneyStepsFields'
+import { PlausibleJourneyVisitorsPageExitsFields as JourneyVisitorsPageExit } from './plausibleFields/__generated__/PlausibleJourneyVisitorsPageExitsFields'
 
 interface StatsBreakdown {
   journeySteps: JourneyStep[]

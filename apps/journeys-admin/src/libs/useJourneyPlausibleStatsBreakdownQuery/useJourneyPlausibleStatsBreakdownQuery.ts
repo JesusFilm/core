@@ -1,10 +1,12 @@
 import { QueryResult, gql, useQuery } from '@apollo/client'
 
-import { PLAUSIBLE_JOURNEY_AGGREGATE_VISITORS_FIELDS } from '@core/journeys/ui/transformPlausibleBreakdown/plausibleJourneyAggregateVisitorsFields'
-import { PLAUSIBLE_JOURNEY_REFERRER_FIELDS } from '@core/journeys/ui/transformPlausibleBreakdown/plausibleJourneyReferrerFields'
-import { PLAUSIBLE_JOURNEY_STEPS_ACTIONS_FIELDS } from '@core/journeys/ui/transformPlausibleBreakdown/plausibleJourneyStepsActionsFields'
-import { PLAUSIBLE_JOURNEY_STEPS_FIELDS } from '@core/journeys/ui/transformPlausibleBreakdown/plausibleJourneyStepsFields'
-import { PLAUSIBLE_JOURNEY_VISITORS_PAGE_EXITS_FIELDS } from '@core/journeys/ui/transformPlausibleBreakdown/plausibleJourneyVisitorsPageExitsFields'
+import {
+  PLAUSIBLE_JOURNEY_AGGREGATE_VISITORS_FIELDS,
+  PLAUSIBLE_JOURNEY_REFERRER_FIELDS,
+  PLAUSIBLE_JOURNEY_STEPS_ACTIONS_FIELDS,
+  PLAUSIBLE_JOURNEY_STEPS_FIELDS,
+  PLAUSIBLE_JOURNEY_VISITORS_PAGE_EXITS_FIELDS
+} from '@core/journeys/ui/transformPlausibleBreakdown/plausibleFields'
 
 import {
   GetJourneyPlausibleStatsBreakdown,
