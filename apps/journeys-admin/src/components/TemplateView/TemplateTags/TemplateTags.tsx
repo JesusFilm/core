@@ -6,9 +6,9 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
 import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { ParentTagIcon } from '@core/journeys/ui/ParentTagIcon'
 
 import { useTagsQuery } from '../../../libs/useTagsQuery'
-import { ParentTagIcon } from '../../ParentTagIcon'
 
 import { getSortedTags } from './getSortedTags'
 import { TagItem } from './TagItem'

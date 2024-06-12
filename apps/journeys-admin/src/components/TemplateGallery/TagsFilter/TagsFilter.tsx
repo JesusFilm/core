@@ -12,11 +12,11 @@ import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { ReactElement, useCallback } from 'react'
 
+import { ParentTagIcon } from '@core/journeys/ui/ParentTagIcon'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetTags_tags as Tag } from '../../../../__generated__/GetTags'
 import { useTagsQuery } from '../../../libs/useTagsQuery'
-import { ParentTagIcon } from '../../ParentTagIcon'
 
 interface TagsFilterProps {
   label: string
