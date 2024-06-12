@@ -18,7 +18,6 @@ import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_FormBlock as FormBlock,
   BlockFields_SignUpBlock as SignUpBlock,
-  BlockFields_TextResponseBlock as TextResponseBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 
@@ -65,7 +64,6 @@ export function Action(): ReactElement {
     | TreeBlock<ButtonBlock>
     | TreeBlock<FormBlock>
     | TreeBlock<SignUpBlock>
-    | TreeBlock<TextResponseBlock>
     | TreeBlock<VideoBlock>
     | undefined
 
