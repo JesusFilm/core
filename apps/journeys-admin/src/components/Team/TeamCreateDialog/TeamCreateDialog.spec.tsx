@@ -22,6 +22,11 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+jest.mock('next-firebase-auth', () => ({
+  __esModule: true,
+  useUser: jest.fn(() => ({ id: 'userId', name: 'userName' }))
+}))
+
 describe('TeamCreateDialog', () => {
   beforeEach(() => {
     // eslint-disable-next-line @typescript-eslint/no-extra-semi
