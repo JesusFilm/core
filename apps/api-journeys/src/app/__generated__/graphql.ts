@@ -696,6 +696,29 @@ export class JourneysEmailPreferenceUpdateInput {
     value: boolean;
 }
 
+export class PlausibleStatsAggregateFilter {
+    period?: Nullable<string>;
+    date?: Nullable<string>;
+    filters?: Nullable<string>;
+    interval?: Nullable<string>;
+}
+
+export class PlausibleStatsBreakdownFilter {
+    property: string;
+    period?: Nullable<string>;
+    date?: Nullable<string>;
+    limit?: Nullable<number>;
+    page?: Nullable<number>;
+    filters?: Nullable<string>;
+}
+
+export class PlausibleStatsTimeseriesFilter {
+    period?: Nullable<string>;
+    date?: Nullable<string>;
+    filters?: Nullable<string>;
+    interval?: Nullable<string>;
+}
+
 export class TeamCreateInput {
     title: string;
     publicTitle?: Nullable<string>;
@@ -994,6 +1017,7 @@ export class Journey {
     strategySlug?: Nullable<string>;
     tags: Tag[];
     journeyCollections: JourneyCollection[];
+    plausibleToken?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -1033,6 +1057,14 @@ export abstract class IQuery {
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 
     abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
+
+    abstract journeysPlausibleStatsRealtimeVisitors(id: string, idType?: Nullable<IdType>): number | Promise<number>;
+
+    abstract journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsAggregateResponse | Promise<PlausibleStatsAggregateResponse>;
+
+    abstract journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
+
+    abstract journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
 
     abstract teams(): Team[] | Promise<Team[]>;
 
@@ -1556,6 +1588,39 @@ export class JourneysEmailPreference {
     email: string;
     unsubscribeAll: boolean;
     accountNotifications: boolean;
+}
+
+export class PlausibleStatsAggregateValue {
+    __typename?: 'PlausibleStatsAggregateValue';
+    value: number;
+    change?: Nullable<number>;
+}
+
+export class PlausibleStatsAggregateResponse {
+    __typename?: 'PlausibleStatsAggregateResponse';
+    visitors?: Nullable<PlausibleStatsAggregateValue>;
+    visits?: Nullable<PlausibleStatsAggregateValue>;
+    pageviews?: Nullable<PlausibleStatsAggregateValue>;
+    viewsPerVisit?: Nullable<PlausibleStatsAggregateValue>;
+    bounceRate?: Nullable<PlausibleStatsAggregateValue>;
+    visitDuration?: Nullable<PlausibleStatsAggregateValue>;
+    events?: Nullable<PlausibleStatsAggregateValue>;
+    conversionRate?: Nullable<PlausibleStatsAggregateValue>;
+    timeOnPage?: Nullable<PlausibleStatsAggregateValue>;
+}
+
+export class PlausibleStatsResponse {
+    __typename?: 'PlausibleStatsResponse';
+    property: string;
+    visitors?: Nullable<number>;
+    visits?: Nullable<number>;
+    pageviews?: Nullable<number>;
+    viewsPerVisit?: Nullable<number>;
+    bounceRate?: Nullable<number>;
+    visitDuration?: Nullable<number>;
+    events?: Nullable<number>;
+    conversionRate?: Nullable<number>;
+    timeOnPage?: Nullable<number>;
 }
 
 export class Team {
