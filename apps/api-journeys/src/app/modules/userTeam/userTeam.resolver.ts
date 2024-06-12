@@ -14,6 +14,7 @@ import { Prisma, UserTeam } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
 import {
+  JourneyNotification,
   UserTeamFilterInput,
   UserTeamUpdateInput
 } from '../../__generated__/graphql'
@@ -127,5 +128,17 @@ export class UserTeamResolver {
     @Parent() userTeam: UserTeam
   ): Promise<{ __typename: string; id: string }> {
     return { __typename: 'User', id: userTeam.userId }
+  }
+
+  @ResolveField('journeyNotification')
+  async journeyNotification(
+    @Parent() userTeam: UserTeam,
+    @Args('journeyId') journeyId: string
+  ): Promise<JourneyNotification[] | null> {
+    return await this.prismaService.userTeam
+      .findUnique({
+        where: { id: userTeam.id }
+      })
+      .journeyNotification({ where: { journeyId } })
   }
 }

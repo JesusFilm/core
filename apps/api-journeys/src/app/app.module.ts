@@ -15,11 +15,11 @@ import { BlockModule } from './modules/block/block.module'
 import { CustomDomainModule } from './modules/customDomain/customDomain.module'
 import { EmailModule } from './modules/email/email.module'
 import { EventModule } from './modules/event/event.module'
-import { EventEmailNotificationsModule } from './modules/eventEmailNotifications/eventEmailNotifications.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { JourneyCollectionModule } from './modules/journeyCollection/journeyCollection.module'
+import { JourneyNotificationModule } from './modules/journeyNotification/journeyNotification.module'
 import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'
 import { JourneysEmailPreferenceModule } from './modules/journeysEmailPreference/journeysEmailPreference.module'
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
@@ -39,12 +39,12 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     CustomDomainModule,
     EmailModule,
     EventModule,
-    EventEmailNotificationsModule,
     HostModule,
     JourneyCollectionModule,
     JourneysEmailPreferenceModule,
     JourneyModule,
     JourneyVisitorModule,
+    JourneyNotificationModule,
     JourneyProfileModule,
     MailChimpModule,
     NestHealthModule,

@@ -373,7 +373,6 @@ export class TextResponseBlockCreateInput {
     journeyId: string;
     parentBlockId: string;
     label: string;
-    submitLabel: string;
 }
 
 export class TextResponseBlockUpdateInput {
@@ -381,8 +380,6 @@ export class TextResponseBlockUpdateInput {
     label?: Nullable<string>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
-    submitIconId?: Nullable<string>;
-    submitLabel?: Nullable<string>;
 }
 
 export class TypographyBlockCreateInput {
@@ -594,14 +591,6 @@ export class VideoProgressEventCreateInput {
     value?: Nullable<VideoBlockSource>;
 }
 
-export class EventEmailNotificationsUpdateInput {
-    userId: string;
-    journeyId: string;
-    userTeamId?: Nullable<string>;
-    userJourneyId?: Nullable<string>;
-    value: boolean;
-}
-
 export class HostUpdateInput {
     title?: Nullable<string>;
     location?: Nullable<string>;
@@ -673,6 +662,11 @@ export class JourneyCollectionCreateInput {
 export class JourneyCollectionUpdateInput {
     title?: Nullable<string>;
     journeyIds?: Nullable<string[]>;
+}
+
+export class JourneyNotificationUpdateInput {
+    journeyId: string;
+    visitorInteractionEmail: boolean;
 }
 
 export class JourneyProfileUpdateInput {
@@ -886,8 +880,6 @@ export abstract class IMutation {
 
     abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
 
-    abstract eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput): EventEmailNotifications | Promise<EventEmailNotifications>;
-
     abstract hostCreate(teamId: string, input: HostCreateInput): Host | Promise<Host>;
 
     abstract hostUpdate(id: string, teamId: string, input?: Nullable<HostUpdateInput>): Host | Promise<Host>;
@@ -919,6 +911,8 @@ export abstract class IMutation {
     abstract journeyCollectionUpdate(id: string, input: JourneyCollectionUpdateInput): JourneyCollection | Promise<JourneyCollection>;
 
     abstract journeyCollectionDelete(id: string): JourneyCollection | Promise<JourneyCollection>;
+
+    abstract journeyNotificationUpdate(input: JourneyNotificationUpdateInput): JourneyNotification | Promise<JourneyNotification>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
 
@@ -1008,8 +1002,6 @@ export abstract class IQuery {
 
     abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
 
-    abstract eventEmailNotificationsByJourney(journeyId: string): EventEmailNotifications[] | Promise<EventEmailNotifications[]>;
-
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
@@ -1025,6 +1017,8 @@ export abstract class IQuery {
     abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
 
     abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
+
+    abstract journeyNotifications(journeyId: string): JourneyNotification[] | Promise<JourneyNotification[]>;
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
@@ -1205,9 +1199,6 @@ export class TextResponseBlock implements Block {
     label: string;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
-    action?: Nullable<Action>;
-    submitIconId?: Nullable<string>;
-    submitLabel?: Nullable<string>;
 }
 
 export class TypographyBlock implements Block {
@@ -1460,16 +1451,6 @@ export class VideoProgressEvent implements Event {
     progress: number;
 }
 
-export class EventEmailNotifications {
-    __typename?: 'EventEmailNotifications';
-    id: string;
-    userId: string;
-    journeyId: string;
-    userTeamId?: Nullable<string>;
-    userJourneyId?: Nullable<string>;
-    value: boolean;
-}
-
 export class Host {
     __typename?: 'Host';
     id: string;
@@ -1492,6 +1473,7 @@ export class PowerBiEmbed {
 export class UserJourney {
     __typename?: 'UserJourney';
     journey?: Nullable<Journey>;
+    journeyNotification: JourneyNotification[];
     id: string;
     userId: string;
     journeyId: string;
@@ -1507,6 +1489,26 @@ export class JourneyCollection {
     title?: Nullable<string>;
     customDomains?: Nullable<CustomDomain[]>;
     journeys?: Nullable<Journey[]>;
+}
+
+export class JourneyNotification {
+    __typename?: 'JourneyNotification';
+    id: string;
+    userId: string;
+    journeyId: string;
+    userTeamId?: Nullable<string>;
+    userJourneyId?: Nullable<string>;
+    visitorInteractionEmail: boolean;
+}
+
+export class UserTeam {
+    __typename?: 'UserTeam';
+    journeyNotification?: JourneyNotification[];
+    id: string;
+    user: User;
+    role: UserTeamRole;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export class JourneyProfile {
@@ -1584,15 +1586,6 @@ export class UserRole {
     id: string;
     userId: string;
     roles?: Nullable<Role[]>;
-}
-
-export class UserTeam {
-    __typename?: 'UserTeam';
-    id: string;
-    user: User;
-    role: UserTeamRole;
-    createdAt: DateTime;
-    updatedAt: DateTime;
 }
 
 export class UserTeamInvite {
