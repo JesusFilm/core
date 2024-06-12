@@ -55,6 +55,10 @@ export const GET_JOURNEY_VISITORS = gql`
             createdAt
             label
             value
+            ... on TextResponseSubmissionEvent {
+              id
+              blockId
+            }
           }
         }
       }

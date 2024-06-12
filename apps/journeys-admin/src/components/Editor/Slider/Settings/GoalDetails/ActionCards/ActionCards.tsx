@@ -140,10 +140,6 @@ function ActionCardsDetail({
   const buttonBlock = actionBlock as ButtonBlock
 
   switch (actionBlock?.__typename) {
-    case 'TextResponseBlock':
-      blockType = t('Feedback')
-      label = actionBlock?.submitLabel ?? ''
-      break
     case 'RadioOptionBlock':
       blockType = t('Poll')
       label = actionBlock?.label ?? ''
