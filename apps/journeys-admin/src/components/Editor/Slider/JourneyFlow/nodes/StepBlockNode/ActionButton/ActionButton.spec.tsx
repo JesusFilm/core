@@ -10,7 +10,6 @@ import {
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_StepBlock as StepBlock,
-  BlockFields_TextResponseBlock as TextResponseBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { mockReactFlow } from '../../../../../../../../test/mockReactFlow'
