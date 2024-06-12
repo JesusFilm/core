@@ -6,12 +6,14 @@ import { PlausibleJourneyAggregateVisitorsFields as JourneyAggregateVisitors } f
 import { PlausibleJourneyReferrerFields as JourneyReferrer } from './__generated__/PlausibleJourneyReferrerFields'
 import { PlausibleJourneyStepsActionsFields as JourneyStepsActions } from './__generated__/PlausibleJourneyStepsActionsFields'
 import { PlausibleJourneyStepsFields as JourneySteps } from './__generated__/PlausibleJourneyStepsFields'
+import { PlausibleJourneyVisitorsPageExitsFields as JourneyVisitorsPageExits } from './__generated__/PlausibleJourneyVisitorsPageExitsFields'
 
 interface StatsBreakdown {
   journeySteps: JourneySteps[]
   journeyStepsActions: JourneyStepsActions[]
   journeyReferrer: JourneyReferrer[]
   journeyAggregateVisitors: JourneyAggregateVisitors
+  journeyVisitorsPageExits: JourneyVisitorsPageExits[]
 }
 
 export interface JourneyStatsBreakdown {
