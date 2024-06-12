@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-pnpx validate-branch-name
+pnpm dlx validate-branch-name

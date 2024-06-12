@@ -6,6 +6,8 @@ sudo chgrp node -R /workspaces
 
 cd /workspaces/core
 
+pnpm setup --force
+
 # add default user to postgres
 psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;"
 
