@@ -112,7 +112,7 @@ export const TextResponse = ({
       <Formik initialValues={initialValues} onSubmit={noop}>
         {({ values, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
-            <Stack>
+            <Stack data-testid="stack">
               <TextField
                 id="textResponse-field"
                 name="response"
