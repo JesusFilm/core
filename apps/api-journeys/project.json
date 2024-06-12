@@ -53,7 +53,7 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
+        "command": "pnpm run ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
       }
     },
     "lint": {
@@ -96,8 +96,8 @@
       "options": {
         "parallel": false,
         "commands": [
-          "npx prisma generate --schema apps/api-journeys/db/schema.prisma",
-          "npm run ts-node apps/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
+          "pnpx prisma generate --schema apps/api-journeys/db/schema.prisma",
+          "pnpm run ts-node apps/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
         ]
       }
     },
@@ -105,13 +105,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bash -c 'npx prisma migrate dev --schema apps/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+          "bash -c 'pnpx prisma migrate dev --schema apps/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
         ]
       },
       "configurations": {
         "production": {
           "commands": [
-            "npx prisma migrate deploy --schema apps/api-journeys/db/schema.prisma"
+            "pnpx prisma migrate deploy --schema apps/api-journeys/db/schema.prisma"
           ]
         }
       }
@@ -120,21 +120,21 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate reset --schema apps/api-journeys/db/schema.prisma --force"
+          "pnpx prisma migrate reset --schema apps/api-journeys/db/schema.prisma --force"
         ]
       }
     },
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run ts-node apps/api-journeys/db/seed.ts"]
+        "commands": ["pnpm run ts-node apps/api-journeys/db/seed.ts"]
       }
     },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma studio --schema apps/api-journeys/db/schema.prisma"
+          "pnpx prisma studio --schema apps/api-journeys/db/schema.prisma"
         ]
       }
     },
@@ -142,7 +142,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma validate --schema apps/api-journeys/db/schema.prisma"
+          "pnpx prisma validate --schema apps/api-journeys/db/schema.prisma"
         ]
       }
     },
@@ -150,14 +150,14 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate resolve --schema apps/api-journeys/db/schema.prisma --applied 20230711193802_20230711193801"
+          "pnpx prisma migrate resolve --schema apps/api-journeys/db/schema.prisma --applied 20230711193802_20230711193801"
         ]
       }
     },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/api-journeys/tsconfig.json"
+        "command": "pnpx tsc -b apps/api-journeys/tsconfig.json"
       }
     },
     "codecov": {

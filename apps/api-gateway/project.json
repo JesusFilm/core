@@ -18,7 +18,7 @@
             "command": "echo 'This command is no longer supported. Please run `nf start` instead.'"
           },
           {
-            "command": "echo 'If `bash: nf: command not found` returns please run `npm i -g foreman` then try again.'"
+            "command": "echo 'If `bash: nf: command not found` returns please run `pnpm i -g foreman` then try again.'"
           }
         ]
       }
@@ -41,7 +41,7 @@
             "command": "./apps/api-gateway/router config schema > apps/api-gateway/routerSchema.json"
           },
           {
-            "command": "npx prettier apps/api-gateway/routerSchema.json -w"
+            "command": "pnpx prettier apps/api-gateway/routerSchema.json -w"
           }
         ]
       }

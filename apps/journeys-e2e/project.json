@@ -37,7 +37,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/journeys-e2e/tsconfig.json"
+        "command": "pnpx tsc -b apps/journeys-e2e/tsconfig.json"
       }
     }
   },

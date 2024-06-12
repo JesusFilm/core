@@ -48,7 +48,7 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-languages --transpileOnly"
+        "command": "pnpm run ts-node tools/scripts/generate-typings.ts api-languages --transpileOnly"
       }
     },
     "lint": {
@@ -84,7 +84,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma generate --schema apps/api-languages/db/schema.prisma"
+          "pnpx prisma generate --schema apps/api-languages/db/schema.prisma"
         ]
       }
     },
@@ -92,14 +92,14 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bash -c 'npx prisma migrate dev --schema apps/api-languages/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+          "bash -c 'pnpx prisma migrate dev --schema apps/api-languages/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "npx prisma migrate deploy --schema apps/api-languages/db/schema.prisma"
+            "pnpx prisma migrate deploy --schema apps/api-languages/db/schema.prisma"
           ]
         }
       }
@@ -108,21 +108,21 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate reset --schema apps/api-languages/db/schema.prisma --force"
+          "pnpx prisma migrate reset --schema apps/api-languages/db/schema.prisma --force"
         ]
       }
     },
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run ts-node apps/api-languages/db/seed.ts"]
+        "commands": ["pnpm run ts-node apps/api-languages/db/seed.ts"]
       }
     },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma studio --schema apps/api-languages/db/schema.prisma"
+          "pnpx prisma studio --schema apps/api-languages/db/schema.prisma"
         ]
       }
     },
@@ -130,7 +130,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma validate --schema apps/api-languages/db/schema.prisma"
+          "pnpx prisma validate --schema apps/api-languages/db/schema.prisma"
         ]
       }
     },

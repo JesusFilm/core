@@ -46,13 +46,13 @@
     "seed": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apps/api-videos/db/seed.ts"
+        "command": "pnpm run ts-node apps/api-videos/db/seed.ts"
       }
     },
     "ingest": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apps/api-videos/src/app/modules/bigQuery/bigQuery.console.ts"
+        "command": "pnpm run ts-node apps/api-videos/src/app/modules/bigQuery/bigQuery.console.ts"
       }
     },
     "serve": {
@@ -65,7 +65,7 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-videos --transpileOnly"
+        "command": "pnpm run ts-node tools/scripts/generate-typings.ts api-videos --transpileOnly"
       }
     },
     "lint": {
@@ -102,7 +102,7 @@
       "options": {
         "parallel": false,
         "commands": [
-          "npx prisma generate --schema apps/api-videos/db/schema.prisma"
+          "pnpx prisma generate --schema apps/api-videos/db/schema.prisma"
         ]
       }
     },
@@ -110,13 +110,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bash -c 'npx prisma migrate dev --schema apps/api-videos/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+          "bash -c 'pnpx prisma migrate dev --schema apps/api-videos/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
         ]
       },
       "configurations": {
         "production": {
           "commands": [
-            "npx prisma migrate deploy --schema apps/api-videos/db/schema.prisma"
+            "pnpx prisma migrate deploy --schema apps/api-videos/db/schema.prisma"
           ]
         }
       }
@@ -125,7 +125,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate reset --schema apps/api-videos/db/schema.prisma --force"
+          "pnpx prisma migrate reset --schema apps/api-videos/db/schema.prisma --force"
         ]
       }
     },
@@ -134,7 +134,7 @@
       "options": {
         "commands": [
           {
-            "command": "npm run ts-node apps/api-videos/db/seed.ts {args.mode} {args.id}",
+            "command": "pnpm run ts-node apps/api-videos/db/seed.ts {args.mode} {args.id}",
             "forwardAllArgs": false
           }
         ]
@@ -144,7 +144,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma studio --schema apps/api-videos/db/schema.prisma"
+          "pnpx prisma studio --schema apps/api-videos/db/schema.prisma"
         ]
       }
     },
@@ -152,14 +152,14 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma validate --schema apps/api-videos/db/schema.prisma"
+          "pnpx prisma validate --schema apps/api-videos/db/schema.prisma"
         ]
       }
     },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/api-videos/tsconfig.json"
+        "command": "pnpx tsc -b apps/api-videos/tsconfig.json"
       }
     },
     "codecov": {

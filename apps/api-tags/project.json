@@ -53,7 +53,7 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-tags --transpileOnly"
+        "command": "pnpm run ts-node tools/scripts/generate-typings.ts api-tags --transpileOnly"
       }
     },
     "lint": {
@@ -91,7 +91,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma generate --schema apps/api-tags/db/schema.prisma"
+          "pnpx prisma generate --schema apps/api-tags/db/schema.prisma"
         ]
       }
     },
@@ -99,13 +99,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bash -c 'npx prisma migrate dev --schema apps/api-tags/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+          "bash -c 'pnpx prisma migrate dev --schema apps/api-tags/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
         ]
       },
       "configurations": {
         "production": {
           "commands": [
-            "npx prisma migrate deploy --schema apps/api-tags/db/schema.prisma"
+            "pnpx prisma migrate deploy --schema apps/api-tags/db/schema.prisma"
           ]
         }
       }
@@ -114,21 +114,21 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate reset --schema apps/api-tags/db/schema.prisma --force"
+          "pnpx prisma migrate reset --schema apps/api-tags/db/schema.prisma --force"
         ]
       }
     },
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run ts-node apps/api-tags/db/seed.ts"]
+        "commands": ["pnpm run ts-node apps/api-tags/db/seed.ts"]
       }
     },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma studio --schema apps/api-tags/db/schema.prisma"
+          "pnpx prisma studio --schema apps/api-tags/db/schema.prisma"
         ]
       }
     },
@@ -136,7 +136,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma validate --schema apps/api-tags/db/schema.prisma"
+          "pnpx prisma validate --schema apps/api-tags/db/schema.prisma"
         ]
       }
     },

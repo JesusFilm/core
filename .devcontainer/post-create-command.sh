@@ -10,22 +10,22 @@ cd /workspaces/core
 psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;"
 
 # install Nx CLI tool
-npm install -g nx
+pnpm install -g nx
 
 # install Nest CLI tool
-npm install -g @nestjs/cli@^8.1.5
+pnpm install -g @nestjs/cli@^8.1.5
 
 # install Rover CLI tool
-npm install -g @apollo/rover@0.23.0
+pnpm install -g @apollo/rover@0.23.0
 
 # install Foreman CLI tool
-npm install -g foreman
+pnpm install -g foreman
 
 # install Apollo CLI tool for codegen
-npm install -g apollo graphql
+pnpm install -g apollo graphql
 
 # install all dependencies
-npm i
+pnpm i
 
 # install github action runner
 curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
