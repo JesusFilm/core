@@ -373,7 +373,6 @@ export class TextResponseBlockCreateInput {
     journeyId: string;
     parentBlockId: string;
     label: string;
-    submitLabel: string;
 }
 
 export class TextResponseBlockUpdateInput {
@@ -381,8 +380,6 @@ export class TextResponseBlockUpdateInput {
     label?: Nullable<string>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
-    submitIconId?: Nullable<string>;
-    submitLabel?: Nullable<string>;
 }
 
 export class TypographyBlockCreateInput {
@@ -597,6 +594,8 @@ export class VideoProgressEventCreateInput {
 export class EventEmailNotificationsUpdateInput {
     userId: string;
     journeyId: string;
+    userTeamId?: Nullable<string>;
+    userJourneyId?: Nullable<string>;
     value: boolean;
 }
 
@@ -907,9 +906,7 @@ export abstract class IMutation {
 
     abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
 
-    abstract eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput, id?: Nullable<string>): EventEmailNotifications | Promise<EventEmailNotifications>;
-
-    abstract eventEmailNotificationsDelete(input: EventEmailNotificationsUpdateInput, id?: Nullable<string>): EventEmailNotifications | Promise<EventEmailNotifications>;
+    abstract eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput): EventEmailNotifications | Promise<EventEmailNotifications>;
 
     abstract hostCreate(teamId: string, input: HostCreateInput): Host | Promise<Host>;
 
@@ -1236,9 +1233,6 @@ export class TextResponseBlock implements Block {
     label: string;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
-    action?: Nullable<Action>;
-    submitIconId?: Nullable<string>;
-    submitLabel?: Nullable<string>;
 }
 
 export class TypographyBlock implements Block {
@@ -1496,6 +1490,8 @@ export class EventEmailNotifications {
     id: string;
     userId: string;
     journeyId: string;
+    userTeamId?: Nullable<string>;
+    userJourneyId?: Nullable<string>;
     value: boolean;
 }
 

@@ -6,12 +6,12 @@ import { ReactElement } from 'react'
 import {
   GetHomeVideos,
   GetHomeVideos_videos as Video
-} from '../__generated__/GetHomeVideos'
-import i18nConfig from '../next-i18next.config'
-import { Videos } from '../src/components/VideosPage'
-import { GET_LANGUAGES } from '../src/components/VideosPage/VideosPage'
-import { createApolloClient } from '../src/libs/apolloClient'
-import { VIDEO_CHILD_FIELDS } from '../src/libs/videoChildFields'
+} from '../../__generated__/GetHomeVideos'
+import i18nConfig from '../../next-i18next.config'
+import { Videos } from '../../src/components/VideosPage'
+import { GET_LANGUAGES } from '../../src/components/VideosPage/VideosPage'
+import { createApolloClient } from '../../src/libs/apolloClient'
+import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
 
 import { GET_HOME_VIDEOS } from './index'
 
