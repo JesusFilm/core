@@ -34,19 +34,7 @@ describe('NewTextResponseButton', () => {
         id: 'textResponseBlock.id',
         journeyId: 'journey.id',
         parentBlockId: 'card.id',
-        submitLabel: 'Submit',
         label: 'Your answer here'
-      },
-      iconBlockCreateInput: {
-        id: 'icon.id',
-        journeyId: 'journey.id',
-        parentBlockId: 'textResponseBlock.id',
-        name: null
-      },
-      id: 'textResponseBlock.id',
-      journeyId: 'journey.id',
-      updateInput: {
-        submitIconId: 'icon.id'
       }
     }
   }
@@ -59,38 +47,8 @@ describe('NewTextResponseButton', () => {
         parentBlockId: 'card.id',
         parentOrder: 0,
         label: 'Your answer here',
-        submitLabel: 'Submit',
         hint: null,
-        minRows: null,
-        submitIconId: null,
-        action: null
-      },
-      submitIcon: {
-        __typename: 'IconBlock',
-        id: 'icon.id',
-        journeyId: 'journey.id',
-        parentBlockId: 'textResponseBlock.id',
-        parentOrder: null,
-        iconName: null,
-        iconColor: null,
-        iconSize: null
-      },
-      textResponseBlockUpdate: {
-        __typename: 'TextResponseBlock',
-        id: 'textResponseBlock.id',
-        parentBlockId: 'card.id',
-        parentOrder: null,
-        journeyId: 'journey.id',
-        submitIconId: 'icon.id',
-        submitLabel: 'Submit',
-        label: 'Your answer here',
-        hint: null,
-        minRows: null,
-        action: {
-          __typename: 'NavigateToBlockAction',
-          gtmEventName: 'gtmEventName',
-          blockId: 'def'
-        }
+        minRows: null
       }
     }
   }))
@@ -120,7 +78,6 @@ describe('NewTextResponseButton', () => {
 
   it('should create a new TextResponseBlock', async () => {
     mockUuidv4.mockReturnValueOnce('textResponseBlock.id')
-    mockUuidv4.mockReturnValueOnce('icon.id')
 
     const { getByRole } = render(
       <MockedProvider
@@ -150,7 +107,6 @@ describe('NewTextResponseButton', () => {
 
   it('should update cache', async () => {
     mockUuidv4.mockReturnValueOnce('textResponseBlock.id')
-    mockUuidv4.mockReturnValueOnce('icon.id')
 
     const cache = new InMemoryCache()
     cache.restore({
@@ -185,10 +141,10 @@ describe('NewTextResponseButton', () => {
     )
 
     fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() =>
       expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
-        { __ref: 'TextResponseBlock:textResponseBlock.id' },
-        { __ref: 'IconBlock:icon.id' }
+        { __ref: 'TextResponseBlock:textResponseBlock.id' }
       ])
     )
   })
