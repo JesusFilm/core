@@ -40,15 +40,12 @@ describe('TextResponseBlockResolver', () => {
     id: 'blockId',
     journeyId: 'journeyId',
     parentBlockId: 'parentBlockId',
-    label: 'Your answer here...',
-    submitLabel: 'Submit'
+    label: 'Your answer here...'
   }
   const blockUpdateInput: TextResponseBlockUpdateInput = {
     parentBlockId: 'parentBlockId',
     label: 'Your answer',
-    hint: 'Enter your answer above',
-    submitIconId: 'icon1',
-    submitLabel: 'Next'
+    hint: 'Enter your answer above'
   }
   const blockService = {
     provide: BlockService,
@@ -98,11 +95,9 @@ describe('TextResponseBlockResolver', () => {
           parentBlock: { connect: { id: 'parentBlockId' } },
           parentOrder: 2,
           typename: 'TextResponseBlock',
-          label: 'Your answer here...',
-          submitLabel: 'Submit'
+          label: 'Your answer here...'
         },
         include: {
-          action: true,
           journey: {
             include: {
               team: { include: { userTeams: true } },
@@ -143,17 +138,6 @@ describe('TextResponseBlockResolver', () => {
         blockUpdateInput
       )
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
-    })
-
-    it('throws error if submitIconId does not exist', async () => {
-      mockValidate.mockResolvedValueOnce(false)
-
-      await expect(
-        resolver.textResponseBlockUpdate(ability, 'blockId', {
-          ...blockUpdateInput,
-          submitIconId: 'wrong!'
-        })
-      ).rejects.toThrow('Submit icon does not exist')
     })
 
     it('throws error if not found', async () => {
