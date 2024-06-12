@@ -6,7 +6,6 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { FC, useEffect, useState } from 'react'
 
-import { Channel_channel } from '../../__generated__/Channel'
 import { ChannelCreate } from '../../__generated__/ChannelCreate'
 import { ChannelDelete } from '../../__generated__/ChannelDelete'
 import { Channels, Channels_channels } from '../../__generated__/Channels'
@@ -69,7 +68,7 @@ const ChannelsPage: FC = () => {
   const [deleteChannelModal, setDeleteChannelModal] = useState<boolean>(false)
   const [channelId, setChannelId] = useState<string>('')
   const [channels, setChannels] = useState<Channels_channels[]>([])
-  const [channel, setChannel] = useState<Channel_channel | null>(null)
+  const [channel, setChannel] = useState<Channels_channels | null>(null)
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation()
 

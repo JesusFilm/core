@@ -15,8 +15,8 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { FC, useState } from 'react'
 
+import { ChannelConnect_channelConnect } from '../../../__generated__/ChannelConnect'
 import { Channels_channels } from '../../../__generated__/Channels'
-import { ConnectChannel } from '../../../__generated__/ConnectChannel'
 import { GET_CHANNELS } from '../../../pages/channels'
 
 import { ChannelsTableHeader } from './ChannelsTableHeader'
@@ -45,9 +45,12 @@ export const ChannelsTable: FC<ChannelsTableProps> = ({
   const [morePopup, setMorePopup] = useState<HTMLElement | null>(null)
   const [channelId, setChannelId] = useState<string>('')
   const [channel, setChannel] = useState<Channels_channels | null>(null)
-  const [channelConnect] = useMutation<ConnectChannel>(CHANNEL_CONNECT, {
-    refetchQueries: [GET_CHANNELS]
-  })
+  const [channelConnect] = useMutation<ChannelConnect_channelConnect>(
+    CHANNEL_CONNECT,
+    {
+      refetchQueries: [GET_CHANNELS]
+    }
+  )
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10

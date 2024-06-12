@@ -11,13 +11,13 @@ import { useTranslation } from 'next-i18next'
 import { FC } from 'react'
 import { object, string } from 'yup'
 
-import { Channel_channel } from '../../../__generated__/Channel'
+import { Channels_channels } from '../../../__generated__/Channels'
 import { Modal } from '../Modal'
 
 interface CreateChannelModalProps {
   open: boolean
   onClose: () => void
-  onCreate: (channelData: Partial<Channel_channel>) => void
+  onCreate: (channelData: Partial<Channels_channels>) => void
 }
 
 const channelValidationSchema = object({

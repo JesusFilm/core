@@ -229,24 +229,24 @@ const Row: FC<{ batch: Batches_batches }> = ({ batch }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {batch.batchTasks.map((task) => (
-                  <TableRow key={task.type}>
-                    <TableCell>{task.type}</TableCell>
+                {batch.batchTasks?.map((task) => (
+                  <TableRow key={task?.type}>
+                    <TableCell>{task?.type}</TableCell>
                     <TableCell>
                       <Chip
-                        label={task.status}
-                        color={getChipColor(task.status as string)}
+                        label={task?.status}
+                        color={getChipColor(task?.status as string)}
                         variant="outlined"
                       />
                     </TableCell>
-                    <TableCell>{Number(task.progress).toFixed(2)}%</TableCell>
+                    <TableCell>{Number(task?.progress).toFixed(2)}%</TableCell>
                     <TableCell>
-                      {task.task?.channel?.youtube?.youtubeId}
+                      {task?.task?.channel?.youtube?.youtubeId}
                     </TableCell>
-                    <TableCell>{task.task?.localization?.videoId}</TableCell>
+                    <TableCell>{task?.task?.localization?.videoId}</TableCell>
                     <TableCell>
-                      {task.error !== null ? (
-                        <Tooltip title={task.error}>
+                      {task?.error !== null ? (
+                        <Tooltip title={task?.error}>
                           <IconButton>
                             <CircleIcon
                               sx={{

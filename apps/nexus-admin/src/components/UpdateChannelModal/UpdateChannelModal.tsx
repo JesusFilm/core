@@ -11,14 +11,14 @@ import { useTranslation } from 'next-i18next'
 import { FC, useEffect } from 'react'
 import { object, string } from 'yup'
 
-import { Channel_channel } from '../../../__generated__/Channel'
+import { Channels_channels } from '../../../__generated__/Channels'
 import { Modal } from '../Modal'
 
 interface UpdateChannelModalProps {
   open: boolean
   onClose: () => void
-  data: Partial<Channel_channel> | null
-  onUpdate: (channelData: Partial<Channel_channel>) => void
+  data: Partial<Channels_channels> | null
+  onUpdate: (channelData: Partial<Channels_channels>) => void
 }
 
 const channelValidationSchema = object({
@@ -80,7 +80,9 @@ export const UpdateChannelModal: FC<UpdateChannelModalProps> = ({
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           error={Boolean(formik.touched.name) && Boolean(formik.errors.name)}
-          helperText={Boolean(formik.touched.name) && formik.errors.name}
+          helperText={
+            Boolean(formik.touched.name) && String(formik.errors.name)
+          }
         />
         <FormControl variant="filled" sx={{ m: 1, minWidth: 120 }}>
           <InputLabel>{t('Platform Type')}</InputLabel>
@@ -100,7 +102,9 @@ export const UpdateChannelModal: FC<UpdateChannelModalProps> = ({
         </FormControl>
         {Boolean(formik.touched.platform) &&
           Boolean(formik.errors.platform) && (
-            <FormHelperText error>{formik.errors.platform}</FormHelperText>
+            <FormHelperText error>
+              {String(formik.errors.platform)}
+            </FormHelperText>
           )}
       </Stack>
     </Modal>
