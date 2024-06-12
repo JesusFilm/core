@@ -36,6 +36,8 @@ export function Editor({
     idType: IdType.databaseId
   })
 
+  // console.log(data)
+
   const journeyStatsBreakdown = transformPlausibleBreakdown({
     journeyId: journey?.id,
     data

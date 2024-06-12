@@ -72,9 +72,6 @@ export class PlausibleResolver {
   ): Promise<PlausibleStatsResponse[]> {
     const journey = await this.loadJourney(ability, id, idType)
 
-    // console.log('INFO: ', info)
-    // console.log('WHERE: ', where)
-
     return await this.plausibleService.getStatsBreakdown(
       journey.id,
       'journey',
