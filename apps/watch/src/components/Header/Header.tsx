@@ -42,7 +42,13 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
         <Container maxWidth="xxl" disableGutters>
           <Toolbar sx={{ justifyContent: 'space-between' }}>
             <NextLink href="/watch">
-              <Box sx={{ width: { xs: '64px', sm: '76px', md: '88px' } }}>
+              <Box
+                sx={{
+                  width: { xs: '64px', md: '76px', xl: '88px' },
+                  marginLeft: { xs: '-8px', md: '-12px', xl: '0px' }
+                  // background: { xs: 'white', md: 'blue', xl: 'green' }
+                }}
+              >
               <Image
                 src={favicon}
                 alt="Watch Logo"
