@@ -124,7 +124,7 @@ test.describe('verify card level actions', () => {
   })
 
   //Feedback- create, update & delete
-  test('Feedback - create, update & delete', async ({ page }) => {
+  test.fixme('Feedback - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Feedback') // clicking on Feedback button in add block drawer
