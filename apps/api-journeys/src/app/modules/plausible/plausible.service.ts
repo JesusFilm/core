@@ -56,13 +56,13 @@ interface PlausibleAPIStatsAggregateResponse {
 
 @Injectable()
 export class PlausibleService implements OnModuleInit {
+  client: AxiosInstance
   constructor(
     @InjectQueue('api-journeys-plausible')
     private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly prismaService: PrismaService
   ) {}
 
-  client: AxiosInstance
   async onModuleInit(): Promise<void> {
     this.client = axios.create({
       baseURL: process.env.PLAUSIBLE_URL,
@@ -70,22 +70,9 @@ export class PlausibleService implements OnModuleInit {
         Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`
       }
     })
-
-    const journeys = await this.prismaService.journey.findMany({
-      where: { plausibleToken: null }
+    await this.plausibleQueue.add('plausibleCreateSites', {
+      __typename: 'plausibleCreateSites'
     })
-    await Promise.all(
-      journeys.map(async (journey) => {
-        await this.plausibleQueue.add('plausibleCreateJourneySite', {
-          __typename: 'plausibleCreateJourneySite',
-          journeyId: journey.id
-        })
-        await this.plausibleQueue.add('plausibleCreateTeamSite', {
-          __typename: 'plausibleCreateTeamSite',
-          teamId: journey.teamId
-        })
-      })
-    )
   }
 
   async createSites(): Promise<void> {

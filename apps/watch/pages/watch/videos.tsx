@@ -44,6 +44,7 @@ const videoIds = [
   '1_cl-0-0',
   'Wonder',
   'Nua',
+  '8_NBC',
   'GoodStory',
   '2_FileZero-0-0',
   '1_fj-0-0',

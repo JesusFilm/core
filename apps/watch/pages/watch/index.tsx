@@ -40,6 +40,7 @@ const videoIds = [
   'GOMarkCollection',
   'GOLukeCollection',
   'GOJohnCollection',
+  '8_NBC',
   '1_cl1309-0-0',
   '1_jf6102-0-0',
   '2_0-FallingPlates',
