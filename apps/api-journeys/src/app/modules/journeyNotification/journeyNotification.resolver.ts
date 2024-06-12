@@ -2,11 +2,11 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
 import { JourneyNotification } from '.prisma/api-journeys-client'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 
 import { JourneyNotificationUpdateInput } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 
 @Resolver('JourneyNotification')
 export class JourneyNotificationResolver {

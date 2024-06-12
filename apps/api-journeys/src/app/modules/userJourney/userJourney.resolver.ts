@@ -13,10 +13,10 @@ import omit from 'lodash/omit'
 
 import {
   Journey,
+  JourneyNotification,
   Prisma,
   UserJourney,
-  UserJourneyRole,
-  JourneyNotification
+  UserJourneyRole
 } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
@@ -263,7 +263,7 @@ export class UserJourneyResolver {
   async journeyNotification(
     @Parent() userJourney: UserJourney
   ): Promise<JourneyNotification[] | null> {
-    return this.prismaService.userJourney
+    return await this.prismaService.userJourney
       .findUnique({
         where: { id: userJourney.id }
       })

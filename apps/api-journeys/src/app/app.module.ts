@@ -19,6 +19,7 @@ import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { JourneyCollectionModule } from './modules/journeyCollection/journeyCollection.module'
+import { JourneyNotificationModule } from './modules/journeyNotification/journeyNotification.module'
 import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'
 import { JourneysEmailPreferenceModule } from './modules/journeysEmailPreference/journeysEmailPreference.module'
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
@@ -30,7 +31,6 @@ import { UserRoleModule } from './modules/userRole/userRole.module'
 import { UserTeamModule } from './modules/userTeam/userTeam.module'
 import { UserTeamInviteModule } from './modules/userTeamInvite/userTeamInvite.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
-import { JourneyNotificationModule } from './modules/journeyNotification/journeyNotification.module'
 
 @Module({
   imports: [
