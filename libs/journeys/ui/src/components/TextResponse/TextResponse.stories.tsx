@@ -49,9 +49,6 @@ const textResponseProps: ComponentProps<typeof TextResponse> = {
   label: 'Your answer here',
   hint: null,
   minRows: null,
-  submitIconId: null,
-  submitLabel: null,
-  action: null,
   children: []
 }
 

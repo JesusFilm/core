@@ -19,3 +19,7 @@ data:
       username: mike.allison
       groups:
         - system:masters
+    - userarn: arn:aws:iam::410965620680:user/tataihono.nikora
+      username: tataihono.nikora
+      groups:
+        - system:masters

@@ -23,30 +23,13 @@ export class EventEmailNotificationsResolver {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async eventEmailNotificationsUpdate(
-    @Args('input') input: EventEmailNotificationsUpdateInput,
-    @Args('id') id?: string
+    @Args('input') input: EventEmailNotificationsUpdateInput
   ): Promise<EventEmailNotifications> {
     const { userId, journeyId } = input
-    const where =
-      id != null ? { id } : { userId_journeyId: { userId, journeyId } }
     return await this.prismaService.eventEmailNotifications.upsert({
-      where,
+      where: { userId_journeyId: { userId, journeyId } },
       update: input,
       create: input
-    })
-  }
-
-  @Mutation()
-  @UseGuards(GqlAuthGuard)
-  async eventEmailNotificationsDelete(
-    @Args('input') input: EventEmailNotificationsUpdateInput,
-    @Args('id') id?: string
-  ): Promise<EventEmailNotifications> {
-    const { userId, journeyId } = input
-    const where =
-      id != null ? { id } : { userId_journeyId: { userId, journeyId } }
-    return await this.prismaService.eventEmailNotifications.delete({
-      where
     })
   }
 }
