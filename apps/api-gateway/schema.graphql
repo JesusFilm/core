@@ -456,6 +456,13 @@ type CloudflareVideo
   readyToStream: Boolean!
 }
 
+input ConnectYoutubeChannelInput
+  @join__type(graph: NEXUS)
+{
+  channelId: String!
+  accessToken: String!
+}
+
 type Country
   @join__type(graph: LANGUAGES, key: "id")
 {
