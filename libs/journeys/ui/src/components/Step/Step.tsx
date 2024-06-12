@@ -69,7 +69,14 @@ export function Step({
       if (journey != null)
         plausible('pageview', {
           u: `${journey.id}/${blockId}`,
-          props: { ...input, key: keyify('pageview', input) }
+          props: {
+            ...input,
+            key: keyify({
+              stepId: input.blockId,
+              event: 'pageview',
+              blockId: input.blockId
+            })
+          }
         })
       TagManager.dataLayer({
         dataLayer: {

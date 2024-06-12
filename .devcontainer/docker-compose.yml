@@ -92,3 +92,5 @@ volumes:
   core-node-doppler:
   postgres-data:
   redis-data:
+  event-data:
+  event-logs:

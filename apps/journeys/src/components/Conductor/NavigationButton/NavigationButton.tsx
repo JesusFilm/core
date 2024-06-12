@@ -137,10 +137,14 @@ export function NavigationButton({
     })
     if (journey != null)
       plausible('navigateNextStep', {
-        u: `${journey.id}/${activeBlock.id}`,
         props: {
           ...input,
-          key: keyify('navigateNextStep', input, input.nextStepId)
+          key: keyify({
+            stepId: input.blockId,
+            event: 'navigateNextStep',
+            blockId: input.blockId,
+            target: input.nextStepId
+          })
         }
       })
     TagManager.dataLayer({
@@ -192,10 +196,14 @@ export function NavigationButton({
     })
     if (journey != null)
       plausible('navigatePreviousStep', {
-        u: `${journey.id}/${activeBlock.id}`,
         props: {
           ...input,
-          key: keyify('navigatePreviousStep', input, input.previousStepId)
+          key: keyify({
+            stepId: input.blockId,
+            event: 'navigatePreviousStep',
+            blockId: input.blockId,
+            target: input.previousStepId
+          })
         }
       })
     TagManager.dataLayer({
