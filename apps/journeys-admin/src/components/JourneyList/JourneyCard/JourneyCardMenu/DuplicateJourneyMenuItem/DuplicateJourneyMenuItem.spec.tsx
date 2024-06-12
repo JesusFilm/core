@@ -4,10 +4,10 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { UpdateLastActiveTeamId } from '../../../../../../__generated__/UpdateLastActiveTeamId'
-import { JOURNEY_DUPLICATE } from '../../../../../libs/useJourneyDuplicateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
