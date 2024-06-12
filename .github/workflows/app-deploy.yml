@@ -46,7 +46,7 @@ jobs:
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "matrix=$(pnpx ts-node tools/scripts/affected-apps.ts --withTarget deploy --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
+          echo "matrix=$(pnpm dlx ts-node tools/scripts/affected-apps.ts --withTarget deploy --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   deploy-preview:
     name: Deploy Preview and Test
@@ -126,14 +126,14 @@ jobs:
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: pnpx nx run-many --target=deploy --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }}
       - name: vercel set alias
         if: ${{ github.event_name == 'pull_request' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: pnpx nx run-many --target=vercel-alias --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=vercel-alias --projects=${{ matrix.app }}
       - name: Generate GitHub deployment comment
         id: deployment-url
         env:
@@ -176,12 +176,12 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
-      - run: pnpx playwright install --with-deps
+      - run: pnpm exec playwright install --with-deps
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-      - run: pnpx playwright install-deps
+      - run: pnpm exec playwright install-deps
         if: steps.cache-playwright-browsers.outputs.cache-hit == 'true'
       - name: Run Playwright tests
-        run: pnpx nx run ${{ matrix.app }}-e2e:e2e
+        run: pnpm exec nx run ${{ matrix.app }}-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
@@ -282,7 +282,7 @@ jobs:
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: pnpx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
+        run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }} --prod
       - name: Generate GitHub comment
         id: deployment-url
         env:

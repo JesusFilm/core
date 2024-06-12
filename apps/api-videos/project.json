@@ -102,7 +102,7 @@
       "options": {
         "parallel": false,
         "commands": [
-          "pnpx prisma generate --schema apps/api-videos/db/schema.prisma"
+          "pnpm exec prisma generate --schema apps/api-videos/db/schema.prisma"
         ]
       }
     },
@@ -110,13 +110,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bash -c 'pnpx prisma migrate dev --schema apps/api-videos/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+          "bash -c 'pnpm exec prisma migrate dev --schema apps/api-videos/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
         ]
       },
       "configurations": {
         "production": {
           "commands": [
-            "pnpx prisma migrate deploy --schema apps/api-videos/db/schema.prisma"
+            "pnpm exec prisma migrate deploy --schema apps/api-videos/db/schema.prisma"
           ]
         }
       }
@@ -125,7 +125,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpx prisma migrate reset --schema apps/api-videos/db/schema.prisma --force"
+          "pnpm exec prisma migrate reset --schema apps/api-videos/db/schema.prisma --force"
         ]
       }
     },
@@ -144,7 +144,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpx prisma studio --schema apps/api-videos/db/schema.prisma"
+          "pnpm exec prisma studio --schema apps/api-videos/db/schema.prisma"
         ]
       }
     },
@@ -152,14 +152,14 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpx prisma validate --schema apps/api-videos/db/schema.prisma"
+          "pnpm exec prisma validate --schema apps/api-videos/db/schema.prisma"
         ]
       }
     },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpx tsc -b apps/api-videos/tsconfig.json"
+        "command": "pnpm exec tsc -b apps/api-videos/tsconfig.json"
       }
     },
     "codecov": {

@@ -77,12 +77,12 @@ jobs:
         env:
           APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       - name: Prettier
-        run: pnpx prettier --check .
+        run: pnpm exec prettier --check .
       - name: lint commit messages
-        run: pnpx commitlint --from 9a45682 # earliest good commit to main
+        run: pnpm exec commitlint --from 9a45682 # earliest good commit to main
       - name: lint branch name
         if: ${{ github.event_name == 'pull_request' }}
-        run: pnpx validate-branch-name -t $GITHUB_HEAD_REF
+        run: pnpm exec validate-branch-name -t $GITHUB_HEAD_REF
       - name: Check for file changes due to codegen
         run: ./tools/scripts/check-git-status.sh
   build:

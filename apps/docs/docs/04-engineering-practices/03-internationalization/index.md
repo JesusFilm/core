@@ -32,7 +32,7 @@ module.exports = {
       "options": {
         "commands": [
           {
-            "command": "pnpx i18next --config PROJECT_PATH/i18next-parser.config.js"
+            "command": "pnpm exec i18next --config PROJECT_PATH/i18next-parser.config.js"
           }
         ]
       }

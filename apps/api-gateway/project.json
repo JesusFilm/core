@@ -41,7 +41,7 @@
             "command": "./apps/api-gateway/router config schema > apps/api-gateway/routerSchema.json"
           },
           {
-            "command": "pnpx prettier apps/api-gateway/routerSchema.json -w"
+            "command": "pnpm exec prettier apps/api-gateway/routerSchema.json -w"
           }
         ]
       }

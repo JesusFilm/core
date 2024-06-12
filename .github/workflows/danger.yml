@@ -45,6 +45,6 @@ jobs:
       - name: PNPM Install
         run: pnpm install --silent
       - name: Danger JS
-        run: pnpx danger ci --failOnErrors
+        run: pnpm exec danger ci --failOnErrors
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

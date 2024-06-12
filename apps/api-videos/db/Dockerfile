@@ -14,6 +14,6 @@ COPY ./tsconfig.base.json /app/tsconfig.base.json
 COPY ./apps/api-videos /app/apps/api-videos
 
 RUN pnpm install --silent node-fetch@2.6.7 ts-node@^10.9.1 tslib@^2.6.2 prisma@^5.2.0 @prisma/client@^5.2.0 lodash@^4.17.21 jsondiffpatch@^0.5.0
-RUN pnpx prisma@^5.2.0 generate --schema /app/apps/api-videos/db/schema.prisma --generator client
+RUN pnpm exec prisma generate --schema /app/apps/api-videos/db/schema.prisma --generator client
 
-CMD pnpx prisma@^5.2.0 migrate deploy --schema /app/apps/api-videos/db/schema.prisma; pnpm run ts-node /app/apps/api-videos/db/seed.ts
+CMD pnpm exec prisma migrate deploy --schema /app/apps/api-videos/db/schema.prisma; pnpm run ts-node /app/apps/api-videos/db/seed.ts

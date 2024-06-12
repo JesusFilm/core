@@ -37,7 +37,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpx tsc -b apps/nexus-admin-e2e/tsconfig.json"
+        "command": "pnpm exec tsc -b apps/nexus-admin-e2e/tsconfig.json"
       }
     }
   },

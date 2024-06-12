@@ -19,9 +19,9 @@ RUN pnpm install --production --silent
 
 WORKDIR /prisma
 COPY ./apps/api-languages/db .
-RUN pnpx prisma@^5.2.0 generate --generator client
+RUN pnpm dlx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
 RUN pnpm install tslib@^2.6.2 @nestjs/mapped-types @prisma/client@^5.2.0 pino-pretty@^10.2.0
 
-CMD pnpx prisma@^5.2.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+CMD pnpm dlx prisma@^5.2.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js

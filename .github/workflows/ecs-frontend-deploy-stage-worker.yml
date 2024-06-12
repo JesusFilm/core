@@ -102,7 +102,7 @@ jobs:
 
       - name: Get affected apps
         run: |
-          echo "apps=$(pnpx ts-node tools/scripts/affected-apps.ts --projects apps/${{ inputs.name }})" >> $GITHUB_OUTPUT
+          echo "apps=$(pnpm run ts-node tools/scripts/affected-apps.ts --projects apps/${{ inputs.name }})" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
         id: affected-apps
 

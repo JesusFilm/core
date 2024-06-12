@@ -36,20 +36,20 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID pnpx vercel pull --environment=preview --token=$VERCEL_TOKEN",
-          "pnpx vercel build",
-          "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID pnpx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url",
-          "pnpx @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/nexus-admin/.vercel-url)/_next/static/"
+          "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "pnpm exec vercel build",
+          "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url",
+          "pnpm exec @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/nexus-admin/.vercel-url)/_next/static/"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID pnpx vercel pull --environment=production --token=$VERCEL_TOKEN",
-            "pnpx vercel build --prod",
-            "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID pnpx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url",
-            "pnpx @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://admin.nextstep.is/_next/static/"
+            "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "pnpm exec vercel build --prod",
+            "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url",
+            "pnpm exec @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://admin.nextstep.is/_next/static/"
           ]
         }
       }
@@ -58,7 +58,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpx vercel alias set $(cat apps/nexus-admin/.vercel-url) nexus-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "pnpm exec vercel alias set $(cat apps/nexus-admin/.vercel-url) nexus-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
           "echo \"https://nexus-admin-$PR_NUMBER-jesusfilm.vercel.app\" > apps/nexus-admin/.vercel-url"
         ],
         "parallel": false
@@ -104,7 +104,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpx tsc -b apps/nexus-admin/tsconfig.json"
+        "command": "pnpm exec tsc -b apps/nexus-admin/tsconfig.json"
       }
     },
     "codegen": {
@@ -118,7 +118,7 @@
             "command": "rm -rf apps/nexus-admin/__generated__"
           },
           {
-            "command": "pnpx apollo client:codegen --config apps/nexus-admin/apollo.config.js --target typescript --outputFlat apps/nexus-admin/__generated__"
+            "command": "pnpm exec apollo client:codegen --config apps/nexus-admin/apollo.config.js --target typescript --outputFlat apps/nexus-admin/__generated__"
           }
         ]
       }
@@ -138,7 +138,7 @@
       "options": {
         "commands": [
           {
-            "command": "pnpx i18next --config apps/nexus-admin/i18next-parser.config.js"
+            "command": "pnpm exec i18next --config apps/nexus-admin/i18next-parser.config.js"
           }
         ]
       }

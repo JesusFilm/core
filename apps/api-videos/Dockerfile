@@ -20,9 +20,9 @@ RUN pnpm install --production --silent --force
 
 WORKDIR /prisma
 COPY ./apps/api-videos/db .
-RUN pnpx prisma@^5.2.0 generate --generator client
+RUN pnpm dlx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
 
 RUN pnpm install tslib@^2.6.2 @nestjs/mapped-types pino-pretty@^10.2.0 prisma@^5.2.0 @prisma/client@^5.2.0 --force
-CMD pnpx prisma@^5.2.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+CMD pnpm exec prisma migrate deploy --schema /prisma/schema.prisma; node ./main.js

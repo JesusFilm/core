@@ -36,20 +36,20 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpx vercel pull --environment=preview --token=$VERCEL_TOKEN",
-          "pnpx vercel build",
-          "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/arclight/.vercel-url",
-          "pnpx @datadog/datadog-ci sourcemaps upload dist/apps/arclight/.next/static --service=arclight --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/arclight/.vercel-url)/_next/static/"
+          "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "pnpm exec vercel build",
+          "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpm dlx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/arclight/.vercel-url",
+          "pnpm exec @datadog/datadog-ci sourcemaps upload dist/apps/arclight/.next/static --service=arclight --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/arclight/.vercel-url)/_next/static/"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpx vercel pull --environment=production --token=$VERCEL_TOKEN",
-            "pnpx vercel build --prod",
-            "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/arclight/.vercel-url",
-            "pnpx @datadog/datadog-ci sourcemaps upload dist/apps/arclight/.next/static --service=arclight --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://your.nextstep.is/_next/static/"
+            "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "pnpm exec vercel build --prod",
+            "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/arclight/.vercel-url",
+            "pnpm exec @datadog/datadog-ci sourcemaps upload dist/apps/arclight/.next/static --service=arclight --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://your.nextstep.is/_next/static/"
           ]
         }
       }
@@ -58,7 +58,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpx vercel alias set $(cat apps/arclight/.vercel-url) arclight-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "pnpm exec vercel alias set $(cat apps/arclight/.vercel-url) arclight-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
           "echo \"https://arclight-$PR_NUMBER-jesusfilm.vercel.app\" > apps/arclight/.vercel-url"
         ],
         "parallel": false
@@ -102,7 +102,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpx tsc -b apps/arclight/tsconfig.json"
+        "command": "pnpm exec tsc -b apps/arclight/tsconfig.json"
       }
     },
     "fetch-secrets": {

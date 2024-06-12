@@ -52,9 +52,9 @@ jobs:
       - name: Install dependencies
         run: pnpm ci
       - name: Install Playwright Browsers
-        run: pnpx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
-        run: pnpx nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }}
+        run: pnpm exec nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }}
         env:
           DEPLOYMENT_URL: ${{ inputs.TargetAppUrl }}
       - uses: actions/upload-artifact@v4
