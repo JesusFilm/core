@@ -57,6 +57,7 @@ interface PlausibleAPIStatsAggregateResponse {
 @Injectable()
 export class PlausibleService implements OnModuleInit {
   client: AxiosInstance
+
   constructor(
     @InjectQueue('api-journeys-plausible')
     private readonly plausibleQueue: Queue<PlausibleJob>,
