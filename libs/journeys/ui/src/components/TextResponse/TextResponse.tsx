@@ -112,13 +112,13 @@ export const TextResponse = ({
       <Formik initialValues={initialValues} onSubmit={noop}>
         {({ values, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
-            <Stack data-testid="stack">
+            <Stack>
               <TextField
                 id="textResponse-field"
                 name="response"
                 label={label}
                 value={values.response}
-                helperText={hint}
+                helperText={hint != null ? hint : ''}
                 multiline
                 disabled={loading}
                 minRows={minRows ?? 3}
@@ -135,6 +135,7 @@ export const TextResponse = ({
                     pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
                   }
                 }}
+                sx={{ mb: 0 }}
               />
             </Stack>
           </Form>
