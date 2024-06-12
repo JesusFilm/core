@@ -7,7 +7,7 @@ import {
   Language,
   LanguageAutocomplete
 } from '../../../../components/LanguageAutocomplete'
-import { simpleComponentConfig } from '../../../simpleComponentConfig'
+import { simpleComponentConfig } from '../../../storybook'
 
 const ComponentsDemo: Meta<typeof LanguageAutocomplete> = {
   ...simpleComponentConfig,

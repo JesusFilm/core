@@ -1,7 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import { StoryCard } from '../StoryCard'
 
 import { RadioOption } from '.'

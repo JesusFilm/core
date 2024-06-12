@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { Form, Formik } from 'formik'
 import { ComponentProps } from 'react'
 
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import { simpleComponentConfig } from '../../libs/storybook'
 
 import { SubmitListener } from '.'
 

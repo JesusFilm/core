@@ -5,6 +5,8 @@ import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import {
   IconColor,
   IconName,
@@ -18,7 +20,6 @@ import {
   JourneyFields_language as Language
 } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 
 import { Icon } from '.'
 

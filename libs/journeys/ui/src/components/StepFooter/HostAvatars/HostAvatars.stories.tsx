@@ -2,6 +2,8 @@ import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import {
   JourneyStatus,
   ThemeMode,
@@ -9,7 +11,6 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
 
 import { HostAvatars } from './HostAvatars'
 

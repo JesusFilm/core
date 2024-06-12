@@ -18,7 +18,7 @@ import {
   LanguageAutocomplete
 } from '../../../../components/LanguageAutocomplete'
 import { TabPanel, tabA11yProps } from '../../../../components/TabPanel'
-import { simpleComponentConfig } from '../../../simpleComponentConfig'
+import { simpleComponentConfig } from '../../../storybook'
 
 const ComponentsDemo: Meta<typeof Button> = {
   ...simpleComponentConfig,

@@ -1,13 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import { MessagePlatform } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import {
   JourneyFields_chatButtons as ChatButton,
   JourneyFields as Journey
 } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
 
 import { ChatButtons } from '.'
 

@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 
 // import CircularProgress from '@mui/material/CircularProgress'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import { simpleComponentConfig } from '../../libs/storybook'
 
 // import { CenterCheck } from './CenterCheck'
 import { Icon, IconName } from './Icon'

@@ -3,8 +3,9 @@ import { Meta, StoryObj } from '@storybook/react'
 import { Form, Formik } from 'formik'
 import { object, string } from 'yup'
 
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { StoryCard } from '../StoryCard'
 
 import { TextField } from './TextField'

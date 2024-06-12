@@ -10,7 +10,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
 
 import { ThemeName } from '../..'
-import { simpleComponentConfig } from '../../../simpleComponentConfig'
+import { simpleComponentConfig } from '../../../storybook'
 
 const ColorsDemo: Meta<typeof Typography> = {
   ...simpleComponentConfig,
