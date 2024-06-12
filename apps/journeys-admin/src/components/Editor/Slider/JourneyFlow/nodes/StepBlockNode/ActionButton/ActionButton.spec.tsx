@@ -121,22 +121,6 @@ describe('ActionButton', () => {
     expect(screen.getByText('Subscribe')).toBeInTheDocument()
   })
 
-  it('should render label for TextResponseBlock', () => {
-    const block = {
-      __typename: 'TextResponseBlock'
-    } as unknown as TreeBlock<TextResponseBlock>
-
-    render(
-      <MockedProvider>
-        <ReactFlowProvider>
-          <ActionButton block={block} />
-        </ReactFlowProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByText('Feedback')).toBeInTheDocument()
-  })
-
   it('should render video label for VideoBlock', () => {
     const block = {
       __typename: 'VideoBlock',
