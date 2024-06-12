@@ -15,6 +15,7 @@ import {
   VideoProgressEventCreateInput,
   VideoStartEventCreateInput
 } from '../../../__generated__/globalTypes'
+import { ActionFields as Action } from '../action/__generated__/ActionFields'
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,4 +55,52 @@ export interface JourneyPlausibleEvents extends Events {
   videoProgress75: VideoProgressEventCreateInput & Props
   videoComplete: VideoCompleteEventCreateInput & Props
   videoTrigger: Props
+}
+
+interface KeyifyProps {
+  stepId: string
+  event: keyof JourneyPlausibleEvents
+  blockId: string
+  target?: string | Action | null
+}
+
+export function keyify({
+  stepId,
+  event,
+  blockId,
+  target
+}: KeyifyProps): string {
+  let targetId = ''
+
+  if (typeof target === 'string' || target == null) {
+    targetId = target ?? ''
+  } else {
+    switch (target.__typename) {
+      case 'NavigateToBlockAction':
+        targetId = target.blockId
+        break
+      case 'LinkAction':
+        targetId = `link:${target.url}`
+        break
+      case 'EmailAction':
+        targetId = `email:${target.email}`
+        break
+    }
+  }
+
+  return JSON.stringify({
+    stepId,
+    event,
+    blockId,
+    target: targetId
+  })
+}
+
+export function reverseKeyify(key: string): {
+  stepId: string
+  event: keyof JourneyPlausibleEvents
+  blockId: string
+  target?: string
+} {
+  return JSON.parse(key)
 }

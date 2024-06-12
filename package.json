@@ -74,7 +74,6 @@
     "adal-node": "^0.2.3",
     "algoliasearch": "^4.22.0",
     "aws-sdk": "^2.1557.0",
-    "axios": "^1.6.8",
     "blurhash": "^2.0.5",
     "bullmq": "^5.1.11",
     "cache-manager": "^5.2.3",

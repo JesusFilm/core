@@ -812,9 +812,6 @@ type Journey
   strategySlug: String
   tags: [Tag!]!
   journeyCollections: [JourneyCollection!]!
-
-  """used in a plausible share link to embed report"""
-  plausibleToken: String
   userJourneys: [UserJourney!]
 }
 
