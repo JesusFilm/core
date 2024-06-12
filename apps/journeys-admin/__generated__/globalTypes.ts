@@ -71,6 +71,11 @@ export enum IconSize {
   xl = "xl",
 }
 
+export enum IdType {
+  databaseId = "databaseId",
+  slug = "slug",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -425,6 +430,12 @@ export interface JourneysFilter {
   languageIds?: string[] | null;
   limit?: number | null;
   orderByRecent?: boolean | null;
+}
+
+export interface JourneysQueryOptions {
+  hostname?: string | null;
+  embedded?: boolean | null;
+  journeyCollection?: boolean | null;
 }
 
 export interface LanguagesFilter {

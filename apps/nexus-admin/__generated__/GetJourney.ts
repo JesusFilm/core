@@ -247,6 +247,29 @@ export interface GetJourney_journey_blocks_StepBlock {
   nextBlockId: string | null;
 }
 
+export interface GetJourney_journey_blocks_TextResponseBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface GetJourney_journey_blocks_TextResponseBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface GetJourney_journey_blocks_TextResponseBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetJourney_journey_blocks_TextResponseBlock_action = GetJourney_journey_blocks_TextResponseBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_TextResponseBlock_action_LinkAction | GetJourney_journey_blocks_TextResponseBlock_action_EmailAction;
+
 export interface GetJourney_journey_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
@@ -255,6 +278,9 @@ export interface GetJourney_journey_blocks_TextResponseBlock {
   label: string;
   hint: string | null;
   minRows: number | null;
+  submitLabel: string | null;
+  submitIconId: string | null;
+  action: GetJourney_journey_blocks_TextResponseBlock_action | null;
 }
 
 export interface GetJourney_journey_blocks_TypographyBlock {

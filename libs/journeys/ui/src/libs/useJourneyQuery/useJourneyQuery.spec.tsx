@@ -12,7 +12,7 @@ import {
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_language as Language
-} from "./__generated__/GetJourney"
+} from './__generated__/GetJourney'
 import { GET_JOURNEY, useJourneyQuery } from './useJourneyQuery'
 
 describe('useJourneyQuery', () => {
