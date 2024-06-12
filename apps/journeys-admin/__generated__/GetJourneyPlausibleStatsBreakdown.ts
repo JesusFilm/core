@@ -21,9 +21,10 @@ export interface GetJourneyPlausibleStatsBreakdown_journeySteps {
    */
   visitors: number | null;
   /**
-   * Bounce rate percentage.
+   * The average time users spend on viewing a single page. Requires an
+   * `event:page` filter or `event:page` property in the breakdown endpoint.
    */
-  bounceRate: number | null;
+  timeOnPage: number | null;
 }
 
 export interface GetJourneyPlausibleStatsBreakdown_journeyStepsActions {
@@ -38,11 +39,6 @@ export interface GetJourneyPlausibleStatsBreakdown_journeyStepsActions {
    *  this metric corresponds to "Total Conversions" in the dashboard.
    */
   events: number | null;
-  /**
-   * The average time users spend on viewing a single page. Requires an
-   * `event:page` filter or `event:page` property in the breakdown endpoint.
-   */
-  timeOnPage: number | null;
 }
 
 export interface GetJourneyPlausibleStatsBreakdown_journeyReferrer {

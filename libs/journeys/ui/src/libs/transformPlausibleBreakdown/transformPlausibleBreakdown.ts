@@ -4,16 +4,16 @@ import { JourneyPlausibleEvents, reverseKeyify } from '../plausibleHelpers'
 
 import { PlausibleJourneyAggregateVisitorsFields as JourneyAggregateVisitors } from './__generated__/PlausibleJourneyAggregateVisitorsFields'
 import { PlausibleJourneyReferrerFields as JourneyReferrer } from './__generated__/PlausibleJourneyReferrerFields'
-import { PlausibleJourneyStepsActionsFields as JourneyStepsActions } from './__generated__/PlausibleJourneyStepsActionsFields'
-import { PlausibleJourneyStepsFields as JourneySteps } from './__generated__/PlausibleJourneyStepsFields'
-import { PlausibleJourneyVisitorsPageExitsFields as JourneyVisitorsPageExits } from './__generated__/PlausibleJourneyVisitorsPageExitsFields'
+import { PlausibleJourneyStepsActionsFields as JourneyStepsAction } from './__generated__/PlausibleJourneyStepsActionsFields'
+import { PlausibleJourneyStepsFields as JourneyStep } from './__generated__/PlausibleJourneyStepsFields'
+import { PlausibleJourneyVisitorsPageExitsFields as JourneyVisitorsPageExit } from './__generated__/PlausibleJourneyVisitorsPageExitsFields'
 
 interface StatsBreakdown {
-  journeySteps: JourneySteps[]
-  journeyStepsActions: JourneyStepsActions[]
+  journeySteps: JourneyStep[]
+  journeyStepsActions: JourneyStepsAction[]
   journeyReferrer: JourneyReferrer[]
   journeyAggregateVisitors: JourneyAggregateVisitors
-  journeyVisitorsPageExits: JourneyVisitorsPageExits[]
+  journeyVisitorsPageExits: JourneyVisitorsPageExit[]
 }
 
 export interface JourneyStatsBreakdown {
@@ -21,14 +21,14 @@ export interface JourneyStatsBreakdown {
   chatsStarted: number
   linksVisited: number
   referrers: JourneyReferrer[]
-  stepsStats: StepStats[]
+  stepsStats: StepStat[]
 }
 
-interface StepStats {
+interface StepStat {
   stepId: string
   visitors: number
-  bounceRate: number
   timeOnPage: number
+  visitorsExitAtStep: number
   stepEvents: PlausibleEvent[]
 }
 
@@ -53,19 +53,75 @@ export function transformPlausibleBreakdown({
   const {
     journeySteps,
     journeyStepsActions,
+    journeyVisitorsPageExits,
     journeyReferrer,
     journeyAggregateVisitors
   } = data
 
-  const journeyEvents: PlausibleEvent[] = journeyStepsActions.map((action) => {
+  const journeyEvents = getJourneyEvents(journeyStepsActions)
+  const stepExits = getStepExits(journeyVisitorsPageExits, journeyId)
+  const { chatsStarted, linksVisited } = getLinkClicks(journeyEvents)
+
+  const stepsStats: StepStat[] = journeySteps.map((step) => {
+    const stepId = getStepId(step.property, journeyId)
+    return {
+      stepId,
+      visitors: step.visitors ?? 0,
+      timeOnPage: step.timeOnPage ?? 0,
+      visitorsExitAtStep:
+        stepExits.find((step) => step.id === stepId)?.visitors ?? 0,
+      stepEvents: journeyEvents.filter((event) => event.stepId === stepId) ?? []
+    }
+  })
+
+  return {
+    totalVisitors: journeyAggregateVisitors.visitors?.value ?? 0,
+    chatsStarted,
+    linksVisited,
+    referrers: journeyReferrer,
+    stepsStats
+  }
+}
+
+function getStepId(property: string, journeyId: string): string {
+  return replace(property, `${journeyId}/`, '')
+}
+
+function getJourneyEvents(
+  journeyStepsActions: JourneyStepsAction[]
+): PlausibleEvent[] {
+  const journeyEvents = journeyStepsActions.map((action) => {
     return {
       ...reverseKeyify(action.property),
       events: action.events ?? 0
     }
   })
 
+  return journeyEvents
+}
+
+function getStepExits(
+  journeyVisitorsPageExits: JourneyVisitorsPageExit[],
+  journeyId: string
+): Array<{ id: string; visitors: number }> {
+  const stepExits = journeyVisitorsPageExits.map((page) => {
+    const id = getStepId(page.property, journeyId)
+    return {
+      id,
+      visitors: page.visitors ?? 0
+    }
+  })
+
+  return stepExits
+}
+
+function getLinkClicks(journeyEvents: PlausibleEvent[]): {
+  chatsStarted: number
+  linksVisited: number
+} {
   let chatsStarted = 0
   let linksVisited = 0
+
   journeyEvents.forEach((plausibleEvent) => {
     const { event, target, events } = plausibleEvent
     const isChatEvent = event === 'chatButtonClick'
@@ -79,22 +135,8 @@ export function transformPlausibleBreakdown({
     }
   })
 
-  const stepsStats: StepStats[] = journeySteps.map((step) => {
-    const stepId = replace(step.property, `${journeyId}/`, '')
-    return {
-      stepId,
-      visitors: step.visitors ?? 0,
-      bounceRate: step.bounceRate ?? 0, // bounce rate currently not being collected properly
-      timeOnPage: 0, // need to fix query to get this data
-      stepEvents: journeyEvents.filter((event) => event.stepId === stepId) ?? []
-    }
-  })
-
   return {
-    totalVisitors: journeyAggregateVisitors.visitors?.value ?? 0,
     chatsStarted,
-    linksVisited,
-    referrers: journeyReferrer,
-    stepsStats
+    linksVisited
   }
 }

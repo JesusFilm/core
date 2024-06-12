@@ -19,7 +19,8 @@ export interface PlausibleJourneyStepsFields {
    */
   visitors: number | null;
   /**
-   * Bounce rate percentage.
+   * The average time users spend on viewing a single page. Requires an
+   * `event:page` filter or `event:page` property in the breakdown endpoint.
    */
-  bounceRate: number | null;
+  timeOnPage: number | null;
 }
