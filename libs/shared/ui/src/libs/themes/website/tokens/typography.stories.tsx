@@ -4,7 +4,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { ThemeName } from '../..'
-import { simpleComponentConfig } from '../../../storybook'
+import { simpleComponentConfig } from '../../../simpleComponentConfig'
 
 const TypographyDemo: Meta<typeof MuiTypography> = {
   ...simpleComponentConfig,

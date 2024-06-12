@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { ReactElement, useState } from 'react'
 
-import { simpleComponentConfig } from '../../libs/storybook'
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 
 import {
   Language,

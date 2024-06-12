@@ -15,7 +15,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { ThemeMode, ThemeName, getTheme } from '..'
-import { simpleComponentConfig } from '../../storybook'
+import { simpleComponentConfig } from '../../simpleComponentConfig'
 import { useBreakpoints } from '../../useBreakpoints'
 
 const ThemeDemo: Meta<typeof Typography> = {

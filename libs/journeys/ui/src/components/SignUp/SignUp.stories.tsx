@@ -4,12 +4,11 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
 
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
-
 import { IconName, TypographyVariant } from '../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { StoryCard } from '../StoryCard'
 import { Typography } from '../Typography'
 

@@ -1,8 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps, ReactNode } from 'react'
 
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
-
 import {
   ThemeMode,
   ThemeName,
@@ -11,6 +9,7 @@ import {
   TypographyVariant
 } from '../../../__generated__/globalTypes'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { StoryCard } from '../StoryCard'
 
 import { Typography, TypographyProps } from './Typography'
