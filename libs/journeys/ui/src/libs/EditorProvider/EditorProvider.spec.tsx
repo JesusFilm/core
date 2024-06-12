@@ -485,7 +485,8 @@ describe('EditorContext', () => {
       const initialState = {
         steps: [block],
         selectedBlock: block,
-        selectedStep: block
+        selectedStep: block,
+        showJourneyFlowAnalytics: false
       }
 
       const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
