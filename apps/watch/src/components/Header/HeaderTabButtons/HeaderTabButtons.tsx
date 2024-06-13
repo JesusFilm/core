@@ -81,7 +81,7 @@ export function HeaderTabButtons(): ReactElement {
       </Box>
       <Box
         sx={{
-          top: '-14px',
+          top: '-10px',
           display: 'flex',
           justifyContent: 'center',
           width: '100%',
@@ -109,6 +109,13 @@ export function HeaderTabButtons(): ReactElement {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
         keepMounted
+        slotProps={{
+          paper: {
+            style: {
+              width: anchorEl?.clientWidth
+            }
+          }
+        }}
       >
         {HeaderTabButtonsData.map(({ label, icon, href }) => (
           <NextLink href={href} passHref legacyBehavior key={label}>

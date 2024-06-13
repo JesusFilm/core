@@ -2,6 +2,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import AppBar, { AppBarProps } from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import Divider from '@mui/material/Divider'
 import Fade from '@mui/material/Fade'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
@@ -21,11 +22,12 @@ import { HeaderMenuPanel } from './HeaderMenuPanel'
 import { HeaderTabButtons } from './HeaderTabButtons'
 
 interface LocalAppBarProps extends AppBarProps {
+  showDivider?: boolean
   onMenuClick: MouseEventHandler<HTMLButtonElement>
 }
 
 const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
-  ({ onMenuClick, ...props }, ref) => {
+  ({ onMenuClick, showDivider = false, ...props }, ref) => {
     return (
       <AppBar
         position="absolute"
@@ -33,6 +35,7 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
         sx={{
           p: 4,
           color: 'text.primary',
+          //  borderBottom: { xs: '2px solid red', md: 'none' },
           ...props.sx
         }}
         ref={ref}
@@ -91,6 +94,12 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
             </Grid>
           </Toolbar>
         </Container>
+        {showDivider && (
+          <Divider
+            sx={{ marginTop: '16px', mx: '-16px' }}
+            data-testid="AppBarDivider"
+          />
+        )}
       </AppBar>
     )
   }
@@ -130,6 +139,7 @@ export function Header({
               background: 'transparent',
               boxShadow: 'none'
             }}
+            showDivider
             onMenuClick={() => setDrawerOpen(true)}
           />
         </Fade>
