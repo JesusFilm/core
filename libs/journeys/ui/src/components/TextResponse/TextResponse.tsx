@@ -135,7 +135,11 @@ export const TextResponse = ({
                     pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
                   }
                 }}
-                sx={{ mb: 0 }}
+                sx={{
+                  '&.MuiTextField-root': {
+                    mb: 0
+                  }
+                }}
               />
             </Stack>
           </Form>
