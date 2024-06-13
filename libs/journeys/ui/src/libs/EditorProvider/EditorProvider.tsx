@@ -13,6 +13,7 @@ import {
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { searchBlocks } from '../searchBlocks'
+import { JourneyStatsBreakdown } from '../transformPlausibleBreakdown/transformPlausibleBreakdown'
 
 export enum ActiveContent {
   Canvas = 'canvas',
@@ -85,6 +86,7 @@ export interface EditorState {
    */
   selectedStep?: TreeBlock<StepBlock>
   steps?: Array<TreeBlock<StepBlock>>
+  journeyStatsBreakdown?: JourneyStatsBreakdown
 }
 interface SetActiveContentAction {
   type: 'SetActiveContentAction'
@@ -134,6 +136,10 @@ interface SetShowJourneyFlowAnalyticsAction {
   type: 'SetShowJourneyFlowAnalyticsAction'
   showJourneyFlowAnalytics: boolean
 }
+interface SetJourneyStatsBreakdownAction {
+  type: 'SetJourneyStatsBreakdownAction'
+  journeyStatsBreakdown: JourneyStatsBreakdown
+}
 type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
   | SetActiveContentAction
@@ -147,6 +153,7 @@ type EditorAction =
   | SetSelectedStepAction
   | SetStepsAction
   | SetShowJourneyFlowAnalyticsAction
+  | SetJourneyStatsBreakdownAction
 
 export const reducer = (
   state: EditorState,
@@ -227,6 +234,12 @@ export const reducer = (
         ...state,
         showJourneyFlowAnalytics: action.showJourneyFlowAnalytics
       }
+    case 'SetJourneyStatsBreakdownAction': {
+      return {
+        ...state,
+        journeyStatsBreakdown: action.journeyStatsBreakdown
+      }
+    }
   }
 }
 
@@ -275,6 +288,14 @@ export function EditorProvider({
     if (initialState?.steps != null)
       dispatch({ type: 'SetStepsAction', steps: initialState.steps })
   }, [initialState?.steps])
+
+  useEffect(() => {
+    if (initialState?.journeyStatsBreakdown != null)
+      dispatch({
+        type: 'SetJourneyStatsBreakdownAction',
+        journeyStatsBreakdown: initialState.journeyStatsBreakdown
+      })
+  }, [initialState?.journeyStatsBreakdown])
 
   // only run once
   const stepRef = useRef(false)
