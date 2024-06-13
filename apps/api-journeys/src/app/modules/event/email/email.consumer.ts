@@ -44,7 +44,7 @@ export interface ExtendedJourneys extends Journey {
 interface EmailDetailsResult {
   journey: ExtendedJourneys | null
   visitor:
-    | (Pick<Visitor, 'createdAt' | 'duration'> & { events: Event[] })
+    | (Pick<Visitor, 'id' | 'createdAt' | 'duration'> & { events: Event[] })
     | null
 }
 
@@ -129,6 +129,7 @@ export class EmailConsumer extends WorkerHost {
       this.prismaService.visitor.findUnique({
         where: { id: visitorId },
         select: {
+          id: true,
           createdAt: true,
           duration: true,
           events: true
@@ -142,7 +143,9 @@ export class EmailConsumer extends WorkerHost {
   async sendUserNotification(
     userId: string,
     journey: Journey,
-    visitor: Pick<Visitor, 'createdAt' | 'duration'> & { events: Event[] }
+    visitor: Pick<Visitor, 'id' | 'createdAt' | 'duration'> & {
+      events: Event[]
+    }
   ): Promise<void> {
     const { data } = await apollo.query({
       query: gql`
@@ -159,7 +162,7 @@ export class EmailConsumer extends WorkerHost {
     })
 
     const baseUrl = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys`
-    const analyticsUrl = `${baseUrl}/${journey.id}/reports/visitors`
+    const analyticsUrl = `${baseUrl}/reports/visitors/${visitor.id}`
     const unsubscribeUrl = `${baseUrl}/${journey.id}?manageAccess=true`
 
     const text = render(
