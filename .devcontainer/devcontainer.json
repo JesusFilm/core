@@ -6,26 +6,26 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces",
-
-  // Set *default* container specific settings.json values on container create.
-  "settings": {},
-
-  // Add the IDs of extensions you want installed when the container is created.
-  "extensions": [
-    "dbaeumer.vscode-eslint",
-    "nrwl.angular-console",
-    "monotykamary.vscode-aql",
-    "eamodio.gitlens",
-    "graphql.vscode-graphql",
-    "esbenp.prettier-vscode",
-    "mtxr.sqltools",
-    "mtxr.sqltools-driver-pg",
-    "prisma.prisma"
-  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "nrwl.angular-console",
+        "eamodio.gitlens",
+        "graphql.vscode-graphql",
+        "esbenp.prettier-vscode",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+        "prisma.prisma",
+        "firsttris.vscode-jest-runner",
+        "dbaeumer.vscode-eslint",
+        "redhat.vscode-yaml"
+      ]
+    }
+  },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // 8529 is Arangodb
-  "forwardPorts": [8529],
+  // "forwardPorts": [],
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "bash /workspaces/core/.devcontainer/post-create-command.sh",
@@ -33,15 +33,24 @@
   // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
   "remoteUser": "node",
   "features": {
-    "docker-from-docker": "latest",
-    "kubectl-helm-minikube": "1.21",
-    "git": "os-provided",
-    "aws-cli": "latest",
-    "python": "os-provided",
-    "terraform": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {
       "version": "latest",
-      "tflint": "latest",
+      "tflint": "0.46.1",
       "terragrunt": "latest"
-    }
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "nodeGypDependencies": true,
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+      "version": "1.30",
+      "helm": "latest",
+      "minikube": "none"
+    },
+    "ghcr.io/casl0/devcontainer-features/eksctl:1": {}
   }
 }

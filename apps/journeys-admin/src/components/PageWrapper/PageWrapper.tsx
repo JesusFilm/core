@@ -1,138 +1,141 @@
-import { ReactElement, ReactNode, useState } from 'react'
-import AppBar from '@mui/material/AppBar'
-import IconButton from '@mui/material/IconButton'
-import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import Link from 'next/link'
-import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
-import Image from 'next/image'
-import { AuthUser } from 'next-firebase-auth'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { NextRouter } from 'next/router'
-import MenuIcon from '@mui/icons-material/Menu'
-import { Theme } from '@mui/material/styles'
-import taskbarIcon from '../../../public/taskbar-icon.svg'
-import { NavigationDrawer } from './NavigationDrawer'
+import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
+import { useRouter } from 'next/router'
+import { User } from 'next-firebase-auth'
+import { ReactElement, ReactNode, useState } from 'react'
+import { use100vh } from 'react-div-100vh'
 
-export interface PageWrapperProps {
+import { PageProvider, PageState } from '../../libs/PageWrapperProvider'
+
+import { AppHeader } from './AppHeader'
+import { MainPanelBody } from './MainPanelBody'
+import { MainPanelHeader } from './MainPanelHeader'
+import { NavigationDrawer } from './NavigationDrawer'
+import { SidePanel } from './SidePanel'
+import { usePageWrapperStyles } from './utils/usePageWrapperStyles'
+
+interface PageWrapperProps {
+  showAppHeader?: boolean
+  title?: string
+  showMainHeader?: boolean
+  showNavBar?: boolean
   backHref?: string
-  showDrawer?: boolean
-  title: string
-  menu?: ReactNode
+  backHrefHistory?: boolean
+  mainHeaderChildren?: ReactNode
+  mainBodyPadding?: boolean
   children?: ReactNode
-  authUser?: AuthUser
-  router?: NextRouter
+  bottomPanelChildren?: ReactNode
+  sidePanelTitle?: ReactNode
+  /**
+   * Add default side panel padding and border by wrapping components with `SidePanelContainer`
+   */
+  sidePanelChildren?: ReactNode
+  // Either render default SidePanel with sidePanelChildren
+  // Or render customSidePanel
+  customSidePanel?: ReactNode
+  user?: User
+  initialState?: Partial<PageState>
 }
 
 export function PageWrapper({
-  backHref,
-  showDrawer,
+  showAppHeader = true,
   title,
-  menu: customMenu,
+  showMainHeader = true,
+  showNavBar = true,
+  backHref,
+  backHrefHistory,
+  mainHeaderChildren,
+  mainBodyPadding = true,
   children,
-  authUser,
-  router
+  bottomPanelChildren,
+  sidePanelTitle = '',
+  sidePanelChildren,
+  customSidePanel,
+  user,
+  initialState
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const showAppBarMobile =
-    title === 'Active Journeys' ||
-    title === 'Archived Journeys' ||
-    title === 'Trashed Journeys' ||
-    title === 'Journey Details' ||
-    title === 'Journey Report' ||
-    title === 'Reports' ||
-    title === 'Journey Templates' ||
-    title === 'Journey Template' ||
-    title === 'Template Details'
+  const theme = useTheme()
+  const viewportHeight = use100vh()
+  const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
+  const router = useRouter()
 
   return (
-    <>
-      <AppBar
-        position="sticky"
-        color="default"
-        sx={{
-          ml: { sm: '72px' },
-          mr: { sm: showDrawer === true ? '328px' : 0 },
-          width: {
-            sm:
-              showDrawer === true
-                ? 'calc(100% - 72px - 328px)'
-                : 'calc(100% - 72px)'
-          }
-        }}
-      >
-        {showAppBarMobile ? (
-          <Toolbar
-            sx={{
-              backgroundColor: 'secondary.dark',
-              justifyContent: 'center',
-              display: smUp ? 'none' : 'flex'
-            }}
-          >
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={() => setOpen(!open)}
-              sx={{
-                position: 'absolute',
-                left: '25px'
-              }}
-            >
-              <MenuIcon sx={{ color: 'background.paper' }} />
-            </IconButton>
-            <Image
-              src={taskbarIcon}
-              width={32}
-              height={32}
-              layout="fixed"
-              alt="Next Steps"
-            />
-          </Toolbar>
-        ) : (
-          <></>
-        )}
-        <Toolbar>
-          {backHref != null && (
-            <Link href={backHref} passHref>
-              <IconButton
-                edge="start"
-                size="small"
-                color="inherit"
-                sx={{ mr: 2 }}
-              >
-                <ChevronLeftRounded />
-              </IconButton>
-            </Link>
-          )}
-          <Typography
-            variant="subtitle1"
-            component="div"
-            noWrap
-            sx={{ flexGrow: 1 }}
-          >
-            {title}
-          </Typography>
-          {customMenu != null && customMenu}
-        </Toolbar>
-      </AppBar>
-      <NavigationDrawer
-        open={open}
-        onClose={setOpen}
-        authUser={authUser}
-        title={title}
-        router={router}
-      />
+    <PageProvider initialState={initialState}>
       <Box
         sx={{
-          ml: { sm: '72px' }
+          height: viewportHeight ?? '100vh',
+          minHeight: '-webkit-fill-available',
+          [theme.breakpoints.down('md')]: { overflowY: 'auto' },
+          overflow: 'hidden'
         }}
+        data-testid="JourneysAdminPageWrapper"
       >
-        {children}
+        <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
+          {showNavBar && (
+            <NavigationDrawer
+              open={open}
+              onClose={setOpen}
+              user={user}
+              selectedPage={router?.pathname?.split('/')[1]}
+            />
+          )}
+
+          <Stack
+            flexGrow={1}
+            direction={{ xs: 'column', md: 'row' }}
+            sx={{
+              backgroundColor: 'background.default',
+              width: {
+                xs: '100vw',
+                md: showNavBar ? `calc(100vw - ${navbar.width})` : '100vw'
+              },
+              pt: { xs: showAppHeader ? toolbar.height : 0, md: 0 },
+              pb: {
+                xs: bottomPanelChildren != null ? bottomPanel.height : 0,
+                md: 0
+              }
+            }}
+          >
+            {showAppHeader && <AppHeader onClick={() => setOpen(!open)} />}
+
+            <Stack
+              component="main"
+              flexGrow={1}
+              sx={{
+                width: {
+                  xs: 'inherit',
+                  md:
+                    sidePanelChildren != null || customSidePanel != null
+                      ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
+                      : 'inherit'
+                }
+              }}
+            >
+              {showMainHeader && (
+                <MainPanelHeader
+                  title={title}
+                  backHref={backHref}
+                  backHrefHistory={backHrefHistory}
+                >
+                  {mainHeaderChildren}
+                </MainPanelHeader>
+              )}
+              <MainPanelBody
+                mainBodyPadding={mainBodyPadding}
+                bottomPanelChildren={bottomPanelChildren}
+              >
+                {children}
+              </MainPanelBody>
+            </Stack>
+            {sidePanelChildren != null && (
+              <SidePanel title={sidePanelTitle}>{sidePanelChildren}</SidePanel>
+            )}
+            {customSidePanel != null && customSidePanel}
+          </Stack>
+        </Stack>
       </Box>
-    </>
+    </PageProvider>
   )
 }

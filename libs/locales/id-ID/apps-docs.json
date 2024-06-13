@@ -1,0 +1,10 @@
+{
+  "Deploy Quickly": "Menyebarkan dengan Cepat",
+  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "Pipeline Integrasi Berkelanjutan & Pengiriman Berkelanjutan kami memungkinkan Anda mengirimkan perubahan kode lebih sering dan andal.",
+  "Common Environment": "Lingkungan Umum",
+  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "Kami berjalan di atas Docker. Ini berarti setiap pengembang berbagi lingkungan yang sama yang sangat mirip dengan produksi sehingga memudahkan kolaborasi.",
+  "Powered by Typescript": "Didukung oleh Typescript",
+  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScript adalah bahasa pemrograman yang sangat kuat yang dibangun di atas JavaScript, memberi Anda alat yang lebih baik pada skala apa pun.",
+  "Core Development Kit Documentation": "Dokumentasi Kit Pengembangan Inti",
+  "Welcome - 5min ": "Selamat datang - 5 menit "
+}

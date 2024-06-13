@@ -1,11 +1,14 @@
 locals {
   port = 4002
   environment_variables = [
-    "DATABASE_DB",
-    "DATABASE_PASS",
-    "DATABASE_URL",
-    "DATABASE_USER",
-    "GOOGLE_APPLICATION_JSON"
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+    "EXAMPLE_EMAIL_TOKEN",
+    "GOOGLE_APPLICATION_JSON",
+    "INTEROP_TOKEN",
+    "JOURNEYS_ADMIN_URL",
+    "PG_DATABASE_URL_USERS",
+    "REDIS_URL"
   ]
   service_config = {
     name           = "api-users"
@@ -15,9 +18,11 @@ locals {
     cpu            = 512
     memory         = 1024
     desired_count  = 1
-    image_tag      = var.ecs_config.image_tag
     alb_dns_name   = var.ecs_config.alb_dns_name
     zone_id        = var.ecs_config.zone_id
+    alb_listener = merge(var.ecs_config.alb_listener, {
+      port = local.port
+    })
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port
     })

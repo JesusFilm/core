@@ -1,16 +1,26 @@
 import '@testing-library/jest-dom'
+import 'isomorphic-fetch'
 import './test/createMatchMedia'
 import crypto from 'crypto'
+
 import { configure } from '@testing-library/react'
+
 import { mswServer } from './test/mswServer'
+import './test/i18n'
 
 configure({ asyncUtilTimeout: 2500 })
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ src, alt }) => (
+  default: ({ src, alt, priority, className }) => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} />
+    <img
+      src={src}
+      alt={alt}
+      role="img"
+      rel={priority === true ? 'preload' : undefined}
+      className={className}
+    />
   )
 }))
 
@@ -22,10 +32,17 @@ Element.prototype.scrollIntoView = jest.fn()
 // https://community.powerbi.com/t5/Developer/TypeError-cryptoObj-getRandomValues-is-not-a-function-unrelated/m-p/1963294
 Object.defineProperty(window.self, 'crypto', {
   value: {
-    getRandomValues: (arr) => crypto.randomBytes(arr.length)
+    getRandomValues: (arr: unknown[]) => {
+      crypto.randomBytes(arr.length)
+    }
   }
 })
 
 beforeAll(() => mswServer.listen())
 afterEach(() => mswServer.resetHandlers())
 afterAll(() => mswServer.close())
+
+jest.mock('next/router', () => require('next-router-mock'))
+
+if (process.env.CI === 'true')
+  jest.retryTimes(3, { logErrorsBeforeRetry: true })

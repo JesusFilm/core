@@ -1,47 +1,50 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { mockDbQueryResult } from '@core/nest/database/mock'
-import { v4 as uuidv4 } from 'uuid'
-import { DocumentCollection } from 'arangojs/collection'
-import { AqlQuery } from 'arangojs/aql'
-import { keyAsId } from '@core/nest/decorators/KeyAsId'
+
+import {
+  Journey,
+  JourneyVisitor,
+  Prisma,
+  Visitor
+} from '.prisma/api-journeys-client'
+
+import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
+
 import { VisitorService } from './visitor.service'
 
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn()
-}))
-
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+const journey = {
+  id: 'journey.id',
+  teamId: 'team.id'
+} as unknown as Journey
+const journeyVisitor = {
+  journeyId: 'journey.id',
+  visitorId: 'visitor.id'
+} as unknown as JourneyVisitor
+const visitor = {
+  id: 'visitor.id',
+  userId: 'user.id',
+  teamId: 'team.id'
+} as unknown as Visitor
 
 describe('VisitorService', () => {
-  let service: VisitorService, db: DeepMockProxy<Database>
-
-  beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(new Date('2021-02-18'))
-  })
+  let service: VisitorService, prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         VisitorService,
         {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
 
     service = module.get<VisitorService>(VisitorService)
-    db = service.db as DeepMockProxy<Database>
-    service.collection = mockDeep<DocumentCollection>()
-  })
-
-  afterAll(() => {
-    jest.resetAllMocks()
-    jest.useRealTimers()
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
 
   describe('getList', () => {
@@ -53,98 +56,96 @@ describe('VisitorService', () => {
         endCursor: null
       }
     }
+
     it('returns a visitors connection', async () => {
-      db.query.mockImplementation(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(`
-    LET $edges_plus_one = (
-      FOR item IN visitors
-        FILTER item.@value0 == @value1
-        SORT item.createdAt DESC
-        LIMIT @value2 + 1
-        RETURN { cursor: item.createdAt, node: MERGE({ id: item._key }, item) }
-    )
-    LET $edges = SLICE($edges_plus_one, 0, @value2)
-    RETURN {
-      edges: $edges,
-      pageInfo: {
-        hasNextPage: LENGTH($edges_plus_one) == @value2 + 1,
-        startCursor: LENGTH($edges) > 0 ? FIRST($edges).cursor : null,
-        endCursor: LENGTH($edges) > 0 ? LAST($edges).cursor : null
-      }
-    }
-    `)
-        expect(bindVars).toEqual({
-          value0: 'teamId',
-          value1: 'jfp-team',
-          value2: 50
-        })
-        return await mockDbQueryResult(service.db, [connection])
-      })
+      prismaService.visitor.findMany.mockResolvedValueOnce([])
       expect(
-        await service.getList({ first: 50, filter: { teamId: 'jfp-team' } })
+        await service.getList({ first: 50, filter: { teamId: 'teamId' } })
       ).toEqual(connection)
+      expect(prismaService.visitor.findMany).toHaveBeenCalledWith({
+        cursor: undefined,
+        orderBy: {
+          createdAt: 'desc'
+        },
+        skip: 0,
+        take: 51,
+        where: { teamId: 'teamId' }
+      })
     })
 
     it('allows pagination of the visitors connection', async () => {
-      db.query.mockImplementation(async (q) => {
-        const { bindVars } = q as unknown as AqlQuery
-        expect(bindVars).toEqual({
-          value0: 'cursorId',
-          value1: 'teamId',
-          value2: 'jfp-team',
-          value3: 50
-        })
-        return await mockDbQueryResult(service.db, [connection])
-      })
+      prismaService.visitor.findMany.mockResolvedValueOnce([])
       await service.getList({
         first: 50,
-        after: 'cursorId',
-        filter: { teamId: 'jfp-team' }
+        after: '1',
+        filter: { teamId: 'teamId' }
+      })
+      expect(prismaService.visitor.findMany).toHaveBeenCalledWith({
+        cursor: { id: '1' },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        skip: 1,
+        take: 51,
+        where: { teamId: 'teamId' }
       })
     })
   })
 
   describe('getVisitorId', () => {
     it('should return visitor id', async () => {
-      const visitor = {
-        _key: 'visitor.id',
-        userId: 'user.id',
-        teamId: 'team.id'
-      }
-
-      const visitorWithId = keyAsId(visitor)
-
-      db.query.mockReturnValueOnce(mockDbQueryResult(db, [visitorWithId]))
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      prismaService.visitor.upsert.mockResolvedValueOnce(visitor)
+      prismaService.journeyVisitor.upsert.mockResolvedValueOnce(journeyVisitor)
       expect(
-        await service.getByUserIdAndJourneyId('user.id', 'team.id')
-      ).toEqual(visitorWithId)
+        await service.getByUserIdAndJourneyId('user.id', 'journey.id')
+      ).toEqual({ visitor, journeyVisitor })
     })
 
-    it('should create a new visitor if visitor does not exist', async () => {
-      const visitor = {
-        _key: 'visitor.id',
-        userId: 'user.id',
-        teamId: 'team.id'
-      }
+    it('should throw error if journey not found', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        service.getByUserIdAndJourneyId('user.id', 'journey.id')
+      ).rejects.toThrow('Journey not found')
+    })
 
-      const visitorWithId = keyAsId(visitor)
+    it('should retry if visitor already exists', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      prismaService.visitor.upsert.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('', {
+          code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED,
+          clientVersion: ''
+        })
+      )
+      prismaService.visitor.upsert.mockResolvedValueOnce(visitor)
+      prismaService.journeyVisitor.upsert.mockResolvedValueOnce(journeyVisitor)
+      expect(
+        await service.getByUserIdAndJourneyId('user.id', 'journey.id')
+      ).toEqual({ visitor, journeyVisitor })
+    })
 
-      const journey = {
-        teamId: 'team.id'
-      }
+    it('should retry if journeyVisitor already exists', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      prismaService.visitor.upsert.mockResolvedValueOnce(visitor)
+      prismaService.visitor.upsert.mockResolvedValueOnce(visitor)
+      prismaService.journeyVisitor.upsert.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('', {
+          code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED,
+          clientVersion: ''
+        })
+      )
+      prismaService.journeyVisitor.upsert.mockResolvedValueOnce(journeyVisitor)
+      expect(
+        await service.getByUserIdAndJourneyId('user.id', 'journey.id')
+      ).toEqual({ visitor, journeyVisitor })
+    })
 
-      db.query.mockReturnValueOnce(mockDbQueryResult(db, [])) // mock failing to find existing visitor
-      db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey]))
-
-      mockUuidv4.mockReturnValueOnce('newVisitor.id')
-
-      await service.getByUserIdAndJourneyId('user.id', 'team.id')
-      expect(service.collection.save).toHaveBeenCalledWith({
-        ...visitorWithId,
-        id: 'newVisitor.id',
-        createdAt: new Date().toISOString()
-      })
+    it('should throw error if visitor upsert fails', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      prismaService.visitor.upsert.mockRejectedValueOnce(new Error())
+      await expect(
+        service.getByUserIdAndJourneyId('user.id', 'journey.id')
+      ).rejects.toThrow()
     })
   })
 })

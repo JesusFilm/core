@@ -1,13 +1,15 @@
+import { CacheProvider } from '@emotion/react'
 import { Parameters } from '@storybook/react'
 import { ReactElement, ReactNode } from 'react'
-import { CacheProvider } from '@emotion/react'
-import { createEmotionCache } from '../../../src/libs/createEmotionCache'
-import { ThemeProvider } from '../../components/ThemeProvider'
+
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { globalTypes } from '../../../../../../.storybook/preview'
-import { getTheme, ThemeMode, ThemeName } from '../../libs/themes'
+import { createEmotionCache } from '../../libs/createEmotionCache'
+import { ThemeMode, ThemeName, getTheme } from '../../libs/themes'
+import { ThemeProvider } from '../ThemeProvider'
 
 const storybookMode = globalTypes.theme.toolbar.items
-type StorybookThemeMode = typeof storybookMode[number]
+type StorybookThemeMode = (typeof storybookMode)[number]
 
 interface ThemeDecoratorProps extends Pick<Parameters, 'layout'> {
   name?: ThemeName
@@ -62,7 +64,7 @@ export const ThemeDecorator = ({
   rtl = false,
   locale = ''
 }: ThemeDecoratorProps): ReactElement => {
-  const storybookEmotionCache = createEmotionCache({ rtl, prepend: false })
+  const storybookEmotionCache = createEmotionCache({ rtl })
 
   switch (mode) {
     case 'all':

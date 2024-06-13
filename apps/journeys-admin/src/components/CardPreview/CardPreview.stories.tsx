@@ -1,28 +1,35 @@
-import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
+import { MockedProvider } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
+import { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
+import { ComponentProps, ReactNode, useState } from 'react'
+import { DragDropContext } from 'react-beautiful-dnd'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { MockedProvider } from '@apollo/client/testing'
-import { DragDropContext } from 'react-beautiful-dnd'
+
 import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../libs/storybook'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
   IconName,
   IconSize,
-  TypographyVariant,
   ThemeMode,
   ThemeName,
+  TypographyVariant,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../libs/storybook'
+
 import { CardPreview } from '.'
 
-const CardPreviewStory = {
+const CardPreviewStory: Meta<typeof CardPreview> = {
   ...journeysAdminConfig,
   component: CardPreview,
   title: 'Journeys-Admin/CardPreview',
@@ -99,9 +106,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
             startIconId: 'icon',
             endIconId: null,
             action: {
-              __typename: 'NavigateAction',
+              __typename: 'NavigateToBlockAction',
               parentBlockId: 'button',
-              gtmEventName: 'gtmEventName'
+              gtmEventName: 'gtmEventName',
+              blockId: 'step1.id'
             },
             children: [
               {
@@ -185,9 +193,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
             startIconId: 'icon',
             endIconId: null,
             action: {
-              __typename: 'NavigateAction',
+              __typename: 'NavigateToBlockAction',
               parentBlockId: 'button',
-              gtmEventName: 'gtmEventName'
+              gtmEventName: 'gtmEventName',
+              blockId: 'step2.id'
             },
             children: [
               {
@@ -272,9 +281,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 0,
                 label: 'One of many ways to God',
                 action: {
-                  __typename: 'NavigateAction',
+                  __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption1.id',
-                  gtmEventName: 'gtmEventName'
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step3.id'
                 },
                 children: []
               },
@@ -285,9 +295,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 1,
                 label: 'One great lie...',
                 action: {
-                  __typename: 'NavigateAction',
+                  __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption2.id',
-                  gtmEventName: 'gtmEventName'
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step3.id'
                 },
                 children: []
               },
@@ -298,9 +309,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 2,
                 label: 'One true way to God',
                 action: {
-                  __typename: 'NavigateAction',
+                  __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption3.id',
-                  gtmEventName: 'gtmEventName'
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step3.id'
                 },
                 children: []
               }
@@ -376,9 +388,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 0,
                 label: 'Yes, God likes good people',
                 action: {
-                  __typename: 'NavigateAction',
+                  __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption1.id',
-                  gtmEventName: 'gtmEventName'
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step4.id'
                 },
                 children: []
               },
@@ -389,9 +402,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
                 action: {
-                  __typename: 'NavigateAction',
+                  __typename: 'NavigateToBlockAction',
                   parentBlockId: 'radioOption2.id',
-                  gtmEventName: 'gtmEventName'
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step4.id'
                 },
                 children: []
               }
@@ -548,7 +562,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
+              },
+              variantLanguages: []
             },
             startAt: null,
             endAt: null,
@@ -634,7 +649,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
+              },
+              variantLanguages: []
             },
             startAt: null,
             endAt: null,
@@ -663,9 +679,19 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-const Template: Story = ({ ...args }) => {
-  const [selected, setSelectedStep] = useState<TreeBlock<StepBlock>>(
-    args.steps?.[0]
+const CardPreviewComponent = ({ ...args }): ReactNode => {
+  const [selected] = useState<TreeBlock<StepBlock>>(
+    args.steps != null && args.steps.length > 0
+      ? (args.steps[0] as TreeBlock<StepBlock>)
+      : {
+          id: 'defaultId',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children: []
+        }
   )
 
   return (
@@ -681,16 +707,17 @@ const Template: Story = ({ ...args }) => {
               bcp47: 'en'
             }
           } as unknown as Journey,
-          admin: true
+          variant: 'admin'
         }}
       >
-        <DragDropContext>
+        <DragDropContext onDragEnd={noop}>
           <CardPreview
-            onSelect={(step) => setSelectedStep(step)}
+            onSelect={(step) => ({ step })}
             selected={selected}
             steps={args.steps}
             showAddButton={args.showAddButton}
             isDraggable={args.isDraggable}
+            showNavigationCards={args.showNavigationCards ?? false}
           />
         </DragDropContext>
       </JourneyProvider>
@@ -698,26 +725,89 @@ const Template: Story = ({ ...args }) => {
   )
 }
 
-export const Default = Template.bind({})
-Default.args = {
-  steps
+const CustomLoadingComponent = ({ ...args }): ReactNode => {
+  return (
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        py: 5,
+        px: 6
+      }}
+    >
+      <Box
+        sx={{
+          border: '3px solid transparent'
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          width={87}
+          height={132}
+          sx={{ m: 1, borderRadius: 1 }}
+        />
+      </Box>
+      <Box
+        sx={{
+          border: '3px solid transparent'
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          width={87}
+          height={132}
+          sx={{ m: 1, borderRadius: 1 }}
+        />
+      </Box>
+      <Box
+        sx={{
+          border: '3px solid transparent'
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          width={87}
+          height={132}
+          sx={{ m: 1, borderRadius: 1 }}
+        />
+      </Box>
+    </Stack>
+  )
 }
 
-export const Draggable = Template.bind({})
-Draggable.args = {
-  steps,
-  isDraggable: true
+const Template: StoryObj<
+  ComponentProps<typeof CardPreview> & { steps: Array<TreeBlock<StepBlock>> }
+> = {
+  render: ({ ...args }) => <CardPreviewComponent {...args} />
 }
 
-export const AddButton = Template.bind({})
-AddButton.args = {
-  steps,
-  showAddButton: true
+export const Default = {
+  ...Template,
+  args: {
+    steps
+  }
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  steps: undefined
+export const Draggable = { ...Template, args: { steps, isDraggable: true } }
+
+export const AddButton = {
+  ...Template,
+  args: {
+    steps,
+    showAddButton: true
+  }
 }
 
-export default CardPreviewStory as Meta
+export const Loading = { ...CustomLoadingComponent }
+
+export const WithNavigationCards = {
+  ...Template,
+  args: {
+    steps,
+    CustomLoadingComponent
+  }
+}
+
+export default CardPreviewStory

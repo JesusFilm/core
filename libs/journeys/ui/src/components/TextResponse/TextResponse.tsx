@@ -1,26 +1,24 @@
-import { ReactElement } from 'react'
-import { Formik, Form } from 'formik'
-import { useRouter } from 'next/router'
-import { useMutation, gql, ApolloError } from '@apollo/client'
-import { SxProps } from '@mui/system/styleFunctionSx'
+import { ApolloError, gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
-import { v4 as uuidv4 } from 'uuid'
+import { SxProps } from '@mui/system/styleFunctionSx'
+import { Form, Formik } from 'formik'
+import noop from 'lodash/noop'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
-import { useTranslation } from 'react-i18next'
-import type { TreeBlock } from '../../libs/block'
+import { v4 as uuidv4 } from 'uuid'
+
 import { useBlocks } from '../../libs/block'
+import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
-import { useJourney } from '../../libs/JourneyProvider'
-import { handleAction } from '../../libs/action'
 import { getStepHeading } from '../../libs/getStepHeading'
+import { useJourney } from '../../libs/JourneyProvider'
 import { TextField } from '../TextField'
-import { Icon } from '../Icon'
-import { IconFields } from '../Icon/__generated__/IconFields'
-import { TextResponseSubmissionEventCreate } from './__generated__/TextResponseSubmissionEventCreate'
+
 import { TextResponseFields } from './__generated__/TextResponseFields'
+import { TextResponseSubmissionEventCreate } from './__generated__/TextResponseSubmissionEventCreate'
 
 export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
   mutation TextResponseSubmissionEventCreate(
@@ -46,30 +44,20 @@ export const TextResponse = ({
   uuid = uuidv4,
   label,
   hint,
-  minRows,
-  submitIconId,
-  submitLabel,
-  editableSubmitLabel,
-  action,
-  children,
-  sx
+  minRows
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
 
-  const submitIcon = children.find((block) => block.id === submitIconId) as
-    | TreeBlock<IconFields>
-    | undefined
-
-  const { admin } = useJourney()
+  const { variant } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  const { activeBlock, treeBlocks } = useBlocks()
+  const { blockHistory, treeBlocks } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
   const heading =
     activeBlock != null
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const router = useRouter()
   const [textResponseSubmissionEventCreate, { loading }] =
     useMutation<TextResponseSubmissionEventCreate>(
       TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
@@ -80,7 +68,7 @@ export const TextResponse = ({
   const onSubmitHandler = async (
     values: TextResponseFormValues
   ): Promise<void> => {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuid()
       if (values.response.trim() !== '') {
         try {
@@ -120,17 +108,8 @@ export const TextResponse = ({
   } = useEditor()
 
   return (
-    <Box sx={{ mb: 4 }}>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={(values) => {
-          if (selectedBlock === undefined) {
-            void onSubmitHandler(values).then(() => {
-              handleAction(router, action)
-            })
-          }
-        }}
-      >
+    <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
+      <Formik initialValues={initialValues} onSubmit={noop}>
         {({ values, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
             <Stack>
@@ -141,24 +120,22 @@ export const TextResponse = ({
                 value={values.response}
                 helperText={hint}
                 multiline
+                disabled={loading}
                 minRows={minRows ?? 3}
+                onClick={(e) => e.stopPropagation()}
                 onChange={handleChange}
-                onBlur={handleBlur}
-                disabled={selectedBlock !== undefined}
-                inputProps={{ maxLength: 1000 }}
+                onBlurCapture={(e) => {
+                  handleBlur(e)
+                  void onSubmitHandler(values)
+                }}
+                inputProps={{
+                  maxLength: 1000,
+                  readOnly: selectedBlock !== undefined,
+                  sx: {
+                    pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                  }
+                }}
               />
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                loading={loading}
-                size="large"
-                startIcon={
-                  submitIcon != null ? <Icon {...submitIcon} /> : undefined
-                }
-                sx={{ ...sx, mb: 0 }}
-              >
-                {editableSubmitLabel ?? submitLabel ?? t('Submit')}
-              </LoadingButton>
             </Stack>
           </Form>
         )}

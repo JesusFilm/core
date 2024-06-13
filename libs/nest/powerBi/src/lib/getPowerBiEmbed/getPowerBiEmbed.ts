@@ -1,6 +1,7 @@
 import fetch, { FetchError } from 'node-fetch'
-import { getPowerBiAccessToken } from '../getPowerBiAccessToken'
+
 import { PowerBiConfig, defaultPowerBiConfig } from '../config'
+import { getPowerBiAccessToken } from '../getPowerBiAccessToken'
 
 export interface PowerBiEmbed {
   /**
@@ -66,11 +67,12 @@ export async function getPowerBiEmbed(
       Object.prototype.hasOwnProperty.call(err, 'errorDescription') === true &&
       Object.prototype.hasOwnProperty.call(err, 'error') === true
     ) {
-      throw new Error(err.errorDescription)
+      const errorDescription: string = err.errorDescription
+      throw new Error(errorDescription)
     } else if (err instanceof FetchError) {
       throw new Error(err.message)
     } else {
-      throw new Error(err.toString())
+      throw new Error(String(err))
     }
   }
 }
@@ -103,7 +105,7 @@ async function getEmbedParamsForSingleReport(
       apiUrl,
       reportId,
       userId,
-      [datasetId],
+      [datasetId as string],
       workspaceId,
       headers
     ))

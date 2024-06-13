@@ -1,0 +1,1 @@
+export { getButtonLabel } from './getButtonLabel'

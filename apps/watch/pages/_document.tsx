@@ -1,8 +1,9 @@
-import { ReactElement, FunctionComponent } from 'react'
-import Document, { Html, Head, Main, NextScript } from 'next/document'
-import createEmotionServer from '@emotion/server/create-instance'
 import type { EmotionCache } from '@emotion/cache'
-import type { Enhancer, AppType } from 'next/dist/shared/lib/utils'
+import createEmotionServer from '@emotion/server/create-instance'
+import type { AppType, Enhancer } from 'next/dist/shared/lib/utils'
+import Document, { Head, Html, Main, NextScript } from 'next/document'
+import { FunctionComponent, ReactElement } from 'react'
+
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 export default class MyDocument extends Document<{
@@ -18,18 +19,17 @@ export default class MyDocument extends Document<{
             href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
             rel="stylesheet"
           />
-          <link
-            rel="apple-touch-icon"
-            sizes="180x180"
-            href="/apple-touch-icon.png"
-          />
+          <link rel="icon" href="/watch/assets/favicon-32.png" sizes="32x32" />
           <link
             rel="icon"
-            type="image/png"
-            sizes="16x16"
-            href="/favicon-16x16.png"
+            href="/watch/assets/favicon-180.png"
+            sizes="192x192"
           />
-          <link rel="manifest" href="/site.webmanifest" />
+          <link rel="apple-touch-icon" href="/watch/assets/favicon-180.png" />
+          <meta
+            name="msapplication-TileImage"
+            content="/watch/assets/favicon-180.png"
+          />
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
           {this.props.emotionStyleTags}
         </Head>
@@ -72,10 +72,11 @@ MyDocument.getInitialProps = async (ctx) => {
   // You can consider sharing the same emotion cache between all the SSR requests to speed up performance.
   // However, be aware that it can have global side effects.
   const cache = createEmotionCache({})
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { extractCriticalToChunks } = createEmotionServer(cache)
 
-  ctx.renderPage = () =>
-    originalRenderPage({
+  ctx.renderPage = async () =>
+    await originalRenderPage({
       enhanceApp: ((App: FunctionComponent<{ emotionCache: EmotionCache }>) => {
         return function EnhanceApp(props) {
           return <App emotionCache={cache} {...props} />

@@ -1,10 +1,14 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+
 import { watchConfig } from '../../libs/storybook'
-import { videos } from '../Videos/testData'
+import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
+import { VideoProvider } from '../../libs/videoContext'
+import { videos } from '../Videos/__generated__/testData'
+
 import { VideoContainerPage } from '.'
 
-const VideoContainerPageStory = {
+const VideoContainerPageStory: Meta<typeof VideoContainerPage> = {
   ...watchConfig,
   component: VideoContainerPage,
   title: 'Watch/VideoContainerPage',
@@ -14,13 +18,15 @@ const VideoContainerPageStory = {
   }
 }
 
-const Template: Story<ComponentProps<typeof VideoContainerPage>> = ({
-  ...args
-}) => <VideoContainerPage {...args} />
-
-export const Default = Template.bind({})
-Default.args = {
-  content: videos[0]
+const Template: StoryObj<typeof VideoContainerPage> = {
+  render: () => (
+    <MockedProvider mocks={[getVideoChildrenMock]}>
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoContainerPage />
+      </VideoProvider>
+    </MockedProvider>
+  )
 }
+export const Default = { ...Template }
 
-export default VideoContainerPageStory as Meta
+export default VideoContainerPageStory

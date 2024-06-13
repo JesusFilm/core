@@ -6,6 +6,9 @@
 if [[ `git status --porcelain` ]]; then
   # Changes
   git status --porcelain
+  if [[ `git status --porcelain | grep libs/locales/en` ]]; then
+    echo "🔶 - translation changes - try running \`nx extract-translations <project-name>\`"
+  fi
   echo "🛑 - run codegen and linting locally and commit changes"
   exit 1
 else

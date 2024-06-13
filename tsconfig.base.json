@@ -9,23 +9,26 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2017", "dom"],
+    "module": "commonjs",
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strictNullChecks": true,
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@core/apollo/logging/*": ["libs/apollo/logging/src/lib/*"],
       "@core/journeys/ui/*": [
         "libs/journeys/ui/src/components/*",
         "libs/journeys/ui/src/libs/*"
       ],
-      "@core/nest/database/*": ["libs/nest/database/src/lib/*"],
+      "@core/nest/common/*": ["libs/nest/common/src/lib/*"],
       "@core/nest/decorators/*": ["libs/nest/decorators/src/lib/*"],
       "@core/nest/gqlAuthGuard/*": ["libs/nest/gqlAuthGuard/src/lib/*"],
       "@core/nest/powerBi/*": ["libs/nest/powerBi/src/lib/*"],
-      // "@core/shared/storybook": [],
+      "@core/shared/ui-dynamic/*": [
+        "libs/shared/ui-dynamic/src/components/*",
+        "libs/shared/ui-dynamic/src/libs/*"
+      ],
       "@core/shared/ui/*": [
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"

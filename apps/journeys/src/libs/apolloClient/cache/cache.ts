@@ -9,15 +9,11 @@ export const cache = (): InMemoryCache =>
      initializing InMemoryCache.
    */
     possibleTypes: {
-      Action: [
-        'NavigateAction',
-        'NavigateToBlockAction',
-        'NavigateToJourneyAction',
-        'LinkAction'
-      ],
+      Action: ['NavigateToBlockAction', 'LinkAction', 'EmailAction'],
       Block: [
         'ButtonBlock',
         'CardBlock',
+        'FormBlock',
         'GridContainerBlock',
         'GridItemBlock',
         'IconBlock',
@@ -31,5 +27,8 @@ export const cache = (): InMemoryCache =>
         'VideoBlock',
         'VideoTriggerBlock'
       ]
+    },
+    typePolicies: {
+      Video: { keyFields: ['id', 'variant', ['id']] }
     }
   })

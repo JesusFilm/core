@@ -1,39 +1,31 @@
-import { NextSeo } from 'next-seo'
-import { ReactElement, useState, useEffect } from 'react'
-import { useQuery } from '@apollo/client'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { useTranslation } from 'react-i18next'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { useRouter } from 'next/router'
-import { Role } from '../../__generated__/globalTypes'
-import { GetUserRole } from '../../__generated__/GetUserRole'
+import { useTranslation } from 'next-i18next'
+import { NextSeo } from 'next-seo'
+import { ReactElement, useEffect } from 'react'
+
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../../__generated__/GetAdminJourneys'
+import { JourneyStatus, Role } from '../../__generated__/globalTypes'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
-import i18nConfig from '../../next-i18next.config'
-import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
-import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { GET_ADMIN_JOURNEYS } from '../../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { useUserRoleQuery } from '../../src/libs/useUserRoleQuery'
 
-function TemplateIndex(): ReactElement {
+function PublisherIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const router = useRouter()
-  const [listEvent, setListEvent] = useState('')
 
-  const handleClick = (event: string): void => {
-    setListEvent(event)
-    // remove event after component lifecycle
-    setTimeout(() => {
-      setListEvent('')
-    }, 1000)
-  }
-
-  const { data } = useQuery<GetUserRole>(GET_USER_ROLE)
+  const { data } = useUserRoleQuery()
   useEffect(() => {
     if (
       data != null &&
@@ -46,42 +38,66 @@ function TemplateIndex(): ReactElement {
   return (
     <>
       <NextSeo title={t('Templates Admin')} />
-      <PageWrapper
-        title={t('Templates Admin')}
-        authUser={AuthUser}
-        menu={<JourneyListMenu router={router} onClick={handleClick} />}
-        router={router}
-      >
-        <TemplateList router={router} event={listEvent} authUser={AuthUser} />
+      <PageWrapper title={t('Templates Admin')} user={user}>
+        <TemplateList />
       </PageWrapper>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
+})(async ({ user, locale, resolvedUrl, query }) => {
+  if (user == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
+  const { apolloClient, redirect, translations } = await initAndAuthApp({
+    user,
+    locale,
+    resolvedUrl
+  })
+
+  if (redirect != null) return { redirect }
+
+  let variables: GetAdminJourneysVariables = {}
+
+  switch (query.tab ?? 'active') {
+    case 'active':
+      variables = {
+        // from src/components/TemplateList/ActiveTemplateList useAdminJourneysQuery
+        status: [JourneyStatus.draft, JourneyStatus.published],
+        template: true
+      }
+      break
+    case 'archived':
+      variables = {
+        // from src/components/TemplateList/ArchivedTemplateList useAdminJourneysQuery
+        status: [JourneyStatus.archived],
+        template: true
+      }
+      break
+    case 'trashed':
+      variables = {
+        // from src/components/TemplateList/TrashedTemplateList useAdminJourneysQuery
+        status: [JourneyStatus.trashed],
+        template: true
+      }
+      break
   }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+
+  await apolloClient.query<GetAdminJourneys, GetAdminJourneysVariables>({
+    query: GET_ADMIN_JOURNEYS,
+    variables
+  })
+
   return {
     props: {
-      flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      initialApolloState: apolloClient.cache.extract(),
+      ...translations
     }
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateIndex)
+})(PublisherIndexPage)

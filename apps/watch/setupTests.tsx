@@ -10,3 +10,21 @@ jest.mock('next/image', () => ({
     <img src={src} alt={alt} />
   )
 }))
+
+Object.defineProperty(
+  window.navigator,
+  'userAgent',
+  ((value) => ({
+    get() {
+      return value
+    },
+    set(v) {
+      value = v
+    }
+  }))(window.navigator.userAgent)
+)
+
+jest.mock('next/router', () => require('next-router-mock'))
+
+if (process.env.CI === 'true')
+  jest.retryTimes(3, { logErrorsBeforeRetry: true })

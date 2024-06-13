@@ -1,31 +1,26 @@
-import {
-  ReactElement,
-  useState,
-  useEffect,
-  useRef,
-  MouseEvent,
-  ChangeEvent
-} from 'react'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Drawer from '@mui/material/Drawer'
 import FormControl from '@mui/material/FormControl'
-import FormLabel from '@mui/material/FormLabel'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Popover from '@mui/material/Popover'
-import RadioGroup from '@mui/material/RadioGroup'
 import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import { useTranslation } from 'next-i18next'
+import {
+  ChangeEvent,
+  MouseEvent,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
+
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 export enum SortOrder {
   CREATED_AT = 'createdAt',
   TITLE = 'title'
-}
-
-const sortOrderLabel = {
-  createdAt: 'Date Created',
-  title: 'Name'
 }
 
 interface JourneySortProps {
@@ -41,10 +36,16 @@ export function JourneySort({
   open,
   disabled
 }: JourneySortProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [showSortOrder, setShowSortOrder] = useState(open ?? false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const breakpoints = useBreakpoints()
   const chipRef = useRef(null)
+
+  const sortOrderLabel = {
+    createdAt: t('Date Created'),
+    title: t('Name')
+  }
 
   useEffect(() => {
     setAnchorEl(chipRef.current)
@@ -69,7 +70,6 @@ export function JourneySort({
   const Form = (): ReactElement => (
     <Box sx={{ p: 4 }}>
       <FormControl component="fieldset" fullWidth>
-        <FormLabel component="legend">Sort By</FormLabel>
         <RadioGroup
           aria-label="sort-by-options"
           defaultValue={sortOrder ?? SortOrder.CREATED_AT}
@@ -93,15 +93,7 @@ export function JourneySort({
             flexDirection: 'row',
             justifyContent: 'flex-end'
           }}
-        >
-          <Button
-            sx={{ mt: 1, mr: 1 }}
-            onClick={() => setShowSortOrder(false)}
-            variant="text"
-          >
-            Cancel
-          </Button>
-        </Box>
+        />
       </FormControl>
     </Box>
   )
@@ -109,7 +101,7 @@ export function JourneySort({
   return (
     <>
       <Chip
-        label={sortOrder != null ? sortOrderLabel[sortOrder] : 'Sort By'}
+        label={sortOrder != null ? sortOrderLabel[sortOrder] : t('Sort By')}
         onClick={handleClick}
         ref={chipRef}
         sx={{
@@ -127,7 +119,11 @@ export function JourneySort({
           onClose={handleClose}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'left'
+            horizontal: 'right'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
           }}
         >
           <Form />

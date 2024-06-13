@@ -1,6 +1,8 @@
-import { ReactElement } from 'react'
 import MuiTypography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '../../libs/block'
+
 import { TypographyFields } from './__generated__/TypographyFields'
 
 export interface TypographyProps extends TreeBlock<TypographyFields> {
@@ -22,6 +24,7 @@ export function Typography({
       paragraph={variant === 'overline' || variant === 'caption'}
       gutterBottom
       whiteSpace="pre-line"
+      data-testid="JourneysTypography"
     >
       {editableContent ?? content}
     </MuiTypography>

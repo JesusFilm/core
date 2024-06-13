@@ -1,21 +1,39 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import noop from 'lodash/noop'
+import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
-import { AuthUser } from 'next-firebase-auth'
-import { defaultJourney, oldJourney } from '../journeyListData'
-import { ThemeProvider } from '../../ThemeProvider'
-import { SortOrder } from '../JourneySort'
+
 import {
-  ActiveJourneyList,
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../../../../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { ThemeProvider } from '../../ThemeProvider'
+import { defaultJourney, oldJourney } from '../journeyListData'
+
+import {
   ARCHIVE_ACTIVE_JOURNEYS,
-  GET_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
 } from './ActiveJourneyList'
 
-const activeJourneysMock = {
+import { ActiveJourneyList } from '.'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const activeJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
   request: {
-    query: GET_ACTIVE_JOURNEYS
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.draft, JourneyStatus.published],
+      useLastActiveTeamId: true
+    }
   },
   result: {
     data: {
@@ -24,9 +42,16 @@ const activeJourneysMock = {
   }
 }
 
-const noJourneysMock = {
+const noJourneysMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
   request: {
-    query: GET_ACTIVE_JOURNEYS
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.draft, JourneyStatus.published],
+      useLastActiveTeamId: true
+    }
   },
   result: {
     data: {
@@ -35,79 +60,13 @@ const noJourneysMock = {
   }
 }
 
-const authUser = { id: 'user-id1' } as unknown as AuthUser
-
 describe('ActiveJourneyList', () => {
-  it('should render journeys in descending createdAt date by default', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[activeJourneysMock]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveJourneyList onLoad={noop} event="" />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'January 1'
-      )
-    )
-    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'November 19, 2020'
-    )
-  })
-
-  it('should order journeys in alphabetical order', async () => {
-    const lowerCaseJourneyTitle = {
-      ...defaultJourney,
-      title: 'a lower case title'
-    }
-
-    const { getAllByLabelText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ACTIVE_JOURNEYS
-            },
-            result: {
-              data: {
-                journeys: [lowerCaseJourneyTitle, oldJourney]
-              }
-            }
-          }
-        ]}
-      >
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveJourneyList
-              onLoad={noop}
-              sortOrder={SortOrder.TITLE}
-              event=""
-            />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'An Old Journey Heading'
-      )
-    )
-    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'a lower case title'
-    )
-  })
-
   it('should ask users to add a new journey', async () => {
-    const { getByRole, getByText } = render(
+    const { getByText } = render(
       <MockedProvider mocks={[noJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveJourneyList onLoad={noop} event="" />
+            <ActiveJourneyList />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -118,55 +77,27 @@ describe('ActiveJourneyList', () => {
     expect(
       getByText('Create a journey, then find it here.')
     ).toBeInTheDocument()
-    expect(getByRole('button')).toBeInTheDocument()
-  })
-
-  it('should render loading skeleton', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider mocks={[]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveJourneyList onLoad={noop} event="" />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')).toHaveLength(3)
-    )
-  })
-
-  it('should call onLoad when query is loaded', async () => {
-    const onLoad = jest.fn()
-    render(
-      <MockedProvider mocks={[noJourneysMock]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveJourneyList onLoad={onLoad} event="" />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() => expect(onLoad).toHaveBeenCalled())
   })
 
   describe('Archive All', () => {
-    it('should display the archive all dialog', () => {
+    it('should display the archive all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[activeJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList onLoad={noop} event="archiveAllActive" />
+              <ActiveJourneyList event="archiveAllActive" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
-      expect(getByText('Archive Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Archive Journeys')).toBeInTheDocument()
+      )
     })
 
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'archived' }]
+      data: { journeysArchive: [{ id: defaultJourney.id, status: 'archived' }] }
     }))
     const archiveJourneysMock = {
       request: {
@@ -177,7 +108,6 @@ describe('ActiveJourneyList', () => {
       },
       result
     }
-    const onLoad = jest.fn()
 
     it('should archive all journeys', async () => {
       const { getByText } = render(
@@ -187,49 +117,49 @@ describe('ActiveJourneyList', () => {
           <ThemeProvider>
             <SnackbarProvider>
               <ActiveJourneyList
-                onLoad={onLoad}
                 event="archiveAllActive"
-                authUser={authUser}
+                user={{ id: 'user-id1' } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
       fireEvent.click(getByText('Archive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      const { getByRole, getByText } = render(
         <MockedProvider
           mocks={[
             activeJourneysMock,
             { ...archiveJourneysMock, error: new Error('error') }
           ]}
         >
-          <SnackbarProvider>
-            <ThemeProvider>
-              <SnackbarProvider>
-                <ActiveJourneyList
-                  onLoad={onLoad}
-                  event="archiveAllActive"
-                  authUser={authUser}
-                />
-              </SnackbarProvider>
-            </ThemeProvider>
-          </SnackbarProvider>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ActiveJourneyList
+                event="archiveAllActive"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(onLoad).toHaveBeenCalled())
-      fireEvent.click(getByText('Archive'))
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByRole('button', { name: 'Archive' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
 
   describe('Trash All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'archived' }]
+      data: { journeysTrash: [{ id: defaultJourney.id, status: 'archived' }] }
     }))
     const trashJourneysMock = {
       request: {
@@ -240,20 +170,23 @@ describe('ActiveJourneyList', () => {
       },
       result
     }
-    const onLoad = jest.fn()
 
-    it('should display the trash all dialog', () => {
+    it('should display the trash all dialog', async () => {
       const { getByText } = render(
         <MockedProvider mocks={[activeJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveJourneyList onLoad={noop} event="trashAllActive" />
+              <ActiveJourneyList
+                event="trashAllActive"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-
-      expect(getByText('Trash Journeys')).toBeInTheDocument()
+      await waitFor(() =>
+        expect(getByText('Trash Journeys')).toBeInTheDocument()
+      )
     })
 
     it('should trash all journeys', async () => {
@@ -264,15 +197,16 @@ describe('ActiveJourneyList', () => {
           <ThemeProvider>
             <SnackbarProvider>
               <ActiveJourneyList
-                onLoad={onLoad}
                 event="trashAllActive"
-                authUser={authUser}
+                user={{ id: 'user-id1' } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
       fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
@@ -289,16 +223,17 @@ describe('ActiveJourneyList', () => {
             <ThemeProvider>
               <SnackbarProvider>
                 <ActiveJourneyList
-                  onLoad={onLoad}
                   event="trashAllActive"
-                  authUser={authUser}
+                  user={{ id: 'user-id1' } as unknown as User}
                 />
               </SnackbarProvider>
             </ThemeProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
       fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })

@@ -1,0 +1,1 @@
+export { StyledFooterButton } from './StyledFooterButton'

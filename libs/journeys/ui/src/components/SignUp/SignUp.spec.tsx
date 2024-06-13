@@ -1,16 +1,18 @@
-import { ReactElement } from 'react'
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
+
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import type { TreeBlock } from '../../libs/block'
-import { activeBlockVar, treeBlocksVar } from '../../libs/block'
-import { JourneyProvider } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
+import type { TreeBlock } from '../../libs/block'
+import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+
 import { SignUpFields } from './__generated__/SignUpFields'
+import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -36,15 +38,6 @@ jest.mock('next/router', () => ({
   useRouter() {
     return {
       push: () => null
-    }
-  }
-}))
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
     }
   }
 }))
@@ -163,7 +156,7 @@ describe('SignUp', () => {
     })
   })
 
-  it('should redirect when form submit suceeds', async () => {
+  it('should redirect when form submit succeeds', async () => {
     const mocks = [
       {
         request: {
@@ -204,7 +197,7 @@ describe('SignUp', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(handleAction).toBeCalledWith(
+      expect(handleAction).toHaveBeenCalledWith(
         {
           push: expect.any(Function)
         },
@@ -221,11 +214,9 @@ describe('SignUp', () => {
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole, getByLabelText } = render(
       <ApolloLoadingProvider>
-        <JourneyProvider>
-          <SnackbarProvider>
-            <SignUp {...block} uuid={() => 'uuid'} />
-          </SnackbarProvider>
-        </JourneyProvider>
+        <SnackbarProvider>
+          <SignUp {...block} uuid={() => 'uuid'} />
+        </SnackbarProvider>
       </ApolloLoadingProvider>
     )
     const name = getByLabelText('Name')
@@ -244,7 +235,7 @@ describe('SignUp', () => {
   })
 
   it('should create submission event on click', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
 
     const result = jest.fn(() => ({
       data: {
@@ -291,12 +282,12 @@ describe('SignUp', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(result).toBeCalled()
+      expect(result).toHaveBeenCalled()
     })
   })
 
   it('should add submission event to dataLayer', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const mocks = [
@@ -354,7 +345,7 @@ describe('SignUp', () => {
   })
 
   it('should show error when submit fails', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
 
     const mocks = [
       {
@@ -375,11 +366,9 @@ describe('SignUp', () => {
     ]
 
     const { getByRole, getByLabelText, getByText } = render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <SignUpMock mocks={mocks} />
-        </SnackbarProvider>
-      </JourneyProvider>
+      <SnackbarProvider>
+        <SignUpMock mocks={mocks} />
+      </SnackbarProvider>
     )
     const name = getByLabelText('Name')
     const email = getByLabelText('Email')
@@ -390,5 +379,21 @@ describe('SignUp', () => {
     fireEvent.click(submit)
 
     expect(await waitFor(() => getByText('Error'))).toBeInTheDocument()
+  })
+
+  it('should not allow selection in editor', () => {
+    const { getAllByRole } = render(
+      <SnackbarProvider>
+        <SignUpMock />
+      </SnackbarProvider>
+    )
+
+    const name = getAllByRole('textbox')[0]
+    fireEvent.click(name)
+    expect(name.matches(':focus')).not.toBeTruthy()
+
+    const email = getAllByRole('textbox')[1]
+    fireEvent.click(email)
+    expect(email.matches(':focus')).not.toBeTruthy()
   })
 })

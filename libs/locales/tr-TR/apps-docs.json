@@ -1,0 +1,10 @@
+{
+  "Deploy Quickly": "Hızla Dağıtın",
+  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "Sürekli Entegrasyon ve Sürekli Teslimat işlem hattımız, kod değişikliklerini daha sık ve güvenilir bir şekilde sunmanızı sağlar.",
+  "Common Environment": "Ortak Çevre",
+  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "Docker üzerinde çalışıyoruz. Bu, her geliştiricinin üretimi yakından taklit eden aynı ortamı paylaştığı ve işbirliğini kolaylaştırdığı anlamına gelir.",
+  "Powered by Typescript": "Typescript tarafından desteklenmektedir",
+  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScript, JavaScript üzerine inşa edilen ve size her ölçekte daha iyi araçlar sunan, güçlü bir şekilde yazılmış bir programlama dilidir.",
+  "Core Development Kit Documentation": "Çekirdek Geliştirme Kiti Dokümantasyonu",
+  "Welcome - 5min ": "Hoş geldiniz - 5dk "
+}

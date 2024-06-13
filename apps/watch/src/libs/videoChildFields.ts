@@ -15,14 +15,12 @@ export const VIDEO_CHILD_FIELDS = gql`
       value
     }
     slug
-    children {
-      id
-    }
-    variant {
+    variant(languageId: $languageId) {
       id
       duration
       hls
       slug
     }
+    childrenCount
   }
 `

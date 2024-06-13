@@ -1,0 +1,1 @@
+export { GoalsListItem } from './GoalsListItem'

@@ -1,9 +1,20 @@
-import { render, fireEvent } from '@testing-library/react'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
-import { DragDropContext } from 'react-beautiful-dnd'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { DragDropContext, DroppableProvided } from 'react-beautiful-dnd'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import {
+  Role,
+  ThemeMode,
+  ThemeName,
+  VideoBlockSource
+} from '../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
+import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
+
 import { CardList } from '.'
 
 jest.mock('react-beautiful-dnd', () => ({
@@ -79,7 +90,8 @@ describe('CardList', () => {
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
+              },
+              variantLanguages: []
             },
             endAt: null,
             startAt: null,
@@ -114,7 +126,7 @@ describe('CardList', () => {
       style: {}
     },
     innerRef: jest.fn()
-  }
+  } as unknown as DroppableProvided
 
   const steps: Array<TreeBlock<StepBlock>> = [
     {
@@ -219,10 +231,10 @@ describe('CardList', () => {
     expect(queryByRole('DragHandleRoundedIcon')).not.toBeInTheDocument()
   })
 
-  it('should prompt users that a card is draggable', () => {
+  it('should prompt users that a card is draggable', async () => {
     const { getAllByTestId } = render(
       <MockedProvider>
-        <DragDropContext>
+        <DragDropContext onDragEnd={jest.fn()}>
           <CardList
             steps={steps}
             selected={selected}
@@ -232,7 +244,242 @@ describe('CardList', () => {
         </DragDropContext>
       </MockedProvider>
     )
-    const dragHandle = getAllByTestId('DragHandleRoundedIcon')
+    await waitFor(() => {
+      expect(getAllByTestId('DragIcon')[0]).toBeInTheDocument()
+    })
+    const dragHandle = getAllByTestId('DragIcon')
     expect(dragHandle[0]).toHaveClass('MuiSvgIcon-root')
+  })
+
+  it('contains goals card', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <DragDropContext onDragEnd={jest.fn()}>
+          <CardList
+            steps={steps}
+            selected={selected}
+            showAddButton
+            droppableProvided={droppableProvided}
+            showNavigationCards
+          />
+        </DragDropContext>
+      </MockedProvider>
+    )
+    expect(getByTestId('NavigationCardGoals')).toBeInTheDocument()
+  })
+
+  it('navigates on goals card click', async () => {
+    const handleChange = jest.fn()
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <DragDropContext onDragEnd={jest.fn()}>
+            <CardList
+              steps={steps}
+              selected={selected}
+              droppableProvided={droppableProvided}
+              handleChange={handleChange}
+              showNavigationCards
+            />
+          </DragDropContext>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('NavigationCardGoals'))
+    expect(handleChange).toHaveBeenCalledWith('goals')
+  })
+
+  it('contains social preview card', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <DragDropContext onDragEnd={jest.fn()}>
+          <CardList
+            steps={steps}
+            selected={selected}
+            showAddButton
+            droppableProvided={droppableProvided}
+            showNavigationCards
+          />
+        </DragDropContext>
+      </MockedProvider>
+    )
+    expect(getByTestId('NavigationCardSocial')).toBeInTheDocument()
+  })
+
+  it('navigates on social preview card click', async () => {
+    const handleChange = jest.fn()
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <DragDropContext onDragEnd={jest.fn()}>
+            <CardList
+              steps={steps}
+              selected={selected}
+              droppableProvided={droppableProvided}
+              handleChange={handleChange}
+              showNavigationCards
+            />
+          </DragDropContext>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('NavigationCardSocial'))
+    expect(handleChange).toHaveBeenCalledWith('social')
+  })
+
+  it('should display image for social navigationcard if image is provided', () => {
+    const handleChange = jest.fn()
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              },
+              primaryImageBlock: {
+                src: 'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
+              }
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <DragDropContext onDragEnd={jest.fn()}>
+            <CardList
+              steps={steps}
+              selected={selected}
+              droppableProvided={droppableProvided}
+              handleChange={handleChange}
+              showNavigationCards
+            />
+          </DragDropContext>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getAllByRole('img')[0].attributes.getNamedItem('src')?.value).toBe(
+      'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
+    )
+  })
+
+  it('should render the goal and social navigation card if journey is not a template', async () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <CardList
+          steps={steps}
+          selected={selected}
+          showAddButton
+          handleClick={jest.fn()}
+          showNavigationCards
+        />
+      </MockedProvider>
+    )
+    expect(getByTestId('NavigationCardGoals')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardSocial')).toBeInTheDocument()
+  })
+
+  it('should render the goal and social navigation card if the user is a publisher', () => {
+    const { getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_USER_ROLE
+            },
+            result: {
+              data: {
+                getUserRole: {
+                  id: 'userRoleId',
+                  roles: [Role.publisher]
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <DragDropContext onDragEnd={jest.fn()}>
+          <CardList
+            steps={steps}
+            selected={selected}
+            droppableProvided={droppableProvided}
+            handleChange={jest.fn()}
+            showNavigationCards
+          />
+        </DragDropContext>
+      </MockedProvider>
+    )
+    expect(getByTestId('NavigationCardGoals')).toBeInTheDocument()
+    expect(getByTestId('NavigationCardSocial')).toBeInTheDocument()
+  })
+
+  it('should not render the goal and social navigation card if journey is a template', () => {
+    const { queryByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              },
+              template: true
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <DragDropContext onDragEnd={jest.fn()}>
+            <CardList
+              steps={steps}
+              selected={selected}
+              droppableProvided={droppableProvided}
+              handleChange={jest.fn()}
+              showNavigationCards
+            />
+          </DragDropContext>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(queryByTestId('NavigationCardGoals')).not.toBeInTheDocument()
+    expect(queryByTestId('NavigationCardSocial')).not.toBeInTheDocument()
   })
 })

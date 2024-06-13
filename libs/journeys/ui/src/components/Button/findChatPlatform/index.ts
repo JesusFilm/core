@@ -1,1 +1,0 @@
-export { findChatPlatform } from './findChatPlatform'

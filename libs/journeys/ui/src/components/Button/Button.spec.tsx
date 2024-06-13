@@ -1,22 +1,30 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { v4 as uuidv4 } from 'uuid'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
+import { v4 as uuidv4 } from 'uuid'
+
 import {
-  ButtonVariant,
   ButtonColor,
   ButtonSize,
+  ButtonVariant,
   IconColor,
   IconName,
   IconSize,
   MessagePlatform
 } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { TreeBlock, activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import { ButtonFields_action, ButtonFields } from './__generated__/ButtonFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+
+import {
+  ButtonFields,
+  ButtonFields_action,
+  ButtonFields_action_LinkAction as LinkAction
+} from './__generated__/ButtonFields'
 import { BUTTON_CLICK_EVENT_CREATE, CHAT_OPEN_EVENT_CREATE } from './Button'
+import { GoalType } from './utils/getLinkActionGoal'
+
 import { Button } from '.'
 
 jest.mock('uuid', () => ({
@@ -50,15 +58,6 @@ jest.mock('next/router', () => ({
   useRouter() {
     return {
       push: () => null
-    }
-  }
-}))
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
     }
   }
 }))
@@ -117,14 +116,28 @@ describe('Button', () => {
   it('should create a buttonClickEvent onClick', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
+
+    const action: LinkAction = {
+      __typename: 'LinkAction',
+      parentBlockId: 'button',
+      gtmEventName: null,
+      url: 'https://test.com/some-site'
+    }
+
+    const buttonWithAction = {
+      ...block,
+      action
+    }
 
     const result = jest.fn(() => ({
       data: {
         buttonClickEventCreate: {
           __typename: 'ButtonClickEvent',
-          id: 'uuiid'
+          id: 'uuid',
+          action: action.__typename,
+          actionValue: action.url
         }
       }
     }))
@@ -141,7 +154,9 @@ describe('Button', () => {
                   blockId: 'button',
                   stepId: 'step.id',
                   label: 'stepName',
-                  value: block.label
+                  value: buttonWithAction.label,
+                  action: action.__typename,
+                  actionValue: action.url
                 }
               }
             },
@@ -150,15 +165,15 @@ describe('Button', () => {
         ]}
       >
         <JourneyProvider>
-          <Button {...block} />
+          <Button {...buttonWithAction} />
         </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    await waitFor(() => expect(result).toBeCalled())
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('should add buttonClickEvent to dataLayer', async () => {
+  it('should add button_click event to dataLayer', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const activeBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
@@ -182,7 +197,7 @@ describe('Button', () => {
         }
       ]
     }
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const { getByRole } = render(
@@ -197,7 +212,9 @@ describe('Button', () => {
                   blockId: 'button',
                   stepId: 'step.id',
                   label: 'Step {{number}}',
-                  value: block.label
+                  value: block.label,
+                  action: undefined,
+                  actionValue: undefined
                 }
               }
             },
@@ -205,7 +222,9 @@ describe('Button', () => {
               data: {
                 buttonClickEventCreate: {
                   __typename: 'ButtonClickEvent',
-                  id: 'uuiid'
+                  id: 'uuid',
+                  action: undefined,
+                  actionValue: undefined
                 }
               }
             }
@@ -230,6 +249,77 @@ describe('Button', () => {
     )
   })
 
+  it('should add LinkAction outbound_action_click event to dataLayer', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+
+    const action: ButtonFields_action = {
+      __typename: 'LinkAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      url: 'https://bible.com'
+    }
+
+    const buttonBlock = {
+      ...block,
+      action
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_CLICK_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  label: 'stepName',
+                  value: buttonBlock.label,
+                  action: action.__typename,
+                  actionValue: action.url
+                }
+              }
+            },
+            result: {
+              data: {
+                buttonClickEventCreate: {
+                  __typename: 'ButtonClickEvent',
+                  id: 'uuid',
+                  action: action.__typename,
+                  actionValue: action.url
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button'))
+    await waitFor(() =>
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'outbound_action_click',
+          eventId: 'uuid',
+          blockId: 'button',
+          stepName: 'stepName',
+          buttonLabel: 'This is a button',
+          outboundActionType: GoalType.Bible,
+          outboundActionValue: 'https://bible.com'
+        }
+      })
+    )
+  })
+
   it('should create a chatOpenEvent onClick', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 
@@ -245,14 +335,14 @@ describe('Button', () => {
       action
     }
 
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const result = jest.fn(() => ({
       data: {
         chatOpenEventCreate: {
           __typename: 'ChatOpenEvent',
-          id: 'uuiid'
+          id: 'uuid'
         }
       }
     }))
@@ -282,7 +372,7 @@ describe('Button', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    await waitFor(() => expect(result).toBeCalled())
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('should render the button successfully', () => {
@@ -395,7 +485,7 @@ describe('Button', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    expect(handleAction).toBeCalledWith(
+    expect(handleAction).toHaveBeenCalledWith(
       expect.objectContaining({
         push: expect.any(Function)
       }),

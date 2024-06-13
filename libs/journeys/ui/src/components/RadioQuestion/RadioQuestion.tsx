@@ -1,19 +1,22 @@
-import { ReactElement, useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
-import { styled } from '@mui/material/styles'
+import { gql, useMutation } from '@apollo/client'
 import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
-import { useMutation, gql } from '@apollo/client'
+import { styled } from '@mui/material/styles'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
-import { useTranslation } from 'react-i18next'
+import { v4 as uuidv4 } from 'uuid'
+
 import type { TreeBlock } from '../../libs/block'
-import { useBlocks } from '../../libs/block'
+import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
+// eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
-import { RadioQuestionSubmissionEventCreate } from './__generated__/RadioQuestionSubmissionEventCreate'
+
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
+import { RadioQuestionSubmissionEventCreate } from './__generated__/RadioQuestionSubmissionEventCreate'
 
 export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
   mutation RadioQuestionSubmissionEventCreate(
@@ -46,10 +49,16 @@ export function RadioQuestion({
     useMutation<RadioQuestionSubmissionEventCreate>(
       RADIO_QUESTION_SUBMISSION_EVENT_CREATE
     )
-  const { admin } = useJourney()
+  const { variant } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const { activeBlock, treeBlocks } = useBlocks()
+  const { blockHistory, treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
+  const activeBlock = blockHistory[blockHistory.length - 1]
+
+  useEffect(() => {
+    // test via e2e: radio selection is cleared when going back to card that is no longer rendered
+    if (!isActiveBlockOrDescendant(blockId)) setSelectedId(null)
+  }, [blockId, blockHistory])
 
   const heading =
     activeBlock != null
@@ -60,7 +69,7 @@ export function RadioQuestion({
     radioOptionBlockId: string,
     radioOptionLabel: string
   ): void => {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuid()
       void radioQuestionSubmissionEventCreate({
         variables: {
@@ -80,6 +89,7 @@ export function RadioQuestion({
           eventId: id,
           blockId,
           radioOptionSelectedId: radioOptionBlockId,
+          radioOptionSelectedLabel: radioOptionLabel,
           stepName: heading
         }
       })
@@ -104,7 +114,7 @@ export function RadioQuestion({
   )
 
   return (
-    <StyledRadioQuestion data-testid={`radioQuestion-${blockId}`}>
+    <StyledRadioQuestion data-testid={`JourneysRadioQuestion-${blockId}`}>
       <ButtonGroup orientation="vertical" variant="contained" fullWidth>
         {options}
         {addOption}

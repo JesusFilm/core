@@ -1,0 +1,1 @@
+export { TemplateGalleryCard } from './TemplateGalleryCard'

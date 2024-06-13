@@ -1,60 +1,57 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
-import Button from '@mui/material/Button'
-import Share from '@mui/icons-material/Share'
-import 'video.js/dist/video-js.css'
 
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import { SimpleHero } from '../Hero'
+import { useVideoChildren } from '../../libs/useVideoChildren'
+import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
+import { VideoGrid } from '../VideoGrid/VideoGrid'
 
-interface VideoContainerPageProps {
-  content: VideoContentFields
-}
+import { ContainerDescription } from './ContainerDescription'
+import { ContainerHero } from './ContainerHero'
 
 // Usually Series or Collection Videos
-export function VideoContainerPage({
-  content
-}: VideoContainerPageProps): ReactElement {
-  const [openShare, setOpenShare] = useState(false)
+export function VideoContainerPage(): ReactElement {
+  const { snippet, slug, variant } = useVideo()
+  const { loading, children } = useVideoChildren(variant?.slug)
+  const [shareDialog, setShareDialog] = useState<boolean>(false)
+  const realChildren = children.filter((video) => video.variant !== null)
+  function handleOpenDialog(): void {
+    setShareDialog(true)
+  }
+
+  function handleCloseDialog(): void {
+    setShareDialog(false)
+  }
 
   return (
-    <PageWrapper hero={<SimpleHero video={content} />}>
-      {content != null && (
-        <Container maxWidth="xxl">
-          <Stack
-            direction="row"
-            spacing="100px"
-            sx={{
-              mx: 0,
-              mt: 20,
-              mb: 80,
-              maxWidth: '100%'
-            }}
-          >
-            <Typography variant="body1">{content.snippet[0]?.value}</Typography>
-            <Box width="336px">
-              <Stack direction="row" spacing="20px" mb="40px">
-                <Button variant="outlined" onClick={() => setOpenShare(true)}>
-                  <Share />
-                  &nbsp; Share
-                </Button>
-              </Stack>
-            </Box>
-          </Stack>
-          <ShareDialog
-            open={openShare}
-            video={content}
-            routes={[]}
-            onClose={() => setOpenShare(false)}
+    <PageWrapper hero={<ContainerHero openDialog={handleOpenDialog} />}>
+      <Container maxWidth="xxl" data-testid="VideoContainerPage">
+        <Stack
+          spacing={{ xs: 4, md: 11 }}
+          py={{ xs: 7, md: 17 }}
+          direction="column"
+        >
+          <ContainerDescription
+            value={snippet[0].value}
+            openDialog={handleOpenDialog}
           />
-          {/* Add grid here */}
-        </Container>
-      )}
+          <ShareDialog open={shareDialog} onClose={handleCloseDialog} />
+          <Box>
+            {loading ? (
+              <VideoGrid loading variant="expanded" />
+            ) : (
+              <VideoGrid
+                containerSlug={slug}
+                videos={realChildren}
+                variant="expanded"
+              />
+            )}
+          </Box>
+        </Stack>
+      </Container>
     </PageWrapper>
   )
 }

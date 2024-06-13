@@ -1,13 +1,14 @@
 import { Global, Module } from '@nestjs/common'
-import { DatabaseModule } from '@core/nest/database/DatabaseModule'
-import { JourneyService } from '../journey/journey.service'
-import { UserRoleService } from './userRole.service'
+
+import { PrismaService } from '../../lib/prisma.service'
+
 import { UserRoleResolver } from './userRole.resolver'
+import { UserRoleService } from './userRole.service'
 
 @Global()
 @Module({
-  imports: [DatabaseModule],
-  providers: [UserRoleService, UserRoleResolver, JourneyService],
+  imports: [],
+  providers: [UserRoleService, UserRoleResolver, PrismaService],
   exports: [UserRoleService]
 })
 export class UserRoleModule {}

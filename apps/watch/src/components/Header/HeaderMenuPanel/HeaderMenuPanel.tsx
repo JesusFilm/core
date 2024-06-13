@@ -1,30 +1,31 @@
-import { ReactElement, KeyboardEvent, MouseEvent } from 'react'
-import Paper from '@mui/material/Paper'
-import Button from '@mui/material/Button'
-import FavoriteIcon from '@mui/icons-material/Favorite'
-import IconButton from '@mui/material/IconButton'
-import Stack from '@mui/material/Stack'
 import CloseIcon from '@mui/icons-material/Close'
+import FavoriteIcon from '@mui/icons-material/Favorite'
+import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
 import MuiLink from '@mui/material/Link'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
 
-import logo from '../../../../public/header-logo.svg'
+import logo from '../assets/logo.svg'
 
 interface HeaderMenuPanelProps {
-  toggleDrawer: (
-    anchor: string,
-    open: boolean
-  ) => (event: KeyboardEvent | MouseEvent) => void
+  onClose: () => void
 }
 
 export function HeaderMenuPanel({
-  toggleDrawer
+  onClose
 }: HeaderMenuPanelProps): ReactElement {
   const theme = useTheme()
+
+  const { t } = useTranslation('apps-watch')
 
   const HeaderLink = ({
     url,
@@ -36,12 +37,10 @@ export function HeaderMenuPanel({
     <MuiLink
       href={url}
       underline="none"
-      target="_blank"
       rel="noopener"
       color="text.primary"
       variant="overline2"
-      onClick={toggleDrawer('top', false)}
-      onKeyDown={toggleDrawer('top', false)}
+      onClick={onClose}
     >
       {label}
       <Divider
@@ -51,56 +50,72 @@ export function HeaderMenuPanel({
   )
 
   return (
-    <Paper elevation={0}>
-      <Stack spacing={0.5} direction="row" justifyContent="space-between" p={8}>
-        <NextLink href="/" passHref>
-          <Image
-            src={logo}
-            width="160"
-            height="40"
-            alt="Watch Logo"
-            style={{ cursor: 'pointer' }}
-          />
-        </NextLink>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          edge="start"
-          onClick={toggleDrawer('top', false)}
-        >
-          <CloseIcon />
-        </IconButton>
-      </Stack>
-      <Divider />
-      <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        p={8}
-      >
+    <Paper elevation={0} data-testid="HeaderMenuPanel">
+      <Container maxWidth="xxl" disableGutters>
         <Stack
+          spacing={0.5}
+          direction="row"
           justifyContent="space-between"
-          alignItems={{ sm: 'center' }}
-          spacing={{ xs: 3, sm: 3, md: 8 }}
-          direction={{ xs: 'column', sm: 'row' }}
+          p={8}
         >
-          <HeaderLink url="https://www.jesusfilm.org/about" label="About" />
-          <HeaderLink url="https://www.jesusfilm.org/give" label="Give" />
-          <HeaderLink
-            url="https://www.jesusfilm.org/partners"
-            label="Partner"
-          />
-          <HeaderLink url="https://www.jesusfilm.org/tools" label="Tools" />
-          <HeaderLink url="https://www.jesusfilm.org/blog" label="Blog" />
+          <NextLink href="/watch">
+            <Image
+              src={logo}
+              width="160"
+              height="40"
+              alt="Watch Logo"
+              style={{
+                cursor: 'pointer',
+                maxWidth: '100%',
+                height: 'auto'
+              }}
+            />
+          </NextLink>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={onClose}
+          >
+            <CloseIcon />
+          </IconButton>
         </Stack>
-        <Button
-          startIcon={<FavoriteIcon />}
-          href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
-          target="_blank"
-          rel="noopener"
+      </Container>
+      <Divider />
+      <Container maxWidth="xxl" disableGutters>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between"
+          p={8}
         >
-          <Typography variant="overline2">Give Now</Typography>
-        </Button>
-      </Stack>
+          <Stack
+            justifyContent="space-between"
+            alignItems={{ sm: 'center' }}
+            spacing={{ xs: 3, sm: 3, md: 8 }}
+            direction={{ xs: 'column', sm: 'row' }}
+          >
+            <HeaderLink url="https://www.jesusfilm.org/give/" label="Give" />
+            <HeaderLink url="https://www.jesusfilm.org/about/" label="About" />
+            <HeaderLink
+              url="https://www.jesusfilm.org/partners/"
+              label="Partners"
+            />
+            <HeaderLink url="https://www.jesusfilm.org/blog/" label="Blog" />
+            <HeaderLink url="https://www.jesusfilm.org/tools/" label="Tools" />
+            <HeaderLink
+              url="https://www.jesusfilm.org/contact/"
+              label="Contact"
+            />
+          </Stack>
+          <Button
+            startIcon={<FavoriteIcon />}
+            href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
+            rel="noopener"
+          >
+            <Typography variant="overline2">{t('Give Now')}</Typography>
+          </Button>
+        </Stack>
+      </Container>
     </Paper>
   )
 }

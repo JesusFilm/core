@@ -1,160 +1,254 @@
+import { subject } from '@casl/ability'
+import { UseGuards } from '@nestjs/common'
 import {
   Args,
-  Resolver,
   Mutation,
   Parent,
   Query,
-  ResolveField
+  ResolveField,
+  Resolver
 } from '@nestjs/graphql'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { UseGuards } from '@nestjs/common'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { AuthenticationError, UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
+import omit from 'lodash/omit'
+
 import {
-  IdType,
   Journey,
-  Role,
+  Prisma,
   UserJourney,
   UserJourneyRole
-} from '../../__generated__/graphql'
-import { JourneyService } from '../journey/journey.service'
-import { RoleGuard } from '../../lib/roleGuard/roleGuard'
-import { MemberService } from '../member/member.service'
+} from '.prisma/api-journeys-client'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { User } from '@core/nest/common/firebaseClient'
+import { CurrentUser } from '@core/nest/decorators/CurrentUser'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { UserJourneyService } from './userJourney.service'
 
 @Resolver('UserJourney')
 export class UserJourneyResolver {
   constructor(
-    private readonly userJourneyService: UserJourneyService,
-    private readonly journeyService: JourneyService,
-    private readonly memberService: MemberService
+    private readonly prismaService: PrismaService,
+    private readonly userJourneyService: UserJourneyService
   ) {}
 
   @Query()
-  async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
-    return await this.userJourneyService.forJourney(journey)
+  @UseGuards(AppCaslGuard)
+  async userJourneys(
+    @CaslAccessible('UserJourneys')
+    accessibleUserJourneys: Prisma.UserJourneyWhereInput,
+    @Parent() journey: Journey
+  ): Promise<UserJourney[]> {
+    return await this.prismaService.userJourney.findMany({
+      where: {
+        AND: [accessibleUserJourneys, { journeyId: journey.id }]
+      }
+    })
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(AppCaslGuard)
   async userJourneyRequest(
+    @CaslAbility() ability: AppAbility,
     @Args('journeyId') journeyId: string,
-    @Args('idType') idType: IdType = IdType.slug,
-    @CurrentUserId() userId: string
+    @CurrentUser() user: User
   ): Promise<UserJourney> {
-    const journey: Journey =
-      idType === IdType.slug
-        ? await this.journeyService.getBySlug(journeyId)
-        : await this.journeyService.get(journeyId)
+    return await this.prismaService.$transaction(async (tx) => {
+      const userJourney = await tx.userJourney.upsert({
+        where: { journeyId_userId: { journeyId, userId: user.id } },
+        create: {
+          userId: user.id,
+          journey: { connect: { id: journeyId } },
+          role: UserJourneyRole.inviteRequested
+        },
+        update: {},
+        include: {
+          journey: {
+            include: { userJourneys: true, team: true, primaryImageBlock: true }
+          }
+        }
+      })
+      if (!ability.can(Action.Create, subject('UserJourney', userJourney)))
+        throw new GraphQLError('user is not allowed to create userJourney', {
+          extensions: { code: 'FORBIDDEN' }
+        })
 
-    if (journey == null) throw new UserInputError('journey does not exist')
-
-    return await this.userJourneyService.save({
-      userId,
-      journeyId: journey.id,
-      role: 'inviteRequested'
-    })
-  }
-
-  async checkOwnership(id: string, userId: string): Promise<UserJourney> {
-    // can only update user journey roles if you are the journey's owner.
-    const actor: UserJourney = await this.userJourneyService.forJourneyUser(
-      id,
-      userId
-    )
-
-    if (actor?.role !== UserJourneyRole.owner)
-      throw new AuthenticationError(
-        'You do not own this journey, so you cannot make changes to it'
+      await this.userJourneyService.sendJourneyAccessRequest(
+        userJourney.journey,
+        omit(user, ['id', 'emailVerified'])
       )
-
-    return actor
-  }
-
-  async getUserJourney(id: string): Promise<UserJourney> {
-    const userJourney: UserJourney = await this.userJourneyService.get(id)
-    if (userJourney === null) throw new UserInputError('User journey not found')
-    return userJourney
+      return userJourney
+    })
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(AppCaslGuard)
   async userJourneyApprove(
-    @Args('id') id: string,
-    @CurrentUserId() userId: string
+    @CaslAbility() ability: AppAbility,
+    @CurrentUser() user: User,
+    @Args('id') id: string
   ): Promise<UserJourney> {
-    const userJourney: UserJourney = await this.getUserJourney(id)
-    await this.checkOwnership(userJourney.journeyId, userId)
-
-    const journey = await this.journeyService.get<{ teamId: string }>(
-      userJourney.journeyId
-    )
-
-    await this.memberService.save(
-      {
-        id: `${userId}:${journey.teamId}`,
-        userId,
-        teamId: journey.teamId
-      },
-      { overwriteMode: 'ignore' }
-    )
-
-    return await this.userJourneyService.update(id, {
-      role: UserJourneyRole.editor
+    const userJourney = await this.prismaService.userJourney.findUnique({
+      where: { id },
+      include: {
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true,
+            primaryImageBlock: true
+          }
+        }
+      }
     })
+    if (userJourney == null)
+      throw new GraphQLError('userJourney not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (
+      !ability.can(Action.Update, subject('UserJourney', userJourney), 'role')
+    )
+      throw new GraphQLError('user is not allowed to update userJourney', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    const retVal = await this.prismaService.userJourney.update({
+      where: { id },
+      data: { role: UserJourneyRole.editor }
+    })
+    await this.userJourneyService.sendJourneyApproveEmail(
+      userJourney.journey,
+      userJourney.userId,
+      omit(user, ['id', 'emailVerified'])
+    )
+    return retVal
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(AppCaslGuard)
   async userJourneyPromote(
-    @Args('id') id: string,
-    @CurrentUserId() userId: string
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string
   ): Promise<UserJourney> {
-    const userJourney: UserJourney = await this.getUserJourney(id)
-    const actor: UserJourney = await this.checkOwnership(
-      userJourney.journeyId,
-      userId
+    const userJourney = await this.prismaService.userJourney.findUnique({
+      where: { id },
+      include: {
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+    if (userJourney == null)
+      throw new GraphQLError('userJourney not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (
+      !ability.can(Action.Update, subject('UserJourney', userJourney), 'role')
     )
-    if (actor.userId === userJourney.userId) return actor
+      throw new GraphQLError('user is not allowed to update userJourney', {
+        extensions: { code: 'FORBIDDEN' }
+      })
 
-    const newOwner: UserJourney = await this.userJourneyService.update(id, {
-      role: UserJourneyRole.owner
+    return await this.prismaService.$transaction(async (tx) => {
+      await tx.userJourney.updateMany({
+        where: {
+          journeyId: userJourney.journey.id,
+          role: UserJourneyRole.owner
+        },
+        data: { role: UserJourneyRole.editor }
+      })
+      return await tx.userJourney.update({
+        where: { id },
+        data: { role: UserJourneyRole.owner }
+      })
     })
-
-    await this.userJourneyService.update(actor.id, {
-      role: UserJourneyRole.editor
-    })
-
-    return newOwner
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(AppCaslGuard)
   async userJourneyRemove(
-    @Args('id') id: string,
-    @CurrentUserId() userId: string
-  ): Promise<UserJourney> {
-    const userJourney: UserJourney = await this.getUserJourney(id)
-    await this.checkOwnership(userJourney.journeyId, userId)
-    return await this.userJourneyService.remove(id)
+    @CaslAbility() ability: AppAbility,
+    @Args('id') id: string
+  ): Promise<UserJourney | undefined> {
+    const userJourney = await this.prismaService.userJourney.findUnique({
+      where: { id },
+      include: {
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+    if (userJourney == null)
+      throw new GraphQLError('userJourney not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    if (!ability.can(Action.Delete, subject('UserJourney', userJourney)))
+      throw new GraphQLError('user is not allowed to delete userJourney', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.prismaService.userJourney.delete({ where: { id } })
   }
 
   @Mutation()
-  @UseGuards(
-    GqlAuthGuard,
-    RoleGuard('id', { role: Role.publisher, attributes: { template: true } })
-  )
-  async userJourneyRemoveAll(@Args('id') id: string): Promise<UserJourney[]> {
-    const journey: Journey = await this.journeyService.get(id)
-    const userJourneys = await this.userJourneyService.forJourney(journey)
-    const userJourneyIds: string[] = userJourneys.map((user) => user.id)
+  @UseGuards(AppCaslGuard)
+  async userJourneyRemoveAll(
+    @CaslAccessible(['UserJourney', Action.Delete])
+    accessibleUserJourneys: Prisma.UserJourneyWhereInput,
+    @Args('id') journeyId: string
+  ): Promise<UserJourney[] | undefined> {
+    const userJourneys = await this.prismaService.userJourney.findMany({
+      where: { AND: [accessibleUserJourneys, { journeyId }] }
+    })
+    await this.prismaService.userJourney.deleteMany({
+      where: {
+        AND: [
+          accessibleUserJourneys,
+          { id: { in: userJourneys.map(({ id }) => id) } }
+        ]
+      }
+    })
+    return userJourneys
+  }
 
-    return await this.userJourneyService.removeAll(userJourneyIds)
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async userJourneyOpen(
+    @CaslAbility() ability: AppAbility,
+    @Args('id') journeyId: string,
+    @CurrentUserId() userId: string
+  ): Promise<UserJourney | null> {
+    const userJourney = await this.prismaService.userJourney.findUnique({
+      where: { journeyId_userId: { journeyId, userId } }
+    })
+    if (userJourney == null) return null
+    if (
+      !ability.can(
+        Action.Update,
+        subject('UserJourney', userJourney),
+        'openedAt'
+      )
+    )
+      throw new GraphQLError('user is not allowed to update userJourney', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    return await this.prismaService.userJourney.update({
+      where: { id: userJourney.id },
+      data: { openedAt: new Date() }
+    })
   }
 
   @ResolveField()
-  async journey(@Parent() userJourney: UserJourney): Promise<Journey> {
-    return await this.journeyService.get(userJourney.journeyId)
+  async journey(@Parent() userJourney: UserJourney): Promise<Journey | null> {
+    return await this.prismaService.journey.findUnique({
+      where: { id: userJourney.journeyId }
+    })
   }
 
   @ResolveField('user')

@@ -1,0 +1,1 @@
+export { JourneySharedEmail } from './JourneyShared'

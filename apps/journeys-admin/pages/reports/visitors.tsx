@@ -1,61 +1,54 @@
-import { ReactElement } from 'react'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { useTranslation } from 'react-i18next'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+import { ReactElement } from 'react'
+
 import { PageWrapper } from '../../src/components/PageWrapper'
-import i18nConfig from '../../next-i18next.config'
+import { ReportsNavigation } from '../../src/components/ReportsNavigation'
+import { VisitorsList } from '../../src/components/VisitorsList'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function ReportsVisitorsPage(): ReactElement {
-  const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
 
   return (
     <>
-      <NextSeo title={t('Visitors Report')} />
-      <PageWrapper
-        title={t('Visitors Report')}
-        authUser={AuthUser}
-        router={router}
-      >
-        Visitors report list
+      <NextSeo title={t('Visitors Analytics')} />
+      <PageWrapper title={t('Visitors Analytics')} user={user}>
+        <ReportsNavigation selected="visitors" />
+        <VisitorsList />
       </PageWrapper>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+})(async ({ user, locale, resolvedUrl }) => {
+  if (user == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
+  const { redirect, translations } = await initAndAuthApp({
+    user,
+    locale,
+    resolvedUrl
+  })
+
+  if (redirect != null) return { redirect }
+
   return {
     props: {
-      flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(ReportsVisitorsPage)

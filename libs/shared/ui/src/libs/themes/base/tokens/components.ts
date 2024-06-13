@@ -1,4 +1,5 @@
 import { ThemeOptions } from '@mui/material/styles'
+
 import { spacingThemeToken } from './spacing'
 
 export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
@@ -98,7 +99,7 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           '&:-webkit-autofill': {
             transitionDelay: '9999s',
             transitionProperty: 'background-color, color',
-            '-webkit-box-shadow': 'none'
+            WebkitBoxShadow: 'none'
           }
         }
       }
@@ -117,8 +118,10 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
         root: {
           paddingLeft: 10,
           opacity: 0.7,
-          '&:hover': {
-            opacity: 1
+          '@media (hover: hover)': {
+            '&:hover': {
+              opacity: 1
+            }
           }
         }
       }

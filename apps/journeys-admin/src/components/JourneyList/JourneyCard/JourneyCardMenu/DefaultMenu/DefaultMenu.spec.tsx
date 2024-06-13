@@ -1,32 +1,67 @@
-import { fireEvent, render } from '@testing-library/react'
-import { noop } from 'lodash'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
+
+import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../../../Team/TeamProvider'
+
 import { DefaultMenu } from '.'
+
+const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  request: {
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  },
+  result: jest.fn(() => ({
+    data: {
+      teams: [
+        {
+          id: 'teamId',
+          title: 'Team Title',
+          publicTitle: null,
+          __typename: 'Team',
+          userTeams: [],
+          customDomains: []
+        }
+      ],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
+        lastActiveTeamId: 'teamId'
+      }
+    }
+  }))
+}
 
 describe('DefaultMenu', () => {
   it('should render menu for journey', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <DefaultMenu
-            id="journeyId"
-            slug="journey-slug"
-            status={JourneyStatus.draft}
-            journeyId="journey-id"
-            published={false}
-            setOpenAccessDialog={noop}
-            handleCloseMenu={noop}
-            setOpenTrashDialog={noop}
-          />
+          <TeamProvider>
+            <DefaultMenu
+              id="journeyId"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
   })
@@ -54,9 +89,7 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Access' })).not.toBeInTheDocument()
-    expect(
-      queryByRole('menuitem', { name: 'Duplicate' })
-    ).not.toBeInTheDocument()
+    expect(queryByRole('menuitem', { name: 'Copy to' })).not.toBeInTheDocument()
   })
 
   it('should call correct functions on Access click', () => {
@@ -66,16 +99,18 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <DefaultMenu
-            id="journey-id"
-            slug="journey-slug"
-            status={JourneyStatus.draft}
-            journeyId="journey-id"
-            published={false}
-            setOpenAccessDialog={setOpenAccessDialog}
-            handleCloseMenu={handleCloseMenu}
-            setOpenTrashDialog={noop}
-          />
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={setOpenAccessDialog}
+              handleCloseMenu={handleCloseMenu}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -85,23 +120,29 @@ describe('DefaultMenu', () => {
     expect(handleCloseMenu).toHaveBeenCalled()
   })
 
-  it('should redirect to preview', () => {
+  it('should redirect to preview', async () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <DefaultMenu
-            id="journey-id"
-            slug="journey-slug"
-            status={JourneyStatus.published}
-            journeyId="journey-id"
-            published
-            setOpenAccessDialog={noop}
-            handleCloseMenu={noop}
-            setOpenTrashDialog={noop}
-          />
+          <MockedProvider mocks={[getTeams]}>
+            <TeamProvider>
+              <DefaultMenu
+                id="journey-id"
+                slug="journey-slug"
+                status={JourneyStatus.published}
+                journeyId="journey-id"
+                published
+                setOpenAccessDialog={noop}
+                handleCloseMenu={noop}
+                setOpenTrashDialog={noop}
+              />
+            </TeamProvider>
+          </MockedProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
+    await waitFor(() => expect(getTeams.result).toHaveBeenCalled())
+
     expect(getByRole('menuitem', { name: 'Preview' })).not.toBeDisabled()
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'href',
@@ -113,26 +154,41 @@ describe('DefaultMenu', () => {
     )
   })
 
-  it('should disable preview button', () => {
+  it('should redirect to preview with custom Domain', async () => {
+    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <DefaultMenu
-            id="journey-id"
-            slug="journey-slug"
-            status={JourneyStatus.draft}
-            journeyId="journey-id"
-            published={false}
-            setOpenAccessDialog={noop}
-            handleCloseMenu={noop}
-            setOpenTrashDialog={noop}
-          />
+          <MockedProvider
+            mocks={[{ ...getCustomDomainMock, result }, getTeams]}
+          >
+            <TeamProvider>
+              <DefaultMenu
+                id="journey-id"
+                slug="journey-slug"
+                status={JourneyStatus.published}
+                journeyId="journey-id"
+                published
+                setOpenAccessDialog={noop}
+                handleCloseMenu={noop}
+                setOpenTrashDialog={noop}
+              />
+            </TeamProvider>
+          </MockedProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
+    await waitFor(() => expect(getTeams.result).toHaveBeenCalled())
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(getByRole('menuitem', { name: 'Preview' })).not.toBeDisabled()
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
+      'href',
+      '/api/preview?slug=journey-slug&hostname=example.com'
+    )
+    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+      'target',
+      '_blank'
     )
   })
 
@@ -143,16 +199,18 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <DefaultMenu
-            id="journey-id"
-            slug="journey-slug"
-            status={JourneyStatus.draft}
-            journeyId="journey-id"
-            published={false}
-            setOpenAccessDialog={noop}
-            handleCloseMenu={handleCloseMenu}
-            setOpenTrashDialog={setOpenTrashDialog}
-          />
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={handleCloseMenu}
+              setOpenTrashDialog={setOpenTrashDialog}
+            />
+          </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

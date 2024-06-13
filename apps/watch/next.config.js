@@ -1,49 +1,58 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const withNx = require('@nrwl/next/plugins/with-nx')
-const withPlugins = require('next-compose-plugins')
-const withImages = require('next-images')
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true'
+})
+const { composePlugins, withNx } = require('@nx/next')
+
+const { i18n } = require('./next-i18next.config')
+
 /**
- * @type {import('@nrwl/next/plugins/with-nx').WithNxOptions}
+ * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
+  swcMinify: true,
   images: {
-    domains: [
-      'images.unsplash.com',
-      'localhost',
-      'unsplash.com',
-      'd1wl257kev7hsz.cloudfront.net'
-    ],
-    disableStaticImages: true
+    domains: ['localhost', 'd1wl257kev7hsz.cloudfront.net'],
+    minimumCacheTTL: 31536000
+  },
+  i18n,
+  modularizeImports: {
+    lodash: {
+      transform: 'lodash/{{member}}'
+    }
   },
   nx: {
     // Set this to true if you would like to to use SVGR
     // See: https://github.com/gregberge/svgr
     svgr: false
   },
-  i18n: {
-    locales: [
-      'ar',
-      'de',
-      'en',
-      'es',
-      'fa',
-      'fr',
-      'he',
-      'hi',
-      'id',
-      'ja',
-      'ko',
-      'pt',
-      'ru',
-      'tr',
-      'ur',
-      'vi',
-      'zh-Hans',
-      'zh-Hant'
-    ],
-    defaultLocale: 'en',
-    localeDetection: false
+  productionBrowserSourceMaps: true,
+  typescript: {
+    // handled by github actions
+    ignoreBuildErrors: process.env.CI === 'true'
   },
-  trailingSlash: true
+  eslint: {
+    // handled by github actions
+    ignoreDuringBuilds: process.env.CI === 'true'
+  },
+  transpilePackages: ['shared-ui'],
+  experimental: {
+    outputFileTracingExcludes: {
+      '*': [
+        'node_modules/@swc/core-linux-x64-gnu',
+        'node_modules/@swc/core-linux-x64-musl',
+        'node_modules/esbuild-linux-64/bin'
+      ]
+    }
+  },
+  async redirects() {
+    return [
+      {
+        source: '/bin/jf/watch.html/:videoId/:languageId',
+        destination: '/api/jf/watch.html/:videoId/:languageId',
+        permanent: false
+      }
+    ]
+  }
 }
-module.exports = withPlugins([[withImages], [withNx]], nextConfig)
+module.exports = composePlugins(withBundleAnalyzer, withNx)(nextConfig)

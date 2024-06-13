@@ -2,8 +2,8 @@ export type { TreeBlock } from './TreeBlock'
 export {
   useBlocks,
   nextActiveBlock,
+  previousActiveBlock,
   isActiveBlockOrDescendant,
-  activeBlockVar,
-  previousBlocksVar,
-  treeBlocksVar
+  treeBlocksVar,
+  blockHistoryVar
 } from './block'

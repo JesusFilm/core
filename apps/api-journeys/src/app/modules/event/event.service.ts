@@ -1,22 +1,20 @@
-import { Injectable, Inject } from '@nestjs/common'
-import { BaseService } from '@core/nest/database/BaseService'
-import { DocumentCollection } from 'arangojs/collection'
-import { UserInputError } from 'apollo-server'
-import { aql } from 'arangojs'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+import { Injectable } from '@nestjs/common'
+import { GraphQLError } from 'graphql'
+
+import { JourneyVisitor, Prisma, Visitor } from '.prisma/api-journeys-client'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+
+import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
-import { Visitor, Event } from '../../__generated__/graphql'
 
 @Injectable()
-export class EventService extends BaseService {
-  @Inject(BlockService)
-  private readonly blockService: BlockService
-
-  @Inject(VisitorService)
-  private readonly visitorService: VisitorService
-
-  collection: DocumentCollection = this.db.collection('events')
+export class EventService {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly blockService: BlockService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   async validateBlockEvent(
     userId: string,
@@ -24,20 +22,31 @@ export class EventService extends BaseService {
     stepId: string | null = null
   ): Promise<{
     visitor: Visitor
+    journeyVisitor: JourneyVisitor
     journeyId: string
   }> {
-    const block: { journeyId: string; _key: string } | undefined =
-      await this.blockService.get(blockId)
+    const block = await this.prismaService.block.findUnique({
+      where: { id: blockId },
+      include: { action: true }
+    })
 
     if (block == null) {
-      throw new UserInputError('Block does not exist')
+      throw new GraphQLError('Block does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     }
     const journeyId = block.journeyId
 
-    const visitor = await this.visitorService.getByUserIdAndJourneyId(
-      userId,
-      journeyId
-    )
+    const visitorAndJourneyVisitor =
+      await this.visitorService.getByUserIdAndJourneyId(userId, journeyId)
+
+    if (visitorAndJourneyVisitor == null) {
+      throw new GraphQLError('Visitor does not exist', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+
+    const { visitor, journeyVisitor } = visitorAndJourneyVisitor
 
     const validStep = await this.blockService.validateBlock(
       stepId,
@@ -46,23 +55,21 @@ export class EventService extends BaseService {
     )
 
     if (!validStep) {
-      throw new UserInputError(
+      throw new GraphQLError(
         `Step ID ${
           stepId as string
-        } does not exist on Journey with ID ${journeyId}`
+        } does not exist on Journey with ID ${journeyId}`,
+        { extensions: { code: 'NOT_FOUND' } }
       )
     }
 
-    return { visitor, journeyId }
+    return { visitor, journeyVisitor, journeyId }
   }
 
-  @KeyAsId()
-  async getAllByVisitorId(visitorId: string): Promise<Event[]> {
-    const res = await this.db.query(aql`
-      FOR event IN ${this.collection}
-        FILTER event.visitorId == ${visitorId}
-        RETURN event
-    `)
-    return await res.all()
+  @FromPostgresql()
+  async save<T>(input: Prisma.EventCreateInput): Promise<T> {
+    return (await this.prismaService.event.create({
+      data: input
+    })) as unknown as T
   }
 }

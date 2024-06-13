@@ -1,6 +1,8 @@
 import { Theme } from '@mui/material/styles'
-import { getBaseLight, getBaseDark } from './base/theme'
-import { websiteLight, websiteDark } from './website/theme'
+
+import { getBaseDark, getBaseLight } from './base/theme'
+import { getJourneyUiDark, getJourneyUiLight } from './journeyUi/theme'
+import { websiteDark, websiteLight } from './website/theme'
 
 export enum ThemeMode {
   dark = 'dark',
@@ -9,7 +11,8 @@ export enum ThemeMode {
 
 export enum ThemeName {
   base = 'base',
-  website = 'website'
+  website = 'website',
+  journeyUi = 'journeyUi'
 }
 
 interface ThemeProps {
@@ -27,6 +30,10 @@ export const getTheme = ({
 }: ThemeProps): Theme => {
   const themes = {
     base: { light: getBaseLight(rtl, locale), dark: getBaseDark(rtl, locale) },
+    journeyUi: {
+      light: getJourneyUiLight(rtl, locale),
+      dark: getJourneyUiDark(rtl, locale)
+    },
     website: { light: websiteLight, dark: websiteDark }
   }
   return {

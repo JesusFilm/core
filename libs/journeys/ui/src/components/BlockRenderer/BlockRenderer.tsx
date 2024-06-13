@@ -1,22 +1,12 @@
+import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
-import { Button } from '../Button'
-import { Card } from '../Card'
-import { Image } from '../Image'
-import { GridItem } from '../GridItem'
-import { GridContainer } from '../GridContainer'
-import { RadioOption } from '../RadioOption'
-import { RadioQuestion } from '../RadioQuestion'
-import { SignUp } from '../SignUp'
-import { Step } from '../Step'
-import { Typography } from '../Typography'
-import { Video } from '../Video'
+
 import type { TreeBlock } from '../../libs/block'
 import {
   BlockFields as Block,
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_CardBlock as CardBlock,
-  BlockFields_GridItemBlock as GridItemBlock,
-  BlockFields_GridContainerBlock as GridContainerBlock,
+  BlockFields_FormBlock as FormBlock,
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_RadioQuestionBlock as RadioQuestionBlock,
@@ -26,7 +16,7 @@ import {
   BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../libs/block/__generated__/BlockFields'
-import { TextResponse } from '../TextResponse'
+import { Video } from '../Video'
 
 export interface WrapperProps<T = Block> {
   block: TreeBlock<T>
@@ -39,8 +29,7 @@ export interface WrappersProps {
   Wrapper?: WrapperFn
   ButtonWrapper?: WrapperFn<ButtonBlock>
   CardWrapper?: WrapperFn<CardBlock>
-  GridItemWrapper?: WrapperFn<GridItemBlock>
-  GridContainerWrapper?: WrapperFn<GridContainerBlock>
+  FormWrapper?: WrapperFn<FormBlock>
   ImageWrapper?: WrapperFn<ImageBlock>
   RadioOptionWrapper?: WrapperFn<RadioOptionBlock>
   RadioQuestionWrapper?: WrapperFn<RadioQuestionBlock>
@@ -51,8 +40,94 @@ export interface WrappersProps {
   VideoWrapper?: WrapperFn<VideoBlock>
 }
 
+const DynamicButton = dynamic<TreeBlock<ButtonBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Button" */
+      '../Button'
+    ).then((mod) => mod.Button)
+)
+
+const DynamicCard = dynamic<
+  TreeBlock<CardBlock> & { wrappers?: WrappersProps }
+>(
+  async () =>
+    // eslint-disable-next-line import/no-cycle
+    await import(
+      /* webpackChunkName: "Card" */
+      '../Card'
+    ).then((mod) => mod.Card)
+)
+
+const DynamicForm = dynamic<TreeBlock<FormBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Form" */
+      '../Form'
+    ).then((mod) => mod.Form)
+)
+
+const DynamicImage = dynamic<TreeBlock<ImageBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Image" */
+      '../Image'
+    ).then((mod) => mod.Image)
+)
+
+const DynamicRadioOption = dynamic<TreeBlock<RadioOptionBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "RadioOption" */
+      '../RadioOption'
+    ).then((mod) => mod.RadioOption)
+)
+
+const DynamicRadioQuestion = dynamic<
+  TreeBlock<RadioQuestionBlock> & { wrappers?: WrappersProps }
+>(
+  async () =>
+    await import(
+      /* webpackChunkName: "RadioQuestion" */
+      '../RadioQuestion'
+    ).then((mod) => mod.RadioQuestion)
+)
+
+const DynamicSignUp = dynamic<TreeBlock<SignUpBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "SignUp" */
+      '../SignUp'
+    ).then((mod) => mod.SignUp)
+)
+
+const DynamicStep = dynamic<
+  TreeBlock<StepBlock> & { wrappers?: WrappersProps }
+>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Step" */
+      '../Step'
+    ).then((mod) => mod.Step)
+)
+const DynamicTextResponse = dynamic<TreeBlock<TextResponseBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "TextResponse" */
+      '../TextResponse'
+    ).then((mod) => mod.TextResponse)
+)
+
+const DynamicTypography = dynamic<TreeBlock<TypographyBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Typography" */
+      '../Typography'
+    ).then((mod) => mod.Typography)
+)
+
 interface BlockRenderProps {
-  block: TreeBlock
+  block?: TreeBlock
   wrappers?: WrappersProps
 }
 
@@ -65,8 +140,7 @@ export function BlockRenderer({
   const Wrapper = wrappers?.Wrapper ?? DefaultWrapper
   const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper
   const CardWrapper = wrappers?.CardWrapper ?? DefaultWrapper
-  const GridItemWrapper = wrappers?.GridItemWrapper ?? DefaultWrapper
-  const GridContainerWrapper = wrappers?.GridContainerWrapper ?? DefaultWrapper
+  const FormWrapper = wrappers?.FormWrapper ?? DefaultWrapper
   const ImageWrapper = wrappers?.ImageWrapper ?? DefaultWrapper
   const RadioOptionWrapper = wrappers?.RadioOptionWrapper ?? DefaultWrapper
   const RadioQuestionWrapper = wrappers?.RadioQuestionWrapper ?? DefaultWrapper
@@ -76,7 +150,7 @@ export function BlockRenderer({
   const TypographyWrapper = wrappers?.TypographyWrapper ?? DefaultWrapper
   const VideoWrapper = wrappers?.VideoWrapper ?? DefaultWrapper
 
-  if (block.parentOrder === null) {
+  if (block == null || block?.parentOrder === null) {
     return <></>
   }
 
@@ -85,7 +159,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <ButtonWrapper block={block}>
-            <Button {...block} />
+            <DynamicButton {...block} />
           </ButtonWrapper>
         </Wrapper>
       )
@@ -93,31 +167,23 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <CardWrapper block={block}>
-            <Card {...block} wrappers={wrappers} />
+            <DynamicCard {...block} wrappers={wrappers} />
           </CardWrapper>
         </Wrapper>
       )
-    case 'GridItemBlock':
+    case 'FormBlock':
       return (
         <Wrapper block={block}>
-          <GridItemWrapper block={block}>
-            <GridItem {...block} wrappers={wrappers} />
-          </GridItemWrapper>
-        </Wrapper>
-      )
-    case 'GridContainerBlock':
-      return (
-        <Wrapper block={block}>
-          <GridContainerWrapper block={block}>
-            <GridContainer {...block} wrappers={wrappers} />
-          </GridContainerWrapper>
+          <FormWrapper block={block}>
+            <DynamicForm {...block} />
+          </FormWrapper>
         </Wrapper>
       )
     case 'ImageBlock':
       return (
         <Wrapper block={block}>
           <ImageWrapper block={block}>
-            <Image {...block} alt={block.alt} />
+            <DynamicImage {...block} alt={block.alt} />
           </ImageWrapper>
         </Wrapper>
       )
@@ -125,7 +191,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <RadioOptionWrapper block={block}>
-            <RadioOption {...block} />
+            <DynamicRadioOption {...block} />
           </RadioOptionWrapper>
         </Wrapper>
       )
@@ -133,7 +199,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <RadioQuestionWrapper block={block}>
-            <RadioQuestion {...block} wrappers={wrappers} />
+            <DynamicRadioQuestion {...block} wrappers={wrappers} />
           </RadioQuestionWrapper>
         </Wrapper>
       )
@@ -141,7 +207,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <SignUpWrapper block={block}>
-            <SignUp {...block} />
+            <DynamicSignUp {...block} />
           </SignUpWrapper>
         </Wrapper>
       )
@@ -149,7 +215,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <StepWrapper block={block}>
-            <Step {...block} wrappers={wrappers} />
+            <DynamicStep {...block} wrappers={wrappers} />
           </StepWrapper>
         </Wrapper>
       )
@@ -157,7 +223,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <TextResponseWrapper block={block}>
-            <TextResponse {...block} />
+            <DynamicTextResponse {...block} />
           </TextResponseWrapper>
         </Wrapper>
       )
@@ -165,7 +231,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <TypographyWrapper block={block}>
-            <Typography {...block} />
+            <DynamicTypography {...block} />
           </TypographyWrapper>
         </Wrapper>
       )

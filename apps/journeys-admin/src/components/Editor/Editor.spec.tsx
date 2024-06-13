@@ -1,15 +1,21 @@
-import { render } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { render, screen, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { mockReactFlow } from '../../../test/mockReactFlow'
 import { ThemeProvider } from '../ThemeProvider'
-import { JourneyEdit } from './JourneyEdit'
+
+import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
+
 import { Editor } from '.'
 
 describe('Editor', () => {
@@ -19,6 +25,8 @@ describe('Editor', () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     title: 'my journey',
+    featuredAt: null,
+    strategySlug: null,
     slug: 'my-journey',
     language: {
       __typename: 'Language',
@@ -56,42 +64,131 @@ describe('Editor', () => {
       }
     ] as TreeBlock[],
     primaryImageBlock: null,
+    creatorDescription: null,
+    creatorImageBlock: null,
     userJourneys: [],
     template: null,
     seoTitle: null,
-    seoDescription: null
+    seoDescription: null,
+    chatButtons: [],
+    host: null,
+    team: null,
+    tags: []
   }
 
-  it('should render the element', () => {
-    const { getByText } = render(
-      <MockedProvider>
-        <FlagsProvider>
-          <ThemeProvider>
-            <Editor journey={journey}>
-              <JourneyEdit />
-            </Editor>
-          </ThemeProvider>
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(getByText('Cards')).toBeInTheDocument()
-    expect(getByText('Social Share Appearance')).toBeInTheDocument()
-    expect(getByText('Social Image')).toBeInTheDocument()
+  beforeEach(() => {
+    mockReactFlow()
   })
 
-  it('should display Next Card property', () => {
-    const { getByText } = render(
+  it('should render the Toolbar', () => {
+    render(
       <MockedProvider>
-        <FlagsProvider>
+        <SnackbarProvider>
           <ThemeProvider>
-            <Editor journey={journey} selectedStepId="step0.id">
-              <JourneyEdit />
-            </Editor>
+            <Editor journey={journey} />
           </ThemeProvider>
-        </FlagsProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByText('Next Card')).toBeInTheDocument()
-    expect(getByText('Unlocked Card')).toBeInTheDocument()
+    expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
+  })
+
+  it('should render the Slider', async () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <Editor journey={journey} />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('Slider')).toBeInTheDocument()
+  })
+
+  it('should render the Fab', async () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <Editor journey={journey} />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('Fab')).toBeInTheDocument()
+  })
+
+  it('should set the selected step', async () => {
+    const withTypographyBlock: Journey = {
+      ...journey,
+      blocks: [
+        {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: 'step1.id'
+        },
+        {
+          __typename: 'CardBlock',
+          id: 'card0.id',
+          parentBlockId: 'step0.id',
+          parentOrder: 0,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: ThemeMode.light,
+          themeName: ThemeName.base,
+          fullscreen: false
+        },
+        {
+          __typename: 'TypographyBlock',
+          id: 'heading3',
+          parentBlockId: 'card0.id',
+          parentOrder: 0,
+          content: 'Test selected step',
+          variant: null,
+          color: null,
+          align: null
+        }
+      ]
+    }
+
+    const mockGetStepBlocksWithPosition: MockedResponse<GetStepBlocksWithPosition> =
+      {
+        request: {
+          query: GET_STEP_BLOCKS_WITH_POSITION,
+          variables: {
+            journeyIds: [journey.id]
+          }
+        },
+        result: {
+          data: {
+            blocks: [
+              {
+                __typename: 'StepBlock',
+                id: 'step0.id',
+                x: 0,
+                y: 0
+              }
+            ]
+          }
+        }
+      }
+    render(
+      <MockedProvider mocks={[mockGetStepBlocksWithPosition]}>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <Editor journey={withTypographyBlock} selectedStepId="step0.id" />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('Test selected step')).toBeInTheDocument()
+    )
   })
 })

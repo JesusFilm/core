@@ -10,15 +10,11 @@ export const cache = (): InMemoryCache =>
      initializing InMemoryCache.
    */
     possibleTypes: {
-      Action: [
-        'NavigateAction',
-        'NavigateToBlockAction',
-        'NavigateToJourneyAction',
-        'LinkAction'
-      ],
+      Action: ['NavigateToBlockAction', 'LinkAction', 'EmailAction'],
       Block: [
         'ButtonBlock',
         'CardBlock',
+        'FormBlock',
         'GridContainerBlock',
         'GridItemBlock',
         'IconBlock',
@@ -36,8 +32,32 @@ export const cache = (): InMemoryCache =>
     typePolicies: {
       Query: {
         fields: {
-          videos: offsetLimitPagination(['where'])
+          videos: offsetLimitPagination(['where']),
+          searchUnsplashPhotos: {
+            keyArgs: ['query'],
+            merge(existing, incoming) {
+              return {
+                ...incoming,
+                results: [...(existing?.results ?? []), ...incoming.results]
+              }
+            }
+          },
+          listUnsplashCollectionPhotos: {
+            keyArgs: ['collectionId'],
+            merge(existing, incoming) {
+              return [...(existing ?? []), ...incoming]
+            }
+          }
         }
-      }
+      },
+      Video: {
+        keyFields: ['id', 'variant', ['id']]
+      },
+      Translation: {
+        keyFields: ['value']
+      },
+      LinkAction: { keyFields: ['parentBlockId'] },
+      EmailAction: { keyFields: ['parentBlockId'] },
+      NavigateToBlockAction: { keyFields: ['parentBlockId'] }
     }
   })

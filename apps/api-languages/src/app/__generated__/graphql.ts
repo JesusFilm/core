@@ -7,9 +7,10 @@
 
 /* tslint:disable */
 /* eslint-disable */
-export enum IdType {
-    databaseId = "databaseId",
-    slug = "slug"
+
+export enum CacheControlScope {
+    PUBLIC = "PUBLIC",
+    PRIVATE = "PRIVATE"
 }
 
 export enum LanguageIdType {
@@ -17,17 +18,33 @@ export enum LanguageIdType {
     bcp47 = "bcp47"
 }
 
+export class LanguagesFilter {
+    ids?: Nullable<string[]>;
+}
+
 export class Country {
     __typename?: 'Country';
     id: string;
-    name: Translation[];
-    population: number;
-    continent: Translation[];
-    slug: Translation[];
+    name?: Translation[];
+    population?: Nullable<number>;
+    continent?: Translation[];
     languages: Language[];
-    latitude: number;
-    longitude: number;
-    image?: Nullable<string>;
+    latitude?: Nullable<number>;
+    longitude?: Nullable<number>;
+    flagPngSrc?: Nullable<string>;
+    flagWebpSrc?: Nullable<string>;
+}
+
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract countries(): Country[] | Promise<Country[]>;
+
+    abstract country(id: string): Country | Promise<Country>;
+
+    abstract languages(offset?: Nullable<number>, limit?: Nullable<number>, where?: Nullable<LanguagesFilter>): Language[] | Promise<Language[]>;
+
+    abstract language(id: string, idType?: Nullable<LanguageIdType>): Nullable<Language> | Promise<Nullable<Language>>;
 }
 
 export class Language {
@@ -35,7 +52,7 @@ export class Language {
     id: string;
     bcp47?: Nullable<string>;
     iso3?: Nullable<string>;
-    name: Translation[];
+    name?: Translation[];
 }
 
 export class Translation {
@@ -43,16 +60,6 @@ export class Translation {
     value: string;
     language: Language;
     primary: boolean;
-}
-
-export abstract class IQuery {
-    abstract countries(): Country[] | Promise<Country[]>;
-
-    abstract country(id: string, idType?: Nullable<IdType>): Country | Promise<Country>;
-
-    abstract languages(offset?: Nullable<number>, limit?: Nullable<number>): Language[] | Promise<Language[]>;
-
-    abstract language(id: string, idType?: Nullable<LanguageIdType>): Nullable<Language> | Promise<Nullable<Language>>;
 }
 
 type Nullable<T> = T | null;

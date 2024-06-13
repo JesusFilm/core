@@ -1,129 +1,167 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import Button from '@mui/material/Button'
-import SaveAlt from '@mui/icons-material/SaveAlt'
-import Share from '@mui/icons-material/Share'
-import Tabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
+import { useVideoChildren } from '../../libs/useVideoChildren'
+import { useVideo } from '../../libs/videoContext'
+import { DownloadDialog } from '../DownloadDialog'
+import { PageWrapper } from '../PageWrapper'
+import { ShareButton } from '../ShareButton'
+import { ShareDialog } from '../ShareDialog'
+import { getSlug } from '../VideoCard'
+import { VideoCarousel } from '../VideoCarousel'
+
+import { DownloadButton } from './DownloadButton'
+import { VideoContent } from './VideoContent/VideoContent'
+import { VideoHeading } from './VideoHeading'
+import { VideoHero } from './VideoHero'
+
 import 'video.js/dist/video-js.css'
 
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import { LanguageProvider } from '../../libs/languageContext/LanguageContext'
-import { VideoHero } from '../Hero'
-import { PageWrapper } from '../PageWrapper'
-import { VideosCarousel } from '../Videos/VideosCarousel/VideosCarousel'
-import { ShareDialog } from '../ShareDialog'
-
-interface VideoContentPageProps {
-  container?: VideoContentFields
-  content: VideoContentFields
-}
-
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
-export function VideoContentPage({
-  container,
-  content
-}: VideoContentPageProps): ReactElement {
-  const [tabValue, setTabValue] = useState(0)
+export function VideoContentPage(): ReactElement {
+  const {
+    title,
+    snippet,
+    image,
+    imageAlt,
+    slug,
+    variant,
+    id,
+    label,
+    container,
+    childrenCount
+  } = useVideo()
+  const { loading, children } = useVideoChildren(
+    container?.variant?.slug ?? variant?.slug
+  )
+  const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
-  const handleTabChange = (_event, newValue): void => {
-    setTabValue(newValue)
-  }
+  const [openDownload, setOpenDownload] = useState(false)
+
+  const ogSlug = getSlug(container?.slug, label, variant?.slug)
+  const realChildren = children.filter((video) => video.variant !== null)
 
   return (
-    <LanguageProvider>
-      <PageWrapper hero={<VideoHero video={content} />}>
-        {content != null && (
+    <>
+      <NextSeo
+        title={title[0].value}
+        description={snippet[0].value ?? undefined}
+        openGraph={{
+          type: 'website',
+          title: title[0].value,
+          url: `${
+            process.env.NEXT_PUBLIC_WATCH_URL ??
+            'https://watch-jesusfilm.vercel.app'
+          }${ogSlug}`,
+          description: snippet[0].value ?? undefined,
+          images:
+            image != null
+              ? [
+                  {
+                    url: image,
+                    width: 1080,
+                    height: 600,
+                    alt: imageAlt[0].value,
+                    type: 'image/jpeg'
+                  }
+                ]
+              : []
+        }}
+        facebook={
+          process.env.NEXT_PUBLIC_FACEBOOK_APP_ID != null
+            ? { appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID }
+            : undefined
+        }
+        twitter={{
+          site: '@YourNextStepIs',
+          cardType: 'summary_large_image'
+        }}
+      />
+      <PageWrapper
+        hideHeader
+        hero={
           <>
-            <ThemeProvider
-              themeName={ThemeName.website}
-              themeMode={ThemeMode.dark}
-              nested
+            <VideoHero
+              onPlay={() => setHasPlayed(true)}
+              hasPlayed={hasPlayed}
+            />
+            <Stack
+              sx={{
+                backgroundColor: 'background.default',
+                py:
+                  hasPlayed ||
+                  (container?.childrenCount ?? 0) > 0 ||
+                  childrenCount > 0
+                    ? 5
+                    : 0
+              }}
+              spacing={5}
             >
-              <Paper elevation={0} square sx={{ pt: '20px' }}>
-                <Container maxWidth="xxl">
-                  {/* TODO: combine content and container children? */}
-                  {content?.children.length > 0 && (
-                    <VideosCarousel
-                      videos={content.children}
-                      routePrefix={content.slug}
-                      routeSuffix={content.variant?.slug.split('/')[1]}
-                    />
-                  )}
-                  {container != null && container.children.length > 0 && (
-                    <VideosCarousel
-                      videos={container.children}
-                      routePrefix={container.slug}
-                      routeSuffix={container.variant?.slug.split('/')[1]}
-                    />
-                  )}
-                </Container>
-              </Paper>
-            </ThemeProvider>
-            <Container maxWidth="xxl">
-              <Stack
-                direction="row"
-                spacing="100px"
-                sx={{
-                  mx: 0,
-                  mt: 20,
-                  mb: 80,
-                  maxWidth: '100%'
-                }}
-              >
-                <Box width="100%">
-                  <Tabs
-                    value={tabValue}
-                    onChange={handleTabChange}
-                    aria-label="background tabs"
-                    variant="fullWidth"
-                    centered
-                    sx={{ marginBottom: '40px' }}
-                  >
-                    <Tab
-                      label="Description"
-                      {...tabA11yProps('video-description', 0)}
-                    />
-                  </Tabs>
-                  <TabPanel name="video-description" value={tabValue} index={0}>
-                    <Typography variant="body1">
-                      {content.description[0]?.value}
-                    </Typography>
-                  </TabPanel>
-                </Box>
-                <Box width="336px">
-                  <Stack direction="row" spacing="20px" mb="40px">
-                    <Button variant="outlined">
-                      <SaveAlt />
-                      &nbsp; Download
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      onClick={() => setOpenShare(true)}
-                    >
-                      <Share />
-                      &nbsp; Share
-                    </Button>
-                  </Stack>
-                </Box>
-              </Stack>
-              <ShareDialog
-                open={openShare}
-                video={content}
-                routes={[]}
-                onClose={() => setOpenShare(false)}
+              <VideoHeading
+                loading={loading}
+                hasPlayed={hasPlayed}
+                videos={realChildren}
+                onShareClick={() => setOpenShare(true)}
+                onDownloadClick={() => setOpenDownload(true)}
               />
-            </Container>
+              {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
+                (realChildren.length === children.length ||
+                  realChildren.length > 0) && (
+                  <Box pb={4}>
+                    <VideoCarousel
+                      loading={loading}
+                      videos={realChildren}
+                      containerSlug={container?.slug ?? slug}
+                      activeVideoId={id}
+                    />
+                  </Box>
+                )}
+            </Stack>
           </>
-        )}
+        }
+        testId="VideoContentPage"
+      >
+        <Container maxWidth="xxl" sx={{ mb: 24 }}>
+          <Stack
+            direction="row"
+            spacing="40px"
+            sx={{
+              mx: 0,
+              mt: { xs: 5, md: 10 },
+              mb: { xs: 5, md: 10 },
+              maxWidth: '100%'
+            }}
+          >
+            <VideoContent />
+            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+              <Stack spacing={5} mb={8} direction={{ md: 'column', lg: 'row' }}>
+                {variant != null && variant.downloads.length > 0 && (
+                  <DownloadButton
+                    variant="button"
+                    onClick={() => setOpenDownload(true)}
+                  />
+                )}
+                <ShareButton
+                  variant="button"
+                  onClick={() => setOpenShare(true)}
+                />
+              </Stack>
+            </Box>
+          </Stack>
+          {variant != null && variant.downloads.length > 0 && (
+            <DownloadDialog
+              open={openDownload}
+              onClose={() => {
+                setOpenDownload(false)
+              }}
+            />
+          )}
+          <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
+        </Container>
       </PageWrapper>
-    </LanguageProvider>
+    </>
   )
 }

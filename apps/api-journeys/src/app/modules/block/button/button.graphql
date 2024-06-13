@@ -54,7 +54,10 @@ extend type Mutation {
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
-    journeyId: ID!
     input: ButtonBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): ButtonBlock
 }

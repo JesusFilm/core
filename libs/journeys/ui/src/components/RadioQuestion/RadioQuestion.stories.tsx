@@ -1,18 +1,25 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import type { TreeBlock } from '../../libs/block'
-import { StoryCard } from '../StoryCard'
-import { TypographyVariant } from '../../../__generated__/globalTypes'
-import { Typography } from '../Typography'
-import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
-import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
-const Demo = {
+import { TypographyVariant } from '../../../__generated__/globalTypes'
+import type { TreeBlock } from '../../libs/block'
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
+import { StoryCard } from '../StoryCard'
+import { Typography } from '../Typography'
+
+import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'
+
+const Demo: Meta<typeof RadioQuestion> = {
   ...simpleComponentConfig,
   component: RadioQuestion,
-  title: 'Journeys-Ui/RadioQuestion'
+  title: 'Journeys-Ui/RadioQuestion',
+  parameters: {
+    docs: {
+      source: { type: 'code' }
+    }
+  }
 }
 
 const typographyProps: ComponentProps<typeof Typography> = {
@@ -86,31 +93,38 @@ const submitEventMock: MockedResponse = {
   }
 }
 
-const Template: Story<ComponentProps<typeof RadioQuestion>> = ({ ...args }) => (
-  <MockedProvider mocks={[submitEventMock]}>
-    <StoryCard>
-      <Typography {...typographyProps} />
-      <RadioQuestion {...args} uuid={() => 'uuid'} />
-      <Typography
-        {...typographyProps}
-        content="RadioQuestion is just the button group above"
-        variant={TypographyVariant.body1}
-        parentOrder={2}
-      />
-    </StoryCard>
-  </MockedProvider>
-)
+type Story = StoryObj<typeof RadioQuestion>
 
-export const Default = Template.bind({})
-Default.args = {
-  id: 'Default',
-  children,
-  parentOrder: 1,
-  parentBlockId: 'Step1'
+const Template: Story = {
+  render: ({ ...args }) => (
+    <MockedProvider mocks={[submitEventMock]}>
+      <StoryCard>
+        <Typography {...typographyProps} />
+        <RadioQuestion {...args} uuid={() => 'uuid'} />
+        <Typography
+          {...typographyProps}
+          content="RadioQuestion is just the button group above"
+          variant={TypographyVariant.body1}
+          parentOrder={2}
+        />
+      </StoryCard>
+    </MockedProvider>
+  )
 }
 
-export const RTL = Template.bind({})
-RTL.args = { ...Default.args }
-RTL.parameters = { rtl: true }
+export const Default = {
+  ...Template,
+  args: {
+    id: 'Default',
+    children,
+    parentOrder: 1,
+    parentBlockId: 'Step1'
+  }
+}
 
-export default Demo as Meta
+export const RTL = {
+  args: { ...Default.args },
+  parameters: { rtl: true }
+}
+
+export default Demo

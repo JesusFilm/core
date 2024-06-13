@@ -1,29 +1,61 @@
-const withNx = require('@nrwl/next/plugins/with-nx')
-const withPlugins = require('next-compose-plugins')
-const withImages = require('next-images')
+const { composePlugins, withNx } = require('@nx/next')
+
 const { i18n } = require('./next-i18next.config')
 
 /**
- * @type {import('@nrwl/next/plugins/with-nx').WithNxOptions}
+ * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  i18n,
-  images: {
-    domains: [
-      'images.unsplash.com',
-      'localhost',
-      'unsplash.com',
-      'imagizer.imageshack.com',
-      // arclight image provider - cloudfront
-      'd1wl257kev7hsz.cloudfront.net',
-      'i.ytimg.com'
-    ]
-  },
   nx: {
     // Set this to true if you would like to to use SVGR
     // See: https://github.com/gregberge/svgr
     svgr: false
   },
-  productionBrowserSourceMaps: true
+  i18n,
+  images: {
+    remotePatterns: [
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'unsplash.com' },
+      { protocol: 'https', hostname: 'imagizer.imageshack.com' },
+      // arclight image provider - cloudfront
+      { protocol: 'https', hostname: 'd1wl257kev7hsz.cloudfront.net' },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
+      // cloudflare
+      { protocol: 'https', hostname: 'imagedelivery.net' },
+      {
+        protocol: 'https',
+        hostname: 'customer-209o3ptmsiaetvfx.cloudflarestream.com'
+      },
+      { protocol: 'https', hostname: 'cloudflarestream.com' }
+    ]
+  },
+  productionBrowserSourceMaps: true,
+  typescript: {
+    // handled by github actions
+    ignoreBuildErrors: process.env.CI === 'true'
+  },
+  eslint: {
+    // handled by github actions
+    ignoreDuringBuilds: process.env.CI === 'true'
+  },
+  transpilePackages: ['journeys-ui'],
+  experimental: {
+    outputFileTracingExcludes: {
+      '*': [
+        'node_modules/@swc/core-linux-x64-gnu',
+        'node_modules/@swc/core-linux-x64-musl',
+        'node_modules/esbuild-linux-64/bin'
+      ]
+    }
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/graphql',
+        destination: process.env.GATEWAY_URL
+      }
+    ]
+  }
 }
-module.exports = withPlugins([[withImages], [withNx]], nextConfig)
+module.exports = composePlugins(withNx)(nextConfig)

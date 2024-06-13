@@ -1,8 +1,4 @@
-export interface Translation {
-  languageId: string
-  primary: boolean
-  value: string
-}
+import { Translation } from '@core/nest/common/TranslationModule'
 
 export function TranslationField(
   name: string

@@ -1,55 +1,31 @@
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Dialog } from '@core/shared/ui/Dialog'
-import { useTranslation } from 'react-i18next'
+import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { AuthUser } from 'next-firebase-auth'
-import {
-  GetTrashedJourneys,
-  GetTrashedJourneys_journeys as TrashedJourney
-} from '../../../../__generated__/GetTrashedJourneys'
-import { JourneyCard } from '../JourneyCard'
-import { SortOrder } from '../JourneySort'
-import { sortJourneys } from '../JourneySort/utils/sortJourneys'
+import { ReactElement, useEffect, useState } from 'react'
 
-export const GET_TRASHED_JOURNEYS = gql`
-  query GetTrashedJourneys {
-    journeys: adminJourneys(status: [trashed]) {
-      id
-      title
-      createdAt
-      publishedAt
-      trashedAt
-      description
-      slug
-      themeName
-      themeMode
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      status
-      seoTitle
-      seoDescription
-      userJourneys {
-        id
-        role
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
-    }
-  }
-`
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../__generated__/JourneyFields'
+import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { JourneyCard } from '../JourneyCard'
+import type { JourneyListProps } from '../JourneyList'
+import { sortJourneys } from '../JourneySort/utils/sortJourneys'
+import { LoadingJourneyList } from '../LoadingJourneyList'
+
+const Dialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "core/shared/ui-dynamic/Dialog" */
+      '@core/shared/ui-dynamic/Dialog'
+    ).then((mod) => mod.Dialog),
+  { ssr: false }
+)
 
 export const RESTORE_TRASHED_JOURNEYS = gql`
   mutation RestoreTrashedJourneys($ids: [ID!]!) {
@@ -68,38 +44,19 @@ export const DELETE_TRASHED_JOURNEYS = gql`
     }
   }
 `
-
-interface TrashedJourneyListProps {
-  onLoad: (journeys: string[] | undefined) => void
-  sortOrder?: SortOrder
-  event: string | undefined
-  authUser?: AuthUser
-}
-
 export function TrashedJourneyList({
-  onLoad,
+  user,
   sortOrder,
-  event,
-  authUser
-}: TrashedJourneyListProps): ReactElement {
+  event
+}: JourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, loading, error, refetch } =
-    useQuery<GetTrashedJourneys>(GET_TRASHED_JOURNEYS)
-  const journeys = data?.journeys
-
+  const { data, refetch } = useAdminJourneysQuery({
+    status: [JourneyStatus.trashed],
+    useLastActiveTeamId: true
+  })
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
-    variables: {
-      ids: journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
-    },
-    update(cache, { data }) {
+    update(_cache, { data }) {
       if (data?.journeysRestore != null) {
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
@@ -108,19 +65,8 @@ export function TrashedJourneyList({
       }
     }
   })
-
   const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
-    variables: {
-      ids: journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
-    },
-    update(cache, { data }) {
+    update(_cache, { data }) {
       if (data?.journeysDelete != null) {
         enqueueSnackbar(t('Journeys Deleted'), {
           variant: 'success'
@@ -129,57 +75,69 @@ export function TrashedJourneyList({
       }
     }
   })
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState<
+    boolean | undefined
+  >()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<
+    boolean | undefined
+  >()
 
-  const [openRestoreAll, setOpenRestoreAll] = useState(false)
-  const [openDeleteAll, setOpenDeleteAll] = useState(false)
-
-  const snackbarError = (error: Error): void => {
-    enqueueSnackbar(error.message, {
-      variant: 'error',
-      preventDuplicate: true
-    })
-  }
-
-  const restoreAll = async (): Promise<void> => {
+  async function handleRestoreSubmit(): Promise<void> {
     try {
-      await restoreTrashed()
+      const journeyIds = data?.journeys
+        ?.filter(
+          (journey) =>
+            journey.userJourneys?.find(
+              (userJourney) => userJourney.user?.id === (user?.id ?? '')
+            )?.role === 'owner'
+        )
+        .map((journey) => journey.id)
+      await restoreTrashed({ variables: { ids: journeyIds } })
     } catch (error) {
-      snackbarError(error)
-    }
-    handleClose()
-  }
-
-  const deleteAll = async (): Promise<void> => {
-    try {
-      await deleteTrashed()
-    } catch (error) {
-      snackbarError(error)
-    }
-    handleClose()
-  }
-
-  const handleClose = (): void => {
-    setOpenRestoreAll(false)
-    setOpenDeleteAll(false)
-  }
-
-  const once = useRef(false)
-  useEffect(() => {
-    if (!once.current) {
-      if (!loading && error == null) {
-        onLoad(journeys?.map((journey) => journey.id))
-        once.current = true
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
       }
     }
-  }, [onLoad, loading, error, journeys, once])
+    handleClose()
+  }
+
+  async function handleDeleteSubmit(): Promise<void> {
+    try {
+      const journeyIds = data?.journeys
+        ?.filter(
+          (journey) =>
+            journey.userJourneys?.find(
+              (userJourney) => userJourney.user?.id === (user?.id ?? '')
+            )?.role === 'owner'
+        )
+        .map((journey) => journey.id)
+      await deleteTrashed({ variables: { ids: journeyIds } })
+    } catch (error) {
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
+    }
+    handleClose()
+  }
+
+  function handleClose(): void {
+    setRestoreDialogOpen(false)
+    setDeleteDialogOpen(false)
+  }
 
   useEffect(() => {
     switch (event) {
       case 'restoreAllTrashed':
-        setOpenRestoreAll(true)
+        setRestoreDialogOpen(true)
         break
       case 'deleteAllTrashed':
-        setOpenDeleteAll(true)
+        setDeleteDialogOpen(true)
         break
       case 'refetchTrashed':
         void refetch()
@@ -192,18 +150,35 @@ export function TrashedJourneyList({
   daysAgo.setDate(new Date().getDate() - 40)
 
   const sortedJourneys =
-    journeys != null
-      ? (sortJourneys(journeys, sortOrder) as TrashedJourney[]).filter(
-          (journey) => new Date(journey.trashedAt) > daysAgo
+    data?.journeys != null
+      ? sortJourneys(
+          data.journeys.filter(
+            (journey) => new Date(String(journey.trashedAt)) > daysAgo
+          ),
+          sortOrder
         )
       : undefined
 
   return (
     <>
-      {journeys != null && sortedJourneys != null ? (
-        <>
+      {sortedJourneys == null ? (
+        <LoadingJourneyList hideHelperText />
+      ) : (
+        <Box>
           {sortedJourneys.map((journey) => (
-            <JourneyCard key={journey.id} journey={journey} refetch={refetch} />
+            <JourneyProvider
+              key={journey.id}
+              value={{
+                journey: journey as unknown as JourneyFields,
+                variant: 'admin'
+              }}
+            >
+              <JourneyCard
+                key={journey.id}
+                journey={journey}
+                refetch={refetch}
+              />
+            </JourneyProvider>
           ))}
           {sortedJourneys.length === 0 && (
             <>
@@ -212,73 +187,73 @@ export function TrashedJourneyList({
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-                  pt: 20,
-                  pb: 16,
+                  py: 20,
                   borderBottomLeftRadius: { xs: 0, sm: 12 },
                   borderBottomRightRadius: { xs: 0, sm: 12 },
                   borderTopLeftRadius: 0,
                   borderTopRightRadius: 0
                 }}
               >
-                <Typography variant="subtitle1" align="center" gutterBottom>
+                <Typography variant="subtitle1" align="center">
                   {t('Your trashed journeys will appear here.')}
                 </Typography>
               </Card>
             </>
           )}
-          <span>
-            <Box width="100%" sx={{ textAlign: 'center' }}>
-              <Typography variant="caption">
-                {t('Trashed journeys are moved here for up to 40 days.')}
-              </Typography>
-            </Box>
-          </span>
-        </>
-      ) : (
-        <>
-          {[0, 1, 2].map((index) => (
-            <JourneyCard key={`journeyCard${index}`} />
-          ))}
-        </>
+        </Box>
       )}
-      <Dialog
-        open={openRestoreAll ?? false}
-        onClose={handleClose}
-        dialogTitle={{
-          title: t('Restore Journeys'),
-          closeButton: true
-        }}
-        dialogAction={{
-          onSubmit: restoreAll,
-          submitLabel: t('Restore'),
-          closeLabel: t('Cancel')
-        }}
-      >
-        <Typography>
-          {t(
-            'Are you sure you would like to restore all trashed journeys immediately?'
-          )}
+      <Stack alignItems="center">
+        <Typography
+          variant="caption"
+          align="center"
+          component="div"
+          sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
+        >
+          {t('Trashed journeys are moved here for up to 40 days.')}
         </Typography>
-      </Dialog>
-      <Dialog
-        open={openDeleteAll ?? false}
-        onClose={handleClose}
-        dialogTitle={{
-          title: t('Delete Journeys Forever'),
-          closeButton: true
-        }}
-        dialogAction={{
-          onSubmit: deleteAll,
-          submitLabel: t('Delete Forever'),
-          closeLabel: t('Cancel')
-        }}
-      >
-        <Typography>
-          {t(
-            'Are you sure you would like to permanently delete all trashed journeys immediately?'
-          )}
-        </Typography>
-      </Dialog>
+      </Stack>
+      {restoreDialogOpen != null && (
+        <Dialog
+          open={restoreDialogOpen}
+          onClose={handleClose}
+          dialogTitle={{
+            title: t('Restore Journeys'),
+            closeButton: true
+          }}
+          dialogAction={{
+            onSubmit: handleRestoreSubmit,
+            submitLabel: t('Restore'),
+            closeLabel: t('Cancel')
+          }}
+        >
+          <Typography>
+            {t(
+              'Are you sure you would like to restore all trashed journeys immediately?'
+            )}
+          </Typography>
+        </Dialog>
+      )}
+      {deleteDialogOpen != null && (
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={handleClose}
+          dialogTitle={{
+            title: t('Delete Journeys Forever'),
+            closeButton: true
+          }}
+          dialogAction={{
+            onSubmit: handleDeleteSubmit,
+            submitLabel: t('Delete Forever'),
+            closeLabel: t('Cancel')
+          }}
+        >
+          <Typography>
+            {t(
+              'Are you sure you would like to permanently delete all trashed journeys immediately?'
+            )}
+          </Typography>
+        </Dialog>
+      )}
     </>
   )
 }

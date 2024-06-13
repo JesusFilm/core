@@ -1,14 +1,15 @@
-import { ReactElement, ReactNode } from 'react'
-import MuiMenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import MuiMenuItem from '@mui/material/MenuItem'
+import { ComponentProps, MouseEvent, ReactElement, ReactNode } from 'react'
 
-interface MenuItemProps {
+interface MenuItemProps extends ComponentProps<typeof MuiMenuItem> {
   label: string
   icon: ReactNode
   disabled?: boolean
   openInNew?: boolean
-  onClick?: () => void
+  onClick?: (event: MouseEvent<HTMLElement>) => void
+  testId?: string
 }
 
 export function MenuItem({
@@ -17,6 +18,7 @@ export function MenuItem({
   disabled,
   openInNew,
   onClick,
+  testId,
   // implicitly pass in href
   ...menuItemProps
 }: MenuItemProps): ReactElement {
@@ -31,6 +33,7 @@ export function MenuItem({
       {...newTabProps}
       disabled={disabled}
       onClick={onClick}
+      data-testid={`JourneysAdminMenuItem${testId ?? ''}`}
     >
       <ListItemIcon>{icon}</ListItemIcon>
       <ListItemText>{label}</ListItemText>

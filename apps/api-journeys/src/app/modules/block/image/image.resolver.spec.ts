@@ -1,174 +1,283 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import axios from 'axios'
+import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import {
-  CardBlock,
-  ImageBlock,
   ImageBlockCreateInput,
   ImageBlockUpdateInput
 } from '../../../__generated__/graphql'
-import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { BlockResolver } from '../block.resolver'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
-import { UserRoleService } from '../../userRole/userRole.service'
-import { JourneyService } from '../../journey/journey.service'
+
 import { ImageBlockResolver } from './image.resolver'
 
-jest.mock('axios')
-const mockedAxios = axios as jest.Mocked<typeof axios>
-
-jest.mock('sharp', () => () => ({
-  raw: () => ({
-    ensureAlpha: () => ({
-      toBuffer: () => ({
-        data: new Uint8ClampedArray([]),
-        info: {
-          width: 640,
-          height: 425
-        }
-      })
-    })
-  })
-}))
-
-jest.mock('blurhash', () => {
+jest.mock('./transformInput', () => {
   return {
-    encode: jest.fn(() => 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ')
+    transformInput: jest.fn((input) => ({
+      ...input,
+      width: 640,
+      height: 425,
+      blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
+    }))
   }
 })
 
 describe('ImageBlockResolver', () => {
   let resolver: ImageBlockResolver,
-    blockResolver: BlockResolver,
-    service: BlockService
+    service: BlockService,
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
-  const blockCreate: ImageBlockCreateInput = {
+  const journey = {
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  } as unknown as Journey
+  const block = {
     id: '1',
-    journeyId: '2',
-    parentBlockId: 'parentBlockId',
-    src: 'https://unsplash.it/640/425?image=42',
-    alt: 'grid image'
-  }
-
-  const createdBlock: ImageBlock = {
-    id: '1',
-    journeyId: '2',
-    __typename: 'ImageBlock',
-    parentBlockId: 'parentBlockId',
+    journeyId: 'journeyId',
+    typename: 'ImageBlock',
     parentOrder: 2,
     src: 'https://unsplash.it/640/425?image=42',
     alt: 'grid image',
     width: 640,
     height: 425,
     blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
+  } as unknown as Block
+  const blockWithUserTeam = {
+    ...block,
+    journey
   }
-
-  const parentBlock: CardBlock = {
+  const blockCreateInput: ImageBlockCreateInput = {
+    id: 'blockId',
+    journeyId: 'journeyId',
+    parentBlockId: 'parentBlockId',
+    src: 'https://unsplash.it/640/425?image=42',
+    alt: 'grid image'
+  }
+  const blockUpdateInput: ImageBlockUpdateInput = {
+    parentBlockId: 'parentBlockId',
+    src: 'https://unsplash.it/640/425?image=42',
+    alt: 'grid image'
+  }
+  const parentBlock = {
     id: 'parentBlockId',
-    journeyId: createdBlock.journeyId,
-    __typename: 'CardBlock',
-    parentBlockId: '0',
+    journeyId: 'journeyId',
+    parentBlockId: 'parentBlockId',
     parentOrder: 0,
-    coverBlockId: createdBlock.id,
+    coverBlockId: 'coverBlockId',
     fullscreen: true
-  }
-
-  const blockUpdate: ImageBlockUpdateInput = {
-    src: 'https://unsplash.it/640/425?image=42',
-    alt: 'placeholder image from unsplash'
-  }
-
-  const updatedBlock: ImageBlock = {
-    ...createdBlock,
-    src: 'https://unsplash.it/640/425?image=42',
-    alt: 'placeholder image from unsplash',
-    width: 640,
-    height: 425
-  }
-
+  } as unknown as Block
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn((id) =>
-        id === blockCreate.id ? createdBlock : parentBlock
-      ),
-      getAll: jest.fn(() => [createdBlock, createdBlock]),
-      getSiblings: jest.fn(() => [createdBlock, createdBlock]),
+      getSiblings: jest.fn(() => [block, block]),
       removeBlockAndChildren: jest.fn((input) => input),
-      save: jest.fn((input) => createdBlock),
-      update: jest.fn((id, input) => updatedBlock)
+      update: jest.fn((input) => input)
     })
   }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        BlockResolver,
         blockService,
         ImageBlockResolver,
-        UserJourneyService,
-        UserRoleService,
-        JourneyService,
         {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<ImageBlockResolver>(ImageBlockResolver)
     service = await module.resolve(BlockService)
-  })
-
-  describe('ImageBlock', () => {
-    it('returns ImageBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(createdBlock)
-      expect(await blockResolver.blocks()).toEqual([createdBlock, createdBlock])
-    })
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
   describe('imageBlockCreate', () => {
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+    })
+
     it('creates an ImageBlock', async () => {
-      mockedAxios.get.mockResolvedValue({
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.imageBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.block.create).toHaveBeenCalledWith({
         data: {
-          mockData: 'mockData' // this kinda doesnt matter since sharp returns the data we need, but still need to mock so it doesnt run the API
+          id: 'blockId',
+          journey: { connect: { id: 'journeyId' } },
+          parentBlock: { connect: { id: 'parentBlockId' } },
+          parentOrder: 2,
+          alt: 'grid image',
+          blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ',
+          coverBlockParent: undefined,
+          height: 425,
+          src: 'https://unsplash.it/640/425?image=42',
+          typename: 'ImageBlock',
+          width: 640
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
         }
       })
-
-      await resolver.imageBlockCreate(blockCreate)
-
       expect(service.getSiblings).toHaveBeenCalledWith(
-        blockCreate.journeyId,
-        blockCreate.parentBlockId
+        blockCreateInput.journeyId,
+        blockCreateInput.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(createdBlock)
-      expect(service.update).not.toHaveBeenCalled()
+    })
+
+    it('creates an ImageBlock without parent block', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.imageBlockCreate(ability, {
+          ...blockCreateInput,
+          parentBlockId: null
+        })
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
+          id: 'blockId',
+          journey: { connect: { id: 'journeyId' } },
+          parentBlock: undefined,
+          parentOrder: 2,
+          alt: 'grid image',
+          blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ',
+          coverBlockParent: undefined,
+          height: 425,
+          src: 'https://unsplash.it/640/425?image=42',
+          typename: 'ImageBlock',
+          width: 640
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
     })
 
     it('creates a cover ImageBlock', async () => {
-      await resolver.imageBlockCreate({ ...blockCreate, isCover: true })
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      prismaService.block.findUnique.mockResolvedValueOnce(parentBlock)
+      expect(
+        await resolver.imageBlockCreate(ability, {
+          ...blockCreateInput,
+          isCover: true
+        })
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
+          id: 'blockId',
+          journey: { connect: { id: 'journeyId' } },
+          parentBlock: { connect: { id: 'parentBlockId' } },
+          parentOrder: null,
+          alt: 'grid image',
+          blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ',
+          coverBlockParent: { connect: { id: 'parentBlockId' } },
+          height: 425,
+          src: 'https://unsplash.it/640/425?image=42',
+          typename: 'ImageBlock',
+          width: 640
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+    })
 
-      expect(service.save).toHaveBeenCalledWith({
-        ...createdBlock,
-        isCover: true,
-        parentOrder: null
+    it('throws error if not authorized', async () => {
+      prismaService.block.create.mockResolvedValueOnce(block)
+      await expect(
+        resolver.imageBlockCreate(ability, blockCreateInput)
+      ).rejects.toThrow('user is not allowed to create block')
+    })
+
+    it('throws error if no parentBlockId for cover block', async () => {
+      prismaService.block.create.mockResolvedValueOnce(block)
+      await expect(
+        resolver.imageBlockCreate(ability, {
+          ...blockCreateInput,
+          isCover: true,
+          parentBlockId: null
+        })
+      ).rejects.toThrow('parent block id is required for cover blocks')
+    })
+
+    it('throws error if no parent block found for cover block', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.imageBlockCreate(ability, {
+          ...blockCreateInput,
+          isCover: true
+        })
+      ).rejects.toThrow('parent block not found')
+    })
+
+    it('removes old cover block', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce({
+        ...parentBlock,
+        coverBlock: block
+      } as unknown as Block)
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.imageBlockCreate(ability, {
+        ...blockCreateInput,
+        isCover: true
       })
       expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
-        parentBlock.coverBlockId,
-        parentBlock.journeyId
+        block,
+        prismaService
       )
-      expect(service.update).toHaveBeenCalledWith(parentBlock.id, {
-        coverBlockId: createdBlock.id
-      })
     })
   })
 
   describe('imageBlockUpdate', () => {
     it('updates an ImageBlock', async () => {
-      expect(await resolver.imageBlockUpdate('1', '2', blockUpdate)).toEqual(
-        updatedBlock
-      )
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.imageBlockUpdate(ability, 'blockId', blockUpdateInput)
+      expect(service.update).toHaveBeenCalledWith('blockId', {
+        ...blockUpdateInput,
+        width: 640,
+        height: 425,
+        blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
+      })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.imageBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.imageBlockUpdate(ability, 'blockId', blockUpdateInput)
+      ).rejects.toThrow('user is not allowed to update block')
     })
   })
 })

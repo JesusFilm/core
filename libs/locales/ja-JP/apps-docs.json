@@ -1,0 +1,10 @@
+{
+  "Deploy Quickly": "迅速な展開",
+  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "継続的インテグレーションと継続的デリバリーのパイプラインにより、コード変更をより頻繁かつ確実に提供できます。",
+  "Common Environment": "共通環境",
+  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "我々はDocker上で動いています。これは、すべての開発者が本番環境に近い同じ環境を共有することを意味し、コラボレーションを簡単にします。",
+  "Powered by Typescript": "タイプスクリプト",
+  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScriptはJavaScriptの上に構築された強く型付けされたプログラミング言語であり、あらゆるスケールでより優れたツールを提供する。",
+  "Core Development Kit Documentation": "コア開発キットのドキュメント",
+  "Welcome - 5min ": "ようこそ - 5分 "
+}

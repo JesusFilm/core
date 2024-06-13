@@ -1,8 +1,10 @@
-import { Meta, Story } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/react'
+
 import { watchConfig } from '../../../libs/storybook'
+
 import { HomeHero } from './HomeHero'
 
-const HomeHeroStory = {
+const HomeHeroStory: Meta<typeof HomeHero> = {
   ...watchConfig,
   component: HomeHero,
   title: 'Watch/HomePage/HomeHero',
@@ -11,8 +13,10 @@ const HomeHeroStory = {
   }
 }
 
-const Template: Story = () => <HomeHero />
+const Template: StoryObj<typeof HomeHero> = {
+  render: () => <HomeHero />
+}
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
-export default HomeHeroStory as Meta
+export default HomeHeroStory

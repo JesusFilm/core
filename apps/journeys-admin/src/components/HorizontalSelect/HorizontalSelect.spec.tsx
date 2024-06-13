@@ -1,5 +1,6 @@
-import { render, fireEvent } from '@testing-library/react'
 import Box from '@mui/material/Box'
+import { fireEvent, render } from '@testing-library/react'
+
 import { HorizontalSelect } from '.'
 
 describe('HorizontalSelect', () => {

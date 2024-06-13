@@ -1,7 +1,7 @@
-import { ReactElement } from 'react'
 import MuiLink, { LinkProps } from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
+import { HTMLAttributeAnchorTarget, ReactElement } from 'react'
 
 type ValueOf<T> = T[keyof T]
 
@@ -11,8 +11,10 @@ interface FooterLinkProps {
   variant?: ValueOf<Pick<LinkProps, 'variant'>>
   underline?: ValueOf<Pick<LinkProps, 'underline'>>
   src?: string
-  width?: string
-  height?: string
+  width?: number
+  height?: number
+  target?: HTMLAttributeAnchorTarget
+  noFollow?: boolean
 }
 
 export function FooterLink({
@@ -22,15 +24,18 @@ export function FooterLink({
   underline = 'none',
   src,
   width,
-  height
+  height,
+  target,
+  noFollow = false
 }: FooterLinkProps): ReactElement {
   return (
     <MuiLink
       href={url}
       underline={underline}
-      target="_blank"
-      rel="noopener"
+      target={target}
+      rel={noFollow ? 'nofollow noopener' : 'noopener'}
       color="text.primary"
+      data-testid="FooterLink"
     >
       {src == null ? (
         <Typography variant={variant}>{label}</Typography>
@@ -40,6 +45,10 @@ export function FooterLink({
           width={width ?? 32}
           height={height ?? 32}
           alt={label}
+          style={{
+            maxWidth: '100%',
+            height: 'auto'
+          }}
         />
       )}
     </MuiLink>

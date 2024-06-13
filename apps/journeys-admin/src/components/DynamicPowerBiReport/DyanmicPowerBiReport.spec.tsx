@@ -1,8 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
 import { JourneysReportType } from '../../../__generated__/globalTypes'
+
 import { GET_ADMIN_JOURNEYS_REPORT } from './Report/Report'
+
 import { MemoizedDynamicReport } from '.'
 
 describe('DynamicPowerBiReport', () => {

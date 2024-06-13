@@ -1,132 +1,105 @@
+import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import {
-  mockCollectionRemoveResult,
-  mockCollectionSaveResult,
-  mockDbQueryResult
-} from '@core/nest/database/mock'
-import { DocumentCollection } from 'arangojs/collection'
-import { keyAsId } from '@core/nest/decorators/KeyAsId'
 
-import {
-  Journey,
-  JourneyStatus,
-  ThemeMode,
-  ThemeName,
-  UserJourneyRole
-} from '../../__generated__/graphql'
+import { JourneyWithTeamAndUserJourney } from '../email/email.consumer'
+import { UserJourneyModule } from '../userJourney/userJourney.module'
+
 import { UserJourneyService } from './userJourney.service'
 
 describe('UserJourneyService', () => {
   let service: UserJourneyService
+  let emailQueue
 
   beforeEach(async () => {
+    emailQueue = {
+      add: jest.fn()
+    }
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UserJourneyService,
-        {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
-        }
-      ]
-    }).compile()
+      imports: [UserJourneyModule]
+    })
+      .overrideProvider(getQueueToken('api-journeys-email'))
+      .useValue(emailQueue)
+      .compile()
 
     service = module.get<UserJourneyService>(UserJourneyService)
-    service.collection = mockDeep<DocumentCollection>()
-  })
-  afterAll(() => {
-    jest.resetAllMocks()
   })
 
-  const userJourney = {
-    _key: '1',
-    userId: '1',
-    journeyId: '2',
-    role: UserJourneyRole.editor
-  }
+  describe('sendJourneyApproveEmail', () => {
+    it('should send an email with the correct subject and body', async () => {
+      // Arrange
+      const journey = {
+        id: 'journeyId',
+        title: 'Journey Title',
+        team: {
+          title: 'Ukrainian outreach team Odessa'
+        },
+        primaryImageBlock: {
+          id: 'primaryImageBlockId',
+          src: undefined
+        }
+      } as unknown as JourneyWithTeamAndUserJourney
+      const userId = 'userId'
+      const user = {
+        userId: 'senderUserId',
+        firstName: 'John',
+        lastName: 'Smith',
+        email: 'jsmith@example.com'
+      }
+      // Act
+      await service.sendJourneyApproveEmail(journey, userId, user)
 
-  const userJourneyWithId = keyAsId(userJourney)
-
-  const journey: Journey = {
-    id: '1',
-    title: 'published',
-    language: { id: '529' },
-    themeMode: ThemeMode.light,
-    themeName: ThemeName.base,
-    description: null,
-    primaryImageBlock: null,
-    slug: 'published-slug',
-    createdAt: '',
-    status: JourneyStatus.published
-  }
-
-  describe('forJourney', () => {
-    beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [userJourney, userJourney])
+      // Assert
+      expect(emailQueue.add).toHaveBeenCalledWith(
+        'journey-request-approved',
+        {
+          userId,
+          journey,
+          sender: user,
+          url: expect.stringContaining('/journeys/journeyId')
+        },
+        {
+          removeOnComplete: true,
+          removeOnFail: {
+            age: 24 * 3600
+          }
+        }
       )
     })
-
-    it('should return an array of userjourneys', async () => {
-      expect(await service.forJourney(journey)).toEqual([
-        userJourneyWithId,
-        userJourneyWithId
-      ])
-    })
   })
 
-  describe('forUserJourney', () => {
-    beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [userJourney])
+  describe('sendJourneyAccessRequest', () => {
+    it('should send an email with the correct subject and body', async () => {
+      // Arrange
+      const journey = {
+        id: 'journeyId',
+        title: 'Journey Title',
+        userJourneys: []
+      } as unknown as JourneyWithTeamAndUserJourney
+      const user = {
+        userId: 'senderUserId',
+        firstName: 'John',
+        lastName: 'Smith',
+        email: 'jsmith@example.com'
+      }
+      // Act
+      await service.sendJourneyAccessRequest(journey, user)
+
+      // Assert
+      expect(emailQueue.add).toHaveBeenCalledWith(
+        'journey-access-request',
+        {
+          journey,
+          url: expect.stringContaining('/journeys/journeyId'),
+          sender: user
+        },
+        {
+          removeOnComplete: true,
+          removeOnFail: {
+            age: 24 * 3600
+          }
+        }
       )
-    })
-
-    it('should return a userjourney', async () => {
-      expect(await service.forJourneyUser('1', '2')).toEqual(userJourneyWithId)
-    })
-  })
-
-  describe('remove', () => {
-    beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).remove.mockReturnValue(
-        mockCollectionRemoveResult(service.collection, userJourney)
-      )
-    })
-
-    it('should return a removed userJourney', async () => {
-      expect(await service.remove('1')).toEqual(userJourneyWithId)
-    })
-  })
-
-  describe('save', () => {
-    beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).save.mockReturnValue(
-        mockCollectionSaveResult(service.collection, userJourney)
-      )
-    })
-
-    it('should return a saved userJourney', async () => {
-      expect(await service.save(userJourney)).toEqual(userJourneyWithId)
-    })
-  })
-
-  describe('update', () => {
-    beforeEach(() => {
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).update.mockReturnValue(
-        mockCollectionSaveResult(service.collection, userJourney)
-      )
-    })
-
-    it('should return an updated userJourney', async () => {
-      expect(await service.update('1', userJourney)).toEqual(userJourneyWithId)
     })
   })
 })

@@ -1,0 +1,1 @@
+export { CompactEvent } from './CompactEvent'

@@ -1,30 +1,38 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
-import { noop } from 'lodash'
+
 import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { DeleteJourneyDialogProps } from './DeleteJourneyDialog'
+import { TeamProvider } from '../../../../Team/TeamProvider'
+
 import { DeleteJourneyDialog } from '.'
 
-const DeleteJourneyDialogDemo = {
+const DeleteJourneyDialogDemo: Meta<typeof DeleteJourneyDialog> = {
   ...simpleComponentConfig,
   component: DeleteJourneyDialog,
   title: 'Journeys-Admin/JourneyList/JourneyCard/Menu/Dialogs'
 }
 
-const Template: Story<DeleteJourneyDialogProps> = ({ ...args }) => (
-  <MockedProvider>
-    <SnackbarProvider>
-      <DeleteJourneyDialog {...args} />
-    </SnackbarProvider>
-  </MockedProvider>
-)
-
-export const Delete = Template.bind({})
-Delete.args = {
-  id: 'journey-id',
-  open: true,
-  handleClose: noop
+const Template: StoryObj<typeof DeleteJourneyDialog> = {
+  render: ({ ...args }) => (
+    <MockedProvider>
+      <TeamProvider>
+        <SnackbarProvider>
+          <DeleteJourneyDialog {...args} />
+        </SnackbarProvider>
+      </TeamProvider>
+    </MockedProvider>
+  )
 }
 
-export default DeleteJourneyDialogDemo as Meta
+export const Delete = {
+  ...Template,
+  args: {
+    id: 'journey-id',
+    open: true,
+    handleClose: noop
+  }
+}
+
+export default DeleteJourneyDialogDemo

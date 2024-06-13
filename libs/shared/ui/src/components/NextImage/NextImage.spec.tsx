@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+
 import { NextImage } from '.'
 
 describe('NextImage', () => {
@@ -13,7 +14,6 @@ describe('NextImage', () => {
         objectFit="cover"
       />
     )
-
     expect(getByRole('img')).toHaveAttribute('src')
     expect(getByRole('img')).toHaveStyle(
       'background-image: url(https://blurUrl)'

@@ -1,221 +1,283 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { omit } from 'lodash'
-import {
-  IdType,
-  JourneyStatus,
-  Role,
-  ThemeMode,
-  ThemeName,
-  UserJourneyRole
-} from '../../__generated__/graphql'
-import { UserJourneyService } from '../userJourney/userJourney.service'
-import { JourneyService } from '../journey/journey.service'
-import { UserRoleService } from '../userRole/userRole.service'
-import { MemberService } from '../member/member.service'
+import { Queue } from 'bullmq'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Journey, UserJourney } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import { UserJourneyRole } from '../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { UserJourneyResolver } from './userJourney.resolver'
+import { UserJourneyService } from './userJourney.service'
 
 describe('UserJourneyResolver', () => {
   let resolver: UserJourneyResolver,
-    service: UserJourneyService,
-    mService: MemberService
-
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
   const userJourney = {
-    id: '1',
-    userId: '1',
-    journeyId: '1',
-    role: UserJourneyRole.editor
-  }
-
-  const actorUserJourney = {
-    id: '2',
-    userId: '2',
-    journeyId: '2',
-    role: UserJourneyRole.owner
-  }
-
-  const userJourneyInvited = {
-    id: '1',
-    userId: '1',
-    journeyId: '1',
+    id: 'userJourneyId',
+    userId: 'userId',
     role: UserJourneyRole.inviteRequested
-  }
-
-  const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
-  const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
-
-  const userRole = {
-    id: 'userRole.id',
-    userId: 'user.id',
-    roles: [Role.publisher]
-  }
-
-  const journey = {
-    id: '1',
-    title: 'published',
-    status: JourneyStatus.published,
-    languageId: '529',
-    themeMode: ThemeMode.light,
-    themeName: ThemeName.base,
-    description: null,
-    primaryImageBlockId: '2',
-    slug: 'published-slug',
-    publishedAt,
-    createdAt,
-    teamId: 'jfp-team'
-  }
-
-  const journeyService = {
-    provide: JourneyService,
-    useFactory: () => ({
-      get: jest.fn((id) => (id === journey.id ? journey : undefined)),
-      getBySlug: jest.fn((slug) =>
-        slug === journey.slug ? journey : undefined
-      )
-    })
-  }
+  } as unknown as UserJourney
+  const userJourneyWithJourneyOwner = {
+    id: 'userJourneyId',
+    journey: {
+      id: 'journeyId',
+      userJourneys: [
+        {
+          userId: 'userId',
+          role: UserJourneyRole.owner
+        }
+      ]
+    }
+  } as unknown as UserJourney
 
   const userJourneyService = {
     provide: UserJourneyService,
     useFactory: () => ({
-      get: jest.fn((key) => {
-        if (key === actorUserJourney.id) return actorUserJourney
-        return userJourney
-      }),
-      getAll: jest.fn(() => [userJourney, userJourney]),
-      remove: jest.fn((input) => input),
-      removeAll: jest.fn(() => [userJourney, userJourney]),
-      save: jest.fn((input) => input),
-      update: jest.fn((input) => input),
-      forJourneyUser: jest.fn((key, userId) => {
-        if (userId === actorUserJourney.userId) return actorUserJourney
-        return userJourney
-      }),
-      forJourney: jest.fn(() => [userJourney, userJourney])
-    })
-  }
-
-  const userRoleService = {
-    provide: UserRoleService,
-    useFactory: () => ({
-      getUserRoleById: jest.fn(() => userRole)
-    })
-  }
-
-  const memberService = {
-    provide: MemberService,
-    useFactory: () => ({
-      save: jest.fn((member) => member)
+      sendJourneyApproveEmail: jest.fn().mockResolvedValue(null),
+      sendJourneyAccessRequest: jest.fn().mockResolvedValue(null)
     })
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         UserJourneyResolver,
         userJourneyService,
-        journeyService,
-        userRoleService,
-        memberService
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: Queue,
+          useValue: {
+            add: jest.fn()
+          }
+        }
       ]
     }).compile()
     resolver = module.get<UserJourneyResolver>(UserJourneyResolver)
-    service = await module.resolve(UserJourneyService)
-    mService = module.get<MemberService>(MemberService)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+  })
+
+  describe('userJourneys', () => {
+    it('fetches accessible userJourneys', async () => {
+      prismaService.userJourney.findMany.mockResolvedValueOnce([
+        { id: 'userInviteId' } as unknown as UserJourney
+      ])
+      const userJourneys = await resolver.userJourneys({ OR: [] }, {
+        id: 'journeyId'
+      } as unknown as Journey)
+      expect(prismaService.userJourney.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [{ OR: [] }, { journeyId: 'journeyId' }]
+        }
+      })
+      expect(userJourneys).toEqual([{ id: 'userInviteId' }])
+    })
   })
 
   describe('userJourneyRequest', () => {
-    it('creates a UserJourney when journeyId is databaseId', async () => {
-      await resolver.userJourneyRequest(journey.id, IdType.databaseId, '1')
-      expect(service.save).toHaveBeenCalledWith(
-        omit(userJourneyInvited, ['id'])
-      )
-    })
-    it('creates a UserJourney when journeyId is slug', async () => {
-      await resolver.userJourneyRequest(journey.slug, IdType.slug, '1')
-      expect(service.save).toHaveBeenCalledWith(
-        omit(userJourneyInvited, ['id'])
+    const user = {
+      id: 'userId',
+      firstName: 'John',
+      email: 'jsmith@example.com',
+      emailVerified: true
+    }
+
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (cb) => await cb(prismaService)
       )
     })
 
-    it('throws UserInputError when journey does not exist', async () => {
-      await resolver
-        .userJourneyRequest('randomJourneyId', IdType.databaseId, '1')
-        .catch((error) => {
-          expect(error.message).toEqual('journey does not exist')
-        })
+    it('creates a userJourney', async () => {
+      prismaService.userJourney.upsert.mockResolvedValueOnce(userJourney)
+      expect(
+        await resolver.userJourneyRequest(ability, 'journeyId', user)
+      ).toEqual(userJourney)
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.userJourney.upsert.mockResolvedValueOnce({
+        id: 'userJourneyId'
+      } as unknown as UserJourney)
+      await expect(
+        resolver.userJourneyRequest(ability, 'journeyId', user)
+      ).rejects.toThrow('user is not allowed to create userJourney')
     })
   })
 
   describe('userJourneyApprove', () => {
+    const user = {
+      id: 'userId',
+      firstName: 'John',
+      email: 'jsmith@example.com',
+      emailVerified: true
+    }
+
     it('updates a UserJourney to editor status', async () => {
-      await resolver.userJourneyApprove(userJourney.id, actorUserJourney.userId)
-      expect(service.update).toHaveBeenCalledWith('1', {
-        role: UserJourneyRole.editor
+      prismaService.userJourney.findUnique.mockResolvedValueOnce(
+        userJourneyWithJourneyOwner
+      )
+      await resolver.userJourneyApprove(ability, user, 'userJourneyId')
+      expect(prismaService.userJourney.update).toHaveBeenCalledWith({
+        where: { id: 'userJourneyId' },
+        data: { role: UserJourneyRole.editor }
       })
     })
 
-    it('adds user to team', async () => {
-      await resolver.userJourneyApprove(userJourney.id, actorUserJourney.userId)
-      expect(mService.save).toHaveBeenCalledWith(
-        {
-          id: '2:jfp-team',
-          userId: '2',
-          teamId: 'jfp-team'
-        },
-        { overwriteMode: 'ignore' }
-      )
+    it('throws error if not found', async () => {
+      prismaService.userJourney.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.userJourneyApprove(ability, user, 'userJourneyId')
+      ).rejects.toThrow('userJourney not found')
     })
 
-    it('should not update a UserJourney to editor status', async () => {
-      await resolver
-        .userJourneyApprove(userJourney.id, userJourney.userId)
-        .catch((err) => console.log(err))
-      expect(service.update).not.toHaveBeenCalled()
+    it('throws error if not authorized', async () => {
+      prismaService.userJourney.findUnique.mockResolvedValueOnce(userJourney)
+      await expect(
+        resolver.userJourneyApprove(ability, user, 'userJourneyId')
+      ).rejects.toThrow('user is not allowed to update userJourney')
     })
   })
 
   describe('userJourneyPromote', () => {
     it('updates a UserJourney to owner status', async () => {
-      await resolver
-        .userJourneyPromote(userJourney.id, actorUserJourney.userId)
-        .catch((err) => console.log(err))
-      expect(service.update).toHaveBeenCalledWith('1', {
-        role: UserJourneyRole.owner
+      prismaService.$transaction.mockImplementation(
+        async (cb) => await cb(prismaService)
+      )
+      prismaService.userJourney.findUnique.mockResolvedValueOnce(
+        userJourneyWithJourneyOwner
+      )
+      await resolver.userJourneyPromote(ability, 'userJourneyId')
+      expect(prismaService.userJourney.updateMany).toHaveBeenCalledWith({
+        where: { journeyId: 'journeyId', role: UserJourneyRole.owner },
+        data: { role: UserJourneyRole.editor }
       })
-      expect(service.update).toHaveBeenCalledWith('2', {
-        role: UserJourneyRole.editor
+      expect(prismaService.userJourney.update).toHaveBeenCalledWith({
+        where: { id: 'userJourneyId' },
+        data: { role: UserJourneyRole.owner }
       })
     })
-    it('should not update a UserJourney', async () => {
-      await resolver
-        .userJourneyPromote(userJourney.id, userJourney.userId)
-        .catch((err) => console.log(err))
-      expect(service.update).not.toHaveBeenCalled()
+
+    it('throws error if not found', async () => {
+      prismaService.userJourney.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.userJourneyPromote(ability, 'userJourneyId')
+      ).rejects.toThrow('userJourney not found')
     })
-    it('should not update a UserJourney scenario 2', async () => {
-      await resolver
-        .userJourneyPromote(actorUserJourney.id, actorUserJourney.userId)
-        .catch((err) => console.log(err))
-      expect(service.update).not.toHaveBeenCalled()
+
+    it('throws error if not authorized', async () => {
+      prismaService.userJourney.findUnique.mockResolvedValueOnce(userJourney)
+      await expect(
+        resolver.userJourneyPromote(ability, 'userJourneyId')
+      ).rejects.toThrow('user is not allowed to update userJourney')
     })
   })
 
   describe('userJourneyRemove', () => {
     it('removes a UserJourney', async () => {
-      await resolver
-        .userJourneyRemove(actorUserJourney.id, actorUserJourney.userId)
-        .catch((err) => console.log(err))
-      expect(service.remove).toHaveBeenCalledWith(actorUserJourney.id)
+      prismaService.userJourney.findUnique.mockResolvedValueOnce(
+        userJourneyWithJourneyOwner
+      )
+      await resolver.userJourneyRemove(ability, 'userJourneyId')
+      expect(prismaService.userJourney.delete).toHaveBeenCalledWith({
+        where: { id: 'userJourneyId' }
+      })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.userJourney.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.userJourneyRemove(ability, 'userJourneyId')
+      ).rejects.toThrow('userJourney not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.userJourney.findUnique.mockResolvedValueOnce(userJourney)
+      await expect(
+        resolver.userJourneyRemove(ability, 'userJourneyId')
+      ).rejects.toThrow('user is not allowed to delete userJourney')
     })
   })
 
   describe('userJourneyRemoveAll', () => {
     it('removes all userJourneys', async () => {
-      await resolver.userJourneyRemoveAll(journey.id)
-      expect(service.removeAll).toHaveBeenCalledWith([
-        userJourney.id,
-        userJourney.id
+      prismaService.userJourney.findMany.mockResolvedValue([
+        userJourney,
+        userJourney
       ])
+      await resolver.userJourneyRemoveAll({ OR: [] }, 'journeyId')
+      expect(prismaService.userJourney.deleteMany).toHaveBeenCalledWith({
+        where: {
+          AND: [{ OR: [] }, { id: { in: [userJourney.id, userJourney.id] } }]
+        }
+      })
+    })
+  })
+
+  describe('UserJourneyOpen', () => {
+    beforeAll(() => {
+      jest.useFakeTimers()
+      jest.setSystemTime(new Date('2021-02-18'))
+    })
+
+    afterAll(() => {
+      jest.useRealTimers()
+    })
+
+    it('updates openedAt', async () => {
+      prismaService.userJourney.findUnique.mockResolvedValue(userJourney)
+      await resolver.userJourneyOpen(ability, 'userJourneyId', 'userId')
+      expect(prismaService.userJourney.update).toHaveBeenCalledWith({
+        where: { id: userJourney.id },
+        data: {
+          openedAt: new Date()
+        }
+      })
+    })
+
+    it('returns null if not found', async () => {
+      prismaService.userJourney.findUnique.mockResolvedValueOnce(null)
+      expect(
+        await resolver.userJourneyOpen(ability, 'userJourneyId', 'userId')
+      ).toBeNull()
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.userJourney.findUnique.mockResolvedValueOnce({
+        ...userJourney,
+        userId: 'unknownUserId'
+      })
+      await expect(
+        resolver.userJourneyOpen(ability, 'userJourneyId', 'userId')
+      ).rejects.toThrow('user is not allowed to update userJourney')
+    })
+  })
+
+  describe('journey', () => {
+    it('returns associated journey', async () => {
+      await resolver.journey({ ...userJourney, journeyId: 'journeyId' })
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        where: { id: 'journeyId' }
+      })
+    })
+  })
+
+  describe('user', () => {
+    it('returns user reference', async () => {
+      expect(await resolver.user(userJourney)).toEqual({
+        __typename: 'User',
+        id: 'userId'
+      })
     })
   })
 })

@@ -7,6 +7,12 @@
 
 /* tslint:disable */
 /* eslint-disable */
+
+export enum CacheControlScope {
+    PUBLIC = "PUBLIC",
+    PRIVATE = "PRIVATE"
+}
+
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
@@ -18,7 +24,9 @@ export enum VideoLabel {
     featureFilm = "featureFilm",
     segment = "segment",
     series = "series",
-    shortFilm = "shortFilm"
+    shortFilm = "shortFilm",
+    trailer = "trailer",
+    behindTheScenes = "behindTheScenes"
 }
 
 export enum VideoVariantDownloadQuality {
@@ -30,13 +38,14 @@ export class VideosFilter {
     availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
     labels?: Nullable<VideoLabel[]>;
+    ids?: Nullable<string[]>;
+    subtitleLanguageIds?: Nullable<string[]>;
 }
 
-export class Translation {
-    __typename?: 'Translation';
-    value: string;
-    language: Language;
-    primary: boolean;
+export class LanguageWithSlug {
+    __typename?: 'LanguageWithSlug';
+    language?: Nullable<Language>;
+    slug?: Nullable<string>;
 }
 
 export class Video {
@@ -44,18 +53,28 @@ export class Video {
     id: string;
     label: VideoLabel;
     primaryLanguageId: string;
-    title: Translation[];
-    seoTitle: Translation[];
-    snippet: Translation[];
-    description: Translation[];
-    studyQuestions: Translation[];
+    title?: Translation[];
+    snippet?: Translation[];
+    description?: Translation[];
+    studyQuestions?: Translation[];
     image?: Nullable<string>;
-    imageAlt: Translation[];
+    imageAlt?: Translation[];
     variantLanguages: Language[];
+    variantLanguagesCount: number;
     slug: string;
     noIndex?: Nullable<boolean>;
     children: Video[];
+    childrenCount: number;
+    variantLanguagesWithSlug: LanguageWithSlug[];
     variant?: Nullable<VideoVariant>;
+}
+
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
+
+    abstract video(id: string, idType?: Nullable<IdType>): Nullable<Video> | Promise<Nullable<Video>>;
 }
 
 export class VideoVariantDownload {
@@ -72,18 +91,20 @@ export class VideoVariant {
     downloads: VideoVariantDownload[];
     duration: number;
     language: Language;
-    subtitle: Translation[];
+    subtitle?: Translation[];
+    subtitleCount: number;
     slug: string;
+}
+
+export class Translation {
+    __typename?: 'Translation';
+    value: string;
+    language: Language;
+    primary: boolean;
 }
 
 export class Language {
     id: string;
-}
-
-export abstract class IQuery {
-    abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
-
-    abstract video(id: string, idType?: Nullable<IdType>): Video | Promise<Video>;
 }
 
 type Nullable<T> = T | null;

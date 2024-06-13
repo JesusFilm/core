@@ -1,16 +1,17 @@
+import { expect } from '@storybook/jest'
+import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
-import { noop } from 'lodash'
-import {
-  VideoContentFields,
-  VideoContentFields_children
-} from '../../../__generated__/VideoContentFields'
+
+import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
-import { videos } from '../Videos/testData'
+import { VideoProvider } from '../../libs/videoContext'
+import { videos } from '../Videos/__generated__/testData'
+
 import { ShareDialog } from './ShareDialog'
 
-const ShareDialogStory = {
+const ShareDialogStory: Meta<typeof ShareDialog> = {
   ...watchConfig,
   component: ShareDialog,
   title: 'Watch/ShareDialog',
@@ -26,56 +27,81 @@ const video: VideoContentFields = {
     __typename: 'VideoVariant',
     duration: videos[0].variant?.duration ?? 0,
     hls: 'https://arc.gt/4jz75',
+    downloads: [],
     language: {
       __typename: 'Language',
       id: '529',
       name: [
         {
           __typename: 'Translation',
-          value: 'English'
+          value: 'English',
+          primary: true
         }
       ]
     },
-    slug: `${videos[0].slug}/english`
+    slug: `${videos[0].slug}/english`,
+    subtitleCount: 1
   },
   description: videos[0].snippet,
   studyQuestions: [],
-  children: []
+  childrenCount: 0
 }
 
 const routes = ['the-story-of-jesus-for-children']
 
-const Template: Story<ComponentProps<typeof ShareDialog>> = ({ ...args }) => {
-  return <ShareDialog {...args} />
+type Story = StoryObj<
+  ComponentProps<typeof ShareDialog> & { video: VideoContentFields }
+>
+
+const Template: Story = {
+  render: ({ ...args }) => {
+    return (
+      <VideoProvider value={{ content: args.video }}>
+        <ShareDialog {...args} />
+      </VideoProvider>
+    )
+  }
 }
 
-export const Basic = Template.bind({})
-Basic.args = {
-  open: true,
-  onClose: noop,
-  video: {
-    ...video,
-    children: [{ id: '1' }] as unknown as VideoContentFields_children[]
+export const Basic = {
+  ...Template,
+  args: {
+    open: true,
+    onClose: noop,
+    video: {
+      ...video,
+      childrenCount: 1
+    },
+    routes
+  }
+}
+
+export const ShareLink = {
+  ...Template,
+  args: {
+    ...Basic.args,
+    video
   },
-  routes
+  play: async () => {
+    await userEvent.click(screen.getByRole('button', { name: 'Copy Link' }))
+  }
 }
 
-export const ShareLink = Template.bind({})
-ShareLink.args = {
-  ...Basic.args,
-  video
-}
-ShareLink.play = () => {
-  userEvent.click(screen.getByRole('button', { name: 'Copy Link' }))
+export const EmbedCode = {
+  ...Template,
+  args: {
+    ...ShareLink.args
+  },
+  play: async () => {
+    await userEvent.click(screen.getByRole('tab', { name: 'Embed Code' }))
+    await waitFor(
+      async () =>
+        await expect(
+          screen.getByRole('button', { name: 'Copy Code' })
+        ).toBeInTheDocument()
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Copy Code' }))
+  }
 }
 
-export const EmbedCode = Template.bind({})
-EmbedCode.args = {
-  ...ShareLink.args
-}
-EmbedCode.play = () => {
-  userEvent.click(screen.getByRole('tab', { name: 'Embed Code' }))
-  userEvent.click(screen.getByRole('button', { name: 'Copy Code' }))
-}
-
-export default ShareDialogStory as Meta
+export default ShareDialogStory

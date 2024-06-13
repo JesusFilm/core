@@ -1,26 +1,19 @@
+import { gql, useQuery } from '@apollo/client'
+import { useRouter } from 'next/router'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import {
-  AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
-} from 'next-firebase-auth'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-import { gql, useQuery } from '@apollo/client'
-import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/router'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { PageWrapper } from '../../src/components/PageWrapper'
-import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
+
 import { GetPublisher } from '../../__generated__/GetPublisher'
-import i18nConfig from '../../next-i18next.config'
-import { JourneyView } from '../../src/components/JourneyView'
+import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
 import { Role } from '../../__generated__/globalTypes'
+import { Editor } from '../../src/components/Editor'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
-import { Menu } from '../../src/components/JourneyView/Menu'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 
 export const GET_PUBLISHER_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -40,10 +33,9 @@ export const GET_PUBLISHER = gql`
   }
 `
 
-function TemplateDetailsAdmin(): ReactElement {
+function TemplateEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const AuthUser = useAuthUser()
   const { data } = useQuery<GetPublisherTemplate>(GET_PUBLISHER_TEMPLATE, {
     variables: { id: router.query.journeyId }
   })
@@ -52,31 +44,23 @@ function TemplateDetailsAdmin(): ReactElement {
     Role.publisher
   )
 
+  useInvalidJourneyRedirect(data)
   return (
     <>
       {isPublisher === true && (
         <>
           <NextSeo
-            title={data?.publisherTemplate?.title ?? t('Template Details')}
+            title={
+              data?.publisherTemplate?.title != null
+                ? t('Edit {{title}}', { title: data.publisherTemplate.title })
+                : t('Edit Journey')
+            }
             description={data?.publisherTemplate?.description ?? undefined}
           />
-          <JourneyProvider
-            value={{
-              journey: data?.publisherTemplate ?? undefined,
-              admin: true
-            }}
-          >
-            <PageWrapper
-              title={t('Template Details')}
-              authUser={AuthUser}
-              showDrawer
-              backHref="/publisher"
-              menu={<Menu />}
-              router={router}
-            >
-              <JourneyView journeyType="Template" />
-            </PageWrapper>
-          </JourneyProvider>
+          <Editor
+            journey={data?.publisherTemplate ?? undefined}
+            selectedStepId={router.query.stepId as string | undefined}
+          />
         </>
       )}
       {data?.publisherTemplate != null && isPublisher !== true && (
@@ -89,30 +73,27 @@ function TemplateDetailsAdmin(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+})(async ({ user, locale, resolvedUrl }) => {
+  if (user == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
+  const { redirect, translations } = await initAndAuthApp({
+    user,
+    locale,
+    resolvedUrl
+  })
+
+  if (redirect != null) return { redirect }
+
   return {
     props: {
-      flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateDetailsAdmin)
+})(TemplateEditPage)

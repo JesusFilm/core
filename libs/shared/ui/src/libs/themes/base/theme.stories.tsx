@@ -1,24 +1,24 @@
-import { useState, useEffect, ReactElement } from 'react'
-import { Story, Meta } from '@storybook/react'
-import Box from '@mui/material/Box'
-import Typography, { TypographyProps } from '@mui/material/Typography'
-import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import {
-  useTheme,
+  Breakpoint,
   PaletteColor,
   PaletteOptions,
   SimplePaletteColorOptions,
-  Breakpoint,
-  styled
+  styled,
+  useTheme
 } from '@mui/material/styles'
+import TextField from '@mui/material/TextField'
+import Typography, { TypographyProps } from '@mui/material/Typography'
+import { Meta, StoryObj } from '@storybook/react'
+import { ReactElement, useEffect, useState } from 'react'
 
+import { ThemeMode, ThemeName, getTheme } from '..'
 import { simpleComponentConfig } from '../../simpleComponentConfig'
 import { useBreakpoints } from '../../useBreakpoints'
-import { getTheme, ThemeMode, ThemeName } from '..'
 
-const ThemeDemo = {
+const ThemeDemo: Meta<typeof Typography> = {
   ...simpleComponentConfig,
   component: Typography,
   title: 'Default Theme',
@@ -176,14 +176,16 @@ const ColorTokens = ({
   )
 }
 
-const ColorTemplate: Story<ColorStoryProps> = (args) => (
-  <ColorTokens {...args} />
-)
+const ColorTemplate: StoryObj<typeof ColorTokens> = {
+  render: (args) => <ColorTokens {...args} />
+}
 
-export const Colors = ColorTemplate.bind({})
-Colors.args = {
-  mainColor: ['light', 'main', 'dark'],
-  overrideColors: ['primary', 'secondary', 'error']
+export const Colors = {
+  ...ColorTemplate,
+  args: {
+    mainColor: ['light', 'main', 'dark'],
+    overrideColors: ['primary', 'secondary', 'error']
+  }
 }
 
 // Make sure this is consistent with palette in colors.ts
@@ -243,16 +245,18 @@ const PaletteTokens = ({
   )
 }
 
-const PaletteTemplate: Story<ThemeStoryProps> = (args) => (
-  <PaletteTokens {...args} variants={args.variants} />
-)
-
-export const FullPalette = PaletteTemplate.bind({})
-FullPalette.args = {
-  variants: [...Object.keys(palette)]
+const PaletteTemplate: StoryObj<typeof PaletteTokens> = {
+  render: (args) => <PaletteTokens {...args} variants={args.variants} />
 }
 
-const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
+export const FullPalette = {
+  ...PaletteTemplate,
+  args: {
+    variants: [...Object.keys(palette)]
+  }
+}
+
+const ViewportComponent = (args: ThemeStoryProps): ReactElement => {
   const theme = useTheme()
   const [width, setWidth] = useState(window.innerWidth)
   const [height, setHeight] = useState(window.innerHeight)
@@ -381,34 +385,40 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
   )
 }
 
+const ViewportTemplate: StoryObj<typeof ViewportComponent> = {
+  render: (args) => <ViewportComponent {...args} />
+}
+
 const breakpoints = getTheme({
   themeName: ThemeName.base,
   themeMode: ThemeMode.light
 }).breakpoints
 
-export const Viewport = ViewportTemplate.bind({})
-Viewport.args = {
-  // Height of viewport will alter breakpoints display.
-  variants: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl']
-}
-Viewport.parameters = {
-  layout: 'fullscreen',
-  chromatic: {
-    viewports: [
-      breakpoints.values.sm - 1,
-      breakpoints.values.sm,
-      // Change to 960px when Chromatic can configure height
-      breakpoints.values.md - 1,
-      breakpoints.values.md,
-      breakpoints.values.lg - 1,
-      breakpoints.values.lg,
-      breakpoints.values.xl - 1,
-      breakpoints.values.xl,
-      breakpoints.values.xxl - 1,
-      breakpoints.values.xxl
-    ]
+export const Viewport = {
+  ...ViewportTemplate,
+  args: {
+    // Height of viewport will alter breakpoints display.
+    variants: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl']
   },
-  theme: 'dark'
+  parameters: {
+    layout: 'fullscreen',
+    chromatic: {
+      viewports: [
+        breakpoints.values.sm - 1,
+        breakpoints.values.sm,
+        // Change to 960px when Chromatic can configure height
+        breakpoints.values.md - 1,
+        breakpoints.values.md,
+        breakpoints.values.lg - 1,
+        breakpoints.values.lg,
+        breakpoints.values.xl - 1,
+        breakpoints.values.xl,
+        breakpoints.values.xxl - 1,
+        breakpoints.values.xxl
+      ]
+    },
+    theme: 'dark'
+  }
 }
 
 const StyledButton = styled(Button)(({ theme }) => ({
@@ -423,57 +433,61 @@ const StyledButton = styled(Button)(({ theme }) => ({
   padding: '14px 10px 14px 14px'
 }))
 
-const RightToLeftTemplate: Story = () => {
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        height: 600,
-        m: '20%'
-      }}
-    >
-      <Typography variant="body1" gutterBottom>
-        Text Component
-      </Typography>
-      <Typography variant="h2" gutterBottom>
-        Right To Left
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        Native Button Component
-      </Typography>
-      <button
-        style={{
-          height: '50px',
-          width: '200px',
-          borderRadius: 10,
-          marginBottom: 10
+const RightToLeftTemplate: StoryObj<typeof StyledButton> = {
+  render: () => {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          height: 600,
+          m: '20%'
         }}
       >
-        Native Button
-      </button>
-      <Typography variant="body1" gutterBottom>
-        MUI Component - Text Field
-      </Typography>
-      <TextField label="Filled" variant="filled" />
-      <Typography variant="body1" gutterBottom sx={{ mt: 2 }}>
-        MUI Styled Component - Styled Button
-      </Typography>
-      <StyledButton
-        variant="contained"
-        fullWidth
-        startIcon={<CheckCircleIcon />}
-      >
-        Styled Button
-      </StyledButton>
-    </Box>
-  )
+        <Typography variant="body1" gutterBottom>
+          Text Component
+        </Typography>
+        <Typography variant="h2" gutterBottom>
+          Right To Left
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          Native Button Component
+        </Typography>
+        <button
+          style={{
+            height: '50px',
+            width: '200px',
+            borderRadius: 10,
+            marginBottom: 10
+          }}
+        >
+          Native Button
+        </button>
+        <Typography variant="body1" gutterBottom>
+          MUI Component - Text Field
+        </Typography>
+        <TextField label="Filled" variant="filled" />
+        <Typography variant="body1" gutterBottom sx={{ mt: 2 }}>
+          MUI Styled Component - Styled Button
+        </Typography>
+        <StyledButton
+          variant="contained"
+          fullWidth
+          startIcon={<CheckCircleIcon />}
+        >
+          Styled Button
+        </StyledButton>
+      </Box>
+    )
+  }
 }
 
-export const RightToLeft = RightToLeftTemplate.bind({})
-RightToLeft.parameters = {
-  rtl: true
+export const RightToLeft = {
+  ...RightToLeftTemplate,
+  parameters: {
+    rtl: true
+  }
 }
 
-export default ThemeDemo as Meta
+export default ThemeDemo

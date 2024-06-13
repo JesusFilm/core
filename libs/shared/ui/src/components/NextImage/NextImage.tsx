@@ -1,11 +1,20 @@
+import { SxProps, styled } from '@mui/material/styles'
+import Image, { ImageProps } from 'next/legacy/image'
 import { ReactElement } from 'react'
-import Image, { ImageProps } from 'next/image'
-import { styled } from '@mui/material/styles'
+
+interface NextImageProps extends ImageProps {
+  sx?: SxProps
+}
 
 const StyledNextImage = styled(Image)({
   filter: 'none !important'
 })
 
-export function NextImage({ ...props }: ImageProps): ReactElement {
+// Safari doesn't yet support priority image loading
+// https://bugs.webkit.org/show_bug.cgi?id=231150
+export function NextImage({
+  priority,
+  ...props
+}: NextImageProps): ReactElement {
   return <StyledNextImage {...props} />
 }

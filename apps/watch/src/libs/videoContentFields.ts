@@ -1,8 +1,6 @@
 import { gql } from '@apollo/client'
-import { VIDEO_CHILD_FIELDS } from './videoChildFields'
 
 export const VIDEO_CONTENT_FIELDS = gql`
-  ${VIDEO_CHILD_FIELDS}
   fragment VideoContentFields on Video {
     id
     label
@@ -22,21 +20,27 @@ export const VIDEO_CONTENT_FIELDS = gql`
     title(languageId: $languageId, primary: true) {
       value
     }
-    variant {
+    variant(languageId: $languageId) {
       id
       duration
       hls
+      downloads {
+        quality
+        size
+        url
+      }
       language {
         id
-        name(languageId: $languageId, primary: true) {
+        name {
           value
+          primary
         }
       }
       slug
+      subtitleCount
     }
+    variantLanguagesCount
     slug
-    children {
-      ...VideoChildFields
-    }
+    childrenCount
   }
 `

@@ -1,66 +1,77 @@
-import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
 
-import JesusHeader from '../../../../public/images/jesus-header.svg'
+import { HeroOverlay } from '../../HeroOverlay'
+
+import JesusHeader from './assets/jesus.jpg'
 
 export function HomeHero(): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
   return (
     <Box
       sx={{
         height: { xs: 502, lg: 777 },
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        position: 'relative'
+        position: 'relative',
+        backgroundColor: 'background.default'
       }}
+      data-testid="HomeHero"
     >
       <Image
         src={JesusHeader}
-        alt="Home Hero"
-        layout="fill"
-        objectFit="cover"
+        alt="Jesus Film Project"
+        placeholder="blur"
+        priority
+        fill
+        sizes="100vw"
+        style={{
+          objectFit: 'cover'
+        }}
       />
-      <Box
+      <HeroOverlay
         sx={{
-          zIndex: 1,
-          position: 'absolute',
-          height: '100%',
-          width: '100%',
           background:
-            'linear-gradient(180deg, rgba(50, 50, 51, 0) 64%, rgba(38, 38, 38, 0.3) 76%, rgba(27, 27, 28, 0.46) 86%, #000000 100%), linear-gradient(90deg, #141414 16%, rgba(10, 10, 10, 0.5) 24%, rgba(4, 4, 4, 0.2) 31%, rgba(0, 0, 0, 0) 40%)'
+            'linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), linear-gradient(180.21deg, rgba(50, 50, 51, 0) 63.7%, rgba(38, 38, 38, 0.249497) 75.85%, rgba(27, 27, 28, 0.459525) 85.7%, #000000 99.82%), linear-gradient(89.75deg, #141414 16.19%, rgba(10, 10, 10, 0.495636) 24.01%, rgba(4, 4, 4, 0.195896) 30.68%, rgba(0, 0, 0, 0) 39.07%)'
         }}
       />
       <Container
         maxWidth="xxl"
-        sx={{ display: 'flex', justifyContent: 'center', pt: 30 }}
+        sx={{ display: 'flex', zIndex: 2, height: '100%' }}
       >
         <Stack
           direction={{ xs: 'column', lg: 'row' }}
-          alignContent="center"
+          alignItems={{ lg: 'center' }}
+          justifyContent="center"
+          spacing={4}
           sx={{ zIndex: 2 }}
         >
-          <Stack spacing={1}>
-            <Typography variant="h1" color="secondary.contrastText">
-              Free Gospel Video Streaming Library
-            </Typography>
+          <Typography variant="h1" color="secondary.contrastText">
+            {t('Free Gospel Video')}{' '}
             <Box
+              component="span"
               sx={{
-                width: '40%',
-                height: { xs: 5, lg: 10 },
-                backgroundColor: 'primary.main'
+                textDecorationLine: 'underline',
+                textDecorationThickness: { xs: 5, md: 10 },
+                textDecorationColor: (theme) => theme.palette.primary.main,
+                textUnderlineOffset: { xs: 5, md: 10 }
               }}
-            />
-          </Stack>
+            >
+              {t('Streaming')}
+            </Box>{' '}
+            {t('Library.')}
+          </Typography>
           <Typography
             variant="h5"
+            component="h2"
             color="secondary.contrastText"
-            sx={{ opacity: 0.7, pt: 8 }}
+            sx={{ opacity: 0.7 }}
           >
-            Watch, learn and share the gospel in over 2000 languages
+            {t('Watch, learn and share the gospel in over 2000 languages')}
           </Typography>
         </Stack>
       </Container>

@@ -1,0 +1,10 @@
+{
+  "Deploy Quickly": "النشر بسرعة",
+  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "يتيح لك خط أنابيب التكامل المستمر والتسليم المستمر الخاص بنا تقديم تغييرات التعليمات البرمجية بشكل أكثر تواتراً وموثوقية.",
+  "Common Environment": "البيئة المشتركة",
+  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "نحن نعمل على Docker. وهذا يعني أن كل مطور يتشارك نفس البيئة التي تحاكي الإنتاج بشكل وثيق مما يجعل التعاون بسيطاً.",
+  "Powered by Typescript": "مدعوم من تايبسكريبت",
+  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScript هي لغة برمجة مطبوعة بقوة تعتمد على JavaScript، مما يمنحك أدوات أفضل على أي نطاق.",
+  "Core Development Kit Documentation": "وثائق مجموعة أدوات التطوير الأساسية",
+  "Welcome - 5min ": "ترحيب - 5 دقائق "
+}

@@ -1,0 +1,1 @@
+export { PasswordResetPage } from './PasswordResetPage'

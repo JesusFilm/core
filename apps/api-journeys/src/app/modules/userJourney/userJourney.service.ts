@@ -1,36 +1,69 @@
-import { BaseService } from '@core/nest/database/BaseService'
+import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
-import { aql } from 'arangojs'
-import { DocumentCollection } from 'arangojs/collection'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+import { Queue } from 'bullmq'
 
-import { Journey, UserJourney } from '../../__generated__/graphql'
+import { User } from '@core/nest/common/firebaseClient'
+
+import {
+  JourneyAccessRequest,
+  JourneyRequestApproved,
+  JourneyWithTeamAndUserJourney
+} from '../email/email.consumer'
+
+type OmittedUser = Omit<User, 'id' | 'emailVerified'>
 
 @Injectable()
-export class UserJourneyService extends BaseService {
-  collection: DocumentCollection = this.db.collection('userJourneys')
+export class UserJourneyService {
+  constructor(
+    @InjectQueue('api-journeys-email')
+    private readonly emailQueue: Queue<
+      JourneyRequestApproved | JourneyAccessRequest
+    >
+  ) {}
 
-  @KeyAsId()
-  async forJourney(journey: Journey): Promise<UserJourney[]> {
-    const res = await this.db.query(aql`
-      FOR j in ${this.collection}
-        FILTER j.journeyId == ${journey.id}
-        RETURN j
-    `)
-    return await res.all()
+  async sendJourneyAccessRequest(
+    journey: JourneyWithTeamAndUserJourney,
+    user: OmittedUser
+  ): Promise<void> {
+    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
+
+    await this.emailQueue.add(
+      'journey-access-request',
+      {
+        journey,
+        url,
+        sender: user
+      },
+      {
+        removeOnComplete: true,
+        removeOnFail: {
+          age: 24 * 3600 // keep up to 24 hours
+        }
+      }
+    )
   }
 
-  @KeyAsId()
-  async forJourneyUser(
-    journeyId: string,
-    userId: string
-  ): Promise<UserJourney> {
-    const res = await this.db.query(aql`
-      FOR j in ${this.collection}
-        FILTER j.journeyId == ${journeyId} && j.userId == ${userId}
-        LIMIT 1
-        RETURN j
-    `)
-    return await res.next()
+  async sendJourneyApproveEmail(
+    journey: JourneyWithTeamAndUserJourney,
+    userId: string,
+    user: OmittedUser
+  ): Promise<void> {
+    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}`
+
+    await this.emailQueue.add(
+      'journey-request-approved',
+      {
+        userId,
+        url,
+        journey,
+        sender: user
+      },
+      {
+        removeOnComplete: true,
+        removeOnFail: {
+          age: 24 * 3600 // keep up to 24 hours
+        }
+      }
+    )
   }
 }

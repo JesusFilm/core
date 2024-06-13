@@ -1,23 +1,34 @@
 import { fireEvent, render } from '@testing-library/react'
-import { NextRouter } from 'next/router'
-import JourneyListMenu from './JourneyListMenu'
+import { NextRouter, useRouter } from 'next/router'
 
-const onclick = jest.fn()
+import { JourneyListMenu } from '.'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('JourneyListMenu', () => {
   it('should be empty if not needed', () => {
-    const router = { query: { tab: '' } } as unknown as NextRouter
-    const { queryByRole } = render(
-      <JourneyListMenu router={router} onClick={onclick} />
-    )
-    expect(queryByRole('button')).toBeNull()
+    mockedUseRouter.mockReturnValue({
+      query: { tab: '' }
+    } as unknown as NextRouter)
+    const { queryByRole } = render(<JourneyListMenu onClick={jest.fn()} />)
+    expect(queryByRole('button')).not.toBeInTheDocument()
   })
 
   describe('active', () => {
-    const router = { query: { tab: 'active' } } as unknown as NextRouter
+    beforeEach(() => {
+      mockedUseRouter.mockReturnValue({
+        query: { tab: 'active' }
+      } as unknown as NextRouter)
+    })
+
     it('should render correctly on active', () => {
       const { getByText, getByRole } = render(
-        <JourneyListMenu router={router} onClick={onclick} />
+        <JourneyListMenu onClick={jest.fn()} />
       )
       fireEvent.click(getByRole('button'))
       expect(getByText('Archive All')).toBeInTheDocument()
@@ -25,29 +36,36 @@ describe('JourneyListMenu', () => {
     })
 
     it('should call archiveAllActive', () => {
+      const handleClick = jest.fn()
       const { getByText, getByRole } = render(
-        <JourneyListMenu router={router} onClick={onclick} />
+        <JourneyListMenu onClick={handleClick} />
       )
       fireEvent.click(getByRole('button'))
       fireEvent.click(getByText('Archive All'))
-      expect(onclick).toHaveBeenCalledWith('archiveAllActive')
+      expect(handleClick).toHaveBeenCalledWith('archiveAllActive')
     })
 
     it('should call trashAllActive', () => {
+      const handleClick = jest.fn()
       const { getByText, getByRole } = render(
-        <JourneyListMenu router={router} onClick={onclick} />
+        <JourneyListMenu onClick={handleClick} />
       )
       fireEvent.click(getByRole('button'))
       fireEvent.click(getByText('Trash All'))
-      expect(onclick).toHaveBeenCalledWith('trashAllActive')
+      expect(handleClick).toHaveBeenCalledWith('trashAllActive')
     })
   })
 
   describe('archived', () => {
-    const router = { query: { tab: 'archived' } } as unknown as NextRouter
+    beforeEach(() => {
+      mockedUseRouter.mockReturnValue({
+        query: { tab: 'archived' }
+      } as unknown as NextRouter)
+    })
+
     it('should render correctly on archived', () => {
       const { getByText, getByRole } = render(
-        <JourneyListMenu router={router} onClick={onclick} />
+        <JourneyListMenu onClick={jest.fn()} />
       )
       fireEvent.click(getByRole('button'))
       expect(getByText('Unarchive All')).toBeInTheDocument()
@@ -55,29 +73,36 @@ describe('JourneyListMenu', () => {
     })
 
     it('should call archiveAllActive', () => {
+      const handleClick = jest.fn()
       const { getByText, getByRole } = render(
-        <JourneyListMenu router={router} onClick={onclick} />
+        <JourneyListMenu onClick={handleClick} />
       )
       fireEvent.click(getByRole('button'))
       fireEvent.click(getByText('Unarchive All'))
-      expect(onclick).toHaveBeenCalledWith('restoreAllArchived')
+      expect(handleClick).toHaveBeenCalledWith('restoreAllArchived')
     })
 
     it('should call trashAllArchived', () => {
+      const handleClick = jest.fn()
       const { getByText, getByRole } = render(
-        <JourneyListMenu router={router} onClick={onclick} />
+        <JourneyListMenu onClick={handleClick} />
       )
       fireEvent.click(getByRole('button'))
       fireEvent.click(getByText('Trash All'))
-      expect(onclick).toHaveBeenCalledWith('trashAllArchived')
+      expect(handleClick).toHaveBeenCalledWith('trashAllArchived')
     })
   })
 
   describe('trashed', () => {
-    const router = { query: { tab: 'trashed' } } as unknown as NextRouter
+    beforeEach(() => {
+      mockedUseRouter.mockReturnValue({
+        query: { tab: 'trashed' }
+      } as unknown as NextRouter)
+    })
+
     it('should render correctly on trashed', () => {
       const { getByText, getByRole } = render(
-        <JourneyListMenu router={router} onClick={onclick} />
+        <JourneyListMenu onClick={jest.fn()} />
       )
       fireEvent.click(getByRole('button'))
       expect(getByText('Restore All')).toBeInTheDocument()
@@ -85,21 +110,23 @@ describe('JourneyListMenu', () => {
     })
 
     it('should call archiveAllActive', () => {
+      const handleClick = jest.fn()
       const { getByText, getByRole } = render(
-        <JourneyListMenu router={router} onClick={onclick} />
+        <JourneyListMenu onClick={handleClick} />
       )
       fireEvent.click(getByRole('button'))
       fireEvent.click(getByText('Restore All'))
-      expect(onclick).toHaveBeenCalledWith('restoreAllTrashed')
+      expect(handleClick).toHaveBeenCalledWith('restoreAllTrashed')
     })
 
     it('should call trashAllArchived', () => {
+      const handleClick = jest.fn()
       const { getByText, getByRole } = render(
-        <JourneyListMenu router={router} onClick={onclick} />
+        <JourneyListMenu onClick={handleClick} />
       )
       fireEvent.click(getByRole('button'))
       fireEvent.click(getByText('Delete All Forever'))
-      expect(onclick).toHaveBeenCalledWith('deleteAllTrashed')
+      expect(handleClick).toHaveBeenCalledWith('deleteAllTrashed')
     })
   })
 })

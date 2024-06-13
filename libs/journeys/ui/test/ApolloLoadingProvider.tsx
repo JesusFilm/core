@@ -5,7 +5,7 @@ import {
   InMemoryCache,
   Observable
 } from '@apollo/client'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { ReactElement, ReactNode } from 'react'
 
 interface ApolloLoadingProviderProps {
@@ -20,7 +20,9 @@ export const ApolloLoadingProvider = ({
 
   const client = new ApolloClient({
     link,
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
+    name: 'journeys-ui-test',
+    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
   })
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>

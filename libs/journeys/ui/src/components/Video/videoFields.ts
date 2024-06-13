@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+
 import { ACTION_FIELDS } from '../../libs/action/actionFields'
 
 export const VIDEO_FIELDS = gql`
@@ -30,6 +31,13 @@ export const VIDEO_FIELDS = gql`
       variant {
         id
         hls
+      }
+      variantLanguages {
+        id
+        name {
+          value
+          primary
+        }
       }
     }
     action {

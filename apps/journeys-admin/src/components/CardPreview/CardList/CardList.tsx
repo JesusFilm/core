@@ -1,26 +1,51 @@
-import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import AddIcon from '@mui/icons-material/Add'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-import DragHandleRounded from '@mui/icons-material/DragHandleRounded'
-import {
-  Draggable,
-  DroppableProvided,
+import Divider from '@mui/material/Divider'
+import dynamic from 'next/dynamic'
+import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
+import type {
   DraggableProvided,
-  DraggableStateSnapshot
+  DraggableStateSnapshot,
+  DroppableProvided
 } from 'react-beautiful-dnd'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { FramePortal } from '../../FramePortal'
-import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
-import { HorizontalSelect } from '../../HorizontalSelect'
-import { VideoWrapper } from '../../Editor/Canvas/VideoWrapper'
-import { CardWrapper } from '../../Editor/Canvas/CardWrapper'
+import DragIcon from '@core/shared/ui/icons/Drag'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
+import TargetIcon from '@core/shared/ui/icons/Target'
+import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
+import {
+  Role,
+  ThemeMode,
+  ThemeName
+} from '../../../../__generated__/globalTypes'
+import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
+import { VideoWrapper } from '../../Editor/Slider/Content/Canvas/VideoWrapper'
+import { FramePortal } from '../../FramePortal'
+import { HorizontalSelect } from '../../HorizontalSelect'
+import { NavigationCard } from '../NavigationCard'
+
+import { CardWrapper } from './CardWrapper'
+
+const Draggable = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "react-beautiful-dnd" */
+      'react-beautiful-dnd'
+    ).then((mod) => mod.Draggable),
+  { ssr: false }
+)
 
 interface CardListProps {
   steps: Array<TreeBlock<StepBlock>>
@@ -31,6 +56,7 @@ interface CardListProps {
   handleChange?: (selectedId: string) => void
   isDragging?: boolean
   isDraggable?: boolean
+  showNavigationCards?: boolean
 }
 
 export function CardList({
@@ -41,46 +67,134 @@ export function CardList({
   handleClick,
   handleChange,
   isDragging,
-  isDraggable
+  isDraggable,
+  showNavigationCards = false
 }: CardListProps): ReactElement {
-  const AddCardSlide = (): ReactElement => (
-    <Card
-      id="CardPreviewAddButton"
-      variant="outlined"
-      sx={{
-        display: 'flex',
-        width: 87,
-        height: 132,
-        m: 1
-      }}
-    >
-      <CardActionArea
+  const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { activeContent }
+  } = useEditor()
+  const { journey } = useJourney()
+
+  const { data } = useUserRoleQuery()
+  const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
+
+  const showNavigation =
+    showNavigationCards && (journey?.template !== true || isPublisher)
+
+  function AddCardSlide(): ReactElement {
+    return (
+      <Card
+        id="CardPreviewAddButton"
+        variant="outlined"
         sx={{
           display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
+          width: 87,
+          height: 132,
+          m: 1
         }}
-        onClick={handleClick}
       >
-        <AddIcon color="primary" />
-      </CardActionArea>
-    </Card>
-  )
+        <CardActionArea
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+          onClick={handleClick}
+        >
+          <Plus2Icon color="primary" />
+        </CardActionArea>
+      </Card>
+    )
+  }
+
+  const selectedId =
+    activeContent === ActiveContent.Goals
+      ? 'goals'
+      : activeContent === ActiveContent.Social
+      ? 'social'
+      : selected?.id
+
   return (
     <HorizontalSelect
       onChange={handleChange}
-      id={selected?.id}
+      id={selectedId}
       isDragging={isDragging}
       footer={showAddButton === true && <AddCardSlide />}
+      testId="CardList"
+      sx={{ px: 4, pb: 4, pt: 1 }}
+      scrollIntoView
     >
+      {showNavigation === true && (
+        <NavigationCard
+          key="goals"
+          id="goals"
+          title={t('Goals')}
+          destination={ActiveContent.Goals}
+          header={
+            <Box
+              bgcolor={(theme) => theme.palette.background.paper}
+              borderRadius={1}
+              width={72}
+              height={72}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <TargetIcon color="error" />
+            </Box>
+          }
+          loading={journey == null}
+        />
+      )}
+      {showNavigation === true && (
+        <Divider
+          id="cardlist-divider"
+          orientation="vertical"
+          sx={{
+            borderWidth: 1,
+            mr: 1
+          }}
+        />
+      )}
+      {showNavigation === true && (
+        <NavigationCard
+          key="social"
+          id="social"
+          title={t('Social Media')}
+          destination={ActiveContent.Social}
+          header={
+            journey?.primaryImageBlock?.src == null ? (
+              <Box
+                bgcolor={(theme) => theme.palette.background.default}
+                borderRadius="4px"
+                width={72}
+                height={72}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <ThumbsUpIcon color="error" />
+              </Box>
+            ) : (
+              <Image
+                src={journey.primaryImageBlock.src}
+                alt={journey.primaryImageBlock.src}
+                width={72}
+                height={72}
+                style={{
+                  borderRadius: '4px',
+                  objectFit: 'cover'
+                }}
+              />
+            )
+          }
+          loading={journey == null}
+        />
+      )}
       {droppableProvided != null &&
         steps.map((step, index) => (
-          <Draggable
-            key={step.id}
-            id={step.id}
-            draggableId={step.id}
-            index={index}
-          >
+          <Draggable key={step.id} draggableId={step.id} index={index}>
             {(provided, snapshot) => (
               <CardItem
                 key={step.id}
@@ -119,17 +233,22 @@ const CardItem = ({
 }: CardItemProps): ReactElement => {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
+  const cardBlock = step.children.find(
+    (child) => child.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock>
 
   return (
     <Box
       ref={provided != null ? provided.innerRef : null}
       id={id}
       key={id}
-      data-testid={`preview-${id}`}
+      data-testid={`CardItem-${id}`}
       sx={{
+        display: 'flex',
+        flexDirection: 'column',
         width: 95,
         position: 'relative',
-        height: isDraggable === true ? 160 : 140,
+        height: isDraggable === true ? 164 : 140,
         top: isDraggable === true ? '-24px' : undefined,
         mb: isDraggable === true ? '-24px' : undefined,
         overflow: isDraggable === true ? 'hidden' : undefined
@@ -144,11 +263,7 @@ const CardItem = ({
             justifyContent: 'center'
           }}
         >
-          <DragHandleRounded
-            sx={{
-              opacity: snapshot.isDragging === true ? 1 : 0.5
-            }}
-          />
+          <DragIcon sx={{ opacity: snapshot.isDragging ? 1 : 0.5 }} />
         </Box>
       )}
       <Box
@@ -169,12 +284,12 @@ const CardItem = ({
         />
         <FramePortal width={380} height={560} dir={rtl ? 'rtl' : 'ltr'}>
           <ThemeProvider
-            themeName={journey?.themeName ?? ThemeName.base}
-            themeMode={journey?.themeMode ?? ThemeMode.light}
+            themeName={cardBlock?.themeName ?? ThemeName.base}
+            themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
             rtl={rtl}
             locale={locale}
           >
-            <Box sx={{ p: 4, height: '100%' }}>
+            <Box sx={{ p: 4, height: '100%', borderRadius: 4 }}>
               <BlockRenderer
                 block={step}
                 wrappers={{

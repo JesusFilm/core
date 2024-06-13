@@ -1,12 +1,22 @@
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
-import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
+import { v4 as uuidv4 } from 'uuid'
+
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
-import { activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+
 import { StepFields } from './__generated__/StepFields'
+import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
 import { STEP_VIEW_EVENT_CREATE } from './Step'
+
 import { Step } from '.'
 
 jest.mock('uuid', () => ({
@@ -27,14 +37,62 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
 
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
+jest.mock('next/head', () => {
+  return {
+    __esModule: true,
+    default: ({ children }: { children: React.ReactElement[] }) => {
+      return <>{children}</>
     }
   }
-}))
+})
+
+const journey: Journey = {
+  __typename: 'Journey',
+  id: 'journeyId',
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
+  featuredAt: null,
+  title: 'my journey',
+  strategySlug: null,
+  slug: 'my-journey',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
+  description: 'my cool journey',
+  status: JourneyStatus.draft,
+  createdAt: '2021-11-19T12:34:56.647Z',
+  publishedAt: null,
+  blocks: [
+    {
+      id: 'step0.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      locked: false,
+      nextBlockId: 'step1.id'
+    }
+  ] as TreeBlock[],
+  primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
+  userJourneys: [],
+  template: null,
+  seoTitle: null,
+  seoDescription: null,
+  chatButtons: [],
+  host: null,
+  team: null,
+  tags: []
+}
 
 const block: TreeBlock<StepFields> = {
   __typename: 'StepBlock',
@@ -76,11 +134,18 @@ const block: TreeBlock<StepFields> = {
 }
 
 describe('Step', () => {
-  it('should create a stepViewEvent', async () => {
-    mockUuidv4.mockReturnValueOnce('uuid')
-    activeBlockVar(block)
-
-    const result = jest.fn(() => ({
+  const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
+    request: {
+      query: STEP_VIEW_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          blockId: 'Step1',
+          value: 'Step {{number}}'
+        }
+      }
+    },
+    result: jest.fn(() => ({
       data: {
         stepViewEventCreate: {
           id: 'uuid',
@@ -88,63 +153,32 @@ describe('Step', () => {
         }
       }
     }))
+  }
+
+  it('should create a stepViewEvent', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    treeBlocksVar([block])
+    blockHistoryVar([block])
 
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: STEP_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'Step1',
-                  value: 'Untitled'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider>
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
+        <JourneyProvider value={{ journey }}>
           <Step {...block} />
         </JourneyProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockStepViewEventCreate.result).toHaveBeenCalled()
+    )
   })
 
   it('should stepViewEvent to dataLayer', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    activeBlockVar(block)
+    blockHistoryVar([block])
     treeBlocksVar([block])
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: STEP_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'Step1',
-                  value: 'Step {{number}}'
-                }
-              }
-            },
-            result: {
-              data: {
-                stepViewEventCreate: {
-                  id: 'uuid',
-                  __typename: 'StepViewEvent'
-                }
-              }
-            }
-          }
-        ]}
-      >
-        <JourneyProvider>
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
+        <JourneyProvider value={{ journey }}>
           <Step {...block} />
         </JourneyProvider>
       </MockedProvider>
@@ -160,9 +194,10 @@ describe('Step', () => {
       })
     )
   })
+
   it('should not create a stepViewEvent if there are wrappers', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-    activeBlockVar(block)
+    blockHistoryVar([block])
 
     const result = jest.fn(() => ({
       data: {
@@ -174,24 +209,8 @@ describe('Step', () => {
     }))
 
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: STEP_VIEW_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'Step1',
-                  value: 'Step {{number}}'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider>
+      <MockedProvider mocks={[{ ...mockStepViewEventCreate, result }]}>
+        <JourneyProvider value={{ journey }}>
           <Step
             {...block}
             wrappers={{
@@ -205,22 +224,89 @@ describe('Step', () => {
   })
 
   it('should render blocks', () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+
     const { getByText } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
         <Step {...block} />
       </MockedProvider>
     )
+
     expect(getByText('Button 1')).toBeInTheDocument()
     expect(getByText('Button 2')).toBeInTheDocument()
   })
 
   it('should render empty block', () => {
+    blockHistoryVar([])
+    treeBlocksVar([])
+
     const { baseElement } = render(
-      <MockedProvider>
-        {/* eslint-disable-next-line react/no-children-prop */}
-        <Step {...block} children={[]} />
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
+        <JourneyProvider value={{ journey }}>
+          {/* eslint-disable-next-line react/no-children-prop */}
+          <Step {...block} children={[]} />
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(baseElement).toContainHTML('<body><div /></body>')
+  })
+
+  it('should not send stepViewEvent if not activeStep', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    treeBlocksVar([])
+    blockHistoryVar([block, { ...block, id: 'Step2' }])
+
+    const result = jest.fn(() => ({
+      data: {
+        stepViewEventCreate: {
+          id: 'uuid',
+          __typename: 'StepViewEvent'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider mocks={[{ ...mockStepViewEventCreate, result }]}>
+        <JourneyProvider value={{ journey }}>
+          <Step {...block} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
+
+  it('should set seoTitle to [journey name (step name)] if activeStep and on first card', () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    treeBlocksVar([block])
+    blockHistoryVar([block])
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <Step {...block} />
+        </JourneyProvider>
+      </MockedProvider>,
+      { container: document.head }
+    )
+
+    expect(document.title).toBe('my journey (Step {{number}})')
+  })
+
+  it('should set seoTitle to [step name (journey name)] if activeStep and not on first card', () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    treeBlocksVar([{ ...block, id: 'Step0' }, block])
+    blockHistoryVar([block])
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <Step {...block} />
+        </JourneyProvider>
+      </MockedProvider>,
+      { container: document.head }
+    )
+
+    expect(document.title).toBe('Step {{number}} (my journey)')
   })
 })

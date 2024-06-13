@@ -1,12 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
+
 import type { TreeBlock } from '../../libs/block'
-import { activeBlockVar, treeBlocksVar } from '../../libs/block'
-import { JourneyProvider } from '../../libs/JourneyProvider'
+import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
-import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
+
+import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -27,15 +30,6 @@ jest.mock('react-gtm-module', () => ({
 const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
 
 const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
@@ -87,7 +81,7 @@ describe('RadioQuestion', () => {
   })
 
   it('should select an option onClick', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
 
     const result = jest.fn(() => ({
       data: {
@@ -133,7 +127,7 @@ describe('RadioQuestion', () => {
   })
 
   it('should disable unselected options', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
 
     const { getByTestId, getAllByRole } = render(
       <MockedProvider
@@ -180,7 +174,7 @@ describe('RadioQuestion', () => {
     expect(buttons[1]).toBeDisabled()
   })
 
-  it('should display options with wrappers', () => {
+  it('should display options with wrappers', async () => {
     const { getByText, getAllByTestId } = render(
       <MockedProvider mocks={[]} addTypename={false}>
         <RadioQuestion
@@ -193,8 +187,10 @@ describe('RadioQuestion', () => {
         />
       </MockedProvider>
     )
-    expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
-      getByText('Option 1')
+    await waitFor(() =>
+      expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
+        getByText('Option 1')
+      )
     )
     expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
       getByText('Option 2')
@@ -202,7 +198,7 @@ describe('RadioQuestion', () => {
   })
 
   it('should add radio submission to dataLayer', async () => {
-    activeBlockVar(activeBlock)
+    blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
     const { getAllByRole } = render(
@@ -246,9 +242,51 @@ describe('RadioQuestion', () => {
           eventId: 'uuid',
           blockId: 'RadioQuestion1',
           radioOptionSelectedId: 'RadioOption1',
+          radioOptionSelectedLabel: 'Option 1',
           stepName: 'Step {{number}}'
         }
       })
     )
+  })
+
+  it('should set selectedId to null when  is false', () => {
+    blockHistoryVar([activeBlock])
+
+    const { getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1',
+                  stepId: 'step.id',
+                  label: 'Untitled',
+                  value: 'Option 1'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <RadioQuestion {...block} uuid={() => 'uuid'} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const buttons = getAllByRole('button')
+
+    buttons.forEach((button) => {
+      expect(button).not.toBeDisabled()
+      const icon = within(button).getByTestId(
+        'RadioOptionRadioButtonUncheckedIcon'
+      )
+      expect(icon).toBeInTheDocument()
+      expect(button).toContainElement(icon)
+    })
   })
 })

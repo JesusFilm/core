@@ -1,10 +1,13 @@
-import { Story, Meta } from '@storybook/react'
 import TextField from '@mui/material/TextField'
-import { Formik, Form } from 'formik'
+import { Meta, StoryObj } from '@storybook/react'
+import { Form, Formik } from 'formik'
+import { ComponentProps } from 'react'
+
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+
 import { SubmitListener } from '.'
 
-const Demo = {
+const Demo: Meta<typeof SubmitListener> = {
   ...simpleComponentConfig,
   title: 'Shared-Ui/SubmitListener',
   component: SubmitListener,
@@ -23,26 +26,30 @@ const Demo = {
   argTypes: { onSubmit: { action: 'submitted' } }
 }
 
-const Template: Story = (args) => {
-  return (
-    <Formik initialValues={{ name: '' }} onSubmit={args.onSubmit}>
-      {({ values, handleChange }) => (
-        <Form>
-          <TextField
-            id="name"
-            name="name"
-            value={values.name}
-            onChange={handleChange}
-            aria-label="name"
-            label="Name"
-          />
-          <SubmitListener />
-        </Form>
-      )}
-    </Formik>
-  )
+const Template: StoryObj<
+  ComponentProps<typeof SubmitListener> & { onSubmit: () => void }
+> = {
+  render: ({ onSubmit }) => {
+    return (
+      <Formik initialValues={{ name: '' }} onSubmit={onSubmit}>
+        {({ values, handleChange }) => (
+          <Form>
+            <TextField
+              id="name"
+              name="name"
+              value={values.name}
+              onChange={handleChange}
+              aria-label="name"
+              label="Name"
+            />
+            <SubmitListener />
+          </Form>
+        )}
+      </Formik>
+    )
+  }
 }
 
-export const Default = Template.bind({})
+export const Default = { ...Template }
 
-export default Demo as Meta
+export default Demo

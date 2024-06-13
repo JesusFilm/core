@@ -1,25 +1,28 @@
 locals {
   port = 4004
   environment_variables = [
-    "DATABASE_DB",
-    "DATABASE_PASS",
-    "DATABASE_URL",
-    "DATABASE_USER",
+    "ALGOLIA_APPLICATION_ID",
+    "ALGOLIA_API_KEY",
+    "ALGOLIA_INDEX",
     "ARCLIGHT_API_KEY",
     "ARCLIGHT_V3_URL",
-    "CROWDIN_API_KEY"
+    "CROWDIN_API_KEY",
+    "PG_DATABASE_URL_VIDEOS",
+    "REDIS_URL"
   ]
   service_config = {
     name           = "api-videos"
     is_public      = false
     container_port = local.port
     host_port      = local.port
-    cpu            = 512
-    memory         = 1024
+    cpu            = 1024
+    memory         = 4096
     desired_count  = 1
-    image_tag      = var.ecs_config.image_tag
     alb_dns_name   = var.ecs_config.alb_dns_name
     zone_id        = var.ecs_config.zone_id
+    alb_listener = merge(var.ecs_config.alb_listener, {
+      port = local.port
+    })
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port
     })

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoLabel } from "./globalTypes";
+import { VideoLabel, VideoVariantDownloadQuality } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: VideoContentFields
@@ -34,9 +34,17 @@ export interface VideoContentFields_title {
   value: string;
 }
 
+export interface VideoContentFields_variant_downloads {
+  __typename: "VideoVariantDownload";
+  quality: VideoVariantDownloadQuality;
+  size: number;
+  url: string;
+}
+
 export interface VideoContentFields_variant_language_name {
   __typename: "Translation";
   value: string;
+  primary: boolean;
 }
 
 export interface VideoContentFields_variant_language {
@@ -50,58 +58,13 @@ export interface VideoContentFields_variant {
   id: string;
   duration: number;
   hls: string | null;
+  downloads: VideoContentFields_variant_downloads[];
   language: VideoContentFields_variant_language;
   /**
    * slug is a permanent link to the video variant.
    */
   slug: string;
-}
-
-export interface VideoContentFields_children_title {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface VideoContentFields_children_imageAlt {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface VideoContentFields_children_snippet {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface VideoContentFields_children_children {
-  __typename: "Video";
-  id: string;
-}
-
-export interface VideoContentFields_children_variant {
-  __typename: "VideoVariant";
-  id: string;
-  duration: number;
-  hls: string | null;
-  /**
-   * slug is a permanent link to the video variant.
-   */
-  slug: string;
-}
-
-export interface VideoContentFields_children {
-  __typename: "Video";
-  id: string;
-  label: VideoLabel;
-  title: VideoContentFields_children_title[];
-  image: string | null;
-  imageAlt: VideoContentFields_children_imageAlt[];
-  snippet: VideoContentFields_children_snippet[];
-  /**
-   * slug is a permanent link to the video.
-   */
-  slug: string;
-  children: VideoContentFields_children_children[];
-  variant: VideoContentFields_children_variant | null;
+  subtitleCount: number;
 }
 
 export interface VideoContentFields {
@@ -115,9 +78,13 @@ export interface VideoContentFields {
   studyQuestions: VideoContentFields_studyQuestions[];
   title: VideoContentFields_title[];
   variant: VideoContentFields_variant | null;
+  variantLanguagesCount: number;
   /**
    * slug is a permanent link to the video.
    */
   slug: string;
-  children: VideoContentFields_children[];
+  /**
+   * the number value of the amount of children on a video
+   */
+  childrenCount: number;
 }

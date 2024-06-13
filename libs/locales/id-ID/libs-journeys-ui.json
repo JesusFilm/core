@@ -1,0 +1,22 @@
+{
+  "Form": "Formulir",
+  "Name must be 2 characters or more": "Nama harus terdiri dari 2 karakter atau lebih",
+  "Name must be 50 characters or less": "Nama harus terdiri dari 50 karakter atau kurang",
+  "Required": "Diperlukan",
+  "Please enter a valid email address": "Masukkan alamat email yang valid",
+  "Name": "Nama",
+  "Email": "Email",
+  "Submit": "Kirim",
+  "Journey": "Perjalanan",
+  "Copied to clipboard": "Disalin ke papan klip",
+  "Share": "Bagikan",
+  "Copy Link": "Salin tautan",
+  "Facebook": "Facebook",
+  "Twitter": "Twitter",
+  "Report this content": "Laporkan konten ini",
+  "Terms & Conditions": "Syarat & Ketentuan",
+  "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "Semua data pribadi yang dapat diidentifikasi yang terdaftar di situs web ini akan diproses oleh pembuat perjalanan: \"{{ teamTitle }}\".",
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Untitled": "Tanpa judul",
+  "Step {{number}}": "Langkah {{number}}"
+}

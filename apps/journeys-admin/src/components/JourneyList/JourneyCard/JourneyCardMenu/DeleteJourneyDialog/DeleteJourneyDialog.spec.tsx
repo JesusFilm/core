@@ -1,9 +1,12 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
-import { noop } from 'lodash'
+
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+
 import { JOURNEY_DELETE } from './DeleteJourneyDialog'
+
 import { DeleteJourneyDialog } from '.'
 
 describe('DeleteJourneyDialog', () => {

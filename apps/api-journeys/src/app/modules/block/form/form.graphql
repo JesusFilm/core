@@ -1,0 +1,52 @@
+type FormiumProject {
+  """
+  The projectId of the project
+  """
+  id: String!
+  """
+  The name of the project
+  """
+  name: String!
+}
+
+type FormiumForm {
+  """
+  The formSlug of the form
+  """
+  slug: String!
+  """
+  The name of the form
+  """
+  name: String!
+}
+
+type FormBlock implements Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  action: Action
+  form: Json
+  projects: [FormiumProject!]!
+  projectId: String
+  forms: [FormiumForm!]!
+  formSlug: String
+  apiTokenExists: Boolean!
+}
+
+input FormBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
+
+input FormBlockUpdateInput {
+  projectId: String
+  apiToken: String
+  formSlug: String
+}
+
+extend type Mutation {
+  formBlockCreate(input: FormBlockCreateInput!): FormBlock!
+  formBlockUpdate(id: ID!, input: FormBlockUpdateInput!): FormBlock
+}

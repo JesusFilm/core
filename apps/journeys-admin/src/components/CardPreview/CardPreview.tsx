@@ -1,75 +1,78 @@
 import Box from '@mui/material/Box'
-import { ReactElement, useState, useMemo } from 'react'
-import { transformer } from '@core/journeys/ui/transformer'
-import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
-import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
+import { ReactElement, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { useMutation, gql } from '@apollo/client'
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
-import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { transformer } from '@core/journeys/ui/transformer'
+
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import { useBlockOrderUpdateMutation } from '../../libs/useBlockOrderUpdateMutation'
+import { useStepAndCardBlockCreateMutation } from '../../libs/useStepAndCardBlockCreateMutation'
+
 import { CardList } from './CardList'
+import { OnSelectProps } from './OnSelectProps'
+
+const DragDropContext = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "react-beautiful-dnd" */
+      'react-beautiful-dnd'
+    ).then((mod) => mod.DragDropContext),
+  { ssr: false }
+)
+
+const Droppable = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "react-beautiful-dnd" */
+      'react-beautiful-dnd'
+    ).then((mod) => mod.Droppable),
+  { ssr: false }
+)
 
 export interface CardPreviewProps {
-  onSelect?: (step: TreeBlock<StepBlock>) => void
+  onSelect?: ({ step, view }: OnSelectProps) => void
   selected?: TreeBlock<StepBlock>
   steps?: Array<TreeBlock<StepBlock>>
   showAddButton?: boolean
   isDraggable?: boolean
+  showNavigationCards?: boolean
+  testId?: string
 }
-
-export const STEP_AND_CARD_BLOCK_CREATE = gql`
-  ${STEP_FIELDS}
-  ${CARD_FIELDS}
-  mutation StepAndCardBlockCreate($journeyId: ID!, $stepId: ID!, $cardId: ID) {
-    stepBlockCreate(input: { id: $stepId, journeyId: $journeyId }) {
-      ...StepFields
-    }
-    cardBlockCreate(
-      input: { id: $cardId, journeyId: $journeyId, parentBlockId: $stepId }
-    ) {
-      ...CardFields
-    }
-  }
-`
-
-export const STEPS_ORDER_UPDATE = gql`
-  mutation StepsOrderUpdate($id: ID!, $journeyId: ID!, $parentOrder: Int!) {
-    blockOrderUpdate(
-      id: $id
-      journeyId: $journeyId
-      parentOrder: $parentOrder
-    ) {
-      id
-      parentOrder
-    }
-  }
-`
 
 export function CardPreview({
   steps,
   selected,
   onSelect,
   showAddButton,
-  isDraggable
+  isDraggable,
+  showNavigationCards,
+  testId
 }: CardPreviewProps): ReactElement {
   const [isDragging, setIsDragging] = useState(false)
-  const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
-    STEP_AND_CARD_BLOCK_CREATE
-  )
-  const [stepsOrderUpdate] = useMutation<StepsOrderUpdate>(STEPS_ORDER_UPDATE)
+  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
+  const [stepsOrderUpdate] = useBlockOrderUpdateMutation()
   const { journey } = useJourney()
 
   const handleChange = (selectedId: string): void => {
+    switch (selectedId) {
+      case 'goals':
+        onSelect?.({ view: ActiveContent.Goals })
+        return
+      case 'social':
+        onSelect?.({ view: ActiveContent.Social })
+        return
+    }
     if (steps == null) return
 
     const selectedStep = steps.find(({ id }) => id === selectedId)
-    selectedStep != null && onSelect?.(selectedStep)
+    selectedStep != null && onSelect?.({ step: selectedStep })
   }
 
   const handleClick = async (): Promise<void> => {
@@ -79,46 +82,26 @@ export function CardPreview({
     const cardId = uuidv4()
     const { data } = await stepAndCardBlockCreate({
       variables: {
-        journeyId: journey.id,
-        stepId,
-        cardId
-      },
-      update(cache, { data }) {
-        if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journey.id }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const newStepBlockRef = cache.writeFragment({
-                  data: data.stepBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                const newCardBlockRef = cache.writeFragment({
-                  data: data.cardBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                return [...existingBlockRefs, newStepBlockRef, newCardBlockRef]
-              }
-            }
-          })
+        stepBlockCreateInput: {
+          id: stepId,
+          journeyId: journey.id
+        },
+        cardBlockCreateInput: {
+          id: cardId,
+          journeyId: journey.id,
+          parentBlockId: stepId,
+          themeMode: ThemeMode.dark,
+          themeName: ThemeName.base
         }
       }
     })
     if (data?.stepBlockCreate != null) {
-      onSelect?.(
-        transformer([
+      onSelect?.({
+        step: transformer([
           data.stepBlockCreate,
           data.cardBlockCreate
         ])[0] as TreeBlock<StepBlock>
-      )
+      })
     }
   }
 
@@ -188,6 +171,7 @@ export function CardPreview({
                     handleChange={handleChange}
                     isDragging={isDragging}
                     isDraggable={isDraggable}
+                    showNavigationCards={showNavigationCards}
                   />
                 </Box>
               )}
@@ -200,6 +184,7 @@ export function CardPreview({
             handleClick={handleClick}
             handleChange={handleChange}
             showAddButton={showAddButton}
+            showNavigationCards={showNavigationCards}
           />
         )
       ) : (
@@ -212,6 +197,7 @@ export function CardPreview({
             py: 5,
             px: 6
           }}
+          data-testid={`CardPreview${testId ?? ''}`}
         >
           <Box
             sx={{

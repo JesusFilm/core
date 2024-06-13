@@ -1,0 +1,1 @@
+export { TeamManageWrapper } from './TeamManageWrapper'

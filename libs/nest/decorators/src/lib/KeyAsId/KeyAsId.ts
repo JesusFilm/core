@@ -1,4 +1,5 @@
-import { has, omit } from 'lodash'
+import has from 'lodash/has'
+import omit from 'lodash/omit'
 
 interface TransformObject {
   _key?: string
@@ -16,7 +17,7 @@ export function KeyAsId() {
   ) => {
     const childFunction = descriptor.value
     descriptor.value = async function (...args: TransformObject[]) {
-      const result = await childFunction.apply(this, args)
+      const result: TransformObject = await childFunction.apply(this, args)
       return Array.isArray(result) ? result.map(keyAsId) : keyAsId(result)
     }
   }

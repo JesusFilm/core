@@ -1,3 +1,4 @@
 export { ExpandedCover } from './ExpandedCover'
 export { ContainedCover } from './ContainedCover'
-export { Card, CardWrapper } from './Card'
+// eslint-disable-next-line import/no-cycle
+export { Card } from './Card'

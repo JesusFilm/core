@@ -1,21 +1,24 @@
 import { formatISO, startOfYear } from 'date-fns'
 
 import {
-  GetJourneys_journeys as Journey,
-  GetJourneys_journeys_userJourneys as User
-} from '../../../__generated__/GetJourneys'
+  GetAdminJourneys_journeys_userJourneys as ApiUser,
+  GetAdminJourneys_journeys as Journey
+} from '../../../__generated__/GetAdminJourneys'
 import {
-  ThemeName,
-  ThemeMode,
   JourneyStatus,
+  ThemeMode,
+  ThemeName,
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
 
-const userJourneys: User[] = [
+export const fakeDate = '2021-12-11'
+
+const userJourneys: ApiUser[] = [
   {
     __typename: 'UserJourney',
     id: 'user-journey-id',
     role: UserJourneyRole.owner,
+    openedAt: null,
     user: {
       __typename: 'User',
       id: 'user-id1',
@@ -28,6 +31,7 @@ const userJourneys: User[] = [
     __typename: 'UserJourney',
     id: 'user-journey-id2',
     role: UserJourneyRole.editor,
+    openedAt: null,
     user: {
       __typename: 'User',
       id: 'user-id2',
@@ -40,6 +44,7 @@ const userJourneys: User[] = [
     __typename: 'UserJourney',
     id: 'user-journey-id3',
     role: UserJourneyRole.editor,
+    openedAt: null,
     user: {
       __typename: 'User',
       id: 'user-id3',
@@ -69,12 +74,15 @@ export const defaultJourney: Journey = {
       }
     ]
   },
-  createdAt: formatISO(startOfYear(new Date())),
+  createdAt: formatISO(startOfYear(new Date(fakeDate))),
   publishedAt: null,
   status: JourneyStatus.draft,
   seoTitle: null,
   seoDescription: null,
-  userJourneys: userJourneys
+  userJourneys,
+  trashedAt: null,
+  template: false,
+  primaryImageBlock: null
 }
 
 export const oldJourney: Journey = {
@@ -93,7 +101,7 @@ export const publishedJourney: Journey = {
   id: 'published-journey-id',
   title: 'Published Journey Heading',
   description: 'a published journey',
-  publishedAt: formatISO(startOfYear(new Date())),
+  publishedAt: formatISO(startOfYear(new Date(fakeDate))),
   status: JourneyStatus.published
 }
 
@@ -126,6 +134,7 @@ export const descriptiveJourney: Journey = {
       __typename: 'UserJourney',
       id: 'user-journey-id4',
       role: UserJourneyRole.editor,
+      openedAt: null,
       user: {
         __typename: 'User',
         id: 'user-id4',
@@ -138,6 +147,7 @@ export const descriptiveJourney: Journey = {
       __typename: 'UserJourney',
       id: 'user-journey-id5',
       role: UserJourneyRole.editor,
+      openedAt: null,
       user: {
         __typename: 'User',
         id: 'user-id5',
@@ -150,6 +160,7 @@ export const descriptiveJourney: Journey = {
       __typename: 'UserJourney',
       id: 'user-journey-id6',
       role: UserJourneyRole.editor,
+      openedAt: null,
       user: {
         __typename: 'User',
         id: 'user-id6',
@@ -162,6 +173,7 @@ export const descriptiveJourney: Journey = {
       __typename: 'UserJourney',
       id: 'user-journey-id7',
       role: UserJourneyRole.editor,
+      openedAt: null,
       user: {
         __typename: 'User',
         id: 'user-id7',

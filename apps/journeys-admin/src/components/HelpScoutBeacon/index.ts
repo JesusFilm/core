@@ -1,0 +1,1 @@
+export { HelpScoutBeacon } from './HelpScoutBeacon'

@@ -1,5 +1,6 @@
-import { ReactElement, memo } from 'react'
 import dynamic from 'next/dynamic'
+import { ReactElement, memo } from 'react'
+
 import { ReportProps } from './Report/Report'
 
 function DynamicPowerBiReport(props: ReportProps): ReactElement {

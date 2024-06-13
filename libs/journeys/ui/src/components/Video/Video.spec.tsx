@@ -1,10 +1,18 @@
-import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render } from '@testing-library/react'
+
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { EditorProvider } from '../../libs/EditorProvider'
+
 import { VideoFields } from './__generated__/VideoFields'
+
 import { Video } from '.'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
 
 const block: TreeBlock<VideoFields> = {
   __typename: 'VideoBlock',
@@ -41,7 +49,8 @@ const block: TreeBlock<VideoFields> = {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
       hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    }
+    },
+    variantLanguages: []
   },
   children: [
     {
@@ -60,18 +69,40 @@ const block: TreeBlock<VideoFields> = {
 }
 
 describe('Video', () => {
-  it('should render the video through mediaComponentId and languageId successfully', () => {
+  it('should render internal video', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <Video {...block} />
       </MockedProvider>
     )
-    const sourceTag =
-      getByTestId('video-video0.id').querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toEqual(
+    const sourceTag = getByTestId('JourneysVideo-video0.id').querySelector(
+      '.vjs-tech source'
+    )
+    expect(sourceTag?.getAttribute('src')).toBe(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )
-    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
+  })
+
+  it('should render cloudflare video', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <Video
+          {...{
+            ...block,
+            source: VideoBlockSource.cloudflare,
+            videoId: 'videoId'
+          }}
+        />
+      </MockedProvider>
+    )
+    const sourceTag = getByTestId('JourneysVideo-video0.id').querySelector(
+      '.vjs-tech source'
+    )
+    expect(sourceTag?.getAttribute('src')).toBe(
+      'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8?clientBandwidthHint=10'
+    )
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })
 
   it('should render an image if videoId is null', () => {
@@ -110,10 +141,23 @@ describe.skip('Admin Video', () => {
     )
     const video = getByRole('region', { name: 'Video Player' })
 
-    fireEvent.click(getByTestId('video-video0.id'))
-    expect(getByTestId('video-video0.id')).toHaveStyle(
-      'outline: 3px solid #C52D3A'
+    fireEvent.click(getByTestId('JourneysVideo-video0.id'))
+    expect(getByTestId('JourneysVideo-video0.id')).toHaveStyle(
+      'outline: 2px solid #C52D3A'
     )
     expect(video).toHaveClass('vjs-paused')
+  })
+
+  it('should set container to 16:9', () => {
+    const { getByTestId } = render(<Video {...block} />)
+
+    // Expect container to have 16:9 aspect ratio
+    expect(getByTestId('video-container')).toHaveStyle('position: absolute')
+    expect(getByTestId('video-container')).toHaveStyle(
+      'margin-left: calc((100vh * 16 / 9) * -0.355)'
+    )
+    expect(getByTestId('video-container')).toHaveStyle('overflow: hidden')
+
+    // Jest height/width are not rendered by jest dom for testing
   })
 })

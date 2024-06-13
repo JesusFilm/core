@@ -1,6 +1,8 @@
-import { ThemeOptions } from '@mui/material/styles'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import { ThemeOptions } from '@mui/material/styles'
+
 import { baseBreakpoints } from '../../base/tokens/breakpoints'
+
 import { typography } from './typography'
 
 export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
@@ -67,6 +69,7 @@ export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
       styleOverrides: {
         notchedOutline: {
           top: 0,
+          borderWidth: '2px',
           '> legend': {
             display: 'none'
           }

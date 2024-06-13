@@ -12,12 +12,70 @@ module "internal_alb_security_group" {
   egress_rules  = local.internal_alb_config.egress_rules
 }
 
+module "internal_rds_security_group" {
+  source = "./security-group"
+  name   = "jfp-internal-rds-sg-${var.env}"
+  vpc_id = module.vpc.vpc_id
+  ingress_rules = [
+    {
+      from_port   = 5432
+      to_port     = 5432
+      protocol    = "tcp"
+      cidr_blocks = [var.cidr]
+    }
+  ]
+  egress_rules = local.egress_rules
+}
+
 module "public_alb_security_group" {
   source        = "./security-group"
   name          = "jfp-public-alb-sg-${var.env}"
   vpc_id        = module.vpc.vpc_id
   ingress_rules = local.public_alb_config.ingress_rules
   egress_rules  = local.public_alb_config.egress_rules
+}
+
+module "public_bastion_security_group" {
+  source = "./security-group"
+  name   = "jfp-public-bastion-sg-${var.env}"
+  vpc_id = module.vpc.vpc_id
+  ingress_rules = [
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = concat([var.cidr], local.google_datastream_ip_list)
+    },
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["172.221.20.111/32"]
+    },
+    {
+      // Mike Allison
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["47.36.114.169/32"]
+    },
+    {
+      // Tataihono Nikora
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["203.86.193.21/32"]
+    },
+
+    // EC2_INSTANCE_CONNECT
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["3.16.146.0/29"]
+    }
+  ]
+  egress_rules = local.egress_rules
 }
 
 module "internal_alb" {
@@ -59,16 +117,5 @@ module "ecs" {
   vpc_id                      = module.vpc.vpc_id
   internal_alb_security_group = module.internal_alb_security_group
   public_alb_security_group   = module.public_alb_security_group
-}
-
-module "vpn" {
-  source          = "./vpn"
-  dns_name        = "vpn-${var.env}.central.jesusfilm.org"
-  name            = "jfp-vpn-${var.env}"
-  vpc_id          = module.vpc.vpc_id
-  vpc_cidr_block  = var.cidr
-  cidr_block      = "10.0.0.0/16"
-  subnets         = module.vpc.public_subnets
-  certificate_arn = var.certificate_arn
-  dns_server      = var.env == "prod" ? "10.10.0.2" : "10.11.0.2"
+  env                         = var.env
 }

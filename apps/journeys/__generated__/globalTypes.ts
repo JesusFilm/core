@@ -7,6 +7,12 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum ButtonAction {
+  EmailAction = "EmailAction",
+  LinkAction = "LinkAction",
+  NavigateToBlockAction = "NavigateToBlockAction",
+}
+
 export enum ButtonColor {
   error = "error",
   inherit = "inherit",
@@ -23,26 +29,6 @@ export enum ButtonSize {
 export enum ButtonVariant {
   contained = "contained",
   text = "text",
-}
-
-export enum GridAlignItems {
-  baseline = "baseline",
-  center = "center",
-  flexEnd = "flexEnd",
-  flexStart = "flexStart",
-}
-
-export enum GridDirection {
-  column = "column",
-  columnReverse = "columnReverse",
-  row = "row",
-  rowReverse = "rowReverse",
-}
-
-export enum GridJustifyContent {
-  center = "center",
-  flexEnd = "flexEnd",
-  flexStart = "flexStart",
 }
 
 export enum IconColor {
@@ -94,6 +80,7 @@ export enum JourneyStatus {
 }
 
 export enum MessagePlatform {
+  custom = "custom",
   facebook = "facebook",
   instagram = "instagram",
   line = "line",
@@ -155,21 +142,42 @@ export enum VideoBlockObjectFit {
 }
 
 export enum VideoBlockSource {
+  cloudflare = "cloudflare",
   internal = "internal",
   youTube = "youTube",
 }
 
+/**
+ * The status of a visitor according to team members interacting with the
+ * visitor admin interface. This enum should map to an emoji when displayed
+ * (names here match Apple's emoji name)
+ */
+export enum VisitorStatus {
+  checkMarkSymbol = "checkMarkSymbol",
+  partyPopper = "partyPopper",
+  prohibited = "prohibited",
+  redExclamationMark = "redExclamationMark",
+  redQuestionMark = "redQuestionMark",
+  robotFace = "robotFace",
+  star = "star",
+  thumbsDown = "thumbsDown",
+  thumbsUp = "thumbsUp",
+  warning = "warning",
+}
+
 export interface ButtonClickEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
+  blockId: string;
   stepId?: string | null;
+  label?: string | null;
   value?: string | null;
+  action?: ButtonAction | null;
+  actionValue?: string | null;
 }
 
 export interface ChatOpenEventCreateInput {
-  blockId: string;
   id?: string | null;
+  blockId: string;
   stepId?: string | null;
   value?: MessagePlatform | null;
 }
@@ -181,99 +189,135 @@ export interface JourneyViewEventCreateInput {
   value?: string | null;
 }
 
+export interface JourneysQueryOptions {
+  hostname?: string | null;
+  embedded?: boolean | null;
+  journeyCollection?: boolean | null;
+}
+
 export interface RadioQuestionSubmissionEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
+  blockId: string;
   radioOptionBlockId: string;
   stepId?: string | null;
+  label?: string | null;
   value?: string | null;
 }
 
 export interface SignUpSubmissionEventCreateInput {
-  blockId: string;
-  email: string;
   id?: string | null;
-  name: string;
+  blockId: string;
   stepId?: string | null;
+  name: string;
+  email: string;
+}
+
+export interface StepNextEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  nextStepId: string;
+  label?: string | null;
+  value?: string | null;
+}
+
+export interface StepPreviousEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  previousStepId: string;
+  label?: string | null;
+  value?: string | null;
 }
 
 export interface StepViewEventCreateInput {
-  blockId: string;
   id?: string | null;
+  blockId: string;
   value?: string | null;
 }
 
 export interface TextResponseSubmissionEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
+  blockId: string;
   stepId?: string | null;
+  label?: string | null;
   value: string;
 }
 
 export interface VideoCollapseEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
-  position?: number | null;
+  blockId: string;
   stepId?: string | null;
+  position?: number | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideoCompleteEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
-  position?: number | null;
+  blockId: string;
   stepId?: string | null;
+  position?: number | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideoExpandEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
-  position?: number | null;
+  blockId: string;
   stepId?: string | null;
+  position?: number | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideoPauseEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
-  position?: number | null;
+  blockId: string;
   stepId?: string | null;
+  position?: number | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideoPlayEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
-  position?: number | null;
+  blockId: string;
   stepId?: string | null;
+  position?: number | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideoProgressEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
+  blockId: string;
+  stepId?: string | null;
   position?: number | null;
   progress: number;
-  stepId?: string | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
 }
 
 export interface VideoStartEventCreateInput {
-  blockId: string;
   id?: string | null;
-  label?: string | null;
-  position?: number | null;
+  blockId: string;
   stepId?: string | null;
+  position?: number | null;
+  label?: string | null;
   value?: VideoBlockSource | null;
+}
+
+/**
+ * A list of fields to update a visitor when calling the visitorUpdate mutation
+ */
+export interface VisitorUpdateInput {
+  email?: string | null;
+  messagePlatformId?: string | null;
+  messagePlatform?: MessagePlatform | null;
+  name?: string | null;
+  notes?: string | null;
+  status?: VisitorStatus | null;
+  countryCode?: string | null;
+  referrer?: string | null;
 }
 
 //==============================================================

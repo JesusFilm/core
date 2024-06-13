@@ -1,17 +1,19 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useEffect } from 'react'
-import videojs from 'video.js'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
-import { useBlocks } from '../../libs/block'
+import Player from 'video.js/dist/types/player'
+
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
-import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
-import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
-import { VideoPauseEventCreate } from './__generated__/VideoPauseEventCreate'
+import { useBlocks } from '../../libs/block'
+
+import { VideoCollapseEventCreate } from './__generated__/VideoCollapseEventCreate'
 import { VideoCompleteEventCreate } from './__generated__/VideoCompleteEventCreate'
 import { VideoExpandEventCreate } from './__generated__/VideoExpandEventCreate'
-import { VideoCollapseEventCreate } from './__generated__/VideoCollapseEventCreate'
+import { VideoPauseEventCreate } from './__generated__/VideoPauseEventCreate'
+import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
 import { VideoProgressEventCreate } from './__generated__/VideoProgressEventCreate'
+import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
 
 export const VIDEO_START_EVENT_CREATE = gql`
   mutation VideoStartEventCreate($input: VideoStartEventCreateInput!) {
@@ -66,7 +68,7 @@ export const VIDEO_PROGRESS_EVENT_CREATE = gql`
 `
 
 export interface VideoEventsProps {
-  player: videojs.Player
+  player: Player
   blockId: string
   videoTitle: string
   source: VideoBlockSource
@@ -99,11 +101,12 @@ export function VideoEvents({
     VIDEO_COLLAPSE_EVENT_CREATE
   )
 
-  const { activeBlock } = useBlocks()
+  const { blockHistory } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
   const stepId = activeBlock?.id
 
   const start = startAt ?? 0
-  const end = endAt ?? player.duration()
+  const end = endAt ?? player.duration() ?? 1
   const position25 = (end - start) / 4 + start
   const position50 = (end - start) / 2 + start
   const position75 = ((end - start) * 3) / 4 + start
@@ -121,7 +124,7 @@ export function VideoEvents({
   useEffect(() => {
     function playListener(): void {
       const id = uuidv4()
-      const currentTime = player.currentTime()
+      const currentTime = player.currentTime() ?? 0
       if (currentTime >= start) {
         void videoPlayEventCreate({
           variables: {
@@ -188,6 +191,7 @@ export function VideoEvents({
         }
       })
     }
+
     player.on('pause', pauseListener)
     return () => player.off('pause', pauseListener)
   }, [
@@ -205,7 +209,7 @@ export function VideoEvents({
     function expandListener(): void {
       const id = uuidv4()
       const currentPosition = player.currentTime()
-      if (player.isFullscreen()) {
+      if (player.isFullscreen() ?? false) {
         void videoExpandEventCreate({
           variables: {
             input: {
@@ -246,8 +250,8 @@ export function VideoEvents({
   useEffect(() => {
     function collapseListener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime()
-      if (!player.isFullscreen()) {
+      const currentPosition = player.currentTime() ?? 0
+      if (!(player.isFullscreen() ?? false)) {
         void videoCollapseEventCreate({
           variables: {
             input: {
@@ -288,7 +292,7 @@ export function VideoEvents({
   useEffect(() => {
     function startListener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime()
+      const currentPosition = player.currentTime() ?? 0
       if (!calledStart && currentPosition >= start) {
         void videoStartEventCreate({
           variables: {
@@ -332,7 +336,7 @@ export function VideoEvents({
   useEffect(() => {
     function timeupdate25Listener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime()
+      const currentPosition = player.currentTime() ?? 0
       if (!called25 && currentPosition >= position25) {
         void videoProgressEventCreate25({
           variables: {
@@ -378,7 +382,7 @@ export function VideoEvents({
   useEffect(() => {
     function timeupdate50Listener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime()
+      const currentPosition = player.currentTime() ?? 0
       if (!called50 && currentPosition >= position50) {
         void videoProgressEventCreate50({
           variables: {
@@ -424,7 +428,7 @@ export function VideoEvents({
   useEffect(() => {
     function timeupdate75Listener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime()
+      const currentPosition = player.currentTime() ?? 0
       if (!called75 && currentPosition >= position75) {
         void videoProgressEventCreate75({
           variables: {
@@ -471,7 +475,8 @@ export function VideoEvents({
   useEffect(() => {
     function completeListener(): void {
       const id = uuidv4()
-      const currentPosition = player.currentTime()
+      // + 2 to current time to prevent race condition between videoComplete and stepView events
+      const currentPosition = (player.currentTime() ?? 0) + 2
       if (!calledComplete && currentPosition >= end) {
         void videoCompleteEventCreate({
           variables: {

@@ -1,70 +1,64 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import {
-  mockCollectionSaveResult,
-  mockDbQueryResult
-} from '@core/nest/database/mock'
-import { DocumentCollection } from 'arangojs/collection'
-import { keyAsId } from '@core/nest/decorators/KeyAsId'
 
 import { Role } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
+
 import { UserRoleService } from './userRole.service'
 
 describe('userRoleService', () => {
-  let service: UserRoleService
+  let service: UserRoleService, prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserRoleService,
         {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
 
     service = module.get<UserRoleService>(UserRoleService)
-    service.collection = mockDeep<DocumentCollection>()
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
+
   afterAll(() => {
     jest.resetAllMocks()
   })
 
   const user = {
-    _key: '1',
+    id: '1',
     userId: 'userId',
     roles: [Role.publisher]
   }
 
-  const userWithId = keyAsId(user)
-
   describe('getUserRoleById', () => {
     it('should return a user role if exists', async () => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [user])
-      )
-      expect(await service.getUserRoleById('1')).toEqual(userWithId)
+      prismaService.userRole.upsert.mockResolvedValue(user)
+      expect(await service.getUserRoleById('1')).toEqual(user)
+      expect(prismaService.userRole.upsert).toHaveBeenCalledWith({
+        where: { userId: '1' },
+        update: {},
+        create: { userId: '1' }
+      })
     })
 
-    it('should return a newly created user role', async () => {
-      const user2 = {
-        _key: '2',
-        userId: 'userId2',
-        roles: []
-      }
-
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [])
-      )
-      ;(
-        service.collection as DeepMockProxy<DocumentCollection>
-      ).save.mockReturnValue(
-        mockCollectionSaveResult(service.collection, user2)
-      )
-
-      expect(await service.getUserRoleById('2')).toEqual(keyAsId(user2))
+    it('should retry if error', async () => {
+      prismaService.userRole.upsert.mockRejectedValueOnce({
+        code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
+      })
+      prismaService.userRole.upsert.mockResolvedValue(user)
+      expect(await service.getUserRoleById('1')).toEqual(user)
+      expect(prismaService.userRole.upsert).toHaveBeenCalledWith({
+        where: { userId: '1' },
+        update: {},
+        create: { userId: '1' }
+      })
     })
   })
 })

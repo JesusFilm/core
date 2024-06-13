@@ -1,0 +1,1 @@
+export { VideoHeroOverlay } from './VideoHeroOverlay'

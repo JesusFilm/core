@@ -1,0 +1,22 @@
+{
+  "Form": "Форма",
+  "Name must be 2 characters or more": "Имя должно состоять из 2 символов или более",
+  "Name must be 50 characters or less": "Имя должно состоять из 50 символов или меньше",
+  "Required": "Необходимый",
+  "Please enter a valid email address": "Пожалуйста, введите действительный адрес электронной почты",
+  "Name": "Имя",
+  "Email": "Электронная почта",
+  "Submit": "Представлять на рассмотрение",
+  "Journey": "Путешествие",
+  "Copied to clipboard": "Скопировано в буфер обмена",
+  "Share": "Поделиться",
+  "Copy Link": "Копировать ссылку",
+  "Facebook": "Фейсбук",
+  "Twitter": "Твиттер",
+  "Report this content": "Сообщить об этом",
+  "Terms & Conditions": "Правила и условия",
+  "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "Все персональные идентифицируемые данные, зарегистрированные на этом сайте, будут обрабатываться создателем journey: \"{{ teamTitle }}\".",
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Untitled": "Без названия",
+  "Step {{number}}": "Шаг {{number}}"
+}

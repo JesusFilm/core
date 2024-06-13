@@ -1,23 +1,25 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import {
-  VideoStartEvent,
-  VideoStartEventCreateInput,
-  VideoPlayEvent,
-  VideoPlayEventCreateInput,
-  VideoPauseEvent,
-  VideoPauseEventCreateInput,
+  VideoBlockSource,
+  VideoCollapseEvent,
+  VideoCollapseEventCreateInput,
   VideoCompleteEvent,
   VideoCompleteEventCreateInput,
   VideoExpandEvent,
   VideoExpandEventCreateInput,
-  VideoCollapseEvent,
-  VideoCollapseEventCreateInput,
+  VideoPauseEvent,
+  VideoPauseEventCreateInput,
+  VideoPlayEvent,
+  VideoPlayEventCreateInput,
   VideoProgressEvent,
   VideoProgressEventCreateInput,
-  VideoBlockSource
+  VideoStartEvent,
+  VideoStartEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
@@ -39,9 +41,10 @@ export class VideoStartEventResolver {
 
     return await this.eventService.save({
       ...input,
-      __typename: 'VideoStartEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
+      id: input.id ?? undefined,
+      typename: 'VideoStartEvent',
+      visitor: { connect: { id: visitor.id } },
+      stepId: input.stepId ?? undefined,
       journeyId
     })
   }
@@ -69,9 +72,10 @@ export class VideoPlayEventResolver {
 
     return await this.eventService.save({
       ...input,
-      __typename: 'VideoPlayEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
+      id: input.id ?? undefined,
+      typename: 'VideoPlayEvent',
+      visitor: { connect: { id: visitor.id } },
+      stepId: input.stepId ?? undefined,
       journeyId
     })
   }
@@ -100,10 +104,11 @@ export class VideoPauseEventResolver {
 
     return await this.eventService.save({
       ...input,
-      __typename: 'VideoPauseEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
+      id: input.id ?? undefined,
+      typename: 'VideoPauseEvent',
+      visitor: { connect: { id: visitor.id } },
+      journeyId,
+      stepId: input.stepId ?? undefined
     })
   }
 
@@ -131,10 +136,11 @@ export class VideoCompleteEventResolver {
 
     return await this.eventService.save({
       ...input,
-      __typename: 'VideoCompleteEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
+      id: input.id ?? undefined,
+      typename: 'VideoCompleteEvent',
+      visitor: { connect: { id: visitor.id } },
+      journeyId,
+      stepId: input.stepId ?? undefined
     })
   }
 
@@ -162,10 +168,11 @@ export class VideoExpandEventResolver {
 
     return await this.eventService.save({
       ...input,
-      __typename: 'VideoExpandEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
+      id: input.id ?? undefined,
+      typename: 'VideoExpandEvent',
+      visitor: { connect: { id: visitor.id } },
+      journeyId,
+      stepId: input.stepId ?? undefined
     })
   }
 
@@ -190,12 +197,14 @@ export class VideoCollapseEventResolver {
       input.blockId,
       input.stepId
     )
+
     return await this.eventService.save({
       ...input,
-      __typename: 'VideoCollapseEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
+      id: input.id ?? undefined,
+      typename: 'VideoCollapseEvent',
+      visitor: { connect: { id: visitor.id } },
+      journeyId,
+      stepId: input.stepId ?? undefined
     })
   }
 
@@ -223,10 +232,11 @@ export class VideoProgressEventResolver {
 
     return await this.eventService.save({
       ...input,
-      __typename: 'VideoProgressEvent',
-      visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      journeyId
+      id: input.id ?? undefined,
+      typename: 'VideoProgressEvent',
+      visitor: { connect: { id: visitor.id } },
+      journeyId,
+      stepId: input.stepId ?? undefined
     })
   }
 

@@ -1,0 +1,10 @@
+{
+  "Deploy Quickly": "Быстрое развертывание",
+  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "Наш конвейер непрерывной интеграции и непрерывной доставки позволяет тебе чаще и надежнее доставлять изменения в коде.",
+  "Common Environment": "Общая среда",
+  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "Мы работаем на Docker. Это значит, что каждый разработчик использует одно и то же окружение, которое в точности имитирует производственное, что упрощает совместную работу.",
+  "Powered by Typescript": "Работает под управлением Typescript",
+  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScript - это язык программирования с сильной типизацией, созданный на основе JavaScript и предоставляющий тебе лучшие инструменты в любом масштабе.",
+  "Core Development Kit Documentation": "Документация по Core Development Kit",
+  "Welcome - 5min ": "Приветствие - 5 минут "
+}

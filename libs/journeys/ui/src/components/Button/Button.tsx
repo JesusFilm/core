@@ -1,23 +1,27 @@
-import { ReactElement, useMemo } from 'react'
-import { useRouter } from 'next/router'
-import MuiButton from '@mui/material/Button'
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { useMutation, gql } from '@apollo/client'
-import { v4 as uuidv4 } from 'uuid'
+import MuiButton from '@mui/material/Button'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
+import { MouseEvent, ReactElement, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
-import { useTranslation } from 'react-i18next'
+import { v4 as uuidv4 } from 'uuid'
+
+import { ButtonVariant } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
-import { useJourney } from '../../libs/JourneyProvider'
 import { useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { ButtonVariant } from '../../../__generated__/globalTypes'
-import { IconFields } from '../Icon/__generated__/IconFields'
+import { useJourney } from '../../libs/JourneyProvider'
 import { Icon } from '../Icon'
-import { ButtonFields } from './__generated__/ButtonFields'
+import { IconFields } from '../Icon/__generated__/IconFields'
+
 import { ButtonClickEventCreate } from './__generated__/ButtonClickEventCreate'
+import { ButtonFields } from './__generated__/ButtonFields'
 import { ChatOpenEventCreate } from './__generated__/ChatOpenEventCreate'
-import { findChatPlatform } from './findChatPlatform'
+import { findMessagePlatform } from './utils/findMessagePlatform'
+import { getActionLabel } from './utils/getActionLabel'
+import { getLinkActionGoal } from './utils/getLinkActionGoal'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -58,9 +62,10 @@ export function Button({
     CHAT_OPEN_EVENT_CREATE
   )
 
-  const { admin } = useJourney()
-  const { treeBlocks, activeBlock } = useBlocks()
+  const { variant } = useJourney()
+  const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
   const heading =
     activeBlock != null
@@ -75,10 +80,14 @@ export function Button({
     | TreeBlock<IconFields>
     | undefined
 
-  const chatPlatform = useMemo(() => findChatPlatform(action), [action])
+  const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
+  const actionValue = useMemo(
+    () => getActionLabel(action, treeBlocks, t),
+    [action, treeBlocks, t]
+  )
 
   function createClickEvent(): void {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuidv4()
       void buttonClickEventCreate({
         variables: {
@@ -87,23 +96,18 @@ export function Button({
             blockId,
             stepId: activeBlock?.id,
             label: heading,
-            value: label
+            value: label,
+            action: action?.__typename,
+            actionValue
           }
         }
       })
-      TagManager.dataLayer({
-        dataLayer: {
-          event: 'button_click',
-          eventId: id,
-          blockId,
-          stepName: heading
-        }
-      })
+      addEventToDataLayer(id)
     }
   }
 
   function createChatEvent(): void {
-    if (!admin) {
+    if (variant === 'default' || variant === 'embed') {
       const id = uuidv4()
       void chatOpenEventCreate({
         variables: {
@@ -111,20 +115,50 @@ export function Button({
             id,
             blockId,
             stepId: activeBlock?.id,
-            value: chatPlatform
+            value: messagePlatform
           }
+        }
+      })
+      addEventToDataLayer(id)
+    }
+  }
+
+  function addEventToDataLayer(id: string): void {
+    const eventProperties = {
+      eventId: id,
+      blockId,
+      stepName: heading
+    }
+
+    if (action?.__typename === 'LinkAction') {
+      TagManager.dataLayer({
+        dataLayer: {
+          ...eventProperties,
+          event: 'outbound_action_click',
+          buttonLabel: label,
+          outboundActionType: getLinkActionGoal(action.url),
+          outboundActionValue: action.url
+        }
+      })
+    } else {
+      TagManager.dataLayer({
+        dataLayer: {
+          ...eventProperties,
+          event: 'button_click'
         }
       })
     }
   }
 
   const router = useRouter()
-  const handleClick = async (): Promise<void> => {
-    if (chatPlatform == null) {
+  const handleClick = async (e: MouseEvent): Promise<void> => {
+    e.stopPropagation()
+    if (messagePlatform == null) {
       void createClickEvent()
     } else {
       void createChatEvent()
     }
+
     handleAction(router, action)
   }
 
@@ -142,6 +176,7 @@ export function Button({
             ? 4
             : 5
       }}
+      data-testid={`JourneysButton-${blockId}`}
     >
       <MuiButton
         variant={buttonVariant ?? ButtonVariant.contained}

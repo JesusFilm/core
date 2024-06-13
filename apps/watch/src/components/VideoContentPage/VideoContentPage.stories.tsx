@@ -1,10 +1,16 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/react'
+
 import { watchConfig } from '../../libs/storybook'
-import { videos } from '../Videos/testData'
+import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
+import { VideoProvider } from '../../libs/videoContext'
+import { getLanguagesSlugMock } from '../AudioLanguageDialog/testData'
+import { getSubtitleMock } from '../SubtitleDialog/testData'
+import { videos } from '../Videos/__generated__/testData'
+
 import { VideoContentPage } from '.'
 
-const VideoContentPageStory = {
+const VideoContentPageStory: Meta<typeof VideoContentPage> = {
   ...watchConfig,
   component: VideoContentPage,
   title: 'Watch/VideoContentPage',
@@ -14,13 +20,18 @@ const VideoContentPageStory = {
   }
 }
 
-const Template: Story<ComponentProps<typeof VideoContentPage>> = ({
-  ...args
-}) => <VideoContentPage {...args} />
-
-export const Default = Template.bind({})
-Default.args = {
-  content: videos[0]
+const Template: StoryObj<typeof VideoContentPage> = {
+  render: () => (
+    <MockedProvider
+      mocks={[getLanguagesSlugMock, getSubtitleMock, getVideoChildrenMock]}
+    >
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoContentPage />
+      </VideoProvider>
+    </MockedProvider>
+  )
 }
 
-export default VideoContentPageStory as Meta
+export const Default = { ...Template }
+
+export default VideoContentPageStory

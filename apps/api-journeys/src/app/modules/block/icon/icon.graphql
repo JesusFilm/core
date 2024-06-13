@@ -70,7 +70,10 @@ extend type Mutation {
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
   iconBlockUpdate(
     id: ID!
-    journeyId: ID!
     input: IconBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): IconBlock!
 }

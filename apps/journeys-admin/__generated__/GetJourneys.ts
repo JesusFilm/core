@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode, JourneyStatus, UserJourneyRole } from "./globalTypes";
+import { JourneysFilter, ThemeName, ThemeMode, JourneyStatus, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourneys
@@ -33,7 +33,46 @@ export interface GetJourneys_journeys_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
+  /**
+   * Date time of when the journey was first opened
+   */
+  openedAt: any | null;
   user: GetJourneys_journeys_userJourneys_user | null;
+}
+
+export interface GetJourneys_journeys_primaryImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+}
+
+export interface GetJourneys_journeys_tags_name_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetJourneys_journeys_tags_name {
+  __typename: "Translation";
+  value: string;
+  language: GetJourneys_journeys_tags_name_language;
+  primary: boolean;
+}
+
+export interface GetJourneys_journeys_tags {
+  __typename: "Tag";
+  id: string;
+  parentId: string | null;
+  name: GetJourneys_journeys_tags_name[];
 }
 
 export interface GetJourneys_journeys {
@@ -42,6 +81,8 @@ export interface GetJourneys_journeys {
   title: string;
   createdAt: any;
   publishedAt: any | null;
+  featuredAt: any | null;
+  trashedAt: any | null;
   description: string | null;
   slug: string;
   themeName: ThemeName;
@@ -50,9 +91,16 @@ export interface GetJourneys_journeys {
   status: JourneyStatus;
   seoTitle: string | null;
   seoDescription: string | null;
+  template: boolean | null;
   userJourneys: GetJourneys_journeys_userJourneys[] | null;
+  primaryImageBlock: GetJourneys_journeys_primaryImageBlock | null;
+  tags: GetJourneys_journeys_tags[];
 }
 
 export interface GetJourneys {
   journeys: GetJourneys_journeys[];
+}
+
+export interface GetJourneysVariables {
+  where?: JourneysFilter | null;
 }

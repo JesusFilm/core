@@ -1,22 +1,32 @@
-import { ReactElement, ReactNode } from 'react'
-import { transformer } from '@core/journeys/ui/transformer'
+import { ReactElement } from 'react'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { transformer } from '@core/journeys/ui/transformer'
+
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import { SocialShareAppearance } from './Drawer/SocialShareAppearance'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+
+import { Fab } from './Fab'
+import { Slider } from './Slider'
+import { Toolbar } from './Toolbar'
 
 interface EditorProps {
   journey?: Journey
   selectedStepId?: string
-  children: ReactNode
+  initialState?: Partial<EditorState>
 }
 
+/**
+ * Editor initializes the journey provider and editor provider states which all
+ * descendants are able to make use of via useJourney and useEditor
+ * respectively.
+ */
 export function Editor({
   journey,
   selectedStepId,
-  children
+  initialState
 }: EditorProps): ReactElement {
   const steps =
     journey != null
@@ -28,16 +38,17 @@ export function Editor({
       : undefined
 
   return (
-    <JourneyProvider value={{ journey, admin: true }}>
+    <JourneyProvider value={{ journey, variant: 'admin' }}>
       <EditorProvider
         initialState={{
           steps,
           selectedStep,
-          drawerTitle: 'Social Share Appearance',
-          drawerChildren: <SocialShareAppearance />
+          ...initialState
         }}
       >
-        {children}
+        <Toolbar />
+        <Slider />
+        <Fab variant="mobile" />
       </EditorProvider>
     </JourneyProvider>
   )

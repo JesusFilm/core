@@ -1,26 +1,29 @@
-import { ReactElement } from 'react'
-import {
-  withAuthUser,
-  withAuthUserTokenSSR,
-  AuthAction
-} from 'next-firebase-auth'
-import { NextSeo } from 'next-seo'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { useTranslation } from 'react-i18next'
-import { SignIn } from '../../src/components/SignIn'
+import { NextSeo } from 'next-seo'
+import { ReactElement } from 'react'
+
 import i18nConfig from '../../next-i18next.config'
+import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
+import { SignIn } from '../../src/components/SignIn'
 
 function SignInPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <NextSeo title={t('Sign In')} />
-      <SignIn />
+      <OnboardingPageWrapper
+        title={t('Create New Account or Log in')}
+        emailSubject={t('A question about sign in')}
+      >
+        <SignIn />
+      </OnboardingPageWrapper>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenAuthed: AuthAction.REDIRECT_TO_APP
 })(async ({ locale }) => {
   return {
@@ -34,6 +37,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenAuthed: AuthAction.REDIRECT_TO_APP
 })(SignInPage)

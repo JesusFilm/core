@@ -1,12 +1,43 @@
-import { render, fireEvent } from '@testing-library/react'
+import useScrollTrigger from '@mui/material/useScrollTrigger'
+import { fireEvent, render } from '@testing-library/react'
+
 import { Header } from './Header'
 
+jest.mock('@mui/material/useScrollTrigger', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
+const useScrollTriggerMock = useScrollTrigger as jest.Mock
+
 describe('Header', () => {
-  it('should open navigation panel on menu icon click', () => {
+  beforeEach(() => {
+    useScrollTriggerMock.mockReset()
+  })
+
+  it('should open navigation panel on menu icon click', async () => {
     const { getByText, getByRole } = render(<Header />)
-
     fireEvent.click(getByRole('button', { name: 'open header menu' }))
+    const button = getByText('About')
+    expect(button.getAttribute('href')).toBe('https://www.jesusfilm.org/about/')
+  })
 
-    expect(getByText('About')).toBeInTheDocument()
+  it('should show fixed app bar', async () => {
+    useScrollTriggerMock.mockReturnValue(true)
+    const { getAllByRole, getByText } = render(<Header />)
+
+    expect(getAllByRole('button', { name: 'open header menu' })).toHaveLength(2)
+
+    fireEvent.click(getAllByRole('button', { name: 'open header menu' })[1])
+    const button = getByText('About')
+    expect(button.getAttribute('href')).toBe('https://www.jesusfilm.org/about/')
+  })
+
+  it('should hide absolute app bar', () => {
+    const { queryByRole } = render(<Header hideAbsoluteAppBar />)
+
+    expect(
+      queryByRole('button', { name: 'open header menu' })
+    ).not.toBeInTheDocument()
   })
 })

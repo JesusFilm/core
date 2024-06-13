@@ -1,5 +1,7 @@
 import { NextRouter } from 'next/dist/client/router'
+
 import { nextActiveBlock } from '../block'
+
 import { handleAction } from '.'
 
 jest.mock('../block', () => {
@@ -17,8 +19,12 @@ describe('action', () => {
       push: jest.fn()
     } as unknown as NextRouter
 
+    beforeEach(() => {
+      jest.resetAllMocks()
+    })
+
     it('should handle empty action', () => {
-      expect(() => handleAction(router)).not.toThrowError()
+      expect(() => handleAction(router)).not.toThrow()
     })
 
     it('should handle NavigateToBlockAction', () => {
@@ -31,56 +37,19 @@ describe('action', () => {
       expect(nextActiveBlock).toHaveBeenCalledWith({ id: 'block-id' })
     })
 
-    it('should navigate to journey with same RTL on NavigateToJourneyAction', () => {
-      handleAction(router, {
-        __typename: 'NavigateToJourneyAction',
-        parentBlockId: 'parent-id',
-        journey: {
-          __typename: 'Journey',
-          id: 'journey-id',
-          slug: 'journey-slug',
-          language: { __typename: 'Language', bcp47: 'en' }
-        },
-        gtmEventName: null
-      })
-      expect(router.push).toHaveBeenCalledWith('/journey-slug')
-    })
-
-    it('should navigate on journey with different RTL on NavigateToJourneyAction', () => {
+    it('should handle EmailAction', () => {
       window.open = jest.fn()
 
       handleAction(router, {
-        __typename: 'NavigateToJourneyAction',
+        __typename: 'EmailAction',
         parentBlockId: 'parent-id',
-        journey: {
-          __typename: 'Journey',
-          id: 'journey-id',
-          slug: 'journey-slug',
-          language: { __typename: 'Language', bcp47: 'ar' }
-        },
-        gtmEventName: null
+        gtmEventName: null,
+        email: 'edmondshen@gmail.com'
       })
-      expect(window.open).toHaveBeenCalledWith('/journey-slug', '_self')
-    })
-
-    it('should handle NavigateToJourneyAction when journey is null', () => {
-      expect(() =>
-        handleAction(router, {
-          __typename: 'NavigateToJourneyAction',
-          parentBlockId: 'parent-id',
-          journey: null,
-          gtmEventName: null
-        })
-      ).not.toThrowError()
-    })
-
-    it('should handle NavigateAction', () => {
-      handleAction(router, {
-        __typename: 'NavigateAction',
-        parentBlockId: 'parent-id',
-        gtmEventName: null
-      })
-      expect(nextActiveBlock).toHaveBeenCalledWith()
+      expect(window.open).toHaveBeenCalledWith(
+        'mailto:edmondshen@gmail.com',
+        '_blank'
+      )
     })
 
     it('should handle external LinkAction', () => {
@@ -98,7 +67,7 @@ describe('action', () => {
       )
     })
 
-    it('should handle internal LinkAction', () => {
+    it('should handle internal LinkAction for non http url', () => {
       handleAction(router, {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',
@@ -106,6 +75,33 @@ describe('action', () => {
         url: 'fact-or-fiction'
       })
       expect(router.push).toHaveBeenCalledWith('fact-or-fiction')
+    })
+
+    it('should not open new tab for internal links to journeys', () => {
+      window.open = jest.fn()
+
+      handleAction(router, {
+        __typename: 'LinkAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        url: 'https://your.nextstep.is/fact-or-fiction'
+      })
+      expect(router.push).toHaveBeenCalledWith(
+        'https://your.nextstep.is/fact-or-fiction'
+      )
+      expect(window.open).not.toHaveBeenCalled()
+    })
+
+    it('should not redirect when url is an empty string', () => {
+      window.open = jest.fn()
+      handleAction(router, {
+        __typename: 'LinkAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        url: ''
+      })
+      expect(window.open).not.toHaveBeenCalled()
+      expect(router.push).not.toHaveBeenCalled()
     })
   })
 })

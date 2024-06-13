@@ -1,74 +1,85 @@
-import { TranslationField } from '@core/nest/decorators/TranslationField'
 import {
-  Resolver,
-  Query,
   Args,
-  ResolveReference,
+  Parent,
+  Query,
   ResolveField,
-  Parent
+  ResolveReference,
+  Resolver
 } from '@nestjs/graphql'
-import { Country, IdType, Language } from '../../__generated__/graphql'
-import { LanguageService } from '../language/language.service'
-import { CountryService } from './country.service'
+
+import { Country, Language, Prisma } from '.prisma/api-languages-client'
+import { Translation } from '@core/nest/common/TranslationModule'
+
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Country')
 export class CountryResolver {
-  constructor(
-    private readonly countryService: CountryService,
-    private readonly languageService: LanguageService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
   async countries(): Promise<Country[]> {
-    return await this.countryService.getAll()
+    return await this.prismaService.country.findMany()
   }
 
   @Query()
-  async country(
-    @Args('id') id: string,
-    @Args('idType') idType: IdType = IdType.databaseId
-  ): Promise<Country> {
-    return idType === IdType.databaseId
-      ? await this.countryService.get(id)
-      : await this.countryService.getCountryBySlug(id)
+  async country(@Args('id') id: string): Promise<Country | null> {
+    return await this.prismaService.country.findUnique({ where: { id } })
   }
 
   @ResolveField()
-  @TranslationField('name')
-  name(
+  async name(
     @Parent() country,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {}
+  ): Promise<Translation[]> {
+    const where: Prisma.CountryNameWhereInput = {
+      countryId: country.id,
+      OR: languageId == null && primary == null ? undefined : []
+    }
+    if (languageId != null) where.OR?.push({ languageId })
+    if (primary != null) where.OR?.push({ primary })
+
+    return (await this.prismaService.countryName.findMany({
+      where,
+      orderBy: { primary: 'desc' }
+    })) as Translation[]
+  }
 
   @ResolveField()
-  @TranslationField('slug')
-  slug(
+  async continent(
     @Parent() country,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): void {}
+  ): Promise<Translation[]> {
+    const where: Prisma.CountryContinentWhereInput = {
+      countryId: country.id,
+      OR: languageId == null && primary == null ? undefined : []
+    }
+    if (languageId != null) where.OR?.push({ languageId })
+    if (primary != null) where.OR?.push({ primary })
 
-  @ResolveField()
-  @TranslationField('continent')
-  continent(
-    @Parent() country,
-    @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean
-  ): void {}
+    return (await this.prismaService.countryContinent.findMany({
+      where,
+      orderBy: { primary: 'desc' }
+    })) as Translation[]
+  }
 
   @ResolveField()
   async languages(
     @Parent() country: Country & { languageIds: string[] }
   ): Promise<Language[]> {
-    return await this.languageService.getByIds(country.languageIds)
+    return await this.prismaService.language.findMany({
+      where: { id: { in: country.languageIds } }
+    })
   }
 
   @ResolveReference()
   async resolveReference(reference: {
     __typename: 'Country'
     id: string
-  }): Promise<Country> {
-    return await this.countryService.get(reference.id)
+  }): Promise<Country | null> {
+    return await this.prismaService.country.findUnique({
+      where: { id: reference.id }
+    })
   }
 }

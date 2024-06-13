@@ -1,88 +1,136 @@
-import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
-import {
-  AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
-} from 'next-firebase-auth'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { gql, useQuery } from '@apollo/client'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { useTranslation } from 'react-i18next'
+import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-import { JourneyView } from '../../src/components/JourneyView'
-import { GetTemplate } from '../../__generated__/GetTemplate'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
+import { NextSeo } from 'next-seo'
+import { ReactElement, useEffect } from 'react'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+import { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
+import {
+  GetJourneys,
+  GetJourneysVariables
+} from '../../__generated__/GetJourneys'
+import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
-import i18nConfig from '../../next-i18next.config'
-import { Menu } from '../../src/components/JourneyView/Menu'
+import { useTeam } from '../../src/components/Team/TeamProvider'
+import { TemplateView } from '../../src/components/TemplateView'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import {
+  GET_JOURNEY,
+  useJourneyQuery
+} from '../../src/libs/useJourneyQuery/useJourneyQuery'
+import { GET_JOURNEYS } from '../../src/libs/useJourneysQuery/useJourneysQuery'
+import { GET_TAGS } from '../../src/libs/useTagsQuery/useTagsQuery'
 
-export const GET_TEMPLATE = gql`
-  ${JOURNEY_FIELDS}
-  query GetTemplate($id: ID!) {
-    template: adminJourney(id: $id, idType: databaseId) {
-      ...JourneyFields
-    }
-  }
-`
-
-function TemplateDetails(): ReactElement {
+function TemplateDetailsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const AuthUser = useAuthUser()
-  const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
-    variables: { id: router.query.journeyId }
+  const user = useUser()
+  const { data } = useJourneyQuery({
+    id: router.query.journeyId as string
   })
+  const { query } = useTeam()
+
+  useEffect(() => {
+    void query.refetch()
+  }, [user.id, query])
+
   return (
     <>
       <NextSeo
-        title={data?.template?.title ?? t('Journey Template')}
-        description={data?.template?.description ?? undefined}
+        title={data?.journey?.title ?? t('Journey Template')}
+        description={data?.journey?.description ?? undefined}
       />
       <JourneyProvider
-        value={{ journey: data?.template ?? undefined, admin: true }}
+        value={{
+          journey: data?.journey,
+          variant: 'admin'
+        }}
       >
         <PageWrapper
           title={t('Journey Template')}
-          authUser={AuthUser}
-          showDrawer
+          user={user}
           backHref="/templates"
-          menu={<Menu />}
-          router={router}
+          backHrefHistory
+          mainBodyPadding={false}
+          showMainHeader={user?.id != null}
+          showAppHeader={user?.id != null}
+          showNavBar={user?.id != null}
         >
-          <JourneyView journeyType="Template" />
+          <TemplateView authUser={user} />
         </PageWrapper>
       </JourneyProvider>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
-  return {
-    props: {
-      flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+export const getServerSideProps: GetStaticProps = withUserTokenSSR()(
+  async ({ user, locale, resolvedUrl, params }) => {
+    const { redirect, apolloClient, translations } = await initAndAuthApp({
+      user,
+      locale,
+      resolvedUrl
+    })
+
+    if (params?.journeyId == null) {
+      return {
+        redirect: {
+          destination: '/templates',
+          permanent: false
+        }
+      }
+    }
+
+    if (redirect != null) return { redirect }
+
+    try {
+      // TemplateDetailsPage
+      const { data } = await apolloClient.query<
+        GetJourney,
+        GetJourneyVariables
+      >({
+        query: GET_JOURNEY,
+        variables: {
+          id: params.journeyId.toString()
+        }
+      })
+      const tagIds = data.journey.tags.map((tag) => tag.id)
+      // src/components/TemplateView/TemplateView.tsx useJourneysQuery
+      await apolloClient.query<GetJourneys, GetJourneysVariables>({
+        query: GET_JOURNEYS,
+        variables: {
+          where: {
+            template: true,
+            orderByRecent: true,
+            tagIds
+          }
+        }
+      })
+      // src/components/TemplateView/TemplateTags/TemplateTags.tsx useTagsQuery
+      await apolloClient.query<GetTags>({
+        query: GET_TAGS
+      })
+    } catch (error) {
+      if (error.message === 'journey not found') {
+        return {
+          redirect: {
+            destination: '/templates',
+            permanent: false
+          }
+        }
+      }
+      throw error
+    }
+
+    return {
+      props: {
+        ...translations,
+        initialApolloState: apolloClient.cache.extract()
+      }
     }
   }
-})
+)
 
-export default withAuthUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateDetails)
+export default withUser()(TemplateDetailsPage)

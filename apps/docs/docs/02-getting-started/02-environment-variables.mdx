@@ -43,7 +43,9 @@ doppler login
 Open the authorization page in your browser? (Y/n) n
 ```
 
-3. Open the [authorization page](https://dashboard.doppler.com/workplace/auth/cli) to complete authorization. This will require you to login to Doppler, copy your auth code from your terminal, and give your newly minted token a name. On completion you terminal should look like the following:
+3. Open the [authorization page](https://dashboard.doppler.com/workplace/auth/cli) to complete authorization.
+   This will require you to login to Doppler, copy your auth code from your terminal, and give your newly minted
+   token a name. On completion you terminal should look like the following:
 
 ```shell
 ? Open the authorization page in your browser? No
@@ -60,4 +62,55 @@ Welcome, Brian
 
 ```shell
 DOPPLER_CONFIG=dev nx run-many --all --target=fetch-secrets
+```
+
+## Getting Started without a Backend
+
+If you just want to dig right in without setting up a local backend then you run the following command:
+
+```shell
+DOPPLER_CONFIG=stg_dev nx run-many --projects=tag:doppler_config:stg_dev --target=fetch-secrets
+```
+
+This will point your local frontend projects to our stage api-gateway so you can get started right away.
+For example you can start the journeys application using the following command:
+
+```shell
+nx run journeys-admin:serve
+```
+
+The key difference is the environment variable `DOPPLER_CONFIG=stg_dev` tells doppler to get enviroment variables
+for the stg_dev environment of the relevant project instead. You can revert this change by following step 4 of
+this guide again.
+
+You can skip ahead to step 2 in [4. Starting Projects](/docs/getting-started/running-projects) guide
+if getting started without a backend.
+
+### Common Issues
+
+#### I changed to stg_dev environment variables but now I want to go back
+
+You might already be working with your local backend but want to try some changes against stage.
+Just run the following command (given above):
+
+```shell
+DOPPLER_CONFIG=dev nx run-many --all --target=fetch-secrets
+```
+
+#### COOKIE_SECRET_CURRENT mismatch
+
+If you are signed in your web browser to localhost before performing DOPPLER_CONFIG change then you will need to
+clear the cookies from your localhost as they will not match the stage cookie values and firebase credentials.
+
+You'll see the error below this issue is relevant to you:
+
+```
+TypeError [ERR_INVALID_ARG_TYPE]: The "key" argument must be of type string or an instance of ArrayBuffer, Buffer, TypedArray, DataView, KeyObject, or CryptoKey. Received undefined
+    at new NodeError (node:internal/errors:405:5)
+    at prepareSecretKey (node:internal/crypto/keys:596:11)
+    at new Hmac (node:internal/crypto/hash:134:9)
+    at Object.createHmac (node:crypto:165:10)
+    at sign (/workspaces/core/node_modules/keygrip/index.js:23:8)
+    at Keygrip.index (/workspaces/core/node_modules/keygrip/index.js:38:27)
+    at c.get (/workspaces/core/node_modules/next-firebase-auth/build/index.node.js:2:1640)
 ```

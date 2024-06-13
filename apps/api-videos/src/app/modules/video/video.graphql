@@ -14,35 +14,50 @@ enum VideoLabel {
   segment
   series
   shortFilm
+  trailer
+  behindTheScenes
 }
 
-type Video @key(fields: "id primaryLanguageId") {
+type LanguageWithSlug {
+  language: Language
+  slug: String
+}
+
+type Video @key(fields: "id primaryLanguageId") @cacheControl(maxAge: 86400) {
   id: ID!
   label: VideoLabel!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
-  seoTitle(languageId: ID, primary: Boolean): [Translation!]!
   snippet(languageId: ID, primary: Boolean): [Translation!]!
   description(languageId: ID, primary: Boolean): [Translation!]!
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
   image: String
   imageAlt(languageId: ID, primary: Boolean): [Translation!]!
   variantLanguages: [Language!]!
+  variantLanguagesCount: Int!
   """
   slug is a permanent link to the video.
   """
   slug: String!
   noIndex: Boolean
   children: [Video!]!
+  """
+  the number value of the amount of children on a video
+  """
+  childrenCount: Int!
+  variantLanguagesWithSlug: [LanguageWithSlug!]!
 }
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
   labels: [VideoLabel!]
+  ids: [ID!]
+  subtitleLanguageIds: [ID!]
 }
 
-extend type Query {
+type Query {
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  video(id: ID!, idType: IdType): Video!
+    @cacheControl(maxAge: 86400)
+  video(id: ID!, idType: IdType): Video @cacheControl(maxAge: 86400)
 }

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetPublisherTemplate
@@ -23,10 +23,11 @@ export interface GetPublisherTemplate_publisherTemplate_language {
   name: GetPublisherTemplate_publisherTemplate_language_name[];
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
+export interface GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction {
@@ -36,25 +37,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_actio
   blockId: string;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -62,7 +44,14 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_actio
   url: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToJourneyAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_LinkAction;
+export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock {
   __typename: "ButtonBlock";
@@ -111,25 +100,36 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_CardBlock {
   fullscreen: boolean;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock {
-  __typename: "GridContainerBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  spacing: number;
-  direction: GridDirection;
-  justifyContent: GridJustifyContent;
-  alignItems: GridAlignItems;
+export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_GridItemBlock {
-  __typename: "GridItemBlock";
+export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action = GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_EmailAction;
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock {
+  __typename: "FormBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  xl: number;
-  lg: number;
-  sm: number;
+  form: any | null;
+  action: GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_IconBlock {
@@ -158,36 +158,11 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ImageBlock {
   blurhash: string;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_LinkAction {
@@ -197,7 +172,14 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_
   url: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action = GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_LinkAction;
+export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action = GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -215,36 +197,11 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBloc
   parentOrder: number | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_LinkAction {
@@ -254,7 +211,14 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_actio
   url: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action = GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToJourneyAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_LinkAction;
+export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action = GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock {
   __typename: "SignUpBlock";
@@ -277,54 +241,11 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_StepBlock {
    */
   locked: boolean;
   /**
-   * nextBlockId contains the preferred block to navigate to when a
-   * NavigateAction occurs or if the user manually tries to advance to the next
-   * step. If no nextBlockId is set it will automatically navigate to the next
-   * step in the journey based on parentOrder.
+   * nextBlockId contains the preferred block to navigate to, users will have to
+   * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
 }
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey | null;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export type GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action = GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_LinkAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
@@ -334,9 +255,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock
   label: string;
   hint: string | null;
   minRows: number | null;
-  submitLabel: string | null;
-  submitIconId: string | null;
-  action: GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
@@ -361,18 +279,25 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_
   hls: string | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages_name[];
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_title[];
   image: string | null;
   variant: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant | null;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
+  variantLanguages: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages[];
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction {
@@ -382,25 +307,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action
   blockId: string;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToJourneyAction_journey | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
@@ -408,7 +314,14 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action
   url: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToJourneyAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_LinkAction;
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
   __typename: "VideoBlock";
@@ -489,36 +402,11 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
   action: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateAction {
-  __typename: "NavigateAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey_language {
-  __typename: "Language";
-  bcp47: string | null;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey {
-  __typename: "Journey";
-  id: string;
-  slug: string;
-  language: GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey_language;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  journey: GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_LinkAction {
@@ -528,7 +416,14 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   url: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction = GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_LinkAction;
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction = GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -543,9 +438,25 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   triggerAction: GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock | GetPublisherTemplate_publisherTemplate_blocks_GridItemBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
+export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_FormBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
 
 export interface GetPublisherTemplate_publisherTemplate_primaryImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_creatorImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -573,7 +484,54 @@ export interface GetPublisherTemplate_publisherTemplate_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
+  /**
+   * Date time of when the journey was first opened
+   */
+  openedAt: any | null;
   user: GetPublisherTemplate_publisherTemplate_userJourneys_user | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_chatButtons {
+  __typename: "ChatButton";
+  id: string;
+  link: string | null;
+  platform: MessagePlatform | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_host {
+  __typename: "Host";
+  id: string;
+  teamId: string;
+  title: string;
+  location: string | null;
+  src1: string | null;
+  src2: string | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_team {
+  __typename: "Team";
+  id: string;
+  title: string;
+  publicTitle: string | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_tags_name_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_tags_name {
+  __typename: "Translation";
+  value: string;
+  language: GetPublisherTemplate_publisherTemplate_tags_name_language;
+  primary: boolean;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_tags {
+  __typename: "Tag";
+  id: string;
+  parentId: string | null;
+  name: GetPublisherTemplate_publisherTemplate_tags_name[];
 }
 
 export interface GetPublisherTemplate_publisherTemplate {
@@ -585,19 +543,27 @@ export interface GetPublisherTemplate_publisherTemplate {
   status: JourneyStatus;
   language: GetPublisherTemplate_publisherTemplate_language;
   createdAt: any;
+  featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
+  strategySlug: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
   blocks: GetPublisherTemplate_publisherTemplate_blocks[] | null;
   primaryImageBlock: GetPublisherTemplate_publisherTemplate_primaryImageBlock | null;
+  creatorDescription: string | null;
+  creatorImageBlock: GetPublisherTemplate_publisherTemplate_creatorImageBlock | null;
   userJourneys: GetPublisherTemplate_publisherTemplate_userJourneys[] | null;
+  chatButtons: GetPublisherTemplate_publisherTemplate_chatButtons[];
+  host: GetPublisherTemplate_publisherTemplate_host | null;
+  team: GetPublisherTemplate_publisherTemplate_team | null;
+  tags: GetPublisherTemplate_publisherTemplate_tags[];
 }
 
 export interface GetPublisherTemplate {
-  publisherTemplate: GetPublisherTemplate_publisherTemplate | null;
+  publisherTemplate: GetPublisherTemplate_publisherTemplate;
 }
 
 export interface GetPublisherTemplateVariables {

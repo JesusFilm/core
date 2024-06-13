@@ -1,237 +1,205 @@
-import { ReactElement, useState } from 'react'
+import Backdrop from '@mui/material/Backdrop'
+import Badge from '@mui/material/Badge'
 import Drawer from '@mui/material/Drawer'
-import { AuthUser } from 'next-firebase-auth'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { styled, Theme } from '@mui/material/styles'
-import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import Avatar from '@mui/material/Avatar'
-import Box from '@mui/material/Box'
-import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
-import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
-import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
-import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
-import Backdrop from '@mui/material/Backdrop'
+import ListItemText from '@mui/material/ListItemText'
+import NoSsr from '@mui/material/NoSsr'
+import Tooltip from '@mui/material/Tooltip'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { NextRouter } from 'next/router'
-import { compact } from 'lodash'
-import { gql, useQuery } from '@apollo/client'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
-import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
-import { Role } from '../../../../__generated__/globalTypes'
-import taskbarIcon from '../../../../public/taskbar-icon.svg'
+import NextLink from 'next/link'
+import type { User } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, Suspense, useState } from 'react'
+
+import Bag5Icon from '@core/shared/ui/icons/Bag5'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
+import JourneysIcon from '@core/shared/ui/icons/Journeys'
+
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
-import { GetMe } from '../../../../__generated__/GetMe'
-import { GetUserRole } from '../../../../__generated__/GetUserRole'
-import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
-import { UserMenu } from './UserMenu'
-import { NavigationListItem } from './NavigationListItem'
+import taskbarIcon from '../../../../public/taskbar-icon.svg'
 
 const DRAWER_WIDTH = '237px'
 
-export interface NavigationDrawerProps {
-  open: boolean
-  onClose: (value: boolean) => void
-  authUser?: AuthUser
-  title: string
-  router?: NextRouter
+const UserNavigation = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "UserNavigation" */
+      './UserNavigation'
+    ).then((mod) => mod.UserNavigation),
+  { ssr: false }
+)
+
+interface NavigationDrawerProps {
+  open?: boolean
+  onClose?: (value: boolean) => void
+  user?: User
+  selectedPage?: string
 }
-
-export const GET_ME = gql`
-  query GetMe {
-    me {
-      id
-      firstName
-      lastName
-      email
-      imageUrl
-    }
-  }
-`
-
-const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
-  width: DRAWER_WIDTH,
-  display: 'flex',
-  boxSizing: 'border-box',
-  border: 0,
-  '& .MuiDrawer-paper': {
-    backgroundColor: theme.palette.secondary.dark,
-    overflowX: 'hidden',
-    ...(open === true && {
-      width: DRAWER_WIDTH,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen
-      })
-    }),
-    ...(open === false && {
-      width: theme.spacing(18),
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen
-      })
-    })
-  }
-}))
-
-const StyledList = styled(List)({
-  display: 'flex',
-  flexDirection: 'column',
-  '& .MuiListItemButton-root, & .MuiListItem-root': {
-    paddingLeft: 0,
-    marginBottom: 6,
-    '& .MuiListItemIcon-root': {
-      minWidth: 'unset',
-      width: '72px',
-      justifyContent: 'center'
-    },
-    '& .MuiListItemText-primary': {
-      fontSize: '15px',
-      fontWeight: 'bold'
-    }
-  }
-})
 
 export function NavigationDrawer({
   open,
   onClose,
-  authUser,
-  title,
-  router
+  user,
+  selectedPage
 }: NavigationDrawerProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const [profileAnchorEl, setProfileAnchorEl] = useState(null)
+  const { t } = useTranslation('apps-journeys-admin')
+  const [tooltip, setTooltip] = useState<string | undefined>()
 
-  const selectedPage = router?.pathname?.split('/')[1]
-
-  const { templates } = useFlags()
-
-  const profileOpen = Boolean(profileAnchorEl)
-  const handleProfileClick = (event): void => {
-    setProfileAnchorEl(event.currentTarget)
+  function handleClose(): void {
+    onClose?.(open !== true)
   }
-
-  const handleProfileClose = (): void => {
-    setProfileAnchorEl(null)
-  }
-
-  const handleClose = (): void => {
-    onClose(!open)
-  }
-
-  const { data } = useQuery<GetMe>(GET_ME)
-  const { data: userRoleData } = useQuery<GetUserRole>(GET_USER_ROLE)
 
   return (
-    <StyledNavigationDrawer
+    <Drawer
       open={open}
       onClose={handleClose}
-      variant={smUp ? 'permanent' : 'temporary'}
+      variant="permanent"
       anchor="left"
+      data-testid="NavigationDrawer"
+      sx={{
+        display: 'flex',
+        width: { xs: 0, md: 72 },
+        '& .MuiDrawer-paper': {
+          border: 0,
+          backgroundColor: 'secondary.dark',
+          overflowX: 'hidden',
+          transition: (theme) => theme.transitions.create('width'),
+          width: open === true ? DRAWER_WIDTH : { xs: 0, md: 72 },
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }
+      }}
     >
-      {open && smUp && <Backdrop open={open} onClick={handleClose} />}
-      <StyledList>
-        <ListItemButton onClick={handleClose}>
+      <Backdrop open={open === true} onClick={handleClose} />
+      <List
+        component="nav"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          gap: 1.5,
+          '& .MuiListItemButton-root, & .MuiListItem-root': {
+            paddingLeft: 0,
+            flexGrow: 0,
+            '& .MuiListItemIcon-root': {
+              minWidth: 'unset',
+              width: '72px',
+              justifyContent: 'center'
+            },
+            '& .MuiListItemText-primary': {
+              fontSize: '15px',
+              fontWeight: 'bold'
+            },
+            '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+              color: 'secondary.light',
+              transition: (theme) => theme.transitions.create('color')
+            },
+            '&.Mui-selected, &:hover, &.Mui-selected:hover': {
+              backgroundColor: 'transparent',
+              '& .MuiListItemIcon-root': {
+                color: 'background.paper'
+              },
+              '& .MuiListItemText-primary': {
+                color: 'background.paper'
+              }
+            }
+          }
+        }}
+      >
+        <ListItemButton
+          onClick={handleClose}
+          data-testid="NavigationListItemToggle"
+          aria-label="Navigation Drawer Toggle"
+        >
           <ListItemIcon
             sx={{
               '> .MuiSvgIcon-root': {
-                color: 'secondary.dark',
                 backgroundColor: 'secondary.light',
-                borderRadius: 2
+                color: 'secondary.dark',
+                borderRadius: 2,
+                transition: (theme) =>
+                  theme.transitions.create(['transform', 'background-color']),
+                transform: {
+                  md: open === true ? 'rotate(180deg)' : 'rotate(0deg)'
+                },
+                '&:hover': {
+                  backgroundColor: 'background.paper'
+                }
               }
             }}
           >
-            {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
+            <ChevronRightIcon />
           </ListItemIcon>
         </ListItemButton>
-
-        <NavigationListItem
-          icon={<ViewCarouselRoundedIcon />}
-          label="Discover"
-          selected={selectedPage === 'journeys' || selectedPage == null} // null for when page is index. UPDATE when we add the actual index page
-          link="/"
-        />
-
-        {templates && (
-          <NavigationListItem
-            icon={<ShopRoundedIcon />}
-            label="Templates"
+        <NextLink href="/" passHref legacyBehavior>
+          <Tooltip title={tooltip} placement="right" arrow>
+            <ListItemButton
+              selected={selectedPage === 'journeys' || selectedPage === ''}
+              data-testid="NavigationListItemDiscover"
+            >
+              <ListItemIcon>
+                <Badge
+                  variant="dot"
+                  color="warning"
+                  overlap="circular"
+                  invisible={tooltip == null}
+                >
+                  <JourneysIcon />
+                </Badge>
+              </ListItemIcon>
+              <ListItemText
+                primary={t('Discover')}
+                primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+              />
+            </ListItemButton>
+          </Tooltip>
+        </NextLink>
+        <NextLink href="/templates" passHref legacyBehavior>
+          <ListItemButton
             selected={selectedPage === 'templates'}
-            link="/templates"
-          />
-        )}
-
-        <NavigationListItem
-          icon={<LeaderboardRoundedIcon />}
-          label="Reports"
-          selected={selectedPage === 'reports'}
-          link="/reports"
-        />
-
-        {authUser != null && data?.me != null && (
-          <>
-            <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
-
-            {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
-              true &&
-              templates && (
-                <NavigationListItem
-                  icon={<ShopTwoRoundedIcon />}
-                  label="Publisher"
-                  selected={selectedPage === 'publisher'}
-                  link="/publisher"
-                />
-              )}
-
-            <NavigationListItem
-              icon={
-                <Avatar
-                  alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
-                  src={data.me.imageUrl ?? undefined}
-                  sx={{ width: 24, height: 24 }}
-                />
-              }
-              label="Profile"
-              selected={false}
-              handleClick={handleProfileClick}
+            data-testid="NavigationListItemTemplates"
+          >
+            <ListItemIcon>
+              <Bag5Icon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('Templates')}
+              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
             />
-            <UserMenu
-              user={data.me}
-              profileOpen={profileOpen}
-              profileAnchorEl={profileAnchorEl}
-              handleProfileClose={handleProfileClose}
-              authUser={authUser}
-            />
-          </>
+          </ListItemButton>
+        </NextLink>
+        {user?.id != null && (
+          <NoSsr>
+            <Suspense>
+              <UserNavigation
+                user={user}
+                selectedPage={selectedPage}
+                setTooltip={setTooltip}
+              />
+            </Suspense>
+          </NoSsr>
         )}
-      </StyledList>
-      <Box sx={{ flexGrow: 1 }} />
-      <StyledList>
-        <ListItem>
+        <ListItem component="div" sx={{ flexGrow: '1 !important' }} />
+        <ListItem component="div" sx={{ mb: 1.5 }}>
           <ListItemIcon>
             <Image
               src={taskbarIcon}
               width={32}
               height={32}
-              layout="fixed"
               alt="Next Steps Logo"
             />
           </ListItemIcon>
-          <Box sx={{ display: 'flex' }}>
-            <Image
-              src={nextstepsTitle}
-              width={106}
-              height={24}
-              layout="fixed"
-              alt="Next Steps Title"
-            />
-          </Box>
+          <Image
+            src={nextstepsTitle}
+            width={106}
+            height={24}
+            alt="Next Steps Title"
+          />
         </ListItem>
-      </StyledList>
-    </StyledNavigationDrawer>
+      </List>
+    </Drawer>
   )
 }

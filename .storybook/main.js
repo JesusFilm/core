@@ -19,51 +19,60 @@ const storiesForProject = {
     '../libs/shared/ui/src/**/*.stories.mdx',
     '../libs/shared/ui/src/**/*.stories.@(js|jsx|ts|tsx)'
   ],
+  'shared-ui-dynamic': [
+    '../libs/shared/ui-dynamic/src/**/*.stories.mdx',
+    '../libs/shared/ui-dynamic/src/**/*.stories.@(js|jsx|ts|tsx)'
+  ],
   watch: [
     '../apps/watch/src/**/*.stories.@(js|jsx|ts|tsx)',
     '../apps/watch/src/components/**/*.stories.mdx',
     '../apps/watch/src/components/**/*.stories.@(js|jsx|ts|tsx)'
   ],
-  'watch-admin': [
-    '../apps/watch-admin/src/**/*.stories.@(js|jsx|ts|tsx)',
-    '../apps/watch-admin/src/components/**/*.stories.mdx',
-    '../apps/watch-admin/src/components/**/*.stories.@(js|jsx|ts|tsx)',
-    '../apps/watch-admin/src/components/**/**/*.stories.@(js|jsx|ts|tsx)'
+  'api-journeys': [
+    '../apps/api-journeys/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
+  ],
+  'api-users': [
+    '../apps/api-users/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
   ]
   // Add new UI projects here and in allStories
 }
 
-const allStories = [
+const stories = [
   ...storiesForProject['journeys'],
   ...storiesForProject['journeys-admin'],
   ...storiesForProject['journeys-ui'],
   ...storiesForProject['watch'],
-  ...storiesForProject['watch-admin'],
-  ...storiesForProject['shared-ui']
+  ...storiesForProject['shared-ui'],
+  ...storiesForProject['shared-ui-dynamic'],
+  ...storiesForProject['api-journeys'],
+  ...storiesForProject['api-users']
 ]
 
 module.exports = {
   staticDirs: [
     './static',
-    { from: '../apps/watch/public/fonts', to: '/fonts' }
+    {
+      from: '../apps/watch/public/watch/assets/fonts',
+      to: '/watch/assets/fonts'
+    }
   ],
-  stories: allStories,
+  stories,
   addons: [
-    '@storybook/addon-essentials',
     '@storybook/addon-interactions',
-    '@storybook/addon-a11y'
+    '@storybook/addon-a11y',
+    'storybook-addon-apollo-client'
   ],
+
   features: {
     interactionsDebugger: true
   },
-  core: {
-    builder: 'webpack5'
-  },
+
   resolve: {
     fallback: {
       util: require.resolve('util/')
     }
   },
+
   webpackFinal: async (config) => {
     const tsPaths = new TsconfigPathsPlugin({
       configFile: './tsconfig.base.json'
@@ -84,5 +93,14 @@ module.exports = {
     }
 
     return config
+  },
+
+  framework: {
+    name: '@storybook/nextjs',
+    options: {}
+  },
+
+  docs: {
+    autodocs: false
   }
 }

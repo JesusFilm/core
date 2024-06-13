@@ -19,11 +19,17 @@ input ImageBlockCreateInput {
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  parentBlockId: ID!
+  parentBlockId: ID
   journeyId: ID!
   src: String
   alt: String!
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
   blurhash: String
+  width: Int
+  height: Int
+
   """
   True if the coverBlockId in a parent block should be set to this block's id.
   """
@@ -34,17 +40,27 @@ input ImageBlockUpdateInput {
   parentBlockId: ID
   src: String
   alt: String
+  """
+  If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated.
+  """
+  blurhash: String
+  width: Int
+  height: Int
 }
 
 extend type Mutation {
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
   imageBlockUpdate(
     id: ID!
-    journeyId: ID!
     input: ImageBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): ImageBlock!
 }
 
 extend type Journey {
   primaryImageBlock: ImageBlock
+  creatorImageBlock: ImageBlock
 }

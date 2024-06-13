@@ -1,0 +1,1 @@
+export { useTagsQuery } from './useTagsQuery'

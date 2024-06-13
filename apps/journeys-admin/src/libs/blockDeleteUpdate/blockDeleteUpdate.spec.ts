@@ -1,9 +1,10 @@
 import { InMemoryCache } from '@apollo/client'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
-  GetJourney_journey as Journey,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../__generated__/GetJourney'
 import {
@@ -12,6 +13,7 @@ import {
   ThemeName,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
+
 import { blockDeleteUpdate } from './blockDeleteUpdate'
 
 const video: TreeBlock<VideoBlock> = {
@@ -48,7 +50,8 @@ const video: TreeBlock<VideoBlock> = {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
       hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    }
+    },
+    variantLanguages: []
   },
   posterBlockId: null,
   children: []
@@ -72,6 +75,8 @@ const journey: Journey = {
   id: 'journeyId',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
+  featuredAt: null,
+  strategySlug: null,
   title: 'my journey',
   slug: 'my-journey',
   language: {
@@ -93,10 +98,16 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
   template: null,
   userJourneys: [],
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  chatButtons: [],
+  host: null,
+  team: null,
+  tags: []
 }
 
 const response = [{ ...image, parentOrder: 0 }]
@@ -124,6 +135,47 @@ describe('blockDeleteUpdate', () => {
       { __ref: 'ImageBlock:imageId' }
     ])
     expect(extractedCache['VideoBlock:videoId']).toBeUndefined()
-    expect(extractedCache['ImageBlock:imageId']?.parentOrder).toEqual(0)
+    expect(extractedCache['ImageBlock:imageId']?.parentOrder).toBe(0)
+  })
+
+  it('should handle deletion of StepBlocks', () => {
+    const step1 = {
+      __typename: 'StepBlock' as const,
+      id: 'step1.id',
+      locked: false,
+      nextBlockId: null,
+      parentBlockId: null,
+      parentOrder: 0,
+      children: []
+    }
+
+    const step2 = {
+      __typename: 'StepBlock',
+      id: 'step2.id',
+      locked: false,
+      nextBlockId: null,
+      parentBlockId: null,
+      parentOrder: 1,
+      children: []
+    }
+
+    const response = [step2]
+
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [
+          { __ref: 'StepBlock:step1.id' },
+          { __ref: 'StepBlock:step2.id' }
+        ],
+        id: journey.id,
+        __typename: 'Journey'
+      }
+    })
+    blockDeleteUpdate(step1, response, cache, journey.id)
+    const extractedCache = cache.extract()
+    expect(extractedCache['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'StepBlock:step2.id' }
+    ])
   })
 })

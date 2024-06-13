@@ -1,0 +1,1 @@
+export { JourneySharedNoAccountEmail } from './JourneySharedNoAccount'

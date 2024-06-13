@@ -1,35 +1,33 @@
-import { ReactElement } from 'react'
+import Box from '@mui/material/Box'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { useTranslation } from 'react-i18next'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import Box from '@mui/material/Box'
-import { PageWrapper } from '../../src/components/PageWrapper'
-import i18nConfig from '../../next-i18next.config'
-import { MemoizedDynamicReport } from '../../src/components/DynamicPowerBiReport'
+import { ReactElement } from 'react'
+
 import { JourneysReportType } from '../../__generated__/globalTypes'
+import { MemoizedDynamicReport } from '../../src/components/DynamicPowerBiReport'
+import { PageWrapper } from '../../src/components/PageWrapper'
+import { ReportsNavigation } from '../../src/components/ReportsNavigation'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function ReportsJourneysPage(): ReactElement {
-  const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
-  const AuthUser = useAuthUser()
+  const user = useUser()
 
   return (
     <>
-      <NextSeo title={t('Journeys Report')} />
-      <PageWrapper
-        title={t('Journeys Report')}
-        authUser={AuthUser}
-        router={router}
-      >
+      <NextSeo title={t('Journeys Analytics')} />
+      <PageWrapper title={t('Journeys Analytics')} user={user}>
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
+          <ReportsNavigation
+            reportType={JourneysReportType.multipleFull}
+            selected="journeys"
+          />
           <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
         </Box>
       </PageWrapper>
@@ -37,30 +35,27 @@ function ReportsJourneysPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
-  }
+})(async ({ user, locale, resolvedUrl }) => {
+  if (user == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
+  const { redirect, translations } = await initAndAuthApp({
+    user,
+    locale,
+    resolvedUrl
+  })
+
+  if (redirect != null) return { redirect }
+
   return {
     props: {
-      flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      ...translations
     }
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(ReportsJourneysPage)

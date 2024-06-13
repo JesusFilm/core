@@ -16,3 +16,4 @@ variable "internal_url_name" {
 variable "certificate_arn" {
   type = string
 }
+

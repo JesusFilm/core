@@ -1,123 +1,138 @@
-import { ReactElement, useState } from 'react'
-import { gql, useQuery } from '@apollo/client'
+import Stack from '@mui/material/Stack'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
-  useAuthUser,
-  withAuthUser,
-  withAuthUserTokenSSR
+  useUser,
+  withUser,
+  withUserTokenSSR
 } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/router'
-import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { GetJourneys } from '../__generated__/GetJourneys'
-import { JourneyList } from '../src/components/JourneyList'
-import { PageWrapper } from '../src/components/PageWrapper'
-import i18nConfig from '../next-i18next.config'
-import JourneyListMenu from '../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
+import { ReactElement, useEffect } from 'react'
 
-export const GET_JOURNEYS = gql`
-  query GetJourneys {
-    journeys: adminJourneys {
-      id
-      title
-      createdAt
-      publishedAt
-      description
-      slug
-      themeName
-      themeMode
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      status
-      seoTitle
-      seoDescription
-      userJourneys {
-        id
-        role
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
-    }
-  }
-`
+import {
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+} from '../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../__generated__/globalTypes'
+import {
+  UpdateLastActiveTeamId,
+  UpdateLastActiveTeamIdVariables
+} from '../__generated__/UpdateLastActiveTeamId'
+import { JourneyList } from '../src/components/JourneyList'
+import { OnboardingPanel } from '../src/components/OnboardingPanel'
+import { PageWrapper } from '../src/components/PageWrapper'
+import { TeamMenu } from '../src/components/Team/TeamMenu'
+import { useTeam } from '../src/components/Team/TeamProvider'
+import { TeamSelect } from '../src/components/Team/TeamSelect'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../src/components/Team/TeamSelect/TeamSelect'
+import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+import { GET_ADMIN_JOURNEYS } from '../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
-  const AuthUser = useAuthUser()
+  const user = useUser()
   const router = useRouter()
-  const [listEvent, setListEvent] = useState('')
+  const { query } = useTeam()
 
-  const activeTab = router.query.tab ?? 'active'
-  const pageTitle =
-    activeTab === 'active'
-      ? t('Active Journeys')
-      : activeTab === 'archived'
-      ? t('Archived Journeys')
-      : t('Trashed Journeys')
-
-  const handleClick = (event: string): void => {
-    setListEvent(event)
-    // remove event after component lifecycle
-    setTimeout(() => {
-      setListEvent('')
-    }, 1000)
-  }
+  // MA - ensure team is refetched if user is not loaded before provider
+  useEffect(() => {
+    void query.refetch()
+  }, [user.id, query])
 
   return (
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper
-        title={pageTitle}
-        authUser={AuthUser}
-        menu={<JourneyListMenu router={router} onClick={handleClick} />}
+        user={user}
+        mainHeaderChildren={
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            width="100%"
+          >
+            <TeamSelect onboarding={router.query.onboarding === 'true'} />
+            <Stack direction="row" alignItems="center">
+              <TeamMenu />
+            </Stack>
+          </Stack>
+        }
+        sidePanelChildren={<OnboardingPanel />}
+        sidePanelTitle={t('Create a New Journey')}
       >
-        <JourneyList
-          journeys={data?.journeys}
-          router={router}
-          event={listEvent}
-          authUser={AuthUser}
-        />
+        <JourneyList user={user} />
       </PageWrapper>
     </>
   )
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
+export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
-  const ldUser = {
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
+})(async ({ user, locale, resolvedUrl, query }) => {
+  if (user == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
+  const { apolloClient, redirect, translations, flags } = await initAndAuthApp({
+    user,
+    locale,
+    resolvedUrl
+  })
+
+  if (redirect != null) return { redirect }
+
+  let variables: GetAdminJourneysVariables = {}
+
+  switch (query.tab ?? 'active') {
+    case 'active':
+      variables = {
+        // from src/components/JourneyList/ActiveJourneyList useAdminJourneysQuery
+        status: [JourneyStatus.draft, JourneyStatus.published],
+        useLastActiveTeamId: true
+      }
+      break
+    case 'archived':
+      variables = {
+        // from src/components/JourneyList/ArchivedJourneyList useAdminJourneysQuery
+        status: [JourneyStatus.archived],
+        useLastActiveTeamId: true
+      }
+      break
+    case 'trashed':
+      variables = {
+        // from src/components/JourneyList/TrashedJourneyList useAdminJourneysQuery
+        status: [JourneyStatus.trashed],
+        useLastActiveTeamId: true
+      }
+      break
   }
-  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
-  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
-    [key: string]: boolean | undefined
+
+  if (query?.activeTeam != null) {
+    await apolloClient.mutate<
+      UpdateLastActiveTeamId,
+      UpdateLastActiveTeamIdVariables
+    >({
+      mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: {
+        input: { lastActiveTeamId: query.activeTeam as string }
+      }
+    })
   }
+
+  await apolloClient.query<GetAdminJourneys, GetAdminJourneysVariables>({
+    query: GET_ADMIN_JOURNEYS,
+    variables
+  })
+
   return {
     props: {
-      flags,
-      ...(await serverSideTranslations(
-        locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+      initialApolloState: apolloClient.cache.extract(),
+      ...translations,
+      flags
     }
   }
 })
 
-export default withAuthUser({
+export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(IndexPage)

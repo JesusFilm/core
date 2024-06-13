@@ -1,36 +1,41 @@
-import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded'
-import Link from 'next/link'
+import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
+
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
+
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
 
 export function MultipleSummaryReport(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Box
       sx={{
         width: '100%',
         backgroundColor: 'background.paper'
       }}
+      data-testid="JourneysAdminMultipleSummaryReport"
     >
       <Container maxWidth="lg" sx={{ px: { xs: 6, sm: 8 } }}>
         <Stack direction="row" spacing={4} sx={{ py: 2 }}>
           <Typography variant="subtitle1" sx={{ pt: 1 }}>
-            Reports
+            {t('Reports')}
           </Typography>
-          <Link href="/reports" passHref>
+          <NextLink href="/reports" passHref legacyBehavior prefetch={false}>
             <Button
               size="small"
               variant="text"
-              endIcon={<ArrowForwardIosRoundedIcon sx={{ fontSize: 1 }} />}
+              endIcon={<ChevronRightIcon sx={{ fontSize: 1 }} />}
             >
-              See all
+              {t('See all')}
             </Button>
-          </Link>
+          </NextLink>
         </Stack>
         <Box sx={{ height: '160px', pb: 8 }}>
           <MemoizedDynamicReport

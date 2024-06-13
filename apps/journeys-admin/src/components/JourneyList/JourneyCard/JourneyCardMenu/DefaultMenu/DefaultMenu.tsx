@@ -1,17 +1,22 @@
-import { ReactElement } from 'react'
-import EditIcon from '@mui/icons-material/Edit'
-import PeopleIcon from '@mui/icons-material/People'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
+import { ApolloQueryResult } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
-import { ApolloQueryResult } from '@apollo/client'
-import { MenuItem } from '../../../../MenuItem'
-import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
+import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
+
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import Trash2Icon from '@core/shared/ui/icons/Trash2'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
+
+import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { GetActiveJourneys } from '../../../../../../__generated__/GetActiveJourneys'
-import { GetArchivedJourneys } from '../../../../../../__generated__/GetArchivedJourneys'
-import { GetTrashedJourneys } from '../../../../../../__generated__/GetTrashedJourneys'
+import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
+import { MenuItem } from '../../../../MenuItem'
+import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
+import { useTeam } from '../../../../Team/TeamProvider'
+import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
+
 import { ArchiveJourney } from './ArchiveJourney'
 
 interface DefaultMenuProps {
@@ -24,11 +29,7 @@ interface DefaultMenuProps {
   handleCloseMenu: () => void
   setOpenTrashDialog: () => void
   template?: boolean
-  refetch?: () => Promise<
-    ApolloQueryResult<
-      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
-    >
-  >
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function DefaultMenu({
@@ -43,6 +44,13 @@ export function DefaultMenu({
   template,
   refetch
 }: DefaultMenuProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const { activeTeam } = useTeam()
+  const { hostname } = useCustomDomainsQuery({
+    variables: { teamId: activeTeam?.id ?? '' },
+    skip: activeTeam?.id == null
+  })
+
   return (
     <>
       <NextLink
@@ -52,35 +60,40 @@ export function DefaultMenu({
             : `/journeys/${journeyId}`
         }
         passHref
+        legacyBehavior
+        prefetch={false}
       >
-        <MenuItem label="Edit" icon={<EditIcon color="secondary" />} />
+        <MenuItem label={t('Edit')} icon={<Edit2Icon color="secondary" />} />
       </NextLink>
-
       {template !== true && (
         <MenuItem
-          label="Access"
-          icon={<PeopleIcon color="secondary" />}
+          label={t('Access')}
+          icon={<UsersProfiles2Icon color="secondary" />}
           onClick={() => {
             setOpenAccessDialog()
             handleCloseMenu()
           }}
         />
       )}
-      <NextLink href={`/api/preview?slug=${slug}`} passHref>
+      <NextLink
+        href={`/api/preview?slug=${slug}${
+          hostname != null ? `&hostname=${hostname}` : ''
+        }`}
+        passHref
+        legacyBehavior
+        prefetch={false}
+      >
         <MenuItem
-          label="Preview"
-          icon={<VisibilityIcon color="secondary" />}
-          disabled={!published}
+          label={t('Preview')}
+          icon={<EyeOpenIcon color="secondary" />}
           openInNew
         />
       </NextLink>
-
       {template !== true && (
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       )}
-
       <Divider />
-
+      <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       <ArchiveJourney
         status={status}
         id={journeyId}
@@ -88,10 +101,9 @@ export function DefaultMenu({
         handleClose={handleCloseMenu}
         refetch={refetch}
       />
-
       <MenuItem
-        label="Trash"
-        icon={<DeleteOutlineRoundedIcon color="secondary" />}
+        label={t('Trash')}
+        icon={<Trash2Icon color="secondary" />}
         onClick={() => {
           setOpenTrashDialog()
           handleCloseMenu()

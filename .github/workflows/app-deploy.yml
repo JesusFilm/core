@@ -1,0 +1,286 @@
+name: App Deploy
+on:
+  push:
+    branches: [main, stage, feature/*]
+  pull_request:
+    branches: [main, feature/*]
+  merge_group:
+    branches: [main]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  affected:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v3
+      - id: set-matrix
+        name: set matrix app to affected array
+        run: |
+          echo "matrix=$(npx ts-node tools/scripts/affected-apps.ts --withTarget deploy --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+  deploy-preview:
+    name: Deploy Preview and Test
+    needs: affected
+    # if branch is not main or is a pull request
+    if: |
+      needs.affected.outputs.matrix != '[]' &&
+      needs.affected.outputs.matrix != '' && (
+        github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
+      )
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{fromJson(needs.affected.outputs.matrix)}}
+        github-ref-name: ['${{ github.ref_name }}']
+        github-event-name: ['${{ github.event_name }}']
+        node-version: [20]
+        exclude:
+          # handled by production job below
+          - app: journeys
+            github-ref-name: stage
+            github-event-name: push
+          # handled by ecs-frontend-deploy-stage
+          - app: journeys-admin
+            github-ref-name: stage
+            github-event-name: push
+    runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.deployment-url.outputs.deployment-url }}
+    permissions:
+      pull-requests: write
+      deployments: write
+      contents: write
+    steps:
+      - name: start deployment
+        uses: chrnorm/deployment-action@v2
+        id: deployment
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: Preview - ${{ matrix.app }}
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v3
+      - name: vercel deployment
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          ARCLIGHT_VERCEL_PROJECT_ID: ${{ secrets.ARCLIGHT_VERCEL_PROJECT_ID }}
+          DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
+          JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID }}
+          JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
+          NEXUS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.NEXUS_ADMIN_VERCEL_PROJECT_ID }}
+          WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
+          NEXT_PUBLIC_VERCEL_ENV: preview
+          NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+        # use run-namy to avoid case where deploy command doesn't exist for a project
+        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+      - name: vercel set alias
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
+        # use run-namy to avoid case where deploy command doesn't exist for a project
+        run: npx nx run-many --target=vercel-alias --projects=${{ matrix.app }}
+      - name: Generate GitHub deployment comment
+        id: deployment-url
+        env:
+          APP: ${{ matrix.app }}
+        run: ./tools/scripts/generate-deployment-comment.sh
+      - id: get-comment-body
+        run: |
+          body="$(cat .github/deployment_comment.md)"
+          delimiter="$(openssl rand -hex 8)"
+          echo "body<<$delimiter" >> $GITHUB_OUTPUT
+          echo "$body" >> $GITHUB_OUTPUT
+          echo "$delimiter" >> $GITHUB_OUTPUT
+      - uses: mshick/add-pr-comment@v2
+        if: ${{ github.event_name == 'pull_request' }}
+        name: add deployment comment to pull request
+        with:
+          message: ${{ steps.get-comment-body.outputs.body }}
+          message-id: ${{ matrix.app }}
+      - name: add deployment comment to commit
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: peter-evans/commit-comment@v2
+        with:
+          body: ${{ steps.get-comment-body.outputs.body }}
+      - name: update deployment status
+        uses: chrnorm/deployment-status@v2
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          state: ${{ job.status }}
+          environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      - name: Store Playwright's Version
+        run: |
+          PLAYWRIGHT_VERSION=$(npm run playwright -v)
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+      - run: npx playwright install --with-deps
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+      - run: npx playwright install-deps
+        if: steps.cache-playwright-browsers.outputs.cache-hit == 'true'
+      - name: Run Playwright tests
+        run: npx nx run ${{ matrix.app }}-e2e:e2e
+        env:
+          DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
+          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
+          PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
+          EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ${{ matrix.app }}-playwright-report
+          path: |
+            playwright-report/
+          retention-days: 30
+  deploy-status:
+    runs-on: ubuntu-latest
+    needs: [affected, deploy-preview]
+    if: ${{ always() && github.event_name == 'pull_request' }}
+    steps:
+      - name: Successful deploy
+        if: ${{ !(contains(needs.*.result, 'failure')) }}
+        run: exit 0
+      - name: Failing deploy
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
+  deploy-production:
+    name: Deploy Production
+    # if push to main or stage
+    if: |
+      needs.affected.outputs.matrix != '[]' &&
+      needs.affected.outputs.matrix != '' &&
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')
+    needs: affected
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{fromJson(needs.affected.outputs.matrix)}}
+        github-ref-name: ['${{ github.ref_name }}']
+        node-version: [20]
+        exclude:
+          # handled by ecs-frontend-deploy-prod
+          - app: journeys-admin
+          # handled by deploy-preview job above
+          - github-ref-name: stage
+        include:
+          - app: journeys
+            github-ref-name: stage
+    runs-on: ubuntu-latest
+    permissions:
+      deployments: write
+      contents: write
+    outputs:
+      url: ${{ steps.deployment-url.outputs.deployment-url }}
+    steps:
+      - name: start deployment
+        uses: chrnorm/deployment-action@v2
+        id: deployment
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: Production - ${{ matrix.app }}
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v3
+      - name: vercel deployment
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          ARCLIGHT_VERCEL_PROJECT_ID: ${{ secrets.ARCLIGHT_VERCEL_PROJECT_ID }}
+          DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
+          JOURNEYS_VERCEL_PROJECT_ID: ${{ github.ref == 'refs/heads/stage' && secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID || secrets.JOURNEYS_VERCEL_PROJECT_ID }}
+          JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
+          NEXUS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.NEXUS_ADMIN_VERCEL_PROJECT_ID }}
+          WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
+          NEXT_PUBLIC_VERCEL_ENV: production
+          NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+        # use run-namy to avoid case where deploy command doesn't exist for a project
+        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
+      - name: Generate GitHub comment
+        id: deployment-url
+        env:
+          APP: ${{ matrix.app }}
+        run: ./tools/scripts/generate-deployment-comment.sh
+      - id: get-comment-body
+        run: |
+          body="$(cat .github/deployment_comment.md)"
+          delimiter="$(openssl rand -hex 8)"
+          echo "body<<$delimiter" >> $GITHUB_OUTPUT
+          echo "$body" >> $GITHUB_OUTPUT
+          echo "$delimiter" >> $GITHUB_OUTPUT
+      - name: add deployment comment to commit
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: peter-evans/commit-comment@v2
+        with:
+          body: ${{ steps.get-comment-body.outputs.body }}
+      - name: update deployment status
+        uses: chrnorm/deployment-status@v2
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          state: ${{ job.status }}
+          environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}

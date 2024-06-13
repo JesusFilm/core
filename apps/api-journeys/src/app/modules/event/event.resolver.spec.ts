@@ -1,25 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
+import { PrismaService } from '../../lib/prisma.service'
+
 import { DbEvent, EventResolver } from './event.resolver'
-import { EventService } from './event.service'
 
 describe('EventResolver', () => {
   let resolver: EventResolver
 
   describe('__resolveType', () => {
-    const event = {
-      id: 'eventId'
-    }
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        getAllByVisitorId: jest.fn(() => [event])
-      })
-    }
-
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [EventResolver, eventService]
+        providers: [EventResolver, PrismaService]
       }).compile()
       resolver = module.get<EventResolver>(EventResolver)
     })
@@ -29,9 +20,7 @@ describe('EventResolver', () => {
         __typename: 'TextResponseSubmissionEvent'
       } as unknown as DbEvent
 
-      expect(resolver.__resolveType(event)).toEqual(
-        'TextResponseSubmissionEvent'
-      )
+      expect(resolver.__resolveType(event)).toBe('TextResponseSubmissionEvent')
     })
   })
 })

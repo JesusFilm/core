@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = env("PRISMA_LOCATION_MEDIA")
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+generator erd {
+  provider    = "prisma-erd-generator"
+  ignoreEnums = true
+  disabled    = true
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL_MEDIA")
+}
+
+model CloudflareImage {
+  id        String   @id @default(uuid())
+  uploadUrl String?
+  userId    String
+  createdAt DateTime @default(now())
+  uploaded  Boolean  @default(false)
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([userId])
+}
+
+model CloudflareVideo {
+  id            String   @id @default(uuid())
+  uploadUrl     String?
+  userId        String
+  name          String?
+  createdAt     DateTime @default(now())
+  readyToStream Boolean  @default(false)
+  updatedAt     DateTime @default(now()) @updatedAt
+
+  @@index([userId])
+}

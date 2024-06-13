@@ -1,15 +1,15 @@
-import {
-  ReactElement,
-  Children,
-  ReactNode,
-  isValidElement,
-  useRef,
-  useEffect
-} from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { SxProps } from '@mui/system/styleFunctionSx'
 import { Theme } from '@mui/material/styles'
+import { SxProps } from '@mui/system/styleFunctionSx'
+import {
+  Children,
+  ReactElement,
+  ReactNode,
+  isValidElement,
+  useEffect,
+  useRef
+} from 'react'
 
 export interface HorizontalSelectProps {
   onChange?: (id: string) => void
@@ -18,6 +18,8 @@ export interface HorizontalSelectProps {
   sx?: SxProps<Theme>
   footer?: ReactNode
   isDragging?: boolean
+  testId?: string
+  scrollIntoView?: boolean
 }
 
 export function HorizontalSelect({
@@ -26,23 +28,25 @@ export function HorizontalSelect({
   onChange,
   sx,
   footer,
-  isDragging
+  isDragging,
+  testId,
+  scrollIntoView
 }: HorizontalSelectProps): ReactElement {
   const selectedRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    if (selectedRef?.current != null) {
+    if (selectedRef?.current != null && scrollIntoView === true) {
       selectedRef.current.scrollIntoView({
         behavior: 'smooth',
         inline: 'center'
       })
     }
-  }, [id])
+  }, [id, scrollIntoView])
 
   return (
     <Stack
       direction="row"
-      data-testid="horizontal-select"
+      data-testid={testId}
       spacing={1}
       sx={{
         overflowX: 'auto',
@@ -56,20 +60,25 @@ export function HorizontalSelect({
         (child) =>
           isValidElement(child) && (
             <Box
-              key={child.props.id}
-              ref={id === child.props.id ? selectedRef : undefined}
+              key={child.props.id ?? child.props.draggableId}
+              // ref={id === child.props.draggableId ? selectedRef : undefined}
               sx={{
                 borderRadius: 2,
-                transition: '0.2s border-color ease-out',
+                transition: '0.1s outline ease-out',
                 position: 'relative',
                 outline: (theme) =>
-                  id === child.props.id && isDragging !== true
+                  id === (child.props.id ?? child.props.draggableId) &&
+                  isDragging !== true
                     ? `2px solid ${theme.palette.primary.main} `
                     : '2px solid transparent',
                 border: '3px solid transparent',
                 cursor: 'pointer'
               }}
-              onClick={() => onChange?.(child.props.id)}
+              onClick={() => {
+                onChange?.(
+                  (child.props.id ?? child.props.draggableId) as string
+                )
+              }}
             >
               <Box
                 sx={{

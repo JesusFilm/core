@@ -1,111 +1,150 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
-import { IdType } from '../../__generated__/graphql'
-import { LanguageService } from '../language/language.service'
-import { CountryResolver } from './country.resolver'
-import { CountryService } from './country.service'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-describe('LangaugeResolver', () => {
-  let resolver: CountryResolver, service: CountryService
+import { PrismaService } from '../../lib/prisma.service'
+
+import { CountryResolver } from './country.resolver'
+
+describe('CountryResolver', () => {
+  let resolver: CountryResolver, prismaService: DeepMockProxy<PrismaService>
 
   const country = {
     id: 'US',
-    name: [{ value: 'United States', languageId: '529', primary: true }],
     population: 500000000,
-    continent: [{ value: 'North America', languageId: '529', primary: true }],
-    slug: [{ value: 'United-States', languageId: '529', primary: true }],
-    languageIds: ['529'],
     latitude: 10,
-    longitude: -20.1
+    longitude: -20.1,
+    flagPngSrc: 'flag.png',
+    flagWebpSrc: 'flag.webp'
+  }
+  const countryName = {
+    id: '1',
+    countryId: country.id,
+    value: 'United States',
+    languageId: '529',
+    primary: true
+  }
+  const countryContinent = {
+    id: '1',
+    countryId: country.id,
+    value: 'North America',
+    languageId: '529',
+    primary: true
   }
 
   beforeEach(async () => {
-    const countryService = {
-      provide: CountryService,
-      useFactory: () => ({
-        get: jest.fn(() => country),
-        getCountryBySlug: jest.fn(() => country),
-        getAll: jest.fn(() => [country, country])
-      })
-    }
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CountryResolver,
-        countryService,
-        LanguageService,
-        { provide: 'DATABASE', useFactory: () => mockDeep<Database>() }
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
       ]
     }).compile()
     resolver = module.get<CountryResolver>(CountryResolver)
-    service = await module.resolve(CountryService)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
   })
 
   describe('countries', () => {
     it('returns Countries', async () => {
+      prismaService.country.findMany.mockResolvedValue([country, country])
       expect(await resolver.countries()).toEqual([country, country])
-      expect(service.getAll).toHaveBeenCalledWith()
+      expect(prismaService.country.findMany).toHaveBeenCalledWith()
     })
   })
 
   describe('country', () => {
     it('should return country', async () => {
+      prismaService.country.findUnique.mockResolvedValue(country)
       expect(await resolver.country(country.id)).toEqual(country)
-      expect(service.get).toHaveBeenCalledWith(country.id)
-    })
-
-    it('should return country by slug', async () => {
-      expect(await resolver.country(country.id, IdType.slug)).toEqual(country)
-      expect(service.getCountryBySlug).toHaveBeenCalledWith(country.id)
+      expect(prismaService.country.findUnique).toHaveBeenCalledWith({
+        where: { id: country.id }
+      })
     })
   })
 
   describe('name', () => {
-    it('should return translations', () => {
-      expect(resolver.name(country)).toEqual(country.name)
+    it('should return translations', async () => {
+      prismaService.countryName.findMany.mockResolvedValueOnce([
+        countryName,
+        countryName
+      ])
+      expect(await resolver.name(country)).toEqual([countryName, countryName])
+      expect(prismaService.countryName.findMany).toHaveBeenCalledWith({
+        where: { countryId: country.id },
+        orderBy: { primary: 'desc' }
+      })
     })
 
-    it('should return translations filtered by countryId', () => {
-      expect(resolver.name(country, '529')).toEqual([country.name[0]])
+    it('should return translations filtered by countryId', async () => {
+      prismaService.countryName.findMany.mockResolvedValueOnce([countryName])
+      expect(await resolver.name(country, '529')).toEqual([countryName])
+      expect(prismaService.countryName.findMany).toHaveBeenCalledWith({
+        where: { countryId: country.id, OR: [{ languageId: '529' }] },
+        orderBy: { primary: 'desc' }
+      })
     })
 
-    it('should return translations filtered by primary', () => {
-      expect(resolver.name(country, undefined, true)).toEqual([country.name[0]])
-    })
-  })
-
-  describe('slug', () => {
-    it('should return translations', () => {
-      expect(resolver.slug(country)).toEqual(country.slug)
-    })
-
-    it('should return translations filtered by countryId', () => {
-      expect(resolver.slug(country, '529')).toEqual([country.slug[0]])
-    })
-
-    it('should return translations filtered by primary', () => {
-      expect(resolver.slug(country, undefined, true)).toEqual([country.slug[0]])
+    it('should return translations filtered by primary', async () => {
+      prismaService.countryName.findMany.mockResolvedValueOnce([countryName])
+      expect(await resolver.name(country, undefined, true)).toEqual([
+        countryName
+      ])
+      expect(prismaService.countryName.findMany).toHaveBeenCalledWith({
+        where: { countryId: country.id, OR: [{ primary: true }] },
+        orderBy: { primary: 'desc' }
+      })
     })
   })
 
   describe('continent', () => {
-    it('should return translations', () => {
-      expect(resolver.continent(country)).toEqual(country.continent)
-    })
-
-    it('should return translations filtered by countryId', () => {
-      expect(resolver.continent(country, '529')).toEqual([country.continent[0]])
-    })
-
-    it('should return translations filtered by primary', () => {
-      expect(resolver.continent(country, undefined, true)).toEqual([
-        country.continent[0]
+    it('should return translations', async () => {
+      prismaService.countryContinent.findMany.mockResolvedValueOnce([
+        countryContinent,
+        countryContinent
       ])
+      expect(await resolver.continent(country)).toEqual([
+        countryContinent,
+        countryContinent
+      ])
+      expect(prismaService.countryContinent.findMany).toHaveBeenCalledWith({
+        where: { countryId: country.id },
+        orderBy: { primary: 'desc' }
+      })
+    })
+
+    it('should return translations filtered by countryId', async () => {
+      prismaService.countryContinent.findMany.mockResolvedValueOnce([
+        countryContinent
+      ])
+      expect(await resolver.continent(country, '529')).toEqual([
+        countryContinent
+      ])
+      expect(prismaService.countryContinent.findMany).toHaveBeenCalledWith({
+        where: { countryId: country.id, OR: [{ languageId: '529' }] },
+        orderBy: { primary: 'desc' }
+      })
+    })
+
+    it('should return translations filtered by primary', async () => {
+      prismaService.countryContinent.findMany.mockResolvedValueOnce([
+        countryContinent
+      ])
+      expect(await resolver.continent(country, undefined, true)).toEqual([
+        countryContinent
+      ])
+      expect(prismaService.countryContinent.findMany).toHaveBeenCalledWith({
+        where: { countryId: country.id, OR: [{ primary: true }] },
+        orderBy: { primary: 'desc' }
+      })
     })
   })
 
   describe('resolveReference', () => {
     it('should return country', async () => {
+      prismaService.country.findUnique.mockResolvedValueOnce(country)
       expect(
         await resolver.resolveReference({
           __typename: 'Country',

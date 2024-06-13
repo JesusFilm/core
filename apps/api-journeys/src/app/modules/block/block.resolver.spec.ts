@@ -1,120 +1,263 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
-import { JourneyService } from '../journey/journey.service'
-import { UserJourneyService } from '../userJourney/userJourney.service'
-import { UserRoleService } from '../userRole/userRole.service'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import {
+  Block,
+  Journey,
+  Prisma,
+  UserTeamRole
+} from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { PrismaService } from '../../lib/prisma.service'
+
 import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
 
 describe('BlockResolver', () => {
-  let resolver: BlockResolver, service: BlockService
+  let resolver: BlockResolver,
+    service: BlockService,
+    prismaService: DeepMockProxy<PrismaService>,
+    ability: AppAbility
 
-  const image1 = {
-    id: 'image1',
+  const journey = {
+    id: '2'
+  } as unknown as Journey
+
+  const journeyWithUserTeam = {
+    ...journey,
+    team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }
+  }
+
+  const block: Block = {
+    id: 'blockId',
     journeyId: '2',
-    __typename: 'ImageBlock',
+    typename: 'ImageBlock',
     parentBlockId: 'card1',
     parentOrder: 0,
     src: 'https://source.unsplash.com/random/1920x1080',
     alt: 'random image from unsplash',
     width: 1920,
-    height: 1080
+    height: 1080,
+    label: 'label',
+    description: 'description',
+    updatedAt: new Date()
+  } as unknown as Block
+  const blockWithUserTeam = {
+    ...block,
+    journey: journeyWithUserTeam
   }
-
-  const image2 = {
-    id: 'image2',
-    journeyId: '2',
-    __typename: 'ImageBlock',
-    parentBlockId: 'card1',
-    parentOrder: 1,
-    src: 'https://source.unsplash.com/random/1920x1080',
-    alt: 'random image from unsplash',
-    width: 1920,
-    height: 1080
-  }
-
-  const image3 = {
-    id: 'image3',
-    journeyId: '2',
-    __typename: 'ImageBlock',
-    parentBlockId: 'card1',
-    parentOrder: 2,
-    src: 'https://source.unsplash.com/random/1920x1080',
-    alt: 'random image from unsplash',
-    width: 1920,
-    height: 1080
-  }
-
   const blockService = {
     provide: BlockService,
+    PrismaService,
     useFactory: () => ({
-      get: jest.fn(() => image1),
-      duplicateBlock: jest.fn(() => [image1, image1, image2, image3]),
-      removeBlockAndChildren: jest.fn(() => [image1, image2, image3]),
-      reorderBlock: jest.fn(() => [
-        { id: 'image2', parentOrder: 0 },
-        { id: 'image3', parentOrder: 1 },
-        { id: 'image1', parentOrder: 2 }
-      ])
+      duplicateBlock: jest.fn((block, _parentOrder) => [block, block]),
+      removeBlockAndChildren: jest.fn(() => []),
+      reorderBlock: jest.fn((block, parentOrder) => [{ ...block, parentOrder }])
     })
   }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        UserJourneyService,
         BlockResolver,
         blockService,
-        UserRoleService,
-        JourneyService,
         {
-          provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
     resolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
-  describe('blockDelete', () => {
-    it('removes the block and its children', async () => {
-      const data = await resolver.blockDelete('image1', '2', 'card1')
-
-      expect(service.removeBlockAndChildren).toBeCalledTimes(1)
-      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
-        'image1',
-        '2',
-        'card1'
-      )
-      expect(data).toEqual([image1, image2, image3])
+  describe('__resolveType', () => {
+    it('returns __typename', () => {
+      expect(
+        resolver.__resolveType({
+          __typename: 'VideoBlock',
+          typename: 'VideoOtherBlock'
+        })
+      ).toBe('VideoBlock')
     })
-  })
 
-  describe('blockDuplicate', () => {
-    it('duplicates the block and its children', async () => {
-      const data = await resolver.blockDuplicate('image1', '2', 1)
-
-      expect(service.duplicateBlock).toBeCalledTimes(1)
-      expect(service.duplicateBlock).toHaveBeenCalledWith('image1', '2', 1)
-      expect(data).toEqual([image1, image1, image2, image3])
+    it('returns typename when no __typename', () => {
+      expect(resolver.__resolveType({ typename: 'VideoBlock' })).toBe(
+        'VideoBlock'
+      )
     })
   })
 
   describe('blockOrderUpdate', () => {
     it('updates the block order', async () => {
-      const data = await resolver.blockOrderUpdate('image1', '2', 2)
-
-      expect(service.reorderBlock).toHaveBeenCalledWith(
-        image1.id,
-        image1.journeyId,
-        2
-      )
-      expect(data).toEqual([
-        { id: 'image2', parentOrder: 0 },
-        { id: 'image3', parentOrder: 1 },
-        { id: 'image1', parentOrder: 2 }
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      expect(await resolver.blockOrderUpdate(ability, 'blockId', 2)).toEqual([
+        { ...blockWithUserTeam, parentOrder: 2 }
       ])
+      expect(service.reorderBlock).toHaveBeenCalledWith(blockWithUserTeam, 2)
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.blockOrderUpdate(ability, 'blockId', 2)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.blockOrderUpdate(ability, 'blockId', 2)
+      ).rejects.toThrow('user is not allowed to update block')
+    })
+  })
+
+  describe('blockDuplicate', () => {
+    it('duplicates the block and its children', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.blockDuplicate(ability, 'blockId', 2, 3, 4)
+      ).toEqual([blockWithUserTeam, blockWithUserTeam])
+      expect(service.duplicateBlock).toHaveBeenCalledWith(
+        blockWithUserTeam,
+        2,
+        3,
+        4
+      )
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.blockDuplicate(ability, 'blockId', 2)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.blockDuplicate(ability, 'blockId', 2)
+      ).rejects.toThrow('user is not allowed to update block')
+    })
+  })
+
+  describe('blockDelete', () => {
+    it('removes the block and its children', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      expect(await resolver.blockDelete(ability, 'blockId')).toEqual([])
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
+        blockWithUserTeam
+      )
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(resolver.blockDelete(ability, 'blockId')).rejects.toThrow(
+        'block not found'
+      )
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(resolver.blockDelete(ability, 'blockId')).rejects.toThrow(
+        'user is not allowed to delete block'
+      )
+    })
+  })
+
+  describe('block', () => {
+    it('returns block', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+
+      expect(await resolver.block(ability, 'blockId')).toEqual(
+        blockWithUserTeam
+      )
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(resolver.block(ability, 'blockId')).rejects.toThrow(
+        'block not found'
+      )
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(resolver.block(ability, 'blockId')).rejects.toThrow(
+        'user is not allowed to read block'
+      )
+    })
+  })
+
+  describe('blocks', () => {
+    const accessibleBlocks: Prisma.BlockWhereInput = { OR: [{}] }
+
+    it('returns blocks', async () => {
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      expect(await resolver.blocks(accessibleBlocks)).toEqual([block])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [accessibleBlocks, {}]
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+    })
+
+    it('should get filtered blocks', async () => {
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      expect(
+        await resolver.blocks(accessibleBlocks, {
+          journeyIds: ['journeyId'],
+          typenames: ['StepBlock']
+        })
+      ).toEqual([block])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            accessibleBlocks,
+            {
+              journeyId: { in: ['journeyId'] },
+              typename: { in: ['StepBlock'] }
+            }
+          ]
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
     })
   })
 })

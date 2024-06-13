@@ -1,89 +1,47 @@
 {
-  "root": "apps/api-gateway",
+  "name": "api-gateway",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-gateway/src",
   "projectType": "application",
   "targets": {
-    "build": {
-      "executor": "@nrwl/node:build",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/apps/api-gateway",
-        "main": "apps/api-gateway/src/main.ts",
-        "tsConfig": "apps/api-gateway/tsconfig.app.json",
-        "generatePackageJson": true
-      },
-      "configurations": {
-        "production": {
-          "optimization": true,
-          "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/api-gateway/src/environments/environment.ts",
-              "with": "apps/api-gateway/src/environments/environment.prod.ts"
-            }
-          ]
-        }
-      }
-    },
     "serve": {
-      "executor": "@nrwl/node:execute",
+      "executor": "nx:run-commands",
       "options": {
-        "buildTarget": "api-gateway:build"
+        "command": "./apps/api-gateway/router --supergraph apps/api-gateway/schema.graphql --config apps/api-gateway/router.yaml --dev"
       }
     },
     "serve-all": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           {
-            "command": "nx serve api-journeys"
+            "command": "echo 'This command is no longer supported. Please run `nf start` instead.'"
           },
           {
-            "command": "nx serve api-users"
-          },
-          {
-            "command": "nx serve api-languages"
-          },
-          {
-            "command": "nx serve api-videos"
-          },
-          {
-            "command": "nx serve api-gateway"
-          }
-        ],
-        "parallel": true
-      }
-    },
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
-      },
-      "outputs": ["{options.outputFile}"]
-    },
-    "type-check": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "command": "npx tsc -b apps/api-gateway/tsconfig.json"
-      }
-    },
-    "generate-graphql": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "rover supergraph compose --config apps/api-gateway/supergraph.yml > apps/api-gateway/schema.graphql"
+            "command": "echo 'If `bash: nf: command not found` returns please run `npm i -g foreman` then try again.'"
           }
         ]
       }
     },
-    "fetch-secrets": {
-      "executor": "@nrwl/workspace:run-commands",
+    "generate-graphql": {
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           {
-            "command": "DOPPLER_TOKEN=$DOPPLER_API_GATEWAY_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-gateway > apps/api-gateway/.env"
+            "command": "rover supergraph compose --config apps/api-gateway/supergraph.yml --elv2-license=accept > apps/api-gateway/schema.graphql"
+          }
+        ]
+      }
+    },
+    "update-router-schema": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "./apps/api-gateway/router config schema > apps/api-gateway/routerSchema.json"
+          },
+          {
+            "command": "npx prettier apps/api-gateway/routerSchema.json -w"
           }
         ]
       }

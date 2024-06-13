@@ -1,0 +1,1 @@
+export { ManageAccessAvatar } from './ManageAccessAvatar'

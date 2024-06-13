@@ -17,7 +17,7 @@ locals {
     ingress_rules = [
       {
         from_port   = 80
-        to_port     = 3000
+        to_port     = 7000
         protocol    = "tcp"
         cidr_blocks = [var.cidr]
       }
@@ -59,4 +59,5 @@ locals {
     ]
     egress_rules = local.egress_rules
   }
+  google_datastream_ip_list = ["34.74.216.163/32", "34.75.166.194/32", "104.196.6.24/32", "34.73.50.6/32", "35.237.45.20/32"]
 }

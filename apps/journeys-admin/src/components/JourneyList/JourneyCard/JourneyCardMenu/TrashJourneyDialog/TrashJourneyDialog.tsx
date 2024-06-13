@@ -1,13 +1,14 @@
-import { ReactElement } from 'react'
-import { useMutation, gql, ApolloQueryResult } from '@apollo/client'
+import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
-import { Dialog } from '@core/shared/ui/Dialog'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { JourneyTrash } from '../../../../../../__generated__/JourneyTrash'
+import { ReactElement } from 'react'
+
+import { Dialog } from '@core/shared/ui/Dialog'
+
+import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { GetActiveJourneys } from '../../../../../../__generated__/GetActiveJourneys'
-import { GetArchivedJourneys } from '../../../../../../__generated__/GetArchivedJourneys'
-import { GetTrashedJourneys } from '../../../../../../__generated__/GetTrashedJourneys'
+import { JourneyTrash } from '../../../../../../__generated__/JourneyTrash'
 
 export const JOURNEY_TRASH = gql`
   mutation JourneyTrash($ids: [ID!]!) {
@@ -22,11 +23,7 @@ export interface TrashJourneyDialogProps {
   id: string
   open: boolean
   handleClose: () => void
-  refetch?: () => Promise<
-    ApolloQueryResult<
-      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
-    >
-  >
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function TrashJourneyDialog({
@@ -51,21 +48,24 @@ export function TrashJourneyDialog({
   })
 
   const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation('apps-journeys-admin')
 
   async function handleTrash(): Promise<void> {
     try {
       await trashJourney()
-      enqueueSnackbar('Journey trashed', {
+      enqueueSnackbar(t('Journey trashed'), {
         variant: 'success',
         preventDuplicate: true
       })
       await refetch?.()
       handleClose()
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
   }
 
@@ -73,16 +73,20 @@ export function TrashJourneyDialog({
     <Dialog
       open={open}
       onClose={handleClose}
-      dialogTitle={{ title: 'Trash Journey?', closeButton: true }}
+      dialogTitle={{ title: t('Trash Journey?'), closeButton: true }}
       dialogAction={{
         onSubmit: handleTrash,
-        submitLabel: 'Delete',
-        closeLabel: 'Cancel'
+        submitLabel: t('Delete'),
+        closeLabel: t('Cancel')
       }}
+      testId="TrashJourneyDialog"
     >
       <Typography>
-        Journey will be moved to trash. You can find this journey under the
-        Trash tab for 40 days, until it is premanently deleted.
+        {t(
+          'By selecting “delete”, this journey will be moved to the trash. It will ' +
+            'remain there for 40 days, before being automatically and permanently ' +
+            'deleted.'
+        )}
       </Typography>
     </Dialog>
   )

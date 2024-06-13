@@ -1,40 +1,93 @@
 {
-  "root": "apps/watch",
+  "name": "watch",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/watch",
   "projectType": "application",
+  "implicitDependencies": ["locales"],
   "targets": {
     "build": {
-      "executor": "@nrwl/next:build",
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["cp -r libs/locales apps/watch/public", "nx _build watch"],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "cp -r libs/locales apps/watch/public",
+            "CI=true nx _build watch --prod"
+          ]
+        }
+      }
+    },
+    "_build": {
+      "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "root": "apps/watch",
         "outputPath": "dist/apps/watch"
       },
       "configurations": {
         "production": {}
       }
     },
-    "serve": {
-      "executor": "@nrwl/next:server",
+    "deploy": {
+      "executor": "nx:run-commands",
       "options": {
-        "buildTarget": "watch:build",
+        "commands": [
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "npx vercel build",
+          "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/watch/.vercel-url",
+          "npx @datadog/datadog-ci sourcemaps upload dist/apps/watch/.next/static --service=watch --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/watch/.vercel-url)/_next/static/"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "npx vercel build --prod",
+            "VERCEL_PROJECT_ID=$WATCH_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/watch/.vercel-url",
+            "npx @datadog/datadog-ci sourcemaps upload dist/apps/watch/.next/static --service=watch --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://www.jesusfilm.org/watch/_next/static/"
+          ]
+        }
+      }
+    },
+    "vercel-alias": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx vercel alias set $(cat apps/watch/.vercel-url) watch-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "echo \"https://watch-$PR_NUMBER-jesusfilm.vercel.app\" > apps/watch/.vercel-url"
+        ],
+        "parallel": false
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "watch:_build",
         "dev": true,
         "hostname": "0.0.0.0",
         "port": 4300
       },
       "configurations": {
         "production": {
-          "buildTarget": "watch:build:production",
+          "buildTarget": "watch:_build:production",
           "dev": false
+        },
+        "development": {
+          "buildTarget": "watch:_build:development",
+          "dev": true
         }
-      }
+      },
+      "defaultConfiguration": "development"
     },
     "serve-all": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           {
-            "command": "nx serve-all api-gateway"
+            "command": "nf start"
           },
           {
             "command": "nx serve watch"
@@ -43,41 +96,40 @@
         "parallel": true
       }
     },
+    "generate-test-data": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NEXT_PUBLIC_GATEWAY_URL=http://127.0.0.1:4000 npx ts-node apps/watch/src/components/Videos/testData.generator.ts"
+      }
+    },
     "export": {
-      "executor": "@nrwl/next:export",
+      "executor": "@nx/next:export",
       "options": {
         "buildTarget": "watch:build:production"
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/watch"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/watch"],
       "options": {
-        "jestConfig": "apps/watch/jest.config.js",
-        "passWithNoTests": true
+        "jestConfig": "apps/watch/jest.config.ts"
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": ["apps/watch/**/*.{ts,tsx,js,jsx}"]
-      },
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
     },
     "type-check": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "command": "npx tsc -b apps/watch/tsconfig.json"
       }
     },
     "demo": {
-      "executor": "@nrwl/storybook:storybook",
+      "executor": "@nx/storybook:storybook",
       "options": {
-        "uiFramework": "@storybook/react",
         "port": 4400,
-        "config": {
-          "configFolder": ".storybook"
-        }
+        "configDir": ".storybook"
       },
       "configurations": {
         "ci": {
@@ -86,7 +138,7 @@
       }
     },
     "codegen": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           {
@@ -102,7 +154,7 @@
       }
     },
     "fetch-secrets": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "commands": [
           {
@@ -110,7 +162,23 @@
           }
         ]
       }
+    },
+    "extract-translations": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx i18next --config apps/watch/i18next-parser.config.js"
+          }
+        ]
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/watch/cobertura-coverage.xml -F apps.watch"
+      }
     }
   },
-  "tags": []
+  "tags": ["doppler_config:stg_dev"]
 }

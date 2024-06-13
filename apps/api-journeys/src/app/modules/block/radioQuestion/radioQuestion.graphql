@@ -1,24 +1,8 @@
-type RadioOptionBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  label: String!
-  action: Action
-}
-
 type RadioQuestionBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-}
-
-input RadioOptionBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  label: String!
 }
 
 input RadioQuestionBlockCreateInput {
@@ -27,24 +11,16 @@ input RadioQuestionBlockCreateInput {
   parentBlockId: ID!
 }
 
-input RadioOptionBlockUpdateInput {
-  parentBlockId: ID
-  label: String
-}
-
 extend type Mutation {
-  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
   radioQuestionBlockCreate(
     input: RadioQuestionBlockCreateInput!
   ): RadioQuestionBlock!
-  radioOptionBlockUpdate(
-    id: ID!
-    journeyId: ID!
-    input: RadioOptionBlockUpdateInput!
-  ): RadioOptionBlock!
   radioQuestionBlockUpdate(
     id: ID!
-    journeyId: ID!
     parentBlockId: ID!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): RadioQuestionBlock!
 }

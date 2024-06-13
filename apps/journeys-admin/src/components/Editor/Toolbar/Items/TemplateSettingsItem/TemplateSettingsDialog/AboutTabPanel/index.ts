@@ -1,0 +1,1 @@
+export { AboutTabPanel } from './AboutTabPanel'

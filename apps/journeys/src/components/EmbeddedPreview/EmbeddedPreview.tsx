@@ -1,20 +1,15 @@
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
-
-import Box from '@mui/material/Box'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { useRouter } from 'next/router'
-import IconButton from '@mui/material/IconButton'
 import Close from '@mui/icons-material/Close'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import isFunction from 'lodash/isFunction'
+import { ReactElement, useEffect, useState } from 'react'
+import { use100vh } from 'react-div-100vh'
 
-// Used to resolve dynamic viewport height on Safari
-import Div100vh from 'react-div-100vh'
-import useFullscreenStatus from '../../libs/useFullscreenStatus/useFullscreenStatus'
+import type { TreeBlock } from '@core/journeys/ui/block'
+
 import { Conductor } from '../Conductor'
 
-import { ButtonWrapper } from './ButtonWrapper/ButtonWrapper'
-import { VideoWrapper } from './VideoWrapper/VideoWrapper'
-import { RadioOptionWrapper } from './RadioOptionWrapper/RadioOptionWrapper'
+import { ClickableCard } from './ClickableCard'
 
 interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
@@ -23,110 +18,54 @@ interface EmbeddedPreviewProps {
 export function EmbeddedPreview({
   blocks
 }: EmbeddedPreviewProps): ReactElement {
-  const maximizableElement = useRef(null)
-  const [allowFullscreen, setAllowFullscreen] = useState(true)
-  let isFullscreen: boolean, setIsFullscreen
-  // Safari / iPhone fullscreen check
-  const [isFullContainer, setIsFullContainer] = useState(false)
-  let canFullscreen = true
-  try {
-    // Chrome / Firefox fullscreen check
-    ;[isFullscreen, setIsFullscreen] = useFullscreenStatus(maximizableElement)
-  } catch {
-    isFullscreen = false
-    canFullscreen = false
-  }
-
-  const maximizeView = useCallback(
-    (value: boolean) => {
-      if (canFullscreen) {
-        setIsFullscreen(value)
-        // TODO: Remove this check once allow="fullscreen" works with Safari 16+
-      } else {
-        setIsFullContainer(value)
-        window.parent.postMessage(value, '*')
-      }
-    },
-    [canFullscreen, setIsFullscreen, setIsFullContainer]
-  )
-
-  // use router internally on this component as it does not function properly when passed as prop
-  const router = useRouter()
-  const once = useRef(false)
-
-  const handleClick = useCallback((): void => {
-    if (allowFullscreen) maximizeView(true)
-  }, [allowFullscreen, maximizeView])
+  const viewportHeight = use100vh()
+  const [isFullWindow, setIsFullWindow] = useState(false)
 
   useEffect(() => {
-    if (!once.current) {
-      if (router?.query?.preview === 'true') {
-        setAllowFullscreen(false)
-        once.current = true
-      }
-      if (router?.query?.autoexpand === 'true') {
-        handleClick()
-        once.current = true
-      }
+    function onFullscreenChange(): void {
+      setIsFullWindow(Boolean(document.fullscreenElement))
     }
-  }, [setAllowFullscreen, handleClick, router?.query])
+    document.addEventListener('fullscreenchange', onFullscreenChange)
+    return () =>
+      document.removeEventListener('fullscreenchange', onFullscreenChange)
+  }, [])
 
-  const ClickableCard = (): ReactElement => (
-    <Box
-      sx={{
-        p: 8,
-        flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        cursor: allowFullscreen ? 'pointer' : 'default',
-        zindex: 10,
-        height: '100%'
-      }}
-      onClick={() => handleClick()}
-    >
-      <Box
-        sx={{
-          mx: 'auto',
-          mb: 0,
-          height: 6.5,
-          width: '82.5%',
-          backgroundColor: 'rgba(220,222,229)',
-          borderRadius: '16px 16px 0 0',
-          opacity: 0.3
-        }}
-      />
-      <Box
-        sx={{
-          mx: 'auto',
-          mb: 0,
-          height: 6.5,
-          width: '90%',
-          backgroundColor: 'rgba(170,172,287)',
-          borderRadius: '16px 16px 0 0',
-          opacity: 0.3
-        }}
-      />
-      <Box
-        sx={{
-          height: '100%',
-          width: '100%',
-          borderRadius: '16px',
-          border: '1px solid rgba(186, 186, 187, 0.5)'
-        }}
-      >
-        <BlockRenderer
-          data-testid="embedded-preview-block-renderer"
-          block={blocks?.[0]}
-          wrappers={{
-            ButtonWrapper: ButtonWrapper,
-            ImageWrapper: NullWrapper,
-            RadioOptionWrapper: RadioOptionWrapper,
-            VideoWrapper: VideoWrapper
-          }}
-        />
-      </Box>
-    </Box>
-  )
+  async function requestFullscreen(): Promise<void> {
+    const elem = document.documentElement
+
+    /* View in fullscreen */
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    if (isFunction(elem.requestFullscreen)) {
+      await elem.requestFullscreen()
+      setIsFullWindow(true)
+    } else if (isFunction(elem.webkitRequestFullscreen)) {
+      /* Safari */
+      await elem.webkitRequestFullscreen()
+      setIsFullWindow(true)
+    } else if (isFunction(elem.msRequestFullscreen)) {
+      /* IE11 */
+      await elem.msRequestFullscreen()
+      setIsFullWindow(true)
+    }
+  }
+
+  async function exitFullscreen(): Promise<void> {
+    /* View in fullscreen */
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    if (isFunction(document.exitFullscreen)) {
+      await document.exitFullscreen()
+      setIsFullWindow(false)
+    } else if (isFunction(document.mozCancelFullScreen)) {
+      await document.mozCancelFullScreen()
+      setIsFullWindow(false)
+    } else if (isFunction(document.webkitExitFullscreen)) {
+      await document.webkitExitFullscreen()
+      setIsFullWindow(false)
+    } else if (isFunction(document.msExitFullscreen)) {
+      await document.msExitFullscreen()
+      setIsFullWindow(false)
+    }
+  }
 
   return (
     <>
@@ -140,40 +79,32 @@ export function EmbeddedPreview({
           box-shadow: none !important;
         }
       `}</style>
-      <Div100vh data-testid="embedded-preview">
-        {!(isFullscreen || isFullContainer) && <ClickableCard />}
-        <Box
-          ref={maximizableElement}
-          sx={{
-            backgroundColor: 'background.default',
-            overflow: 'hidden'
-          }}
-        >
-          {(isFullscreen || isFullContainer) && (
-            <>
-              <IconButton
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  zIndex: 1000,
-                  color: 'text.primary'
-                }}
-                onClick={() => {
-                  maximizeView(false)
-                }}
-              >
-                <Close />
-              </IconButton>
-              <Conductor blocks={blocks} />
-            </>
+      <Box
+        data-testid="EmbeddedPreview"
+        sx={{
+          height: viewportHeight ?? '100vh',
+          minHeight: '-webkit-fill-available'
+        }}
+      >
+        <ClickableCard onClick={requestFullscreen} fullscreen={isFullWindow}>
+          {isFullWindow && (
+            <IconButton
+              data-testid="CloseIconButton"
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 'env(safe-area-inset-left)',
+                zIndex: 1000,
+                color: 'text.primary'
+              }}
+              onClick={exitFullscreen}
+            >
+              <Close />
+            </IconButton>
           )}
-        </Box>
-      </Div100vh>
+          <Conductor blocks={blocks} />
+        </ClickableCard>
+      </Box>
     </>
   )
-}
-
-function NullWrapper({ children }): ReactElement {
-  return <fieldset disabled>{children}</fieldset>
 }

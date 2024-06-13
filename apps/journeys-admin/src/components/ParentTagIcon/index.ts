@@ -1,0 +1,1 @@
+export { ParentTagIcon } from './ParentTagIcon'

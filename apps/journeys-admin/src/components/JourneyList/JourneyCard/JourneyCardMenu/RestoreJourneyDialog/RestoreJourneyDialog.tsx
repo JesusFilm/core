@@ -1,13 +1,14 @@
-import { ReactElement } from 'react'
-import { useMutation, gql, ApolloQueryResult } from '@apollo/client'
-import { useSnackbar } from 'notistack'
+import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+
 import { Dialog } from '@core/shared/ui/Dialog'
-import { JourneyRestore } from '../../../../../../__generated__/JourneyRestore'
+
+import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { GetActiveJourneys } from '../../../../../../__generated__/GetActiveJourneys'
-import { GetArchivedJourneys } from '../../../../../../__generated__/GetArchivedJourneys'
-import { GetTrashedJourneys } from '../../../../../../__generated__/GetTrashedJourneys'
+import { JourneyRestore } from '../../../../../../__generated__/JourneyRestore'
 
 export const JOURNEY_RESTORE = gql`
   mutation JourneyRestore($ids: [ID!]!) {
@@ -23,11 +24,7 @@ export interface RestoreJourneyDialogProps {
   published: boolean
   open: boolean
   handleClose: () => void
-  refetch?: () => Promise<
-    ApolloQueryResult<
-      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
-    >
-  >
+  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
 
 export function RestoreJourneyDialog({
@@ -38,6 +35,7 @@ export function RestoreJourneyDialog({
   refetch
 }: RestoreJourneyDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const previousStatus = published
     ? JourneyStatus.published
@@ -62,16 +60,18 @@ export function RestoreJourneyDialog({
     try {
       await restoreJourney()
       handleClose()
-      enqueueSnackbar('Journey Restored', {
+      enqueueSnackbar(t('Journey Restored'), {
         variant: 'success',
         preventDuplicate: true
       })
       await refetch?.()
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
   }
 
@@ -79,15 +79,16 @@ export function RestoreJourneyDialog({
     <Dialog
       open={open}
       onClose={handleClose}
-      dialogTitle={{ title: 'Restore Journey?', closeButton: true }}
+      dialogTitle={{ title: t('Restore Journey?'), closeButton: true }}
       dialogAction={{
         onSubmit: handleRestore,
-        submitLabel: 'Restore',
-        closeLabel: 'Cancel'
+        submitLabel: t('Restore'),
+        closeLabel: t('Cancel')
       }}
+      testId="RestoreJourneyDialog"
     >
       <Typography>
-        Are you sure you would like to restore this journey?
+        {t('Are you sure you would like to restore this journey?')}
       </Typography>
     </Dialog>
   )

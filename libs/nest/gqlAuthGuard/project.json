@@ -1,21 +1,24 @@
 {
-  "root": "libs/nest/gqlAuthGuard",
+  "name": "nest/gqlAuthGuard",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/nest/gqlAuthGuard/src",
   "projectType": "library",
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["libs/nest/gqlAuthGuard/**/*.ts"]
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/nest/gqlAuthGuard"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/nest/gqlAuthGuard"],
       "options": {
-        "jestConfig": "libs/nest/gqlAuthGuard/jest.config.js",
-        "passWithNoTests": true
+        "jestConfig": "libs/nest/gqlAuthGuard/jest.config.ts"
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/libs/nest/gqlAuthGuard/cobertura-coverage.xml -F libs.nest.gqlAuthGuard"
       }
     }
   },

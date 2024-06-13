@@ -1,12 +1,13 @@
-import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { ComponentProps } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
+
 import { journeysAdminConfig } from '../../libs/storybook'
-import { getVisitorMock } from './VisitorDetail/VisitorDetailForm/VisitorDetailFormData'
-import { getVisitorEventsMock } from './VisitorJourneyList/VisitorJourneyListData'
+
+import { getVisitorMock } from './DetailsForm/DetailsFormData'
+
 import { VisitorInfo } from '.'
 
-const VisitorInfoDemo = {
+const VisitorInfoDemo: Meta<typeof VisitorInfo> = {
   ...journeysAdminConfig,
   component: VisitorInfo,
   title: 'Journeys-Admin/VisitorInfo',
@@ -16,15 +17,19 @@ const VisitorInfoDemo = {
   }
 }
 
-const Template: Story<ComponentProps<typeof VisitorInfo>> = ({ ...args }) => (
-  <MockedProvider mocks={[getVisitorMock, getVisitorEventsMock]}>
-    <VisitorInfo {...args} />
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  id: 'visitorId'
+const Template: StoryObj<typeof VisitorInfo> = {
+  render: ({ ...args }) => (
+    <MockedProvider mocks={[getVisitorMock]}>
+      <VisitorInfo {...args} />
+    </MockedProvider>
+  )
 }
 
-export default VisitorInfoDemo as Meta
+export const Default = {
+  ...Template,
+  args: {
+    id: 'visitorId'
+  }
+}
+
+export default VisitorInfoDemo

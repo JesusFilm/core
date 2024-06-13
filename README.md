@@ -16,4 +16,6 @@ The fastest and easiest way to try Core out is via using Visual Studio Code with
 
 ## License
 
+[Stratis Icon Set](https://www.figma.com/community/file/1177180791780461401/Stratis-UI-Icons---1000%2B-Free-Figma-icons) by [Monty Hayton](https://www.figma.com/@designproduct) is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
 Core is available under the MIT License.

@@ -6,60 +6,60 @@ on:
       name:
         required: true
         type: string
-      repository:
+      env:
         required: true
         type: string
       branch:
         required: true
         type: string
+      endpoint_url:
+        required: true
+        type: string
     secrets:
-      ARANGODB_URL:
-        required: true
-      ARANGODB_USER:
-        required: true
-      ARANGODB_PASS:
-        required: true
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
+      APOLLO_KEY:
         required: true
       AWS_DEFAULT_REGION:
         required: true
-      KUBE_CONFIG_DATA:
+      JFP_AWS_ACCESS_KEY_ID:
         required: true
-      ARCLIGHT_API_KEY:
+      JFP_AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_NETWORK_CONFIG:
         required: true
 
 jobs:
   build-and-deploy:
     environment: Production
     env:
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       ENV_SUFFIX: ${{ inputs.branch }}
-      ECR_REPOSITORY: ${{ inputs.repository }}
-      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      ECS_CLUSTER: jfp-ecs-cluster-${{ inputs.env }}
+      ECS_SERVICE: ${{ inputs.name}}-${{ inputs.env }}-service
+      ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
+      ECR_SEED_REPOSITORY: jfp-${{ inputs.name }}-seed-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
-      DATABASE_URL: ${{ secrets.ARANGODB_URL }}
-      DATABASE_USER: ${{ secrets.ARANGODB_USER }}
-      DATABASE_PASS: ${{ secrets.ARANGODB_PASS }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
     steps:
       - name: Checkout current branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 2
-
-      - uses: actions/setup-node@v2
+          fetch-depth: 0
+      - uses: nrwl/nx-set-shas@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
 
       - name: NPM Install
         run: npm install --silent
@@ -67,69 +67,94 @@ jobs:
       - name: nx Install
         run: npm install -g nx --silent
 
+      - name: rover Install
+        run: npm install -g @apollo/rover@0.22.0
+
       - name: Get affected apps
-        run: echo "::set-output name=apps::$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)"
+        run: |
+          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apps/api-*)" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
         id: affected-apps
 
+      - name: Has Prisma
+        id: has_prisma
+        uses: andstor/file-existence-action@v3
+        with:
+          files: 'apps/${{inputs.name}}/db/schema.prisma'
+
+      - name: Prisma Migrate
+        if: steps.has_prisma.outputs.files_exists == 'true' && contains(steps.affected-apps.outputs.apps, inputs.name)
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-generate
+          projects: ${{ inputs.name }}
+          parallel: 1
+        env:
+          DISABLE_ERD: true
       - name: Build ${{ inputs.name }}
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        uses: mansagroup/nrwl-nx-action@v2
+        uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: build
           projects: ${{ inputs.name }}
+          args: --c=production
 
-      - name: Configure AWS credentials
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+      # ECS Deployment
+      - name: Configure ECS AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Login to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        id: login-ecr
+        id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push the image to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        id: build-image
+        id: build-image-ecs
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/${{ inputs.name }}/Dockerfile
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Deploy to Kubernetes cluster
+      - name: Restart task definition
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        uses: kodermax/kubectl-aws-eks@master
-        env:
-          KUBECTL_VERSION: 'v1.21.12'
-          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-        with:
-          args: set image deployment/${{ inputs.name }}-$ENV_SUFFIX $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }}
+        run: |
+          aws ecs update-service --force-new-deployment --service $ECS_SERVICE --cluster $ECS_CLUSTER
 
-      - name: Verify Kubernetes deployment
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        uses: kodermax/kubectl-aws-eks@master
-        env:
-          KUBECTL_VERSION: 'v1.21.12'
-        with:
-          args: rollout status deploy ${{ inputs.name }}-$ENV_SUFFIX
+      - name: Update stage Apollo managed subgraph
+        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'stage')
+        run: |
+          rover subgraph publish API-GATEWAY-0zuda@stage --name ${{ inputs.name }} --routing-url ${{ inputs.endpoint_url }} --schema apps/${{ inputs.name }}/schema.graphql
+
+      - name: Update prod Apollo managed subgraph
+        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'main')
+        run: |
+          rover subgraph publish API-GATEWAY-0zuda@current --name ${{ inputs.name }} --routing-url ${{ inputs.endpoint_url }} --schema apps/${{ inputs.name }}/schema.graphql
 
       - name: Get affected app seed
-        run: echo "::set-output name=dbs::$(git diff --name-only HEAD~1 HEAD | grep 'apps/${{ inputs.name }}/db/seed.ts')"
+        run: echo "dbs=$(git diff --name-only HEAD~1 HEAD | grep 'apps/${{ inputs.name }}/db/seed.ts')" >> $GITHUB_OUTPUT
         id: affected-dbs
+
+      - name: Build, tag, and push the image to Amazon ECR
+        if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
+        id: build-image-ecs-seed
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
+        run: |
+          # Build a docker container and push it to ECR 
+          docker build -t $ECR_REGISTRY/$ECR_SEED_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_SEED_REPOSITORY:latest . -f apps/${{ inputs.name }}/db/Dockerfile
+          echo "Pushing image to ECR..."
+          docker push -a $ECR_REGISTRY/$ECR_SEED_REPOSITORY
+          echo "image=$ECR_REGISTRY/$ECR_SEED_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Seed Database
         if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
-        uses: mansagroup/nrwl-nx-action@v2
-        env:
-          DATABASE_DB: ${{ env.ENV_SUFFIX }}
-          ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
-        with:
-          targets: seed
-          projects: ${{ inputs.name }}
+        run: |
+          aws ecs run-task --task-definition $ECR_SEED_REPOSITORY --cluster $ECS_CLUSTER --launch-type FARGATE --network-configuration "${{ secrets.AWS_NETWORK_CONFIG }}"

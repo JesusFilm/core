@@ -1,11 +1,14 @@
+import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
-import { DatabaseModule } from '@core/nest/database/DatabaseModule'
+
+import { PrismaService } from '../../lib/prisma.service'
+
 import { UserResolver } from './user.resolver'
 import { UserService } from './user.service'
 
 @Module({
-  imports: [DatabaseModule],
-  providers: [UserResolver, UserService],
-  exports: [UserService]
+  imports: [BullModule.registerQueue({ name: 'api-users-email' })],
+  providers: [UserResolver, PrismaService, UserService],
+  exports: []
 })
 export class UserModule {}

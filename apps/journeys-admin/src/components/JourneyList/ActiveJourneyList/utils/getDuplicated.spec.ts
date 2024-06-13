@@ -1,10 +1,12 @@
 import { formatISO, startOfYear } from 'date-fns'
+
 import {
-  ThemeName,
-  ThemeMode,
   JourneyStatus,
+  ThemeMode,
+  ThemeName,
   UserJourneyRole
 } from '../../../../../__generated__/globalTypes'
+
 import { getDuplicatedJourney } from './getDuplicatedJourney'
 
 describe('getDuplicatedJourney', () => {
@@ -71,7 +73,7 @@ describe('getDuplicatedJourney', () => {
 
   it('should return the duplicated journeys id', () => {
     const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, journeys)
-    expect(duplicatedJourneyId).toEqual('duplicated-journey-id')
+    expect(duplicatedJourneyId).toBe('duplicated-journey-id')
   })
 
   it('should return undefined if journey length is not 1 more than old journeys', () => {

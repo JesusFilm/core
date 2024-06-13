@@ -1,0 +1,1 @@
+export { validateFormCredentials } from './validateFormCredentials'

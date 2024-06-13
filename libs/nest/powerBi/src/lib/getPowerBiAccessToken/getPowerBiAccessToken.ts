@@ -1,4 +1,4 @@
-import { AuthenticationContext, TokenResponse } from 'adal-node'
+import { AuthenticationContext, ErrorResponse, TokenResponse } from 'adal-node'
 
 export async function getPowerBiAccessToken(
   authorityUri: string,
@@ -19,10 +19,13 @@ export async function getPowerBiAccessToken(
       (err, tokenResponse) => {
         if (err == null) {
           resolve(tokenResponse as TokenResponse)
-        } else {
+        } else if (tokenResponse == null) {
           // Function returns error object in tokenResponse
           // Invalid Username will return empty tokenResponse, thus err is used
-          reject(tokenResponse == null ? err : tokenResponse)
+          reject(err)
+        } else {
+          const { error } = tokenResponse as ErrorResponse
+          reject(new Error(error))
         }
       }
     )

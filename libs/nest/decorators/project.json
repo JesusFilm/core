@@ -1,21 +1,24 @@
 {
-  "root": "libs/nest/decorators",
+  "name": "nest-decorators",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/nest/decorators/src",
   "projectType": "library",
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["libs/nest/decorators/**/*.ts"]
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/nest/decorators"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/nest/decorators"],
       "options": {
-        "jestConfig": "libs/nest/decorators/jest.config.js",
-        "passWithNoTests": true
+        "jestConfig": "libs/nest/decorators/jest.config.ts"
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/libs/nest/decorators/cobertura-coverage.xml -F libs.nest.decorators"
       }
     }
   },

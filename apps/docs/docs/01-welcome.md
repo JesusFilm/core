@@ -60,11 +60,7 @@ Videos subgraph pulls data from Arclight, Jesus Film Project's premiere Video AP
 
 ### Watch
 
-**[watch.jesusfilm.org](https://watch.jesusfilm.org)** - A [Next.js](https://nextjs.org/) site that puts our incredible videos on display in an easy to use content library.
-
-### Watch Admin
-
-**[watch.jesusfilm.org](https://admin.watch.jesusfilm.org)** - A [Next.js](https://nextjs.org/) site to manage our video library.
+**[jesusfilm.org/watch](https://www.jesusfilm.org/watch)** - A [Next.js](https://nextjs.org/) site that puts our incredible videos on display in an easy to use content library.
 
 ## Shared Libraries
 

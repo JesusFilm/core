@@ -1,25 +1,26 @@
-import { BaseService } from '@core/nest/database/BaseService'
-import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { Injectable } from '@nestjs/common'
-import { aql } from 'arangojs'
-import { DocumentCollection } from 'arangojs/collection'
-import { UserRole } from '../../__generated__/graphql'
+
+import { UserRole } from '.prisma/api-journeys-client'
+
+import { PrismaService } from '../../lib/prisma.service'
+import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 
 @Injectable()
-export class UserRoleService extends BaseService {
-  collection: DocumentCollection = this.db.collection('userRoles')
+export class UserRoleService {
+  constructor(private readonly prismaService: PrismaService) {}
 
-  @KeyAsId()
   async getUserRoleById(userId: string): Promise<UserRole> {
-    const response = await this.db.query(aql`
-      FOR user in ${this.collection}
-        FILTER user.userId == ${userId}
-        LIMIT 1
-        RETURN user
-    `)
-
-    return response.hasNext
-      ? await response.next()
-      : await this.save({ userId })
+    try {
+      return await this.prismaService.userRole.upsert({
+        where: { userId },
+        create: { userId },
+        update: {}
+      })
+    } catch (err) {
+      if (err.code !== ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
+        throw err
+      }
+    }
+    return await this.getUserRoleById(userId)
   }
 }

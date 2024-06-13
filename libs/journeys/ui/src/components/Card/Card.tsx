@@ -1,19 +1,43 @@
-import { ReactElement, ReactNode, useMemo } from 'react'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { getTheme } from '@core/shared/ui/themes'
-import { useTheme } from '@mui/material/styles'
+import { gql, useMutation } from '@apollo/client'
 import Paper from '@mui/material/Paper'
-import { SxProps } from '@mui/system/styleFunctionSx'
-import type { TreeBlock } from '../../libs/block'
+import { useTheme } from '@mui/material/styles'
+import { useTranslation } from 'next-i18next'
+import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
+import TagManager from 'react-gtm-module'
+import { v4 as uuidv4 } from 'uuid'
+
+import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
-import { BlockRenderer, WrappersProps } from '../BlockRenderer'
-import { ImageFields } from '../Image/__generated__/ImageFields'
-import { VideoFields } from '../Video/__generated__/VideoFields'
+import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+// eslint-disable-next-line import/no-cycle
+import { BlockRenderer, WrappersProps } from '../BlockRenderer'
+import { ImageFields } from '../Image/__generated__/ImageFields'
+import { StepFields } from '../Step/__generated__/StepFields'
+import { VideoFields } from '../Video/__generated__/VideoFields'
+
 import { CardFields } from './__generated__/CardFields'
+import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
+import { StepPreviousEventCreate } from './__generated__/StepPreviousEventCreate'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
+
+export const STEP_NEXT_EVENT_CREATE = gql`
+  mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
+    stepNextEventCreate(input: $input) {
+      id
+    }
+  }
+`
+
+export const STEP_PREVIOUS_EVENT_CREATE = gql`
+  mutation StepPreviousEventCreate($input: StepPreviousEventCreateInput!) {
+    stepPreviousEventCreate(input: $input) {
+      id
+    }
+  }
+`
 
 interface CardProps extends TreeBlock<CardFields> {
   wrappers?: WrappersProps
@@ -24,14 +48,42 @@ export function Card({
   children,
   backgroundColor,
   coverBlockId,
-  themeMode,
-  themeName,
   fullscreen,
   wrappers
 }: CardProps): ReactElement {
+  const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
+    STEP_NEXT_EVENT_CREATE
+  )
+  const [stepPreviousEventCreate] = useMutation<StepPreviousEventCreate>(
+    STEP_PREVIOUS_EVENT_CREATE
+  )
+
+  const { t } = useTranslation('journeys-ui')
   const theme = useTheme()
-  const { journey } = useJourney()
-  const { rtl, locale } = getJourneyRTL(journey)
+  const {
+    nextActiveBlock,
+    previousActiveBlock,
+    blockHistory,
+    treeBlocks,
+    getNextBlock
+  } = useBlocks()
+  const { journey, variant } = useJourney()
+  const { rtl } = getJourneyRTL(journey)
+  const activeBlock = blockHistory[
+    blockHistory.length - 1
+  ] as TreeBlock<StepFields>
+
+  const cardColor =
+    backgroundColor != null
+      ? backgroundColor
+      : // Card theme is determined in Conductor
+        theme.palette.background.paper
+
+  useEffect(() => {
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', cardColor)
+  }, [cardColor])
 
   const coverBlock = children.find(
     (block) =>
@@ -42,35 +94,16 @@ export function Card({
   const videoBlock =
     coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
 
-  // ImageBlock is card cover image or video poster image
   const imageBlock =
-    coverBlock?.__typename === 'ImageBlock'
-      ? coverBlock
-      : videoBlock != null
-      ? (videoBlock.children.find(
-          (block) =>
-            block.id === videoBlock.posterBlockId &&
-            block.__typename === 'ImageBlock'
-        ) as TreeBlock<ImageFields> | undefined)
-      : undefined
+    coverBlock?.__typename === 'ImageBlock' ? coverBlock : undefined
 
-  const customCardTheme =
-    themeName != null && themeMode != null
-      ? getTheme({ themeName, themeMode, rtl, locale })
-      : undefined
-
-  const cardColor =
-    backgroundColor != null
-      ? backgroundColor
-      : customCardTheme != null
-      ? customCardTheme.palette.background.paper
-      : theme.palette.background.paper
-
-  const blurUrl = useMemo(() => {
-    return imageBlock != null
-      ? blurImage(imageBlock.blurhash, cardColor)
-      : undefined
-  }, [imageBlock, cardColor])
+  const blurUrl = useMemo(
+    () =>
+      imageBlock != null
+        ? blurImage(imageBlock.blurhash, cardColor)
+        : undefined,
+    [imageBlock, cardColor]
+  )
 
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)
@@ -78,12 +111,149 @@ export function Card({
       <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
     ))
 
+  const hasFullscreenVideo =
+    children.find(
+      (child) => child.__typename === 'VideoBlock' && child.id !== coverBlockId
+    ) != null
+
+  // should always be called with nextActiveBlock()
+  // should match with other handleNextNavigationEventCreate functions
+  // places used:
+  // libs/journeys/ui/src/components/Card/Card.tsx
+  // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
+  function handleNextNavigationEventCreate(): void {
+    const id = uuidv4()
+    const stepName = getStepHeading(
+      activeBlock.id,
+      activeBlock.children,
+      treeBlocks,
+      t
+    )
+    const targetBlock = getNextBlock({ id: undefined, activeBlock })
+    const targetStepName =
+      targetBlock != null &&
+      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
+
+    if (targetBlock != null) {
+      void stepNextEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId: activeBlock.id,
+            label: stepName,
+            value: targetStepName,
+            nextStepId: targetBlock.id
+          }
+        }
+      })
+
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'step_next',
+          eventId: id,
+          blockId: activeBlock.id,
+          stepName,
+          targetStepId: targetBlock.id,
+          targetStepName
+        }
+      })
+    }
+  }
+  // should always be called with previousActiveBlock()
+  // should match with other handlePreviousNavigationEventCreate functions
+  // places used:
+  // libs/journeys/ui/src/components/Card/Card.tsx
+  // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
+  // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
+  function handlePreviousNavigationEventCreate(): void {
+    const id = uuidv4()
+    const stepName = getStepHeading(
+      activeBlock.id,
+      activeBlock.children,
+      treeBlocks,
+      t
+    )
+    const targetBlock = blockHistory[
+      blockHistory.length - 2
+    ] as TreeBlock<StepFields>
+    const targetStepName =
+      targetBlock != null &&
+      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
+
+    if (targetBlock != null) {
+      void stepPreviousEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId: activeBlock.id,
+            label: stepName,
+            value: targetStepName,
+            previousStepId: targetBlock.id
+          }
+        }
+      })
+
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'step_prev',
+          eventId: id,
+          blockId: activeBlock.id,
+          stepName,
+          targetStepId: targetBlock.id,
+          targetStepName
+        }
+      })
+    }
+  }
+  const handleNavigation = (e: MouseEvent): void => {
+    if (variant === 'admin') return
+    const screenWidth = window.innerWidth
+    if (rtl) {
+      const divide = screenWidth * 0.66
+      if (e.clientX <= divide) {
+        if (!activeBlock?.locked && activeBlock?.nextBlockId != null) {
+          handleNextNavigationEventCreate()
+          nextActiveBlock()
+        }
+      } else {
+        if (blockHistory.length > 1) {
+          handlePreviousNavigationEventCreate()
+          previousActiveBlock()
+        }
+      }
+    } else {
+      const divide = screenWidth * 0.33
+      if (e.clientX >= divide) {
+        if (!activeBlock?.locked && activeBlock?.nextBlockId != null) {
+          handleNextNavigationEventCreate()
+          nextActiveBlock()
+        }
+      } else {
+        if (blockHistory.length > 1) {
+          handlePreviousNavigationEventCreate()
+          previousActiveBlock()
+        }
+      }
+    }
+  }
+
   return (
-    <CardWrapper
-      id={id}
-      backgroundColor={backgroundColor}
-      themeMode={themeMode}
-      themeName={themeName}
+    <Paper
+      data-testid={`JourneysCard-${id}`}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        borderRadius: { xs: 'inherit', lg: 3 },
+        backgroundColor,
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        transform: 'translateZ(0)' // safari glitch with border radius
+      }}
+      elevation={3}
+      onClick={handleNavigation}
     >
       {coverBlock != null && !fullscreen ? (
         <ContainedCover
@@ -91,64 +261,20 @@ export function Card({
           backgroundBlur={blurUrl}
           videoBlock={videoBlock}
           imageBlock={imageBlock}
+          hasFullscreenVideo={hasFullscreenVideo}
         >
           {renderedChildren}
         </ContainedCover>
       ) : (
-        <ExpandedCover backgroundBlur={blurUrl}>
+        <ExpandedCover
+          backgroundColor={cardColor}
+          backgroundBlur={blurUrl}
+          imageBlock={imageBlock}
+          hasFullscreenVideo={hasFullscreenVideo}
+        >
           {renderedChildren}
         </ExpandedCover>
       )}
-    </CardWrapper>
-  )
-}
-
-interface CardWrapperProps
-  extends Pick<
-    CardFields,
-    'id' | 'backgroundColor' | 'themeMode' | 'themeName'
-  > {
-  children: ReactNode
-  sx?: SxProps
-}
-
-export function CardWrapper({
-  id,
-  backgroundColor,
-  themeMode,
-  themeName,
-  children,
-  sx
-}: CardWrapperProps): ReactElement {
-  const Card = (
-    <Paper
-      data-testid={id}
-      sx={{
-        display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        justifyContent: { md: 'flex-end' },
-        borderRadius: (theme) => theme.spacing(4),
-        backgroundColor,
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-        position: 'relative',
-        transform: 'translateZ(0)', // safari glitch with border radius
-        ...sx
-      }}
-      elevation={3}
-    >
-      {children}
     </Paper>
   )
-
-  if (themeMode != null && themeName != null) {
-    return (
-      <ThemeProvider themeMode={themeMode} themeName={themeName} nested>
-        {Card}
-      </ThemeProvider>
-    )
-  } else {
-    return Card
-  }
 }

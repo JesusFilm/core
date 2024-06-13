@@ -1,6 +1,7 @@
+import { TypographyVariant } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
-import { TypographyVariant } from '../../../__generated__/globalTypes'
+
 import { getStepHeading } from '.'
 
 describe('getStepHeading', () => {
@@ -111,7 +112,7 @@ describe('getStepHeading', () => {
       }
     ]
 
-    expect(getStepHeading('step.id', children, steps, t)).toEqual('Heading')
+    expect(getStepHeading('step.id', children, steps, t)).toBe('Heading')
   })
 
   it('returns step number if there are no typography blocks', () => {
@@ -130,7 +131,7 @@ describe('getStepHeading', () => {
         steps,
         jest.fn((str) => 'Step 1')
       )
-    ).toEqual('Step 1')
+    ).toBe('Step 1')
   })
 
   it('returns Untitled step if no typogrpahy blocks and id not matched', () => {
@@ -142,7 +143,7 @@ describe('getStepHeading', () => {
       }
     ]
 
-    expect(getStepHeading('anotherStep.id', children, steps, t)).toEqual(
+    expect(getStepHeading('anotherStep.id', children, steps, t)).toBe(
       'Untitled'
     )
   })

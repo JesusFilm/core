@@ -1,8 +1,9 @@
-import { render, fireEvent } from '@testing-library/react'
-import { useState, ReactElement } from 'react'
-import { SortOrder, JourneySort } from '.'
+import { fireEvent, render } from '@testing-library/react'
+import { ReactElement, useState } from 'react'
 
-export const JourneySortMock = ({ ...args }): ReactElement => {
+import { JourneySort, SortOrder } from '.'
+
+const JourneySortMock = ({ ...args }): ReactElement => {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   return <JourneySort sortOrder={sortOrder} onChange={setSortOrder} {...args} />
 }
@@ -34,16 +35,6 @@ describe('JourneyList/JourneySort', () => {
 
     const updatedButton = getByRole('button', { name: 'Date Created' })
     expect(updatedButton).toBeInTheDocument()
-  })
-
-  it('should not set sort value on cancel button click', () => {
-    const { getByText, getByRole } = render(<JourneySortMock />)
-    const button = getByRole('button', { name: 'Sort By' })
-
-    fireEvent.click(button)
-    fireEvent.click(getByText('Cancel'))
-
-    expect(button).toBeInTheDocument()
   })
 
   it('should be disabled', () => {
