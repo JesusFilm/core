@@ -16,6 +16,7 @@ import {
 } from '../../../../../../../../../__generated__/BlockFields'
 import { StepDuplicate } from '../../../../../../../../../__generated__/StepDuplicate'
 import { MenuItem } from '../../../../../../../MenuItem'
+import { STEP_NODE_DUPLICATE_OFFSET } from '../../libs/sizes'
 
 interface DuplicateStepProps {
   step: TreeBlock<StepBlock>
@@ -60,14 +61,13 @@ export function DuplicateStep({
 
   async function handleDuplicateStep(): Promise<void> {
     if (journey == null || step == null) return
-    // duplicate step
     const { data } = await stepDuplicate({
       variables: {
         id: step.id,
         journeyId: journey.id,
         parentOrder: null,
-        x: xPos != null ? xPos + 40 : null,
-        y: yPos != null ? yPos + 40 : null
+        x: xPos != null ? xPos + STEP_NODE_DUPLICATE_OFFSET : null,
+        y: yPos != null ? yPos + STEP_NODE_DUPLICATE_OFFSET : null
       },
       update(cache, { data }) {
         if (data?.blockDuplicate != null) {
@@ -121,18 +121,17 @@ export function DuplicateStep({
         (block) => block.__typename === 'StepBlock'
       )
       const duplicatedStep = last(steps)
+
       dispatch({
         type: 'SetSelectedStepAction',
         selectedStep: duplicatedStep
       })
+      enqueueSnackbar(t('Card Duplicated'), {
+        variant: 'success',
+        preventDuplicate: true
+      })
+      handleClick?.()
     }
-
-    enqueueSnackbar(t('Card Duplicated'), {
-      variant: 'success',
-      preventDuplicate: true
-    })
-
-    handleClick?.()
   }
 
   return (
@@ -141,7 +140,7 @@ export function DuplicateStep({
       icon={<CopyLeftIcon color="inherit" />}
       disabled={disabled ?? step == null}
       onMouseUp={handleDuplicateStep}
-      testId="duplicate-step"
+      testId="DuplicateStep"
     />
   )
 }

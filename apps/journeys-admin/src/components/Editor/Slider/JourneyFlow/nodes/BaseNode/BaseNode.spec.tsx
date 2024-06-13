@@ -23,11 +23,11 @@ describe('BaseNode', () => {
     expect(screen.getByTestId('BaseNode')).toBeInTheDocument()
   })
 
-  it('should render target handles', () => {
+  it('should render target handle', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode isTargetConnectable />
+          <BaseNode targetHandle="show" />
         </MockedProvider>
       </ReactFlowProvider>
     )
@@ -35,11 +35,25 @@ describe('BaseNode', () => {
     expect(screen.getByTestId('BaseNodeLeftHandle')).toBeInTheDocument()
   })
 
-  it('should render source handles', async () => {
+  it('should render disabled target handle', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode isSourceConnectable />
+          <BaseNode targetHandle="disabled" />
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    expect(
+      screen.getByTestId('BaseNodeLeftHandle-disabled')
+    ).toBeInTheDocument()
+  })
+
+  it('should render source handle', async () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <BaseNode sourceHandle="show" />
         </MockedProvider>
       </ReactFlowProvider>
     )
@@ -51,11 +65,13 @@ describe('BaseNode', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode isSourceConnectable />
+          <BaseNode sourceHandle="show" />
         </MockedProvider>
       </ReactFlowProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeDownwardArrowIcon')).toBeInTheDocument()
+    expect(
+      screen.getByTestId('BaseNodeConnectionArrowIcon')
+    ).toBeInTheDocument()
   })
 })

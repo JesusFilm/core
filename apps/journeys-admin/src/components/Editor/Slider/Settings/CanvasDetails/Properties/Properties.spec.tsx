@@ -10,6 +10,14 @@ import {
   EditorState
 } from '@core/journeys/ui/EditorProvider'
 
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_StepBlock as StepBlock
+} from '../../../../../../../__generated__/BlockFields'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { Properties } from '.'
@@ -345,6 +353,9 @@ describe('Properties', () => {
       </MockedProvider>
     )
 
+    await waitFor(() =>
+      expect(screen.getByTestId('CardProperties')).toBeInTheDocument()
+    )
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     await waitFor(() =>
       expect(screen.getByTestId('X2Icon')).toBeInTheDocument()
@@ -354,5 +365,60 @@ describe('Properties', () => {
     )
 
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+  })
+
+  it('should open card properties drawer when card templates is closed, and should not switch to journey map', async () => {
+    const card: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      coverBlockId: null,
+      parentOrder: 0,
+      backgroundColor: null,
+      themeMode: ThemeMode.light,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      children: []
+    }
+
+    const step: TreeBlock<StepBlock> = {
+      id: 'step.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      children: [card]
+    }
+
+    const state = {
+      selectedBlock: step,
+      selectedStep: step,
+      activeSlide: ActiveSlide.Content
+    } as unknown as EditorState
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={state}>
+            <TestEditorState />
+            <Properties />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CardTemplates')).toBeInTheDocument()
+    )
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    await waitFor(
+      async () => await userEvent.click(screen.getByTestId('X2Icon'))
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CardProperties')).toBeInTheDocument()
+    )
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
   })
 })

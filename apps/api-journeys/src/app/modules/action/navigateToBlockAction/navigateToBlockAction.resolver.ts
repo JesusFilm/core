@@ -11,12 +11,16 @@ import { NavigateToBlockActionInput } from '../../../__generated__/graphql'
 import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
+import { BlockService } from '../../block/block.service'
 import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
 import { canBlockHaveAction } from '../canBlockHaveAction'
 
 @Resolver('NavigateToBlockAction')
 export class NavigateToBlockActionResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly blockService: BlockService,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @Mutation()
   @UseGuards(AppCaslGuard)
@@ -53,6 +57,15 @@ export class NavigateToBlockActionResolver {
         { extensions: { code: 'BAD_USER_INPUT' } }
       )
     }
+
+    const stepBlock = await this.blockService.findParentStepBlock(
+      block.parentBlockId as string
+    )
+    if (stepBlock != null && stepBlock.id === input.blockId)
+      throw new GraphQLError('blockId cannot be the parent step block id', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
+
     const inputWithBlockConnection = {
       ...omit(input, 'blockId'),
       block: { connect: { id: input.blockId } }

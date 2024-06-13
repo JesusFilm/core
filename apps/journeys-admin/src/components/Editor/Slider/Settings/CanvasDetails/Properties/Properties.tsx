@@ -1,7 +1,7 @@
 import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -97,15 +97,9 @@ interface PropertiesProps {
 export function Properties({ block, step }: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { state, dispatch } = useEditor()
+  const [showCardTemplates, setShowCardTemplates] = useState(true)
   const selectedBlock = block ?? state.selectedBlock
   const selectedStep = step ?? state.selectedStep
-
-  function onClose(): void {
-    dispatch({
-      type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.JourneyFlow
-    })
-  }
 
   let component
   let title: string | undefined
@@ -119,7 +113,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       break
     case 'StepBlock': {
       const card = selectedBlock.children[0]
-      if (card?.children.length > 0) {
+      if (card?.children.length > 0 || !showCardTemplates) {
         title = t('Card Properties')
         component = card != null && (
           <Properties block={card} step={selectedStep} />
@@ -166,6 +160,18 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       component = <></>
       break
   }
+
+  function onClose(): void {
+    const isCardTemplates = title === 'Card Templates'
+    setShowCardTemplates(!isCardTemplates)
+
+    if (!isCardTemplates)
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.JourneyFlow
+      })
+  }
+
   return block == null && step == null ? (
     <Drawer title={title} onClose={onClose}>
       <Stack>{component}</Stack>

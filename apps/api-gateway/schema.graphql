@@ -1,16 +1,14 @@
 schema
   @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/join/v0.4", for: EXECUTION)
+  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
 {
   query: Query
   mutation: Mutation
 }
 
-directive @join__directive(graphs: [join__Graph!], name: String!, args: join__DirectiveArguments) repeatable on SCHEMA | OBJECT | INTERFACE | FIELD_DEFINITION
-
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
 
-directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean, overrideLabel: String) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
@@ -332,6 +330,20 @@ type CloudflareVideo
   readyToStream: Boolean!
 }
 
+type Country
+  @join__type(graph: LANGUAGES, key: "id")
+{
+  id: ID!
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  population: Int
+  continent(languageId: ID, primary: Boolean): [Translation!]!
+  languages: [Language!]!
+  latitude: Float
+  longitude: Float
+  flagPngSrc: String
+  flagWebpSrc: String
+}
+
 input CreateVerificationRequestInput
   @join__type(graph: USERS)
 {
@@ -450,6 +462,27 @@ interface Event
   createdAt: DateTime!
   label: String
   value: String
+}
+
+type EventEmailNotifications
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  value: Boolean!
+}
+
+input EventEmailNotificationsUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  value: Boolean!
 }
 
 type FormBlock implements Block
@@ -736,8 +769,6 @@ input ImageBlockUpdateInput
   width: Int
   height: Int
 }
-
-scalar join__DirectiveArguments
 
 scalar join__FieldSet
 
@@ -1361,6 +1392,7 @@ type Mutation
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent! @join__field(graph: JOURNEYS)
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @join__field(graph: JOURNEYS)
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
+  eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput!): EventEmailNotifications! @join__field(graph: JOURNEYS)
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
@@ -1508,6 +1540,7 @@ type Query
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
   customDomain(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
   customDomains(teamId: ID!): [CustomDomain!]! @join__field(graph: JOURNEYS)
+  eventEmailNotificationsByJourney(journeyId: ID!): [EventEmailNotifications!]! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
   """
@@ -2007,9 +2040,6 @@ type TextResponseBlock implements Block
   label: String!
   hint: String
   minRows: Int
-  action: Action
-  submitIconId: ID
-  submitLabel: String
 }
 
 input TextResponseBlockCreateInput
@@ -2019,7 +2049,6 @@ input TextResponseBlockCreateInput
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  submitLabel: String!
 }
 
 input TextResponseBlockUpdateInput
@@ -2029,8 +2058,6 @@ input TextResponseBlockUpdateInput
   label: String
   hint: String
   minRows: Int
-  submitIconId: ID
-  submitLabel: String
 }
 
 type TextResponseSubmissionEvent implements Event
@@ -2050,6 +2077,9 @@ type TextResponseSubmissionEvent implements Event
 
   """response from the TextResponseBlock form"""
   value: String
+
+  """the id of the block this event originates from"""
+  blockId: String
 }
 
 input TextResponseSubmissionEventCreateInput

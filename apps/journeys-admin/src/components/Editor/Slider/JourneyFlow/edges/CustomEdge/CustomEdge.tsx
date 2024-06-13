@@ -23,10 +23,11 @@ export function CustomEdge({
   targetPosition,
   source,
   sourceHandleId,
-  style = {}
-}: EdgeProps): ReactElement {
+  style = {},
+  isSelected = false // for testing use
+}: EdgeProps & { isSelected?: boolean }): ReactElement {
   const deleteEdge = useDeleteEdge()
-  const [selected, setSelected] = useState(false)
+  const [selected, setSelected] = useState(isSelected)
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -37,11 +38,11 @@ export function CustomEdge({
   })
 
   useOnSelectionChange({
-    onChange: (selected) =>
-      setSelected(selected.edges.find((edge) => edge.id === id) != null)
+    onChange: ({ edges }) =>
+      setSelected(edges.find((edge) => edge.id === id) != null)
   })
 
-  const onEdgeClick = (): void => {
+  const handleEdgeDelete = (): void => {
     void deleteEdge({
       source,
       sourceHandle: sourceHandleId
@@ -61,7 +62,7 @@ export function CustomEdge({
             }}
           >
             <IconButton
-              onClick={onEdgeClick}
+              onClick={handleEdgeDelete}
               sx={{
                 borderRadius: '100%',
                 backgroundColor: 'primary.main',

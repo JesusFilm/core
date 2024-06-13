@@ -30,7 +30,8 @@ export function DeleteBlock({
   block
 }: DeleteBlockProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [blockDelete] = useBlockDeleteMutation()
+  const [blockDelete, result] = useBlockDeleteMutation()
+
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
   const {
@@ -47,7 +48,7 @@ export function DeleteBlock({
     closeMenu?.()
   }
 
-  const disableAction = currentBlock == null || disabled
+  const disableAction = currentBlock == null || disabled || result.loading
 
   const handleDeleteBlock = async (): Promise<void> => {
     if (currentBlock == null || journey == null || steps == null) return
@@ -103,6 +104,7 @@ export function DeleteBlock({
           submitLabel: t('Delete'),
           closeLabel: t('Cancel')
         }}
+        loading={result.loading}
       >
         <Typography>
           {t('Are you sure you would like to delete this card?')}
