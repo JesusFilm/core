@@ -1,21 +1,18 @@
 import { QueryResult, gql, useQuery } from '@apollo/client'
 
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+import { JOURNEY_FIELDS } from '../JourneyProvider/journeyFields'
 
-import {
-  GetJourney,
-  GetJourneyVariables
-} from '../../../__generated__/GetJourney'
+import { GetJourney, GetJourneyVariables } from './__generated__/GetJourney'
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
-  query GetJourney($id: ID!) {
-    journey(id: $id, idType: databaseId) {
+  query GetJourney($id: ID!, $idType: IdType, $options: JourneysQueryOptions) {
+    journey(id: $id, idType: $idType, options: $options) {
       ...JourneyFields
     }
   }
 `
-// useJourney in journeys-admin gets journey by databaseId
+
 export function useJourneyQuery(
   variables?: GetJourneyVariables
 ): QueryResult<GetJourney, GetJourneyVariables> {

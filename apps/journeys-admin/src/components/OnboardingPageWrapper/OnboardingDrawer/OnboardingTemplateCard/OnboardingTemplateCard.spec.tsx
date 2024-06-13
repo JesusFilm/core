@@ -1,13 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
+
 import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../__generated__/globalTypes'
-import { GET_JOURNEY } from '../../../../libs/useJourneyQuery/useJourneyQuery'
 
 import { OnboardingTemplateCard } from './OnboardingTemplateCard'
 

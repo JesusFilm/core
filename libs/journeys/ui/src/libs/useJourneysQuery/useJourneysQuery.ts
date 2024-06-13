@@ -6,10 +6,7 @@ import {
   useQuery
 } from '@apollo/client'
 
-import {
-  GetJourneys,
-  GetJourneysVariables
-} from '../../../__generated__/GetJourneys'
+import { GetJourneys, GetJourneysVariables } from './__generated__/GetJourneys'
 
 export const GET_JOURNEYS = gql`
   query GetJourneys($where: JourneysFilter) {

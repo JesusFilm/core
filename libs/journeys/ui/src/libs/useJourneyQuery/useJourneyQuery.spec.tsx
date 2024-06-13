@@ -3,16 +3,16 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 import { formatISO, startOfYear } from 'date-fns'
 
 import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_language as Language
-} from '../../../__generated__/GetJourney'
-import {
   JourneyStatus,
   ThemeMode,
   ThemeName,
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
 
+import {
+  GetJourney_journey as Journey,
+  GetJourney_journey_language as Language
+} from './__generated__/GetJourney'
 import { GET_JOURNEY, useJourneyQuery } from './useJourneyQuery'
 
 describe('useJourneyQuery', () => {
