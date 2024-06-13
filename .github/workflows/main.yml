@@ -63,8 +63,6 @@ jobs:
           parallel: 1
         env:
           DISABLE_ERD: true
-      - name: PNPM apollo and graphql for codegen
-        run: pnpm i -g apollo graphql @apollo/rover@0.22.0
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:
