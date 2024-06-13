@@ -74,7 +74,7 @@ jobs:
         run: pnpm install -g nx --silent
 
       - name: rover Install
-        run: pnpm install -g @apollo/rover@0.22.0
+        run: pnpm install -g @apollo/rover@0.23.0
 
       - name: Get affected apps
         run: |
