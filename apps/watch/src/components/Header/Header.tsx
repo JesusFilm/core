@@ -32,9 +32,7 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
         {...props}
         sx={{
           p: 4,
-          ...props.sx,
-          borderBottom: '2px solid red',
-          borderColor: 'inherit'
+          ...props.sx
         }}
         ref={ref}
       >
@@ -114,36 +112,38 @@ LocalAppBar.displayName = 'LocalAppBar'
 
 interface HeaderProps {
   hideAbsoluteAppBar?: boolean
+  themeMode?: ThemeMode
 }
 
-export function Header({ hideAbsoluteAppBar }: HeaderProps): ReactElement {
+export function Header({
+  hideAbsoluteAppBar,
+  themeMode = ThemeMode.light
+}: HeaderProps): ReactElement {
   const trigger = useScrollTrigger()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
     <>
-      <Fade
-        in={hideAbsoluteAppBar !== true}
-        style={{
-          transitionDelay: hideAbsoluteAppBar !== true ? undefined : '2s',
-          transitionDuration: '225ms'
-        }}
-        timeout={{ exit: 2225 }}
-        data-testid="Header"
-      >
-        <LocalAppBar
-          sx={{
-            background: 'transparent',
-            boxShadow: 'none'
+      <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
+        <Fade
+          in={hideAbsoluteAppBar !== true}
+          style={{
+            transitionDelay: hideAbsoluteAppBar !== true ? undefined : '2s',
+            transitionDuration: '225ms'
           }}
-          onMenuClick={() => setDrawerOpen(true)}
-        />
-      </Fade>
-      <ThemeProvider
-        themeName={ThemeName.website}
-        themeMode={ThemeMode.dark}
-        nested
-      >
+          timeout={{ exit: 2225 }}
+          data-testid="Header"
+        >
+          <LocalAppBar
+            sx={{
+              backgroundColor: 'transparent',
+              boxShadow: 'none'
+            }}
+            onMenuClick={() => setDrawerOpen(true)}
+          />
+        </Fade>
+      </ThemeProvider>
+      <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
         <Slide in={trigger}>
           <LocalAppBar
             sx={{ backgroundColor: 'background.default' }}

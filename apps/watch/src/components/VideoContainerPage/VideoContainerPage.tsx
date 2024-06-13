@@ -3,6 +3,8 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useState } from 'react'
 
+import { ThemeMode } from '@core/shared/ui/themes'
+
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
@@ -27,7 +29,10 @@ export function VideoContainerPage(): ReactElement {
   }
 
   return (
-    <PageWrapper hero={<ContainerHero openDialog={handleOpenDialog} />}>
+    <PageWrapper
+      hero={<ContainerHero openDialog={handleOpenDialog} />}
+      headerThemeMode={ThemeMode.dark}
+    >
       <Container maxWidth="xxl" data-testid="VideoContainerPage">
         <Stack
           spacing={{ xs: 4, md: 11 }}

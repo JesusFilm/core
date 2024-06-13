@@ -23,7 +23,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   return (
-    <PageWrapper hero={<HomeHero />}>
+    <PageWrapper hero={<HomeHero />} headerThemeMode={ThemeMode.dark}>
       <ThemeProvider
         themeName={ThemeName.website}
         themeMode={ThemeMode.dark}
