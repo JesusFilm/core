@@ -3,6 +3,7 @@ services:
   app:
     build:
       context: .
+      target: final
       dockerfile: Dockerfile
       args:
         VARIANT: 20
@@ -10,7 +11,7 @@ services:
         USER_GID: 1000
     volumes:
       - ..:/workspaces:delegated
-      - core-node-doppler:/home/node/.doppler
+      - core-node-user:/home/node
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
     # Uncomment the next line to use a non-root user for all processes.
@@ -89,7 +90,7 @@ services:
       DATABASE_URL: postgres://postgres:postgres@db:5432/plausible_db
       CLICKHOUSE_DATABASE_URL: http://clickhouse:8123/plausible_events_db
 volumes:
-  core-node-doppler:
+  core-node-user:
   postgres-data:
   redis-data:
   event-data:
