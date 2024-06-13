@@ -13,7 +13,8 @@ import { MouseEvent, ReactElement, useMemo, useState } from 'react'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { GetJourneyWithPermissions_journey_team_userTeams as UserTeam } from '../../../../../../__generated__/GetJourneyWithPermissions'
+import { GetJourneyWithPermissions_journey_team_userTeams as JourneyTeamUserTeam } from '../../../../../../__generated__/GetJourneyWithPermissions'
+import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
 import { UserTeamUpdate } from '../../../../../../__generated__/UserTeamUpdate'
 import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
@@ -21,11 +22,11 @@ import { MenuItem } from '../../../../MenuItem'
 import { UserTeamDeleteMenuItem } from '../../UserTeamDeleteMenuItem'
 
 interface UserTeamListItemProps {
-  user: UserTeam
+  user: JourneyTeamUserTeam | UserTeam
   disabled?: boolean
   variant?: 'readonly' | 'default'
   journeyId?: string
-  currentUserTeam: UserTeam | undefined
+  currentUserTeam: JourneyTeamUserTeam | UserTeam | undefined
 }
 
 export const USER_TEAM_UPDATE = gql`
@@ -81,6 +82,11 @@ export function UserTeamListItem({
     setAnchorEl(null)
   }
 
+  const checked =
+    'journeyNotification' in listItem
+      ? listItem?.journeyNotification?.visitorInteractionEmail
+      : false
+
   return (
     <>
       <Grid container spacing={1} alignItems="center">
@@ -111,7 +117,7 @@ export function UserTeamListItem({
             <NotificationSwitch
               name={listItem?.user?.firstName}
               journeyId={journeyId}
-              checked={listItem?.journeyNotification?.visitorInteractionEmail}
+              checked={checked}
               disabled={currentUserTeam?.user?.id !== userId}
             />
           )}

@@ -17,11 +17,9 @@ describe('NotificationSwitch', () => {
           mocks={[{ ...useEventEmailNotificationsUpdateMock, result }]}
         >
           <NotificationSwitch
-            id="eventEmailNotificationId"
             name="username"
             checked={false}
             disabled={false}
-            userId="userId"
             journeyId="journeyId"
           />
         </MockedProvider>
@@ -40,11 +38,9 @@ describe('NotificationSwitch', () => {
       <SnackbarProvider>
         <MockedProvider>
           <NotificationSwitch
-            id="eventEmailNotificationId"
             name="username"
             checked={false}
             disabled={false}
-            userId="userId"
             journeyId="journeyId"
           />
         </MockedProvider>
@@ -64,11 +60,9 @@ describe('NotificationSwitch', () => {
       <SnackbarProvider>
         <MockedProvider>
           <NotificationSwitch
-            id="eventEmailNotificationId"
             name="username"
             checked={false}
             disabled
-            userId="userId"
             journeyId="journeyId"
           />
         </MockedProvider>

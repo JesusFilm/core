@@ -8,17 +8,20 @@ import sortBy from 'lodash/sortBy'
 import { ReactElement, useMemo } from 'react'
 
 import {
-  GetJourneyWithPermissions_journey_team as GetUserTeam,
   GetJourneyWithPermissions_journey_team as JourneyTeam,
-  GetJourneyWithPermissions_journey_team_userTeams as UserTeam
+  GetJourneyWithPermissions_journey_team_userTeams as JourneyTeamUserTeam
 } from '../../../../../__generated__/GetJourneyWithPermissions'
+import {
+  GetUserTeamsAndInvites,
+  GetUserTeamsAndInvites_userTeams as UserTeam
+} from '../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 
 import { UserTeamListItem } from './UserTeamListItem'
 
 interface UserTeamListProps {
-  data: GetUserTeam | undefined | JourneyTeam
-  currentUserTeam: UserTeam | undefined
+  data: undefined | JourneyTeam | GetUserTeamsAndInvites
+  currentUserTeam: JourneyTeamUserTeam | undefined | UserTeam
   loading: boolean
   variant?: 'readonly' | 'default'
   journeyId?: string
@@ -31,7 +34,7 @@ export function UserTeamList({
   variant = 'default',
   journeyId
 }: UserTeamListProps): ReactElement {
-  const sortedUserTeams: UserTeam[] = useMemo(() => {
+  const sortedUserTeams: JourneyTeamUserTeam[] | UserTeam[] = useMemo(() => {
     if (variant === 'readonly') return data?.userTeams ?? []
     return (
       sortBy(data?.userTeams ?? [], ({ user: { id } }) =>
