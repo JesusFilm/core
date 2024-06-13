@@ -20,7 +20,7 @@ import TerminalIcon from '@core/shared/ui/icons/Terminal'
 
 // const [showAllButtons] = useFlags() ... Launchdarkly flag to control which buttons to display
 
-const ResourceNextLinkButtonsData = [
+const HeaderTabButtonsData = [
   { label: 'Strategies', icon: <TerminalIcon />, href: '/strategies' },
   { label: 'Journeys', icon: <JourneysIcon />, href: '/journeys' },
   { label: 'Videos', icon: <Play1Icon />, href: '/watch' },
@@ -28,7 +28,7 @@ const ResourceNextLinkButtonsData = [
   { label: 'Products', icon: <Grid1Icon />, href: '/products' }
 ] // filter out this list to only use the ones with the launchdarkly flag set to true
 
-export function ResourceNextLinkButtons(): ReactElement {
+export function HeaderTabButtons(): ReactElement {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
   const { t } = useTranslation('apps-watch')
   const router = useRouter()
@@ -45,8 +45,8 @@ export function ResourceNextLinkButtons(): ReactElement {
   function getButtonName(): string {
     const currentHref = router.pathname
     return (
-      ResourceNextLinkButtonsData.find((link) => link.href === currentHref)
-        ?.label ?? ''
+      HeaderTabButtonsData.find((link) => link.href === currentHref)?.label ??
+      ''
     )
   }
 
@@ -63,7 +63,7 @@ export function ResourceNextLinkButtons(): ReactElement {
               gap: '12px' // todo: reduce to 4px on smaller devices
             }}
           >
-            {ResourceNextLinkButtonsData.map(({ label, icon, href }) => (
+            {HeaderTabButtonsData.map(({ label, icon, href }) => (
               <NextLink href={href} passHref legacyBehavior key={label}>
                 <Button
                   component="a"
@@ -107,7 +107,7 @@ export function ResourceNextLinkButtons(): ReactElement {
             onClose={handleCloseMenu}
             keepMounted
           >
-            {ResourceNextLinkButtonsData.map(({ label, icon, href }) => (
+            {HeaderTabButtonsData.map(({ label, icon, href }) => (
               <NextLink href={href} passHref legacyBehavior key={label}>
                 <MenuItem onClick={handleCloseMenu}>
                   <ListItemIcon>{icon}</ListItemIcon>

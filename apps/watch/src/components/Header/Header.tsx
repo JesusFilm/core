@@ -16,10 +16,9 @@ import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { ResourceNextLinkButtons } from '../ResourcePageHeader/ResourceNextLinkButtons'
-
 import favicon from './assets/favicon.png'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
+import { HeaderTabButtons } from './HeaderTabButtons'
 
 interface LocalAppBarProps extends AppBarProps {
   onMenuClick: MouseEventHandler<HTMLButtonElement>
@@ -71,7 +70,7 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
                     display: { xs: 'none', md: 'flex', lg: 'none', xl: 'flex' }
                   }}
                 >
-                  <ResourceNextLinkButtons />
+                  <HeaderTabButtons />
                 </Box>
                 <IconButton
                   color="inherit"
@@ -87,7 +86,7 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
               data-testid="TabletButtons"
               sx={{ display: { xs: 'none', lg: 'flex', xl: 'none' } }}
             >
-              <ResourceNextLinkButtons />
+              <HeaderTabButtons />
             </Box>
           </Stack>
         </Container>
@@ -105,7 +104,7 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
             display: { xs: 'flex', md: 'none' }
           }}
         >
-          <ResourceNextLinkButtons />
+          <HeaderTabButtons />
         </Box>
       </AppBar>
     )

@@ -1,1 +1,0 @@
-export { ResourcePageHeader } from './ResourcePageHeader'
