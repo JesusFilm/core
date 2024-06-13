@@ -131,7 +131,7 @@ export class UserTeamResolver {
   }
 
   @ResolveField('journeyNotification')
-  async journeyNotification(
+  async journeyNotifications(
     @Parent() userTeam: UserTeam,
     @Args('journeyId') journeyId: string
   ): Promise<JourneyNotification | null | undefined> {
@@ -139,7 +139,7 @@ export class UserTeamResolver {
       .findUnique({
         where: { id: userTeam.id }
       })
-      .journeyNotification({ where: { journeyId } })
+      .journeyNotifications({ where: { journeyId } })
 
     return res?.[0]
   }
