@@ -720,7 +720,7 @@
   "<0>{count}</0><1>card</1>_one": "<0>{count}</0><1>card</1>",
   "<0>{count}</0><1>card</1>_other": "<0>{count}</0><1>card</1>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_one": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>",
-  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>",
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{count}} languages</2>",
   "{{count}} more cards_one": "{{count}} more card",
   "{{count}} more cards_other": "{{count}} more cards",
   "{{count}} Cards_one": "{{count}} Card",
