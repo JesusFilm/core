@@ -12,7 +12,7 @@ import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../..
 interface AIPromptProps {
   handleSubmit: ({ prompt }) => void
   loading?: boolean
-  selectedBlock: ImageBlock | null
+  selectedBlock?: ImageBlock | null
 }
 
 interface AIPromptInput {
@@ -36,7 +36,6 @@ export function AIPrompt({
         ? selectedBlock?.alt.substring(8)
         : ''
   }
-  console.log(selectedBlock)
 
   return (
     <Stack sx={{ p: 6 }} data-testid="AIPrompt">
