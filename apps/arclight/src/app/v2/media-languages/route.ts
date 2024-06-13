@@ -20,7 +20,7 @@ import { paramsToRecord } from '../../../lib/paramsToRecord'
 */
 
 const GET_LANGUAGES = graphql(`
-  query GetLanguages($limit: Int, $offset: Int) {
+  query GetLanguagesWithTags($limit: Int, $offset: Int) {
     languages(limit: $limit, offset: $offset) {
       id
       iso3
@@ -31,6 +31,7 @@ const GET_LANGUAGES = graphql(`
     }
   }
 `)
+
 export async function GET(request: NextRequest): Promise<Response> {
   const query = request.nextUrl.searchParams
 

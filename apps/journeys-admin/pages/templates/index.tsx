@@ -7,6 +7,7 @@ import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
 import {
@@ -24,7 +25,6 @@ import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNa
 import { useTeam } from '../../src/components/Team/TeamProvider'
 import { TemplateGallery } from '../../src/components/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { GET_LANGUAGES } from '../../src/libs/useLanguagesQuery'
 
 function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
