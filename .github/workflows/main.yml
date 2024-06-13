@@ -54,7 +54,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: PNPM Install
-        run: pnpm install --silent
+        run: pnpm install --silent --frozen-lockfile
 
       - name: generate prisma imports
         run: pnpm exec nx run-many --target=prisma-generate --parallel=1
@@ -129,7 +129,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: PNPM Install
-        run: pnpm install --silent
+        run: pnpm install --silent --frozen-lockfile
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -211,7 +211,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: PNPM Install
-        run: pnpm install --silent
+        run: pnpm install --silent --frozen-lockfile
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -282,7 +282,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: PNPM Install
-        run: pnpm install --silent
+        run: pnpm install --silent --frozen-lockfile
       - uses: nrwl/nx-set-shas@v3
       - name: nx Install
         run: pnpm install -g nx --silent

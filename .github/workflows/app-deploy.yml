@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: PNPM Install
-        run: pnpm install --silent
+        run: pnpm install --silent --frozen-lockfile
       - uses: nrwl/nx-set-shas@v3
       - id: set-matrix
         name: set matrix app to affected array
@@ -110,7 +110,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: PNPM Install
-        run: pnpm install --silent
+        run: pnpm install --silent --frozen-lockfile
       - uses: nrwl/nx-set-shas@v3
       - name: vercel deployment
         env:
@@ -266,7 +266,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: PNPM Install
-        run: pnpm install --silent
+        run: pnpm install --silent --frozen-lockfile
       - uses: nrwl/nx-set-shas@v3
       - name: vercel deployment
         env:
