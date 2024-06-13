@@ -25,12 +25,11 @@ jobs:
         with:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v3
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
-
-      - uses: pnpm/action-setup@v4
 
       - name: Get pnpm store directory
         shell: bash
