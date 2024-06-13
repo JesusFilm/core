@@ -166,7 +166,7 @@ export class ChannelResolver {
       accessToken: input.accessToken
     })
 
-    if (youtubeChannels.items?.[0] == null)
+    if (youtubeChannels?.items?.[0] == null)
       throw new GraphQLError('youtube channel not found', {
         extensions: { code: 'NOT_FOUND' }
       })

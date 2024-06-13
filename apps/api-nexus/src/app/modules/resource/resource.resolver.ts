@@ -170,13 +170,11 @@ export class ResourceResolver {
   ): Promise<Resource[]> {
     console.log('Resource From Template . . .')
     const { templateType, spreadsheetData } =
-      await this.googleSheetsService.getSpreadSheetTemplateData(
-        input.accessToken,
-        input.spreadsheetId,
-        input.drivefolderId,
-        [],
-        false
-      )
+      await this.googleSheetsService.getSpreadSheetTemplateData({
+        accessToken: input.accessToken,
+        drivefolderId: input.drivefolderId,
+        isArray: false
+      })
     // CHECK SPREADSHEET TEMPLATE TYPE
     if (templateType === SpreadsheetTemplateType.UPLOAD) {
       // PROCESS UPLOAD TEMPLATE
@@ -198,18 +196,20 @@ export class ResourceResolver {
   @Mutation()
   @UseGuards(AppCaslGuard)
   async resourceFromArray(
-    // @Args('input') input: ResourceFromArrayInput
-    @Args('input') input: any
+    @Args('input')
+    input: {
+      accessToken: string
+      spreadsheetData: []
+      isArray: boolean
+    }
   ): Promise<Resource[]> {
     console.log('Resource From Array . . .')
     const { templateType, spreadsheetData } =
-      await this.googleSheetsService.getSpreadSheetTemplateData(
-        input.accessToken,
-        '',
-        '',
-        input.spreadsheetData,
-        true
-      )
+      await this.googleSheetsService.getSpreadSheetTemplateData({
+        accessToken: input.accessToken,
+        data: input.spreadsheetData,
+        isArray: true
+      })
     // CHECK SPREADSHEET TEMPLATE TYPE
     if (templateType === SpreadsheetTemplateType.UPLOAD) {
       // PROCESS UPLOAD TEMPLATE

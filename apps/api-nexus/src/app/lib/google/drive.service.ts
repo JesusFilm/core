@@ -142,6 +142,6 @@ export class GoogleDriveService {
 
   extractFileIdFromUrl(url: string): string | null {
     const match = url.match(/[-\w]{25,}/)
-    return match ? match[0] : null
+    return match != null ? match[0] : null
   }
 }
