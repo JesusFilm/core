@@ -53,11 +53,20 @@ module "public_bastion_security_group" {
       cidr_blocks = ["172.221.20.111/32"]
     },
     {
+      // Mike Allison
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
       cidr_blocks = ["47.36.114.169/32"]
     },
+    {
+      // Tataihono Nikora
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["203.86.193.21/32"]
+    },
+
     // EC2_INSTANCE_CONNECT
     {
       from_port   = 22

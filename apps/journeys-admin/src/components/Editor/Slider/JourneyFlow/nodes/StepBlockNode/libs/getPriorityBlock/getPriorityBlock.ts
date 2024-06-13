@@ -17,14 +17,18 @@ export function getPriorityBlock(
           return 1
         case 'TextResponseBlock':
           return 2
-        case 'ButtonBlock':
+        case 'FormBlock':
           return 3
-        case 'RadioQuestionBlock':
+        case 'ButtonBlock':
           return 4
-        case 'TypographyBlock':
+        case 'RadioQuestionBlock':
           return 5
-        default:
+        case 'SignUpBlock':
           return 6
+        case 'TypographyBlock':
+          return 7
+        default:
+          return 8
       }
     }
   )

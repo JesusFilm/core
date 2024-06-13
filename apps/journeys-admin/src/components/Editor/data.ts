@@ -1,3 +1,5 @@
+import { Edge, MarkerType, Node } from 'reactflow'
+
 import { BlockFields as Block } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { GetStepBlocksWithPosition_blocks_StepBlock as StepBlockWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
@@ -769,3 +771,232 @@ export const blocksWithStepBlockPosition: StepBlockWithPosition[] = blocks
       y: 1
     }
   })
+
+export const nodes: Node[] = [
+  {
+    id: 'SocialPreview',
+    type: 'SocialPreview',
+    data: {},
+    position: { x: -365, y: -46 },
+    draggable: false
+  },
+  {
+    id: 'hidden',
+    data: {},
+    position: { x: -165, y: -46 },
+    draggable: false,
+    hidden: true
+  },
+  {
+    id: 'step0.id',
+    type: 'StepBlock',
+    data: {},
+    position: { x: 0, y: 1 }
+  },
+  {
+    id: 'step1.id',
+    type: 'StepBlock',
+    data: {},
+    position: { x: 300, y: 1 }
+  },
+  {
+    id: 'step2.id',
+    type: 'StepBlock',
+    data: {},
+    position: { x: 600, y: 1 }
+  },
+  {
+    id: 'step3.id',
+    type: 'StepBlock',
+    data: {},
+    position: { x: 900, y: 1 }
+  },
+  {
+    id: 'step4.id',
+    type: 'StepBlock',
+    data: {},
+    position: { x: 1200, y: 1 }
+  },
+  {
+    id: 'step5.id',
+    type: 'StepBlock',
+    data: {},
+    position: { x: 1500, y: 1 }
+  },
+  {
+    id: 'step6.id',
+    type: 'StepBlock',
+    data: {},
+    position: { x: 1800, y: 1 }
+  }
+]
+
+export const edges: Edge[] = [
+  {
+    id: 'SocialPreview->hidden',
+    source: 'SocialPreview',
+    target: 'hidden',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#C52D3A'
+    },
+    style: { opacity: 0 }
+  },
+  {
+    id: 'step0.id->step1.id',
+    source: 'step0.id',
+    sourceHandle: undefined,
+    target: 'step1.id',
+    type: 'Custom',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#d9d9dc'
+    }
+  },
+  {
+    id: 'button0.id->step1.id',
+    source: 'step0.id',
+    sourceHandle: 'button0.id',
+    target: 'step1.id',
+    type: 'Custom',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#d9d9dc'
+    }
+  },
+  {
+    id: 'step1.id->step2.id',
+    source: 'step1.id',
+    sourceHandle: undefined,
+    target: 'step2.id',
+    type: 'Custom',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#d9d9dc'
+    }
+  },
+  {
+    id: 'button1.id->step2.id',
+    source: 'step1.id',
+    sourceHandle: 'button1.id',
+    target: 'step2.id',
+    type: 'Custom',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#d9d9dc'
+    }
+  },
+  {
+    id: 'step2.id->step3.id',
+    source: 'step2.id',
+    sourceHandle: undefined,
+    target: 'step3.id',
+    type: 'Custom',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#d9d9dc'
+    }
+  },
+  {
+    id: 'radioOption1.id->step3.id',
+    source: 'step2.id',
+    sourceHandle: 'radioOption1.id',
+    target: 'step3.id',
+    type: 'Custom',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#d9d9dc'
+    }
+  },
+  {
+    id: 'radioOption2.id->step3.id',
+    source: 'step2.id',
+    sourceHandle: 'radioOption2.id',
+    target: 'step3.id',
+    type: 'Custom',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#d9d9dc'
+    }
+  },
+  {
+    id: 'radioOption3.id->step3.id',
+    source: 'step2.id',
+    sourceHandle: 'radioOption3.id',
+    target: 'step3.id',
+    type: 'Custom',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#d9d9dc'
+    }
+  },
+  {
+    id: 'step3.id->step4.id',
+    source: 'step3.id',
+    sourceHandle: undefined,
+    target: 'step4.id',
+    type: 'Custom',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#d9d9dc'
+    }
+  },
+  {
+    id: 'radioOption4.id->step4.id',
+    source: 'step3.id',
+    sourceHandle: 'radioOption4.id',
+    target: 'step4.id',
+    type: 'Custom',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#d9d9dc'
+    }
+  },
+  {
+    id: 'radioOption5.id->step4.id',
+    source: 'step3.id',
+    sourceHandle: 'radioOption5.id',
+    target: 'step4.id',
+    type: 'Custom',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#d9d9dc'
+    }
+  },
+  {
+    id: 'SocialPreview->step0.id',
+    source: 'SocialPreview',
+    target: 'step0.id',
+    type: 'Start',
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      height: 10,
+      width: 10,
+      color: '#d9d9dc'
+    }
+  }
+]

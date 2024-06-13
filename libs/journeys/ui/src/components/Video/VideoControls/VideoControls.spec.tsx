@@ -189,6 +189,7 @@ describe('VideoControls', () => {
   })
 
   it('should show pause after unmuting via region click', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(true)
     jest.spyOn(player, 'on').mockImplementation((type, fn) => {
       if (type === 'play') fn()
