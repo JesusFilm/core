@@ -92,13 +92,13 @@ describe('journeyNotificationAcl', () => {
       ).toBe(true)
     })
 
-    it('deny when user is same as journeyNotificaion in userTeam', () => {
+    it('deny when user is not same as journeyNotificaion in userTeam', () => {
       expect(
         ability.can(Action.Manage, journeyNotificationWithIncorrectUserTeam)
       ).toBe(false)
     })
 
-    it('deny when user is same as journeyNotificaion in userJourney', () => {
+    it('deny when user is not same as journeyNotificaion in userJourney', () => {
       expect(
         ability.can(Action.Manage, journeyNotificationWithIncorrectUserJourney)
       ).toBe(false)
