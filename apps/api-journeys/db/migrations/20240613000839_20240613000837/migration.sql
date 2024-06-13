@@ -26,6 +26,9 @@ CREATE TABLE "JourneyNotification" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "JourneyNotification_userJourneyId_key" ON "JourneyNotification"("userJourneyId");
+
+-- CreateIndex
 CREATE INDEX "JourneyNotification_userId_idx" ON "JourneyNotification"("userId");
 
 -- CreateIndex
@@ -33,6 +36,9 @@ CREATE INDEX "JourneyNotification_journeyId_idx" ON "JourneyNotification"("journ
 
 -- CreateIndex
 CREATE UNIQUE INDEX "JourneyNotification_userId_journeyId_key" ON "JourneyNotification"("userId", "journeyId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "JourneyNotification_userId_journeyId_userTeamId_key" ON "JourneyNotification"("userId", "journeyId", "userTeamId");
 
 -- AddForeignKey
 ALTER TABLE "JourneyNotification" ADD CONSTRAINT "JourneyNotification_journeyId_fkey" FOREIGN KEY ("journeyId") REFERENCES "Journey"("id") ON DELETE CASCADE ON UPDATE CASCADE;

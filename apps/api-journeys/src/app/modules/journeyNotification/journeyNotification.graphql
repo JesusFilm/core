@@ -8,11 +8,11 @@ type JourneyNotification {
 }
 
 extend type UserJourney {
-  journeyNotification: [JourneyNotification!]!
+  journeyNotification: JourneyNotification
 }
 
 extend type UserTeam {
-  journeyNotification(journeyId: ID!): [JourneyNotification!]!
+  journeyNotification(journeyId: ID!): JourneyNotification
 }
 
 input JourneyNotificationUpdateInput {
@@ -24,8 +24,4 @@ type Mutation {
   journeyNotificationUpdate(
     input: JourneyNotificationUpdateInput!
   ): JourneyNotification!
-}
-
-type Query {
-  journeyNotifications(journeyId: ID!): [JourneyNotification!]!
 }

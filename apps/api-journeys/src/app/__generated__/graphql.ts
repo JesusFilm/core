@@ -1018,8 +1018,6 @@ export abstract class IQuery {
 
     abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
 
-    abstract journeyNotifications(journeyId: string): JourneyNotification[] | Promise<JourneyNotification[]>;
-
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
     abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
@@ -1473,7 +1471,7 @@ export class PowerBiEmbed {
 export class UserJourney {
     __typename?: 'UserJourney';
     journey?: Nullable<Journey>;
-    journeyNotification: JourneyNotification[];
+    journeyNotification?: Nullable<JourneyNotification>;
     id: string;
     userId: string;
     journeyId: string;
@@ -1503,7 +1501,7 @@ export class JourneyNotification {
 
 export class UserTeam {
     __typename?: 'UserTeam';
-    journeyNotification?: JourneyNotification[];
+    journeyNotification?: Nullable<JourneyNotification>;
     id: string;
     user: User;
     role: UserTeamRole;
