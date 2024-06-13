@@ -58,6 +58,11 @@ export function AccessItem({
     const manageAccessQuery = router.query.manageAccess as string
     if (manageAccessQuery === 'true') {
       setAccessDialogOpen(true)
+      void router.replace(
+        { query: { ...router.query, manageAccess: undefined } },
+        undefined,
+        { shallow: true }
+      )
     }
   }, [router])
 

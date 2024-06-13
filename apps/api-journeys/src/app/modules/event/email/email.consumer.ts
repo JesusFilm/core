@@ -161,9 +161,8 @@ export class EmailConsumer extends WorkerHost {
       variables: { userId }
     })
 
-    const baseUrl = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys`
-    const analyticsUrl = `${baseUrl}/reports/visitors/${visitor.id}`
-    const unsubscribeUrl = `${baseUrl}/${journey.id}?manageAccess=true`
+    const analyticsUrl = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/reports/visitors/${visitor.id}`
+    const unsubscribeUrl = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/journeys/${journey.id}?manageAccess=true`
 
     const text = render(
       VisitorInteraction({
