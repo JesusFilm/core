@@ -167,7 +167,7 @@ jobs:
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
       - name: Store Playwright's Version
         run: |
-          PLAYWRIGHT_VERSION=$(pnpm exec playwright -v)
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
       - name: Cache Playwright Browsers for Playwright's Version
