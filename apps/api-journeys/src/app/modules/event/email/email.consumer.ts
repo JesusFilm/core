@@ -5,8 +5,8 @@ import { Job } from 'bullmq'
 
 import {
   Event,
-  EventEmailNotifications,
   Journey,
+  JourneyNotification,
   Team,
   UserJourney,
   UserTeam,
@@ -26,9 +26,19 @@ const apollo = new ApolloClient({
   }
 })
 
+interface ExtendedUserJourneys extends UserJourney {
+  journeyNotification: JourneyNotification | null
+}
+
+interface ExtendedUserTeam extends UserTeam {
+  journeyNotifications: JourneyNotification[]
+}
+
 export interface ExtendedJourneys extends Journey {
-  userJourneys: UserJourney[]
-  team: Team & { userTeams: UserTeam[] }
+  userJourneys: ExtendedUserJourneys[]
+  team: Team & {
+    userTeams: ExtendedUserTeam[]
+  }
 }
 
 interface EmailDetailsResult {
@@ -36,7 +46,6 @@ interface EmailDetailsResult {
   visitor:
     | (Pick<Visitor, 'createdAt' | 'duration'> & { events: Event[] })
     | null
-  eventEmailNotifications: EventEmailNotifications[]
 }
 
 export interface EventsNotificationJob {
@@ -72,12 +81,22 @@ export class EmailConsumer extends WorkerHost {
           userJourney.role === UserJourneyRole.owner ||
           userJourney.role === UserJourneyRole.editor
       )
-      .forEach((userJourney) => recipientUserIds.add(userJourney.userId))
+      .forEach((userJourney) => {
+        const journeyNotification = userJourney.journeyNotification
+        const userId = journeyNotification?.userId as string
+        if (journeyNotification?.visitorInteractionEmail === true)
+          recipientUserIds.add(userId)
+      })
 
     if (journey.team != null) {
-      journey.team.userTeams.forEach((userTeam) =>
-        recipientUserIds.add(userTeam.userId)
-      )
+      journey.team.userTeams.forEach((userTeam) => {
+        const journeyNotification = userTeam.journeyNotifications.find(
+          (notification) => notification.userId === userTeam.userId
+        )
+        const userId = journeyNotification?.userId as string
+        if (journeyNotification?.visitorInteractionEmail === true)
+          recipientUserIds.add(userId)
+      })
     }
 
     return Array.from(recipientUserIds)
@@ -87,14 +106,22 @@ export class EmailConsumer extends WorkerHost {
     journeyId: string,
     visitorId: string
   ): Promise<EmailDetailsResult> {
-    const [journey, visitor, eventEmailNotifications] = await Promise.all([
+    const [journey, visitor] = await Promise.all([
       this.prismaService.journey.findUnique({
         where: { id: journeyId },
         include: {
-          userJourneys: true,
+          userJourneys: {
+            include: {
+              journeyNotification: true
+            }
+          },
           team: {
             include: {
-              userTeams: true
+              userTeams: {
+                include: {
+                  journeyNotifications: true
+                }
+              }
             }
           }
         }
@@ -106,29 +133,17 @@ export class EmailConsumer extends WorkerHost {
           duration: true,
           events: true
         }
-      }),
-      this.prismaService.eventEmailNotifications.findMany({
-        where: {
-          journeyId
-        }
       })
     ])
 
-    return { journey, visitor, eventEmailNotifications }
+    return { journey, visitor }
   }
 
   async sendUserNotification(
     userId: string,
     journey: Journey,
-    visitor: Pick<Visitor, 'createdAt' | 'duration'> & { events: Event[] },
-    eventEmailNotifications: EventEmailNotifications[]
+    visitor: Pick<Visitor, 'createdAt' | 'duration'> & { events: Event[] }
   ): Promise<void> {
-    const receiveNotification = eventEmailNotifications.find(
-      (notification) => notification.userId === userId
-    )?.value
-
-    if (receiveNotification == null || !receiveNotification) return
-
     const { data } = await apollo.query({
       query: gql`
         query User($userId: ID!) {
@@ -178,23 +193,19 @@ export class EmailConsumer extends WorkerHost {
   }
 
   async sendEventsNotification(job: Job<EventsNotificationJob>): Promise<void> {
-    const { journey, visitor, eventEmailNotifications } =
-      await this.fetchEmailDetails(job.data.journeyId, job.data.visitorId)
+    const { journey, visitor } = await this.fetchEmailDetails(
+      job.data.journeyId,
+      job.data.visitorId
+    )
 
     if (journey == null) return
     if (visitor == null) return
-    if (eventEmailNotifications.length === 0) return
 
     const recipientUserIds = this.proccesUserIds(journey)
 
     await Promise.all(
       recipientUserIds.map(async (userId) => {
-        await this.sendUserNotification(
-          userId,
-          journey,
-          visitor,
-          eventEmailNotifications
-        )
+        await this.sendUserNotification(userId, journey, visitor)
       })
     )
   }
