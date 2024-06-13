@@ -5,7 +5,7 @@ disableAuth: false
 # -- Disables registration of new users, keep your admin credentials handy ;)
 disableRegistration: false
 # -- The hosting url of the server, used for URL generation. In production systems, this should be your ingress host.
-baseURL: 'https://analytics.central.jesusfilm.org'
+baseURL: ''
 # -- Secret key to be used for encryption. IF no value is provided random string will be generated during release.
 secretKey: ''
 # -- Secret TOTP Vault key to be used for encryption. IF no value is provided random string will be generated during release.
@@ -113,7 +113,7 @@ image:
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
   # See https://hub.docker.com/r/plausible/analytics for tags
-  tag: 'v2.1.0'
+  tag: 'v2.1.1'
 
 imagePullSecrets: []
 nameOverride: ''
@@ -171,8 +171,8 @@ resources:
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
+  #   cpu: 500m
+  #   memory: 512Mi
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
