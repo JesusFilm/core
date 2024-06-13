@@ -210,6 +210,10 @@ export interface JourneysQueryOptions {
   journeyCollection?: boolean | null;
 }
 
+export interface LanguagesFilter {
+  ids?: string[] | null;
+}
+
 export interface RadioQuestionSubmissionEventCreateInput {
   id?: string | null;
   blockId: string;

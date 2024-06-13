@@ -15,11 +15,11 @@ import {
   useState
 } from 'react'
 
+import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetLanguages_languages } from '../../../../__generated__/GetLanguages'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
-import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
