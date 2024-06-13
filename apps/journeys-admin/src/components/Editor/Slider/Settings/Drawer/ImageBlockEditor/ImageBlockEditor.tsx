@@ -93,6 +93,7 @@ export function ImageBlockEditor({
 
   const handleSrcChange = async (
     src: string,
+    prompt?: string,
     blurhash?: string,
     width = 0,
     height = 0
@@ -107,7 +108,10 @@ export function ImageBlockEditor({
         selectedBlock?.blurhash !== blurhash
           ? undefined
           : selectedBlock?.blurhash,
-      alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+      alt:
+        prompt != null
+          ? `PROMPT: ${prompt}`
+          : src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
     if ((blurhash?.length ?? 0) > 0) {
       block.blurhash = blurhash
@@ -125,7 +129,7 @@ export function ImageBlockEditor({
     width?: number,
     height?: number
   ): Promise<void> => {
-    await handleSrcChange(src, blurHash, width, height)
+    await handleSrcChange(src, undefined, blurHash, width, height)
     setUnsplashAuthor(unsplashAuthor)
   }
 
@@ -236,6 +240,7 @@ export function ImageBlockEditor({
               onChange={handleSrcChange}
               setUploading={setUploading}
               loading={uploading != null ? uploading : loading}
+              selectedBlock={selectedBlock}
             />
           )}
         </TabPanel>
