@@ -1,8 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
+
 import { Service } from '../../../../__generated__/globalTypes'
-import { GET_TAGS } from '../../../libs/useTagsQuery/useTagsQuery'
 
 import { TagsFilter } from '.'
 

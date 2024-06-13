@@ -3,11 +3,11 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { Service } from '../../../../../../../__generated__/globalTypes'
 import { JourneyFields_tags as Tag } from '../../../../../../../__generated__/JourneyFields'
-import { GET_TAGS } from '../../../../../../libs/useTagsQuery/useTagsQuery'
 import { defaultJourney } from '../../../../data'
 
 import { TemplateSettingsDialog } from './TemplateSettingsDialog'
