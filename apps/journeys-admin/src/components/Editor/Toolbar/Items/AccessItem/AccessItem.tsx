@@ -4,9 +4,9 @@ import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
-import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { Item } from '../Item/Item'
 
 const AccessDialog = dynamic(
