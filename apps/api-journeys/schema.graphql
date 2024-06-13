@@ -226,8 +226,6 @@ type Mutation {
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
-  eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput!, id: ID): EventEmailNotifications!
-  eventEmailNotificationsDelete(input: EventEmailNotificationsUpdateInput!, id: ID): EventEmailNotifications!
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
@@ -258,6 +256,7 @@ type Mutation {
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
   journeyCollectionDelete(id: ID!): JourneyCollection!
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   journeyProfileOnboardingFormComplete: JourneyProfile!
@@ -341,11 +340,15 @@ input BlocksFilter {
 }
 
 type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
   blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block!
   customDomain(id: ID!): CustomDomain!
   customDomains(teamId: ID!): [CustomDomain!]!
-  eventEmailNotificationsByJourney(journeyId: ID!): [EventEmailNotifications!]!
   hosts(teamId: ID!): [Host!]!
 
   """
@@ -410,8 +413,6 @@ type Query {
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor!
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
 }
 
 enum ButtonVariant {
@@ -854,9 +855,6 @@ type TextResponseBlock implements Block {
   label: String!
   hint: String
   minRows: Int
-  action: Action
-  submitIconId: ID
-  submitLabel: String
 }
 
 input TextResponseBlockCreateInput {
@@ -864,7 +862,6 @@ input TextResponseBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  submitLabel: String!
 }
 
 input TextResponseBlockUpdateInput {
@@ -872,8 +869,6 @@ input TextResponseBlockUpdateInput {
   label: String
   hint: String
   minRows: Int
-  submitIconId: ID
-  submitLabel: String
 }
 
 enum TypographyVariant {
@@ -1904,19 +1899,6 @@ type VideoProgressEvent implements Event {
   progress: Int!
 }
 
-type EventEmailNotifications {
-  id: ID!
-  userId: ID!
-  journeyId: ID!
-  value: Boolean!
-}
-
-input EventEmailNotificationsUpdateInput {
-  userId: ID!
-  journeyId: ID!
-  value: Boolean!
-}
-
 type Host {
   id: ID!
   teamId: ID!
@@ -2055,6 +2037,7 @@ type UserJourney
   @key(fields: "id")
 {
   journey: Journey
+  journeyNotification: JourneyNotification
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2087,6 +2070,31 @@ input JourneyCollectionCreateInput {
 input JourneyCollectionUpdateInput {
   title: String
   journeyIds: [String!]
+}
+
+type JourneyNotification {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  visitorInteractionEmail: Boolean!
+}
+
+type UserTeam
+  @key(fields: "id")
+{
+  journeyNotification(journeyId: ID!): JourneyNotification
+  id: ID!
+  user: User!
+  role: UserTeamRole!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input JourneyNotificationUpdateInput {
+  journeyId: ID!
+  visitorInteractionEmail: Boolean!
 }
 
 type JourneyProfile
@@ -2299,16 +2307,6 @@ enum Role {
 enum UserTeamRole {
   manager
   member
-}
-
-type UserTeam
-  @key(fields: "id")
-{
-  id: ID!
-  user: User!
-  role: UserTeamRole!
-  createdAt: DateTime!
-  updatedAt: DateTime!
 }
 
 input UserTeamUpdateInput {
