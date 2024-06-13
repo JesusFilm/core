@@ -301,12 +301,6 @@ export interface EmailActionInput {
   email: string;
 }
 
-export interface EventEmailNotificationsUpdateInput {
-  userId: string;
-  journeyId: string;
-  value: boolean;
-}
-
 export interface FormBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -379,6 +373,11 @@ export interface JourneyCollectionCreateInput {
 export interface JourneyCollectionUpdateInput {
   title?: string | null;
   journeyIds?: string[] | null;
+}
+
+export interface JourneyNotificationUpdateInput {
+  journeyId: string;
+  visitorInteractionEmail: boolean;
 }
 
 export interface JourneyProfileUpdateInput {

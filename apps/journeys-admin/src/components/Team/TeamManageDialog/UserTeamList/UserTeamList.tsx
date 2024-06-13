@@ -7,22 +7,20 @@ import Skeleton from '@mui/material/Skeleton'
 import sortBy from 'lodash/sortBy'
 import { ReactElement, useMemo } from 'react'
 
-import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EmailEventNotifications } from '../../../../../__generated__/GetEventEmailNotifications'
-import { GetJourneyWithPermissions_journey_team as JourneyTeam } from '../../../../../__generated__/GetJourneyWithPermissions'
 import {
-  GetUserTeamsAndInvites,
-  GetUserTeamsAndInvites_userTeams as UserTeam
-} from '../../../../../__generated__/GetUserTeamsAndInvites'
+  GetJourneyWithPermissions_journey_team as GetUserTeam,
+  GetJourneyWithPermissions_journey_team as JourneyTeam,
+  GetJourneyWithPermissions_journey_team_userTeams as UserTeam
+} from '../../../../../__generated__/GetJourneyWithPermissions'
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 
 import { UserTeamListItem } from './UserTeamListItem'
 
 interface UserTeamListProps {
-  data: GetUserTeamsAndInvites | undefined | JourneyTeam
+  data: GetUserTeam | undefined | JourneyTeam
   currentUserTeam: UserTeam | undefined
   loading: boolean
   variant?: 'readonly' | 'default'
-  emailPreferences?: Map<string, EmailEventNotifications>
   journeyId?: string
 }
 
@@ -31,7 +29,6 @@ export function UserTeamList({
   currentUserTeam,
   loading,
   variant = 'default',
-  emailPreferences,
   journeyId
 }: UserTeamListProps): ReactElement {
   const sortedUserTeams: UserTeam[] = useMemo(() => {
@@ -73,9 +70,6 @@ export function UserTeamList({
           {sortedUserTeams.length > 0 && currentUserTeam != null && (
             <>
               {sortedUserTeams.map((userTeam) => {
-                const emailPreference = emailPreferences?.get(
-                  userTeam.user.id ?? ''
-                )
                 return (
                   <UserTeamListItem
                     key={userTeam.id}
@@ -86,7 +80,6 @@ export function UserTeamList({
                       variant === 'readonly'
                     }
                     variant={variant}
-                    emailPreference={emailPreference}
                     journeyId={journeyId}
                     currentUserTeam={currentUserTeam}
                   />

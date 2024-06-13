@@ -13,8 +13,7 @@ import { MouseEvent, ReactElement, useMemo, useState } from 'react'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../../../../__generated__/GetEventEmailNotifications'
-import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
+import { GetJourneyWithPermissions_journey_team_userTeams as UserTeam } from '../../../../../../__generated__/GetJourneyWithPermissions'
 import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
 import { UserTeamUpdate } from '../../../../../../__generated__/UserTeamUpdate'
 import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
@@ -25,7 +24,6 @@ interface UserTeamListItemProps {
   user: UserTeam
   disabled?: boolean
   variant?: 'readonly' | 'default'
-  emailPreference?: EventEmailNotifications
   journeyId?: string
   currentUserTeam: UserTeam | undefined
 }
@@ -45,7 +43,6 @@ export function UserTeamListItem({
   user: listItem,
   disabled,
   variant = 'default',
-  emailPreference,
   journeyId,
   currentUserTeam
 }: UserTeamListItemProps): ReactElement {
@@ -112,11 +109,9 @@ export function UserTeamListItem({
         <Grid xs={2} sm={2}>
           {journeyId != null && (
             <NotificationSwitch
-              id={emailPreference?.id}
-              userId={userId}
               name={listItem?.user?.firstName}
               journeyId={journeyId}
-              checked={emailPreference?.value}
+              checked={listItem?.journeyNotification?.visitorInteractionEmail}
               disabled={currentUserTeam?.user?.id !== userId}
             />
           )}

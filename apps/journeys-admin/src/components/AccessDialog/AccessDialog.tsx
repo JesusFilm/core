@@ -13,20 +13,18 @@ import EmailIcon from '@core/shared/ui/icons/Email'
 import ShieldCheck from '@core/shared/ui/icons/ShieldCheck'
 import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
 
-import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../__generated__/GetEventEmailNotifications'
 import {
   GetJourneyWithPermissions,
-  GetJourneyWithPermissions_journey_userJourneys as UserJourney
+  GetJourneyWithPermissions_journey_userJourneys as UserJourney,
+  GetJourneyWithPermissions_journey_team_userTeams as UserTeam
 } from '../../../__generated__/GetJourneyWithPermissions'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
-import { useEventEmailNotificationsLazyQuery } from '../../libs/useEventEmailNotificationsLazyQuery'
 import { useUserInvitesLazyQuery } from '../../libs/useUserInvitesLazyQuery'
 import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
-import { GetUserTeamsAndInvites_userTeams as UserTeams } from '../../../__generated__/GetUserTeamsAndInvites'
 
 export const GET_JOURNEY_WITH_PERMISSIONS = gql`
   query GetJourneyWithPermissions($id: ID!) {
@@ -44,6 +42,10 @@ export const GET_JOURNEY_WITH_PERMISSIONS = gql`
             imageUrl
             lastName
           }
+          journeyNotification(journeyId: $id) {
+            id
+            visitorInteractionEmail
+          }
         }
       }
       userJourneys {
@@ -55,6 +57,10 @@ export const GET_JOURNEY_WITH_PERMISSIONS = gql`
           lastName
           email
           imageUrl
+        }
+        journeyNotification {
+          id
+          visitorInteractionEmail
         }
       }
     }
@@ -82,8 +88,6 @@ export function AccessDialog({
     useUserInvitesLazyQuery({ journeyId })
 
   const { loadUser, data: user } = useCurrentUserLazyQuery()
-  const [, { data: emailPreferences, refetch: loadEmailPreferences }] =
-    useEventEmailNotificationsLazyQuery(journeyId)
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
@@ -93,21 +97,11 @@ export function AccessDialog({
     )
   }, [data?.journey?.userJourneys, user])
 
-  const currentUserTeam: UserTeams | undefined = useMemo(() => {
+  const currentUserTeam: UserTeam | undefined = useMemo(() => {
     return data?.journey?.team?.userTeams.find(({ user: { email } }) => {
       return email === user?.email
     })
   }, [data, user])
-
-  const emailPreferencesMap: Map<string, EventEmailNotifications> =
-    useMemo(() => {
-      return new Map(
-        emailPreferences?.eventEmailNotificationsByJourney.map((obj) => [
-          obj.userId,
-          obj
-        ])
-      )
-    }, [emailPreferences])
 
   const userTeamsMap = useMemo(() => {
     return new Map(
@@ -146,9 +140,8 @@ export function AccessDialog({
       void refetch()
       void refetchInvites()
       void loadUser()
-      void loadEmailPreferences()
     }
-  }, [open, refetch, refetchInvites, loadUser, loadEmailPreferences])
+  }, [open, refetch, refetchInvites, loadUser])
 
   return (
     <Dialog
@@ -203,7 +196,6 @@ export function AccessDialog({
                 currentUserTeam={currentUserTeam}
                 loading={loading}
                 variant="readonly"
-                emailPreferences={emailPreferencesMap}
                 journeyId={journeyId}
               />
             </>
@@ -221,7 +213,6 @@ export function AccessDialog({
           invites={invites}
           currentUser={currentUserJourney}
           journeyId={journeyId}
-          emailPreferences={emailPreferencesMap}
         />
       </Stack>
     </Dialog>

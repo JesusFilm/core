@@ -6,42 +6,34 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import { useEventEmailNotificationsUpdate } from '../../../libs/useEventEmailNotificationsUpdateMutation'
+import { useJourneyNotifcationUpdate } from '../../../libs/useJourneyNotifcationUpdate'
 
 interface NotificationSwitchProps {
-  id?: string
   name?: string
   checked?: boolean
   disabled?: boolean
-  userId?: string
   journeyId?: string
 }
 
 export function NotificationSwitch({
-  id,
   name,
   checked,
   disabled,
-  userId,
   journeyId
 }: NotificationSwitchProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
 
-  const [eventEmailNotificationsUpdate, { loading }] =
-    useEventEmailNotificationsUpdate()
+  const [journeyNotificationUpdate, { loading }] = useJourneyNotifcationUpdate()
 
   async function handleChange(): Promise<void> {
-    if (userId == null) return
     if (journeyId == null) return
     try {
-      await eventEmailNotificationsUpdate({
+      await journeyNotificationUpdate({
         variables: {
-          id,
           input: {
-            userId,
             journeyId,
-            value: checked != null ? !checked : true
+            visitorInteractionEmail: checked != null ? !checked : true
           }
         }
       })

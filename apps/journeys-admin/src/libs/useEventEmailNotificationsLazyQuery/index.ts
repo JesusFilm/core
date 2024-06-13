@@ -1,1 +1,0 @@
-export { useEventEmailNotificationsLazyQuery } from './useEventEmailNotificationsLazyQuery'

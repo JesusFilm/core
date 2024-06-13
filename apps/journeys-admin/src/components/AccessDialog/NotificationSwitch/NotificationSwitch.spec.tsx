@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { useEventEmailNotificationsUpdateMock } from '../../../libs/useEventEmailNotificationsUpdateMutation/useEventEmailNotificationsUpdateMutation.mock'
+import { useEventEmailNotificationsUpdateMock } from '../../../libs/useJourneyNotifcationUpdate/useJourneyNotifcationUpdate.mock'
 
 import { NotificationSwitch } from '.'
 

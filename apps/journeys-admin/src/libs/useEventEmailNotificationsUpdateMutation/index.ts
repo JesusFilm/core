@@ -1,1 +1,0 @@
-export { useEventEmailNotificationsUpdate } from './useEventEmailNotificationsUpdateMutation'
