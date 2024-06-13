@@ -71,6 +71,11 @@ export enum IconSize {
   xl = "xl",
 }
 
+export enum IdType {
+  databaseId = "databaseId",
+  slug = "slug",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -196,6 +201,16 @@ export interface JourneyViewEventCreateInput {
   journeyId: string;
   label?: string | null;
   value?: string | null;
+}
+
+export interface JourneysFilter {
+  featured?: boolean | null;
+  template?: boolean | null;
+  ids?: string[] | null;
+  tagIds?: string[] | null;
+  languageIds?: string[] | null;
+  limit?: number | null;
+  orderByRecent?: boolean | null;
 }
 
 export interface JourneysQueryOptions {

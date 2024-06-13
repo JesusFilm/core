@@ -6,6 +6,8 @@ import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
+import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
 import { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
@@ -18,11 +20,6 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import { useTeam } from '../../src/components/Team/TeamProvider'
 import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import {
-  GET_JOURNEY,
-  useJourneyQuery
-} from '../../src/libs/useJourneyQuery/useJourneyQuery'
-import { GET_JOURNEYS } from '../../src/libs/useJourneysQuery/useJourneysQuery'
 
 function TemplateDetailsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
