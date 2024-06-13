@@ -24,7 +24,8 @@ const owner: UserJourney = {
     lastName: 'ownerLastName',
     email: 'owner@email.com',
     imageUrl: 'imageSrc'
-  }
+  },
+  journeyNotification: null
 }
 
 const editor: UserJourney = {
@@ -38,7 +39,8 @@ const editor: UserJourney = {
     lastName: 'editorLastName',
     email: 'editor@email.com',
     imageUrl: null
-  }
+  },
+  journeyNotification: null
 }
 
 const editor2: UserJourney = {
@@ -52,7 +54,8 @@ const editor2: UserJourney = {
     lastName: 'editorLastName',
     email: 'editor2@email.com',
     imageUrl: null
-  }
+  },
+  journeyNotification: null
 }
 
 const userRequest: UserJourney = {
@@ -66,7 +69,8 @@ const userRequest: UserJourney = {
     lastName: 'requestLastName',
     email: 'request@email.com',
     imageUrl: null
-  }
+  },
+  journeyNotification: null
 }
 
 const userInvite: UserInvite = {

@@ -9,7 +9,6 @@ import Typography from '@mui/material/Typography'
 import sortBy from 'lodash/sortBy'
 import { ReactElement, useMemo } from 'react'
 
-import { GetEventEmailNotifications_eventEmailNotificationsByJourney as EventEmailNotifications } from '../../../../__generated__/GetEventEmailNotifications'
 import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
@@ -23,7 +22,6 @@ interface UserListProps {
   loading?: boolean
   currentUser?: UserJourney
   journeyId: string
-  emailPreferences?: Map<string, EventEmailNotifications>
 }
 
 export function UserList({
@@ -32,8 +30,7 @@ export function UserList({
   invites = [],
   loading,
   currentUser,
-  journeyId,
-  emailPreferences
+  journeyId
 }: UserListProps): ReactElement {
   const sortedUsers: UserJourney[] = useMemo(() => {
     return sortBy(users, ({ role }) => {
@@ -95,20 +92,14 @@ export function UserList({
                 </Typography>
               </Divider>
 
-              {sortedUsers.map((user) => {
-                const emailPreference = emailPreferences?.get(
-                  user.user?.id ?? ''
-                )
-                return (
-                  <UserListItem
-                    journeyId={journeyId}
-                    key={user.id}
-                    listItem={user}
-                    currentUser={currentUser}
-                    emailPreference={emailPreference}
-                  />
-                )
-              })}
+              {sortedUsers.map((user) => (
+                <UserListItem
+                  journeyId={journeyId}
+                  key={user.id}
+                  listItem={user}
+                  currentUser={currentUser}
+                />
+              ))}
               {invites.map(
                 (invite) =>
                   invite.removedAt == null &&

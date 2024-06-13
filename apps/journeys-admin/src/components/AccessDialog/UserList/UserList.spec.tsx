@@ -20,7 +20,8 @@ describe('UserList', () => {
       lastName: 'lastName1',
       email: 'name1@email.com',
       imageUrl: null
-    }
+    },
+    journeyNotification: null
   }
 
   const userJourney2: UserJourney = {
@@ -34,7 +35,8 @@ describe('UserList', () => {
       lastName: 'lastName2',
       email: 'name2@email.com',
       imageUrl: null
-    }
+    },
+    journeyNotification: null
   }
 
   const userInvite: UserInvite = {
