@@ -25,7 +25,7 @@ import { TemplateViewHeader } from './TemplateViewHeader'
 import { TemplateCreatorDetails } from './TemplateViewHeader/TemplateCreatorDetails'
 
 interface TemplateViewProps {
-  authUser: User
+  authUser?: User
 }
 
 export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
