@@ -1,6 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
 
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
 import {
@@ -17,7 +18,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
 
 const defaultTemplate: Journey = {
   __typename: 'Journey',
