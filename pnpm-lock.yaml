@@ -264,8 +264,8 @@ importers:
         specifier: ^6.4.0
         version: 6.5.0(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@1.8.0)(@playwright/test@1.44.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       node-fetch:
-        specifier: ^2.7.0
-        version: 2.7.0
+        specifier: 2.6.7
+        version: 2.6.7
       nodemailer:
         specifier: ^6.9.9
         version: 6.9.13
@@ -383,6 +383,9 @@ importers:
       util:
         specifier: ^0.12.4
         version: 0.12.5
+      uuid:
+        specifier: 9.0.1
+        version: 9.0.1
       vercel:
         specifier: ^32.1.0
         version: 32.7.2(@swc/core@1.5.28(@swc/helpers@0.5.5))
@@ -16718,7 +16721,7 @@ snapshots:
       lru-cache: 7.18.3
       negotiator: 0.6.3
       node-abort-controller: 3.1.1
-      node-fetch: 2.7.0
+      node-fetch: 2.6.7
       uuid: 9.0.1
       whatwg-mimetype: 3.0.0
     transitivePeerDependencies:
@@ -20120,7 +20123,7 @@ snapshots:
       detect-libc: 2.0.3
       https-proxy-agent: 5.0.1
       make-dir: 3.1.0
-      node-fetch: 2.7.0
+      node-fetch: 2.6.7
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
@@ -20908,7 +20911,7 @@ snapshots:
     dependencies:
       chalk: 4.1.2
       consola: 2.15.3
-      node-fetch: 2.7.0
+      node-fetch: 2.6.7
     transitivePeerDependencies:
       - encoding
 
@@ -21664,7 +21667,7 @@ snapshots:
       '@octokit/request-error': 2.1.0
       '@octokit/types': 6.41.0
       is-plain-object: 5.0.0
-      node-fetch: 2.7.0
+      node-fetch: 2.6.7
       universal-user-agent: 6.0.1
     transitivePeerDependencies:
       - encoding
@@ -23134,7 +23137,7 @@ snapshots:
       glob: 10.4.1
       handlebars: 4.7.8
       lazy-universal-dotenv: 4.0.0
-      node-fetch: 2.7.0
+      node-fetch: 2.6.7
       picomatch: 2.3.1
       pkg-dir: 5.0.0
       pretty-hrtime: 1.0.3
@@ -23163,7 +23166,7 @@ snapshots:
       glob: 10.4.1
       handlebars: 4.7.8
       lazy-universal-dotenv: 4.0.0
-      node-fetch: 2.7.0
+      node-fetch: 2.6.7
       picomatch: 2.3.1
       pkg-dir: 5.0.0
       pretty-hrtime: 1.0.3
@@ -27291,7 +27294,7 @@ snapshots:
       memfs-or-file-map-to-github-branch: 1.2.1
       micromatch: 4.0.7
       node-cleanup: 2.1.2
-      node-fetch: 2.7.0
+      node-fetch: 2.6.7
       override-require: 1.1.1
       p-limit: 2.3.0
       parse-diff: 0.7.1
@@ -29536,7 +29539,7 @@ snapshots:
       fast-text-encoding: 1.0.6
       google-auth-library: 8.9.0
       is-stream-ended: 0.1.4
-      node-fetch: 2.7.0
+      node-fetch: 2.6.7
       object-hash: 3.0.0
       proto3-json-serializer: 1.1.1
       protobufjs: 7.2.4
@@ -30549,7 +30552,7 @@ snapshots:
 
   isomorphic-fetch@3.0.0:
     dependencies:
-      node-fetch: 2.7.0
+      node-fetch: 2.6.7
       whatwg-fetch: 3.6.20
     transitivePeerDependencies:
       - encoding
@@ -32975,7 +32978,7 @@ snapshots:
       inquirer: 8.2.6
       is-node-process: 1.2.0
       js-levenshtein: 1.1.6
-      node-fetch: 2.7.0
+      node-fetch: 2.6.7
       outvariant: 1.4.2
       path-to-regexp: 6.2.2
       strict-event-emitter: 0.4.6
@@ -36473,7 +36476,7 @@ snapshots:
     dependencies:
       http-proxy-agent: 5.0.0
       https-proxy-agent: 5.0.1
-      node-fetch: 2.7.0
+      node-fetch: 2.6.7
       stream-events: 1.0.5
       uuid: 9.0.1
     transitivePeerDependencies:
@@ -37406,7 +37409,7 @@ snapshots:
       escape-goat: 3.0.0
       htmlparser2: 5.0.1
       mime: 2.6.0
-      node-fetch: 2.7.0
+      node-fetch: 2.6.7
       valid-data-url: 3.0.1
     transitivePeerDependencies:
       - encoding
