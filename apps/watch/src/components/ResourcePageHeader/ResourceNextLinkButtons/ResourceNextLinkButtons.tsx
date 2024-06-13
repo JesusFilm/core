@@ -53,6 +53,15 @@ export function ResourceNextLinkButtons(): ReactElement {
   function handleCloseMenu(): void {
     setAnchorEl(null)
   }
+
+  function getButtonName(): string {
+    const currentHref = router.pathname
+    return (
+      ResourceNextLinkButtonsData.find((link) => link.href === currentHref)
+        ?.label ?? ''
+    )
+  }
+
   return (
     <>
       {/* <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}> */}
@@ -104,7 +113,7 @@ export function ResourceNextLinkButtons(): ReactElement {
               sx={{ borderRadius: '40px !important', border: '2px solid red' }}
               onClick={handleShowMenu}
             >
-              {t('Videos')}
+            {t(getButtonName())}
             </Button>
             <MuiMenu
               anchorEl={anchorEl}
