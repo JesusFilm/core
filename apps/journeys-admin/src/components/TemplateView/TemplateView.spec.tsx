@@ -3,13 +3,13 @@ import { render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 
 import { GetTags } from '../../../__generated__/GetTags'
 import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag
 } from '../../../__generated__/JourneyFields'
-import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
 import { defaultJourney } from '../Editor/data'
 
