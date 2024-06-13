@@ -284,11 +284,9 @@ jobs:
       - name: PNPM Install
         run: pnpm install --silent --frozen-lockfile
       - uses: nrwl/nx-set-shas@v3
-      - name: nx Install
-        run: pnpm install -g nx --silent
       - name: Build Stories
         id: build-storybook
-        run: nx affected --target=build-storybook shared-storybook --webpack-stats-json
+        run: pnpm exec nx affected --target=build-storybook shared-storybook --webpack-stats-json
       - name: Check for frontend changes
         id: check_files
         uses: andstor/file-existence-action@v3

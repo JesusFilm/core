@@ -44,9 +44,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: nx Install
-        run: pnpm install -g nx --silent
-
       - name: Get affected apps
         run: |
           echo "apps=$(pnpm dlx ts-node tools/scripts/affected-apps.ts --projects apps/api-*)" >> $GITHUB_OUTPUT

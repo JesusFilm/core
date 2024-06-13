@@ -90,9 +90,6 @@ jobs:
       - name: PNPM Install
         run: pnpm install --silent --frozen-lockfile
 
-      - name: nx Install
-        run: pnpm install -g nx --silent
-
       - name: Install Doppler
         run: |
           sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
