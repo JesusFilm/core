@@ -22,7 +22,7 @@ interface AIGalleryProps {
   onChange: (src: string, prompt: string) => void
   setUploading?: (uploading?: boolean) => void
   loading?: boolean
-  selectedBlock: ImageBlock | null
+  selectedBlock?: ImageBlock | null
 }
 
 export function AIGallery({
