@@ -12,10 +12,10 @@ import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { ReactElement, useCallback } from 'react'
 
+import { useTagsQuery } from '@core/journeys/ui/useTagsQuery'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetTags_tags as Tag } from '../../../../__generated__/GetTags'
-import { useTagsQuery } from '../../../libs/useTagsQuery'
 import { ParentTagIcon } from '../../ParentTagIcon'
 
 interface TagsFilterProps {
