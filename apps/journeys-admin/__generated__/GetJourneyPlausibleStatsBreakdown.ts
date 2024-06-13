@@ -48,6 +48,10 @@ export interface GetJourneyPlausibleStatsBreakdown_journeyReferrer {
    * On aggregate queries, this is the date the stats are for.
    */
   property: string;
+  /**
+   * The number of unique visitors.
+   */
+  visitors: number | null;
 }
 
 export interface GetJourneyPlausibleStatsBreakdown_journeyVisitorsPageExits {
@@ -82,13 +86,10 @@ export interface GetJourneyPlausibleStatsBreakdown {
    * If you are familiar with SQL family databases, this endpoint corresponds to
    * running `GROUP BY` on a certain property in your stats, then ordering by the
    * count.
-   * 
    * Check out the [properties](https: // plausible.io/docs/stats-api#properties)
    * section for a reference of all the properties you can use in this query.
-   * 
    * This endpoint can be used to fetch data for `Top sources`, `Top pages`,
    * `Top countries` and similar reports.
-   * 
    * Currently, it is only possible to break down on one property at a time.
    * Using a list of properties with one query is not supported. So if you want
    * a breakdown by both `event:page` and `visit:source` for example, you would
@@ -104,13 +105,10 @@ export interface GetJourneyPlausibleStatsBreakdown {
    * If you are familiar with SQL family databases, this endpoint corresponds to
    * running `GROUP BY` on a certain property in your stats, then ordering by the
    * count.
-   * 
    * Check out the [properties](https: // plausible.io/docs/stats-api#properties)
    * section for a reference of all the properties you can use in this query.
-   * 
    * This endpoint can be used to fetch data for `Top sources`, `Top pages`,
    * `Top countries` and similar reports.
-   * 
    * Currently, it is only possible to break down on one property at a time.
    * Using a list of properties with one query is not supported. So if you want
    * a breakdown by both `event:page` and `visit:source` for example, you would
@@ -126,13 +124,10 @@ export interface GetJourneyPlausibleStatsBreakdown {
    * If you are familiar with SQL family databases, this endpoint corresponds to
    * running `GROUP BY` on a certain property in your stats, then ordering by the
    * count.
-   * 
    * Check out the [properties](https: // plausible.io/docs/stats-api#properties)
    * section for a reference of all the properties you can use in this query.
-   * 
    * This endpoint can be used to fetch data for `Top sources`, `Top pages`,
    * `Top countries` and similar reports.
-   * 
    * Currently, it is only possible to break down on one property at a time.
    * Using a list of properties with one query is not supported. So if you want
    * a breakdown by both `event:page` and `visit:source` for example, you would
@@ -148,13 +143,10 @@ export interface GetJourneyPlausibleStatsBreakdown {
    * If you are familiar with SQL family databases, this endpoint corresponds to
    * running `GROUP BY` on a certain property in your stats, then ordering by the
    * count.
-   * 
    * Check out the [properties](https: // plausible.io/docs/stats-api#properties)
    * section for a reference of all the properties you can use in this query.
-   * 
    * This endpoint can be used to fetch data for `Top sources`, `Top pages`,
    * `Top countries` and similar reports.
-   * 
    * Currently, it is only possible to break down on one property at a time.
    * Using a list of properties with one query is not supported. So if you want
    * a breakdown by both `event:page` and `visit:source` for example, you would

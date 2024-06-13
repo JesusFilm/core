@@ -14,4 +14,8 @@ export interface PlausibleJourneyReferrerFields {
    * On aggregate queries, this is the date the stats are for.
    */
   property: string;
+  /**
+   * The number of unique visitors.
+   */
+  visitors: number | null;
 }
