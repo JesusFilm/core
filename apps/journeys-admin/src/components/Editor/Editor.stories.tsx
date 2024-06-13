@@ -2,6 +2,8 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
 import {
@@ -9,7 +11,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../libs/storybook'
 
 import { blocks, blocksWithStepBlockPosition } from './data'
 import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'

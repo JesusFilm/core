@@ -4,9 +4,9 @@ import { ComponentProps } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 import { Drawer } from '../../../../Drawer'
 
 import { TextResponse } from './TextResponse'

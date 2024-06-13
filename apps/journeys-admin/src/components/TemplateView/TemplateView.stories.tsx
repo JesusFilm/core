@@ -5,6 +5,7 @@ import { User } from 'next-firebase-auth'
 import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '../../../__generated__/GetJourney'
 import { GetJourneys } from '../../../__generated__/GetJourneys'
@@ -15,7 +16,6 @@ import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag
 } from '../../../__generated__/JourneyFields'
-import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 import { GET_TAGS } from '../../libs/useTagsQuery/useTagsQuery'
 import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'

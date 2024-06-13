@@ -2,12 +2,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { userEvent, waitFor, within } from '@storybook/testing-library'
 
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import {
   GetAdminJourneys_journeys as Journey,
   GetAdminJourneys_journeys_userJourneys as UserJourney
 } from '../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../libs/storybook'
 import { TeamProvider } from '../../Team/TeamProvider'
 import {
   archiveddJourney,
