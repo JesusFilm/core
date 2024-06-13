@@ -8,7 +8,7 @@ import { PlausibleJourneyStepsActionsFields as JourneyStepsAction } from './plau
 import { PlausibleJourneyStepsFields as JourneyStep } from './plausibleFields/__generated__/PlausibleJourneyStepsFields'
 import { PlausibleJourneyVisitorsPageExitsFields as JourneyVisitorsPageExit } from './plausibleFields/__generated__/PlausibleJourneyVisitorsPageExitsFields'
 
-interface StatsBreakdown {
+export interface StatsBreakdown {
   journeySteps: JourneyStep[]
   journeyStepsActions: JourneyStepsAction[]
   journeyReferrer: JourneyReferrer[]
