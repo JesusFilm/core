@@ -16,6 +16,10 @@ import {
   VideoStartEventCreateInput
 } from '../../../__generated__/globalTypes'
 import { ActionFields as Action } from '../action/__generated__/ActionFields'
+import { TreeBlock } from '../block'
+import { BlockFields_StepBlock } from '../block/__generated__/BlockFields'
+import { ActionBlock, isActionBlock } from '../isActionBlock'
+import { PlausibleEvent } from '../transformPlausibleBreakdown/transformPlausibleBreakdown'
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,6 +68,31 @@ interface KeyifyProps {
   target?: string | Action | null
 }
 
+export interface BlockAnalytics {
+  percentOfStepEvents: number
+  event: PlausibleEvent
+}
+
+interface StepAnalytics {
+  blockAnalyticsMap: Record<string, BlockAnalytics>
+  totalActiveEvents: number
+}
+
+interface ActionEvent extends PlausibleEvent {
+  target: string
+}
+
+function generateActionTargetKey(action: Action): string {
+  switch (action.__typename) {
+    case 'NavigateToBlockAction':
+      return action.blockId
+    case 'LinkAction':
+      return `link:${action.url}`
+    case 'EmailAction':
+      return `email:${action.email}`
+  }
+}
+
 export function keyify({
   stepId,
   event,
@@ -75,17 +104,7 @@ export function keyify({
   if (typeof target === 'string' || target == null) {
     targetId = target ?? ''
   } else {
-    switch (target.__typename) {
-      case 'NavigateToBlockAction':
-        targetId = target.blockId
-        break
-      case 'LinkAction':
-        targetId = `link:${target.url}`
-        break
-      case 'EmailAction':
-        targetId = `email:${target.email}`
-        break
-    }
+    targetId = generateActionTargetKey(target)
   }
 
   return JSON.stringify({
@@ -103,4 +122,71 @@ export function reverseKeyify(key: string): {
   target?: string
 } {
   return JSON.parse(key)
+}
+
+export function formatEventKey(from: string, to: string): string {
+  return `${from}->${to}`
+}
+
+export function getBlockEventKey(block?: TreeBlock): string {
+  let key = ''
+
+  if (block == null) {
+    return key
+  }
+
+  if (block?.__typename === 'StepBlock') {
+    // Get a key for Steps that have a next block
+    if (block.nextBlockId != null && block.nextBlockId !== '') {
+      key = formatEventKey(block.id, block.nextBlockId)
+    }
+  }
+
+  // Get a key for actions blocks that have an action
+  if (isActionBlock(block) && block.action != null) {
+    const target = generateActionTargetKey(block.action)
+    key = formatEventKey(block.action.parentBlockId, target)
+  }
+
+  return key
+}
+
+export function isActiveActionEvent(
+  event: PlausibleEvent
+): event is ActionEvent {
+  return event.target != null && event.event !== 'navigatePreviousStep'
+}
+
+export function getStepAnalytics(
+  blocks: Array<TreeBlock<BlockFields_StepBlock> | ActionBlock>,
+  eventMap?: Record<string, PlausibleEvent>
+): StepAnalytics {
+  let totalActiveEvents = 0
+  const blockAnalyticsMap: { [key: string]: BlockAnalytics } = {}
+
+  // Iterate over action blocks to populate blockAnalyticsMap and totalActiveEvents
+  blocks.forEach((block) => {
+    if (block == null) return
+
+    const key = getBlockEventKey(block)
+    const event = eventMap?.[key]
+
+    if (event != null) {
+      totalActiveEvents += event.events
+      blockAnalyticsMap[block.id] = { event, percentOfStepEvents: 0 }
+    }
+  })
+
+  // Calculate
+  blocks.forEach((block) => {
+    const analytics = blockAnalyticsMap[block.id]
+
+    if (analytics == null) return
+
+    const percentage = analytics.event.events / totalActiveEvents
+
+    blockAnalyticsMap[block.id].percentOfStepEvents = percentage
+  })
+
+  return { blockAnalyticsMap, totalActiveEvents }
 }
