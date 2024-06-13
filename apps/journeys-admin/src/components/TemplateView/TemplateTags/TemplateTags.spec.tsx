@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
-import { GET_TAGS } from '../../../libs/useTagsQuery/useTagsQuery'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
 import { parentTags, tags } from './data'
 import { TemplateTags } from './TemplateTags'
