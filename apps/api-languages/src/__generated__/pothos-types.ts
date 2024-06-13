@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, Language, LanguageName } from ".prisma/api-languages-client";
+import type { Prisma, Language, LanguageName, Country, CountryName, CountryContinent } from ".prisma/api-languages-client";
 export default interface PrismaTypes {
     Language: {
         Name: "Language";
@@ -11,8 +11,8 @@ export default interface PrismaTypes {
         Where: Prisma.LanguageWhereInput;
         Create: {};
         Update: {};
-        RelationName: "name" | "nameLanguage";
-        ListRelations: "name" | "nameLanguage";
+        RelationName: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent";
+        ListRelations: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent";
         Relations: {
             name: {
                 Shape: LanguageName[];
@@ -22,6 +22,21 @@ export default interface PrismaTypes {
             nameLanguage: {
                 Shape: LanguageName[];
                 Name: "LanguageName";
+                Nullable: false;
+            };
+            countries: {
+                Shape: Country[];
+                Name: "Country";
+                Nullable: false;
+            };
+            countryName: {
+                Shape: CountryName[];
+                Name: "CountryName";
+                Nullable: false;
+            };
+            countryContinent: {
+                Shape: CountryContinent[];
+                Name: "CountryContinent";
                 Nullable: false;
             };
         };
@@ -45,6 +60,86 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
             parent: {
+                Shape: Language;
+                Name: "Language";
+                Nullable: false;
+            };
+        };
+    };
+    Country: {
+        Name: "Country";
+        Shape: Country;
+        Include: Prisma.CountryInclude;
+        Select: Prisma.CountrySelect;
+        OrderBy: Prisma.CountryOrderByWithRelationInput;
+        WhereUnique: Prisma.CountryWhereUniqueInput;
+        Where: Prisma.CountryWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "name" | "continent" | "languages";
+        ListRelations: "name" | "continent" | "languages";
+        Relations: {
+            name: {
+                Shape: CountryName[];
+                Name: "CountryName";
+                Nullable: false;
+            };
+            continent: {
+                Shape: CountryContinent[];
+                Name: "CountryContinent";
+                Nullable: false;
+            };
+            languages: {
+                Shape: Language[];
+                Name: "Language";
+                Nullable: false;
+            };
+        };
+    };
+    CountryName: {
+        Name: "CountryName";
+        Shape: CountryName;
+        Include: Prisma.CountryNameInclude;
+        Select: Prisma.CountryNameSelect;
+        OrderBy: Prisma.CountryNameOrderByWithRelationInput;
+        WhereUnique: Prisma.CountryNameWhereUniqueInput;
+        Where: Prisma.CountryNameWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "country" | "language";
+        ListRelations: never;
+        Relations: {
+            country: {
+                Shape: Country;
+                Name: "Country";
+                Nullable: false;
+            };
+            language: {
+                Shape: Language;
+                Name: "Language";
+                Nullable: false;
+            };
+        };
+    };
+    CountryContinent: {
+        Name: "CountryContinent";
+        Shape: CountryContinent;
+        Include: Prisma.CountryContinentInclude;
+        Select: Prisma.CountryContinentSelect;
+        OrderBy: Prisma.CountryContinentOrderByWithRelationInput;
+        WhereUnique: Prisma.CountryContinentWhereUniqueInput;
+        Where: Prisma.CountryContinentWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "country" | "language";
+        ListRelations: never;
+        Relations: {
+            country: {
+                Shape: Country;
+                Name: "Country";
+                Nullable: false;
+            };
+            language: {
                 Shape: Language;
                 Name: "Language";
                 Nullable: false;

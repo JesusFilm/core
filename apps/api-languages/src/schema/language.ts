@@ -29,7 +29,7 @@ const Translation = builder.prismaObject('LanguageName', {
   })
 })
 
-const Language = builder.prismaObject('Language', {
+export const Language = builder.prismaObject('Language', {
   fields: (t) => ({
     id: t.exposeID('id'),
     bcp47: t.exposeString('bcp47', { nullable: true }),

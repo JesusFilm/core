@@ -4,6 +4,7 @@ import { printSubgraphSchema } from '@apollo/subgraph'
 import { lexicographicSortSchema } from 'graphql'
 
 import './language'
+import './country'
 import { builder } from './builder'
 
 export const schema = builder.toSubGraphSchema({})
