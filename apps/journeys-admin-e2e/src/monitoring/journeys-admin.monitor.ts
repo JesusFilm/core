@@ -1,18 +1,24 @@
 import { expect, test } from '@playwright/test'
 
 /*  
-NS Admin: Homepage monitoring
-Returns with 200 response
-Page name is Sign In|Next Steps
-'Sign in with email' button is visible
+NS Admin: Monitoring
 */
-test('NS Admin: Homepage monitoring', async ({ page }) => {
-  const response = await page.goto('https://admin.nextstep.is/')
-  expect(response?.status()).toEqual(200)
-  await expect(page).toHaveTitle(/Sign In|Next Steps/)
-
-  const emailSignInButton = await page.getByRole('button', {
-    name: 'Sign in with email'
-  })
-  expect(emailSignInButton).toBeVisible()
+test('NS Admin Monitoring: Check user can login and logout successfuly', async ({
+  page
+}) => {
+  await page.goto('https://admin.nextstep.is/')
+  await page.getByPlaceholder('Enter your email address here').click()
+  await page
+    .getByPlaceholder('Enter your email address here')
+    .fill(process.env.PLAYWRIGHT_EMAIL)
+  await page.getByRole('button', { name: 'Continue with email' }).click()
+  await page.getByPlaceholder('Enter Password').click()
+  await page.getByPlaceholder('Enter Password').fill('pwu@ec')
+  await page.getByRole('button', { name: 'Sign In' }).click()
+  await page.getByTestId('NavigationListItemProfile').click()
+  await expect(page.getByText(process.env.PLAYWRIGHT_EMAIL)).toBeVisible()
+  await page.getByText('Logout').click()
+  await expect(
+    page.getByRole('button', { name: 'Continue with email' })
+  ).toBeVisible()
 })
