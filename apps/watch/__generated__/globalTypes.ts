@@ -98,6 +98,15 @@ export enum MessagePlatform {
   whatsApp = "whatsApp",
 }
 
+export enum Service {
+  apiJourneys = "apiJourneys",
+  apiLanguages = "apiLanguages",
+  apiMedia = "apiMedia",
+  apiTags = "apiTags",
+  apiUsers = "apiUsers",
+  apiVideos = "apiVideos",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
