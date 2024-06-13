@@ -40,9 +40,6 @@
       "options": {
         "commands": [
           {
-            "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
-          },
-          {
             "command": "rm -rf libs/journeys/ui/__generated__"
           },
           {
