@@ -4,8 +4,6 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -29,7 +27,6 @@ const HeaderTabButtonsData = [
 ] // filter out this list to only use the ones with the launchdarkly flag set to true
 
 export function HeaderTabButtons(): ReactElement {
-  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
   const { t } = useTranslation('apps-watch')
   const router = useRouter()
 
@@ -52,72 +49,76 @@ export function HeaderTabButtons(): ReactElement {
 
   return (
     <>
-      {lgUp ? (
-        <>
-          <Box
-            sx={{
-              display: 'flex',
-              width: '100%',
-              height: '48px',
-              justifyContent: 'space-between',
-              gap: '12px' // todo: reduce to 4px on smaller devices
-            }}
-          >
-            {HeaderTabButtonsData.map(({ label, icon, href }) => (
-              <NextLink href={href} passHref legacyBehavior key={label}>
-                <Button
-                  component="a"
-                  color="inherit"
-                  sx={{
-                    flexGrow: 1,
-                    textAlign: 'center',
-                    borderRadius: '40px !important',
-                    border: '2px solid',
-                    borderColor: router.pathname.startsWith(href)
-                      ? 'red'
-                      : 'transparent'
-                  }}
-                  startIcon={icon}
-                >
-                  {t(label)}
-                </Button>
-              </NextLink>
-            ))}
-          </Box>
-        </>
-      ) : (
-        <>
-          <Button
-            color="inherit"
-            startIcon={<Play1Icon />}
-            endIcon={<ChervonDownIcon />}
-            sx={{
-              borderRadius: '40px !important',
-              border: '2px solid red',
-              height: '48px',
-              backgroundColor: { xs: 'red', md: 'transparent' }
-            }}
-            onClick={handleShowMenu}
-          >
-            {t(getButtonName())}
-          </Button>
-          <MuiMenu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleCloseMenu}
-            keepMounted
-          >
-            {HeaderTabButtonsData.map(({ label, icon, href }) => (
-              <NextLink href={href} passHref legacyBehavior key={label}>
-                <MenuItem onClick={handleCloseMenu}>
-                  <ListItemIcon>{icon}</ListItemIcon>
-                  <ListItemText>{t(label)}</ListItemText>
-                </MenuItem>
-              </NextLink>
-            ))}
-          </MuiMenu>
-        </>
-      )}
+      <Box
+        sx={{
+          display: { xs: 'none', lg: 'flex' },
+          width: '100%',
+          height: '48px',
+          justifyContent: 'space-between',
+          gap: '12px' // todo: reduce to 4px on smaller devices
+        }}
+      >
+        {HeaderTabButtonsData.map(({ label, icon, href }) => (
+          <NextLink href={href} passHref legacyBehavior key={label}>
+            <Button
+              component="a"
+              color="inherit"
+              sx={{
+                flexGrow: 1,
+                textAlign: 'center',
+                borderRadius: '40px !important',
+                border: '2px solid',
+                borderColor: router.pathname.startsWith(href)
+                  ? 'red'
+                  : 'transparent'
+              }}
+              startIcon={icon}
+            >
+              {t(label)}
+            </Button>
+          </NextLink>
+        ))}
+      </Box>
+      <Box
+        sx={{
+          top: '-14px',
+          display: 'flex',
+          justifyContent: 'center',
+          width: '100%',
+          position: { xs: 'absolute', md: 'initial' }
+        }}
+      >
+        <Button
+          color="inherit"
+          startIcon={<Play1Icon />}
+          endIcon={<ChervonDownIcon />}
+          sx={{
+            display: { xs: 'flex', lg: 'none' },
+            borderRadius: '40px !important',
+            border: '2px solid red',
+            height: '48px',
+            backgroundColor: { xs: 'red', md: 'transparent' }
+          }}
+          onClick={handleShowMenu}
+        >
+          {t(getButtonName())}
+        </Button>
+      </Box>
+      <MuiMenu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+        keepMounted
+      >
+        {HeaderTabButtonsData.map(({ label, icon, href }) => (
+          <NextLink href={href} passHref legacyBehavior key={label}>
+            <MenuItem onClick={handleCloseMenu}>
+              <ListItemIcon>{icon}</ListItemIcon>
+              <ListItemText>{t(label)}</ListItemText>
+            </MenuItem>
+          </NextLink>
+        ))}
+      </MuiMenu>
     </>
   )
 }

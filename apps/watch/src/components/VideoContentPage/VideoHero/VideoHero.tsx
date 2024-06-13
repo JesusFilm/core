@@ -61,6 +61,7 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
     <>
       <Header
         hideAbsoluteAppBar={!controlsVisible}
+        hideSpacer
         themeMode={ThemeMode.dark}
       />
       <Div100vh

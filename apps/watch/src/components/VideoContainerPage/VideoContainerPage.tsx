@@ -32,6 +32,7 @@ export function VideoContainerPage(): ReactElement {
     <PageWrapper
       hero={<ContainerHero openDialog={handleOpenDialog} />}
       headerThemeMode={ThemeMode.dark}
+      hideHeaderSpacer
     >
       <Container maxWidth="xxl" data-testid="VideoContainerPage">
         <Stack

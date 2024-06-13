@@ -3,9 +3,9 @@ import AppBar, { AppBarProps } from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'
+import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
 import Slide from '@mui/material/Slide'
-import Stack from '@mui/material/Stack'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import Toolbar from '@mui/material/Toolbar'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
@@ -32,44 +32,53 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
         {...props}
         sx={{
           p: 4,
+          color: 'text.primary',
           ...props.sx
         }}
         ref={ref}
       >
         <Container maxWidth="xxl" disableGutters>
-          <Stack sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Toolbar sx={{ justifyContent: 'space-between' }}>
-              <NextLink href="/watch">
-                <Box
-                  sx={{
-                    width: { xs: '64px', md: '76px', xl: '88px' },
-                    marginLeft: { xs: '-8px', md: '-12px', xl: '0px' }
-                  }}
-                >
-                  <Image
-                    src={favicon}
-                    alt="Watch Logo"
-                    style={{
-                      cursor: 'pointer',
-                      maxWidth: '100%',
-                      height: 'auto'
+          <Toolbar>
+            <Grid
+              container
+              sx={{
+                display: 'grid',
+                alignItems: 'center',
+                gridTemplateColumns: '1fr auto auto',
+                columnGap: 2
+              }}
+            >
+              <Grid item sx={{ gridRow: 1 }}>
+                <NextLink href="/watch">
+                  <Box
+                    sx={{
+                      width: { xs: '64px', md: '76px', xl: '88px' },
+                      marginLeft: { xs: '-8px', md: '-12px', xl: '0px' }
                     }}
-                  />
-                </Box>
-              </NextLink>
-              <Stack
-                data-testid="ButtonsAndMenuStack"
-                spacing={0.5}
-                direction="row"
+                  >
+                    <Image
+                      src={favicon}
+                      alt="Watch Logo"
+                      style={{
+                        cursor: 'pointer',
+                        maxWidth: '100%',
+                        height: 'auto'
+                      }}
+                    />
+                  </Box>
+                </NextLink>
+              </Grid>
+              <Grid
+                item
+                sx={{
+                  gridRow: { xs: 2, md: 1, lg: 2, xl: 1 },
+                  gridColumn: { xs: '1 / 3', md: 2, lg: '1 / 3', xl: 2 },
+                  position: 'relative'
+                }}
               >
-                <Box
-                  data-testid="DesktopButtons"
-                  sx={{
-                    display: { xs: 'none', md: 'flex', lg: 'none', xl: 'flex' }
-                  }}
-                >
-                  <HeaderTabButtons />
-                </Box>
+                <HeaderTabButtons />
+              </Grid>
+              <Grid item sx={{ gridRow: 1 }}>
                 <IconButton
                   color="inherit"
                   aria-label="open header menu"
@@ -78,32 +87,10 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
                 >
                   <MenuIcon />
                 </IconButton>
-              </Stack>
-            </Toolbar>
-            <Box
-              data-testid="TabletButtons"
-              sx={{ display: { xs: 'none', lg: 'flex', xl: 'none' } }}
-            >
-              <HeaderTabButtons />
-            </Box>
-          </Stack>
+              </Grid>
+            </Grid>
+          </Toolbar>
         </Container>
-        {/* drop down button on mobile */}
-        <Box
-          justifyContent="center"
-          data-testid="ButtonBox"
-          sx={{
-            position: 'absolute',
-            zIndex: 1,
-            bottom: -24,
-            left: 0,
-            right: 0,
-            height: '48px',
-            display: { xs: 'flex', md: 'none' }
-          }}
-        >
-          <HeaderTabButtons />
-        </Box>
       </AppBar>
     )
   }
@@ -112,11 +99,13 @@ LocalAppBar.displayName = 'LocalAppBar'
 
 interface HeaderProps {
   hideAbsoluteAppBar?: boolean
+  hideSpacer?: boolean
   themeMode?: ThemeMode
 }
 
 export function Header({
   hideAbsoluteAppBar,
+  hideSpacer,
   themeMode = ThemeMode.light
 }: HeaderProps): ReactElement {
   const trigger = useScrollTrigger()
@@ -124,8 +113,10 @@ export function Header({
 
   return (
     <>
+      {hideSpacer !== true && <Box height={128} />}
       <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
         <Fade
+          appear={false}
           in={hideAbsoluteAppBar !== true}
           style={{
             transitionDelay: hideAbsoluteAppBar !== true ? undefined : '2s',
@@ -136,7 +127,7 @@ export function Header({
         >
           <LocalAppBar
             sx={{
-              backgroundColor: 'transparent',
+              background: 'transparent',
               boxShadow: 'none'
             }}
             onMenuClick={() => setDrawerOpen(true)}
@@ -146,7 +137,9 @@ export function Header({
       <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
         <Slide in={trigger}>
           <LocalAppBar
-            sx={{ backgroundColor: 'background.default' }}
+            sx={{
+              backgroundColor: 'background.default'
+            }}
             position="fixed"
             onMenuClick={() => setDrawerOpen(true)}
           />

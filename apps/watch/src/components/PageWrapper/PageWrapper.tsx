@@ -15,6 +15,7 @@ interface PageWrapperProps {
   hero?: ReactNode
   children?: ReactNode
   hideHeader?: boolean
+  hideHeaderSpacer?: boolean
   testId?: string
   headerThemeMode?: ThemeMode
 }
@@ -23,17 +24,20 @@ export function PageWrapper({
   hero,
   children,
   hideHeader,
+  hideHeaderSpacer,
   testId,
   headerThemeMode
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
+      {hideHeader !== true && (
+        <Header themeMode={headerThemeMode} hideSpacer={hideHeaderSpacer} />
+      )}
       <Stack
         justifyContent="space-between"
         sx={{ width: '100%', height: '100%' }}
         data-testid={testId}
       >
-        {hideHeader !== true && <Header themeMode={headerThemeMode} />}
         <Container maxWidth={false} disableGutters>
           <ThemeProvider
             nested

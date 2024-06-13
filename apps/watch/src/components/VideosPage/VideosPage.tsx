@@ -6,6 +6,8 @@ import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
+import { ThemeMode } from '@core/shared/ui/themes'
+
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
@@ -85,7 +87,12 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
   }, [])
 
   return (
-    <PageWrapper hero={<VideosHero />} testId="VideosPage">
+    <PageWrapper
+      hero={<VideosHero />}
+      testId="VideosPage"
+      headerThemeMode={ThemeMode.dark}
+      hideHeaderSpacer
+    >
       <Container maxWidth="xxl">
         <VideosSubHero />
       </Container>
