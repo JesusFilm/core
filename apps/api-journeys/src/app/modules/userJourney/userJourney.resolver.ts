@@ -262,11 +262,13 @@ export class UserJourneyResolver {
   @ResolveField('journeyNotification')
   async journeyNotification(
     @Parent() userJourney: UserJourney
-  ): Promise<JourneyNotification[] | null> {
-    return await this.prismaService.userJourney
+  ): Promise<JourneyNotification | null | undefined> {
+    const res = await this.prismaService.userJourney
       .findUnique({
         where: { id: userJourney.id }
       })
       .journeyNotification()
+
+    return res?.[0]
   }
 }

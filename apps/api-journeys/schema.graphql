@@ -340,6 +340,11 @@ input BlocksFilter {
 }
 
 type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+extend type Query {
   blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block!
   customDomain(id: ID!): CustomDomain!
@@ -366,7 +371,6 @@ type Query {
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
   journeyCollection(id: ID!): JourneyCollection!
   journeyCollections(teamId: ID!): [JourneyCollection]!
-  journeyNotifications(journeyId: ID!): [JourneyNotification!]!
   getJourneyProfile: JourneyProfile
 
   """Get a list of Visitor Information by Journey"""
@@ -409,8 +413,6 @@ type Query {
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor!
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
 }
 
 enum ButtonVariant {
@@ -2035,7 +2037,7 @@ type UserJourney
   @key(fields: "id")
 {
   journey: Journey
-  journeyNotification: [JourneyNotification!]!
+  journeyNotification: JourneyNotification
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2082,7 +2084,7 @@ type JourneyNotification {
 type UserTeam
   @key(fields: "id")
 {
-  journeyNotification(journeyId: ID!): [JourneyNotification!]!
+  journeyNotification(journeyId: ID!): JourneyNotification
   id: ID!
   user: User!
   role: UserTeamRole!

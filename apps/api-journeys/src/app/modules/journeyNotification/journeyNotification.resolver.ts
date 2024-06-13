@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Resolver } from '@nestjs/graphql'
 
 import { JourneyNotification } from '.prisma/api-journeys-client'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
@@ -12,26 +12,34 @@ import { PrismaService } from '../../lib/prisma.service'
 export class JourneyNotificationResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
-  @Query()
-  async journeyNotifications(
-    @Args('journeyId') journeyId: string
-  ): Promise<JourneyNotification[]> {
-    return await this.prismaService.journeyNotification.findMany({
-      where: { journeyId }
-    })
-  }
-
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  async journeyNotificationsUpdate(
+  async journeyNotificationUpdate(
     @CurrentUserId() userId: string,
     @Args('input') input: JourneyNotificationUpdateInput
   ): Promise<JourneyNotification> {
     const { journeyId } = input
+    const journey = await this.prismaService.journey.findUnique({
+      where: { id: journeyId },
+      include: { team: { include: { userTeams: true } }, userJourneys: true }
+    })
+    const userJourneyId = journey?.userJourneys?.find(
+      (userJourney) => userJourney.userId === userId
+    )?.id
+    const userTeamId = journey?.team?.userTeams?.find(
+      (userTeam) => userTeam.userId === userId
+    )?.id
+
+    const upsertInput = {
+      ...input,
+      userJourneyId,
+      userTeamId
+    }
+
     return await this.prismaService.journeyNotification.upsert({
       where: { userId_journeyId: { userId, journeyId } },
-      update: input,
-      create: { userId, ...input }
+      update: upsertInput,
+      create: { userId, ...upsertInput }
     })
   }
 }

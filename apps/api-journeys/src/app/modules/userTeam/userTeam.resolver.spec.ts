@@ -337,16 +337,14 @@ describe('UserTeamResolver', () => {
           userTeam as unknown as UserTeam,
           'journeyId'
         )
-      ).resolves.toEqual([
-        {
-          id: 'journeyNotification',
-          journeyId: 'journeyId',
-          userId: 'userId',
-          userJourneyId: 'userJourneyId',
-          userTeamId: null,
-          visitorInteractionEmail: false
-        }
-      ])
+      ).resolves.toEqual({
+        id: 'journeyNotification',
+        journeyId: 'journeyId',
+        userId: 'userId',
+        userJourneyId: 'userJourneyId',
+        userTeamId: null,
+        visitorInteractionEmail: false
+      })
       expect(journeyNotification).toHaveBeenCalledWith({
         where: {
           journeyId: 'journeyId'

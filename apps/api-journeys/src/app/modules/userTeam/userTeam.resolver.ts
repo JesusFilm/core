@@ -134,11 +134,13 @@ export class UserTeamResolver {
   async journeyNotification(
     @Parent() userTeam: UserTeam,
     @Args('journeyId') journeyId: string
-  ): Promise<JourneyNotification[] | null> {
-    return await this.prismaService.userTeam
+  ): Promise<JourneyNotification | null | undefined> {
+    const res = await this.prismaService.userTeam
       .findUnique({
         where: { id: userTeam.id }
       })
       .journeyNotification({ where: { journeyId } })
+
+    return res?.[0]
   }
 }

@@ -307,16 +307,14 @@ describe('UserJourneyResolver', () => {
         ...userJourneyWithJourneyNotification,
         journeyNotification
       } as unknown as Prisma.Prisma__UserJourneyClient<UserJourney>)
-      expect(await resolver.journeyNotification(userJourney)).toEqual([
-        {
-          id: 'journeyNotification',
-          journeyId: 'journeyId',
-          userId: 'userId',
-          userJourneyId: 'userJourneyId',
-          userTeamId: null,
-          visitorInteractionEmail: false
-        }
-      ])
+      expect(await resolver.journeyNotification(userJourney)).toEqual({
+        id: 'journeyNotification',
+        journeyId: 'journeyId',
+        userId: 'userId',
+        userJourneyId: 'userJourneyId',
+        userTeamId: null,
+        visitorInteractionEmail: false
+      })
     })
   })
 })

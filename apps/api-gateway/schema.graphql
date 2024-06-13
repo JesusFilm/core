@@ -1560,7 +1560,6 @@ type Query
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey! @join__field(graph: JOURNEYS)
   journeyCollection(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyCollections(teamId: ID!): [JourneyCollection]! @join__field(graph: JOURNEYS)
-  journeyNotifications(journeyId: ID!): [JourneyNotification!]! @join__field(graph: JOURNEYS)
   getJourneyProfile: JourneyProfile @join__field(graph: JOURNEYS)
 
   """Get a list of Visitor Information by Journey"""
@@ -2368,7 +2367,7 @@ type UserJourney
   @join__type(graph: JOURNEYS, key: "id")
 {
   journey: Journey
-  journeyNotification: [JourneyNotification!]!
+  journeyNotification: JourneyNotification
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2398,7 +2397,7 @@ type UserRole
 type UserTeam
   @join__type(graph: JOURNEYS, key: "id")
 {
-  journeyNotification(journeyId: ID!): [JourneyNotification!]!
+  journeyNotification(journeyId: ID!): JourneyNotification
   id: ID!
   user: User!
   role: UserTeamRole!
