@@ -37,6 +37,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
 
       - uses: pnpm/action-setup@v4
 
@@ -55,14 +56,12 @@ jobs:
 
       - name: PNPM Install
         run: pnpm install --silent
+
       - name: generate prisma imports
-        uses: mansagroup/nrwl-nx-action@v3
-        with:
-          targets: prisma-generate
-          all: true
-          parallel: 1
+        run: pnpm exec nx run-many --all --target=prisma-generate --parallel=1
         env:
           DISABLE_ERD: true
+
       - name: PNPM apollo and graphql for codegen
         run: pnpm i -g apollo @apollo/rover@0.23.0
       - name: Codegen
@@ -112,6 +111,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
 
       - uses: pnpm/action-setup@v4
 
@@ -194,6 +194,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
 
       - uses: pnpm/action-setup@v4
 
@@ -265,6 +266,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
 
       - uses: pnpm/action-setup@v4
 
