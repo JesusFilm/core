@@ -13,6 +13,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import Lock1Icon from '@core/shared/ui/icons/Lock1'
 import MinusCircleContained from '@core/shared/ui/icons/MinusCircleContained'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -24,7 +25,6 @@ import {
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
 import { StepFields } from '../../../../../../../../../../../__generated__/StepFields'
 import { CardWrapper } from '../../../../../../../Content/Canvas/CardWrapper'
-import { VideoWrapper } from '../../../../../../../Content/Canvas/VideoWrapper'
 
 export const STEP_BLOCK_DEFAULT_NEXT_BLOCK_UPDATE = gql`
   mutation StepBlockDefaultNextBlockUpdate(
