@@ -1,9 +1,9 @@
 import { Decorator } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 
-import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
-
 import { ThemeProvider } from '../../components/ThemeProvider'
+import { sharedUiConfig } from '../sharedUiConfig'
+import { ThemeMode, ThemeName } from '../themes'
 
 // Must set parameters at component level for shared-storybook stories to work
 export const journeysAdminConfig = {
@@ -11,7 +11,10 @@ export const journeysAdminConfig = {
   decorators: [
     (Story: Parameters<Decorator>[0]) => (
       <SnackbarProvider>
-        <ThemeProvider>
+        <ThemeProvider
+          themeName={ThemeName.journeysAdmin}
+          themeMode={ThemeMode.light}
+        >
           <Story />
         </ThemeProvider>
       </SnackbarProvider>

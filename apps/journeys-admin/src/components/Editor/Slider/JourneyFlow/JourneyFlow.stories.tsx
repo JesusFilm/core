@@ -8,12 +8,12 @@ import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__ge
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import {
   GetStepBlocksWithPosition,
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
-import { simpleComponentConfig } from '../../../../libs/storybook'
 import { blocks, blocksWithStepBlockPosition, defaultJourney } from '../../data'
 
 import { GET_STEP_BLOCKS_WITH_POSITION, JourneyFlow } from './JourneyFlow'

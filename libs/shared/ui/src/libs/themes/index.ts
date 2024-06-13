@@ -1,6 +1,7 @@
 import { Theme } from '@mui/material/styles'
 
 import { getBaseDark, getBaseLight } from './base/theme'
+import { adminLight } from './journeysAdmin/theme'
 import { getJourneyUiDark, getJourneyUiLight } from './journeyUi/theme'
 import { websiteDark, websiteLight } from './website/theme'
 
@@ -12,7 +13,8 @@ export enum ThemeMode {
 export enum ThemeName {
   base = 'base',
   website = 'website',
-  journeyUi = 'journeyUi'
+  journeyUi = 'journeyUi',
+  journeysAdmin = 'journeysAdmin'
 }
 
 interface ThemeProps {
@@ -36,7 +38,14 @@ export const getTheme = ({
     },
     website: { light: websiteLight, dark: websiteDark }
   }
-  return {
-    ...themes[themeName][themeMode]
+
+  if (themeName === ThemeName.journeysAdmin) {
+    if (themeMode === ThemeMode.dark)
+      console.warn('Journeys Admin has no dark theme! Using light theme.')
+    return adminLight
+  } else {
+    return {
+      ...themes[themeName][themeMode]
+    }
   }
 }

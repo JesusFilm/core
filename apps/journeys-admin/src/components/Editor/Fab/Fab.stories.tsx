@@ -10,9 +10,9 @@ import {
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { StepFields as StepBlock } from '../../../../__generated__/StepFields'
-import { journeysAdminConfig } from '../../../libs/storybook'
 
 import { Fab } from '.'
 

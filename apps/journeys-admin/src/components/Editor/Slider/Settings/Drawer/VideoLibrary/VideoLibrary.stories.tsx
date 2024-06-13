@@ -4,7 +4,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { userEvent, waitFor, within } from '@storybook/testing-library'
 import { ReactElement, useState } from 'react'
 
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { videos } from './VideoFromLocal/data'
 import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'

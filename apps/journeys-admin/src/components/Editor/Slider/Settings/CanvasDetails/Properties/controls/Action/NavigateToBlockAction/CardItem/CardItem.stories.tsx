@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { journeysAdminConfig } from '../../../../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { CardItem } from './CardItem'
 
