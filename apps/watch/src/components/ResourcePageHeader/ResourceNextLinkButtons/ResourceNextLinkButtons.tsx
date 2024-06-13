@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Container from '@mui/material/Container'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import MuiMenu from '@mui/material/Menu'
@@ -12,21 +11,14 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
-import BulbIcon from '@core/shared/ui/icons/Bulb'
-import Calendar1Icon from '@core/shared/ui/icons/Calendar1'
 import Calendar2Icon from '@core/shared/ui/icons/Calendar2'
 import ChervonDownIcon from '@core/shared/ui/icons/ChevronDown'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 import TerminalIcon from '@core/shared/ui/icons/Terminal'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-interface ResourceNextLinkButtonsProps {
-  selectedTab: string
-  setSelectedTab: (string) => void
-}
+// const [showAllButtons] = useFlags() ... Launchdarkly flag to control which buttons to display
 
 const ResourceNextLinkButtonsData = [
   { label: 'Strategies', icon: <TerminalIcon />, href: '/strategies' },
@@ -34,14 +26,10 @@ const ResourceNextLinkButtonsData = [
   { label: 'Videos', icon: <Play1Icon />, href: '/watch' },
   { label: 'Calendar', icon: <Calendar2Icon />, href: '/calendar' },
   { label: 'Products', icon: <Grid1Icon />, href: '/products' }
-]
+] // filter out this list to only use the ones with the launchdarkly flag set to true
 
 export function ResourceNextLinkButtons(): ReactElement {
-  //   {
-  //   selectedTab,
-  //   setSelectedTab
-  // }: ResourceNextLinkButtonsProps
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
   const { t } = useTranslation('apps-watch')
   const router = useRouter()
 
@@ -64,21 +52,17 @@ export function ResourceNextLinkButtons(): ReactElement {
 
   return (
     <>
-      {/* <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}> */}
-      {/* <Container
-        maxWidth="xxl"
-        disableGutters */}
-      <Box
-        sx={{
-          display: 'flex',
-          width: '100%',
-          height: '48px',
-          justifyContent: 'space-between',
-          gap: '12px' // todo: reduce to 4px on smaller devices
-        }}
-      >
-        {smUp ? (
-          <>
+      {lgUp ? (
+        <>
+          <Box
+            sx={{
+              display: 'flex',
+              width: '100%',
+              height: '48px',
+              justifyContent: 'space-between',
+              gap: '12px' // todo: reduce to 4px on smaller devices
+            }}
+          >
             {ResourceNextLinkButtonsData.map(({ label, icon, href }) => (
               <NextLink href={href} passHref legacyBehavior key={label}>
                 <Button
@@ -92,56 +76,53 @@ export function ResourceNextLinkButtons(): ReactElement {
                     borderColor: router.pathname.startsWith(href)
                       ? 'red'
                       : 'transparent'
-                    // borderColor: 'black'
-
-                    // color: (theme) => theme.palette.secondary.main
                   }}
-                  // onClick={() => setSelectedTab(label.toLowerCase())}
                   startIcon={icon}
                 >
                   {t(label)}
                 </Button>
               </NextLink>
             ))}
-          </>
-        ) : (
-          <>
-            <Button
-              color="inherit"
-              startIcon={<Play1Icon />}
-              endIcon={<ChervonDownIcon />}
-              sx={{ borderRadius: '40px !important', border: '2px solid red' }}
-              onClick={handleShowMenu}
-            >
+          </Box>
+        </>
+      ) : (
+        <>
+          <Button
+            color="inherit"
+            startIcon={<Play1Icon />}
+            endIcon={<ChervonDownIcon />}
+            sx={{
+              borderRadius: '40px !important',
+              border: '2px solid red',
+              height: '48px',
+              backgroundColor: { xs: 'red', md: 'transparent' }
+            }}
+            onClick={handleShowMenu}
+          >
             {t(getButtonName())}
-            </Button>
-            <MuiMenu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleCloseMenu}
-              keepMounted
-            >
-              {ResourceNextLinkButtonsData.map(({ label, icon, href }) => (
-                <NextLink href={href} passHref legacyBehavior key={label}>
-                  <MenuItem onClick={handleCloseMenu}>
-                    <ListItemIcon>{icon}</ListItemIcon>
-                    <ListItemText>{t(label)}</ListItemText>
-                  </MenuItem>
-                </NextLink>
-              ))}
-              {/* <MenuItem onClick={handleCloseMenu}> {t('Journeys')}</MenuItem>
-          <MenuItem onClick={handleCloseMenu}> {t('Stat')}</MenuItem>
-          <MenuItem onClick={handleCloseMenu}> {t('Journeys')}</MenuItem> */}
-            </MuiMenu>
-          </>
-        )}
-      </Box>
-      {/* </Container> */}
-      {/* </ThemeProvider> */}
+          </Button>
+          <MuiMenu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleCloseMenu}
+            keepMounted
+          >
+            {ResourceNextLinkButtonsData.map(({ label, icon, href }) => (
+              <NextLink href={href} passHref legacyBehavior key={label}>
+                <MenuItem onClick={handleCloseMenu}>
+                  <ListItemIcon>{icon}</ListItemIcon>
+                  <ListItemText>{t(label)}</ListItemText>
+                </MenuItem>
+              </NextLink>
+            ))}
+          </MuiMenu>
+        </>
+      )}
     </>
   )
 }
 
 // todo:
 // move button into it's own line  to match design
+//  - use the correct divider line
 // create tablet design

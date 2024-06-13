@@ -1,7 +1,6 @@
 import MenuIcon from '@mui/icons-material/Menu'
 import AppBar, { AppBarProps } from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
@@ -20,7 +19,6 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { ResourceNextLinkButtons } from '../ResourcePageHeader/ResourceNextLinkButtons'
 
 import favicon from './assets/favicon.png'
-import logo from './assets/logo.svg'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 
 interface LocalAppBarProps extends AppBarProps {
@@ -35,49 +33,80 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
         {...props}
         sx={{
           p: 4,
-          ...props.sx
+          ...props.sx,
+          borderBottom: '2px solid red',
+          borderColor: 'inherit'
         }}
         ref={ref}
       >
         <Container maxWidth="xxl" disableGutters>
-          <Toolbar sx={{ justifyContent: 'space-between' }}>
-            <NextLink href="/watch">
-              <Box
-                sx={{
-                  width: { xs: '64px', md: '76px', xl: '88px' },
-                  marginLeft: { xs: '-8px', md: '-12px', xl: '0px' }
-                  // background: { xs: 'white', md: 'blue', xl: 'green' }
-                }}
+          <Stack sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Toolbar sx={{ justifyContent: 'space-between' }}>
+              <NextLink href="/watch">
+                <Box
+                  sx={{
+                    width: { xs: '64px', md: '76px', xl: '88px' },
+                    marginLeft: { xs: '-8px', md: '-12px', xl: '0px' }
+                  }}
+                >
+                  <Image
+                    src={favicon}
+                    alt="Watch Logo"
+                    style={{
+                      cursor: 'pointer',
+                      maxWidth: '100%',
+                      height: 'auto'
+                    }}
+                  />
+                </Box>
+              </NextLink>
+              <Stack
+                data-testid="ButtonsAndMenuStack"
+                spacing={0.5}
+                direction="row"
               >
-              <Image
-                src={favicon}
-                alt="Watch Logo"
-                style={{
-                  cursor: 'pointer',
-                  maxWidth: '100%',
-                  height: 'auto'
-                }}
-              />
-              </Box>
-            </NextLink>
-
-            <Stack
-              data-testid="ButtonsAndMenuStack"
-              spacing={0.5}
-              direction="row"
+                <Box
+                  data-testid="DesktopButtons"
+                  sx={{
+                    display: { xs: 'none', md: 'flex', lg: 'none', xl: 'flex' }
+                  }}
+                >
+                  <ResourceNextLinkButtons />
+                </Box>
+                <IconButton
+                  color="inherit"
+                  aria-label="open header menu"
+                  edge="start"
+                  onClick={onMenuClick}
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Stack>
+            </Toolbar>
+            <Box
+              data-testid="TabletButtons"
+              sx={{ display: { xs: 'none', lg: 'flex', xl: 'none' } }}
             >
               <ResourceNextLinkButtons />
-              <IconButton
-                color="inherit"
-                aria-label="open header menu"
-                edge="start"
-                onClick={onMenuClick}
-              >
-                <MenuIcon />
-              </IconButton>
-            </Stack>
-          </Toolbar>
+            </Box>
+          </Stack>
         </Container>
+        {/* drop down button on mobile */}
+        <Box
+          justifyContent="center"
+          data-testid="ButtonBox"
+          sx={{
+            position: 'absolute',
+            zIndex: 1,
+            bottom: -24,
+            left: 0,
+            right: 0,
+            height: '48px',
+            display: { xs: 'flex', md: 'none' }
+          }}
+        >
+          <ResourceNextLinkButtons />
+        </Box>
       </AppBar>
     )
   }
