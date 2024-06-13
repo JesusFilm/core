@@ -31,3 +31,4 @@ export function JourneysPage(): ReactElement {
     </PageWrapper>
   )
 }
+export default JourneysPage
