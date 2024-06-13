@@ -11,7 +11,6 @@ import {
 import { VideoChildFields } from '../../__generated__/VideoChildFields'
 import i18nConfig from '../../next-i18next.config'
 import { HomePage as VideoHomePage } from '../../src/components/HomePage'
-import { ResourcePageHeader } from '../../src/components/ResourcePageHeader'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
 
@@ -56,7 +55,6 @@ interface HomePageProps {
 
 function HomePage({ videos }: HomePageProps): ReactElement {
   return <VideoHomePage videos={videos} />
-  // return <ResourcePageHeader />
 }
 
 export const getStaticProps: GetStaticProps<HomePageProps> = async ({
