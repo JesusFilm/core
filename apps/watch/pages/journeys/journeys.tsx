@@ -13,7 +13,7 @@ export function JourneysPage(): ReactElement {
   return (
     <PageWrapper>
       <Box
-        sx={{ backgroundColor: 'background.default' }}
+        sx={{ backgroundColor: 'background.default', overflow: 'hidden' }}
         data-testid="JourneysPage"
       >
         <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
