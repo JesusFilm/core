@@ -331,6 +331,20 @@ type CloudflareVideo
   readyToStream: Boolean!
 }
 
+type Country
+  @join__type(graph: LANGUAGES, key: "id")
+{
+  id: ID!
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  population: Int
+  continent(languageId: ID, primary: Boolean): [Translation!]!
+  languages: [Language!]!
+  latitude: Float
+  longitude: Float
+  flagPngSrc: String
+  flagWebpSrc: String
+}
+
 input CreateVerificationRequestInput
   @join__type(graph: USERS)
 {
@@ -1592,6 +1606,8 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
+  country(id: ID!): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
