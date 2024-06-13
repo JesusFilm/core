@@ -1,6 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
+import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
+
 import {
   GetJourneys,
   GetJourneys_journeys as Journey,
@@ -11,7 +13,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { GET_JOURNEYS } from '../../libs/useJourneysQuery/useJourneysQuery'
 
 import { TemplateSections } from './TemplateSections'
 

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneysFilter, ThemeName, ThemeMode, JourneyStatus, UserJourneyRole } from "./globalTypes";
+import { JourneysFilter, ThemeName, ThemeMode, JourneyStatus, UserJourneyRole } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourneys
