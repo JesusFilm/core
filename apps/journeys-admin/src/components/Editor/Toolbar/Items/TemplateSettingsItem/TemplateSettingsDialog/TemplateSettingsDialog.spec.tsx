@@ -4,9 +4,9 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
-import { GET_TAGS } from '../../../../../../libs/useTagsQuery/useTagsQuery'
 import { defaultJourney } from '../../../../data'
 
 import {
