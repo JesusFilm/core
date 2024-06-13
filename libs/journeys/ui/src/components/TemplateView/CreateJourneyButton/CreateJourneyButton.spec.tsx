@@ -31,6 +31,8 @@ jest.mock('react-gtm-module', () => ({
   }
 }))
 
+// TODO(jk): Need to refactor this class
+
 describe('CreateJourneyButton', () => {
   const journey: Journey = {
     __typename: 'Journey',
@@ -142,123 +144,373 @@ describe('CreateJourneyButton', () => {
     expect(setOpenTeamDialogMock).toHaveBeenCalledWith(true)
   })
 
-  it('should open account check dialog and redirect to sign in page when login is clicked if not signed in', async () => {
-    const prefetch = jest.fn()
-    const push = jest.fn().mockResolvedValueOnce('')
-    mockUseRouter.mockReturnValue({
-      prefetch,
-      push,
-      query: { createNew: false },
-      asPath: '/templates/[journeyId]'
-    } as unknown as NextRouter)
+  describe('if not signed in', () => {
+    it('should open account check dialog and redirect to sign in page when login is clicked', async () => {
+      const prefetch = jest.fn()
+      const push = jest.fn().mockResolvedValueOnce('')
+      mockUseRouter.mockReturnValue({
+        prefetch,
+        push,
+        query: { createNew: false },
+        asPath: '/templates/[journeyId]'
+      } as unknown as NextRouter)
 
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      enumerable: true,
-      value: { origin: 'http://localhost:4200' }
-    })
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        enumerable: true,
+        value: { origin: 'http://localhost:4200' }
+      })
 
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-            },
-            result: teamResult
-          }
-        ]}
-      >
-        <JourneyProvider value={{ journey }}>
-          <CreateJourneyButton
-            openTeamDialog={false}
-            setOpenTeamDialog={setOpenTeamDialogMock}
-          />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() => {
-      expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
-    })
-
-    fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-
-    fireEvent.click(getByRole('button', { name: 'Login with my account' }))
-
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          pathname: '/users/sign-in',
-          query: {
-            redirect:
-              'http://localhost:4200/templates/[journeyId]?createNew=true',
-            login: true
-          }
-        },
-        undefined,
-        { shallow: true }
+      const { getByRole } = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+              },
+              result: teamResult
+            }
+          ]}
+        >
+          <JourneyProvider value={{ journey }}>
+            <CreateJourneyButton
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
+            />
+          </JourneyProvider>
+        </MockedProvider>
       )
+
+      await waitFor(() => {
+        expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
+      })
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+
+      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: '/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/[journeyId]?createNew=true',
+              login: true
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+    })
+
+    it('should open account check dialog and redirect to sign in page when create account is clicked', async () => {
+      const prefetch = jest.fn()
+      const push = jest.fn().mockResolvedValueOnce('')
+      mockUseRouter.mockReturnValue({
+        prefetch,
+        push,
+        query: { createNew: false },
+        asPath: '/templates/[journeyId]'
+      } as unknown as NextRouter)
+
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        enumerable: true,
+        value: { origin: 'http://localhost:4200' }
+      })
+
+      const { getByRole } = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+              },
+              result: teamResult
+            }
+          ]}
+        >
+          <JourneyProvider value={{ journey }}>
+            <CreateJourneyButton
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
+      })
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+
+      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: '/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/[journeyId]?createNew=true',
+              login: false
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
     })
   })
 
-  it('should open account check dialog and redirect to sign in page when create account is clicked if not signed in', async () => {
-    const prefetch = jest.fn()
-    const push = jest.fn().mockResolvedValueOnce('')
-    mockUseRouter.mockReturnValue({
-      prefetch,
-      push,
-      query: { createNew: false },
-      asPath: '/templates/[journeyId]'
-    } as unknown as NextRouter)
+  describe('if domain environment variable set and not signed in', () => {
+    it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
+      process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL = 'http://localhost:4200'
+      const prefetch = jest.fn()
+      const push = jest.fn().mockResolvedValueOnce('')
+      mockUseRouter.mockReturnValue({
+        prefetch,
+        push,
+        query: { createNew: false },
+        asPath: '/templates/[journeyId]'
+      } as unknown as NextRouter)
 
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      enumerable: true,
-      value: { origin: 'http://localhost:4200' }
-    })
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        enumerable: true,
+        value: { origin: 'http://localhost:4200' }
+      })
 
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-            },
-            result: teamResult
-          }
-        ]}
-      >
-        <JourneyProvider value={{ journey }}>
-          <CreateJourneyButton
-            openTeamDialog={false}
-            setOpenTeamDialog={setOpenTeamDialogMock}
-          />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() => {
-      expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
-    })
-
-    fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-
-    fireEvent.click(getByRole('button', { name: 'Create a new account' }))
-
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          pathname: '/users/sign-in',
-          query: {
-            redirect:
-              'http://localhost:4200/templates/[journeyId]?createNew=true',
-            login: false
-          }
-        },
-        undefined,
-        { shallow: true }
+      const { getByRole } = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+              },
+              result: teamResult
+            }
+          ]}
+        >
+          <JourneyProvider value={{ journey }}>
+            <CreateJourneyButton
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
+            />
+          </JourneyProvider>
+        </MockedProvider>
       )
+
+      await waitFor(() => {
+        expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
+      })
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+
+      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/[journeyId]?createNew=true',
+              login: true
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+    })
+
+    it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
+      process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL = 'http://localhost:4200'
+      const prefetch = jest.fn()
+      const push = jest.fn().mockResolvedValueOnce('')
+      mockUseRouter.mockReturnValue({
+        prefetch,
+        push,
+        query: { createNew: false },
+        asPath: '/templates/[journeyId]'
+      } as unknown as NextRouter)
+
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        enumerable: true,
+        value: { origin: 'http://localhost:4200' }
+      })
+
+      const { getByRole } = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+              },
+              result: teamResult
+            }
+          ]}
+        >
+          <JourneyProvider value={{ journey }}>
+            <CreateJourneyButton
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
+      })
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+
+      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/[journeyId]?createNew=true',
+              login: false
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+    })
+  })
+
+  describe('if viewing from another project and domain environment variable set and not signed in', () => {
+    it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
+      process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL = 'http://localhost:4200'
+      const prefetch = jest.fn()
+      const push = jest.fn().mockResolvedValueOnce('')
+      mockUseRouter.mockReturnValue({
+        prefetch,
+        push,
+        query: { createNew: false },
+        asPath: '/templates/[journeyId]'
+      } as unknown as NextRouter)
+
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        enumerable: true,
+        value: { origin: 'http://localhost:4300' }
+      })
+
+      const { getByRole } = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+              },
+              result: teamResult
+            }
+          ]}
+        >
+          <JourneyProvider value={{ journey }}>
+            <CreateJourneyButton
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
+      })
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+
+      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/[journeyId]?createNew=true',
+              login: true
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+    })
+
+    it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
+      process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL = 'http://localhost:4200'
+      const prefetch = jest.fn()
+      const push = jest.fn().mockResolvedValueOnce('')
+      mockUseRouter.mockReturnValue({
+        prefetch,
+        push,
+        query: { createNew: false },
+        asPath: '/templates/[journeyId]'
+      } as unknown as NextRouter)
+
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        enumerable: true,
+        value: { origin: 'http://localhost:4300' }
+      })
+
+      const { getByRole } = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+              },
+              result: teamResult
+            }
+          ]}
+        >
+          <JourneyProvider value={{ journey }}>
+            <CreateJourneyButton
+              openTeamDialog={false}
+              setOpenTeamDialog={setOpenTeamDialogMock}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
+      })
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+
+      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/[journeyId]?createNew=true',
+              login: false
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
     })
   })
 

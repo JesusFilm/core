@@ -77,15 +77,15 @@ export function CreateJourneyButton({
     }
   }
 
-  const handleSignIn = (login): void => {
+  const handleSignIn = (login: boolean): void => {
     const url = window.location.origin + router.asPath
+    const domain = process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? ''
+
     void router.push(
       {
-        pathname: '/users/sign-in',
+        pathname: `${domain}/users/sign-in`,
         query: {
-          redirect: url.includes('createNew')
-            ? url
-            : `${window.location.origin + router.asPath}?createNew=true`,
+          redirect: url.includes('createNew') ? url : `${url}?createNew=true`,
           login: login ?? false
         }
       },
