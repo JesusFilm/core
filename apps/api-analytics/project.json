@@ -11,19 +11,6 @@
         "outputPath": "dist/apps/api-analytics",
         "main": "apps/api-analytics/src/main.ts",
         "tsConfig": "apps/api-analytics/tsconfig.app.json",
-        "assets": [
-          "apps/api-analytics/src/assets",
-          {
-            "glob": "**/*.graphql",
-            "input": "apps/api-analytics/src/app/",
-            "output": "./assets"
-          },
-          {
-            "glob": "**/*.graphql",
-            "input": "libs/nest/common/src/lib/TranslationModule/",
-            "output": "./assets"
-          }
-        ],
         "generatePackageJson": true,
         "compiler": "tsc",
         "target": "node",
@@ -50,12 +37,6 @@
         "inspect": false
       }
     },
-    "watcher": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-analytics --transpileOnly"
-      }
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
@@ -64,19 +45,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/api-analytics"],
       "options": {
-        "jestConfig": "apps/api-analytics/jest.config.ts",
-        "fileReplacements": [
-          {
-            "replace": "apps/api-analytics/src/environments/environment.ts",
-            "with": "apps/api-analytics/src/environments/environment.testing.ts"
-          }
-        ]
-      }
-    },
-    "generate-graphql": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "rover subgraph introspect http://localhost:4001/graphql > apps/api-analytics/schema.graphql"
+        "jestConfig": "apps/api-analytics/jest.config.ts"
       }
     },
     "subgraph-check": {
@@ -94,10 +63,8 @@
     "prisma-generate": {
       "executor": "nx:run-commands",
       "options": {
-        "parallel": false,
         "commands": [
-          "npx prisma generate --schema apps/api-analytics/db/schema.prisma",
-          "npm run ts-node apps/api-analytics/src/app/lib/casl/caslPrismaGenerator.ts"
+          "npx prisma generate --schema apps/api-analytics/db/schema.prisma"
         ]
       }
     },
@@ -106,7 +73,8 @@
       "options": {
         "commands": [
           "bash -c 'npx prisma migrate dev --schema apps/api-analytics/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
-        ]
+        ],
+        "parallel": false
       },
       "configurations": {
         "production": {
@@ -146,34 +114,10 @@
         ]
       }
     },
-    "prisma-resolve": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma migrate resolve --schema apps/api-analytics/db/schema.prisma --applied 20230711193802_20230711193801"
-        ]
-      }
-    },
-    "type-check": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx tsc -b apps/api-analytics/tsconfig.json"
-      }
-    },
     "codecov": {
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-analytics/cobertura-coverage.xml -F apps.api-analytics"
-      }
-    },
-    "email": {
-      "executor": "nx:run-commands",
-      "options": {
-        "parallel": false,
-        "commands": [
-          "if lsof -Pi :4601 -sTCP:LISTEN -t>/dev/null; then\nkill -9 $(lsof -Pi :4601 -sTCP:LISTEN -t)\nfi",
-          "email dev --dir apps/api-analytics/src/app/emails/templates --port 4601"
-        ]
       }
     }
   },

@@ -2,8 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "strict": true
+    "noEmit": true
   },
   "files": [],
   "include": [],

@@ -441,6 +441,12 @@ input EmailActionInput
   email: String!
 }
 
+type Error
+  @join__type(graph: ANALYTICS)
+{
+  message: String!
+}
+
 interface Event
   @join__type(graph: JOURNEYS)
 {
@@ -760,6 +766,7 @@ input ImageBlockUpdateInput
 scalar join__FieldSet
 
 enum join__Graph {
+  ANALYTICS @join__graph(name: "analytics", url: "http://127.0.0.1:4007/graphql")
   JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
   LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql")
   MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")
@@ -1213,10 +1220,12 @@ enum MessagePlatform
 }
 
 type Mutation
+  @join__type(graph: ANALYTICS)
   @join__type(graph: JOURNEYS)
   @join__type(graph: MEDIA)
   @join__type(graph: USERS)
 {
+  siteCreate(apiKey: String!, input: SiteCreateInput!): MutationSiteCreateResult! @join__field(graph: ANALYTICS)
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
@@ -1459,6 +1468,18 @@ type Mutation
   validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
 }
 
+union MutationSiteCreateResult
+  @join__type(graph: ANALYTICS)
+  @join__unionMember(graph: ANALYTICS, member: "Error")
+  @join__unionMember(graph: ANALYTICS, member: "MutationSiteCreateSuccess")
+ = Error | MutationSiteCreateSuccess
+
+type MutationSiteCreateSuccess
+  @join__type(graph: ANALYTICS)
+{
+  data: Site!
+}
+
 type NavigateToBlockAction implements Action
   @join__implements(graph: JOURNEYS, interface: "Action")
   @join__type(graph: JOURNEYS)
@@ -1516,6 +1537,7 @@ type PowerBiEmbed
 }
 
 type Query
+  @join__type(graph: ANALYTICS)
   @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
@@ -1791,6 +1813,44 @@ input SignUpSubmissionEventCreateInput
 
   """email from the signUpBlock form"""
   email: String!
+}
+
+type Site
+  @join__type(graph: ANALYTICS)
+{
+  id: String!
+  domain: String!
+  memberships: [SiteMembership!]!
+  sharedLinks: [SiteSharedLink!]!
+  goals: [SiteGoal!]!
+}
+
+input SiteCreateInput
+  @join__type(graph: ANALYTICS)
+{
+  domain: String!
+  goals: [String!]
+}
+
+type SiteGoal
+  @join__type(graph: ANALYTICS)
+{
+  id: String!
+  eventName: String
+}
+
+type SiteMembership
+  @join__type(graph: ANALYTICS)
+{
+  id: String!
+  role: String!
+}
+
+type SiteSharedLink
+  @join__type(graph: ANALYTICS)
+{
+  id: String!
+  slug: String!
 }
 
 type StepBlock implements Block
