@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { ReactNode, useContext } from 'react'
 
 import type { TreeBlock } from '../block'
+import { JourneyStatsBreakdown } from '../transformPlausibleBreakdown/transformPlausibleBreakdown'
 
 import { EditorContext, reducer } from './EditorProvider'
 
@@ -466,6 +467,37 @@ describe('EditorContext', () => {
           selectedBlock: updatedBlock,
           selectedStep: updatedStep
         })
+      })
+    })
+  })
+
+  describe('SetJourneyStatsBreakdownAction', () => {
+    it('should set journey stats breakdown', () => {
+      const state: EditorState = {
+        steps: [],
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+        activeFab: ActiveFab.Add,
+        activeSlide: ActiveSlide.JourneyFlow,
+        activeContent: ActiveContent.Canvas,
+        showJourneyFlowAnalytics: false
+      }
+
+      const journeyStatsBreakdown: JourneyStatsBreakdown = {
+        totalVisitors: 0,
+        chatsStarted: 0,
+        linksVisited: 0,
+        referrers: [],
+        stepsStats: []
+      }
+
+      expect(
+        reducer(state, {
+          type: 'SetJourneyStatsBreakdownAction',
+          journeyStatsBreakdown
+        })
+      ).toEqual({
+        ...state,
+        journeyStatsBreakdown
       })
     })
   })
