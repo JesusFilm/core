@@ -17,11 +17,11 @@ export const getJourneyPlausibleStatsBreakdown: MockedResponse<
     variables: {
       id: 'journeyId',
       idType: IdType.databaseId,
-      period: '30d',
-      date: '2021-10-01',
-      interval: 'day',
-      limit: 10,
-      page: 1
+      period: undefined,
+      date: undefined,
+      interval: undefined,
+      limit: undefined,
+      page: undefined
     }
   },
   result: {
