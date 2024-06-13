@@ -331,6 +331,20 @@ type CloudflareVideo
   readyToStream: Boolean!
 }
 
+type Country
+  @join__type(graph: LANGUAGES, key: "id")
+{
+  id: ID!
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  population: Int
+  continent(languageId: ID, primary: Boolean): [Translation!]!
+  languages: [Language!]!
+  latitude: Float
+  longitude: Float
+  flagPngSrc: String
+  flagWebpSrc: String
+}
+
 input CreateVerificationRequestInput
   @join__type(graph: USERS)
 {
@@ -457,6 +471,8 @@ type EventEmailNotifications
   id: ID!
   userId: ID!
   journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
   value: Boolean!
 }
 
@@ -465,6 +481,8 @@ input EventEmailNotificationsUpdateInput
 {
   userId: ID!
   journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
   value: Boolean!
 }
 
@@ -1375,8 +1393,7 @@ type Mutation
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent! @join__field(graph: JOURNEYS)
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @join__field(graph: JOURNEYS)
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
-  eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput!, id: ID): EventEmailNotifications! @join__field(graph: JOURNEYS)
-  eventEmailNotificationsDelete(input: EventEmailNotificationsUpdateInput!, id: ID): EventEmailNotifications! @join__field(graph: JOURNEYS)
+  eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput!): EventEmailNotifications! @join__field(graph: JOURNEYS)
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
@@ -1589,6 +1606,8 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
+  country(id: ID!): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
@@ -2025,9 +2044,6 @@ type TextResponseBlock implements Block
   label: String!
   hint: String
   minRows: Int
-  action: Action
-  submitIconId: ID
-  submitLabel: String
 }
 
 input TextResponseBlockCreateInput
@@ -2037,7 +2053,6 @@ input TextResponseBlockCreateInput
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  submitLabel: String!
 }
 
 input TextResponseBlockUpdateInput
@@ -2047,8 +2062,6 @@ input TextResponseBlockUpdateInput
   label: String
   hint: String
   minRows: Int
-  submitIconId: ID
-  submitLabel: String
 }
 
 type TextResponseSubmissionEvent implements Event

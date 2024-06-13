@@ -19,24 +19,17 @@ export default class MyDocument extends Document<{
             href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
             rel="stylesheet"
           />
-          <link
-            rel="apple-touch-icon"
-            sizes="180x180"
-            href="/watch/apple-touch-icon.png"
-          />
+          <link rel="icon" href="/watch/assets/favicon-32.png" sizes="32x32" />
           <link
             rel="icon"
-            type="image/png"
-            sizes="16x16"
-            href="/watch/favicon-16x16.png"
+            href="/watch/assets/favicon-180.png"
+            sizes="192x192"
           />
-          <link
-            rel="icon"
-            type="image/png"
-            sizes="32x32"
-            href="/watch/favicon-32x32.png"
+          <link rel="apple-touch-icon" href="/watch/assets/favicon-180.png" />
+          <meta
+            name="msapplication-TileImage"
+            content="/watch/assets/favicon-180.png"
           />
-          <link rel="manifest" href="/watch/site.webmanifest" />
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
           {this.props.emotionStyleTags}
         </Head>

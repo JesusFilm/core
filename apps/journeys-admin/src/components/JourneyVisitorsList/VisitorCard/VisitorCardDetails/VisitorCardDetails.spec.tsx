@@ -16,7 +16,8 @@ describe('VisitorCardDetails', () => {
             id: 'event.id',
             createdAt: 'isostring',
             label: 'label',
-            value: 'value'
+            value: 'value',
+            blockId: 'blockId'
           }
         ]}
       />
@@ -38,7 +39,8 @@ describe('VisitorCardDetails', () => {
         id: 'TextResponseSubmissionEvent.id',
         createdAt: 'isostring',
         label: 'text label',
-        value: 'text value'
+        value: 'text value',
+        blockId: 'blockId'
       },
       {
         __typename: 'RadioQuestionSubmissionEvent',
@@ -65,6 +67,50 @@ describe('VisitorCardDetails', () => {
     expect(queryByText('button value')).not.toBeInTheDocument()
   })
 
+  it('should filter text response events by block and most recent submission', () => {
+    const events: Event[] = [
+      {
+        __typename: 'TextResponseSubmissionEvent',
+        id: 'TextResponseSubmissionEvent.id',
+        createdAt: 'isostring',
+        label: 'text label',
+        value: 'text value block id 1',
+        blockId: 'blockId'
+      },
+      {
+        __typename: 'TextResponseSubmissionEvent',
+        id: 'TextResponseSubmissionEvent.id',
+        createdAt: 'isostring',
+        label: 'text label',
+        value: 'text value block id 1',
+        blockId: 'blockId'
+      },
+      {
+        __typename: 'TextResponseSubmissionEvent',
+        id: 'TextResponseSubmissionEvent.id',
+        // older by three minutes
+        createdAt: '2024-05-15T10:27:00Z',
+        label: 'text label',
+        value: 'text value older block id 2',
+        blockId: 'blockId-2'
+      },
+      {
+        __typename: 'TextResponseSubmissionEvent',
+        id: 'TextResponseSubmissionEvent.id',
+        createdAt: '2024-05-15T10:30:00Z',
+        label: 'text label',
+        value: 'text value newer date block id 2',
+        blockId: 'blockId-2'
+      }
+    ]
+    const { getAllByText, getByText } = render(
+      <VisitorCardDetails name="test name" events={events} loading={false} />
+    )
+
+    expect(getAllByText('text value block id 1')).toHaveLength(1)
+    expect(getByText('text value newer date block id 2')).toBeInTheDocument()
+  })
+
   it('should only show skeletons while loading', () => {
     const events: Event[] = [
       {
@@ -79,7 +125,8 @@ describe('VisitorCardDetails', () => {
         id: 'TextResponseSubmissionEvent.id',
         createdAt: 'isostring',
         label: 'text label',
-        value: 'text value'
+        value: 'text value',
+        blockId: 'blockId'
       },
       {
         __typename: 'RadioQuestionSubmissionEvent',
