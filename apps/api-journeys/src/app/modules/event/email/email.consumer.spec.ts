@@ -6,15 +6,12 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import {
   Event,
-  EventEmailNotifications,
   JourneyStatus,
   MessagePlatform,
   Team,
   ThemeMode,
   ThemeName,
-  UserJourney,
   UserJourneyRole,
-  UserTeam,
   Visitor
 } from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
@@ -25,7 +22,9 @@ import {
   ApiUsersJob,
   EmailConsumer,
   EventsNotificationJob,
-  ExtendedJourneys
+  ExtendedJourneys,
+  ExtendedUserJourneys,
+  ExtendedUserTeam
 } from './email.consumer'
 
 jest.mock('@apollo/client')
@@ -35,14 +34,22 @@ describe('EmailConsumer', () => {
     emailService: EmailService,
     prismaService: DeepMockProxy<PrismaService>
 
-  const userJourneys: UserJourney[] = [
+  const userJourneys: ExtendedUserJourneys[] = [
     {
       id: 'userJourneyId1',
       userId: 'userId1',
       journeyId: 'journeyId',
       role: UserJourneyRole.owner,
       updatedAt: new Date('2021-11-19T12:34:56.647Z'),
-      openedAt: null
+      openedAt: null,
+      journeyNotification: {
+        id: 'journeyNotificationId1',
+        userId: 'userId1',
+        journeyId: 'journeyId',
+        userTeamId: null,
+        userJourneyId: 'userJourneyId1',
+        visitorInteractionEmail: true
+      }
     },
     {
       id: 'userJourneyId2',
@@ -50,17 +57,24 @@ describe('EmailConsumer', () => {
       journeyId: 'journeyId',
       role: UserJourneyRole.editor,
       updatedAt: new Date('2021-11-19T12:34:56.647Z'),
-      openedAt: null
+      openedAt: null,
+      journeyNotification: {
+        id: 'journeyNotificationId2',
+        userId: 'userId2',
+        journeyId: 'journeyId',
+        userTeamId: null,
+        userJourneyId: 'userJourneyId2',
+        visitorInteractionEmail: true
+      }
     }
   ]
 
-  const team: Team & { userTeams: UserTeam[] } = {
+  const team: Team & { userTeams: ExtendedUserTeam[] } = {
     id: 'teamId',
     title: 'jfp',
     publicTitle: null,
     createdAt: new Date('2024-05-14T22:08:12.000Z'),
     updatedAt: new Date('2024-05-14T22:08:12.000Z'),
-    plausibleToken: null,
     userTeams: [
       {
         id: 'userTeamId',
@@ -68,7 +82,17 @@ describe('EmailConsumer', () => {
         userId: 'userId',
         role: 'manager',
         createdAt: new Date('2024-05-14T22:08:12.000Z'),
-        updatedAt: new Date('2024-05-14T22:08:12.000Z')
+        updatedAt: new Date('2024-05-14T22:08:12.000Z'),
+        journeyNotifications: [
+          {
+            id: 'journeyNotificationId',
+            userId: 'userId',
+            journeyId: 'journeyId',
+            userTeamId: 'userTeamId',
+            userJourneyId: null,
+            visitorInteractionEmail: true
+          }
+        ]
       }
     ]
   }
@@ -99,8 +123,7 @@ describe('EmailConsumer', () => {
     hostId: null,
     strategySlug: null,
     userJourneys,
-    team,
-    plausibleToken: null
+    team
   }
 
   const event: Event = {
@@ -184,21 +207,6 @@ describe('EmailConsumer', () => {
     ]
   }
 
-  const eventEmailNotifications: EventEmailNotifications[] = [
-    {
-      id: '1',
-      journeyId: 'journeyId',
-      userId: 'userId1',
-      value: true
-    },
-    {
-      id: '1',
-      journeyId: 'journeyId',
-      userId: 'userId1',
-      value: true
-    }
-  ]
-
   const job: Job<EventsNotificationJob, unknown, string> = {
     data: {
       journeyId: journey.id,
@@ -264,9 +272,6 @@ describe('EmailConsumer', () => {
 
       prismaService.journey.findUnique.mockResolvedValueOnce(journey)
       prismaService.visitor.findUnique.mockResolvedValueOnce(visitor)
-      prismaService.eventEmailNotifications.findMany.mockResolvedValueOnce(
-        eventEmailNotifications
-      )
 
       let args = {}
       emailService.sendEmail = jest

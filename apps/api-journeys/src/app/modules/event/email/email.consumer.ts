@@ -26,11 +26,11 @@ const apollo = new ApolloClient({
   }
 })
 
-interface ExtendedUserJourneys extends UserJourney {
+export interface ExtendedUserJourneys extends UserJourney {
   journeyNotification: JourneyNotification | null
 }
 
-interface ExtendedUserTeam extends UserTeam {
+export interface ExtendedUserTeam extends UserTeam {
   journeyNotifications: JourneyNotification[]
 }
 
