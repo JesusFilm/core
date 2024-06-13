@@ -11,9 +11,9 @@ import { ReactElement } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { Role } from '../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'
 import { Drawer } from '../Editor/Slider/Settings/Drawer'
 

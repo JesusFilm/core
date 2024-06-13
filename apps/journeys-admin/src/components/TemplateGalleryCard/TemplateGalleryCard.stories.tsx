@@ -3,12 +3,13 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../libs/storybook'
 
 import { TemplateGalleryCard } from '.'
 

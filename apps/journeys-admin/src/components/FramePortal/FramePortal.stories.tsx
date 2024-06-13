@@ -4,6 +4,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields as Block } from '../../../__generated__/BlockFields'
@@ -18,7 +19,6 @@ import {
   ThemeName,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../libs/storybook'
 
 import { FramePortal } from '.'
 

@@ -4,9 +4,9 @@ import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
-import { simpleComponentConfig } from '../../../libs/storybook'
 import { journey } from '../../Editor/Slider/Settings/GoalDetails/data'
 
 import { TemplateFooter } from './TemplateFooter'
