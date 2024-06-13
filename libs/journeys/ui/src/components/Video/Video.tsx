@@ -207,16 +207,18 @@ export function Video({
               xs: isFillAndNotYoutube() ? hundredVh : '100%',
               sm: '100%'
             }}
-            width={{
-              xs: isFillAndNotYoutube() ? '300%' : '100%',
-              sm: '100%'
-            }}
+            width="100%"
+            // width={{
+            //   xs: isFillAndNotYoutube() ? '300%' : '100%',
+            //   sm: '100%'
+            // }}
             minHeight="-webkit-fill-available"
             overflow="hidden"
-            marginX={{
-              xs: isFillAndNotYoutube() ? '-100%' : 0,
-              sm: 0
-            }}
+            marginX={0}
+            // marginX={{
+            //   xs: isFillAndNotYoutube() ? '-100%' : 0,
+            //   sm: 0
+            // }}
             position={isFillAndNotYoutube() ? 'absolute' : 'inherit'}
             data-testid="video-container"
           >
