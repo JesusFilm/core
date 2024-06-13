@@ -1,8 +1,1 @@
-**/*
-
-!apps/**/*
-apps/__mocks__
-apps/api-gateway
-apps/analytics
-
-!/*
+app/**/public/locales

@@ -6,23 +6,25 @@ sudo chgrp node -R /workspaces
 
 cd /workspaces/core
 
+curl -fsSL https://bun.sh/install | bash
+
 # add default user to postgres
 psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;"
 
 # install Nx CLI tool
-npm install -g nx
+bun install -g nx
 
 # install Nest CLI tool
-npm install -g @nestjs/cli@^8.1.5
+bun install -g @nestjs/cli@^8.1.5
 
 # install Rover CLI tool
-npm install -g @apollo/rover@0.23.0
+bun install -g @apollo/rover@0.23.0
 
 # install Foreman CLI tool
-npm install -g foreman
+bun install -g foreman
 
 # install Apollo CLI tool for codegen
-npm install -g apollo graphql
+bun install -g apollo graphql
 
 # install all dependencies
 bun i
