@@ -5,10 +5,10 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
 import { JourneyDuplicate } from '../../../../../../__generated__/JourneyDuplicate'
-import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamDialog } from '../../../../Team/CopyToTeamDialog'

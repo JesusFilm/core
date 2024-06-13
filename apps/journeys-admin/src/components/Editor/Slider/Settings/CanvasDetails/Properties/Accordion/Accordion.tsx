@@ -9,8 +9,7 @@ import { useRouter } from 'next/router'
 import { ReactElement, ReactNode } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-
-import { setBeaconPageViewed } from '../../../../../../../libs/setBeaconPageViewed'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 
 interface AccordionProps {
   id: string
