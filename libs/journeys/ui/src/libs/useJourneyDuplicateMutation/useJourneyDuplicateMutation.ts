@@ -8,7 +8,7 @@ import {
 import {
   JourneyDuplicate,
   JourneyDuplicateVariables
-} from '../../../__generated__/JourneyDuplicate'
+} from './__generated__/JourneyDuplicate'
 
 export const JOURNEY_DUPLICATE = gql`
   mutation JourneyDuplicate($id: ID!, $teamId: ID!) {

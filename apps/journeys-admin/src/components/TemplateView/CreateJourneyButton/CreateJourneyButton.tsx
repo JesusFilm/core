@@ -6,8 +6,8 @@ import { ReactElement, useCallback, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 
-import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface CreateJourneyButtonProps {
