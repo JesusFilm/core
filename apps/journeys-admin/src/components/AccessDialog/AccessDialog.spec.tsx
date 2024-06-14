@@ -52,6 +52,10 @@ const mocks = [
                   imageUrl:
                     'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c',
                   lastName: 'Kujo'
+                },
+                journeyNotification: {
+                  id: 'journeyNotificationId',
+                  visitorInteractionEmail: true
                 }
               },
               {
@@ -65,6 +69,10 @@ const mocks = [
                   id: 'userId1',
                   imageUrl: null,
                   lastName: 'Higashikata'
+                },
+                journeyNotification: {
+                  id: 'journeyNotificationId',
+                  visitorInteractionEmail: false
                 }
               },
               {
@@ -78,6 +86,10 @@ const mocks = [
                   id: 'userId2',
                   imageUrl: null,
                   lastName: 'Hirose'
+                },
+                journeyNotification: {
+                  id: 'journeyNotificationId',
+                  visitorInteractionEmail: true
                 }
               }
             ]
@@ -92,6 +104,10 @@ const mocks = [
                 firstName: 'Amin',
                 lastName: 'One',
                 imageUrl: 'https://bit.ly/3Gth4Yf'
+              },
+              journeyNotification: {
+                id: 'journeyNotificationId',
+                visitorInteractionEmail: true
               }
             },
             {
@@ -104,6 +120,10 @@ const mocks = [
                 lastName: 'Two',
                 imageUrl: 'https://bit.ly/3rgHd6a',
                 email: 'horace@email.com'
+              },
+              journeyNotification: {
+                id: 'journeyNotificationId',
+                visitorInteractionEmail: false
               }
             },
             {
@@ -116,6 +136,10 @@ const mocks = [
                 lastName: 'Three',
                 imageUrl: 'https://bit.ly/3nlwUwJ',
                 email: 'coral@email.com'
+              },
+              journeyNotification: {
+                id: 'journeyNotificationId',
+                visitorInteractionEmail: true
               }
             },
             {
@@ -130,6 +154,10 @@ const mocks = [
                 imageUrl:
                   'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c',
                 lastName: 'Kujo'
+              },
+              journeyNotification: {
+                id: 'journeyNotificationId',
+                visitorInteractionEmail: false
               }
             }
           ]
@@ -231,6 +259,23 @@ describe('AccessDialog', () => {
     expect(getByRole('button', { name: 'Manager' })).toBeDisabled()
     expect(getAllByRole('button', { name: 'Member' })[0]).toBeDisabled()
     expect(getAllByRole('button', { name: 'Member' })[1]).toBeDisabled()
+  })
+
+  it('if user is part of user team, should filter them out of user journey', async () => {
+    const handleClose = jest.fn()
+    const { getByText, getAllByText } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocks}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByText('Team Members')).toBeInTheDocument()
+    })
+
+    expect(getAllByText('Jotaro Kujo')).toHaveLength(1)
   })
 
   it('calls on close', () => {

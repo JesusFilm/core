@@ -118,6 +118,7 @@ export function AccessDialog({
       if (userJourney.role === UserJourneyRole.inviteRequested) {
         requests.push(userJourney)
       } else {
+        // if user is already part of user team, don't display their user journey
         if (userTeamsMap.get(userJourney?.user?.id ?? '') == null)
           users.push(userJourney)
       }
