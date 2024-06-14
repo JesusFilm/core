@@ -36,7 +36,7 @@ export class ImageService {
         }
       }
     )
-    return await response.json()
+    return (await response.json()) as CloudflareDirectCreatorUploadResponse
   }
 
   async uploadImageToCloudflare(
@@ -56,7 +56,7 @@ export class ImageService {
         body
       }
     )
-    return await response.json()
+    return (await response.json()) as CloudflareDirectCreatorUploadResponse
   }
 
   async deleteImageFromCloudflare(
@@ -73,7 +73,7 @@ export class ImageService {
         }
       }
     )
-    return await response.json()
+    return (await response.json()) as CloudflareDirectCreatorUploadResponse
   }
 
   async uploadToCloudlareByUrl(
@@ -93,6 +93,6 @@ export class ImageService {
         body: formData
       }
     )
-    return await response.json()
+    return (await response.json()) as CloudflarUrlUploadResponse
   }
 }

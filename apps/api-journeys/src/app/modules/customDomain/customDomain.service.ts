@@ -90,7 +90,7 @@ export class CustomDomainService {
     )
 
     const data: VercelCreateDomainResponse | VercelCreateDomainError =
-      await response.json()
+      (await response.json()) as any
 
     if ('error' in data) {
       switch (response.status) {
@@ -175,8 +175,9 @@ export class CustomDomainService {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })
 
-    const configData: VercelConfigDomainResponse = await configResponse.json()
-    const domainData: VercelDomainResponse = await domainResponse.json()
+    const configData =
+      (await configResponse.json()) as VercelConfigDomainResponse
+    const domainData = (await domainResponse.json()) as VercelDomainResponse
 
     let verifyData:
       | VercelVerifyDomainResponse
@@ -193,7 +194,7 @@ export class CustomDomainService {
         }
       )
 
-      verifyData = await verifyResponse.json()
+      verifyData = (await verifyResponse.json()) as any
 
       if (
         verifyResponse.status !== 200 &&

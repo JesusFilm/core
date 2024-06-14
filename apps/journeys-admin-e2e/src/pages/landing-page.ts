@@ -1,8 +1,8 @@
 import { expect } from '@playwright/test'
 import { Page } from 'playwright-core'
-import { getBaseUrl } from '../framework/helpers'
 
 import { isVisible } from '../framework/actions'
+import { getBaseUrl } from '../framework/helpers'
 
 export class LandingPage {
   readonly page: Page

@@ -309,9 +309,9 @@ export class VideoBlockResolver {
       key: process.env.FIREBASE_API_KEY ?? '',
       id: videoId
     }).toString()
-    const videosData: YoutubeVideosData = await (
+    const videosData: YoutubeVideosData = (await (
       await fetch(`https://www.googleapis.com/youtube/v3/videos?${query}`)
-    ).json()
+    ).json()) as any
     if (videosData.items[0] == null) {
       throw new GraphQLError('videoId cannot be found on YouTube', {
         extensions: { code: 'NOT_FOUND' }
@@ -330,7 +330,7 @@ export class VideoBlockResolver {
   private async fetchFieldsFromCloudflare(
     videoId: string
   ): Promise<Pick<VideoBlock, 'title' | 'image' | 'duration' | 'endAt'>> {
-    const response: CloudflareRetrieveVideoDetailsResponse = await (
+    const response: CloudflareRetrieveVideoDetailsResponse = (await (
       await fetch(
         `https://api.cloudflare.com/client/v4/accounts/${
           process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
@@ -341,7 +341,7 @@ export class VideoBlockResolver {
           }
         }
       )
-    ).json()
+    ).json()) as any
 
     if (response.result == null) {
       throw new GraphQLError('videoId cannot be found on Cloudflare', {

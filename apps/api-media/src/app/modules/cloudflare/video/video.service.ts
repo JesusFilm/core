@@ -84,7 +84,7 @@ export class VideoService {
         }
       }
     )
-    return await response.json()
+    return (await response.json()) as CloudflareVideoGetResponse
   }
 
   async uploadToCloudflareByUrl(
@@ -104,6 +104,6 @@ export class VideoService {
         body: JSON.stringify({ url, creator: userId })
       }
     )
-    return await response.json()
+    return (await response.json()) as CloudflareVideoUrlUploadResponse
   }
 }

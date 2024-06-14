@@ -117,7 +117,7 @@
     "next-i18next": "15.0.0",
     "next-logger": "^4.0.0",
     "next-seo": "^6.4.0",
-    "node-fetch": "2.6.7",
+    "node-fetch": "3.3.2",
     "nodemailer": "^6.9.9",
     "notistack": "^2.0.3",
     "pino-http": "^8.5.0",

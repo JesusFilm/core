@@ -84,26 +84,26 @@ export async function getArclightMediaLanguages(): Promise<
 > {
   const response: {
     _embedded: { mediaLanguages: ArclightMediaLanguage[] }
-  } = await (
+  } = (await (
     await fetchPlus(
       `https://api.arclight.org/v2/media-languages?limit=5000&filter=default&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
-  ).json()
+  ).json()) as any
   return response._embedded.mediaLanguages
 }
 
 export async function getArclightMediaComponent(
   id: string
 ): Promise<ArclightMediaComponent | null> {
-  return await (
+  return (await (
     await fetchPlus(
       `https://api.arclight.org/v2/media-components/${id}?apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
-  ).json()
+  ).json()) as ArclightMediaComponent | null
 }
 
 export async function getArclightMediaComponents(
@@ -112,13 +112,13 @@ export async function getArclightMediaComponents(
   const response: {
     _embedded: { mediaComponents: ArclightMediaComponent[] }
     message?: string
-  } = await (
+  } = (await (
     await fetchPlus(
       `https://api.arclight.org/v2/media-components?limit=10&isDeprecated=false&contentTypes=video&page=${page}&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
-  ).json()
+  ).json()) as any
   if (
     response.message?.match(
       /Page \[\d\d\] does not exist. Given a limit of \[10\] per page, value must not be greater than \[\d\d\]\./
@@ -135,13 +135,13 @@ export async function getArclightMediaComponentLanguages(
     _embedded: {
       mediaComponentLanguage: ArclightMediaComponentLanguage[]
     } | null
-  } = await (
+  } = (await (
     await fetchPlus(
       `https://api.arclight.org/v2/media-components/${mediaComponentId}/languages?platform=android&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
-  ).json()
+  ).json()) as any
   return response._embedded?.mediaComponentLanguage ?? []
 }
 
@@ -150,13 +150,13 @@ export async function getArclightMediaComponentLinks(
 ): Promise<string[]> {
   const response: {
     linkedMediaComponentIds: { contains?: string[] }
-  } = await (
+  } = (await (
     await fetchPlus(
       `https://api.arclight.org/v2/media-component-links/${mediaComponentId}?apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
-  ).json()
+  ).json()) as any
   return response.linkedMediaComponentIds?.contains ?? []
 }
 

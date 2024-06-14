@@ -95,7 +95,7 @@ async function getEmbedParamsForSingleReport(
     }
   )
 
-  const { id, name, embedUrl, datasetId } = await result.json()
+  const { id, name, embedUrl, datasetId } = (await result.json()) as any
 
   return {
     reportId: id as string,
@@ -142,7 +142,7 @@ async function getEmbedTokenForSingleReportSingleWorkspace(
     })
   })
 
-  const { token, expiration } = await result.json()
+  const { token, expiration } = (await result.json()) as any
 
   return { accessToken: token, expiration }
 }
