@@ -48,7 +48,7 @@ model Video {
   slug              String?              @unique
   noIndex           Boolean?
   childIds          String[] // needed for child sort order
-  subtitles         Subtitle[]
+  subtitles         VideoSubtitle[]
   children          Video[]              @relation("ParentChild")
   parent            Video[]              @relation("ParentChild")
   variants          VideoVariant[]
@@ -104,7 +104,7 @@ model VideoVariant {
   @@index(videoId)
 }
 
-model Subtitle {
+model VideoSubtitle {
   id         String  @id @default(uuid())
   videoId    String
   edition    String?
@@ -115,7 +115,6 @@ model Subtitle {
   Video      Video   @relation(fields: [videoId], references: [id])
 
   @@unique([videoId, edition, languageId])
-  @@unique([videoId, languageId, edition, primary])
   @@index(languageId(type: Hash))
   @@index(edition(type: Hash))
   @@index(primary(type: Hash))
