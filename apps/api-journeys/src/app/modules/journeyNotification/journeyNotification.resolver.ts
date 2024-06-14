@@ -6,10 +6,10 @@ import { GraphQLError } from 'graphql'
 import { JourneyNotification } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 
 import { JourneyNotificationUpdateInput } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('JourneyNotification')
@@ -17,7 +17,7 @@ export class JourneyNotificationResolver {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(AppCaslGuard)
   async journeyNotificationUpdate(
     @CaslAbility() ability: AppAbility,
     @CurrentUserId() userId: string,
