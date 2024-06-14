@@ -52,6 +52,7 @@ export function HeaderTabButtons(): ReactElement {
       <Box
         sx={{
           display: { xs: 'none', lg: 'flex' },
+          pr: { xl: '20px' },
           width: '100%',
           height: '48px',
           justifyContent: 'space-between',
@@ -82,6 +83,7 @@ export function HeaderTabButtons(): ReactElement {
       <Box
         sx={{
           top: '-10px',
+          pr: { md: '20px' },
           display: 'flex',
           justifyContent: 'center',
           width: '100%',
@@ -95,9 +97,14 @@ export function HeaderTabButtons(): ReactElement {
           sx={{
             display: { xs: 'flex', lg: 'none' },
             borderRadius: '40px !important',
-            border: '2px solid red',
-            height: '48px',
-            backgroundColor: { xs: 'red', md: 'transparent' }
+            borderWidth: '2px',
+            borderStyle: 'solid',
+            borderColor: 'text.disabled',
+            backgroundColor: 'background.default',
+            '&:hover': {
+              backgroundColor: 'background.default'
+            },
+            height: '48px'
           }}
           onClick={handleShowMenu}
         >

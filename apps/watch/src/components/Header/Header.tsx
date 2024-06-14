@@ -35,7 +35,6 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
         sx={{
           p: 4,
           color: 'text.primary',
-          //  borderBottom: { xs: '2px solid red', md: 'none' },
           ...props.sx
         }}
         ref={ref}
@@ -96,7 +95,10 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
         </Container>
         {showDivider && (
           <Divider
-            sx={{ marginTop: '16px', mx: '-16px' }}
+            sx={{
+              marginTop: '16px',
+              mx: '-16px'
+            }}
             data-testid="AppBarDivider"
           />
         )}
