@@ -5,12 +5,12 @@ import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
-import { EventEmailNotificationsResolver } from './eventEmailNotifications.resolver'
+import { JourneyNotificationResolver } from './journeyNotification.resolver'
 
 @Global()
 @Module({
   imports: [CaslAuthModule.register(AppCaslFactory)],
-  providers: [EventEmailNotificationsResolver, PrismaService],
+  providers: [JourneyNotificationResolver, PrismaService],
   exports: []
 })
-export class EventEmailNotificationsModule {}
+export class JourneyNotificationModule {}
