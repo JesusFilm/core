@@ -119,11 +119,7 @@ export function BaseNode({
         <PulseWrapper show={isConnecting && targetHandle !== 'disabled'}>
           <StyledHandle
             type="target"
-            data-testid={
-              targetHandle === 'disabled'
-                ? 'BaseNodeLeftHandle-disabled'
-                : 'BaseNodeLeftHandle'
-            }
+            data-testid={`BaseNodeLeftHandle-${targetHandle}`}
             position={Position.Left}
             isConnectableStart={isConnecting && targetHandle !== 'disabled'}
             isConnectable={
@@ -161,7 +157,7 @@ export function BaseNode({
           id={id}
           type="source"
           title={t('Drag to connect')}
-          data-testid="BaseNodeRightHandle"
+          data-testid={`BaseNodeRightHandle-${sourceHandle}`}
           position={Position.Right}
           onConnect={onSourceConnect}
           isConnectable={sourceHandle !== 'disabled'}

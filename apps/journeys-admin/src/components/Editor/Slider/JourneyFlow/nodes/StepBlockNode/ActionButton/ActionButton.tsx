@@ -15,7 +15,6 @@ import { ACTION_BUTTON_HEIGHT } from '../libs/sizes'
 interface BlockUIProperties {
   title: string
   isSourceConnected: boolean
-  typename?: string
 }
 
 interface ActionButtonProps {
@@ -45,9 +44,8 @@ export function ActionButton({
       block.action?.__typename === 'NavigateToBlockAction' &&
       block.action?.blockId != null
     const title = getTitle(block, defaultTitle)
-    const typename = block.__typename
 
-    return { title, isSourceConnected, typename }
+    return { title, isSourceConnected }
   }
 
   function getTitleAndConnection(): BlockUIProperties {
@@ -60,8 +58,6 @@ export function ActionButton({
         return extractTitleAndConnection(block, t('Option'))
       case 'SignUpBlock':
         return extractTitleAndConnection(block, t('Subscribe'))
-      case 'TextResponseBlock':
-        return extractTitleAndConnection(block, t('Feedback'))
       case 'VideoBlock':
         return extractTitleAndConnection(block, t('Video'))
       case 'StepBlock':
@@ -71,21 +67,12 @@ export function ActionButton({
     }
   }
 
-  const { title, isSourceConnected, typename } = getTitleAndConnection()
-
-  let sourceHandle
-  if (typename === 'TextResponseBlock') {
-    sourceHandle = 'hide'
-  } else if (showJourneyFlowAnalytics) {
-    sourceHandle = 'disabled'
-  } else {
-    sourceHandle = 'show'
-  }
+  const { title, isSourceConnected } = getTitleAndConnection()
 
   return (
     <BaseNode
       id={block.id}
-      sourceHandle={sourceHandle}
+      sourceHandle={showJourneyFlowAnalytics ? 'disabled' : 'show'}
       onSourceConnect={updateEdge}
       selected={selected}
       isSourceConnected={isSourceConnected}

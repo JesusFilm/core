@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { ReactFlowProvider } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
@@ -10,7 +11,6 @@ import {
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_StepBlock as StepBlock,
-  BlockFields_TextResponseBlock as TextResponseBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { mockReactFlow } from '../../../../../../../../test/mockReactFlow'
@@ -121,22 +121,6 @@ describe('ActionButton', () => {
     expect(screen.getByText('Subscribe')).toBeInTheDocument()
   })
 
-  it('should render label for TextResponseBlock', () => {
-    const block = {
-      __typename: 'TextResponseBlock'
-    } as unknown as TreeBlock<TextResponseBlock>
-
-    render(
-      <MockedProvider>
-        <ReactFlowProvider>
-          <ActionButton block={block} />
-        </ReactFlowProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByText('Feedback')).toBeInTheDocument()
-  })
-
   it('should render video label for VideoBlock', () => {
     const block = {
       __typename: 'VideoBlock',
@@ -223,5 +207,29 @@ describe('ActionButton', () => {
     )
 
     expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).not.toBeVisible()
+  })
+
+  it('should disable source handle in analytics mode', () => {
+    const block = {
+      __typename: 'ButtonBlock'
+    } as unknown as TreeBlock<ButtonBlock>
+
+    const initialState = {
+      showJourneyFlowAnalytics: true
+    } as unknown as EditorState
+
+    render(
+      <MockedProvider>
+        <ReactFlowProvider>
+          <EditorProvider initialState={initialState}>
+            <ActionButton block={block} />
+          </EditorProvider>
+        </ReactFlowProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      screen.getByTestId('BaseNodeRightHandle-disabled')
+    ).toBeInTheDocument()
   })
 })
