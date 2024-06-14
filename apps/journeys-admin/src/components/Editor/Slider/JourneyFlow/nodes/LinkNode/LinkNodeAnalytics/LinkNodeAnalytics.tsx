@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import PointerClick from '@core/shared/ui/icons/PointerClick'
@@ -10,6 +11,8 @@ interface LinkNodeAnalyticsProps {
 }
 
 export function LinkNodeAnalytics(props: LinkNodeAnalyticsProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <Box
       data-testid="LinkNodeAnalytics"
@@ -23,7 +26,7 @@ export function LinkNodeAnalytics(props: LinkNodeAnalyticsProps): ReactElement {
         filter: 'drop-shadow(4px 4px 10px rgba(0,0,0,0.25))'
       }}
     >
-      <AnalyticsDataPoint Icon={PointerClick}>
+      <AnalyticsDataPoint Icon={PointerClick} tooltipLabel={t('Clicks')}>
         {props.children ?? '~'}
       </AnalyticsDataPoint>
     </Box>
