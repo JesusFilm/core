@@ -76,7 +76,6 @@
     "quickfix.biome": "explicit",
     "source.organizeImports.biome": "explicit"
   },
-  "eslint.validate": ["javascript", "typescript"],
   "yaml.schemas": {
     "./apps/api-gateway/routerSchema.json": [
       "apps/api-gateway/router.yaml",

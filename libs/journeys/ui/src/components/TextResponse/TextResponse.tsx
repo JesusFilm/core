@@ -10,11 +10,11 @@ import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import { useEditor } from '../../libs/EditorProvider'
+import { useJourney } from '../../libs/JourneyProvider'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
-import { useEditor } from '../../libs/EditorProvider'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider'
 import { TextField } from '../TextField'
 
 import { TextResponseFields } from './__generated__/TextResponseFields'
