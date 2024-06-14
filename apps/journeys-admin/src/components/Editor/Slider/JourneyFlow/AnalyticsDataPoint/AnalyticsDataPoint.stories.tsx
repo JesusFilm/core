@@ -22,14 +22,16 @@ export const Default = {
   ...Template,
   args: {
     children: 10,
-    Icon: PointerClick
+    Icon: PointerClick,
+    tooltipLabel: 'Clicks'
   }
 }
 
 export const WithoutIcon = {
   ...Template,
   args: {
-    children: '10'
+    children: '10',
+    tooltipLabel: 'Clicks'
   }
 }
 

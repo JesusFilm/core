@@ -43,7 +43,7 @@ export function AnalyticsDataPoint({
           flex: 1
         }}
         className="stats-overlay__data-point"
-        data-testid="StatsOverlayDataPoint"
+        data-testid="AnalyticsDataPoint"
       >
         {Icon != null && <Icon sx={{ fontSize: '16px' }} />}
         <Typography variant="caption" sx={{ fontWeight: 800 }}>
