@@ -57,6 +57,7 @@ model Country {
   longitude   Float?
   flagPngSrc  String?
   flagWebpSrc String?
+  aoa         String?
   languages   Language[]
 }
 
@@ -88,4 +89,9 @@ model CountryContinent {
   @@index(languageId(type: Hash))
   @@index(primary(type: Hash))
   @@index(countryId(type: Hash))
+}
+
+model Mission865 {
+  id           String @id
+  currentPhase String
 }

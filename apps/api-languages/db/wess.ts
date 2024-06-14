@@ -1,8 +1,25 @@
+import isEmpty from 'lodash/isEmpty'
+import toInteger from 'lodash/toInteger'
 import fetch from 'node-fetch'
-import { aql } from 'arangojs'
-import { isEmpty, toInteger } from 'lodash'
-import { ArangoDB } from './db'
-import { Country, Language } from './seed'
+
+import {
+  CountryName,
+  Prisma,
+  PrismaClient,
+  Country as PrismaCountry,
+  Language as PrismaLanguage
+} from '.prisma/api-languages-client'
+
+const prismaService = new PrismaClient()
+
+interface Language extends Omit<PrismaLanguage, 'name'> {
+  name: Prisma.LanguageNameUncheckedCreateInput[]
+}
+
+interface Country extends Omit<PrismaCountry, 'name'> {
+  name: Prisma.CountryNameUncheckedCreateInput[]
+  languageIds: string[]
+}
 
 // 156
 interface WessCountry {
@@ -41,13 +58,6 @@ interface WessMission865 {
   CURRENT_PHASE: string
 }
 
-interface Mission865 {
-  _key: string
-  currentPhase: string
-}
-
-const db = ArangoDB()
-
 async function getWessQuery<T>(id: string): Promise<T> {
   return await (
     await fetch(
@@ -62,15 +72,6 @@ async function getWessQuery<T>(id: string): Promise<T> {
   ).json()
 }
 
-async function getDatabaseItems<T>(
-  collection: string
-): Promise<T[] | undefined> {
-  const rst = await db.query(aql`
-  FOR item IN ${db.collection(collection)}    
-    RETURN item`)
-  return await rst.all()
-}
-
 function transformCountryLanguage(
   wessCountryLanguage: WessCountryLanguage
 ): void {
@@ -81,43 +82,42 @@ function transformCountryLanguage(
   )
 }
 
-function transformCountry(wessCountry: WessCountry): void {
-  let country = countries?.find(({ _key }) => _key === wessCountry.COUNTRY_CODE)
-  let exists = true
-  if (country == null) {
-    country = {
-      _key: wessCountry.COUNTRY_CODE,
-      name: []
-    } as unknown as Country
-    exists = false
+async function transformCountry(wessCountry: WessCountry): Promise<void> {
+  const country = {
+    id: wessCountry.COUNTRY_CODE,
+    aoa:
+      isEmpty(wessCountry.AOA_NAME) || wessCountry.AOA_NAME === 'NAME'
+        ? null
+        : wessCountry.AOA_NAME,
+    population: wessCountry.COUNTRY_POPULATION
   }
+  await prismaService.country.upsert({
+    where: { id: country.id },
+    update: country,
+    create: country
+  })
 
   if (!isEmpty(wessCountry.COUNTRY_NAME)) {
     const name = country.name.find(({ languageId }) => languageId === '529')
     if (name == null)
       country.name.push({
+        countryId: wessCountry.COUNTRY_CODE,
         languageId: '529',
         primary: true,
         value: wessCountry.COUNTRY_NAME
       })
     else name.value = wessCountry.COUNTRY_NAME
   }
-  country.aoa =
-    isEmpty(wessCountry.AOA_NAME) || wessCountry.AOA_NAME === 'NAME'
-      ? undefined
-      : wessCountry.AOA_NAME
-  country.population = wessCountry.COUNTRY_POPULATION ?? 0
   country.languageIds = countryLanguages[wessCountry.COUNTRY_NAME] ?? []
-  if (!exists) countries?.push(country)
 }
 
 function transformLanguage(wessLanguage: WessLanguage): void {
-  const key = toInteger(wessLanguage.LAN_ALTERNATE_LAN_NO).toString()
-  let language = languages?.find(({ _key }) => key === _key)
+  const languageId = toInteger(wessLanguage.LAN_ALTERNATE_LAN_NO).toString()
+  let language = languages?.find(({ id }) => id === languageId)
   let exists = true // handled this way to avoid undefined
   if (language == null) {
     language = {
-      _key: key,
+      id: languageId,
       name: []
     } as unknown as Language
     exists = false
@@ -131,6 +131,7 @@ function transformLanguage(wessLanguage: WessLanguage): void {
     const name = language.name.find(({ languageId }) => languageId === '529')
     if (name == null)
       language.name.push({
+        parentLanguageId: wessLanguage.LAN_NO.toString(),
         languageId: '529',
         primary: true,
         value: wessLanguage.LAN_NAME
@@ -143,7 +144,7 @@ function transformLanguage(wessLanguage: WessLanguage): void {
 
 function handleAlternateLanguages(wessLanguage: WessLanguage): void {
   const key = toInteger(wessLanguage.LAN_ALTERNATE_LAN_NO).toString()
-  const language = languages?.find(({ _key }) => key === _key)
+  const language = languages?.find(({ id }) => key === id)
   if (language == null) return
 
   if (
@@ -169,10 +170,10 @@ function handleAlternateLanguages(wessLanguage: WessLanguage): void {
 
 function transformMission865(wessMission865: WessMission865): void {
   const key = toInteger(wessMission865.VERSION_NO).toString()
-  const mission865 = mission865s?.find(({ _key }) => _key === key)
+  const mission865 = mission865s?.find(({ id }) => id === key)
   if (mission865 == null) {
     mission865s?.push({
-      _key: key,
+      id: key,
       currentPhase: wessMission865.CURRENT_PHASE
     })
   } else mission865.currentPhase = wessMission865.CURRENT_PHASE
@@ -181,19 +182,14 @@ function transformMission865(wessMission865: WessMission865): void {
 let wessCountries: WessCountry[],
   wessLanguages: WessLanguage[],
   wessCountryLanguages: WessCountryLanguage[],
-  countries: Country[] | undefined,
-  languages: Language[] | undefined,
-  wessMission865s: WessMission865[],
-  mission865s: Mission865[] | undefined
+  // countries: PrismaCountry[] | undefined,
+  // languages: PrismaLanguage[] | undefined,
+  wessMission865s: WessMission865[]
+// mission865s: Prisma.Mission865UncheckedCreateInput[] | undefined
 
 const countryLanguages: Record<string, string[]> = {}
 
 async function main(): Promise<void> {
-  // set up Mission 865 collection
-  if (!(await db.collection('mission865').exists())) {
-    await db.createCollection('mission865', { keyOptions: { type: 'uuid' } })
-  }
-
   // get data from wess
   console.log('wess: countries')
   wessCountries = await getWessQuery('156')
@@ -217,22 +213,16 @@ async function main(): Promise<void> {
   wessMission865s = await getWessQuery('157')
 
   // get data from database
-  console.log('arango: countries')
-  countries = await getDatabaseItems('countries')
-  if (countries === undefined)
-    throw new Error('countries not found in database')
-  console.log('database country count:', countries.length)
+  // console.log('prisma: countries')
+  // countries = await prismaService.country.findMany()
+  // console.log('database country count:', countries.length)
 
-  console.log('arango: languages')
-  languages = await getDatabaseItems('languages')
-  if (languages === undefined)
-    throw new Error('languages not found in database')
-  console.log('database language count:', languages.length)
+  // console.log('prisma: languages')
+  // languages = await prismaService.language.findMany()
+  // console.log('database language count:', languages.length)
 
-  console.log('arango: mission 865')
-  mission865s = await getDatabaseItems('mission865')
-  if (mission865s === undefined)
-    throw new Error('mission 865 not found in database')
+  // console.log('prisma: mission 865')
+  // mission865s = await prismaService.mission865.findMany()
 
   // transform data
   console.log('mapping languages to countries')
@@ -265,6 +255,29 @@ async function main(): Promise<void> {
 
   // save data to database
   console.log('updating countries')
+  for (const country of countries ?? []) {
+    console.log('country:', country.id)
+    prismaService.country.upsert({
+      where: { id: country.id },
+      update: country,
+      create: country
+    })
+    for (const name of country.name) {
+      prismaService.countryName.upsert({
+        where: {
+          languageId_countryId: {
+            languageId: name.languageId,
+            countryId: country.id
+          }
+        },
+        update: name,
+        create: {
+          ...name,
+          countryId: country.id
+        }
+      })
+    }
+  }
   await db
     .collection('countries')
     .saveAll(countries, { silent: true, overwriteMode: 'update' })
