@@ -486,10 +486,10 @@ model JourneyNotification {
   journeyId               String
   userTeamId              String?
   userJourneyId           String?      @unique
+  visitorInteractionEmail Boolean      @default(false)
   journey                 Journey      @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   userTeam                UserTeam?    @relation(fields: [userTeamId], references: [id], onDelete: Cascade)
   userJourney             UserJourney? @relation(fields: [userJourneyId], references: [id], onDelete: Cascade)
-  visitorInteractionEmail Boolean      @default(false)
 
   @@unique([userId, journeyId])
   @@unique([userId, journeyId, userTeamId])

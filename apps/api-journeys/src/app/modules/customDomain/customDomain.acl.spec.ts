@@ -207,7 +207,7 @@ describe('customDomainAcl', () => {
                   userJourneys: [
                     {
                       userId: 'userId',
-                      role: UserJourneyRole.editor
+                      role: UserJourneyRole.owner
                     }
                   ]
                 }
