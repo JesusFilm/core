@@ -7,17 +7,17 @@ test('NS Admin Monitoring: Check user can login and logout successfuly', async (
   page
 }) => {
   if (!process.env.PLAYWRIGHT_EMAIL || !process.env.PLAYWRIGHT_PASSWORD) {
-    throw new Error('Email & password environment variables are not set in checkly.')
+    throw new Error(
+      'Email & password environment variables are not set in checkly.'
+    )
   }
-  
+
   const email = process.env.PLAYWRIGHT_EMAIL as string
   const password = process.env.PLAYWRIGHT_PASSWORD as string
 
   await page.goto('https://admin.nextstep.is/')
   await page.getByPlaceholder('Enter your email address here').click()
-  await page
-    .getByPlaceholder('Enter your email address here')
-    .fill(email)
+  await page.getByPlaceholder('Enter your email address here').fill(email)
   await page.getByRole('button', { name: 'Continue with email' }).click()
   await page.getByPlaceholder('Enter Password').click()
   await page.getByPlaceholder('Enter Password').fill(password)
