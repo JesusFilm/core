@@ -40,7 +40,7 @@ export function useDeleteOnKeyPress(): {
   const deleteEvent = useKeyPress(['Delete', 'Backspace'])
 
   useEffect(
-    function handleDeleteEvent() {
+    () => {
       if (
         deleteEvent &&
         selected != null &&
