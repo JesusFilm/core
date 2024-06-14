@@ -304,9 +304,7 @@ export function JourneyFlow(): ReactElement {
         onEdgeUpdate={showJourneyFlowAnalytics ? undefined : onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
-        onSelectionChange={
-          showJourneyFlowAnalytics ? undefined : onSelectionChange
-        }
+        onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
         nodeTypes={nodeTypes}
