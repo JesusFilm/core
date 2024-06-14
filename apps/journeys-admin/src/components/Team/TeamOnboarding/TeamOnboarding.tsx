@@ -8,11 +8,11 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
-import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { TeamCreateForm } from '../TeamCreateForm'
 import { useTeam } from '../TeamProvider'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
