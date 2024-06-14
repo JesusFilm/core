@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { transformer } from '@core/journeys/ui/transformer'
@@ -14,7 +15,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { FramePortal } from '../../../../../../FramePortal'
 
 const CARD_WIDTH = 340
 

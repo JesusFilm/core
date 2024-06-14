@@ -16,6 +16,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
@@ -33,7 +34,6 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
-import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
 

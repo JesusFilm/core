@@ -10,6 +10,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
@@ -23,7 +24,6 @@ import {
 } from '../../../../../../../../../../../__generated__/globalTypes'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
 import { StepFields } from '../../../../../../../../../../../__generated__/StepFields'
-import { FramePortal } from '../../../../../../../../../FramePortal'
 import { CardWrapper } from '../../../../../../../Content/Canvas/CardWrapper'
 
 export const STEP_BLOCK_DEFAULT_NEXT_BLOCK_UPDATE = gql`
