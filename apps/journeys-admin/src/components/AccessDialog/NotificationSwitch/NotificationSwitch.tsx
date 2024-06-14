@@ -4,7 +4,7 @@ import Switch from '@mui/material/Switch'
 import Tooltip from '@mui/material/Tooltip'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ChangeEvent, ReactElement } from 'react'
 
 import { useJourneyNotifcationUpdate } from '../../../libs/useJourneyNotifcationUpdate'
 
@@ -26,14 +26,14 @@ export function NotificationSwitch({
 
   const [journeyNotificationUpdate, { loading }] = useJourneyNotifcationUpdate()
 
-  async function handleChange(): Promise<void> {
+  async function handleChange(e: ChangeEvent<HTMLInputElement>): Promise<void> {
     if (journeyId == null) return
     try {
       await journeyNotificationUpdate({
         variables: {
           input: {
             journeyId,
-            visitorInteractionEmail: checked != null ? !checked : true
+            visitorInteractionEmail: e.target.checked
           }
         }
       })
