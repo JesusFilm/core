@@ -1,14 +1,14 @@
 {
   "files.eol": "\n",
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "biomejs.biome",
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "[graphql]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "[terraform]": {
     "editor.defaultFormatter": "hashicorp.terraform",
@@ -73,7 +73,8 @@
     }
   ],
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "always"
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
   },
   "eslint.validate": ["javascript", "typescript"],
   "yaml.schemas": {

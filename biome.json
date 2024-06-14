@@ -1,0 +1,94 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.8.1/schema.json",
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "lineEnding": "lf",
+    "ignore": [
+      "./dist",
+      "./coverage",
+      "**/schema.graphql",
+      "**/__generated__/**",
+      "./libs/locales/**/*.json",
+      "**/.prettierignore",
+      "**/.docusaurus/",
+      ".storybook/static/mockServiceWorker.js",
+      "./.nx/cache",
+      "./.nx/workspace-data"
+    ]
+  },
+  "organizeImports": { "enabled": true },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": false,
+      "suspicious": { "noEmptyBlockStatements": "error" }
+    },
+    "ignore": [
+      "**/*",
+      "**/node_modules",
+      "**/jest.config.ts",
+      "**/.next",
+      "**/.docusaurus"
+    ]
+  },
+  "javascript": {
+    "formatter": {
+      "trailingCommas": "none",
+      "semicolons": "asNeeded",
+      "quoteStyle": "single"
+    }
+  },
+  "overrides": [
+    {
+      "include": [
+        "*.spec.ts",
+        "*.spec.tsx",
+        "*.spec.js",
+        "*.spec.jsx",
+        "*.stories.ts",
+        "*.stories.tsx",
+        "*.stories.js",
+        "*.stories.jsx"
+      ],
+      "linter": { "rules": {} }
+    },
+    {
+      "include": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "linter": { "rules": {} }
+    },
+    {
+      "include": ["*.ts", "*.tsx"],
+      "linter": {
+        "rules": {
+          "complexity": { "useOptionalChain": "off" },
+          "style": { "useExportType": "off", "useImportType": "off" }
+        }
+      }
+    },
+    { "include": ["*.js", "*.jsx"], "linter": { "rules": {} } },
+    {
+      "include": ["*.tsx", "*.jsx"],
+      "linter": { "rules": { "style": { "noImplicitBoolean": "error" } } }
+    },
+    {
+      "include": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
+      "linter": { "rules": { "suspicious": { "noSkippedTests": "off" } } }
+    },
+    {
+      "include": [
+        "*.stories.ts",
+        "*.stories.tsx",
+        "*.stories.js",
+        "*.stories.jsx"
+      ],
+      "linter": { "rules": {} }
+    }
+  ],
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  }
+}
