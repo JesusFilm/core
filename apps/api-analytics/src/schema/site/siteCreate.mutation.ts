@@ -2,7 +2,6 @@ import ShortUniqueId from 'short-unique-id'
 
 import { Prisma } from '.prisma/api-analytics-client'
 
-import { hash } from '../../lib/apiKey'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
@@ -17,23 +16,17 @@ builder.mutationType({
   fields: (t) => ({
     siteCreate: t.prismaField({
       type: 'sites',
+      authz: {
+        rules: ['IsAuthenticated']
+      },
       errors: {
         types: [Error]
       },
       args: {
-        apiKey: t.arg({ type: 'String', required: true }),
         input: t.arg({ type: SiteCreateInput, required: true })
       },
-      resolve: async (query, _parent, { apiKey, input }) => {
+      resolve: async (query, _parent, { input }, context) => {
         try {
-          const { key_hash: keyHash, user_id: userId } =
-            await prisma.api_keys.findFirstOrThrow({
-              select: { key_hash: true, user_id: true },
-              where: { key_prefix: apiKey.slice(0, 6) }
-            })
-
-          if (keyHash !== hash(apiKey)) throw new Error('invalid apiKey')
-
           const uid = new ShortUniqueId({ length: 21 })
           return await prisma.sites.create({
             ...query,
@@ -44,7 +37,9 @@ builder.mutationType({
               updated_at: new Date(),
               site_memberships: {
                 create: {
-                  user_id: userId,
+                  users: {
+                    connect: { id: context.currentUser.id }
+                  },
                   role: 'owner',
                   inserted_at: new Date(),
                   updated_at: new Date()
@@ -73,13 +68,6 @@ builder.mutationType({
             }
           })
         } catch (error) {
-          if (
-            error instanceof Prisma.PrismaClientKnownRequestError &&
-            error.code === 'P2025' &&
-            error.message === 'No api_keys found'
-          )
-            throw new Error('invalid apiKey')
-
           if (
             error instanceof Prisma.PrismaClientKnownRequestError &&
             error.code === 'P2002' &&

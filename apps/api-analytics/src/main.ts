@@ -1,8 +1,12 @@
+import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import { App, HttpRequest, HttpResponse } from 'uWebSockets.js'
 
+import { authZEnvelopPlugin } from '@graphql-authz/envelop-plugin'
+import { getUserFromApiKey } from './lib/auth'
 import { prisma } from './lib/prisma'
 import { schema } from './schema'
+import { rules } from './lib/rules'
 
 interface ServerContext {
   req: HttpRequest
@@ -11,8 +15,19 @@ interface ServerContext {
 
 const yoga = createYoga<ServerContext>({
   schema,
+  context: async ({ request }) => {
+    const apiKey = request.headers
+      .get('authorization')
+      ?.replace(/^Bearer\s/, '')
+
+    return {
+      ...initContextCache(),
+      currentUser: await getUserFromApiKey(apiKey)
+    }
+  },
   logging: 'error',
   plugins: [
+    authZEnvelopPlugin({ rules }),
     useReadinessCheck({
       endpoint: '/.well-known/apollo/server-health',
       check: async () => {

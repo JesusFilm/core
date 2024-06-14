@@ -6,7 +6,7 @@ type Error {
 }
 
 type Mutation {
-  siteCreate(apiKey: String!, input: SiteCreateInput!): MutationSiteCreateResult!
+  siteCreate(input: SiteCreateInput!): MutationSiteCreateResult!
 }
 
 union MutationSiteCreateResult = Error | MutationSiteCreateSuccess
