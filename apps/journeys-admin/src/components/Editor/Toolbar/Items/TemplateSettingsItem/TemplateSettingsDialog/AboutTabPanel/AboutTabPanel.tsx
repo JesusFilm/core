@@ -7,7 +7,7 @@ import { ReactElement } from 'react'
 
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
-import { StrategySection } from '../../../../../../StrategySection'
+import { StrategySection } from '../../../../../../../../../../libs/journeys/ui/src/components/StrategySection'
 import { ImageEdit } from '../../../../../Slider/Settings/Drawer/ImageEdit/ImageEdit'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
