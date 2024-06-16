@@ -16,7 +16,7 @@ export function TextField({
   const [formikFieldProps, meta] = useField(name)
 
   const hasError = meta.error !== undefined && meta.touched
-  const hint = helperText != null && helperText !== '' ? helperText : ' '
+  const hint = helperText != null ? helperText : ' '
 
   return (
     <MuiTextField
