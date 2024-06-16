@@ -6,6 +6,7 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 
+import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
@@ -23,7 +24,6 @@ import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { useTeam } from '../../src/components/Team/TeamProvider'
-import { TemplateGallery } from '../../src/components/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function TemplateIndexPage(): ReactElement {

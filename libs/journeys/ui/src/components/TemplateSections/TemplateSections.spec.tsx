@@ -1,18 +1,17 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
-import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
-
-import {
-  GetJourneys,
-  GetJourneys_journeys as Journey,
-  GetJourneys_journeys_tags as Tag
-} from '../../../__generated__/GetJourneys'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
+import {
+  GetJourneys,
+  GetJourneys_journeys as Journey,
+  GetJourneys_journeys_tags as Tag
+} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
 import { TemplateSections } from './TemplateSections'
 
