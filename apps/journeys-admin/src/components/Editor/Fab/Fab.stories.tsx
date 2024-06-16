@@ -41,36 +41,6 @@ const Template: StoryObj<ComponentProps<typeof Fab> & { state: EditorState }> =
     )
   }
 
-export const SaveDesktop = {
-  ...Template,
-  args: {
-    variant: 'canvas',
-    state: {
-      activeFab: ActiveFab.Save,
-      activeSlide: ActiveSlide.Content,
-      activeContent: ActiveContent.Canvas,
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
-      selectedStep: defaultStep,
-      steps: [defaultStep]
-    }
-  }
-}
-
-export const SaveMobile = {
-  ...Template,
-  args: {
-    variant: 'mobile',
-    state: {
-      activeFab: ActiveFab.Save,
-      activeSlide: ActiveSlide.Content,
-      activeContent: ActiveContent.Canvas,
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
-      selectedStep: defaultStep,
-      steps: [defaultStep]
-    }
-  }
-}
-
 export const AddDesktop = {
   ...Template,
   args: {
@@ -101,42 +71,12 @@ export const AddMobile = {
   }
 }
 
-export const EditDesktop = {
-  ...Template,
-  args: {
-    variant: 'canvas',
-    state: {
-      activeFab: ActiveFab.Edit,
-      activeSlide: ActiveSlide.Content,
-      activeContent: ActiveContent.Canvas,
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
-      selectedStep: defaultStep,
-      steps: [defaultStep]
-    }
-  }
-}
-
-export const EditMobile = {
-  ...Template,
-  args: {
-    variant: 'mobile',
-    state: {
-      activeFab: ActiveFab.Edit,
-      activeSlide: ActiveSlide.Content,
-      activeContent: ActiveContent.Canvas,
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
-      selectedStep: defaultStep,
-      steps: [defaultStep]
-    }
-  }
-}
-
 export const DisabledDesktop = {
   ...Template,
   args: {
     variant: 'canvas',
     state: {
-      activeFab: ActiveFab.Save,
+      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.Content,
       activeContent: ActiveContent.Canvas,
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
@@ -151,7 +91,7 @@ export const DisabledMobile = {
   args: {
     variant: 'mobile',
     state: {
-      activeFab: ActiveFab.Save,
+      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.Content,
       activeContent: ActiveContent.Canvas,
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,

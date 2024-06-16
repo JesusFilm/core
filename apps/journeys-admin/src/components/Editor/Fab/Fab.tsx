@@ -9,12 +9,9 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
-import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'
@@ -26,7 +23,6 @@ interface FabProps {
 export function Fab({ variant }: FabProps): ReactElement {
   const {
     state: {
-      activeFab,
       activeCanvasDetailsDrawer,
       selectedStep,
       steps,
@@ -52,8 +48,13 @@ export function Fab({ variant }: FabProps): ReactElement {
         type: 'SetActiveSlideAction',
         activeSlide: ActiveSlide.Content
       })
-    }
-    if (activeCanvasDetailsDrawer === ActiveCanvasDetailsDrawer.AddBlock) {
+      dispatch({
+        type: 'SetActiveCanvasDetailsDrawerAction',
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
+      })
+    } else if (
+      activeCanvasDetailsDrawer === ActiveCanvasDetailsDrawer.AddBlock
+    ) {
       dispatch({
         type: 'SetActiveCanvasDetailsDrawerAction',
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
@@ -81,37 +82,6 @@ export function Fab({ variant }: FabProps): ReactElement {
       }
     }
   }
-  function handleEditFab(event: MouseEvent): void {
-    event.stopPropagation()
-    if (
-      activeSlide === ActiveSlide.JourneyFlow &&
-      activeContent === ActiveContent.Canvas
-    ) {
-      dispatch({
-        type: 'SetSelectedBlockAction',
-        selectedBlock: selectedStep
-      })
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
-      })
-    } else if (
-      activeSlide === ActiveSlide.JourneyFlow &&
-      activeContent === ActiveContent.Social
-    ) {
-      dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.Content
-      })
-    } else {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
-    }
-  }
-  function handleSaveFab(event: MouseEvent): void {
-    event.stopPropagation()
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
-  }
 
   const cardBlock = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
@@ -124,8 +94,7 @@ export function Fab({ variant }: FabProps): ReactElement {
     steps == null ||
     (videoBlock != null && activeSlide !== ActiveSlide.JourneyFlow)
 
-  // props default to save fab
-  let props: MuiFabProps = {
+  const props: MuiFabProps = {
     variant: smUp ? 'extended' : 'circular',
     size: 'large',
     color: 'primary',
@@ -136,43 +105,15 @@ export function Fab({ variant }: FabProps): ReactElement {
       right: { xs: 16, sm: 'auto' },
       fontWeight: 'bold'
     },
-    onClick: handleSaveFab
+    onClick: handleAddFab
   }
-  // children default to save fab
-  let children: ReactNode = (
+
+  const children: ReactNode = (
     <>
-      <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
-      {smUp ? t('Done') : ''}
+      <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
+      {smUp ? t('Add Block') : ''}
     </>
   )
-
-  const isEdit =
-    activeFab === ActiveFab.Edit || activeSlide === ActiveSlide.JourneyFlow
-  const isAdd = activeFab === ActiveFab.Add
-
-  if (isEdit) {
-    props = {
-      ...props,
-      onClick: handleEditFab
-    }
-    children = (
-      <>
-        <Edit2Icon sx={{ mr: smUp ? 3 : 0 }} />
-        {smUp ? t('Edit') : ''}
-      </>
-    )
-  } else if (isAdd) {
-    props = {
-      ...props,
-      onClick: handleAddFab
-    }
-    children = (
-      <>
-        <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
-        {smUp && variant === 'canvas' && t('Add Block')}
-      </>
-    )
-  }
 
   let fabIn = false
   switch (variant) {
