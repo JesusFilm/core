@@ -13,7 +13,7 @@ import {
 
 import { TemplateGallery } from '.'
 
-import '../../../test/i18n'
+import '@core/journeys/ui/test/i18n'
 
 const TemplateGalleryStory: Meta<typeof TemplateGallery> = {
   ...journeysAdminConfig,

@@ -19,7 +19,7 @@ import {
 } from '../../utils/data'
 
 import { TimelineEvent } from '.'
-import '../../../../../../test/i18n'
+import '@core/journeys/ui/test/i18n'
 
 describe('TimelineEvent', () => {
   it('shows journeyViewEvent', () => {
