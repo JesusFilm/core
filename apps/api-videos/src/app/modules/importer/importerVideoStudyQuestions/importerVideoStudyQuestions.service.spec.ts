@@ -70,6 +70,49 @@ describe('ImporterVideoStudyQuestionsService', () => {
       })
     })
 
+    it('should save many video study questions', async () => {
+      videosService.ids = ['mockVideoId', 'mockVideoId1']
+      await service.importMany([
+        {
+          value: 'mockValue',
+          videoId: 'mockVideoId',
+          languageId: 529,
+          primary: 1,
+          order: 3,
+          crowdInId: 'mockCrowdinId'
+        },
+        {
+          value: 'mockValue1',
+          videoId: 'mockVideoId1',
+          languageId: 529,
+          primary: 1,
+          order: 3,
+          crowdInId: 'mockCrowdinId1'
+        }
+      ])
+      expect(prismaService.videoStudyQuestion.createMany).toHaveBeenCalledWith({
+        data: [
+          {
+            value: 'mockValue',
+            videoId: 'mockVideoId',
+            languageId: '529',
+            primary: true,
+            order: 3,
+            crowdInId: 'mockCrowdinId'
+          },
+          {
+            value: 'mockValue1',
+            videoId: 'mockVideoId1',
+            languageId: '529',
+            primary: true,
+            order: 3,
+            crowdInId: 'mockCrowdinId1'
+          }
+        ],
+        skipDuplicates: true
+      })
+    })
+
     it('should throw error when row is invalid', async () => {
       await expect(
         service.import({
