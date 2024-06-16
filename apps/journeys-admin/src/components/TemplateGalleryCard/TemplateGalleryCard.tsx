@@ -11,8 +11,9 @@ import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { abbreviateLanguageName } from '@core/journeys/ui/abbreviateLanguageName'
+
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
-import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 
 interface HoverLayerProps {
   className?: string
