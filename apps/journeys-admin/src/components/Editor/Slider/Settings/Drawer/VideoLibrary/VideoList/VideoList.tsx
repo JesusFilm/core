@@ -24,7 +24,7 @@ export interface VideoListProps {
       'id' | 'title' | 'description' | 'image' | 'duration' | 'source'
     >
   >
-  fetchMore: () => Promise<void>
+  fetchMore: () => void
   hasMore: boolean
 }
 

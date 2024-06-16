@@ -3,12 +3,9 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
-import {
-  VideoBlockSource,
-  VideoLabel
-} from '../../../../../../../__generated__/globalTypes'
+import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 
-import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'
+import { useVideoSearch } from './VideoFromLocal/utils/useVideoSearch/useVideoSearch'
 
 import { VideoLibrary } from '.'
 
@@ -22,16 +19,44 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
+jest.mock('./VideoFromLocal/utils/useVideoSearch/useVideoSearch', () => ({
+  __esModule: true,
+  useVideoSearch: jest.fn()
+}))
+
+const useVideoSearchMock = useVideoSearch as jest.MockedFunction<
+  typeof useVideoSearch
+>
+
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('VideoLibrary', () => {
   const push = jest.fn()
   const on = jest.fn()
+  const handleLoadMore = jest.fn()
+  const handleSearch = jest.fn()
 
   describe('smUp', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => {
+      ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+      useVideoSearchMock.mockReturnValueOnce({
+        isEnd: true,
+        loading: false,
+        handleSearch,
+        handleLoadMore,
+        algoliaVideos: [
+          {
+            id: '9_0-TheSavior',
+            title: 'The Savior',
+            description: 'some description',
+            image:
+              'https://d1wl257kev7hsz.cloudfront.net/cinematics/9_0-The_Savior.mobileCinematicHigh.jpg',
+            duration: 0,
+            source: VideoBlockSource.internal
+          }
+        ]
+      })
+    })
 
     it('should render the Video Library on the right', () => {
       render(
@@ -61,9 +86,26 @@ describe('VideoLibrary', () => {
   })
 
   describe('xsDown', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => false)
-    )
+    beforeEach(() => {
+      ;(useMediaQuery as jest.Mock).mockImplementation(() => false)
+      useVideoSearchMock.mockReturnValueOnce({
+        isEnd: true,
+        loading: false,
+        handleSearch,
+        handleLoadMore,
+        algoliaVideos: [
+          {
+            id: '9_0-TheSavior',
+            title: 'The Savior',
+            description: 'some description',
+            image:
+              'https://d1wl257kev7hsz.cloudfront.net/cinematics/9_0-The_Savior.mobileCinematicHigh.jpg',
+            duration: 0,
+            source: VideoBlockSource.internal
+          }
+        ]
+      })
+    })
 
     it('should render the VideoLibrary from the bottom', () => {
       render(
@@ -79,72 +121,35 @@ describe('VideoLibrary', () => {
   })
 
   describe('VideoSearch', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
-    )
+    beforeEach(() => {
+      ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+      useVideoSearchMock.mockReturnValueOnce({
+        isEnd: true,
+        loading: false,
+        handleSearch,
+        handleLoadMore,
+        algoliaVideos: [
+          {
+            id: '9_0-TheSavior',
+            title: 'The Savior',
+            description: 'some description',
+            image:
+              'https://d1wl257kev7hsz.cloudfront.net/cinematics/9_0-The_Savior.mobileCinematicHigh.jpg',
+            duration: 0,
+            source: VideoBlockSource.internal
+          }
+        ]
+      })
+    })
 
     it('displays searched video', async () => {
       render(
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_VIDEOS,
-                variables: {
-                  offset: 0,
-                  limit: 5,
-                  where: {
-                    availableVariantLanguageIds: ['529'],
-                    title: 'Andreas',
-                    labels: [
-                      VideoLabel.episode,
-                      VideoLabel.featureFilm,
-                      VideoLabel.segment,
-                      VideoLabel.shortFilm
-                    ]
-                  }
-                }
-              },
-              result: {
-                data: {
-                  videos: [
-                    {
-                      id: '2_0-AndreasStory',
-                      image:
-                        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
-                      snippet: [
-                        {
-                          primary: true,
-                          value:
-                            'After living a life full of fighter planes and porsches, Andreas realizes something is missing.'
-                        }
-                      ],
-                      title: [
-                        {
-                          primary: true,
-                          value: "Andreas' Story"
-                        }
-                      ],
-                      variant: {
-                        id: 'variantA',
-                        duration: 186
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          ]}
-        >
+        <MockedProvider>
           <VideoLibrary open />
         </MockedProvider>
       )
-      const textBox = screen.getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: 'Andreas' }
-      })
       await waitFor(() =>
-        expect(screen.getByText("Andreas' Story")).toBeInTheDocument()
+        expect(screen.getByText('The Savior')).toBeInTheDocument()
       )
     })
   })
@@ -165,57 +170,7 @@ describe('VideoLibrary', () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_VIDEOS,
-              variables: {
-                offset: 0,
-                limit: 5,
-                where: {
-                  availableVariantLanguageIds: ['529'],
-                  title: null,
-                  labels: [
-                    VideoLabel.episode,
-                    VideoLabel.featureFilm,
-                    VideoLabel.segment,
-                    VideoLabel.shortFilm
-                  ]
-                }
-              }
-            },
-            result: {
-              data: {
-                videos: [
-                  {
-                    id: '2_0-AndreasStory',
-                    image:
-                      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
-                    snippet: [
-                      {
-                        primary: true,
-                        value:
-                          'After living a life full of fighter planes and porsches, Andreas realizes something is missing.'
-                      }
-                    ],
-                    title: [
-                      {
-                        primary: true,
-                        value: "Andreas' Story"
-                      }
-                    ],
-                    variant: {
-                      id: 'variantA',
-                      duration: 186
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider>
         <VideoLibrary open onSelect={onSelect} onClose={onClose} />
       </MockedProvider>
     )
