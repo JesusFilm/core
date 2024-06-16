@@ -10,3 +10,4 @@ schema.graphql
 .docusaurus/
 .storybook/static/mockServiceWorker.js
 /.nx/cache
+/.nx/workspace-data

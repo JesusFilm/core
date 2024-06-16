@@ -12,11 +12,13 @@ import { LoggerModule } from 'nestjs-pino'
 
 import TranslationModule from '@core/nest/common/TranslationModule'
 
+import { CountryModule } from './modules/country/country.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { LanguageModule } from './modules/language/language.module'
 
 @Module({
   imports: [
+    CountryModule,
     LanguageModule,
     NestHealthModule,
     TranslationModule,
