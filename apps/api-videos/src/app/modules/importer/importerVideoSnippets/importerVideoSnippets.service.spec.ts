@@ -64,6 +64,43 @@ describe('ImporterVideoSnippetsService', () => {
       })
     })
 
+    it('should save many video snippets', async () => {
+      videosService.ids = ['mockVideoId', 'mockVideoId1']
+      await service.importMany([
+        {
+          value: 'mockValue',
+          videoId: 'mockVideoId',
+          languageId: 529,
+          primary: 1,
+          otherData: 'stuff'
+        },
+        {
+          value: 'mockValue1',
+          videoId: 'mockVideoId1',
+          languageId: 529,
+          primary: 1,
+          otherData: 'stuff'
+        }
+      ])
+      expect(prismaService.videoSnippet.createMany).toHaveBeenCalledWith({
+        data: [
+          {
+            value: 'mockValue',
+            videoId: 'mockVideoId',
+            languageId: '529',
+            primary: true
+          },
+          {
+            value: 'mockValue1',
+            videoId: 'mockVideoId1',
+            languageId: '529',
+            primary: true
+          }
+        ],
+        skipDuplicates: true
+      })
+    })
+
     it('should throw error when row is invalid', async () => {
       await expect(
         service.import({
