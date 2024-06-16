@@ -179,6 +179,8 @@
     "@commitlint/lint": "^17.7.0",
     "@docusaurus/module-type-aliases": "^3.0.1",
     "@emotion/babel-plugin": "11.11.0",
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/client-preset": "^4.3.0",
     "@mermaid-js/mermaid-cli": "^10.8.0",
     "@nestjs/schematics": "10.0.2",
     "@nestjs/testing": "10.1.3",

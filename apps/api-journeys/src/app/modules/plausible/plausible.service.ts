@@ -1,17 +1,24 @@
+import {
+  ApolloClient,
+  HttpLink,
+  InMemoryCache,
+  NormalizedCacheObject
+} from '@apollo/client'
 import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable, OnModuleInit } from '@nestjs/common'
-import axios, { AxiosInstance } from 'axios'
 import { Queue } from 'bullmq'
 
 import { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
 
+import { gql } from '../../../__generated__'
+import { MutationSiteCreateResult } from '../../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { PlausibleJob } from './plausible.consumer'
 
 @Injectable()
 export class PlausibleService implements OnModuleInit {
-  client: AxiosInstance
+  client: ApolloClient<NormalizedCacheObject>
 
   constructor(
     @InjectQueue('api-journeys-plausible')
@@ -20,11 +27,15 @@ export class PlausibleService implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
-    this.client = axios.create({
-      baseURL: process.env.PLAUSIBLE_URL,
-      headers: {
-        Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`
-      }
+    this.client = new ApolloClient({
+      link: new HttpLink({
+        uri: process.env.GATEWAY_URL,
+        fetch,
+        headers: {
+          Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`
+        }
+      }),
+      cache: new InMemoryCache()
     })
     await this.plausibleQueue.add('plausibleCreateSites', {
       __typename: 'plausibleCreateSites'
@@ -41,11 +52,9 @@ export class PlausibleService implements OnModuleInit {
       })
       if (teams.length === 0) break
       await Promise.all(
-        teams.map(async (team) => {
-          await this.createTeamSite({
-            teamId: team.id
-          })
-        })
+        teams.map(
+          async ({ id: teamId }) => await this.createTeamSite({ teamId })
+        )
       )
     }
 
@@ -58,57 +67,40 @@ export class PlausibleService implements OnModuleInit {
       })
       if (journeys.length === 0) break
       await Promise.all(
-        journeys.map(async (journey) => {
-          await this.createJourneySite({
-            journeyId: journey.id
-          })
-        })
+        journeys.map(
+          async ({ id: journeyId }) =>
+            await this.createJourneySite({ journeyId })
+        )
       )
     }
   }
 
   async createJourneySite({ journeyId }: { journeyId: string }): Promise<void> {
-    const domain = this.journeySiteId(journeyId)
-    await this.client.post('/api/v1/sites', {
-      domain
-    })
-    await this.createGoals(domain)
+    const site = await this.createSite(this.journeySiteId(journeyId))
+    if (site == null || site.__typename !== 'MutationSiteCreateSuccess') return
     await this.prismaService.journey.update({
       where: { id: journeyId },
       data: {
-        plausibleToken: await this.createSharedLink(domain)
+        plausibleToken: site.data.sharedLinks[0].slug
       }
     })
   }
 
   async createTeamSite({ teamId }: { teamId: string }): Promise<void> {
-    const domain = this.teamSiteId(teamId)
-    await this.client.post('/api/v1/sites', {
-      domain
-    })
-    await this.createGoals(domain)
+    const site = await this.createSite(this.teamSiteId(teamId))
+    if (site == null || site.__typename !== 'MutationSiteCreateSuccess') return
     await this.prismaService.team.update({
       where: { id: teamId },
       data: {
-        plausibleToken: await this.createSharedLink(domain)
+        plausibleToken: site.data.sharedLinks[0].slug
       }
     })
   }
 
-  private async createSharedLink(domain: string): Promise<string | undefined> {
-    const response = await this.client.put('/api/v1/sites/shared-links', {
-      site_id: domain,
-      name: 'api-journeys'
-    })
-    if (typeof response.data.url === 'string')
-      return (
-        new URL(response.data.url as string).searchParams.get('auth') ??
-        undefined
-      )
-  }
-
-  private async createGoals(domain: string): Promise<void> {
-    const eventNames: Array<keyof JourneyPlausibleEvents> = [
+  async createSite(
+    domain: string
+  ): Promise<MutationSiteCreateResult | undefined> {
+    const goals: Array<keyof JourneyPlausibleEvents> = [
       'footerThumbsUpButtonClick',
       'footerThumbsDownButtonClick',
       'shareButtonClick',
@@ -132,16 +124,48 @@ export class PlausibleService implements OnModuleInit {
       'videoComplete',
       'videoTrigger'
     ]
-    await Promise.all(
-      eventNames.map(
-        async (eventName) =>
-          await this.client.put('/api/v1/sites/goals', {
-            site_id: domain,
-            goal_type: 'event',
-            event_name: eventName
-          })
-      )
-    )
+
+    const { data } = await this.client.mutate({
+      mutation: gql(`
+        mutation SiteCreate($input: SiteCreateInput!) {
+          siteCreate(input: $input) {
+            ... on Error {
+              message
+              __typename
+            }
+            ... on MutationSiteCreateSuccess {
+              data {
+                id
+                domain
+                __typename
+                memberships {
+                  id
+                  role
+                  __typename
+                }
+                goals {
+                  id
+                  eventName
+                  __typename
+                }
+                sharedLinks {
+                  id
+                  slug
+                  __typename
+                }
+              }
+            }
+          }
+        }
+      `),
+      variables: {
+        input: {
+          domain,
+          goals: goals as string[]
+        }
+      }
+    })
+    return data?.siteCreate
   }
 
   private journeySiteId(journeyId: string): string {

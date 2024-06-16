@@ -13,8 +13,9 @@ import { rules } from '../lib/rules'
 
 const PrismaPlugin = pluginName
 
-interface Context {
-  currentUser: User
+export interface Context {
+  currentUser?: User
+  apiKey?: string
 }
 
 export const builder = new SchemaBuilder<{

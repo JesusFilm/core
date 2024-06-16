@@ -1,19 +1,20 @@
+import { authZEnvelopPlugin } from '@graphql-authz/envelop-plugin'
 import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import { App, HttpRequest, HttpResponse } from 'uWebSockets.js'
 
-import { authZEnvelopPlugin } from '@graphql-authz/envelop-plugin'
 import { getUserFromApiKey } from './lib/auth'
 import { prisma } from './lib/prisma'
-import { schema } from './schema'
 import { rules } from './lib/rules'
+import { schema } from './schema'
+import { Context } from './schema/builder'
 
 interface ServerContext {
   req: HttpRequest
   res: HttpResponse
 }
 
-const yoga = createYoga<ServerContext>({
+const yoga = createYoga<ServerContext, Context>({
   schema,
   context: async ({ request }) => {
     const apiKey = request.headers
@@ -22,7 +23,8 @@ const yoga = createYoga<ServerContext>({
 
     return {
       ...initContextCache(),
-      currentUser: await getUserFromApiKey(apiKey)
+      currentUser: await getUserFromApiKey(apiKey),
+      apiKey
     }
   },
   logging: 'error',

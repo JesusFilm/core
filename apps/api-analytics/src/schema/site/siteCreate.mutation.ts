@@ -38,7 +38,7 @@ builder.mutationType({
               site_memberships: {
                 create: {
                   users: {
-                    connect: { id: context.currentUser.id }
+                    connect: { id: context.currentUser?.id }
                   },
                   role: 'owner',
                   inserted_at: new Date(),
