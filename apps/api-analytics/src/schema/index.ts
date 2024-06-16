@@ -8,7 +8,7 @@ import './site'
 import { builder } from './builder'
 
 export const schema = builder.toSubGraphSchema({
-  linkUrl: 'https://specs.apollo.dev/federation/v2.3'
+  linkUrl: 'https://specs.apollo.dev/federation/v2.7'
 })
 
 if (process.env.NODE_ENV !== 'production') {
