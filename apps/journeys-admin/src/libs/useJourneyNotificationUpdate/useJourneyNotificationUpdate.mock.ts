@@ -5,9 +5,9 @@ import {
   JourneyNotificationUpdateVariables
 } from '../../../__generated__/JourneyNotificationUpdate'
 
-import { JOURNEY_NOTIFICATION_UPDATE } from './useJourneyNotifcationUpdate'
+import { JOURNEY_NOTIFICATION_UPDATE } from './useJourneyNotificationUpdate'
 
-export const useEventEmailNotificationsUpdateMock: MockedResponse<
+export const useJourneyNotifcationUpdateMock: MockedResponse<
   JourneyNotificationUpdate,
   JourneyNotificationUpdateVariables
 > = {

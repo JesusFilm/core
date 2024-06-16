@@ -23,7 +23,7 @@ export const JOURNEY_NOTIFICATION_UPDATE = gql`
   }
 `
 
-export function useJourneyNotifcationUpdate(
+export function useJourneyNotificationUpdate(
   options?: MutationHookOptions<
     JourneyNotificationUpdate,
     JourneyNotificationUpdateVariables

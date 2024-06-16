@@ -1,16 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 
-import { useJourneyNotifcationUpdate } from './useJourneyNotifcationUpdate'
-import { useEventEmailNotificationsUpdateMock } from './useJourneyNotifcationUpdate.mock'
+import { useJourneyNotificationUpdate } from './useJourneyNotificationUpdate'
+import { useJourneyNotifcationUpdateMock } from './useJourneyNotificationUpdate.mock'
 
-describe('useEventEmailNotificationsUpdate', () => {
+describe('useJourneyNotificationUpdate', () => {
   afterEach(() => jest.clearAllMocks())
 
   it('should update event email notifications', async () => {
-    const { result } = renderHook(() => useJourneyNotifcationUpdate(), {
+    const { result } = renderHook(() => useJourneyNotificationUpdate(), {
       wrapper: ({ children }) => (
-        <MockedProvider mocks={[useEventEmailNotificationsUpdateMock]}>
+        <MockedProvider mocks={[useJourneyNotifcationUpdateMock]}>
           {children}
         </MockedProvider>
       )
@@ -26,7 +26,7 @@ describe('useEventEmailNotificationsUpdate', () => {
             }
           }
         })
-        expect(useEventEmailNotificationsUpdateMock.result).toHaveBeenCalled()
+        expect(useJourneyNotifcationUpdateMock.result).toHaveBeenCalled()
       })
     })
   })

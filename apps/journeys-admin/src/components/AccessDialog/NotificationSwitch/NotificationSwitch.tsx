@@ -6,7 +6,7 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ChangeEvent, ReactElement } from 'react'
 
-import { useJourneyNotifcationUpdate } from '../../../libs/useJourneyNotifcationUpdate'
+import { useJourneyNotificationUpdate } from '../../../libs/useJourneyNotificationUpdate'
 
 interface NotificationSwitchProps {
   name?: string
@@ -24,7 +24,8 @@ export function NotificationSwitch({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
 
-  const [journeyNotificationUpdate, { loading }] = useJourneyNotifcationUpdate()
+  const [journeyNotificationUpdate, { loading }] =
+    useJourneyNotificationUpdate()
 
   async function handleChange(e: ChangeEvent<HTMLInputElement>): Promise<void> {
     if (journeyId == null) return
