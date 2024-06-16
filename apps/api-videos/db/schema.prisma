@@ -193,3 +193,37 @@ model VideoStudyQuestion {
   @@index(languageId(type: Hash))
   @@index(order)
 }
+
+model BibleCitation {
+  id                 String @id @default(uuid())
+  typeId             Int // keyword or citation
+  bibleBookId        Int
+  chapStart          Int
+  chapEnd            Int // nullable
+  verseStart         Int
+  verseEnd           Int // nullable
+  verseGroupParentId Int
+  videoId            String
+}
+
+model BibleBook {
+  id                   String                @id @default(uuid())
+  osisId               String
+  name                 String
+  alternateNames       String
+  paratextAbbreviation String
+  isNewTestament       Boolean
+  orderNumber          Int
+  descriptorLanguageId Int
+  BibleBookDescriptor  BibleBookDescriptor[]
+}
+
+model BibleBookDescriptor {
+  id             String    @id @default(uuid())
+  bibleBookId    String
+  originalName   String
+  translatedName String
+  alternateNames String
+  languageId     String
+  bibleBook      BibleBook @relation(fields: [bibleBookId], references: [id])
+}
