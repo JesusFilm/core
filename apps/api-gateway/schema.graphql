@@ -1,14 +1,16 @@
 schema
   @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
+  @link(url: "https://specs.apollo.dev/join/v0.4", for: EXECUTION)
 {
   query: Query
   mutation: Mutation
 }
 
+directive @join__directive(graphs: [join__Graph!], name: String!, args: join__DirectiveArguments) repeatable on SCHEMA | OBJECT | INTERFACE | FIELD_DEFINITION
+
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
 
-directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean, overrideLabel: String) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
@@ -455,6 +457,12 @@ input EmailActionInput
   email: String!
 }
 
+type Error
+  @join__type(graph: ANALYTICS)
+{
+  message: String!
+}
+
 interface Event
   @join__type(graph: JOURNEYS)
 {
@@ -463,27 +471,6 @@ interface Event
   createdAt: DateTime!
   label: String
   value: String
-}
-
-type EventEmailNotifications
-  @join__type(graph: JOURNEYS)
-{
-  id: ID!
-  userId: ID!
-  journeyId: ID!
-  userTeamId: ID
-  userJourneyId: ID
-  value: Boolean!
-}
-
-input EventEmailNotificationsUpdateInput
-  @join__type(graph: JOURNEYS)
-{
-  userId: ID!
-  journeyId: ID!
-  userTeamId: ID
-  userJourneyId: ID
-  value: Boolean!
 }
 
 type FormBlock implements Block
@@ -771,9 +758,12 @@ input ImageBlockUpdateInput
   height: Int
 }
 
+scalar join__DirectiveArguments
+
 scalar join__FieldSet
 
 enum join__Graph {
+  ANALYTICS @join__graph(name: "analytics", url: "http://127.0.0.1:4007/graphql")
   JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
   LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql")
   MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")
@@ -866,6 +856,24 @@ input JourneyCreateInput
   at the end of the slug guaranteeing uniqueness
   """
   slug: String
+}
+
+type JourneyNotification
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  visitorInteractionEmail: Boolean!
+}
+
+input JourneyNotificationUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  journeyId: ID!
+  visitorInteractionEmail: Boolean!
 }
 
 type JourneyProfile
@@ -1230,10 +1238,12 @@ enum MessagePlatform
 }
 
 type Mutation
+  @join__type(graph: ANALYTICS)
   @join__type(graph: JOURNEYS)
   @join__type(graph: MEDIA)
   @join__type(graph: USERS)
 {
+  siteCreate(input: SiteCreateInput!): MutationSiteCreateResult! @join__field(graph: ANALYTICS)
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
@@ -1396,7 +1406,6 @@ type Mutation
   videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent! @join__field(graph: JOURNEYS)
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @join__field(graph: JOURNEYS)
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
-  eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput!): EventEmailNotifications! @join__field(graph: JOURNEYS)
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
@@ -1427,6 +1436,7 @@ type Mutation
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyCollectionDelete(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
@@ -1474,6 +1484,18 @@ type Mutation
   userImpersonate(email: String!): String @join__field(graph: USERS)
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean @join__field(graph: USERS)
   validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
+}
+
+union MutationSiteCreateResult
+  @join__type(graph: ANALYTICS)
+  @join__unionMember(graph: ANALYTICS, member: "Error")
+  @join__unionMember(graph: ANALYTICS, member: "MutationSiteCreateSuccess")
+ = Error | MutationSiteCreateSuccess
+
+type MutationSiteCreateSuccess
+  @join__type(graph: ANALYTICS)
+{
+  data: Site!
 }
 
 type NavigateToBlockAction implements Action
@@ -1740,6 +1762,7 @@ type PowerBiEmbed
 }
 
 type Query
+  @join__type(graph: ANALYTICS)
   @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
@@ -1751,7 +1774,6 @@ type Query
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
   customDomain(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
   customDomains(teamId: ID!): [CustomDomain!]! @join__field(graph: JOURNEYS)
-  eventEmailNotificationsByJourney(journeyId: ID!): [EventEmailNotifications!]! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
 
   """
@@ -2046,6 +2068,44 @@ input SignUpSubmissionEventCreateInput
 
   """email from the signUpBlock form"""
   email: String!
+}
+
+type Site
+  @join__type(graph: ANALYTICS)
+{
+  id: String!
+  domain: String!
+  memberships: [SiteMembership!]!
+  sharedLinks: [SiteSharedLink!]!
+  goals: [SiteGoal!]!
+}
+
+input SiteCreateInput
+  @join__type(graph: ANALYTICS)
+{
+  domain: String!
+  goals: [String!]
+}
+
+type SiteGoal
+  @join__type(graph: ANALYTICS)
+{
+  id: String!
+  eventName: String
+}
+
+type SiteMembership
+  @join__type(graph: ANALYTICS)
+{
+  id: String!
+  role: String!
+}
+
+type SiteSharedLink
+  @join__type(graph: ANALYTICS)
+{
+  id: String!
+  slug: String!
 }
 
 type StepBlock implements Block
@@ -2610,6 +2670,7 @@ type UserJourney
   @join__type(graph: JOURNEYS, key: "id")
 {
   journey: Journey
+  journeyNotification: JourneyNotification
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2639,6 +2700,7 @@ type UserRole
 type UserTeam
   @join__type(graph: JOURNEYS, key: "id")
 {
+  journeyNotification(journeyId: ID!): JourneyNotification
   id: ID!
   user: User!
   role: UserTeamRole!
