@@ -55,6 +55,7 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { PlausibleFilter } from '../../../PlausibleFilter'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -292,6 +293,7 @@ export function JourneyFlow(): ReactElement {
       }}
       data-testid="JourneyFlow"
     >
+      <PlausibleFilter />
       <ReactFlow
         nodes={nodes}
         edges={edges}
