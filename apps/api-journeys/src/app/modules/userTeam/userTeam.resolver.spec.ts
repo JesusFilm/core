@@ -308,4 +308,48 @@ describe('UserTeamResolver', () => {
       })
     })
   })
+
+  describe('journeyNotification', () => {
+    it('returns associated journeyNotification', async () => {
+      const userTeam = {
+        id: 'userTeamId',
+        journeyNotifications: [
+          {
+            id: 'journeyNotification',
+            userId: 'userId',
+            journeyId: 'journeyId',
+            userTeamId: null,
+            userJourneyId: 'userJourneyId',
+            visitorInteractionEmail: false
+          }
+        ]
+      }
+
+      const journeyNotifications = jest
+        .fn()
+        .mockResolvedValue(userTeam.journeyNotifications)
+
+      prismaService.userTeam.findUnique = jest
+        .fn()
+        .mockReturnValue({ ...userTeam, journeyNotifications })
+      await expect(
+        userTeamResolver.journeyNotifications(
+          userTeam as unknown as UserTeam,
+          'journeyId'
+        )
+      ).resolves.toEqual({
+        id: 'journeyNotification',
+        journeyId: 'journeyId',
+        userId: 'userId',
+        userJourneyId: 'userJourneyId',
+        userTeamId: null,
+        visitorInteractionEmail: false
+      })
+      expect(journeyNotifications).toHaveBeenCalledWith({
+        where: {
+          journeyId: 'journeyId'
+        }
+      })
+    })
+  })
 })
