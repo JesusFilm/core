@@ -10,11 +10,11 @@ import { ReactElement, useState } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { StrategySection } from '@core/journeys/ui/StrategySection'
 import { useJourneysQuery } from '@core/journeys/ui/useJourneysQuery'
 
 import { Role } from '../../../__generated__/globalTypes'
 import { useUserRoleQuery } from '../../libs/useUserRoleQuery'
-import { StrategySection } from '../../../../../libs/journeys/ui/src/components/StrategySection'
 import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
