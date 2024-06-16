@@ -107,7 +107,12 @@ export function UserListItem({
 
   return (
     <>
-      <Grid container spacing={1} alignItems="center">
+      <Grid
+        container
+        spacing={1}
+        alignItems="center"
+        data-testId="UserListItem"
+      >
         <Grid xs={2} sm={1}>
           <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
             {displayName != null

@@ -116,7 +116,7 @@ export class JourneyLevelActions {
 
   async verifyAccessAddedInManageEditors() {
     await expect(
-      this.page.locator('li[data-testid="UserListItem"] p', {
+      this.page.locator('div[data-testid="UserListItem"] p', {
         hasText: this.memberEmail
       })
     ).toBeVisible()
