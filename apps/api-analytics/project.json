@@ -68,36 +68,6 @@
         ]
       }
     },
-    "prisma-migrate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "bash -c 'npx prisma migrate dev --schema apps/api-analytics/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
-        ],
-        "parallel": false
-      },
-      "configurations": {
-        "production": {
-          "commands": [
-            "npx prisma migrate deploy --schema apps/api-analytics/db/schema.prisma"
-          ]
-        }
-      }
-    },
-    "prisma-reset": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma migrate reset --schema apps/api-analytics/db/schema.prisma --force"
-        ]
-      }
-    },
-    "prisma-seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["npm run ts-node apps/api-analytics/db/seed.ts"]
-      }
-    },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
@@ -111,6 +81,14 @@
       "options": {
         "commands": [
           "npx prisma validate --schema apps/api-analytics/db/schema.prisma"
+        ]
+      }
+    },
+    "prisma-introspect": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma introspect --schema apps/api-analytics/db/schema.prisma"
         ]
       }
     },

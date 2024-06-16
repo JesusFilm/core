@@ -4,15 +4,15 @@ generator client {
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
+generator pothos {
+  provider     = "prisma-pothos-types"
+  output       = "../src/__generated__/pothos-types.ts"
+  clientOutput = ".prisma/api-analytics-client"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("PG_DATABASE_URL_ANALYTICS")
-}
-
-generator pothos {
-  provider     = "prisma-pothos-types"
-  clientOutput = ".prisma/api-analytics-client"
-  output       = "../src/__generated__/pothos-types.ts"
 }
 
 model api_keys {
