@@ -269,6 +269,6 @@ export class UserJourneyResolver {
       })
       .journeyNotification()
 
-    return res?.[0]
+    return res
   }
 }

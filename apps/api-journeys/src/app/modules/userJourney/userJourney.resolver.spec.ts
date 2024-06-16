@@ -285,16 +285,14 @@ describe('UserJourneyResolver', () => {
     it('returns associated journeyNotification', async () => {
       const userJourneyWithJourneyNotification = {
         ...userJourney,
-        journeyNotification: [
-          {
-            id: 'journeyNotification',
-            userId: 'userId',
-            journeyId: 'journeyId',
-            userTeamId: null,
-            userJourneyId: 'userJourneyId',
-            visitorInteractionEmail: false
-          }
-        ]
+        journeyNotification: {
+          id: 'journeyNotification',
+          userId: 'userId',
+          journeyId: 'journeyId',
+          userTeamId: null,
+          userJourneyId: 'userJourneyId',
+          visitorInteractionEmail: false
+        }
       }
 
       const journeyNotification = jest
