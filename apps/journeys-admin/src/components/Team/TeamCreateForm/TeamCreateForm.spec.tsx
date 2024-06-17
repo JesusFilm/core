@@ -15,6 +15,7 @@ import {
   TeamProvider,
   useTeam
 } from '../TeamProvider'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 import { TeamCreateForm } from '.'
 
@@ -74,6 +75,23 @@ describe('TeamCreateForm', () => {
       }
     }
   }
+  const updateLastActiveTeamIdMock = {
+    request: {
+      query: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: {
+        input: {
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    },
+    result: {
+      data: {
+        journeyProfileUpdate: {
+          id: 'teamId'
+        }
+      }
+    }
+  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 
@@ -90,7 +108,10 @@ describe('TeamCreateForm', () => {
     })
     const handleSubmit = jest.fn()
     const { getByRole, getByTestId, getByText } = render(
-      <MockedProvider mocks={[teamCreateMock, getTeamsMock]} cache={cache}>
+      <MockedProvider
+        mocks={[teamCreateMock, getTeamsMock, updateLastActiveTeamIdMock]}
+        cache={cache}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <TeamCreateForm onSubmit={handleSubmit}>
