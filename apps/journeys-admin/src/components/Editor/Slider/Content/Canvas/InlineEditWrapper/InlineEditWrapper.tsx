@@ -18,7 +18,6 @@ import { ButtonEdit } from './ButtonEdit'
 import { RadioOptionEdit } from './RadioOptionEdit'
 import { RadioQuestionEdit } from './RadioQuestionEdit'
 import { SignUpEdit } from './SignUpEdit'
-import { TextResponseEdit } from './TextResponseEdit'
 import { TypographyEdit } from './TypographyEdit'
 
 interface InlineEditWrapperProps
@@ -85,8 +84,6 @@ export function InlineEditWrapper({
       <RadioOptionEdit {...block} />
     ) : block.__typename === 'RadioQuestionBlock' ? (
       <RadioQuestionEdit {...block} wrappers={children.props.wrappers} />
-    ) : block.__typename === 'TextResponseBlock' ? (
-      <TextResponseEdit {...block} />
     ) : block.__typename === 'SignUpBlock' ? (
       <SignUpEdit {...block} />
     ) : (

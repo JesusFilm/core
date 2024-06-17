@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
@@ -16,30 +15,11 @@ import { Button } from '../Button'
 
 export const TEXT_RESPONSE_BLOCK_CREATE = gql`
   ${TEXT_RESPONSE_FIELDS}
-  ${ICON_FIELDS}
-  mutation TextResponseBlockCreate(
-    $input: TextResponseBlockCreateInput!
-    $iconBlockCreateInput: IconBlockCreateInput!
-    $id: ID!
-    $journeyId: ID!
-    $updateInput: TextResponseBlockUpdateInput!
-  ) {
+  mutation TextResponseBlockCreate($input: TextResponseBlockCreateInput!) {
     textResponseBlockCreate(input: $input) {
       id
       parentBlockId
       parentOrder
-      ...TextResponseFields
-    }
-    submitIcon: iconBlockCreate(input: $iconBlockCreateInput) {
-      id
-      parentBlockId
-      ...IconFields
-    }
-    textResponseBlockUpdate(
-      id: $id
-      journeyId: $journeyId
-      input: $updateInput
-    ) {
       ...TextResponseFields
     }
   }
@@ -58,7 +38,6 @@ export function NewTextResponseButton(): ReactElement {
 
   const handleClick = async (): Promise<void> => {
     const id = uuidv4()
-    const submitIconId = uuidv4()
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
@@ -70,50 +49,24 @@ export function NewTextResponseButton(): ReactElement {
             id,
             journeyId: journey.id,
             parentBlockId: card.id,
-            label: t('Your answer here'),
-            submitLabel: t('Submit')
-          },
-          iconBlockCreateInput: {
-            id: submitIconId,
-            journeyId: journey.id,
-            parentBlockId: id,
-            name: null
-          },
-          id,
-          journeyId: journey.id,
-          updateInput: {
-            submitIconId
+            label: t('Your answer here')
           }
         },
         update(cache, { data }) {
-          if (data?.textResponseBlockUpdate != null) {
+          if (data?.textResponseBlockCreate != null) {
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
-                  const newSubmitIconBlockRef = cache.writeFragment({
-                    data: data.submitIcon,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-
                   const newBlockRef = cache.writeFragment({
-                    data: data.textResponseBlockUpdate,
+                    data: data.textResponseBlockCreate,
                     fragment: gql`
                       fragment NewBlock on Block {
                         id
                       }
                     `
                   })
-
-                  return [
-                    ...existingBlockRefs,
-                    newBlockRef,
-                    newSubmitIconBlockRef
-                  ]
+                  return [...existingBlockRefs, newBlockRef]
                 }
               }
             })
@@ -132,7 +85,7 @@ export function NewTextResponseButton(): ReactElement {
   return (
     <Button
       icon={<TextInput1Icon />}
-      value={t('Feedback')}
+      value={t('Text Input')}
       onClick={handleClick}
       testId="NewTextResponseButton"
     />

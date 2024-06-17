@@ -63,7 +63,7 @@ input EmailActionInput {
   email: String!
 }
 
-extend type Mutation {
+type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
@@ -256,6 +256,7 @@ extend type Mutation {
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
   journeyCollectionDelete(id: ID!): JourneyCollection!
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   journeyProfileOnboardingFormComplete: JourneyProfile!
@@ -854,9 +855,6 @@ type TextResponseBlock implements Block {
   label: String!
   hint: String
   minRows: Int
-  action: Action
-  submitIconId: ID
-  submitLabel: String
 }
 
 input TextResponseBlockCreateInput {
@@ -864,7 +862,6 @@ input TextResponseBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  submitLabel: String!
 }
 
 input TextResponseBlockUpdateInput {
@@ -872,8 +869,6 @@ input TextResponseBlockUpdateInput {
   label: String
   hint: String
   minRows: Int
-  submitIconId: ID
-  submitLabel: String
 }
 
 enum TypographyVariant {
@@ -1595,6 +1590,9 @@ type TextResponseSubmissionEvent implements Event {
 
   """response from the TextResponseBlock form"""
   value: String
+
+  """the id of the block this event originates from"""
+  blockId: String
 }
 
 input VideoStartEventCreateInput {
@@ -2039,6 +2037,7 @@ type UserJourney
   @key(fields: "id")
 {
   journey: Journey
+  journeyNotification: JourneyNotification
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2071,6 +2070,31 @@ input JourneyCollectionCreateInput {
 input JourneyCollectionUpdateInput {
   title: String
   journeyIds: [String!]
+}
+
+type JourneyNotification {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  visitorInteractionEmail: Boolean!
+}
+
+type UserTeam
+  @key(fields: "id")
+{
+  journeyNotification(journeyId: ID!): JourneyNotification
+  id: ID!
+  user: User!
+  role: UserTeamRole!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input JourneyNotificationUpdateInput {
+  journeyId: ID!
+  visitorInteractionEmail: Boolean!
 }
 
 type JourneyProfile
@@ -2283,16 +2307,6 @@ enum Role {
 enum UserTeamRole {
   manager
   member
-}
-
-type UserTeam
-  @key(fields: "id")
-{
-  id: ID!
-  user: User!
-  role: UserTeamRole!
-  createdAt: DateTime!
-  updatedAt: DateTime!
 }
 
 input UserTeamUpdateInput {
