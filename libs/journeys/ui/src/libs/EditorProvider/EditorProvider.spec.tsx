@@ -487,7 +487,8 @@ describe('EditorContext', () => {
         chatsStarted: 0,
         linksVisited: 0,
         referrers: [],
-        stepsStats: []
+        stepsStats: [],
+        actionEventMap: {}
       }
 
       expect(

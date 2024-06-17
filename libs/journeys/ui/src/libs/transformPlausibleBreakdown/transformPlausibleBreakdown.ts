@@ -1,10 +1,10 @@
 import replace from 'lodash/replace'
 
+import { TreeBlock } from '../block'
+import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
+import { ActionBlock, isActionBlock } from '../isActionBlock'
 import { JourneyPlausibleEvents, reverseKeyify } from '../plausibleHelpers'
-import {
-  formatEventKey,
-  isActiveActionEvent
-} from '../plausibleHelpers/plausibleHelpers'
+import { generateActionTargetKey } from '../plausibleHelpers/plausibleHelpers'
 
 import { PlausibleJourneyAggregateVisitorsFields as JourneyAggregateVisitors } from './plausibleFields/__generated__/PlausibleJourneyAggregateVisitorsFields'
 import { PlausibleJourneyReferrerFields as JourneyReferrer } from './plausibleFields/__generated__/PlausibleJourneyReferrerFields'
@@ -29,7 +29,7 @@ export interface JourneyStatsBreakdown {
   actionEventMap: Record<string, PlausibleEvent>
 }
 
-export interface StepStat {
+interface StepStat {
   stepId: string
   visitors: number
   timeOnPage: number
@@ -46,10 +46,34 @@ export interface PlausibleEvent {
   events: number
 }
 
+interface PlausibleActionEvent extends PlausibleEvent {
+  target: string
+}
+
+export interface BlockAnalytics {
+  percentOfStepEvents: number
+  event: PlausibleEvent
+}
+
+interface StepAnalytics {
+  blockAnalyticsMap: Record<string, BlockAnalytics>
+  totalActiveEvents: number
+}
+
 interface TransformPlausibleBreakdownProps {
   journeyId?: string
   data?: StatsBreakdown
 }
+
+const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
+  'navigateNextStep',
+  'videoTrigger',
+  'buttonClick',
+  'textResponseSubmit',
+  'signUpSubmit',
+  'radioQuestionSubmit',
+  'chatButtonClick'
+]
 
 export function transformPlausibleBreakdown({
   journeyId,
@@ -76,7 +100,7 @@ export function transformPlausibleBreakdown({
       timeOnPage: step.timeOnPage ?? 0,
       visitorsExitAtStep:
         stepExits.find((step) => step.id === stepId)?.visitors ?? 0,
-      stepEvents: journeyEvents.filter((event) => event.stepId === stepId) ?? []
+      stepEvents: journeyEvents.filter((event) => event.stepId === stepId)
     }
   })
 
@@ -152,4 +176,71 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
     chatsStarted,
     linksVisited
   }
+}
+
+export function formatEventKey(from: string, to: string): string {
+  return `${from}->${to}`
+}
+
+export function getBlockEventKey(block?: TreeBlock): string {
+  let key = ''
+
+  if (block == null) {
+    return key
+  }
+
+  if (block?.__typename === 'StepBlock') {
+    // Get a key for Steps that have a next block
+    if (block.nextBlockId != null && block.nextBlockId !== '') {
+      key = formatEventKey(block.id, block.nextBlockId)
+    }
+  }
+
+  // Get a key for actions blocks that have an action
+  if (isActionBlock(block) && block.action != null) {
+    const target = generateActionTargetKey(block.action)
+    key = formatEventKey(block.action.parentBlockId, target)
+  }
+
+  return key
+}
+
+function isActiveActionEvent(
+  event: PlausibleEvent
+): event is PlausibleActionEvent {
+  return ACTION_EVENTS.includes(event.event) && event.target != null
+}
+
+export function getStepAnalytics(
+  blocks: Array<TreeBlock<StepBlock> | ActionBlock>,
+  eventMap?: Record<string, PlausibleEvent>
+): StepAnalytics {
+  let totalActiveEvents = 0
+  const blockAnalyticsMap: { [key: string]: BlockAnalytics } = {}
+
+  // Iterate over action blocks to populate blockAnalyticsMap and totalActiveEvents
+  blocks.forEach((block) => {
+    if (block == null) return
+
+    const key = getBlockEventKey(block)
+    const event = eventMap?.[key]
+
+    if (event != null) {
+      totalActiveEvents += event.events
+      blockAnalyticsMap[block.id] = { event, percentOfStepEvents: 0 }
+    }
+  })
+
+  // Calculate
+  blocks.forEach((block) => {
+    const analytics = blockAnalyticsMap[block.id]
+
+    if (analytics == null) return
+
+    const percentage = analytics.event.events / totalActiveEvents
+
+    blockAnalyticsMap[block.id].percentOfStepEvents = percentage
+  })
+
+  return { blockAnalyticsMap, totalActiveEvents }
 }

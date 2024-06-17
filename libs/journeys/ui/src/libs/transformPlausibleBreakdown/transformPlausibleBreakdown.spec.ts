@@ -231,13 +231,6 @@ describe('transformPlausibleBreakdown', () => {
           stepId: 'step1.id',
           target: 'link:https://bible.com'
         },
-        'step1.id->': {
-          blockId: 'step1.id',
-          event: 'pageview',
-          events: 5,
-          stepId: 'step1.id',
-          target: ''
-        },
         'step1.id->link:https://m.me/test': {
           blockId: 'step1.id',
           event: 'chatButtonClick',
