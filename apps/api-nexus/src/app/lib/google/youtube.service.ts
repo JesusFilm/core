@@ -185,7 +185,6 @@ export class GoogleYoutubeService {
         }
       })
     } catch (error) {
-      console.log('error', error)
       throw new BadRequestException(error.message)
     }
 

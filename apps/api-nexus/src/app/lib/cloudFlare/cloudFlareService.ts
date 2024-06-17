@@ -60,8 +60,7 @@ export class CloudFlareService {
       }
     )
 
-    const data = await response.json()
-    console.log('makeVideoPublic', data)
+    await response.json()
   }
 
   async downloadFile(fileId: string, resourceId: string): Promise<string> {
@@ -82,14 +81,6 @@ export class CloudFlareService {
       method: 'get',
       url: fileUrl,
       responseType: 'stream'
-    })
-
-    const totalLength = response.headers['content-length']
-    let downloadedLength = 0
-    response.data.on('data', (chunk: Buffer) => {
-      downloadedLength += chunk.length
-      const percentage = ((downloadedLength / totalLength) * 100).toFixed(2)
-      console.log(`Downloaded: ${percentage}%`)
     })
 
     response.data.pipe(writer)

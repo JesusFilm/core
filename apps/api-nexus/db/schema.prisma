@@ -61,11 +61,9 @@ model Resource {
 model ResourceSource {
     id                     String   @id @default(uuid())
     resourceId             String   @unique
-    // VIDEO
     videoGoogleDriveId     String?
     videoCloudFlareId      String?
     videoMimeType          String?
-    // Thumbnail
     thumbnailGoogleDriveId String?
     thumbnailCloudFlareId  String?
     thumbnailMimeType      String?
@@ -98,11 +96,9 @@ model ResourceLocalization {
 model ResourceLocalizationSource {
     id                      String               @id @default(uuid())
     reourceLocalizationId   String               @unique
-    // CAPTION
     captionGoogleDriveId    String?
     captionCloudFlareId     String?
     captionMimeType         String?
-    // AUDIO TRACK
     audioTrackGoogleDriveId String?
     audioTrackCloudFlareId  String?
     audioMimeType           String?

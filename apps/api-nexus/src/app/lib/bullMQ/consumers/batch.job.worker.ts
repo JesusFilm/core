@@ -28,7 +28,6 @@ export class BatchJobWorker {
     job: Job<UpdateVideoLocalizationJob>
   ): Promise<UploadResourceJob> {
     // DOWNLOAD THUMBNAIL FROM DRIVE
-    console.log('DOWNLOAD THUMBNAIL FROM DRIVE')
     let thumnbnailFilePath = ''
     if (job.data.resource?.thumbnailDriveId != null) {
       thumnbnailFilePath = await this.googleDriveService.downloadDriveFile({
@@ -37,7 +36,6 @@ export class BatchJobWorker {
       })
 
       if (thumnbnailFilePath !== '') {
-        console.log('UPDATE YOUTUBE THUMBNAIL')
         await this.youtubeService.updateVideoThumbnail({
           token: job.data.accessToken,
           videoId: job.data.localizations[0].videoId,
@@ -48,7 +46,6 @@ export class BatchJobWorker {
     }
 
     // UPDATE YOUTUBE DATA
-    console.log('UPDATE YOUTUBE')
     await this.youtubeService.updateVideo({
       token: job.data.accessToken,
       title: job.data.resource.title,
@@ -81,7 +78,6 @@ export class BatchJobWorker {
     )
 
     // DOWNLOAD THUMBNAIL FROM DRIVE
-    console.log('DOWNLOAD THUMBNAIL FROM DRIVE')
     let thumnbnailFilePath = ''
     if (job.data.resource?.thumbnailDriveId != null) {
       thumnbnailFilePath = await this.googleDriveService.downloadDriveFile({
@@ -91,7 +87,6 @@ export class BatchJobWorker {
     }
 
     // UPLOAD FILE TO BUCKET
-    console.log('UPLOADING FILE TO BUCKET')
     const bucketFile = await this.bucketService.uploadFile(
       videoFilePath,
       process.env.BUCKET_NAME ?? 'bucket-name',
@@ -103,8 +98,6 @@ export class BatchJobWorker {
     )
 
     // UPLOAD VIDEO
-    console.log('UPLOAD TO YOUTUBE')
-    // const youtubeData = { data: { id: null } }
     const youtubeData = await this.youtubeService.uploadVideo(
       {
         token: job.data.accessToken,
@@ -122,12 +115,8 @@ export class BatchJobWorker {
       }
     )
 
-    await unlink(videoFilePath, (err) => {
-      if (err != null) {
-        console.log('Unable to Delete File: ', videoFilePath)
-      } else {
-        console.log('File Deleted')
-      }
+    await unlink(videoFilePath, () => {
+      console.log('File removed')
     })
 
     // UPDATE THUMBNAIL
@@ -135,7 +124,6 @@ export class BatchJobWorker {
       job?.data?.resource?.thumbnailDriveId != null &&
       youtubeData?.data?.id != null
     ) {
-      console.log('UPLOAD THUMBNAIL TO YOUTUBE')
       if (thumnbnailFilePath != null) {
         await this.youtubeService.updateVideoThumbnail({
           token: job.data.accessToken,

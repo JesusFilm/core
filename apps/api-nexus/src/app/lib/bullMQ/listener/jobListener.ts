@@ -28,7 +28,6 @@ export class NexusJobListener implements OnModuleInit {
         job: Job<UploadResourceJob | UpdateVideoLocalizationJob>,
         progress: number
       ) => {
-        console.log('Job Progress:', job.name, progress)
         void Promise.all([
           this.prismaService.batchTask.updateMany({
             where: { id: job.data.batchTaskId },
@@ -43,7 +42,6 @@ export class NexusJobListener implements OnModuleInit {
     this.uploadQueue.on(
       'completed',
       (job: Job<UploadResourceJob | UpdateVideoLocalizationJob>) => {
-        console.log('Job completed: ', job.id)
         void Promise.all([
           this.prismaService.batchTask.updateMany({
             where: { id: job.data.batchTaskId },

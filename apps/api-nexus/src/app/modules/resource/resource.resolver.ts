@@ -168,7 +168,6 @@ export class ResourceResolver {
   async resourceFromTemplate(
     @Args('input') input: ResourceFromTemplateInput
   ): Promise<Resource[]> {
-    console.log('Resource From Template . . .')
     const { templateType, spreadsheetData } =
       await this.googleSheetsService.getSpreadSheetTemplateData({
         accessToken: input.accessToken,
@@ -184,7 +183,6 @@ export class ResourceResolver {
       )
     } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
       // PROCESS LOCALIZATION TEMPLATE
-      console.log('LOCALIZATION')
       await this.googleSheetsService.processLocalizationTemplateBatches(
         input.accessToken,
         spreadsheetData
@@ -203,7 +201,6 @@ export class ResourceResolver {
       isArray: boolean
     }
   ): Promise<Resource[]> {
-    console.log('Resource From Array . . .')
     const { templateType, spreadsheetData } =
       await this.googleSheetsService.getSpreadSheetTemplateData({
         accessToken: input.accessToken,
@@ -219,7 +216,6 @@ export class ResourceResolver {
       )
     } else if (templateType === SpreadsheetTemplateType.LOCALIZATION) {
       // PROCESS LOCALIZATION TEMPLATE
-      console.log('LOCALIZATION')
       await this.googleSheetsService.processLocalizationTemplateBatches(
         input.accessToken,
         spreadsheetData
