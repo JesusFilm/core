@@ -6,10 +6,10 @@ import { Job } from 'bullmq'
 import { Prisma } from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
 
-import { VisitorInteraction } from '../../emails/templates/VisitorInteraction'
-import { fetchEmailDetails } from '../../lib/fetchEmailDetails'
-import { PrismaService } from '../../lib/prisma.service'
-import { processUserIds } from '../../lib/processUserIds'
+import { VisitorInteraction } from '../../../emails/templates/VisitorInteraction'
+import { fetchEmailDetails } from '../../../lib/fetchEmailDetails'
+import { PrismaService } from '../../../lib/prisma.service'
+import { processUserIds } from '../../../lib/processUserIds'
 
 const apollo = new ApolloClient({
   uri: process.env.GATEWAY_URL,

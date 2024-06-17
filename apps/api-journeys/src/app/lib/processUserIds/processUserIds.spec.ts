@@ -6,7 +6,7 @@ import {
   UserTeamRole
 } from '.prisma/api-journeys-client'
 
-import { JourneyWithTeamAndUserJourney } from '../../modules/emailEvents/emailEvents.consumer'
+import { JourneyWithTeamAndUserJourney } from '../../modules/email/emailEvents/emailEvents.consumer'
 import { processUserIds } from '../processUserIds'
 
 describe('processUserIds', () => {

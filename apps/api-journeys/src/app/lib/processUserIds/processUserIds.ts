@@ -1,5 +1,5 @@
 import { UserJourneyRole } from '../../__generated__/graphql'
-import { JourneyWithTeamAndUserJourney } from '../../modules/emailEvents/emailEvents.consumer'
+import { JourneyWithTeamAndUserJourney } from '../../modules/email/emailEvents/emailEvents.consumer'
 
 export function processUserIds(
   journey: JourneyWithTeamAndUserJourney

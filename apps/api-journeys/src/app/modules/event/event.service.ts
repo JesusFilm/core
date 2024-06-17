@@ -8,7 +8,7 @@ import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
-import { EventsNotificationJob } from '../emailEvents/emailEvents.consumer'
+import { EventsNotificationJob } from '../email/emailEvents/emailEvents.consumer'
 import { VisitorService } from '../visitor/visitor.service'
 
 @Injectable()

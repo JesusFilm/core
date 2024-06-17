@@ -15,8 +15,8 @@ import {
 } from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
 
-import { UserTeamRole } from '../../__generated__/graphql'
-import { PrismaService } from '../../lib/prisma.service'
+import { UserTeamRole } from '../../../__generated__/graphql'
+import { PrismaService } from '../../../lib/prisma.service'
 
 import {
   ApiUsersJob,

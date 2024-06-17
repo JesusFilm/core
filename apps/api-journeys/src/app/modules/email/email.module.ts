@@ -7,11 +7,13 @@ import { EmailService } from '@core/nest/common/email/emailService'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { EmailConsumer } from './email.consumer'
+import { EmailEventsConsumer } from './emailEvents/emailEvents.consumer'
 
 @Global()
 @Module({
   imports: [
     BullModule.registerQueue({ name: 'api-journeys-email' }),
+    BullModule.registerQueue({ name: 'api-journeys-events-email' }),
     MailerModule.forRoot({
       transport: process.env.SMTP_URL ?? 'smtp://maildev:1025',
       defaults: {
@@ -19,7 +21,7 @@ import { EmailConsumer } from './email.consumer'
       }
     })
   ],
-  providers: [EmailConsumer, EmailService, PrismaService],
+  providers: [EmailConsumer, EmailService, PrismaService, EmailEventsConsumer],
   exports: []
 })
 export class EmailModule {}

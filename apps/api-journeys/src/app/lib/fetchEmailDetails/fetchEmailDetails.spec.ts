@@ -12,7 +12,7 @@ import {
   Visitor
 } from '.prisma/api-journeys-client'
 
-import { JourneyWithTeamAndUserJourney } from '../../modules/emailEvents/emailEvents.consumer'
+import { JourneyWithTeamAndUserJourney } from '../../modules/email/emailEvents/emailEvents.consumer'
 import { PrismaService } from '../prisma.service'
 
 import { fetchEmailDetails } from './fetchEmailDetails'
