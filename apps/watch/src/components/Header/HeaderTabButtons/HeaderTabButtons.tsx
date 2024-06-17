@@ -50,6 +50,7 @@ export function HeaderTabButtons(): ReactElement {
   return (
     <>
       <Box
+        data-testid="HeaderTabButtons"
         sx={{
           display: { xs: 'none', lg: 'flex' },
           pr: { xl: '20px' },
@@ -62,6 +63,7 @@ export function HeaderTabButtons(): ReactElement {
         {HeaderTabButtonsData.map(({ label, icon, href }) => (
           <NextLink href={href} passHref legacyBehavior key={label}>
             <Button
+              data-testid={`${label}Button`}
               component="a"
               color="inherit"
               sx={{
@@ -81,21 +83,24 @@ export function HeaderTabButtons(): ReactElement {
         ))}
       </Box>
       <Box
+        // data-testid="DropDownButton"
         sx={{
           top: '-10px',
           pr: { md: '20px' },
-          display: 'flex',
+          display: { xs: 'flex', lg: 'none' },
+          // display: 'flex',
           justifyContent: 'center',
           width: '100%',
           position: { xs: 'absolute', md: 'initial' }
         }}
       >
         <Button
+          data-testid="DropDownButton"
           color="inherit"
           startIcon={<Play1Icon />}
           endIcon={<ChervonDownIcon />}
           sx={{
-            display: { xs: 'flex', lg: 'none' },
+            // display: { xs: 'flex', lg: 'none' },
             borderRadius: '40px !important',
             borderWidth: '2px',
             borderStyle: 'solid',
@@ -126,7 +131,10 @@ export function HeaderTabButtons(): ReactElement {
       >
         {HeaderTabButtonsData.map(({ label, icon, href }) => (
           <NextLink href={href} passHref legacyBehavior key={label}>
-            <MenuItem onClick={handleCloseMenu}>
+            <MenuItem
+              onClick={handleCloseMenu}
+              selected={router.pathname.startsWith(href)}
+            >
               <ListItemIcon>{icon}</ListItemIcon>
               <ListItemText>{t(label)}</ListItemText>
             </MenuItem>
