@@ -1,22 +1,10 @@
 import { createHash } from 'crypto'
 
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { api_keys as PrismaApiKey } from '.prisma/api-analytics-client'
 
-import {
-  api_keys as PrismaApiKey,
-  PrismaClient
-} from '.prisma/api-analytics-client'
-
-import { prisma } from '../prisma'
+import { prismaMock } from '../../../test/prismaMock'
 
 import { getUserFromApiKey } from '.'
-
-jest.mock('../prisma', () => ({
-  __esModule: true,
-  prisma: mockDeep<PrismaClient>()
-}))
-
-const mockPrisma = prisma as DeepMockProxy<PrismaClient>
 
 describe('getUserFromApiKey', () => {
   describe('when apiKey is undefined', () => {
@@ -30,9 +18,9 @@ describe('getUserFromApiKey', () => {
       'd53cae10f378d14b6ececb9a9d787c3d5d126b5ee95b52ecf4772f9bf43e43d4'
 
     it('returns undefined', async () => {
-      mockPrisma.api_keys.findFirst.mockResolvedValue(null)
+      prismaMock.api_keys.findFirst.mockResolvedValue(null)
       expect(await getUserFromApiKey(apiKey)).toBeUndefined()
-      expect(mockPrisma.api_keys.findFirst).toHaveBeenCalledWith({
+      expect(prismaMock.api_keys.findFirst).toHaveBeenCalledWith({
         include: { users: true },
         where: { key_prefix: 'd53cae' }
       })
@@ -53,14 +41,14 @@ describe('getUserFromApiKey', () => {
       .digest('hex')
       .toLowerCase()
 
-    it('returns undefined', async () => {
-      mockPrisma.api_keys.findFirst.mockResolvedValue({
+    it('returns user', async () => {
+      prismaMock.api_keys.findFirst.mockResolvedValue({
         key_hash: keyHash,
         users: prismaUser
       } as unknown as PrismaApiKey)
 
       expect(await getUserFromApiKey(apiKey)).toEqual(prismaUser)
-      expect(mockPrisma.api_keys.findFirst).toHaveBeenCalledWith({
+      expect(prismaMock.api_keys.findFirst).toHaveBeenCalledWith({
         include: { users: true },
         where: { key_prefix: 'd53cae' }
       })

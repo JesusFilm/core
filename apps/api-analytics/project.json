@@ -48,6 +48,18 @@
         "jestConfig": "apps/api-analytics/jest.config.ts"
       }
     },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "graphql-codegen --config apps/api-analytics/codegen.ts"
+      }
+    },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-analytics/src/schema/index.ts"
+      }
+    },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
