@@ -1,16 +1,14 @@
 schema
   @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/join/v0.4", for: EXECUTION)
+  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
 {
   query: Query
   mutation: Mutation
 }
 
-directive @join__directive(graphs: [join__Graph!], name: String!, args: join__DirectiveArguments) repeatable on SCHEMA | OBJECT | INTERFACE | FIELD_DEFINITION
-
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
 
-directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean, overrideLabel: String) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
@@ -331,6 +329,20 @@ type CloudflareVideo
   userId: ID!
   createdAt: String!
   readyToStream: Boolean!
+}
+
+type Country
+  @join__type(graph: LANGUAGES, key: "id")
+{
+  id: ID!
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  population: Int
+  continent(languageId: ID, primary: Boolean): [Translation!]!
+  languages: [Language!]!
+  latitude: Float
+  longitude: Float
+  flagPngSrc: String
+  flagWebpSrc: String
 }
 
 input CreateVerificationRequestInput
@@ -738,8 +750,6 @@ input ImageBlockUpdateInput
   height: Int
 }
 
-scalar join__DirectiveArguments
-
 scalar join__FieldSet
 
 enum join__Graph {
@@ -832,6 +842,24 @@ input JourneyCreateInput
   at the end of the slug guaranteeing uniqueness
   """
   slug: String
+}
+
+type JourneyNotification
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  visitorInteractionEmail: Boolean!
+}
+
+input JourneyNotificationUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  journeyId: ID!
+  visitorInteractionEmail: Boolean!
 }
 
 type JourneyProfile
@@ -1392,6 +1420,7 @@ type Mutation
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyCollectionDelete(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
@@ -1573,6 +1602,8 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
+  country(id: ID!): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
@@ -2009,9 +2040,6 @@ type TextResponseBlock implements Block
   label: String!
   hint: String
   minRows: Int
-  action: Action
-  submitIconId: ID
-  submitLabel: String
 }
 
 input TextResponseBlockCreateInput
@@ -2021,7 +2049,6 @@ input TextResponseBlockCreateInput
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  submitLabel: String!
 }
 
 input TextResponseBlockUpdateInput
@@ -2031,8 +2058,6 @@ input TextResponseBlockUpdateInput
   label: String
   hint: String
   minRows: Int
-  submitIconId: ID
-  submitLabel: String
 }
 
 type TextResponseSubmissionEvent implements Event
@@ -2342,6 +2367,7 @@ type UserJourney
   @join__type(graph: JOURNEYS, key: "id")
 {
   journey: Journey
+  journeyNotification: JourneyNotification
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2371,6 +2397,7 @@ type UserRole
 type UserTeam
   @join__type(graph: JOURNEYS, key: "id")
 {
+  journeyNotification(journeyId: ID!): JourneyNotification
   id: ID!
   user: User!
   role: UserTeamRole!

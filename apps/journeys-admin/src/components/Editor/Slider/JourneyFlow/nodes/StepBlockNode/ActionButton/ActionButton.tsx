@@ -14,6 +14,7 @@ import { ACTION_BUTTON_HEIGHT } from '../libs/sizes'
 interface BlockUIProperties {
   title: string
   isSourceConnected: boolean
+  typename?: string
 }
 
 interface ActionButtonProps {
@@ -40,8 +41,9 @@ export function ActionButton({
       block.action?.__typename === 'NavigateToBlockAction' &&
       block.action?.blockId != null
     const title = getTitle(block, defaultTitle)
+    const typename = block.__typename
 
-    return { title, isSourceConnected }
+    return { title, isSourceConnected, typename }
   }
 
   function getTitleAndConnection(): BlockUIProperties {
@@ -54,8 +56,6 @@ export function ActionButton({
         return extractTitleAndConnection(block, t('Option'))
       case 'SignUpBlock':
         return extractTitleAndConnection(block, t('Subscribe'))
-      case 'TextResponseBlock':
-        return extractTitleAndConnection(block, t('Feedback'))
       case 'VideoBlock':
         return extractTitleAndConnection(block, t('Video'))
       case 'StepBlock':

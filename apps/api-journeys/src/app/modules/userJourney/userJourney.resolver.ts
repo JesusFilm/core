@@ -13,6 +13,7 @@ import omit from 'lodash/omit'
 
 import {
   Journey,
+  JourneyNotification,
   Prisma,
   UserJourney,
   UserJourneyRole
@@ -256,5 +257,18 @@ export class UserJourneyResolver {
     @Parent() userJourney: UserJourney
   ): Promise<{ __typename: string; id: string }> {
     return { __typename: 'User', id: userJourney.userId }
+  }
+
+  @ResolveField('journeyNotification')
+  async journeyNotification(
+    @Parent() userJourney: UserJourney
+  ): Promise<JourneyNotification | null | undefined> {
+    const res = await this.prismaService.userJourney
+      .findUnique({
+        where: { id: userJourney.id }
+      })
+      .journeyNotification()
+
+    return res
   }
 }
