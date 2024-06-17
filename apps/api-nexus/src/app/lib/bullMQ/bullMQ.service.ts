@@ -227,7 +227,7 @@ export class BullMQService {
       })
       const job: UpdateVideoLocalizationJob = {
         batchId: batch.id,
-        batchTaskId: batchTask?.id ?? '',
+        batchTaskId: batchTask?.id ?? '',∏
         accessToken,
         channel: {
           id: channel?.id ?? '',
