@@ -4,11 +4,13 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
+import compact from 'lodash/compact'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Calendar2Icon from '@core/shared/ui/icons/Calendar2'
 import ChervonDownIcon from '@core/shared/ui/icons/ChevronDown'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
@@ -16,19 +18,34 @@ import JourneysIcon from '@core/shared/ui/icons/Journeys'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 import TerminalIcon from '@core/shared/ui/icons/Terminal'
 
-// const [showAllButtons] = useFlags() ... Launchdarkly flag to control which buttons to display
-
-const HeaderTabButtonsData = [
-  { label: 'Strategies', icon: <TerminalIcon />, href: '/strategies' },
-  { label: 'Journeys', icon: <JourneysIcon />, href: '/journeys' },
-  { label: 'Videos', icon: <Play1Icon />, href: '/watch' },
-  { label: 'Calendar', icon: <Calendar2Icon />, href: '/calendar' },
-  { label: 'Products', icon: <Grid1Icon />, href: '/products' }
-] // filter out this list to only use the ones with the launchdarkly flag set to true
-
 export function HeaderTabButtons(): ReactElement {
+  const {
+    watchStrategies,
+    watchJourneys,
+    watchVideos,
+    watchCalendar,
+    watchProducts
+  } = useFlags()
   const { t } = useTranslation('apps-watch')
   const router = useRouter()
+
+  const headerItems = compact([
+    watchStrategies
+      ? { label: t('Strategies'), icon: <TerminalIcon />, href: '/strategies' }
+      : undefined,
+    watchJourneys
+      ? { label: t('Journeys'), icon: <JourneysIcon />, href: '/journeys' }
+      : undefined,
+    watchVideos
+      ? { label: t('Videos'), icon: <Play1Icon />, href: '/watch' }
+      : undefined,
+    watchCalendar
+      ? { label: t('Calendar'), icon: <Calendar2Icon />, href: '/calendar' }
+      : undefined,
+    watchProducts
+      ? { label: t('Products'), icon: <Grid1Icon />, href: '/products' }
+      : undefined
+  ])
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
@@ -39,15 +56,11 @@ export function HeaderTabButtons(): ReactElement {
     setAnchorEl(null)
   }
 
-  function getButtonName(): string {
-    const currentHref = router.pathname
-    return (
-      HeaderTabButtonsData.find((link) => link.href === currentHref)?.label ??
-      ''
-    )
-  }
+  const buttonLabel =
+    headerItems.find((link) => router.pathname.startsWith(link.href))?.label ??
+    ''
 
-  return (
+  return headerItems.length > 0 ? (
     <>
       <Box
         data-testid="HeaderTabButtons"
@@ -60,7 +73,7 @@ export function HeaderTabButtons(): ReactElement {
           gap: '12px' // todo: reduce to 4px on smaller devices
         }}
       >
-        {HeaderTabButtonsData.map(({ label, icon, href }) => (
+        {headerItems.map(({ label, icon, href }) => (
           <NextLink href={href} passHref legacyBehavior key={label}>
             <Button
               data-testid={`${label}Button`}
@@ -77,7 +90,7 @@ export function HeaderTabButtons(): ReactElement {
               }}
               startIcon={icon}
             >
-              {t(label)}
+              {label}
             </Button>
           </NextLink>
         ))}
@@ -113,7 +126,7 @@ export function HeaderTabButtons(): ReactElement {
           }}
           onClick={handleShowMenu}
         >
-          {t(getButtonName())}
+          {buttonLabel}
         </Button>
       </Box>
       <MuiMenu
@@ -129,7 +142,7 @@ export function HeaderTabButtons(): ReactElement {
           }
         }}
       >
-        {HeaderTabButtonsData.map(({ label, icon, href }) => (
+        {headerItems.map(({ label, icon, href }) => (
           <NextLink href={href} passHref legacyBehavior key={label}>
             <MenuItem
               onClick={handleCloseMenu}
@@ -142,6 +155,8 @@ export function HeaderTabButtons(): ReactElement {
         ))}
       </MuiMenu>
     </>
+  ) : (
+    <></>
   )
 }
 
