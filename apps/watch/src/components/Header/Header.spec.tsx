@@ -1,5 +1,5 @@
 import useScrollTrigger from '@mui/material/useScrollTrigger'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { Header } from './Header'
 
@@ -39,5 +39,12 @@ describe('Header', () => {
     expect(
       queryByRole('button', { name: 'open header menu' })
     ).not.toBeInTheDocument()
+  })
+
+  // should hide spacer
+
+  it('should hide spacer', () => {
+    render(<Header hideAbsoluteAppBar hideSpacer />)
+    expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
   })
 })

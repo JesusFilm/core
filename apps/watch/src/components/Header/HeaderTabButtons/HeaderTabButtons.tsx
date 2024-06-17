@@ -71,7 +71,7 @@ export function HeaderTabButtons(): ReactElement {
                 textAlign: 'center',
                 borderRadius: '40px !important',
                 border: '2px solid',
-                borderColor: router.pathname.startsWith(href)
+                borderColor: router.pathname?.startsWith(href)
                   ? 'red'
                   : 'transparent'
               }}
@@ -133,7 +133,7 @@ export function HeaderTabButtons(): ReactElement {
           <NextLink href={href} passHref legacyBehavior key={label}>
             <MenuItem
               onClick={handleCloseMenu}
-              selected={router.pathname.startsWith(href)}
+              selected={router.pathname?.startsWith(href)}
             >
               <ListItemIcon>{icon}</ListItemIcon>
               <ListItemText>{t(label)}</ListItemText>

@@ -124,7 +124,7 @@ export function Header({
 
   return (
     <>
-      {hideSpacer !== true && <Box height={128} />}
+      {hideSpacer !== true && <Box data-testid="HeaderSpacer" height={128} />}
       <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
         <Fade
           appear={false}
