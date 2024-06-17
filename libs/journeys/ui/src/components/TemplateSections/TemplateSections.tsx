@@ -26,7 +26,7 @@ export function TemplateSections({
   tagIds,
   languageIds
 }: TemplateSectionsProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
   const { breakpoints } = useTheme()
 
   const { data, loading } = useJourneysQuery({
