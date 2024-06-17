@@ -334,8 +334,10 @@ type Channel
   name: String!
   platform: String
   connected: Boolean
-  youtube: ChannelYoutube
-  status: ChannelStatus!
+  title: String
+  description: String
+  youtubeId: String
+  imageUrl: String
   createdAt: DateTime!
 }
 
@@ -369,18 +371,6 @@ input ChannelUpdateInput
 {
   name: String
   platform: String
-}
-
-type ChannelYoutube
-  @join__type(graph: NEXUS)
-{
-  id: ID!
-  channelId: String
-  channel: Channel
-  title: String
-  description: String
-  youtubeId: String
-  imageUrl: String
 }
 
 type ChatButton
@@ -462,6 +452,13 @@ type CloudflareVideo
   userId: ID!
   createdAt: String!
   readyToStream: Boolean!
+}
+
+input ConnectYoutubeChannelInput
+  @join__type(graph: NEXUS)
+{
+  channelId: String!
+  accessToken: String!
 }
 
 type Country
@@ -1613,6 +1610,7 @@ type Mutation
   resourceDelete(id: ID!): Resource! @join__field(graph: NEXUS)
   resourceFromTemplate(input: ResourceFromTemplateInput!): [Resource] @join__field(graph: NEXUS)
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean @join__field(graph: NEXUS)
+  resourceFromArray(input: ResourceFromArrayInput!): [Resource] @join__field(graph: NEXUS)
   userImpersonate(email: String!): String @join__field(graph: USERS)
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean @join__field(graph: USERS)
   validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
@@ -1950,6 +1948,13 @@ input ResourceFilter
   limit: Int
 }
 
+input ResourceFromArrayInput
+  @join__type(graph: NEXUS)
+{
+  accessToken: String!
+  spreadsheetData: [SpreadsheetRowInput!]!
+}
+
 input ResourceFromGoogleDriveInput
   @join__type(graph: NEXUS)
 {
@@ -1979,6 +1984,7 @@ type ResourceLocalization
 enum ResourceStatus
   @join__type(graph: NEXUS)
 {
+  created @join__enumValue(graph: NEXUS)
   deleted @join__enumValue(graph: NEXUS)
   published @join__enumValue(graph: NEXUS)
   processing @join__enumValue(graph: NEXUS)
@@ -2091,6 +2097,30 @@ input SignUpSubmissionEventCreateInput
 
   """email from the signUpBlock form"""
   email: String!
+}
+
+input SpreadsheetRowInput
+  @join__type(graph: NEXUS)
+{
+  channel: String
+  filename: String
+  title: String
+  description: String
+  customThumbnail: String
+  keywords: String
+  category: String
+  privacy: String
+  spokenLanguage: String
+  videoId: String
+  captionFile: String
+  audioTrackFile: String
+  language: String
+  captionLanguage: String
+  notifySubscribers: String
+  playlistId: String
+  isMadeForKids: String
+  mediaComponentId: String
+  textLanguage: String
 }
 
 type StepBlock implements Block
