@@ -59,7 +59,7 @@ export function TemplateGalleryCard({
   )
 
   const theme = useTheme()
-  const { t } = useTranslation('libs-journeys-ui')
+  const { t } = useTranslation('apps-journeys-admin')
   const date =
     journey != null
       ? intlFormat(parseISO(String(journey.createdAt)), {

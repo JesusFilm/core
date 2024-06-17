@@ -159,7 +159,7 @@ export function HeaderAndLanguageFilter({
 }: LanguageFilterProps): ReactElement {
   const router = useRouter()
   const [open, setOpen] = useState(false)
-  const { t } = useTranslation('libs-journeys-ui')
+  const { t } = useTranslation('apps-journeys-admin')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   useEffect(() => {

@@ -29,7 +29,7 @@ export function LanguageFilterDialog({
   loading
 }: LanguageFilterDialogProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const { t } = useTranslation('libs-journeys-ui')
+  const { t } = useTranslation('apps-journeys-admin')
 
   const handleSubmit = (values: { languages: LanguageOption[] }): void => {
     const ids = values.languages.map((language) => language.id)
