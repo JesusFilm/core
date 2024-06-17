@@ -1,27 +1,20 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import { useRouter } from 'next/router'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { HeaderTabButtons } from './HeaderTabButtons'
 
-jest.mock('@core/shared/ui/useBreakpoints', () => ({
+jest.mock('next/router', () => ({
   __esModule: true,
-  useBreakpoints: jest.fn()
+  useRouter() {
+    return {
+      pathname: '/watch'
+    }
+  }
 }))
 
 describe('HeaderTabButtons', () => {
-  // should render headertabbuttons x
-  // should render dropdown button on smaller devices x
-  // should render mui menu on dropdown button click x
-  // tab buttons should have correct href attributes x
-  // dropdown buttons should have correct href attributes x
-  // on tabbuttons, test that correct button is selected(has red border color)?
-  // on dropdownbutton, test that correct menu item is selected?
-  // should navigate to other pages on button click (eg journeys button to ./journeys)?
-  // ? should hide buttons based on launchdarkly flags?
-  // tests for large viewport?
-  // tests for smaller viewport?
-
   const trueHeaderItemsFlags = {
     strategies: true,
     journeys: true,
@@ -77,6 +70,23 @@ describe('HeaderTabButtons', () => {
         'href',
         '/products'
       )
+    })
+
+    it('should have Videos button selected when on /watch', () => {
+      render(
+        <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
+      const router = useRouter()
+      expect(router.pathname).toBe('/watch')
+
+      const videosButton = screen.getByTestId('VideosButton')
+      expect(videosButton).toHaveStyle('border-color: red')
+
+      // other buttons shouldn't have red border
+      const journeysButton = screen.getByTestId('JourneysButton')
+      expect(journeysButton).toHaveStyle('border-color: transparent')
     })
 
     it('should not render products button if products flag is false', () => {
@@ -157,6 +167,41 @@ describe('HeaderTabButtons', () => {
       expect(
         screen.getByRole('menuitem', { name: 'Products' })
       ).toHaveAttribute('href', '/products')
+    })
+
+    it('should have Videos as name of dropdown button when on /watch', () => {
+      render(
+        <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
+      const router = useRouter()
+      expect(router.pathname).toBe('/watch')
+
+      const button = screen.getByTestId('DropDownButton')
+      expect(button).toHaveTextContent('Videos')
+    })
+
+    it('should have Videos menu item selected when on /watch', () => {
+      render(
+        <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
+      const router = useRouter()
+      expect(router.pathname).toBe('/watch')
+
+      const button = screen.getByTestId('DropDownButton')
+      fireEvent.click(button)
+
+      const videosMenuItem = screen.getByRole('menuitem', { name: 'Videos' })
+      expect(videosMenuItem).toHaveClass('Mui-selected')
+
+      // other menu items shouldn't be selected
+      const journeysMenuItem = screen.getByRole('menuitem', {
+        name: 'Journeys'
+      })
+      expect(journeysMenuItem).not.toHaveClass('Mui-selected')
     })
 
     it('should not render products menu item if products flag is false', () => {
