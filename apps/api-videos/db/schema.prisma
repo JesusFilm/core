@@ -52,6 +52,8 @@ model Video {
   children          Video[]              @relation("ParentChild")
   parent            Video[]              @relation("ParentChild")
   variants          VideoVariant[]
+  BibleCitation     BibleCitation?       @relation(fields: [bibleCitationId], references: [id])
+  bibleCitationId   String?
 
   @@index(label)
   @@index(childIds)
@@ -194,36 +196,46 @@ model VideoStudyQuestion {
   @@index(order)
 }
 
+enum BibleCitationType {
+  keyword
+  citation
+}
+
 model BibleCitation {
-  id                 String @id @default(uuid())
-  typeId             Int // keyword or citation
-  bibleBookId        Int
+  id                 String            @id @default(uuid())
+  type               BibleCitationType
+  bibleBookId        String
   chapStart          Int
-  chapEnd            Int // nullable
+  chapEnd            Int?
   verseStart         Int
-  verseEnd           Int // nullable
+  verseEnd           Int?
   verseGroupParentId Int
   videoId            String
+  video              Video[]
+  bibleBook          BibleBook         @relation(fields: [bibleBookId], references: [id])
 }
 
 model BibleBook {
-  id                   String                @id @default(uuid())
+  id                   String          @id @default(uuid())
   osisId               String
-  name                 String
+  name                 BibleBookName[]
   alternateNames       String
   paratextAbbreviation String
   isNewTestament       Boolean
   orderNumber          Int
-  descriptorLanguageId Int
-  BibleBookDescriptor  BibleBookDescriptor[]
+  bibleCitation        BibleCitation[]
 }
 
-model BibleBookDescriptor {
-  id             String    @id @default(uuid())
-  bibleBookId    String
-  originalName   String
-  translatedName String
-  alternateNames String
-  languageId     String
-  bibleBook      BibleBook @relation(fields: [bibleBookId], references: [id])
+model BibleBookName {
+  id          String    @id @default(uuid())
+  value       String
+  languageId  String
+  primary     Boolean
+  bibleBookId String
+  bibleBook   BibleBook @relation(fields: [bibleBookId], references: [id])
+
+  @@unique([bibleBookId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
 }
