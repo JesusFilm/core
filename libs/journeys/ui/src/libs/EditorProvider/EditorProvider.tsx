@@ -1,5 +1,3 @@
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import isFunction from 'lodash/isFunction'
 import {
   Dispatch,
@@ -16,174 +14,190 @@ import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { searchBlocks } from '../searchBlocks'
 
-export enum ActiveTab {
-  Journey = 0,
-  Properties = 1,
-  Blocks = 2
+export enum ActiveContent {
+  Canvas = 'canvas',
+  Social = 'social',
+  Goals = 'goals'
 }
-
 export enum ActiveFab {
   Add = 0,
   Edit = 1,
   Save = 2
 }
-
-export enum ActiveJourneyEditContent {
-  Canvas = 'canvas',
-  SocialPreview = 'social',
-  Action = 'action'
+export enum ActiveSlide {
+  JourneyFlow = 0,
+  Content = 1,
+  Drawer = 2
 }
-
+export enum ActiveCanvasDetailsDrawer {
+  Properties = 0,
+  Footer = 1,
+  AddBlock = 2
+}
 export interface EditorState {
-  steps?: Array<TreeBlock<StepBlock>>
-  selectedStep?: TreeBlock<StepBlock>
-  selectedComponent?: string
-  selectedBlock?: TreeBlock
-  selectedAttributeId?: string
-  drawerTitle?: string
-  drawerChildren?: ReactNode
-  drawerMobileOpen: boolean
-  activeTab: ActiveTab
+  /**
+   * activeCanvasDetailsDrawer indicates which drawer is currently visible on
+   * CanvasDetails.
+   */
+  activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer
+  /**
+   * activeContent indicates which content is visible on the Content Slide and
+   * the Settings Slide (the content and settings slides correspond to each
+   * other).
+   */
+  activeContent: ActiveContent
+  /**
+   * activeFab indicates which Fab to display. If the user is currently editing
+   * a text field this should be set to “Save”. If the user based on the
+   * selected block can edit a text field the field should be set to “Edit”.
+   * Otherwise this should be set to “Add”.
+   */
   activeFab: ActiveFab
-  journeyEditContentComponent: ActiveJourneyEditContent
-  smUp?: boolean
+  /**
+   * activeSlide indicates which slide is primarily in view of the user.
+   * Note that Settings should only be set as active when on a mobile device.
+   * */
+  activeSlide: ActiveSlide
+  /**
+   * selectedAttributeId indicates which attribute is current expanded on
+   * Properties. Each attribute is in a collapsible accordion.
+   */
+  selectedAttributeId?: string
+  /**
+   * selectedBlock indicates which block is currently selected on the Canvas
+   * and the JourneyFlow. It also indicates which attributes should be
+   * displayed in relation to the SelectedBlock.
+   */
+  selectedBlock?: TreeBlock
+  /**
+   * selectedGoalUrl indicates which Goal to show on GoalDetails for editing.
+   * If SelectedGoalUrl is unset then the information about goals will be shown.
+   */
+  selectedGoalUrl?: string
+  /**
+   * selectedStep indicates which step is currently displayed by the Canvas and
+   * the JourneyFlow.
+   */
+  selectedStep?: TreeBlock<StepBlock>
+  steps?: Array<TreeBlock<StepBlock>>
 }
-
-export interface SetSelectedStepAction {
-  type: 'SetSelectedStepAction'
-  step?: TreeBlock<StepBlock>
+interface SetActiveContentAction {
+  type: 'SetActiveContentAction'
+  activeContent: ActiveContent
 }
-interface SetSelectedComponentAction {
-  type: 'SetSelectedComponentAction'
-  component?: string
-}
-
-interface SetSelectedBlockAction {
-  type: 'SetSelectedBlockAction'
-  block?: TreeBlock
-}
-
-export interface SetSelectedBlockByIdAction {
-  type: 'SetSelectedBlockByIdAction'
-  id?: string
-}
-
-interface SetSelectedAttributeIdAction {
-  type: 'SetSelectedAttributeIdAction'
-  id?: string
-}
-
-interface SetDrawerPropsAction {
-  type: 'SetDrawerPropsAction'
-  title?: string
-  children?: ReactNode
-  mobileOpen?: boolean
-}
-
-interface SetDrawerMobileOpenAction {
-  type: 'SetDrawerMobileOpenAction'
-  mobileOpen: boolean
-}
-
-interface SetActiveTabAction {
-  type: 'SetActiveTabAction'
-  activeTab: ActiveTab
-}
-
 interface SetActiveFabAction {
   type: 'SetActiveFabAction'
   activeFab: ActiveFab
 }
-
-interface SetActiveJourneyEditContentAction {
-  type: 'SetJourneyEditContentAction'
-  component: ActiveJourneyEditContent
+interface SetActiveSlideAction {
+  type: 'SetActiveSlideAction'
+  activeSlide: ActiveSlide
 }
-
+interface SetSelectedAttributeIdAction {
+  type: 'SetSelectedAttributeIdAction'
+  selectedAttributeId?: string
+}
+interface SetSelectedBlockAction {
+  type: 'SetSelectedBlockAction'
+  selectedBlock?: TreeBlock
+}
+interface SetSelectedBlockOnlyAction {
+  type: 'SetSelectedBlockOnlyAction'
+  selectedBlock?: TreeBlock
+}
+export interface SetSelectedBlockByIdAction {
+  type: 'SetSelectedBlockByIdAction'
+  selectedBlockId?: string
+}
+interface SetActiveCanvasDetailsDrawerAction {
+  type: 'SetActiveCanvasDetailsDrawerAction'
+  activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer
+}
+interface SetSelectedGoalUrlAction {
+  type: 'SetSelectedGoalUrlAction'
+  selectedGoalUrl?: string
+}
+export interface SetSelectedStepAction {
+  type: 'SetSelectedStepAction'
+  selectedStep?: TreeBlock<StepBlock>
+}
 interface SetStepsAction {
   type: 'SetStepsAction'
   steps: Array<TreeBlock<StepBlock>>
 }
-
-interface SetSmUpAction {
-  type: 'SetSmUpAction'
-  smUp: boolean
-}
-
 type EditorAction =
-  | SetSelectedStepAction
-  | SetSelectedComponentAction
-  | SetSelectedBlockAction
-  | SetSelectedBlockByIdAction
-  | SetSelectedAttributeIdAction
-  | SetDrawerPropsAction
-  | SetDrawerMobileOpenAction
-  | SetActiveTabAction
+  | SetActiveCanvasDetailsDrawerAction
+  | SetActiveContentAction
   | SetActiveFabAction
+  | SetActiveSlideAction
+  | SetSelectedAttributeIdAction
+  | SetSelectedBlockAction
+  | SetSelectedBlockOnlyAction
+  | SetSelectedBlockByIdAction
+  | SetSelectedGoalUrlAction
+  | SetSelectedStepAction
   | SetStepsAction
-  | SetActiveJourneyEditContentAction
-  | SetSmUpAction
 
 export const reducer = (
   state: EditorState,
   action: EditorAction
 ): EditorState => {
   switch (action.type) {
-    case 'SetSelectedStepAction':
+    case 'SetActiveCanvasDetailsDrawerAction':
       return {
         ...state,
-        selectedStep: action.step,
-        selectedBlock: action.step,
-        selectedComponent: undefined,
-        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+        activeCanvasDetailsDrawer: action.activeCanvasDetailsDrawer
       }
-    case 'SetSelectedComponentAction':
+    case 'SetActiveContentAction':
       return {
         ...state,
-        selectedComponent: action.component,
-        selectedBlock: undefined,
-        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
-      }
-    case 'SetSelectedBlockAction':
-      return {
-        ...state,
-        selectedBlock: action.block,
-        selectedComponent: undefined,
-        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
-      }
-    case 'SetSelectedBlockByIdAction':
-      return {
-        ...state,
-        selectedBlock:
-          action.id != null
-            ? searchBlocks(state.steps ?? [], action.id)
-            : undefined,
-        selectedComponent: undefined,
-        journeyEditContentComponent: ActiveJourneyEditContent.Canvas
-      }
-    case 'SetSelectedAttributeIdAction':
-      return { ...state, selectedAttributeId: action.id }
-    case 'SetDrawerPropsAction':
-      return {
-        ...state,
-        drawerTitle: action.title,
-        drawerChildren: action.children,
-        drawerMobileOpen: action.mobileOpen ?? state.drawerMobileOpen
-      }
-    case 'SetDrawerMobileOpenAction':
-      return {
-        ...state,
-        drawerMobileOpen: action.mobileOpen
-      }
-    case 'SetActiveTabAction':
-      return {
-        ...state,
-        activeTab: action.activeTab
+        activeContent: action.activeContent
       }
     case 'SetActiveFabAction':
       return {
         ...state,
         activeFab: action.activeFab
+      }
+    case 'SetActiveSlideAction':
+      return {
+        ...state,
+        activeContent: state.activeContent,
+        activeSlide: action.activeSlide
+      }
+    case 'SetSelectedAttributeIdAction':
+      return { ...state, selectedAttributeId: action.selectedAttributeId }
+    case 'SetSelectedBlockAction':
+      return {
+        ...state,
+        selectedBlock: action.selectedBlock,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+        activeContent: ActiveContent.Canvas,
+        activeSlide: ActiveSlide.Content
+      }
+    case 'SetSelectedBlockOnlyAction':
+      return { ...state, selectedBlock: action.selectedBlock }
+    case 'SetSelectedBlockByIdAction':
+      return {
+        ...state,
+        selectedBlock:
+          action.selectedBlockId != null
+            ? searchBlocks(state.steps ?? [], action.selectedBlockId)
+            : undefined,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+        activeContent: ActiveContent.Canvas
+      }
+    case 'SetSelectedGoalUrlAction':
+      return {
+        ...state,
+        selectedGoalUrl: action.selectedGoalUrl
+      }
+    case 'SetSelectedStepAction':
+      return {
+        ...state,
+        selectedStep: action.selectedStep,
+        selectedBlock: action.selectedStep,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+        activeContent: ActiveContent.Canvas
       }
     case 'SetStepsAction':
       return {
@@ -198,16 +212,6 @@ export const reducer = (
             ? searchBlocks(action.steps, state.selectedBlock.id)
             : action.steps[0]
       }
-    case 'SetJourneyEditContentAction':
-      return {
-        ...state,
-        journeyEditContentComponent: action.component
-      }
-    case 'SetSmUpAction':
-      return {
-        ...state,
-        smUp: action.smUp
-      }
   }
 }
 
@@ -217,16 +221,21 @@ export const EditorContext = createContext<{
 }>({
   state: {
     steps: [],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
     activeFab: ActiveFab.Add,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas
+    activeSlide: ActiveSlide.JourneyFlow,
+    activeContent: ActiveContent.Canvas
   },
   dispatch: () => null
 })
 
 interface EditorProviderProps {
-  children: ((state: EditorState) => ReactNode) | ReactNode
+  children:
+    | ((context: {
+        state: EditorState
+        dispatch: Dispatch<EditorAction>
+      }) => ReactNode)
+    | ReactNode
   initialState?: Partial<EditorState>
 }
 
@@ -234,20 +243,17 @@ export function EditorProvider({
   children,
   initialState
 }: EditorProviderProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [state, dispatch] = useReducer(reducer, {
     steps: [],
     selectedStep: initialState?.steps?.[0],
     selectedBlock: initialState?.steps?.[0],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Journey,
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
     activeFab: ActiveFab.Add,
-    journeyEditContentComponent: ActiveJourneyEditContent.Canvas,
-    smUp,
+    activeSlide: ActiveSlide.JourneyFlow,
+    activeContent: ActiveContent.Canvas,
     ...initialState
   })
 
-  useEffect(() => dispatch({ type: 'SetSmUpAction', smUp }), [smUp])
   useEffect(() => {
     if (initialState?.steps != null)
       dispatch({ type: 'SetStepsAction', steps: initialState.steps })
@@ -260,21 +266,21 @@ export function EditorProvider({
     if (initialState?.selectedStep != null) {
       dispatch({
         type: 'SetSelectedStepAction',
-        step: initialState.selectedStep
+        selectedStep: initialState.selectedStep
       })
       stepRef.current = true
 
       if (initialState?.selectedBlock != null)
         dispatch({
           type: 'SetSelectedBlockAction',
-          block: initialState.selectedBlock
+          selectedBlock: initialState.selectedBlock
         })
     }
   }, [initialState?.selectedStep, initialState?.selectedBlock])
 
   return (
     <EditorContext.Provider value={{ state, dispatch }}>
-      {isFunction(children) ? children(state) : children}
+      {isFunction(children) ? children({ state, dispatch }) : children}
     </EditorContext.Provider>
   )
 }

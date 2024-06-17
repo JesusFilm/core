@@ -18,20 +18,6 @@ datasource db {
   url      = env("PG_DATABASE_URL_JOURNEYS")
 }
 
-enum ChatPlatform {
-  facebook
-  telegram
-  whatsApp
-  instagram
-  viber
-  vk
-  snapchat
-  skype
-  line
-  tikTok
-  custom
-}
-
 enum MessagePlatform {
   facebook
   telegram
@@ -69,9 +55,7 @@ enum DeviceType {
 }
 
 enum ButtonAction {
-  NavigateAction
   NavigateToBlockAction
-  NavigateToJourneyAction
   LinkAction
   EmailAction
 }
@@ -83,12 +67,12 @@ enum VideoBlockSource {
 }
 
 model ChatButton {
-  id        String        @id @default(uuid())
+  id        String           @id @default(uuid())
   journeyId String
   link      String?
-  updatedAt DateTime      @default(now()) @updatedAt
-  platform  ChatPlatform?
-  journey   Journey       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  updatedAt DateTime         @default(now()) @updatedAt
+  platform  MessagePlatform?
+  journey   Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index(journeyId)
 }
@@ -224,13 +208,14 @@ model Team {
 }
 
 model UserTeam {
-  id        String       @id @default(uuid())
-  teamId    String
-  team      Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  userId    String
-  role      UserTeamRole @default(member)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id                   String                @id @default(uuid())
+  teamId               String
+  team                 Team                  @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId               String
+  role                 UserTeamRole          @default(member)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  journeyNotifications JourneyNotification[]
 
   @@unique([teamId, userId])
   @@index(role)
@@ -267,13 +252,14 @@ enum UserJourneyRole {
 }
 
 model UserJourney {
-  id        String          @id @default(uuid())
-  userId    String
-  journeyId String
-  updatedAt DateTime        @default(now()) @updatedAt
-  journey   Journey         @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-  role      UserJourneyRole
-  openedAt  DateTime?
+  id                  String               @id @default(uuid())
+  userId              String
+  journeyId           String
+  updatedAt           DateTime             @default(now()) @updatedAt
+  journey             Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  role                UserJourneyRole
+  openedAt            DateTime?
+  journeyNotification JourneyNotification?
 
   @@unique([journeyId, userId])
   @@index(journeyId)
@@ -344,6 +330,7 @@ model Journey {
   journeyVisitors           JourneyVisitor[]
   strategySlug              String?
   journeyCollectionJourneys JourneyCollectionJourneys[]
+  journeyNotifications      JourneyNotification[]
 
   @@index(title)
 }
@@ -361,11 +348,12 @@ model UserRole {
 }
 
 model JourneyProfile {
-  id                        String    @id @default(uuid())
-  userId                    String    @unique
-  acceptedTermsAt           DateTime  @default(now())
-  lastActiveTeamId          String?
-  onboardingFormCompletedAt DateTime?
+  id                           String    @id @default(uuid())
+  userId                       String    @unique
+  acceptedTermsAt              DateTime  @default(now())
+  lastActiveTeamId             String?
+  onboardingFormCompletedAt    DateTime?
+  journeyFlowBackButtonClicked Boolean?
 
   @@index(userId)
 }
@@ -490,6 +478,23 @@ model JourneysEmailPreference {
   accountNotifications Boolean @default(true)
 
   @@index(email)
+}
+
+model JourneyNotification {
+  id                      String       @id @default(uuid())
+  userId                  String
+  journeyId               String
+  userTeamId              String?
+  userJourneyId           String?      @unique
+  visitorInteractionEmail Boolean      @default(false)
+  journey                 Journey      @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  userTeam                UserTeam?    @relation(fields: [userTeamId], references: [id], onDelete: Cascade)
+  userJourney             UserJourney? @relation(fields: [userJourneyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, journeyId])
+  @@unique([userId, journeyId, userTeamId])
+  @@index(userId)
+  @@index(journeyId)
 }
 
 model CustomDomain {

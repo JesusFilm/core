@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import TargetIcon from '@core/shared/ui/icons/Target'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
@@ -21,7 +21,7 @@ const Template: StoryObj<typeof NavigationCard> = {
       <NavigationCard
         id={args.id}
         title={args.title}
-        destination={ActiveJourneyEditContent.Canvas}
+        destination={ActiveContent.Canvas}
         header={args.header ?? <ThumbsUpIcon />}
         loading={args.loading ?? false}
       />

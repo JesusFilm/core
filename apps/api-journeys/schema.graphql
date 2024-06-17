@@ -28,26 +28,10 @@ interface Action {
   gtmEventName: String
 }
 
-"""
-NavigateAction is an Action that navigates to the nextBlockId field set on the
-closest ancestor StepBlock.
-"""
-type NavigateAction implements Action {
-  parentBlockId: ID!
-  gtmEventName: String
-}
-
 type NavigateToBlockAction implements Action {
   parentBlockId: ID!
   gtmEventName: String
   blockId: String!
-}
-
-type NavigateToJourneyAction implements Action {
-  parentBlockId: ID!
-  gtmEventName: String
-  journeyId: String!
-  journey: Journey
 }
 
 type LinkAction implements Action {
@@ -63,18 +47,9 @@ type EmailAction implements Action {
   email: String!
 }
 
-input NavigateActionInput {
-  gtmEventName: String
-}
-
 input NavigateToBlockActionInput {
   gtmEventName: String
   blockId: String!
-}
-
-input NavigateToJourneyActionInput {
-  gtmEventName: String
-  journeyId: String!
 }
 
 input LinkActionInput {
@@ -88,11 +63,9 @@ input EmailActionInput {
   email: String!
 }
 
-extend type Mutation {
+type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
-  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
-  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
   blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction!
 
@@ -120,6 +93,18 @@ extend type Mutation {
 
     """drop this parameter after merging teams"""
     journeyId: ID
+
+    """
+    x is used to position a step block block horizontally in the journey flow diagram on
+    the editor.
+    """
+    x: Int
+
+    """
+    y is used to position a step block block vertically in the journey flow diagram on
+    the editor.
+    """
+    y: Int
   ): [Block!]!
   blockOrderUpdate(
     id: ID!
@@ -271,6 +256,7 @@ extend type Mutation {
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
   journeyCollectionDelete(id: ID!): JourneyCollection!
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   journeyProfileOnboardingFormComplete: JourneyProfile!
@@ -799,10 +785,8 @@ type StepBlock implements Block {
   journeyId: ID!
 
   """
-  nextBlockId contains the preferred block to navigate to when a
-  NavigateAction occurs or if the user manually tries to advance to the next
-  step. If no nextBlockId is set it will automatically navigate to the next
-  step in the journey based on parentOrder.
+  nextBlockId contains the preferred block to navigate to, users will have to
+  manually set the next block they want to card to navigate to
   """
   nextBlockId: ID
 
@@ -871,9 +855,6 @@ type TextResponseBlock implements Block {
   label: String!
   hint: String
   minRows: Int
-  action: Action
-  submitIconId: ID
-  submitLabel: String
 }
 
 input TextResponseBlockCreateInput {
@@ -881,7 +862,6 @@ input TextResponseBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  submitLabel: String!
 }
 
 input TextResponseBlockUpdateInput {
@@ -889,8 +869,6 @@ input TextResponseBlockUpdateInput {
   label: String
   hint: String
   minRows: Int
-  submitIconId: ID
-  submitLabel: String
 }
 
 enum TypographyVariant {
@@ -1188,31 +1166,17 @@ type VideoTriggerBlock implements Block {
 type ChatButton {
   id: ID!
   link: String
-  platform: ChatPlatform
-}
-
-enum ChatPlatform {
-  facebook
-  telegram
-  whatsApp
-  instagram
-  viber
-  vk
-  snapchat
-  skype
-  line
-  tikTok
-  custom
+  platform: MessagePlatform
 }
 
 input ChatButtonCreateInput {
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 input ChatButtonUpdateInput {
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 type CustomDomain {
@@ -1270,9 +1234,7 @@ type CustomDomainVerificationResponse {
 }
 
 enum ButtonAction {
-  NavigateAction
   NavigateToBlockAction
-  NavigateToJourneyAction
   LinkAction
   EmailAction
 }
@@ -1298,9 +1260,7 @@ input ButtonClickEventCreateInput {
 
   """
   The label for each corresponding action, mapping below:
-  NavigateAction - undefined
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
   """
   actionValue: String
@@ -1326,9 +1286,7 @@ type ButtonClickEvent implements Event {
 
   """
   The label for each corresponding action, mapping below:
-  NavigateAction - null
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
   """
   actionValue: String
@@ -1632,6 +1590,9 @@ type TextResponseSubmissionEvent implements Event {
 
   """response from the TextResponseBlock form"""
   value: String
+
+  """the id of the block this event originates from"""
+  blockId: String
 }
 
 input VideoStartEventCreateInput {
@@ -2076,6 +2037,7 @@ type UserJourney
   @key(fields: "id")
 {
   journey: Journey
+  journeyNotification: JourneyNotification
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2110,6 +2072,31 @@ input JourneyCollectionUpdateInput {
   journeyIds: [String!]
 }
 
+type JourneyNotification {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  visitorInteractionEmail: Boolean!
+}
+
+type UserTeam
+  @key(fields: "id")
+{
+  journeyNotification(journeyId: ID!): JourneyNotification
+  id: ID!
+  user: User!
+  role: UserTeamRole!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input JourneyNotificationUpdateInput {
+  journeyId: ID!
+  visitorInteractionEmail: Boolean!
+}
+
 type JourneyProfile
   @key(fields: "id")
 {
@@ -2118,10 +2105,12 @@ type JourneyProfile
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
   onboardingFormCompletedAt: DateTime
+  journeyFlowBackButtonClicked: Boolean
 }
 
 input JourneyProfileUpdateInput {
   lastActiveTeamId: String
+  journeyFlowBackButtonClicked: Boolean
 }
 
 type JourneyVisitor
@@ -2318,16 +2307,6 @@ enum Role {
 enum UserTeamRole {
   manager
   member
-}
-
-type UserTeam
-  @key(fields: "id")
-{
-  id: ID!
-  user: User!
-  role: UserTeamRole!
-  createdAt: DateTime!
-  updatedAt: DateTime!
 }
 
 input UserTeamUpdateInput {

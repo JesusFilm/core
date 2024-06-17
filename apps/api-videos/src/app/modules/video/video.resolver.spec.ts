@@ -41,6 +41,7 @@ describe('VideoResolver', () => {
       videoId: video.id,
       hls: '',
       slug: 'jesus/english',
+      editionId: '1',
       languageId: '529',
       duration: 0
     }

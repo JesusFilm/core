@@ -2,8 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
-import '../../../test/i18n'
-
 import {
   getJourneysMock,
   getJourneysMockWithAcceptanceTag,
@@ -94,13 +92,16 @@ describe('TemplateGallery', () => {
     expect(
       queryByRole('heading', { level: 5, name: 'Hope' })
     ).not.toBeInTheDocument()
-    expect(push).toHaveBeenCalledWith({
-      push,
-      query: {
-        tagIds: ['acceptanceTagId'],
-        languageIds: ['529']
-      }
-    })
+    expect(push).toHaveBeenCalledWith(
+      {
+        query: {
+          tagIds: ['acceptanceTagId'],
+          languageIds: ['529']
+        }
+      },
+      undefined,
+      { shallow: true }
+    )
   })
 
   it('should render templates filtered via language ids', async () => {
@@ -133,16 +134,16 @@ describe('TemplateGallery', () => {
     fireEvent.click(getByRole('button', { name: 'French Français' }))
     fireEvent.click(getByTestId('PresentationLayer'))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        push,
-        events: {
-          on
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: {
+            languageIds: [],
+            param: 'template-language'
+          }
         },
-        query: {
-          languageIds: ['496'],
-          param: 'template-language'
-        }
-      })
+        undefined,
+        { shallow: true }
+      )
     })
   })
 
@@ -176,13 +177,16 @@ describe('TemplateGallery', () => {
       getByRole('button', { name: 'Acceptance tag Acceptance Acceptance' })
     )
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith({
-        push,
-        query: {
-          tagIds: 'acceptanceTagId',
-          languageIds: ['529']
-        }
-      })
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: {
+            tagIds: 'acceptanceTagId',
+            languageIds: ['529']
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
     })
   })
 })

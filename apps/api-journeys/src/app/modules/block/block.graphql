@@ -47,6 +47,16 @@ extend type Mutation {
     drop this parameter after merging teams
     """
     journeyId: ID
+    """
+    x is used to position a step block block horizontally in the journey flow diagram on
+    the editor.
+    """
+    x: Int
+    """
+    y is used to position a step block block vertically in the journey flow diagram on
+    the editor.
+    """
+    y: Int
   ): [Block!]!
   blockOrderUpdate(
     id: ID!

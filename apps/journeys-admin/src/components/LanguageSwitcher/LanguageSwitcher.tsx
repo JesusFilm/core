@@ -118,6 +118,7 @@ export function LanguageSwitcher({
             ))}
           </Select>
         </FormControl>
+
         <Stack gap={2} sx={{ pt: 2 }}>
           {previousLanguageCode != null && (
             <Alert
@@ -130,7 +131,7 @@ export function LanguageSwitcher({
                 </Button>
               }
             >
-              {t('Are you sure you want to change language?', {
+              {t('Would you like to revert to previous language?', {
                 lng: previousLanguageCode
               })}
             </Alert>

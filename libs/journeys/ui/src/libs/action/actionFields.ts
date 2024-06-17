@@ -7,15 +7,6 @@ export const ACTION_FIELDS = gql`
     ... on NavigateToBlockAction {
       blockId
     }
-    ... on NavigateToJourneyAction {
-      journey {
-        id
-        slug
-        language {
-          bcp47
-        }
-      }
-    }
     ... on LinkAction {
       url
     }

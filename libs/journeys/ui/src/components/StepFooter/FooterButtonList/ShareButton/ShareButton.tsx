@@ -14,8 +14,8 @@ export function ShareButton(): ReactElement {
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
 
   const url =
-    journey?.slug != null
-      ? `https://your.nextstep.is/${journey.slug}`
+    typeof window !== 'undefined' && journey?.slug != null
+      ? window.location.href
       : undefined
 
   async function handleShare(): Promise<void> {

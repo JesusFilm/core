@@ -22,8 +22,6 @@ export function HostAvatars({
 }: HostAvatarsProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const src1 = avatarSrc1 ?? journey?.host?.src1
-  const src2 = avatarSrc2 ?? journey?.host?.src2
 
   return (
     <AvatarGroup
@@ -39,25 +37,25 @@ export function HostAvatars({
         }
       }}
     >
-      {src1 != null && (
+      {avatarSrc1 != null && (
         <Avatar
-          src={src1}
+          src={avatarSrc1}
           sx={{
             height: size === 'small' ? '30px' : '48px',
             width: size === 'small' ? '30px' : '48px'
           }}
         />
       )}
-      {src2 != null && (
+      {avatarSrc2 != null && (
         <Avatar
-          src={src2}
+          src={avatarSrc2}
           sx={{
             height: size === 'small' ? '30px' : '48px',
             width: size === 'small' ? '30px' : '48px'
           }}
         />
       )}
-      {(src1 == null || src2 == null) &&
+      {(avatarSrc1 == null || avatarSrc2 == null) &&
         hasPlaceholder === true &&
         size === 'small' && (
           <Avatar
@@ -78,8 +76,8 @@ export function HostAvatars({
             />
           </Avatar>
         )}
-      {src1 == null &&
-        src2 == null &&
+      {avatarSrc1 == null &&
+        avatarSrc2 == null &&
         hasPlaceholder === true &&
         size === 'large' && (
           <Avatar

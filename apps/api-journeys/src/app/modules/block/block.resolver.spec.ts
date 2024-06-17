@@ -122,11 +122,15 @@ describe('BlockResolver', () => {
   describe('blockDuplicate', () => {
     it('duplicates the block and its children', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      expect(await resolver.blockDuplicate(ability, 'blockId', 2)).toEqual([
+      expect(
+        await resolver.blockDuplicate(ability, 'blockId', 2, 3, 4)
+      ).toEqual([blockWithUserTeam, blockWithUserTeam])
+      expect(service.duplicateBlock).toHaveBeenCalledWith(
         blockWithUserTeam,
-        blockWithUserTeam
-      ])
-      expect(service.duplicateBlock).toHaveBeenCalledWith(blockWithUserTeam, 2)
+        2,
+        3,
+        4
+      )
     })
 
     it('throws error if not found', async () => {

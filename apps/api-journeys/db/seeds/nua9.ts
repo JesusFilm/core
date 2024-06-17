@@ -40,13 +40,143 @@ export async function nua9(): Promise<void> {
     update: journeyData
   })
 
+  const lastStep = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 13
+    }
+  })
+
+  const stepNotSure2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 12,
+      nextBlockId: lastStep.id
+    }
+  })
+
+  const stepNotSure = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 11,
+      nextBlockId: stepNotSure2.id
+    }
+  })
+
+  const stepNoThanks2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 10,
+      nextBlockId: lastStep.id
+    }
+  })
+
+  const stepNoThanks = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 9,
+      nextBlockId: stepNoThanks2.id
+    }
+  })
+
+  const stepIAlreadyHave2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 8,
+      nextBlockId: lastStep.id
+    }
+  })
+
+  const stepIAlreadyHave = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 7,
+      nextBlockId: stepIAlreadyHave2.id
+    }
+  })
+
+  const stepPrayer4 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 6,
+      nextBlockId: lastStep.id
+    }
+  })
+
+  const stepPrayer3 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 5,
+      nextBlockId: stepPrayer4.id
+    }
+  })
+
+  const stepPrayer2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 4,
+      nextBlockId: stepPrayer3.id
+    }
+  })
+
+  const stepPrayer1 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 3,
+      nextBlockId: stepPrayer2.id
+    }
+  })
+
+  const questionStep = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 2,
+      nextBlockId: stepPrayer1.id
+    }
+  })
+
+  const step2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      locked: false,
+      parentOrder: 1,
+      nextBlockId: questionStep.id
+    }
+  })
+
   //   first step
   const step1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       typename: 'StepBlock',
       locked: false,
-      parentOrder: 0
+      parentOrder: 0,
+      nextBlockId: step2.id
     }
   })
 
@@ -143,14 +273,6 @@ export async function nua9(): Promise<void> {
   })
 
   //   video step
-  const step2 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 1
-    }
-  })
 
   const button1 = await prisma.block.create({
     data: {
@@ -206,6 +328,7 @@ export async function nua9(): Promise<void> {
     }
   })
 
+  // question step!
   const video = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -219,19 +342,10 @@ export async function nua9(): Promise<void> {
       fullsize: true,
       action: {
         create: {
-          gtmEventName: 'NavigateAction'
+          gtmEventName: 'NavigateToBlockAction',
+          blockId: questionStep.id
         }
       }
-    }
-  })
-
-  // question step!
-  const questionStep = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 2
     }
   })
 
@@ -306,15 +420,6 @@ export async function nua9(): Promise<void> {
 
   //   Yes, I would step/option
   //   First part of the prayer
-  const stepPrayer1 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 3
-    }
-  })
-
   await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -390,15 +495,6 @@ export async function nua9(): Promise<void> {
   })
 
   // Second part of the prayer
-  const stepPrayer2 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 4
-    }
-  })
-
   const button2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -500,15 +596,6 @@ export async function nua9(): Promise<void> {
   })
 
   // Third part of the prayer
-  const stepPrayer3 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 5
-    }
-  })
-
   const button3 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -610,15 +697,6 @@ export async function nua9(): Promise<void> {
   })
 
   // final part of the prayer
-  const stepPrayer4 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 6
-    }
-  })
-
   const button4 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -720,15 +798,6 @@ export async function nua9(): Promise<void> {
   })
 
   //   I already have step/option
-  const stepIAlreadyHave = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 7
-    }
-  })
-
   await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -816,15 +885,6 @@ export async function nua9(): Promise<void> {
   })
 
   // I already have final card
-  const stepIAlreadyHave2 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 8
-    }
-  })
-
   const button5 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -924,15 +984,6 @@ export async function nua9(): Promise<void> {
   })
 
   //   No thanks step/option
-  const stepNoThanks = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 9
-    }
-  })
-
   await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -1020,15 +1071,6 @@ export async function nua9(): Promise<void> {
   })
 
   // No thanks final card
-  const stepNoThanks2 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 10
-    }
-  })
-
   const button6 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -1129,15 +1171,6 @@ export async function nua9(): Promise<void> {
   })
 
   //   I'm not sure step/option
-  const stepNotSure = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 11
-    }
-  })
-
   await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -1226,15 +1259,6 @@ export async function nua9(): Promise<void> {
   })
 
   // step I'm not sure final card
-  const stepNotSure2 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 12
-    }
-  })
-
   const button7 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -1335,15 +1359,6 @@ export async function nua9(): Promise<void> {
   })
 
   // Very last card
-  const lastStep = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      typename: 'StepBlock',
-      locked: false,
-      parentOrder: 13
-    }
-  })
-
   const signUp1 = await prisma.block.create({
     data: {
       journeyId: journey.id,

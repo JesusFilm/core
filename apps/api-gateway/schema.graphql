@@ -1,16 +1,14 @@
 schema
   @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/join/v0.4", for: EXECUTION)
+  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
 {
   query: Query
   mutation: Mutation
 }
 
-directive @join__directive(graphs: [join__Graph!], name: String!, args: join__DirectiveArguments) repeatable on SCHEMA | OBJECT | INTERFACE | FIELD_DEFINITION
-
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
 
-directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean, overrideLabel: String) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
@@ -55,9 +53,7 @@ type Browser
 enum ButtonAction
   @join__type(graph: JOURNEYS)
 {
-  NavigateAction @join__enumValue(graph: JOURNEYS)
   NavigateToBlockAction @join__enumValue(graph: JOURNEYS)
-  NavigateToJourneyAction @join__enumValue(graph: JOURNEYS)
   LinkAction @join__enumValue(graph: JOURNEYS)
   EmailAction @join__enumValue(graph: JOURNEYS)
 }
@@ -126,9 +122,7 @@ type ButtonClickEvent implements Event
 
   """
   The label for each corresponding action, mapping below:
-  NavigateAction - null
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
   """
   actionValue: String
@@ -157,9 +151,7 @@ input ButtonClickEventCreateInput
 
   """
   The label for each corresponding action, mapping below:
-  NavigateAction - undefined
   NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  NavigateToJourneyAction - slug of the journey
   LinkAction - url of the link
   """
   actionValue: String
@@ -263,21 +255,21 @@ type ChatButton
 {
   id: ID!
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 input ChatButtonCreateInput
   @join__type(graph: JOURNEYS)
 {
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 input ChatButtonUpdateInput
   @join__type(graph: JOURNEYS)
 {
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 type ChatOpenEvent implements Event
@@ -320,22 +312,6 @@ input ChatOpenEventCreateInput
   value: MessagePlatform
 }
 
-enum ChatPlatform
-  @join__type(graph: JOURNEYS)
-{
-  facebook @join__enumValue(graph: JOURNEYS)
-  telegram @join__enumValue(graph: JOURNEYS)
-  whatsApp @join__enumValue(graph: JOURNEYS)
-  instagram @join__enumValue(graph: JOURNEYS)
-  viber @join__enumValue(graph: JOURNEYS)
-  vk @join__enumValue(graph: JOURNEYS)
-  snapchat @join__enumValue(graph: JOURNEYS)
-  skype @join__enumValue(graph: JOURNEYS)
-  line @join__enumValue(graph: JOURNEYS)
-  tikTok @join__enumValue(graph: JOURNEYS)
-  custom @join__enumValue(graph: JOURNEYS)
-}
-
 type CloudflareImage
   @join__type(graph: MEDIA)
 {
@@ -353,6 +329,20 @@ type CloudflareVideo
   userId: ID!
   createdAt: String!
   readyToStream: Boolean!
+}
+
+type Country
+  @join__type(graph: LANGUAGES, key: "id")
+{
+  id: ID!
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  population: Int
+  continent(languageId: ID, primary: Boolean): [Translation!]!
+  languages: [Language!]!
+  latitude: Float
+  longitude: Float
+  flagPngSrc: String
+  flagWebpSrc: String
 }
 
 input CreateVerificationRequestInput
@@ -760,8 +750,6 @@ input ImageBlockUpdateInput
   height: Int
 }
 
-scalar join__DirectiveArguments
-
 scalar join__FieldSet
 
 enum join__Graph {
@@ -856,6 +844,24 @@ input JourneyCreateInput
   slug: String
 }
 
+type JourneyNotification
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  visitorInteractionEmail: Boolean!
+}
+
+input JourneyNotificationUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  journeyId: ID!
+  visitorInteractionEmail: Boolean!
+}
+
 type JourneyProfile
   @join__type(graph: JOURNEYS, key: "id")
 {
@@ -864,12 +870,14 @@ type JourneyProfile
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
   onboardingFormCompletedAt: DateTime
+  journeyFlowBackButtonClicked: Boolean
 }
 
 input JourneyProfileUpdateInput
   @join__type(graph: JOURNEYS)
 {
   lastActiveTeamId: String
+  journeyFlowBackButtonClicked: Boolean
 }
 
 type JourneysEmailPreference
@@ -1221,9 +1229,7 @@ type Mutation
   @join__type(graph: USERS)
 {
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
-  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
-  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
   blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction! @join__field(graph: JOURNEYS)
 
@@ -1251,6 +1257,18 @@ type Mutation
 
     """drop this parameter after merging teams"""
     journeyId: ID
+
+    """
+    x is used to position a step block block horizontally in the journey flow diagram on
+    the editor.
+    """
+    x: Int
+
+    """
+    y is used to position a step block block vertically in the journey flow diagram on
+    the editor.
+    """
+    y: Int
   ): [Block!]! @join__field(graph: JOURNEYS)
   blockOrderUpdate(
     id: ID!
@@ -1402,6 +1420,7 @@ type Mutation
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyCollectionDelete(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
@@ -1451,24 +1470,6 @@ type Mutation
   validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
 }
 
-"""
-NavigateAction is an Action that navigates to the nextBlockId field set on the
-closest ancestor StepBlock.
-"""
-type NavigateAction implements Action
-  @join__implements(graph: JOURNEYS, interface: "Action")
-  @join__type(graph: JOURNEYS)
-{
-  parentBlockId: ID!
-  gtmEventName: String
-}
-
-input NavigateActionInput
-  @join__type(graph: JOURNEYS)
-{
-  gtmEventName: String
-}
-
 type NavigateToBlockAction implements Action
   @join__implements(graph: JOURNEYS, interface: "Action")
   @join__type(graph: JOURNEYS)
@@ -1483,23 +1484,6 @@ input NavigateToBlockActionInput
 {
   gtmEventName: String
   blockId: String!
-}
-
-type NavigateToJourneyAction implements Action
-  @join__implements(graph: JOURNEYS, interface: "Action")
-  @join__type(graph: JOURNEYS)
-{
-  parentBlockId: ID!
-  gtmEventName: String
-  journeyId: String!
-  journey: Journey
-}
-
-input NavigateToJourneyActionInput
-  @join__type(graph: JOURNEYS)
-{
-  gtmEventName: String
-  journeyId: String!
 }
 
 type OperatingSystem
@@ -1618,6 +1602,8 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
+  country(id: ID!): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
@@ -1827,10 +1813,8 @@ type StepBlock implements Block
   journeyId: ID!
 
   """
-  nextBlockId contains the preferred block to navigate to when a
-  NavigateAction occurs or if the user manually tries to advance to the next
-  step. If no nextBlockId is set it will automatically navigate to the next
-  step in the journey based on parentOrder.
+  nextBlockId contains the preferred block to navigate to, users will have to
+  manually set the next block they want to card to navigate to
   """
   nextBlockId: ID
 
@@ -2056,9 +2040,6 @@ type TextResponseBlock implements Block
   label: String!
   hint: String
   minRows: Int
-  action: Action
-  submitIconId: ID
-  submitLabel: String
 }
 
 input TextResponseBlockCreateInput
@@ -2068,7 +2049,6 @@ input TextResponseBlockCreateInput
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  submitLabel: String!
 }
 
 input TextResponseBlockUpdateInput
@@ -2078,8 +2058,6 @@ input TextResponseBlockUpdateInput
   label: String
   hint: String
   minRows: Int
-  submitIconId: ID
-  submitLabel: String
 }
 
 type TextResponseSubmissionEvent implements Event
@@ -2099,6 +2077,9 @@ type TextResponseSubmissionEvent implements Event
 
   """response from the TextResponseBlock form"""
   value: String
+
+  """the id of the block this event originates from"""
+  blockId: String
 }
 
 input TextResponseSubmissionEventCreateInput
@@ -2386,6 +2367,7 @@ type UserJourney
   @join__type(graph: JOURNEYS, key: "id")
 {
   journey: Journey
+  journeyNotification: JourneyNotification
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2415,6 +2397,7 @@ type UserRole
 type UserTeam
   @join__type(graph: JOURNEYS, key: "id")
 {
+  journeyNotification(journeyId: ID!): JourneyNotification
   id: ID!
   user: User!
   role: UserTeamRole!

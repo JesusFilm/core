@@ -26,8 +26,7 @@ const StyledPopperOption = styled(ButtonBase)(() => ({
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'flex-start',
-  alignItems: 'center',
-  flexGrow: 1
+  alignItems: 'center'
 }))
 
 export function LanguagesFilterPopper({
@@ -85,7 +84,7 @@ export function LanguagesFilterPopper({
                     backgroundColor: 'background.paper',
                     borderRadius: 1,
                     boxShadow: 2,
-                    minWidth: 250,
+                    minWidth: 200,
                     width: { xs: '100%', md: anchorEl?.clientWidth }
                   }}
                   placement="bottom-start"
@@ -118,10 +117,33 @@ export function LanguagesFilterPopper({
                               (language) => language.id === id
                             )}
                           />
-                          <Stack alignItems="flex-start" sx={{ pr: 2 }}>
-                            <Typography>{localName ?? nativeName}</Typography>
+                          <Stack
+                            alignItems="flex-start"
+                            sx={{
+                              width: 200,
+                              pr: 1,
+                              flexGrow: 1
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                textAlign: 'start',
+                                width: '100%',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden'
+                              }}
+                            >
+                              {localName ?? nativeName}
+                            </Typography>
+
                             {localName != null && nativeName != null && (
                               <Typography
+                                sx={{
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden'
+                                }}
                                 variant="body2"
                                 color="text.secondary"
                               >

@@ -1,0 +1,1 @@
+export { useUpdateEdge } from './useUpdateEdge'

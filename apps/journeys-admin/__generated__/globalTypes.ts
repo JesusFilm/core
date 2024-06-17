@@ -10,9 +10,7 @@
 export enum ButtonAction {
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
-  NavigateAction = "NavigateAction",
   NavigateToBlockAction = "NavigateToBlockAction",
-  NavigateToJourneyAction = "NavigateToJourneyAction",
 }
 
 export enum ButtonColor {
@@ -31,20 +29,6 @@ export enum ButtonSize {
 export enum ButtonVariant {
   contained = "contained",
   text = "text",
-}
-
-export enum ChatPlatform {
-  custom = "custom",
-  facebook = "facebook",
-  instagram = "instagram",
-  line = "line",
-  skype = "skype",
-  snapchat = "snapchat",
-  telegram = "telegram",
-  tikTok = "tikTok",
-  viber = "viber",
-  vk = "vk",
-  whatsApp = "whatsApp",
 }
 
 export enum IconColor {
@@ -280,12 +264,12 @@ export interface CardBlockUpdateInput {
 
 export interface ChatButtonCreateInput {
   link?: string | null;
-  platform?: ChatPlatform | null;
+  platform?: MessagePlatform | null;
 }
 
 export interface ChatButtonUpdateInput {
   link?: string | null;
-  platform?: ChatPlatform | null;
+  platform?: MessagePlatform | null;
 }
 
 export interface ChatOpenEventCreateInput {
@@ -393,6 +377,7 @@ export interface JourneyCollectionUpdateInput {
 
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
+  journeyFlowBackButtonClicked?: boolean | null;
 }
 
 export interface JourneyTemplateInput {
@@ -456,18 +441,9 @@ export interface MeInput {
   redirect?: string | null;
 }
 
-export interface NavigateActionInput {
-  gtmEventName?: string | null;
-}
-
 export interface NavigateToBlockActionInput {
   gtmEventName?: string | null;
   blockId: string;
-}
-
-export interface NavigateToJourneyActionInput {
-  gtmEventName?: string | null;
-  journeyId: string;
 }
 
 export interface RadioOptionBlockCreateInput {
@@ -571,7 +547,6 @@ export interface TextResponseBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   label: string;
-  submitLabel: string;
 }
 
 export interface TextResponseBlockUpdateInput {
@@ -579,8 +554,6 @@ export interface TextResponseBlockUpdateInput {
   label?: string | null;
   hint?: string | null;
   minRows?: number | null;
-  submitIconId?: string | null;
-  submitLabel?: string | null;
 }
 
 export interface TextResponseSubmissionEventCreateInput {

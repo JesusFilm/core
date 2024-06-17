@@ -186,7 +186,11 @@ export function HeaderAndLanguageFilter({
         '7083', // Japanese
         '16639', // Bahasa Indonesia
         '3887', // Vietnamese
-        '13169' // Thai
+        '13169', // Thai
+        '6464', // Hindi
+        '12876', // Ukrainian
+        '53441', // Arabic, Egyptian Modern Standard
+        '1942' // Türkçe, Turkish
       ]
     }
   })
@@ -211,10 +215,12 @@ export function HeaderAndLanguageFilter({
   const localButtonProps: LocalButtonProps = {
     loading,
     onClick: (e) => {
-      router.query.param = 'template-language'
-      void router.push(router)
+      const param = 'template-language'
+      void router.push({ query: { ...router.query, param } }, undefined, {
+        shallow: true
+      })
       router.events.on('routeChangeComplete', () => {
-        setBeaconPageViewed('template-language')
+        setBeaconPageViewed(param)
       })
       setOpen(!open)
     }

@@ -2,21 +2,12 @@ import Box from '@mui/material/Box'
 import NoSsr from '@mui/material/NoSsr'
 import { ReactElement, ReactNode } from 'react'
 
+import { isIPhone } from '@core/shared/ui/deviceUtils'
+
 interface ClickableCardProps {
   children: ReactNode
   onClick?: () => void
   fullscreen?: boolean
-}
-
-function iPhone(): boolean {
-  if (
-    typeof navigator === 'undefined' ||
-    typeof navigator.userAgent === 'undefined'
-  )
-    return false
-
-  const userAgent = navigator.userAgent
-  return userAgent.includes('iPhone')
 }
 
 export function ClickableCard({
@@ -27,7 +18,7 @@ export function ClickableCard({
   return (
     <>
       <NoSsr>
-        {!iPhone() && (
+        {!isIPhone() && (
           <Box
             data-testid="clickable-card-embed"
             onClick={onClick}

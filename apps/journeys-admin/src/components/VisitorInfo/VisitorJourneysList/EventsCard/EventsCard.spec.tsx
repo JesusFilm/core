@@ -30,10 +30,6 @@ describe('EventsCard', () => {
         name: 'It was basically the worst. Stabbed, lost, hungry, betrayed, and I lost a finger.'
       })
     ).toBeInTheDocument()
-    // ButtonClick
-    expect(
-      getByRole('heading', { name: 'Navigate Action' })
-    ).toBeInTheDocument()
     // RadioQuestionSubmissionEvent
     expect(
       getByRole('heading', { name: '10/10 would do it again' })

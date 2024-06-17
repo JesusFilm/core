@@ -1,7 +1,8 @@
 /* eslint-disable playwright/expect-expect */
-import { test } from '@playwright/test'
-import { chromium } from 'playwright-core'
+import { chromium, test } from '@playwright/test'
 import { playAudit } from 'playwright-lighthouse'
+
+import { LandingPage } from '../../pages/landing-page'
 
 const config = {
   extends: 'lighthouse:default',
@@ -26,7 +27,8 @@ test('Homepage', async () => {
   })
 
   const page = await browser.newPage()
-  await page.goto('/')
+  const landingPage = new LandingPage(page)
+  await landingPage.goToAdminUrl()
   await playAudit({
     page,
     config,

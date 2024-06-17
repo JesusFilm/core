@@ -15,7 +15,7 @@ import Menu1Icon from '@core/shared/ui/icons/Menu1'
 import { Role } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'
-import { Drawer } from '../Editor/Drawer'
+import { Drawer } from '../Editor/Slider/Settings/Drawer'
 
 import { GET_ME } from './NavigationDrawer/UserNavigation'
 import { SidePanelContainer } from './SidePanelContainer'
@@ -97,16 +97,7 @@ const Template: StoryObj<typeof PageWrapper> = {
           }
         ]}
       >
-        <EditorProvider
-          initialState={
-            args.sidePanelChildren === null
-              ? {
-                  drawerTitle: 'Custom drawer',
-                  drawerChildren: 'Custom drawer content'
-                }
-              : {}
-          }
-        >
+        <EditorProvider>
           <PageWrapper {...args} />
         </EditorProvider>
       </MockedProvider>

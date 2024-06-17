@@ -1,21 +1,7 @@
 type ChatButton {
   id: ID!
   link: String
-  platform: ChatPlatform
-}
-
-enum ChatPlatform {
-  facebook
-  telegram
-  whatsApp
-  instagram
-  viber
-  vk
-  snapchat
-  skype
-  line
-  tikTok
-  custom
+  platform: MessagePlatform
 }
 
 extend type Journey {
@@ -24,12 +10,12 @@ extend type Journey {
 
 input ChatButtonCreateInput {
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 input ChatButtonUpdateInput {
   link: String
-  platform: ChatPlatform
+  platform: MessagePlatform
 }
 
 extend type Mutation {

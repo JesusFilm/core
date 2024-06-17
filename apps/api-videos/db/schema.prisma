@@ -48,6 +48,7 @@ model Video {
   slug              String?              @unique
   noIndex           Boolean?
   childIds          String[] // needed for child sort order
+  subtitles         VideoSubtitle[]
   children          Video[]              @relation("ParentChild")
   parent            Video[]              @relation("ParentChild")
   variants          VideoVariant[]
@@ -94,12 +95,30 @@ model VideoVariant {
   duration   Int?
   languageId String
   subtitle   VideoVariantSubtitle[]
+  editionId  String?
   slug       String                 @unique
   video      Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId    String?
 
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))
+  @@index(videoId(type: Hash))
+}
+
+model VideoSubtitle {
+  id         String  @id @default(uuid())
+  videoId    String
+  edition    String?
+  vttSrc     String
+  srtSrc     String
+  primary    Boolean
+  languageId String
+  Video      Video   @relation(fields: [videoId], references: [id])
+
+  @@unique([videoId, edition, languageId])
+  @@index(languageId(type: Hash))
+  @@index(edition(type: Hash))
+  @@index(primary(type: Hash))
   @@index(videoId(type: Hash))
 }
 

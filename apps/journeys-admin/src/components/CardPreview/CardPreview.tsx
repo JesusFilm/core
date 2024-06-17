@@ -1,4 +1,3 @@
-import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -7,19 +6,14 @@ import { ReactElement, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
-import { ActiveJourneyEditContent } from '@core/journeys/ui/EditorProvider'
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
-import {
-  StepAndCardBlockCreate,
-  StepAndCardBlockCreateVariables
-} from '../../../__generated__/StepAndCardBlockCreate'
-import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
+import { useBlockOrderUpdateMutation } from '../../libs/useBlockOrderUpdateMutation'
+import { useStepAndCardBlockCreateMutation } from '../../libs/useStepAndCardBlockCreateMutation'
 
 import { CardList } from './CardList'
 import { OnSelectProps } from './OnSelectProps'
@@ -52,35 +46,6 @@ export interface CardPreviewProps {
   testId?: string
 }
 
-export const STEP_AND_CARD_BLOCK_CREATE = gql`
-  ${STEP_FIELDS}
-  ${CARD_FIELDS}
-  mutation StepAndCardBlockCreate(
-    $stepBlockCreateInput: StepBlockCreateInput!
-    $cardBlockCreateInput: CardBlockCreateInput!
-  ) {
-    stepBlockCreate(input: $stepBlockCreateInput) {
-      ...StepFields
-    }
-    cardBlockCreate(input: $cardBlockCreateInput) {
-      ...CardFields
-    }
-  }
-`
-
-export const STEPS_ORDER_UPDATE = gql`
-  mutation StepsOrderUpdate($id: ID!, $journeyId: ID!, $parentOrder: Int!) {
-    blockOrderUpdate(
-      id: $id
-      journeyId: $journeyId
-      parentOrder: $parentOrder
-    ) {
-      id
-      parentOrder
-    }
-  }
-`
-
 export function CardPreview({
   steps,
   selected,
@@ -91,20 +56,17 @@ export function CardPreview({
   testId
 }: CardPreviewProps): ReactElement {
   const [isDragging, setIsDragging] = useState(false)
-  const [stepAndCardBlockCreate] = useMutation<
-    StepAndCardBlockCreate,
-    StepAndCardBlockCreateVariables
-  >(STEP_AND_CARD_BLOCK_CREATE)
-  const [stepsOrderUpdate] = useMutation<StepsOrderUpdate>(STEPS_ORDER_UPDATE)
+  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
+  const [stepsOrderUpdate] = useBlockOrderUpdateMutation()
   const { journey } = useJourney()
 
   const handleChange = (selectedId: string): void => {
     switch (selectedId) {
       case 'goals':
-        onSelect?.({ view: ActiveJourneyEditContent.Action })
+        onSelect?.({ view: ActiveContent.Goals })
         return
       case 'social':
-        onSelect?.({ view: ActiveJourneyEditContent.SocialPreview })
+        onSelect?.({ view: ActiveContent.Social })
         return
     }
     if (steps == null) return
@@ -130,34 +92,6 @@ export function CardPreview({
           parentBlockId: stepId,
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base
-        }
-      },
-      update(cache, { data }) {
-        if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journey.id }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const newStepBlockRef = cache.writeFragment({
-                  data: data.stepBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                const newCardBlockRef = cache.writeFragment({
-                  data: data.cardBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                return [...existingBlockRefs, newStepBlockRef, newCardBlockRef]
-              }
-            }
-          })
         }
       }
     })
@@ -263,7 +197,7 @@ export function CardPreview({
             py: 5,
             px: 6
           }}
-          data-testId={`CardPreview${testId ?? ''}`}
+          data-testid={`CardPreview${testId ?? ''}`}
         >
           <Box
             sx={{

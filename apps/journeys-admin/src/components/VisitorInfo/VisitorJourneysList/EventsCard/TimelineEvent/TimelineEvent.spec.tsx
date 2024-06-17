@@ -2,9 +2,7 @@ import { render } from '@testing-library/react'
 
 import {
   buttonClickLinkEvent,
-  buttonClickNavigateEvent,
   buttonClickNavigateToBlockEvent,
-  buttonClickNavigateToJourneyEvent,
   chatOpenedEvent,
   journeyViewEvent,
   radioQuestionSubmissionEvent,
@@ -56,15 +54,6 @@ describe('TimelineEvent', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows buttonClickEvent for navigateAction', () => {
-    const { getByText } = render(
-      <TimelineEvent timelineItem={buttonClickNavigateEvent} />
-    )
-    expect(getByText('Button click:')).toBeInTheDocument()
-    expect(getByText('Next Card')).toBeInTheDocument()
-    expect(getByText('Navigate Action')).toBeInTheDocument()
-  })
-
   it('shows buttonClickEvent for navigateToBlockAction', () => {
     const { getByText } = render(
       <TimelineEvent timelineItem={buttonClickNavigateToBlockEvent} />
@@ -72,15 +61,6 @@ describe('TimelineEvent', () => {
     expect(getByText('Button click:')).toBeInTheDocument()
     expect(getByText('Selected Card')).toBeInTheDocument()
     expect(getByText('Navigate To Block Action')).toBeInTheDocument()
-  })
-
-  it('shows buttonClickEvent for navigateToJourneyAction', () => {
-    const { getByText } = render(
-      <TimelineEvent timelineItem={buttonClickNavigateToJourneyEvent} />
-    )
-    expect(getByText('Button click:')).toBeInTheDocument()
-    expect(getByText('Journey')).toBeInTheDocument()
-    expect(getByText('Navigate To Journey Action')).toBeInTheDocument()
   })
 
   it('shows buttonClickEvent for LinkAction', () => {
