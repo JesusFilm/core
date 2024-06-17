@@ -3,9 +3,9 @@ import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
-import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useMemo, useState } from 'react'
@@ -97,31 +97,36 @@ export function UserTeamListItem({
               : email.charAt(0).toUpperCase()}
           </Avatar>
         </Grid>
-        <Grid xs={5} sm={7}>
-          <ListItemText
-            primary={displayName}
-            secondary={email}
-            sx={{
-              ml: 2,
-              '& > .MuiListItemText-secondary': {
+        <Grid xs={journeyId != null ? 5 : 7} sm={journeyId != null ? 7 : 9}>
+          <Stack sx={{ ml: 2 }}>
+            <Typography variant="subtitle2" sx={{ width: '100%' }}>
+              {displayName}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
                 width: { xs: '90%', sm: '90%' },
                 whiteSpace: 'nowrap',
                 overflow: 'clip',
                 textOverflow: 'ellipsis'
-              }
-            }}
-          />
+              }}
+            >
+              {email}
+            </Typography>
+          </Stack>
         </Grid>
-        <Grid xs={2} sm={2}>
-          {journeyId != null && (
-            <NotificationSwitch
-              name={listItem?.user?.firstName}
-              journeyId={journeyId}
-              checked={checked}
-              disabled={currentUserTeam?.user?.id !== userId}
-            />
-          )}
-        </Grid>
+        {journeyId != null && (
+          <Grid xs={2} sm={2}>
+            {journeyId != null && (
+              <NotificationSwitch
+                name={listItem?.user?.firstName}
+                journeyId={journeyId}
+                checked={checked}
+                disabled={currentUserTeam?.user?.id !== userId}
+              />
+            )}
+          </Grid>
+        )}
         <Grid xs={3} sm={2}>
           <Button
             aria-controls={open ? 'basic-menu' : undefined}

@@ -49,15 +49,6 @@ export function UserList({
     <>
       {loading === true ? (
         <Box data-testid="JourneysAdminUserList">
-          <Divider>
-            <Typography
-              variant="subtitle3"
-              color="secondary.light"
-              sx={{ opacity: 0.8 }}
-            >
-              {title}
-            </Typography>
-          </Divider>
           <List>
             {[0, 1, 2].map((i) => (
               <ListItem key={i} sx={{ px: 0 }}>

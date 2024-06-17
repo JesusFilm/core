@@ -101,13 +101,13 @@ export function AccessDialog({
     return data?.journey?.team?.userTeams.find(({ user: { email } }) => {
       return email === user?.email
     })
-  }, [data, user])
+  }, [data?.journey?.team?.userTeams, user])
 
   const userTeamsMap = useMemo(() => {
     return new Map(
       data?.journey.team?.userTeams.map((obj) => [obj.user.id, obj])
     )
-  }, [data])
+  }, [data?.journey?.team?.userTeams])
 
   const { users, requests, invites, emails } = useMemo(() => {
     const users: UserJourney[] = []

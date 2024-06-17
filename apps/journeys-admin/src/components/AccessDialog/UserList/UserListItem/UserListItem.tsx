@@ -2,9 +2,9 @@ import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
-import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
@@ -121,19 +121,22 @@ export function UserListItem({
           </Avatar>
         </Grid>
         <Grid xs={5} sm={7}>
-          <ListItemText
-            primary={displayName}
-            secondary={email}
-            sx={{
-              ml: 2,
-              '& > .MuiListItemText-secondary': {
+          <Stack sx={{ ml: 2 }}>
+            <Typography variant="subtitle2" sx={{ width: '100%', flexGrow: 1 }}>
+              {displayName}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
                 width: { xs: '90%', sm: '90%' },
                 whiteSpace: 'nowrap',
                 overflow: 'clip',
                 textOverflow: 'ellipsis'
-              }
-            }}
-          />
+              }}
+            >
+              {email}
+            </Typography>
+          </Stack>
         </Grid>
         <Grid xs={2} sm={2}>
           {listItem.__typename !== 'UserInvite' && (
