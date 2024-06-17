@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
+import { VideoVariant } from '.prisma/api-videos-client'
+
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
@@ -36,7 +38,7 @@ describe('ImporterVideoVariantsService', () => {
 
   describe('import', () => {
     it('should update video variant', async () => {
-      videosService.ids = ['videoId']
+      await service.getExistingIds()
       videosService.usedSlugs = { videoId: 'Variant-Title' }
 
       await service.import({
@@ -73,7 +75,6 @@ describe('ImporterVideoVariantsService', () => {
     })
 
     it('should save many video variants', async () => {
-      videosService.ids = ['videoId']
       videosService.usedSlugs = { videoId: 'Variant-Title' }
 
       await service.importMany([
@@ -125,7 +126,6 @@ describe('ImporterVideoVariantsService', () => {
     })
 
     it('should throw error if cannot find video for the video variant', async () => {
-      videosService.ids = []
       videosService.usedSlugs = {}
 
       expect(
