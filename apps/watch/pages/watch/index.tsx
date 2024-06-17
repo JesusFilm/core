@@ -79,7 +79,7 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
   return {
     revalidate: 3600,
     props: {
-      flags: getFlags(),
+      flags: await getFlags(),
       videos: compact(videos),
       ...(await serverSideTranslations(
         locale ?? 'en',

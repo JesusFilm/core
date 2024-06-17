@@ -100,7 +100,7 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async ({
   return {
     revalidate: 3600,
     props: {
-      flags: getFlags(),
+      flags: await getFlags(),
       initialApolloState: apolloClient.cache.extract(),
       videos,
       ...(await serverSideTranslations(

@@ -18,10 +18,19 @@ function JourneysPage(): ReactElement {
 }
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const flags = await getFlags()
+
+  if (flags.journeys !== true)
+    return {
+      revalidate: 60,
+      redirect: '/',
+      props: {}
+    }
+
   return {
     revalidate: 3600,
     props: {
-      flags: getFlags(),
+      flags,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],

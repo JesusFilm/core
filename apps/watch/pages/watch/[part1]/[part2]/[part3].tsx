@@ -96,7 +96,7 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
     return {
       revalidate: 3600,
       props: {
-        flags: getFlags(),
+        flags: await getFlags(),
         container: data.container,
         content: data.content,
         ...(await serverSideTranslations(

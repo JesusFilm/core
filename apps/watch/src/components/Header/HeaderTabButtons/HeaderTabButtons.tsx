@@ -19,30 +19,22 @@ import Play1Icon from '@core/shared/ui/icons/Play1'
 import TerminalIcon from '@core/shared/ui/icons/Terminal'
 
 export function HeaderTabButtons(): ReactElement {
-  const {
-    watchStrategies,
-    watchJourneys,
-    watchVideos,
-    watchCalendar,
-    watchProducts
-  } = useFlags()
+  const { strategies, journeys, calendar, products } = useFlags()
   const { t } = useTranslation('apps-watch')
   const router = useRouter()
 
   const headerItems = compact([
-    watchStrategies
+    strategies
       ? { label: t('Strategies'), icon: <TerminalIcon />, href: '/strategies' }
       : undefined,
-    watchJourneys
+    journeys
       ? { label: t('Journeys'), icon: <JourneysIcon />, href: '/journeys' }
       : undefined,
-    watchVideos
-      ? { label: t('Videos'), icon: <Play1Icon />, href: '/watch' }
-      : undefined,
-    watchCalendar
+    { label: t('Videos'), icon: <Play1Icon />, href: '/watch' },
+    calendar
       ? { label: t('Calendar'), icon: <Calendar2Icon />, href: '/calendar' }
       : undefined,
-    watchProducts
+    products
       ? { label: t('Products'), icon: <Grid1Icon />, href: '/products' }
       : undefined
   ])
@@ -60,7 +52,7 @@ export function HeaderTabButtons(): ReactElement {
     headerItems.find((link) => router.pathname.startsWith(link.href))?.label ??
     ''
 
-  return headerItems.length > 0 ? (
+  return headerItems.length > 1 ? (
     <>
       <Box
         data-testid="HeaderTabButtons"
