@@ -32,11 +32,11 @@ describe('ImporterVideoVariantsService', () => {
     ) as DeepMockProxy<PrismaService>
 
     prismaService.videoVariant.findMany.mockResolvedValue([])
+    await service.getExistingIds()
   })
 
   describe('import', () => {
     it('should update video variant', async () => {
-      await service.getExistingIds()
       videosService.usedSlugs = { videoId: 'Variant-Title' }
 
       await service.import({
