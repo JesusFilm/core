@@ -240,5 +240,50 @@ describe('ImporterVideosService', () => {
         })
       ).rejects.toThrow('row does not match schema: unknownId')
     })
+
+    it('should throw error when some rows are invalid', async () => {
+      prismaService.video.findMany.mockResolvedValueOnce([])
+      await service.getUsedSlugs()
+      await expect(
+        service.importMany([
+          {
+            id: 'mockValue0',
+            label: 'short',
+            primaryLanguageId: 529,
+            slug: 'Some Title',
+            extraStuff: 'randomData',
+            childIds: null,
+            image: null
+          },
+          {
+            id: 'mockValue1',
+            label: 'invalidLabel',
+            primaryLanguageId: 529
+          }
+        ])
+      ).rejects.toThrow('some rows do not match schema: mockValue1')
+    })
+
+    it('should throw error when some rows have no id', async () => {
+      prismaService.video.findMany.mockResolvedValueOnce([])
+      await service.getUsedSlugs()
+      await expect(
+        service.importMany([
+          {
+            id: 'mockValue0',
+            label: 'short',
+            primaryLanguageId: 529,
+            slug: 'Some Title',
+            extraStuff: 'randomData',
+            childIds: null,
+            image: null
+          },
+          {
+            label: 'invalidLabel',
+            primaryLanguageId: 529
+          }
+        ])
+      ).rejects.toThrow('some rows do not match schema: unknownId')
+    })
   })
 })
