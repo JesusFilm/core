@@ -37,9 +37,8 @@ describe('ImporterVideoVariantSubtitlesService', () => {
   })
 
   describe('import', () => {
-    videoVariantsService.ids = ['mockVideoVariantId']
-
     it('should update video variant subtitle', async () => {
+      videoVariantsService.ids = ['mockVideoVariantId']
       await service.import({
         value: 'mockValue',
         primary: 1,
@@ -67,6 +66,47 @@ describe('ImporterVideoVariantSubtitlesService', () => {
           value: 'mockValue',
           videoVariantId: 'mockVideoVariantId'
         }
+      })
+    })
+
+    it('should save many video variant subtitles', async () => {
+      videoVariantsService.ids = ['mockVideoVariantId', 'mockVideoVariantId1']
+      await service.importMany([
+        {
+          value: 'mockValue',
+          primary: 1,
+          languageId: 529,
+          videoVariantId: 'mockVideoVariantId',
+          format: 'VTT',
+          extraStuff: 'randomData'
+        },
+        {
+          value: 'mockValue1',
+          primary: 1,
+          languageId: 529,
+          videoVariantId: 'mockVideoVariantId1',
+          format: 'VTT',
+          extraStuff: 'randomData'
+        }
+      ])
+      expect(
+        prismaService.videoVariantSubtitle.createMany
+      ).toHaveBeenCalledWith({
+        data: [
+          {
+            value: 'mockValue',
+            primary: true,
+            languageId: '529',
+            videoVariantId: 'mockVideoVariantId'
+          },
+          {
+            value: 'mockValue1',
+            primary: true,
+            languageId: '529',
+            videoVariantId: 'mockVideoVariantId1'
+          }
+        ],
+        skipDuplicates: true
       })
     })
 
