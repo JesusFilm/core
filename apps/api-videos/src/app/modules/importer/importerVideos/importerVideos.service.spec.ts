@@ -31,6 +31,7 @@ describe('ImporterVideosService', () => {
   describe('import', () => {
     it('should upsert video', async () => {
       prismaService.video.findMany.mockResolvedValueOnce([])
+      await service.getUsedSlugs()
       await service.import({
         id: 'mockValue0',
         label: 'short',
@@ -47,20 +48,73 @@ describe('ImporterVideosService', () => {
           label: 'shortFilm',
           primaryLanguageId: '529',
           slug: 'some-title',
-          childIds: []
+          childIds: [],
+          image: null,
+          noIndex: false
         },
         update: {
           id: 'mockValue0',
           label: 'shortFilm',
           primaryLanguageId: '529',
           slug: 'some-title',
-          childIds: []
+          childIds: [],
+          image: null,
+          noIndex: false
         }
+      })
+    })
+
+    it('should save many videos', async () => {
+      prismaService.video.findMany.mockResolvedValueOnce([])
+      await service.getUsedSlugs()
+      await service.importMany([
+        {
+          id: 'mockValue0',
+          label: 'short',
+          primaryLanguageId: 529,
+          slug: 'Some Title',
+          extraStuff: 'randomData',
+          childIds: null,
+          image: null
+        },
+        {
+          id: 'mockValue1',
+          label: 'segments',
+          primaryLanguageId: 529,
+          slug: 'Some Title1',
+          extraStuff: 'randomData',
+          childIds: null,
+          image: null
+        }
+      ])
+      expect(prismaService.video.createMany).toHaveBeenCalledWith({
+        data: [
+          {
+            id: 'mockValue0',
+            label: 'shortFilm',
+            primaryLanguageId: '529',
+            slug: 'some-title',
+            childIds: [],
+            image: null,
+            noIndex: false
+          },
+          {
+            id: 'mockValue1',
+            label: 'segment',
+            primaryLanguageId: '529',
+            slug: 'some-title1',
+            childIds: [],
+            image: null,
+            noIndex: false
+          }
+        ],
+        skipDuplicates: true
       })
     })
 
     it('should transform childId string to array', async () => {
       prismaService.video.findMany.mockResolvedValueOnce([])
+      await service.getUsedSlugs()
       await service.import({
         id: 'mockValue0',
         label: 'short',
@@ -77,20 +131,25 @@ describe('ImporterVideosService', () => {
           label: 'shortFilm',
           primaryLanguageId: '529',
           slug: 'some-title',
-          childIds: ['6_GOMattFrench5101', '6_GOMattFrench5102']
+          childIds: ['6_GOMattFrench5101', '6_GOMattFrench5102'],
+          image: null,
+          noIndex: false
         },
         update: {
           id: 'mockValue0',
           label: 'shortFilm',
           primaryLanguageId: '529',
           slug: 'some-title',
-          childIds: ['6_GOMattFrench5101', '6_GOMattFrench5102']
+          childIds: ['6_GOMattFrench5101', '6_GOMattFrench5102'],
+          image: null,
+          noIndex: false
         }
       })
     })
 
     it('should update feature', async () => {
       prismaService.video.findMany.mockResolvedValueOnce([])
+      await service.getUsedSlugs()
       await service.import({
         id: 'mockValue0',
         label: 'feature',
@@ -107,14 +166,18 @@ describe('ImporterVideosService', () => {
           label: 'featureFilm',
           primaryLanguageId: '529',
           slug: 'some-title',
-          childIds: []
+          childIds: [],
+          image: null,
+          noIndex: false
         },
         update: {
           id: 'mockValue0',
           label: 'featureFilm',
           primaryLanguageId: '529',
           slug: 'some-title',
-          childIds: []
+          childIds: [],
+          image: null,
+          noIndex: false
         }
       })
     })
@@ -126,6 +189,7 @@ describe('ImporterVideosService', () => {
           id: 'mockValue0'
         } as unknown as Video
       ])
+      await service.getUsedSlugs()
       await service.import({
         id: 'mockValue0',
         label: 'behind_the_scenes',
@@ -142,14 +206,18 @@ describe('ImporterVideosService', () => {
           label: 'behindTheScenes',
           primaryLanguageId: '529',
           slug: 'some-title',
-          childIds: []
+          childIds: [],
+          image: null,
+          noIndex: false
         },
         update: {
           id: 'mockValue0',
           label: 'behindTheScenes',
           primaryLanguageId: '529',
           slug: 'some-title',
-          childIds: []
+          childIds: [],
+          image: null,
+          noIndex: false
         }
       })
     })
