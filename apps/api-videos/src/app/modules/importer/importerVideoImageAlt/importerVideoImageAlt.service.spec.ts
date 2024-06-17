@@ -63,6 +63,41 @@ describe('ImporterVideoImageAltService', () => {
       })
     })
 
+    it('should save many video image alts', async () => {
+      videosService.ids = ['mockVideoId', 'mockVideoId1']
+      await service.importMany([
+        {
+          value: 'mockValue',
+          videoId: 'mockVideoId',
+          languageId: 529,
+          primary: 1
+        },
+        {
+          value: 'mockValue1',
+          videoId: 'mockVideoId1',
+          languageId: 529,
+          primary: 1
+        }
+      ])
+      expect(prismaService.videoImageAlt.createMany).toHaveBeenCalledWith({
+        data: [
+          {
+            value: 'mockValue',
+            videoId: 'mockVideoId',
+            languageId: '529',
+            primary: true
+          },
+          {
+            value: 'mockValue1',
+            videoId: 'mockVideoId1',
+            languageId: '529',
+            primary: true
+          }
+        ],
+        skipDuplicates: true
+      })
+    })
+
     it('should throw error when row is invalid', async () => {
       await expect(
         service.import({
