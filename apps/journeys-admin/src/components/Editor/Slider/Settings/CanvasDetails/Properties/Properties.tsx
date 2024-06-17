@@ -153,7 +153,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       component = <SignUp {...selectedBlock} />
       break
     case 'TextResponseBlock':
-      title = t('Feedback Properties')
+      title = t('Text Input Properties')
       component = <TextResponse {...selectedBlock} />
       break
     default:

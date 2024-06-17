@@ -59,7 +59,7 @@ describe('TextResponse', () => {
     )
 
     expect(
-      getByRole('button', { name: 'Feedback default label' })
+      getByRole('button', { name: 'Text Input default label' })
     ).toBeInTheDocument()
   })
 

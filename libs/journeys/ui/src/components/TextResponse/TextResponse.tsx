@@ -118,7 +118,7 @@ export const TextResponse = ({
                 name="response"
                 label={label}
                 value={values.response}
-                helperText={hint}
+                helperText={hint != null ? hint : ''}
                 multiline
                 disabled={loading}
                 minRows={minRows ?? 3}
@@ -133,6 +133,11 @@ export const TextResponse = ({
                   readOnly: selectedBlock !== undefined,
                   sx: {
                     pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                  }
+                }}
+                sx={{
+                  '&.MuiTextField-root': {
+                    mb: 0
                   }
                 }}
               />
