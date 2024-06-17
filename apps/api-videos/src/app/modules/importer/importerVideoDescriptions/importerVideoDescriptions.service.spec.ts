@@ -109,7 +109,7 @@ describe('ImporterVideoDescriptionService', () => {
     })
 
     it('should throw error if video is not found', async () => {
-      videosService.ids = ['mockVideoId', 'mockVideoId1']
+      videosService.ids = []
       await expect(
         service.import({
           value: 'mockValue0',

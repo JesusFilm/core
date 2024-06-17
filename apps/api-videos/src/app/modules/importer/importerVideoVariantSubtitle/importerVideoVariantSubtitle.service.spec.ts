@@ -119,5 +119,19 @@ describe('ImporterVideoVariantSubtitlesService', () => {
         })
       ).rejects.toThrow('row does not match schema: mockValue0')
     })
+
+    it('should throw error if video variant is not found', async () => {
+      videoVariantsService.ids = []
+      await expect(
+        service.import({
+          value: 'mockValue',
+          primary: 1,
+          languageId: 529,
+          videoVariantId: 'mockVideoVariantId',
+          format: 'VTT',
+          extraStuff: 'randomData'
+        })
+      ).rejects.toThrow('Video variant with id mockVideoVariantId not found')
+    })
   })
 })

@@ -106,7 +106,7 @@ describe('ImporterVideoTitleService', () => {
       ).rejects.toThrow('row does not match schema: mockValue0')
     })
 
-    it('should throw error if video variant is not found', async () => {
+    it('should throw error if video is not found', async () => {
       videosService.ids = []
       await expect(
         service.import({

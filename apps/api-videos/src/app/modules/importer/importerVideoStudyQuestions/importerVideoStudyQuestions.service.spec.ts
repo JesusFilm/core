@@ -122,5 +122,19 @@ describe('ImporterVideoStudyQuestionsService', () => {
         })
       ).rejects.toThrow('row does not match schema: mockValue0')
     })
+
+    it('should throw error if video is not found', async () => {
+      videosService.ids = []
+      await expect(
+        service.import({
+          value: 'mockValue0',
+          videoId: 'mockVideoId2',
+          languageId: 529,
+          primary: 1,
+          order: 3,
+          crowdInId: 'mockCrowdinId'
+        })
+      ).rejects.toThrow('Video with id mockVideoId2 not found')
+    })
   })
 })
