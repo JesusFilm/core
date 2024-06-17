@@ -1,9 +1,6 @@
 -- CreateEnum
 CREATE TYPE "BibleCitationType" AS ENUM ('keyword', 'citation');
 
--- AlterTable
-ALTER TABLE "Video" ADD COLUMN     "bibleCitationId" TEXT;
-
 -- CreateTable
 CREATE TABLE "BibleCitation" (
     "id" TEXT NOT NULL,
@@ -55,7 +52,7 @@ CREATE INDEX "BibleBookName_languageId_idx" ON "BibleBookName"("languageId");
 CREATE UNIQUE INDEX "BibleBookName_bibleBookId_languageId_key" ON "BibleBookName"("bibleBookId", "languageId");
 
 -- AddForeignKey
-ALTER TABLE "Video" ADD CONSTRAINT "Video_bibleCitationId_fkey" FOREIGN KEY ("bibleCitationId") REFERENCES "BibleCitation"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "BibleCitation" ADD CONSTRAINT "BibleCitation_videoId_fkey" FOREIGN KEY ("videoId") REFERENCES "Video"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "BibleCitation" ADD CONSTRAINT "BibleCitation_bibleBookId_fkey" FOREIGN KEY ("bibleBookId") REFERENCES "BibleBook"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

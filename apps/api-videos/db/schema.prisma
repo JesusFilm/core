@@ -52,8 +52,7 @@ model Video {
   children          Video[]              @relation("ParentChild")
   parent            Video[]              @relation("ParentChild")
   variants          VideoVariant[]
-  BibleCitation     BibleCitation?       @relation(fields: [bibleCitationId], references: [id])
-  bibleCitationId   String?
+  bibleCitation     BibleCitation[]
 
   @@index(label)
   @@index(childIds)
@@ -211,7 +210,7 @@ model BibleCitation {
   verseEnd           Int?
   verseGroupParentId Int
   videoId            String
-  video              Video[]
+  video              Video             @relation(fields: [videoId], references: [id])
   bibleBook          BibleBook         @relation(fields: [bibleBookId], references: [id])
 }
 
