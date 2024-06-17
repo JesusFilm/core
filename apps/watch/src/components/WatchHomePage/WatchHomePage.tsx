@@ -15,11 +15,11 @@ import { VideoGrid } from '../VideoGrid'
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
-interface HomePageProps {
+interface WatchHomePageProps {
   videos: VideoChildFields[]
 }
 
-export function HomePage({ videos }: HomePageProps): ReactElement {
+export function WatchHomePage({ videos }: WatchHomePageProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   return (
@@ -35,7 +35,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
       >
         <Box
           sx={{ backgroundColor: 'background.default' }}
-          data-testid="HomePage"
+          data-testid="WatchHomePage"
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
             <VideoGrid videos={videos} variant="contained" />

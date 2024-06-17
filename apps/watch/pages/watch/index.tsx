@@ -10,7 +10,7 @@ import {
 } from '../../__generated__/GetHomeVideos'
 import { VideoChildFields } from '../../__generated__/VideoChildFields'
 import i18nConfig from '../../next-i18next.config'
-import { HomePage as VideoHomePage } from '../../src/components/HomePage'
+import { WatchHomePage as VideoHomePage } from '../../src/components/WatchHomePage'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { getFlags } from '../../src/libs/getFlags'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
