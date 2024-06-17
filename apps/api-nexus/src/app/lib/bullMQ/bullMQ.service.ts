@@ -266,6 +266,6 @@ export class BullMQService {
         { data: job, name: 'processResourceUpdate' }
       ])
     }
-    return batch;
+    return batch
   }
 }
