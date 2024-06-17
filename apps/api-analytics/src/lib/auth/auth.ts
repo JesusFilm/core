@@ -1,31 +1,22 @@
 import { createHash } from 'crypto'
 
-import { Prisma, users as User } from '.prisma/api-analytics-client'
+import { users as User } from '.prisma/api-analytics-client'
 
-import { prisma } from './prisma'
+import { prisma } from '../prisma'
 
 export async function getUserFromApiKey(
   apiKey?: string
 ): Promise<User | undefined> {
   if (apiKey == null) return
 
-  try {
-    const { key_hash: keyHash, users: user } =
-      await prisma.api_keys.findFirstOrThrow({
-        include: { users: true },
-        where: { key_prefix: apiKey.slice(0, 6) }
-      })
-    if (keyHash === hash(apiKey)) return user
-  } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === 'P2025' &&
-      error.message === 'No api_keys found'
-    )
-      return
+  const dbApiKey = await prisma.api_keys.findFirst({
+    include: { users: true },
+    where: { key_prefix: apiKey.slice(0, 6) }
+  })
 
-    throw error
-  }
+  if (dbApiKey == null || dbApiKey.key_hash !== hash(apiKey)) return
+
+  return dbApiKey.users
 }
 
 // the follow is a javascript version of the do_hash method in
