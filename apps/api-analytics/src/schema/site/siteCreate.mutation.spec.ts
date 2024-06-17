@@ -43,7 +43,7 @@ const SITE_CREATE_MUTATION = gql(`
   }
 `)
 
-describe('siteCreate Mutation', () => {
+describe('siteCreateMutation', () => {
   const client = getAuthenticatedClient()
   const date = fixedDate()
 
