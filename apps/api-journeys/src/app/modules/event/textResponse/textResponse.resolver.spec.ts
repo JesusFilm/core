@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { TextResponseSubmissionEventCreateInput } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
-import { EmailService } from '../email/email.service'
 import { EventService } from '../event.service'
 
 import { TextResponseSubmissionEventResolver } from './textResponse.resolver'
@@ -24,14 +23,8 @@ describe('TextResponseEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      validateBlockEvent: jest.fn(() => response)
-    })
-  }
-
-  const emailService = {
-    provide: EmailService,
-    useFactory: () => ({
-      sendEventsEmail: jest.fn().mockResolvedValue(null)
+      validateBlockEvent: jest.fn(() => response),
+      sendEventsEmail: jest.fn()
     })
   }
 
@@ -50,7 +43,6 @@ describe('TextResponseEventResolver', () => {
       providers: [
         TextResponseSubmissionEventResolver,
         eventService,
-        emailService,
         PrismaService
       ]
     }).compile()

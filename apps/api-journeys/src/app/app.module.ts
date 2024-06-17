@@ -14,6 +14,7 @@ import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { CustomDomainModule } from './modules/customDomain/customDomain.module'
 import { EmailModule } from './modules/email/email.module'
+import { EmailEventsModule } from './modules/emailEvents/emailEvents.module'
 import { EventModule } from './modules/event/event.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
@@ -38,6 +39,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     BlockModule,
     CustomDomainModule,
     EmailModule,
+    EmailEventsModule,
     EventModule,
     HostModule,
     JourneyCollectionModule,

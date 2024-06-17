@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { VideoBlockSource } from '../../../__generated__/graphql'
-import { EmailService } from '../email/email.service'
 import { EventService } from '../event.service'
 
 import {
@@ -19,14 +18,8 @@ describe('VideoResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
-      validateBlockEvent: jest.fn(() => response)
-    })
-  }
-
-  const emailService = {
-    provide: EmailService,
-    useFactory: () => ({
-      sendEventsEmail: jest.fn().mockResolvedValue(null)
+      validateBlockEvent: jest.fn(() => response),
+      sendEventsEmail: jest.fn()
     })
   }
 
@@ -50,7 +43,7 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoStartEventResolver, eventService, emailService]
+        providers: [VideoStartEventResolver, eventService]
       }).compile()
       resolver = module.get<VideoStartEventResolver>(VideoStartEventResolver)
     })
@@ -75,7 +68,7 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoPlayEventResolver, eventService, emailService]
+        providers: [VideoPlayEventResolver, eventService]
       }).compile()
       resolver = module.get<VideoPlayEventResolver>(VideoPlayEventResolver)
     })
@@ -125,7 +118,7 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoCompleteEventResolver, eventService, emailService]
+        providers: [VideoCompleteEventResolver, eventService]
       }).compile()
       resolver = module.get<VideoCompleteEventResolver>(
         VideoCompleteEventResolver

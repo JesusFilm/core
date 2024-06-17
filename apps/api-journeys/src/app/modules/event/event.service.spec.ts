@@ -1,3 +1,4 @@
+import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { PrismaService } from '../../lib/prisma.service'
@@ -8,6 +9,7 @@ import { EventService } from './event.service'
 
 describe('EventService', () => {
   let service: EventService, prismaService: PrismaService
+  let emailQueue
 
   const blockService = {
     provide: BlockService,
@@ -58,8 +60,24 @@ describe('EventService', () => {
   }
 
   beforeEach(async () => {
+    emailQueue = {
+      add: jest.fn(),
+      getJob: jest.fn(),
+      remove: jest.fn(),
+      getJobState: jest.fn()
+    }
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EventService, blockService, visitorService, PrismaService]
+      providers: [
+        EventService,
+        blockService,
+        visitorService,
+        PrismaService,
+        {
+          provide: getQueueToken('api-journeys-events-email'),
+          useValue: emailQueue
+        }
+      ]
     }).compile()
 
     service = module.get<EventService>(EventService)
@@ -118,6 +136,64 @@ describe('EventService', () => {
       ).rejects.toThrow(
         'Step ID anotherStep.id does not exist on Journey with ID journey.id'
       )
+    })
+  })
+
+  describe('sendEventsEmail', () => {
+    const journeyId = 'journey-id'
+    const visitorId = 'visitor-id'
+
+    it('should send events email', async () => {
+      await service.sendEventsEmail(journeyId, visitorId)
+      expect(emailQueue.add).toHaveBeenCalledWith(
+        'visitor-event',
+        {
+          journeyId,
+          visitorId
+        },
+        {
+          delay: 120000,
+          jobId: 'visitor-event-journey-id-visitor-id',
+          removeOnComplete: true,
+          removeOnFail: { age: 864000 }
+        }
+      )
+    })
+
+    it('should remove the job if it exists and send events email', async () => {
+      emailQueue.getJob.mockResolvedValueOnce({})
+      emailQueue.getJobState.mockResolvedValueOnce('waiting')
+      await service.sendEventsEmail(journeyId, visitorId)
+      expect(emailQueue.remove).toHaveBeenCalled()
+      expect(emailQueue.add).toHaveBeenCalledWith(
+        'visitor-event',
+        {
+          journeyId,
+          visitorId
+        },
+        {
+          delay: 120000,
+          jobId: 'visitor-event-journey-id-visitor-id',
+          removeOnComplete: true,
+          removeOnFail: { age: 864000 }
+        }
+      )
+    })
+
+    it('should remove the job if it exists and video event is start', async () => {
+      emailQueue.getJob.mockResolvedValueOnce({})
+      emailQueue.getJobState.mockResolvedValueOnce('completed')
+      await service.sendEventsEmail(journeyId, visitorId, 'start')
+      expect(emailQueue.remove).toHaveBeenCalled()
+      expect(emailQueue.add).not.toHaveBeenCalled()
+    })
+
+    it('should remove the job if it exists and video event is play', async () => {
+      emailQueue.getJob.mockResolvedValueOnce({})
+      emailQueue.getJobState.mockResolvedValueOnce('completed')
+      await service.sendEventsEmail(journeyId, visitorId, 'play')
+      expect(emailQueue.remove).toHaveBeenCalled()
+      expect(emailQueue.add).not.toHaveBeenCalled()
     })
   })
 })

@@ -1,4 +1,6 @@
+import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
+import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
 
 import { JourneyVisitor, Prisma, Visitor } from '.prisma/api-journeys-client'
@@ -6,11 +8,14 @@ import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
+import { EventsNotificationJob } from '../emailEvents/emailEvents.consumer'
 import { VisitorService } from '../visitor/visitor.service'
 
 @Injectable()
 export class EventService {
   constructor(
+    @InjectQueue('api-journeys-events-email')
+    private readonly emailQueue: Queue<EventsNotificationJob>,
     private readonly prismaService: PrismaService,
     private readonly blockService: BlockService,
     private readonly visitorService: VisitorService
@@ -71,5 +76,52 @@ export class EventService {
     return (await this.prismaService.event.create({
       data: input
     })) as unknown as T
+  }
+
+  async sendEventsEmail(
+    journeyId: string,
+    visitorId: string,
+    videoEvent?: 'start' | 'play'
+  ): Promise<void> {
+    const jobId = `visitor-event-${journeyId}-${visitorId}`
+    const visitorEmailJob = await this.emailQueue.getJob(jobId)
+
+    const removalFlags = ['start', 'play', null, undefined]
+    const removeJob = removalFlags.includes(videoEvent)
+    const isVideoEvent = videoEvent === 'start' || videoEvent === 'play'
+
+    if (visitorEmailJob != null) {
+      const jobState = await this.emailQueue.getJobState(jobId)
+
+      if (removeJob) await this.emailQueue.remove(jobId)
+      if (jobState !== 'completed' && !isVideoEvent)
+        await this.emailQueue.add(
+          'visitor-event',
+          {
+            journeyId,
+            visitorId
+          },
+          {
+            jobId,
+            delay: 2 * 60 * 1000, // delay for 2 minutes
+            removeOnComplete: true,
+            removeOnFail: { age: 24 * 36000 } // keep up to 24 hours
+          }
+        )
+    } else {
+      await this.emailQueue.add(
+        'visitor-event',
+        {
+          journeyId,
+          visitorId
+        },
+        {
+          jobId,
+          delay: 2 * 60 * 1000, // delay for 2 minutes
+          removeOnComplete: true,
+          removeOnFail: { age: 24 * 36000 } // keep up to 24 hours
+        }
+      )
+    }
   }
 }

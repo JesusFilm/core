@@ -83,7 +83,8 @@ export const VisitorInteraction = ({
   const eventsFilter = [
     'ChatOpenEvent',
     'TextResponseSubmissionEvent',
-    'RadioQuestionSubmissionEvent'
+    'RadioQuestionSubmissionEvent',
+    'SignUpSubmissionEvent'
   ]
 
   const filteredEvents = visitor.events.filter((event) =>
@@ -233,27 +234,27 @@ VisitorInteraction.PreviewProps = {
         id: 'event 1',
         label: 'Text Response Submission Event',
         value: 'My mom is sick'
+      },
+      {
+        ...event,
+        typename: 'ChatOpenEvent',
+        id: 'event 2',
+        label: 'Chat Open Event',
+        value: '12:00 PM'
+      },
+      {
+        ...event,
+        typename: 'RadioQuestionSubmissionEvent',
+        id: 'event 3',
+        label: 'Radio Question Submission Event',
+        value: 'Health'
+      },
+      {
+        ...event,
+        typename: 'StepViewEvent',
+        id: 'event 4',
+        label: 'Step View Event'
       }
-      // {
-      //   ...event,
-      //   typename: 'ChatOpenEvent',
-      //   id: 'event 2',
-      //   label: 'Chat Open Event',
-      //   value: '12:00 PM'
-      // },
-      // {
-      //   ...event,
-      //   typename: 'RadioQuestionSubmissionEvent',
-      //   id: 'event 3',
-      //   label: 'Radio Question Submission Event',
-      //   value: 'Health'
-      // },
-      // {
-      //   ...event,
-      //   typename: 'StepViewEvent',
-      //   id: 'event 4',
-      //   label: 'Step View Event'
-      // }
     ]
   },
   recipient: {

@@ -11,15 +11,13 @@ import {
   TextResponseSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
-import { EmailService } from '../email/email.service'
 import { EventService } from '../event.service'
 
 @Resolver('TextResponseSubmissionEvent')
 export class TextResponseSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly prismaService: PrismaService,
-    private readonly emailService: EmailService
+    private readonly prismaService: PrismaService
   ) {}
 
   @Mutation()
@@ -65,7 +63,7 @@ export class TextResponseSubmissionEventResolver {
       })
     ])
 
-    await this.emailService.sendEventsEmail(journeyId, visitor.id)
+    await this.eventService.sendEventsEmail(journeyId, visitor.id)
 
     return textResponseSubmissionEvent as TextResponseSubmissionEvent
   }

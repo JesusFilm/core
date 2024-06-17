@@ -1,40 +1,45 @@
-import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { Test, TestingModule } from '@nestjs/testing'
-import { MailerService } from '@nestjs-modules/mailer'
-import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import {
   Event,
   JourneyStatus,
   MessagePlatform,
-  Team,
   ThemeMode,
   ThemeName,
   UserJourneyRole,
+  UserTeamRole,
   Visitor
 } from '.prisma/api-journeys-client'
-import { EmailService } from '@core/nest/common/email/emailService'
 
-import { PrismaService } from '../../../lib/prisma.service'
+import { JourneyWithTeamAndUserJourney } from '../../modules/emailEvents/emailEvents.consumer'
+import { PrismaService } from '../prisma.service'
 
-import {
-  ApiUsersJob,
-  EmailConsumer,
-  EventsNotificationJob,
-  ExtendedJourneys,
-  ExtendedUserJourneys,
-  ExtendedUserTeam
-} from './email.consumer'
+import { fetchEmailDetails } from './fetchEmailDetails'
 
-jest.mock('@apollo/client')
+describe('fetchEmailDetails', () => {
+  let prismaService: DeepMockProxy<PrismaService>
 
-describe('EmailConsumer', () => {
-  let emailConsumer: EmailConsumer,
-    emailService: EmailService,
-    prismaService: DeepMockProxy<PrismaService>
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
+    }).compile()
 
-  const userJourneys: ExtendedUserJourneys[] = [
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
+  const userJourneys = [
     {
       id: 'userJourneyId1',
       userId: 'userId1',
@@ -69,7 +74,7 @@ describe('EmailConsumer', () => {
     }
   ]
 
-  const team: Team & { userTeams: ExtendedUserTeam[] } = {
+  const team = {
     id: 'teamId',
     title: 'jfp',
     publicTitle: null,
@@ -80,7 +85,7 @@ describe('EmailConsumer', () => {
         id: 'userTeamId',
         teamId: 'teamId',
         userId: 'userId',
-        role: 'manager',
+        role: UserTeamRole.manager,
         createdAt: new Date('2024-05-14T22:08:12.000Z'),
         updatedAt: new Date('2024-05-14T22:08:12.000Z'),
         journeyNotifications: [
@@ -97,7 +102,7 @@ describe('EmailConsumer', () => {
     ]
   }
 
-  const journey: ExtendedJourneys = {
+  const journey: JourneyWithTeamAndUserJourney = {
     id: 'journeyId',
     slug: 'journey-slug',
     title: 'published',
@@ -207,88 +212,43 @@ describe('EmailConsumer', () => {
     ]
   }
 
-  const job: Job<EventsNotificationJob, unknown, string> = {
-    data: {
-      journeyId: journey.id,
-      visitorId: visitor.id
-    },
-    name: 'visitor-event'
-  } as unknown as Job<EventsNotificationJob, unknown, string>
+  it('should return email details', async () => {
+    const journeyId = 'journeyId'
+    const visitorId = 'visitorId'
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        EmailConsumer,
-        {
-          provide: MailerService,
-          useValue: mockDeep<MailerService>()
+    prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+    prismaService.visitor.findUnique.mockResolvedValue(visitor)
+
+    const result = await fetchEmailDetails(prismaService, journeyId, visitorId)
+
+    expect(result).toEqual({ journey, visitor })
+    expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+      where: { id: journeyId },
+      include: {
+        userJourneys: {
+          include: {
+            journeyNotification: true
+          }
         },
-        {
-          provide: EmailService,
-          useValue: mockDeep<EmailService>()
-        },
-        {
-          provide: PrismaService,
-          useValue: mockDeep<PrismaService>()
-        }
-      ]
-    }).compile()
-    emailConsumer = module.get<EmailConsumer>(EmailConsumer)
-    emailService = module.get<EmailService>(EmailService)
-    prismaService = module.get<PrismaService>(
-      PrismaService
-    ) as DeepMockProxy<PrismaService>
-  })
-
-  afterEach(() => jest.clearAllMocks())
-
-  describe('process', () => {
-    it('should call sendEventsNotification', async () => {
-      emailConsumer.sendEventsNotification = jest.fn()
-      await emailConsumer.process(job as Job<ApiUsersJob>)
-      expect(emailConsumer.sendEventsNotification).toHaveBeenCalledWith(job)
-    })
-  })
-
-  describe('sendEventsNotification', () => {
-    it('should send events notification email successfully', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
-        async () =>
-          await Promise.resolve({
-            data: {
-              user: {
-                id: 'userId1',
-                firstName: 'Joe',
-                imageUrl: null,
-                email: 'jron@example.com'
+        team: {
+          include: {
+            userTeams: {
+              include: {
+                journeyNotifications: true
               }
             }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
-
-      jest
-        .spyOn(emailService, 'sendEmail')
-        .mockImplementation(async () => await Promise.resolve())
-
-      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
-      prismaService.visitor.findUnique.mockResolvedValueOnce(visitor)
-
-      let args = {}
-      emailService.sendEmail = jest
-        .fn()
-        .mockImplementation(async (callArgs) => {
-          args = callArgs
-          await Promise.resolve()
-        })
-
-      await emailConsumer.sendEventsNotification(job)
-      expect(emailService.sendEmail).toHaveBeenCalled()
-      expect(args).toEqual({
-        to: 'jron@example.com',
-        subject: 'A visitor has interacted with your journey',
-        text: expect.any(String),
-        html: expect.anything()
-      })
+          }
+        }
+      }
+    })
+    expect(prismaService.visitor.findUnique).toHaveBeenCalledWith({
+      where: { id: visitorId },
+      select: {
+        id: true,
+        createdAt: true,
+        duration: true,
+        events: true
+      }
     })
   })
 })

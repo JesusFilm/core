@@ -7,7 +7,6 @@ import {
   MessagePlatform
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
-import { EmailService } from '../email/email.service'
 import { EventService } from '../event.service'
 
 import {
@@ -133,25 +132,14 @@ describe('ChatOpenEventResolver', () => {
           default:
             return newResponse
         }
-      })
-    })
-  }
-
-  const emailService = {
-    provide: EmailService,
-    useFactory: () => ({
-      sendEventsEmail: jest.fn().mockResolvedValue(null)
+      }),
+      sendEventsEmail: jest.fn()
     })
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ChatOpenEventResolver,
-        eventService,
-        emailService,
-        PrismaService
-      ]
+      providers: [ChatOpenEventResolver, eventService, PrismaService]
     }).compile()
     resolver = module.get<ChatOpenEventResolver>(ChatOpenEventResolver)
     prismaService = module.get<PrismaService>(PrismaService)
