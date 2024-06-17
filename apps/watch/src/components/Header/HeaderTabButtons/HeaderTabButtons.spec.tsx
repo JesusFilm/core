@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { HeaderTabButtons } from './HeaderTabButtons'
 
@@ -22,20 +22,27 @@ describe('HeaderTabButtons', () => {
   // tests for large viewport?
   // tests for smaller viewport?
 
-  describe('tab buttons', () => {
-    // beforeEach(() => {
-    //   const useBreakpointsMock = useBreakpoints as jest.Mock
-    //   useBreakpointsMock.mockReturnValue({
-    //     xs: false,
-    //     sm: false,
-    //     md: false,
-    //     lg: true,
-    //     xl: true
-    //   })
-    // })
+  const trueHeaderItemsFlags = {
+    strategies: true,
+    journeys: true,
+    calendar: true,
+    products: true
+  }
 
+  const falseHeaderItemsFlags = {
+    strategies: false,
+    journeys: false,
+    calendar: false,
+    products: false
+  }
+
+  describe('tab buttons', () => {
     it('should render headertabbuttons', () => {
-      render(<HeaderTabButtons />)
+      render(
+        <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
       expect(screen.getByTestId('HeaderTabButtons')).toBeInTheDocument()
       expect(screen.getByTestId('StrategiesButton')).toBeInTheDocument()
       expect(screen.getByTestId('JourneysButton')).toBeInTheDocument()
@@ -45,7 +52,11 @@ describe('HeaderTabButtons', () => {
     })
 
     it('buttons should have correct links', () => {
-      render(<HeaderTabButtons />)
+      render(
+        <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
       expect(screen.getByTestId('StrategiesButton')).toHaveAttribute(
         'href',
         '/strategies'
@@ -67,29 +78,42 @@ describe('HeaderTabButtons', () => {
         '/products'
       )
     })
+
+    it('should not render products button if products flag is false', () => {
+      render(
+        <FlagsProvider flags={{ ...trueHeaderItemsFlags, products: false }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
+      expect(screen.queryByTestId('ProductsButton')).not.toBeInTheDocument()
+    })
+
+    it('should not render tab buttons if all flags are false', () => {
+      render(
+        <FlagsProvider flags={{ ...falseHeaderItemsFlags }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
+      expect(screen.queryByTestId('HeaderTabButtons')).not.toBeInTheDocument()
+    })
   })
 
-  // clicking button should naviagate to new link
-
   describe('dropdown button', () => {
-    // beforeEach(() => {
-    //   const useBreakpointsMock = useBreakpoints as jest.Mock
-    //   useBreakpointsMock.mockReturnValue({
-    //     xs: true,
-    //     sm: true,
-    //     md: true,
-    //     lg: false,
-    //     xl: false
-    //   })
-    // })
-
     it('should render dropdown button', () => {
-      render(<HeaderTabButtons />)
+      render(
+        <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
       expect(screen.getByTestId('DropDownButton')).toBeInTheDocument()
     })
 
     it('should open menu on click', () => {
-      render(<HeaderTabButtons />)
+      render(
+        <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
       const button = screen.getByTestId('DropDownButton')
       fireEvent.click(button)
       expect(
@@ -110,7 +134,11 @@ describe('HeaderTabButtons', () => {
     })
 
     it('menu buttons should have correct links', () => {
-      render(<HeaderTabButtons />)
+      render(
+        <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
       const button = screen.getByTestId('DropDownButton')
       fireEvent.click(button)
       expect(
@@ -129,6 +157,26 @@ describe('HeaderTabButtons', () => {
       expect(
         screen.getByRole('menuitem', { name: 'Products' })
       ).toHaveAttribute('href', '/products')
+    })
+
+    it('should not render products menu item if products flag is false', () => {
+      render(
+        <FlagsProvider flags={{ ...trueHeaderItemsFlags, products: false }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
+      expect(
+        screen.queryByRole('menuitem', { name: 'Products' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not render dropdown button if all flags are false', () => {
+      render(
+        <FlagsProvider flags={{ ...falseHeaderItemsFlags }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
+      expect(screen.queryByTestId('DropDownButton')).not.toBeInTheDocument()
     })
   })
 })
