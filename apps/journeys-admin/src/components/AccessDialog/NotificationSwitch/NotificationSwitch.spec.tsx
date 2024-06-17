@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { useEventEmailNotificationsUpdateMock } from '../../../libs/useJourneyNotificationUpdate/useJourneyNotificationUpdate.mock'
+import { useJourneyNotifcationUpdateMock } from '../../../libs/useJourneyNotificationUpdate/useJourneyNotificationUpdate.mock'
 
 import { NotificationSwitch } from '.'
 
@@ -10,11 +10,11 @@ describe('NotificationSwitch', () => {
   it('updates event email notifications on click', async () => {
     const result = jest
       .fn()
-      .mockReturnValueOnce(useEventEmailNotificationsUpdateMock.result)
+      .mockReturnValueOnce(useJourneyNotifcationUpdateMock.result)
     render(
       <SnackbarProvider>
         <MockedProvider
-          mocks={[{ ...useEventEmailNotificationsUpdateMock, result }]}
+          mocks={[{ ...useJourneyNotifcationUpdateMock, result }]}
         >
           <NotificationSwitch
             name="username"
