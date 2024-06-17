@@ -86,17 +86,6 @@ export class BatchJobWorker {
       })
     }
 
-    // UPLOAD FILE TO BUCKET
-    const bucketFile = await this.bucketService.uploadFile(
-      videoFilePath,
-      process.env.BUCKET_NAME ?? 'bucket-name',
-      async (progress) => {
-        progress = 30 + progress / 4
-        await job.progress(progress)
-        return await Promise.resolve()
-      }
-    )
-
     // UPLOAD VIDEO
     const youtubeData = await this.youtubeService.uploadVideo(
       {
@@ -134,15 +123,6 @@ export class BatchJobWorker {
       }
     }
 
-    // UPDATE Resources
-
-    await this.prismaService.resourceSource.updateMany({
-      where: { resourceId: job.data.resource?.id },
-      data: {
-        videoCloudFlareId: bucketFile.Key ?? ''
-      }
-    })
-
     await this.prismaService.resourceChannel.create({
       data: {
         channelId: job.data.channel.id,
@@ -163,7 +143,6 @@ export class BatchJobWorker {
 
     return {
       ...job.returnvalue,
-      bucketFileId: bucketFile.Key,
       youtubeId: youtubeData.data.id ?? ''
     }
   }
