@@ -64,6 +64,17 @@ interface KeyifyProps {
   target?: string | Action | null
 }
 
+export function generateActionTargetKey(action: Action): string {
+  switch (action.__typename) {
+    case 'NavigateToBlockAction':
+      return action.blockId
+    case 'LinkAction':
+      return `link:${action.url}`
+    case 'EmailAction':
+      return `email:${action.email}`
+  }
+}
+
 export function keyify({
   stepId,
   event,
@@ -75,17 +86,7 @@ export function keyify({
   if (typeof target === 'string' || target == null) {
     targetId = target ?? ''
   } else {
-    switch (target.__typename) {
-      case 'NavigateToBlockAction':
-        targetId = target.blockId
-        break
-      case 'LinkAction':
-        targetId = `link:${target.url}`
-        break
-      case 'EmailAction':
-        targetId = `email:${target.email}`
-        break
-    }
+    targetId = generateActionTargetKey(target)
   }
 
   return JSON.stringify({
