@@ -16,10 +16,10 @@ import {
 } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
-import { GetLanguages_languages } from '../../../libs/useLanguagesQuery/__generated__/GetLanguages'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
@@ -214,7 +214,7 @@ export function HeaderAndLanguageFilter({
   }
   const localButtonProps: LocalButtonProps = {
     loading,
-    onClick: (e) => {
+    onClick: () => {
       const param = 'template-language'
       void router.push({ query: { ...router.query, param } }, undefined, {
         shallow: true
@@ -226,7 +226,7 @@ export function HeaderAndLanguageFilter({
     }
   }
 
-  function handleSubmit(values: { languages: GetLanguages_languages[] }): void {
+  function handleSubmit(values: { languages: LanguageOption[] }): void {
     const ids = values.languages.map((language) => language.id)
     onChange(ids)
   }

@@ -4,13 +4,13 @@ import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import CircularProgress from '@mui/material/CircularProgress'
-import MuiPopper from '@mui/material/Popper'
+import MuiPopper, { PopperProps } from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
-import { ReactElement, useCallback } from 'react'
+import { ReactElement, SyntheticEvent, useCallback } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -63,7 +63,7 @@ export function TagsFilter({
     )
   )
 
-  function handleChange(_event, value: Tag[]): void {
+  function handleChange(_event: SyntheticEvent, value: readonly Tag[]): void {
     onChange(
       value.map(({ id }) => id),
       filteredChildTagIds
@@ -71,7 +71,7 @@ export function TagsFilter({
   }
 
   const Popper = useCallback(
-    (props) => {
+    (props: PopperProps) => {
       const anchorEl = document.getElementById(popperElementId as string)
 
       return (
