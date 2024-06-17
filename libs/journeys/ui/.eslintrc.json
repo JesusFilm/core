@@ -33,6 +33,12 @@
     {
       "files": ["*.tsx", "*.jsx"],
       "rules": {}
+    },
+    {
+      "files": ["next-env.d.ts"],
+      "rules": {
+        "@typescript-eslint/triple-slash-reference": "off"
+      }
     }
   ]
 }
