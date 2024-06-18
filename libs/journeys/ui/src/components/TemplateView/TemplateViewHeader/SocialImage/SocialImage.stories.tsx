@@ -3,11 +3,11 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
+import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
-import { defaultJourney } from '../../../../../../../../apps/journeys-admin/src/components/Editor/data' //TODO(jk)
+import { defaultJourney } from '../../data'
 
 import { SocialImage } from './SocialImage'
 

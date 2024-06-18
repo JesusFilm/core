@@ -4,9 +4,9 @@ import { act } from 'react-dom/test-utils'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../__generated__/GetJourney'
-import { defaultJourney } from '../../components/Editor/data'
 
 import { deleteBlockMock } from './useBlockDeleteMutation.mock'
 

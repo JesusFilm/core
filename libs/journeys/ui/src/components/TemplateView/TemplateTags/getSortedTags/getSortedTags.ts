@@ -1,7 +1,6 @@
 import compact from 'lodash/compact'
 
 import { JourneyFields_tags as Tag } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
-
 import { GetTags_tags as ParentTag } from '../../../../libs/useTagsQuery/__generated__/GetTags'
 
 export function getSortedTags(

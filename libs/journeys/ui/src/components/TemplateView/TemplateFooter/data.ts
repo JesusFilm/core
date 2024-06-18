@@ -1,4 +1,3 @@
-import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -6,7 +5,8 @@ import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../../../__generated__/globalTypes'
+} from '../../../../__generated__/globalTypes'
+import { GetJourney_journey as Journey } from '../../../libs/useJourneyQuery/__generated__/GetJourney'
 
 export const journey: Journey = {
   __typename: 'Journey',

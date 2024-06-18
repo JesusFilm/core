@@ -3,8 +3,7 @@ import { render } from '@testing-library/react'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 
-import { journey } from '../../../../../../../apps/journeys-admin/src/components/Editor/Slider/Settings/GoalDetails/data' //TODO(jk)
-
+import { journey } from './data'
 import { TemplateFooter } from './TemplateFooter'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

@@ -4,9 +4,9 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { defaultJourney } from '../../../../data'
 
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from './DescriptionDialog'
 

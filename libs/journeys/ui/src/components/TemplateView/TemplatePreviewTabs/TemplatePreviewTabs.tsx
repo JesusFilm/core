@@ -12,11 +12,11 @@ import {
   useState
 } from 'react'
 
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+
 import { TreeBlock } from '../../../libs/block/TreeBlock'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { transformer } from '../../../libs/transformer'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock,

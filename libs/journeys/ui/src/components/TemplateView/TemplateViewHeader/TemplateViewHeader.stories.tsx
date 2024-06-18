@@ -2,14 +2,14 @@ import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
-import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
+import { JourneyProvider } from '../../../libs/JourneyProvider'
 import {
   JourneyFields as Journey,
   JourneyFields_primaryImageBlock as PrimaryImageBlock
 } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { journey } from '../../../../../../../apps/journeys-admin/src/components/Editor/Slider/Settings/GoalDetails/data' //TODO(jk)
+import { journey } from '../TemplateFooter/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
 

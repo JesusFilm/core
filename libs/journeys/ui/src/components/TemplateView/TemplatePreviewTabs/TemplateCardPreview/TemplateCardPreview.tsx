@@ -11,20 +11,20 @@ import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
-import { TreeBlock } from '../../../../libs/block'
-import { BlockRenderer } from '../../../BlockRenderer'
-import { CardWrapper } from '../../../CardWrapper'
-import { FramePortal } from '../../../FramePortal'
-import { useJourney } from '../../../../libs/JourneyProvider'
-import { getJourneyRTL } from '../../../../libs/rtl'
-import { VideoWrapper } from '../../../VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
+import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
+import { TreeBlock } from '../../../../libs/block'
+import { useJourney } from '../../../../libs/JourneyProvider'
+import { getJourneyRTL } from '../../../../libs/rtl'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
-import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
+import { BlockRenderer } from '../../../BlockRenderer'
+import { CardWrapper } from '../../../CardWrapper'
+import { FramePortal } from '../../../FramePortal'
+import { VideoWrapper } from '../../../VideoWrapper'
 import { CreateJourneyButton } from '../../CreateJourneyButton'
 
 interface TemplateCardPreviewProps {

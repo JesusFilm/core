@@ -9,14 +9,14 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
+import { Role } from '../../../__generated__/globalTypes'
 import { useJourney } from '../../libs/JourneyProvider'
+import { useJourneysQuery } from '../../libs/useJourneysQuery'
+import { useUserRoleQuery } from '../../libs/useUserRoleQuery'
 import { StrategySection } from '../StrategySection'
 import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
-import { useJourneysQuery } from '../../libs/useJourneysQuery'
-import { useUserRoleQuery } from '../../libs/useUserRoleQuery'
 
-import { Role } from '../../../__generated__/globalTypes'
 
 import { TemplateFooter } from './TemplateFooter'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'

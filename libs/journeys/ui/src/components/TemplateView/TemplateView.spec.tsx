@@ -3,16 +3,15 @@ import { render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
-import { GET_TAGS } from '../../libs/useTagsQuery'
-
-import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
 import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag
 } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { defaultJourney } from '../../../../../../apps/journeys-admin/src/components/Editor/data' //TODO(jk)
+import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
+import { GET_TAGS } from '../../libs/useTagsQuery'
+import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
 
+import { defaultJourney } from './data'
 import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'
 

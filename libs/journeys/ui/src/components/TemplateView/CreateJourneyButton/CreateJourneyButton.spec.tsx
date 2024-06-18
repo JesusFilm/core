@@ -2,18 +2,17 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
-import { JourneyProvider } from '../../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../../../../../../apps/journeys-admin/src/components/Team/TeamProvider' // TODO(jk)
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '../../../../../../../apps/journeys-admin/src/components/Team/TeamProvider' //TODO(jk)
+import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
 

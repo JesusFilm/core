@@ -3,12 +3,12 @@ import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
-import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
+import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { journey } from '../../../../../../../apps/journeys-admin/src/components/Editor/Slider/Settings/GoalDetails/data' //TODO(jk)
 
+import { journey } from './data'
 import { TemplateFooter } from './TemplateFooter'
 
 const TemplateFooterStory: Meta<typeof TemplateFooter> = {

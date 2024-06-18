@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
-import { TreeBlock } from '../../../../libs/block'
-import { transformer } from '../../../../libs/transformer'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
+import { TreeBlock } from '../../../../libs/block'
+import { transformer } from '../../../../libs/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { journeyVideoBlocks } from '../data'
 

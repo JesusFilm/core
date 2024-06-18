@@ -1,7 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '../../../../libs/block'
-
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { videoBlocksFiltered } from '../data'
 

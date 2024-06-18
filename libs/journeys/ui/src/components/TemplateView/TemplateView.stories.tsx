@@ -4,26 +4,23 @@ import { Meta, StoryObj } from '@storybook/react'
 import { User } from 'next-firebase-auth'
 import { ComponentProps } from 'react'
 
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
-import { GET_TAGS } from '../../libs/useTagsQuery'
-import { GET_USER_ROLE } from '../../libs/useUserRoleQuery'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '../../libs/useJourneyQuery/__generated__/GetJourney'
-import { GetJourneys } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
-import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
-import { GetUserRole } from '../../libs/useUserRoleQuery/__generated__/GetUserRole'
 import { Role } from '../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag
 } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import {
-  defaultJourney,
-  publishedJourney
-} from '../../../../../../apps/journeys-admin/src/components/Editor/data' //TODO(jk)
+import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '../../libs/useJourneyQuery/__generated__/GetJourney'
+import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
+import { GetJourneys } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { GET_TAGS } from '../../libs/useTagsQuery'
+import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
+import { GET_USER_ROLE } from '../../libs/useUserRoleQuery'
+import { GetUserRole } from '../../libs/useUserRoleQuery/__generated__/GetUserRole'
 
+import { defaultJourney, publishedJourney } from './data'
 import { journeyVideoBlocks } from './TemplatePreviewTabs/data'
 import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'

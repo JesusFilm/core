@@ -7,7 +7,6 @@ import { User } from 'next-firebase-auth'
 import { Dispatch, ReactElement, SetStateAction } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
-
 import { CreateJourneyButton } from '../CreateJourneyButton'
 
 import { PreviewTemplateButton } from './PreviewTemplateButton'

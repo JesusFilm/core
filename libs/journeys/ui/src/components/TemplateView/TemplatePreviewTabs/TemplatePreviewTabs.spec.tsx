@@ -2,9 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-
 import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { publishedJourney } from '../../../../../../../apps/journeys-admin/src/components/Editor/data' //TODO(jk)
+import { publishedJourney } from '../data'
 
 import { journeyVideoBlocks } from './data'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'

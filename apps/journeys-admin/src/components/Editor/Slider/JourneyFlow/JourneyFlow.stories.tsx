@@ -7,6 +7,11 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  blocks,
+  blocksWithStepBlockPosition,
+  defaultJourney
+} from '@core/journeys/ui/TemplateView/data'
 import { transformer } from '@core/journeys/ui/transformer'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
@@ -14,7 +19,6 @@ import {
   GetStepBlocksWithPosition,
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
-import { blocks, blocksWithStepBlockPosition, defaultJourney } from '../../data'
 
 import { GET_STEP_BLOCKS_WITH_POSITION, JourneyFlow } from './JourneyFlow'
 

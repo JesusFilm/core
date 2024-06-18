@@ -1,8 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { GET_TAGS } from '../../../libs/useTagsQuery'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
+import { GET_TAGS } from '../../../libs/useTagsQuery'
 
 import { parentTags, tags } from './data'
 import { TemplateTags } from './TemplateTags'

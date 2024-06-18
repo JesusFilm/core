@@ -3,11 +3,11 @@ import { fireEvent, within } from '@storybook/testing-library'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
-import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
+import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { publishedJourney } from '../../../../../../../apps/journeys-admin/src/components/Editor/data' //TODO(jk)
+import { publishedJourney } from '../data'
 
 import { journeyVideoBlocks } from './data'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'

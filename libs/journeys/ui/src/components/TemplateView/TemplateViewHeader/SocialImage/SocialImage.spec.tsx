@@ -1,8 +1,7 @@
 import { render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
-
-import { publishedJourney } from '../../../../../../../../apps/journeys-admin/src/components/Editor/data' //TODO(jk)
+import { publishedJourney } from '../../data'
 
 import { SocialImage } from './SocialImage'
 
