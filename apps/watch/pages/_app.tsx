@@ -9,9 +9,9 @@ import Script from 'next/script'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 
-import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import i18nConfig from '../next-i18next.config'
