@@ -1,4 +1,4 @@
 export {
   filterRecentTextResponseEvents,
-  Event
+  type Event
 } from './filterRecentTextResponseEvents'
