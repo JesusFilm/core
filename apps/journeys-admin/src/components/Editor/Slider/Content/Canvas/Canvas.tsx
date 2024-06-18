@@ -12,12 +12,12 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
-import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 

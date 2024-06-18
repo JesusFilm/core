@@ -2,18 +2,18 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { DragDropContext, DroppableProvided } from 'react-beautiful-dnd'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
+import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 import {
   Role,
   ThemeMode,
   ThemeName,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 
 import { CardList } from '.'
 

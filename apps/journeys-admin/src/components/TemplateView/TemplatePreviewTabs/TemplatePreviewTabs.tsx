@@ -12,8 +12,8 @@ import {
   useState
 } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { transformer } from '@core/journeys/ui/transformer'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 

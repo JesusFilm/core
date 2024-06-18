@@ -1,7 +1,7 @@
 import MuiAvatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
-import { SxProps } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
+import { SxProps } from '@mui/material/styles'
 import compact from 'lodash/compact'
 import { ReactElement } from 'react'
 

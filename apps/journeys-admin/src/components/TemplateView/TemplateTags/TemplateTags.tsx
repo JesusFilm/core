@@ -9,8 +9,8 @@ import { JourneyFields_tags as Tag } from '@core/journeys/ui/JourneyProvider/__g
 import { ParentTagIcon } from '@core/journeys/ui/ParentTagIcon'
 import { useTagsQuery } from '@core/journeys/ui/useTagsQuery'
 
-import { getSortedTags } from './getSortedTags'
 import { TagItem } from './TagItem'
+import { getSortedTags } from './getSortedTags'
 
 interface TemplateTagsProps {
   tags?: Tag[]
