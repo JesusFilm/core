@@ -14,7 +14,6 @@ import { Tailwind } from '@react-email/tailwind'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement, ReactNode } from 'react'
 
-import { Event, Prisma } from '.prisma/api-journeys-client'
 import {
   ActionCard,
   BodyWrapper,
@@ -23,6 +22,7 @@ import {
   UnsubscribeLink
 } from '@core/nest/common/email/components'
 import { User } from '@core/nest/common/firebaseClient'
+import { Event, Prisma } from '.prisma/api-journeys-client'
 
 type Visitor = Prisma.VisitorGetPayload<{
   select: {
@@ -140,7 +140,9 @@ export const VisitorInteraction = ({
                 <Section key={event?.id} align="center" className="px-[28px]">
                   <Column className="w-2/4">
                     <Text className="font-sans text-[16px] leading-[24px] mb-[0px]">
-                      {event.typename === 'ChatOpenEvent' ? 'Chat Started' : event.label}
+                      {event.typename === 'ChatOpenEvent'
+                        ? 'Chat Started'
+                        : event.label}
                     </Text>
                   </Column>
                   <Column className="w-2/4">

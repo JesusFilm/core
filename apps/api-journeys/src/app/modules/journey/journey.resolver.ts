@@ -410,7 +410,7 @@ export class JourneyResolver {
         const duplicate = modifier[1]?.trim() ?? ''
         const numbers = duplicate.match(/^\d+$/)
         // If no duplicate number found, it's a unique journey. Return 0
-        return numbers != null ? parseInt(numbers[0]) : 0
+        return numbers != null ? Number.parseInt(numbers[0]) : 0
       }
     })
   }
