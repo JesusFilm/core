@@ -121,7 +121,9 @@ export class EmailEventsConsumer extends WorkerHost {
 
         await this.emailService.sendEmail({
           to: data.user.email,
-          subject: `Visitor #${visitor.id} has interacted with your journey`,
+          subject: `Visitor #${visitor.id.slice(
+            -12
+          )} has interacted with your journey`,
           text,
           html
         })

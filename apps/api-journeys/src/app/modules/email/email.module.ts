@@ -12,8 +12,10 @@ import { EmailEventsConsumer } from './emailEvents/emailEvents.consumer'
 @Global()
 @Module({
   imports: [
-    BullModule.registerQueue({ name: 'api-journeys-email' }),
-    BullModule.registerQueue({ name: 'api-journeys-events-email' }),
+    BullModule.registerQueue(
+      { name: 'api-journeys-email' },
+      { name: 'api-journeys-events-email' }
+    ),
     MailerModule.forRoot({
       transport: process.env.SMTP_URL ?? 'smtp://maildev:1025',
       defaults: {
