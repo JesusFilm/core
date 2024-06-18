@@ -14,6 +14,7 @@ import {
 } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
 import { TemplateSections } from './TemplateSections'
+import '../../../test/i18n'
 
 describe('TemplateSections', () => {
   const defaultTemplate: Journey = {

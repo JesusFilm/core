@@ -15,7 +15,6 @@ describe('FeltNeedsButton', () => {
     parentId: 'feltNeeds'
   }
 
-  // TODO: Image is missing required "src" property error cause by jest transforming image to a string in test instead of object with src
   it('should render a felt needs button', () => {
     const { getByRole, queryByTestId } = render(
       <FeltNeedsButton item={tag} onClick={jest.fn()} />

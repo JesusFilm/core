@@ -13,6 +13,7 @@ import {
 } from './data'
 
 import { TemplateGallery } from '.'
+import '../../../test/i18n'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
