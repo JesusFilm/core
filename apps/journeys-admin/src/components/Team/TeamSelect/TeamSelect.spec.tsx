@@ -14,7 +14,6 @@ import {
   useTeam
 } from '../TeamProvider'
 
-
 import { TeamSelect } from '.'
 
 describe('TeamSelect', () => {
