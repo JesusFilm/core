@@ -5,9 +5,9 @@ import ListItemText from '@mui/material/ListItemText'
 import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import compact from 'lodash/compact'
+import { useTranslation } from 'next-i18next'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -49,7 +49,7 @@ export function HeaderTabButtons(): ReactElement {
   }
 
   const buttonLabel =
-    headerItems.find((link) => router.pathname.startsWith(link.href))?.label ??
+    headerItems.find((link) => router.pathname?.startsWith(link.href))?.label ??
     ''
 
   return headerItems.length > 1 ? (
@@ -88,12 +88,10 @@ export function HeaderTabButtons(): ReactElement {
         ))}
       </Box>
       <Box
-        // data-testid="DropDownButton"
         sx={{
           top: '-10px',
           pr: { md: '20px' },
           display: { xs: 'flex', lg: 'none' },
-          // display: 'flex',
           justifyContent: 'center',
           width: '100%',
           position: { xs: 'absolute', md: 'initial' }
@@ -105,7 +103,6 @@ export function HeaderTabButtons(): ReactElement {
           startIcon={<Play1Icon />}
           endIcon={<ChervonDownIcon />}
           sx={{
-            // display: { xs: 'flex', lg: 'none' },
             borderRadius: '40px !important',
             borderWidth: '2px',
             borderStyle: 'solid',
@@ -151,8 +148,3 @@ export function HeaderTabButtons(): ReactElement {
     <></>
   )
 }
-
-// todo:
-// move button into it's own line  to match design
-//  - use the correct divider line
-// create tablet design

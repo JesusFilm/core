@@ -17,9 +17,9 @@ import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import minimalLogo from './assets/minimal-logo.png'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 import { HeaderTabButtons } from './HeaderTabButtons'
+import minimalLogo from './assets/minimal-logo.png'
 
 interface LocalAppBarProps extends AppBarProps {
   showDivider?: boolean
