@@ -763,7 +763,7 @@ scalar join__DirectiveArguments
 scalar join__FieldSet
 
 enum join__Graph {
-  ANALYTICS @join__graph(name: "analytics", url: "http://127.0.0.1:4007/graphql")
+  ANALYTICS @join__graph(name: "analytics", url: "http://127.0.0.1:4008/graphql")
   JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
   LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql")
   MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")

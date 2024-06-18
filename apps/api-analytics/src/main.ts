@@ -7,6 +7,6 @@ App()
     '/*',
     yoga as (res: HttpResponse, req: HttpRequest) => void | Promise<void>
   )
-  .listen(4007, () => {
-    console.info('Server is running on http://localhost:4007/graphql')
+  .listen(4008, () => {
+    console.info('Server is running on http://localhost:4008/graphql')
   })

@@ -1,5 +1,5 @@
 locals {
-  port = 4001
+  port = 4008
   environment_variables = [
     "PG_DATABASE_URL_ANALYTICS",
     "PRISMA_LOCATION_ANALYTICS",
