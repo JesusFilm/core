@@ -10,7 +10,6 @@ import {
 import config from './commitlint.config'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { diffLines } from 'diff'
 
 export default async () => {
   // merge queues not supported by danger-js
@@ -20,10 +19,10 @@ export default async () => {
   // check lockfile updated when package changes
   const packageChanged = danger.git.modified_files.includes('package.json')
   const lockfileChanged =
-    danger.git.modified_files.includes('package-lock.json')
+    danger.git.modified_files.includes('bun.lockb')
   if (packageChanged && !lockfileChanged) {
     const message =
-      'Changes were made to package.json, but not to package-lock.json'
+      'Changes were made to package.json, but not to bun.lockb.'
     const idea = 'Perhaps you need to run `bun install`?'
     warn(`${message} - <i>${idea}</i>`)
   }
