@@ -1,7 +1,7 @@
 import { FetchResult } from '@apollo/client'
 import CircularProgress from '@mui/material/CircularProgress'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 

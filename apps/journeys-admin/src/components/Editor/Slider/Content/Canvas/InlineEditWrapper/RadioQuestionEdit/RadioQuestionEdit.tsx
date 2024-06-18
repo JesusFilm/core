@@ -4,11 +4,11 @@ import { SimplePaletteColorOptions } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrappersProps } from '@core/journeys/ui/BlockRenderer'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StyledRadioOption } from '@core/journeys/ui/RadioOption'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 

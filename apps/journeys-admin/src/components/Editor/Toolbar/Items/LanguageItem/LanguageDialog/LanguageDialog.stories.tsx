@@ -136,6 +136,7 @@ const Template: StoryObj<typeof LanguageDialog> = {
 }
 
 export const Default = { ...Template }
+
 export const Error = {
   ...Template,
   play: async () => {

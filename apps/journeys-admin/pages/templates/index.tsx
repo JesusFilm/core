@@ -1,9 +1,9 @@
 import { useQuery } from '@apollo/client'
 import { GetStaticProps } from 'next'
-import { useRouter } from 'next/router'
 import { useUser, withUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'

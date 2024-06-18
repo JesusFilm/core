@@ -4,8 +4,8 @@ import { Meta, StoryObj } from '@storybook/react'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { parentTags, tags } from './data'
 import { TemplateTags } from './TemplateTags'
+import { parentTags, tags } from './data'
 
 const TemplateTagsStory: Meta<typeof TemplateTags> = {
   ...journeysAdminConfig,
