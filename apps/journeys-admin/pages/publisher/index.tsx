@@ -9,6 +9,8 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 
+import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
+
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables
@@ -18,7 +20,6 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEYS } from '../../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { useUserRoleQuery } from '../../src/libs/useUserRoleQuery'
 
 function PublisherIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
