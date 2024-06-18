@@ -105,8 +105,7 @@ export function VideoTrigger({
     triggered,
     variant,
     blockId,
-    plausible,
-    stepId
+    plausible
   ])
 
   return <></>
