@@ -19,6 +19,7 @@ import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -33,7 +34,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
 
