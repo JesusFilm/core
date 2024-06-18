@@ -4,9 +4,9 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 

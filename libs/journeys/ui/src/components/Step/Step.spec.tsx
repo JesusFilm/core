@@ -8,14 +8,14 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import type { TreeBlock } from '../../libs/block'
-import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import type { TreeBlock } from '../../libs/block'
+import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 
+import { STEP_VIEW_EVENT_CREATE } from './Step'
 import { StepFields } from './__generated__/StepFields'
 import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
-import { STEP_VIEW_EVENT_CREATE } from './Step'
 
 import { Step } from '.'
 
@@ -243,7 +243,7 @@ describe('Step', () => {
     const { baseElement } = render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
         <JourneyProvider value={{ journey }}>
-          {/* eslint-disable-next-line react/no-children-prop */}
+          {/* biome-ignore lint/correctness/noChildrenProp: <explanation> */}
           <Step {...block} children={[]} />
         </JourneyProvider>
       </MockedProvider>

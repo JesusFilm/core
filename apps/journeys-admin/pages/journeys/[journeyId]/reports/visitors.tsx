@@ -1,6 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
-import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -9,6 +8,7 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
 import { GetAdminJourney } from '../../../../__generated__/GetAdminJourney'
