@@ -14,7 +14,7 @@ type CrowdinFileName =
   | '/Arclight/media_metadata_tile.csv'
   | '/Arclight/media_metadata_description.csv'
   | '/Arclight/study_questions.csv'
-  // | '/Arclight/Bible_books.csv'
+  | '/Arclight/Bible_books.csv'
   | string
 
 const schema = z.object({
@@ -122,46 +122,50 @@ export class CrowdinService {
     fileName: CrowdinFileName
   ): Promise<void> {
     switch (fileName) {
-      case '/Arclight/media_metadata_tile.csv':
-      case '/Arclight/collection_title.csv':
-        {
-          const videoId = resName
-          const videos = await this.getVideos(videoId)
-          if (videos.length === 0)
-            throw new MatchError(`no matching videoId found for ${videoId}`)
-          await this.updateVideoTitle(videos[0].id, languageId, value)
-        }
-        break
-      case '/Arclight/collection_long_description.csv':
-      case '/Arclight/media_metadata_description.csv':
-        {
-          const videoId = resName
-          const videos = await this.getVideos(videoId)
-          if (videos.length === 0)
-            throw new MatchError(`no matching videoId found for ${videoId}`)
-          await this.updateVideoDescription(videos[0].id, languageId, value)
-        }
-        break
-      case '/Arclight/study_questions.csv': {
-        const englishStudyQuestions = await this.getStudyQuestions(resName)
-        if (englishStudyQuestions.length === 0)
-          throw new MatchError(`no matching crowdInId found for ${resName}`)
+      // case '/Arclight/media_metadata_tile.csv':
+      // case '/Arclight/collection_title.csv':
+      //   {
+      //     const videoId = resName
+      //     const videos = await this.getVideos(videoId)
+      //     if (videos.length === 0)
+      //       throw new MatchError(`no matching videoId found for ${videoId}`)
+      //     await this.updateVideoTitle(videos[0].id, languageId, value)
+      //   }
+      //   break
+      // case '/Arclight/collection_long_description.csv':
+      // case '/Arclight/media_metadata_description.csv':
+      //   {
+      //     const videoId = resName
+      //     const videos = await this.getVideos(videoId)
+      //     if (videos.length === 0)
+      //       throw new MatchError(`no matching videoId found for ${videoId}`)
+      //     await this.updateVideoDescription(videos[0].id, languageId, value)
+      //   }
+      //   break
+      // case '/Arclight/study_questions.csv': {
+      //   const englishStudyQuestions = await this.getStudyQuestions(resName)
+      //   if (englishStudyQuestions.length === 0)
+      //     throw new MatchError(`no matching crowdInId found for ${resName}`)
 
-        await Promise.all(
-          map(englishStudyQuestions, async (englishStudyQuestion) => {
-            const videoId = englishStudyQuestion.videoId
-            if (videoId == null)
-              throw new MatchError(`no matching videoId found for ${resName}`)
-            await this.updateStudyQuestion(
-              videoId,
-              languageId,
-              value,
-              resName,
-              englishStudyQuestion.order
-            )
-          })
-        )
-        break
+      //   await Promise.all(
+      //     map(englishStudyQuestions, async (englishStudyQuestion) => {
+      //       const videoId = englishStudyQuestion.videoId
+      //       if (videoId == null)
+      //         throw new MatchError(`no matching videoId found for ${resName}`)
+      //       await this.updateStudyQuestion(
+      //         videoId,
+      //         languageId,
+      //         value,
+      //         resName,
+      //         englishStudyQuestion.order
+      //       )
+      //     })
+      //   )
+      //   break
+      // }
+      case '/Arclight/Bible_books.csv': {
+        const bibleBookId = resName
+        await this.updateBibleBookNames(bibleBookId, languageId, value)
       }
     }
   }
@@ -241,6 +245,31 @@ export class CrowdinService {
         videoId,
         order,
         crowdInId: resName
+      }
+    })
+  }
+
+  private async updateBibleBookNames(
+    bibleBookId: string,
+    languageId: string,
+    value: string
+  ): Promise<void> {
+    console.log(bibleBookId, languageId, value)
+    await this.prisma.bibleBookName.upsert({
+      where: {
+        bibleBookId_languageId: {
+          bibleBookId,
+          languageId
+        }
+      },
+      update: {
+        value
+      },
+      create: {
+        value,
+        bibleBookId,
+        languageId,
+        primary: false
       }
     })
   }
