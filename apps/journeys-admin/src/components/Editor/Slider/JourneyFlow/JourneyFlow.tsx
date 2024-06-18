@@ -38,6 +38,7 @@ import {
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
+import { PlausibleFilter } from '../../../PlausibleFilter'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
 import { CustomEdge } from './edges/CustomEdge'
@@ -55,7 +56,6 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
-import { PlausibleFilter } from '../../../PlausibleFilter'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -293,7 +293,6 @@ export function JourneyFlow(): ReactElement {
       }}
       data-testid="JourneyFlow"
     >
-      <PlausibleFilter />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -325,7 +324,11 @@ export function JourneyFlow(): ReactElement {
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
             <Panel position="top-right">
-              <NewStepButton />
+              {showJourneyFlowAnalytics ? (
+                <PlausibleFilter />
+              ) : (
+                <NewStepButton />
+              )}
             </Panel>
             <Panel position="top-left">
               <AnalyticsOverlaySwitch />

@@ -1,5 +1,3 @@
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -17,24 +15,15 @@ export function PlausibleFilter(): ReactElement {
   } = usePlausibleLocal()
 
   return (
-    <Card variant="outlined">
-      <CardContent
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          gap: 2
-        }}
-      >
-        {['day', 'month', 'year'].includes(period) && <Arrows />}
-        <Period />
-        {comparison != null && (
-          <>
-            <Typography>{t('vs.')}</Typography>
-            <Comparison />
-          </>
-        )}
-      </CardContent>
-    </Card>
+    <>
+      {['day', 'month', 'year'].includes(period) && <Arrows />}
+      <Period />
+      {comparison != null && (
+        <>
+          <Typography>{t('vs.')}</Typography>
+          <Comparison />
+        </>
+      )}
+    </>
   )
 }
