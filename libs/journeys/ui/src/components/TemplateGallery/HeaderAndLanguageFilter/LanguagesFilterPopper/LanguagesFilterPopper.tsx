@@ -12,6 +12,10 @@ import { Dispatch, ReactElement, SetStateAction } from 'react'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
+interface LanguageOptions {
+  languages: LanguageOption[]
+}
+
 interface LanguagesFilterPopperProps {
   initialValues: LanguageOption[]
   onSubmit: (values: LanguageOptions) => void
@@ -19,10 +23,6 @@ interface LanguagesFilterPopperProps {
   open: boolean
   anchorEl: HTMLElement | null
   sortedLanguages: LanguageOption[]
-}
-
-interface LanguageOptions {
-  languages: LanguageOption[]
 }
 
 const StyledPopperOption = styled(ButtonBase)(() => ({
