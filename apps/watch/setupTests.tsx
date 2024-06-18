@@ -5,10 +5,7 @@ configure({ asyncUtilTimeout: 2500 })
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ src, alt }) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} />
-  )
+  default: ({ src, alt }) => <img src={src} alt={alt} />
 }))
 
 Object.defineProperty(
