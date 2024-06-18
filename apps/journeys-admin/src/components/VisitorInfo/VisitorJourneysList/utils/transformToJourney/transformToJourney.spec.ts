@@ -11,7 +11,8 @@ describe('transformVisitorEvents', () => {
       label: 'How do you feel at the end of the journey?',
       value:
         "Don't adventures ever have an end? I suppose not. Someone else always has to carry on the story",
-      createdAt: '2022-11-02T03:20:26.368Z'
+      createdAt: '2022-11-02T03:20:26.368Z',
+      blockId: 'blockId'
     },
     {
       __typename: 'RadioQuestionSubmissionEvent',
@@ -46,7 +47,8 @@ describe('transformVisitorEvents', () => {
       label: 'How do you feel about your adventure?',
       value:
         'It was basically the worst. Stabbed, lost, hungry, betrayed, and I lost a finger.',
-      createdAt: '2022-11-02T03:20:26.368Z'
+      createdAt: '2022-11-02T03:20:26.368Z',
+      blockId: 'blockId2'
     },
     {
       __typename: 'RadioQuestionSubmissionEvent',
@@ -85,7 +87,8 @@ describe('transformVisitorEvents', () => {
         label: 'How do you feel at the end of the journey?',
         value:
           "Don't adventures ever have an end? I suppose not. Someone else always has to carry on the story",
-        createdAt: '2022-11-02T03:20:26.368Z'
+        createdAt: '2022-11-02T03:20:26.368Z',
+        blockId: 'blockId'
       },
       {
         __typename: 'RadioQuestionSubmissionEvent',
@@ -129,7 +132,8 @@ describe('transformVisitorEvents', () => {
         label: 'How do you feel about your adventure?',
         value:
           'It was basically the worst. Stabbed, lost, hungry, betrayed, and I lost a finger.',
-        createdAt: '2022-11-02T03:20:26.368Z'
+        createdAt: '2022-11-02T03:20:26.368Z',
+        blockId: 'blockId2'
       },
       {
         __typename: 'RadioQuestionSubmissionEvent',
