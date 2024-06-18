@@ -1,4 +1,4 @@
-import { writeFileSync } from 'fs'
+import { writeFileSync } from 'node:fs'
 
 import { printSubgraphSchema } from '@apollo/subgraph'
 import chalk from 'chalk'

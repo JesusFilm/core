@@ -1,4 +1,4 @@
-import { createHash } from 'crypto'
+import { createHash } from 'node:crypto'
 
 import { api_keys as PrismaApiKey } from '.prisma/api-analytics-client'
 
