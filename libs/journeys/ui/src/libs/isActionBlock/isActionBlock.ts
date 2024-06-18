@@ -14,5 +14,6 @@ export type ActionBlock =
   | TreeBlock<FormBlock>
   | TreeBlock<VideoBlock>
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export const isActionBlock = (block: TreeBlock<any>): block is ActionBlock =>
   block?.action !== undefined

@@ -1,4 +1,3 @@
-/* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
 
 import { JourneyPage } from '../../pages/journey-page'
