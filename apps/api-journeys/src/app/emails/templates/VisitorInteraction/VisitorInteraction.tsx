@@ -14,7 +14,7 @@ import { Tailwind } from '@react-email/tailwind'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement, ReactNode } from 'react'
 
-import { Event } from '.prisma/api-journeys-client'
+import { Event, Prisma } from '.prisma/api-journeys-client'
 import {
   ActionCard,
   BodyWrapper,
@@ -24,11 +24,14 @@ import {
 } from '@core/nest/common/email/components'
 import { User } from '@core/nest/common/firebaseClient'
 
-interface Visitor {
-  createdAt: Date
-  duration: number
-  events: Event[]
-}
+type Visitor = Prisma.VisitorGetPayload<{
+  select: {
+    id: true
+    createdAt: true
+    duration: true
+    events: true
+  }
+}>
 
 interface VisitorInteractionProps {
   title: string
@@ -225,6 +228,7 @@ const event: Event = {
 VisitorInteraction.PreviewProps = {
   title: 'Journey Title',
   visitor: {
+    id: 'userId',
     createdAt: new Date('2024-05-27T23:39:28.000Z'),
     duration: 10,
     events: [

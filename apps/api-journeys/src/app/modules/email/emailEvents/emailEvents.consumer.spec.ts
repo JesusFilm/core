@@ -283,7 +283,7 @@ describe('EmailEventsConsumer', () => {
       expect(emailService.sendEmail).toHaveBeenCalled()
       expect(args).toEqual({
         to: 'jron@example.com',
-        subject: 'A visitor has interacted with your journey',
+        subject: 'Visitor #visitorId has interacted with your journey',
         text: expect.any(String),
         html: expect.anything()
       })

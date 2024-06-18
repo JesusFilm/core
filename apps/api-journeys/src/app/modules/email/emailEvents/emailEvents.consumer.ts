@@ -92,7 +92,7 @@ export class EmailEventsConsumer extends WorkerHost {
 
         const analyticsUrl = `${
           process.env.JOURNEYS_ADMIN_URL ?? ''
-        }/reports/visitors/${visitor.id}`
+        }/reports/visitors/${visitor.id}?journeyId=${journey.id}`
         const unsubscribeUrl = `${
           process.env.JOURNEYS_ADMIN_URL ?? ''
         }/journeys/${journey.id}?manageAccess=true`
@@ -121,7 +121,7 @@ export class EmailEventsConsumer extends WorkerHost {
 
         await this.emailService.sendEmail({
           to: data.user.email,
-          subject: `A visitor has interacted with your journey`,
+          subject: `Visitor #${visitor.id} has interacted with your journey`,
           text,
           html
         })

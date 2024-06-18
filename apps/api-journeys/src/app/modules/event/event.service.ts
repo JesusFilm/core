@@ -78,36 +78,25 @@ export class EventService {
     })) as unknown as T
   }
 
-  async sendEventsEmail(
-    journeyId: string,
-    visitorId: string,
-    videoEvent?: 'start' | 'play'
-  ): Promise<void> {
+  async sendEventsEmail(journeyId: string, visitorId: string): Promise<void> {
     const jobId = `visitor-event-${journeyId}-${visitorId}`
     const visitorEmailJob = await this.emailQueue.getJob(jobId)
 
-    const removalFlags = ['start', 'play', null, undefined]
-    const removeJob = removalFlags.includes(videoEvent)
-    const isVideoEvent = videoEvent === 'start' || videoEvent === 'play'
-
     if (visitorEmailJob != null) {
-      const jobState = await this.emailQueue.getJobState(jobId)
-
-      if (removeJob) await this.emailQueue.remove(jobId)
-      if (jobState !== 'completed' && !isVideoEvent)
-        await this.emailQueue.add(
-          'visitor-event',
-          {
-            journeyId,
-            visitorId
-          },
-          {
-            jobId,
-            delay: 2 * 60 * 1000, // delay for 2 minutes
-            removeOnComplete: true,
-            removeOnFail: { age: 24 * 36000 } // keep up to 24 hours
-          }
-        )
+      await this.emailQueue.remove(jobId)
+      await this.emailQueue.add(
+        'visitor-event',
+        {
+          journeyId,
+          visitorId
+        },
+        {
+          jobId,
+          delay: 2 * 60 * 1000, // delay for 2 minutes
+          removeOnComplete: true,
+          removeOnFail: { age: 24 * 36000 } // keep up to 24 hours
+        }
+      )
     } else {
       await this.emailQueue.add(
         'visitor-event',
@@ -122,6 +111,23 @@ export class EventService {
           removeOnFail: { age: 24 * 36000 } // keep up to 24 hours
         }
       )
+    }
+  }
+
+  async resetEventsEmailDelay(
+    journeyId: string,
+    visitorId: string,
+    delay?: number
+  ): Promise<void> {
+    const jobId = `visitor-event-${journeyId}-${visitorId}`
+    const visitorEmailJob = await this.emailQueue.getJob(jobId)
+
+    if (visitorEmailJob != null) {
+      const defaultDelay = 2 * 60 * 1000
+      const delayTimer = Math.max(delay ?? 0, defaultDelay)
+      await this.emailQueue.updateJobProgress(jobId, {
+        delay: delayTimer
+      })
     }
   }
 }
