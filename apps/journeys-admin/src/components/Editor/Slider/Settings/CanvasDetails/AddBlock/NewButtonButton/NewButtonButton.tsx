@@ -3,11 +3,11 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'

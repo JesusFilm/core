@@ -3,12 +3,12 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
-import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
-import { showNavigationVar } from '@core/journeys/ui/block/block'
 import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
+import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
+import { showNavigationVar } from '@core/journeys/ui/block/block'
 
 import { NavigationButton } from './NavigationButton'
 

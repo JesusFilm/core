@@ -5,14 +5,14 @@ import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import { JourneyProvider } from '../../libs/JourneyProvider'
 
-import { SignUpFields } from './__generated__/SignUpFields'
 import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
+import { SignUpFields } from './__generated__/SignUpFields'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')

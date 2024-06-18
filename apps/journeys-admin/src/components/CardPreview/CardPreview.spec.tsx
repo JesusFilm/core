@@ -3,18 +3,18 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../__generated__/GetJourney'
-import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import {
   StepAndCardBlockCreate,
   StepAndCardBlockCreateVariables
 } from '../../../__generated__/StepAndCardBlockCreate'
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
 import { CardPreview } from '.'
