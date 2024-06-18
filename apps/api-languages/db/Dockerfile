@@ -5,6 +5,11 @@ ENV PRISMA_LOCATION_LANGUAGES=/app/node_modules/.prisma/api-languages-client
 RUN apk upgrade --update-cache --available && \
     rm -rf /var/cache/apk/*
 
+ENV BUN_INSTALL="/bun"
+ENV PATH=$BUN_INSTALL/bin:$PATH
+
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.13"
+
 WORKDIR /app
 COPY ./tsconfig.base.json /app/tsconfig.base.json
 COPY ./apps/api-languages /app/apps/api-languages

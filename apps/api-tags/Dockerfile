@@ -7,6 +7,11 @@ ENV PRISMA_LOCATION_TAGS=/app/node_modules/.prisma/api-tags-client
 RUN apk upgrade --update-cache --available && \
     rm -rf /var/cache/apk/*
 
+ENV BUN_INSTALL="/bun"
+ENV PATH=$BUN_INSTALL/bin:$PATH
+
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.13"
+
 WORKDIR /app
 COPY ./dist/apps/api-tags .
 

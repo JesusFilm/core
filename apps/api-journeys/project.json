@@ -106,7 +106,7 @@
         "parallel": false,
         "commands": [
           "bunx prisma generate --schema apps/api-journeys/db/schema.prisma",
-          "bun run ts-node apps/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
+          "bunx ts-node apps/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
         ]
       }
     },
