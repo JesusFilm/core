@@ -3,7 +3,7 @@ import i18next, { use } from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import appJourneysAdminTranslations from '../../../locales/en/apps-journeys-admin.json'
+import appJourneysUiTranslations from '../../../locales/en/libs-journeys-ui.json'
 
 void use(initReactI18next).init({
   fallbackLng: 'en',
@@ -12,7 +12,7 @@ void use(initReactI18next).init({
   },
   resources: {
     en: {
-      'apps-journeys-admin': appJourneysAdminTranslations
+      'libs-journeys-ui': appJourneysUiTranslations
     }
   }
 })
