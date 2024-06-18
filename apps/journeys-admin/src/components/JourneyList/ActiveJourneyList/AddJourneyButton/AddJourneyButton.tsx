@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import Plus2Icon from '@core/shared/ui/icons/Plus2'

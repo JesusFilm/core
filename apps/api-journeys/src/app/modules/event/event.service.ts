@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
 
-import { JourneyVisitor, Prisma, Visitor } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import { JourneyVisitor, Prisma, Visitor } from '.prisma/api-journeys-client'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'

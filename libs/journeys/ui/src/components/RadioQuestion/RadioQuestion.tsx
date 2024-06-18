@@ -7,11 +7,10 @@ import { ReactElement, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import { useJourney } from '../../libs/JourneyProvider'
 import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider'
-// eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
 
