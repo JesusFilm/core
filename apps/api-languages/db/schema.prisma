@@ -29,6 +29,7 @@ model Language {
   countries        Country[]
   countryName      CountryName[]
   countryContinent CountryContinent[]
+  audioPreview     AudioPreview[]
 
   @@index(bcp47(type: Hash))
 }
@@ -88,4 +89,16 @@ model CountryContinent {
   @@index(languageId(type: Hash))
   @@index(primary(type: Hash))
   @@index(countryId(type: Hash))
+}
+
+model AudioPreview {
+  id         String   @id @default(uuid())
+  languageId String
+  value      String
+  size       Int
+  createdAt  DateTime
+  updatedAt  DateTime
+  language   Language @relation(fields: [languageId], references: [id])
+
+  @@index(languageId(type: Hash))
 }

@@ -1,7 +1,7 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo } from 'react'
