@@ -10,6 +10,8 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import {
   CreateJourneyCollection,
   CreateJourneyCollectionVariables
@@ -28,7 +30,6 @@ import {
   UpdateJourneyCollectionVariables
 } from '../../../../../__generated__/UpdateJourneyCollection'
 import { useAdminJourneysQuery } from '../../../../libs/useAdminJourneysQuery'
-import { useTeam } from '../../TeamProvider'
 import { CustomDomainDialogTitle } from '../CustomDomainDialogTitle'
 
 interface DefaultJourneyFormProps {

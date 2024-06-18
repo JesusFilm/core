@@ -3,9 +3,9 @@ import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
-import { TeamProvider } from '../../../../Team/TeamProvider'
 
 import { TrashJourneyDialog } from '.'
 
