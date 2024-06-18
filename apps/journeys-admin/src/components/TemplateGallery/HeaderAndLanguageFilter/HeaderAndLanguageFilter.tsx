@@ -4,8 +4,8 @@ import NoSsr from '@mui/material/NoSsr'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/router'
 import { Trans, useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import {
   ComponentProps,
   ReactElement,
@@ -21,8 +21,8 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetLanguages_languages } from '../../../../__generated__/GetLanguages'
 
-import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
+import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 
 interface LocalTypographyProps extends ComponentProps<typeof Typography> {}
 

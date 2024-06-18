@@ -7,9 +7,9 @@ import { ObjectSchema, object, string } from 'yup'
 
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
-import { TeamCreateInput } from '../../../../__generated__/globalTypes'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { TeamCreateInput } from '../../../../__generated__/globalTypes'
 import { useTeamCreateMutation } from '../../../libs/useTeamCreateMutation'
 
 interface TeamCreateFormProps {

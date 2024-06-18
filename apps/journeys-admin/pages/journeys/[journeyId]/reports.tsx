@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -8,11 +7,12 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
-import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'

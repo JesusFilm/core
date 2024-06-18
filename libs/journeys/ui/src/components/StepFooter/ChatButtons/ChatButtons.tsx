@@ -18,9 +18,9 @@ import Vk from '@core/shared/ui/icons/Vk'
 import WhatsApp from '@core/shared/ui/icons/WhatsApp'
 
 import { MessagePlatform } from '../../../../__generated__/globalTypes'
-import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { useBlocks } from '../../../libs/block'
 import { getJourneyRTL } from '../../../libs/rtl'
 
 import { ChatButtonEventCreate } from './__generated__/ChatButtonEventCreate'
@@ -71,7 +71,6 @@ export function ChatButtons(): ReactElement {
       void chatButtonEventCreate({
         variables: {
           input: {
-            id: chatButton?.id,
             blockId: activeBlock?.id,
             stepId: activeBlock?.id,
             value: chatButton?.platform

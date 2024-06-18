@@ -14,11 +14,11 @@ import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '../..
 import { GetJourneys } from '../../../__generated__/GetJourneys'
 import { GetTags } from '../../../__generated__/GetTags'
 import { GetUserRole } from '../../../__generated__/GetUserRole'
-import { Role } from '../../../__generated__/globalTypes'
 import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag
 } from '../../../__generated__/JourneyFields'
+import { Role } from '../../../__generated__/globalTypes'
 import { defaultJourney, publishedJourney } from '../Editor/data'
 
 import { journeyVideoBlocks } from './TemplatePreviewTabs/data'

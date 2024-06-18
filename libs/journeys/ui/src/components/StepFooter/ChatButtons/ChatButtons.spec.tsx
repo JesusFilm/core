@@ -7,13 +7,13 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import { TreeBlock, blockHistoryVar } from '../../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import {
   JourneyFields_chatButtons as ChatButton,
   JourneyFields as Journey
 } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { TreeBlock, blockHistoryVar } from '../../../libs/block'
+import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 
 import { CHAT_BUTTON_EVENT_CREATE, ChatButtons } from './ChatButtons'
 
@@ -98,7 +98,6 @@ describe('ChatButtons', () => {
         query: CHAT_BUTTON_EVENT_CREATE,
         variables: {
           input: {
-            id: chatButtons[0]?.id,
             blockId: stepBlock?.id,
             stepId: stepBlock?.id,
             value: chatButtons[0].platform

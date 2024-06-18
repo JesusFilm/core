@@ -5,15 +5,15 @@ import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
-  TreeBlock,
-  blockHistoryVar,
-  treeBlocksVar
-} from '@core/journeys/ui/block'
-import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  TreeBlock,
+  blockHistoryVar,
+  treeBlocksVar
+} from '@core/journeys/ui/block'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'

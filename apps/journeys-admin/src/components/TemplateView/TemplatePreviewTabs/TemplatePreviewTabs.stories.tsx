@@ -9,8 +9,8 @@ import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 import { publishedJourney } from '../../Editor/data'
 
-import { journeyVideoBlocks } from './data'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
+import { journeyVideoBlocks } from './data'
 
 const TemplatePreviewTabsStory: Meta<typeof TemplatePreviewTabs> = {
   ...simpleComponentConfig,

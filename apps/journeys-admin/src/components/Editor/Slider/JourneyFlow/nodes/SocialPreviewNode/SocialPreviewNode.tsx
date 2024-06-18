@@ -3,8 +3,8 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
-import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { alpha } from '@mui/material/styles'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { ReactElement } from 'react'
@@ -84,8 +84,8 @@ export function SocialPreviewNode(): ReactElement {
                 selected === true
                   ? theme.palette.primary.main
                   : selected === 'descendant'
-                  ? theme.palette.divider
-                  : 'transparent'
+                    ? theme.palette.divider
+                    : 'transparent'
               }`,
             outlineOffset: '5px'
           }}
