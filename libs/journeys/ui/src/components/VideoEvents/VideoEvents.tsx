@@ -44,6 +44,7 @@ import {
   VideoProgressEventCreateVariables
 } from './__generated__/VideoProgressEventCreate'
 import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
+import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
 export const VIDEO_START_EVENT_CREATE = gql`
   mutation VideoStartEventCreate($input: VideoStartEventCreateInput!) {
@@ -105,6 +106,7 @@ export interface VideoEventsProps {
   videoId: string
   startAt: number | null
   endAt: number | null
+  action: VideoTriggerFields_triggerAction | null
 }
 
 export function VideoEvents({
@@ -114,7 +116,8 @@ export function VideoEvents({
   source,
   videoId,
   startAt,
-  endAt
+  endAt,
+  action
 }: VideoEventsProps): ReactElement {
   const [videoStartEventCreate, { called: calledStart }] =
     useMutation<VideoStartEventCreate>(VIDEO_START_EVENT_CREATE)
@@ -654,7 +657,8 @@ export function VideoEvents({
               key: keyify({
                 stepId: input.stepId ?? '',
                 event: 'videoComplete',
-                blockId: input.blockId
+                blockId: input.blockId,
+                target: action
               })
             }
           })
