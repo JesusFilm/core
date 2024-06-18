@@ -16,8 +16,8 @@ import {
   GetJourneyVariables,
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
-import { IdType } from '../../../__generated__/globalTypes'
 import { StepFields } from '../../../__generated__/StepFields'
+import { IdType } from '../../../__generated__/globalTypes'
 import i18nConfig from '../../../next-i18next.config'
 import { EmbeddedPreview } from '../../../src/components/EmbeddedPreview'
 import { createApolloClient } from '../../../src/libs/apolloClient'
