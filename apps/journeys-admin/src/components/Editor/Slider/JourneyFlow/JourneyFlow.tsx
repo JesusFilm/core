@@ -246,7 +246,7 @@ export function JourneyFlow(): ReactElement {
       const { source, sourceHandle, target } = newConnection
       setEdges((prev) => reactFlowUpdateEdge(oldEdge, newConnection, prev))
       edgeUpdateSuccessful.current = true
-      void updateEdge({ source, sourceHandle, target })
+      void updateEdge({ source, sourceHandle, target, oldEdge })
     },
     [setEdges, updateEdge]
   )
