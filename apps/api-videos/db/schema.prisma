@@ -53,6 +53,7 @@ model Video {
   parent            Video[]              @relation("ParentChild")
   variants          VideoVariant[]
   bibleCitation     BibleCitation[]
+  keywords          VideoKeyword[]
 
   @@index(label)
   @@index(childIds)
@@ -237,4 +238,25 @@ model BibleBookName {
   @@index(value(type: Hash))
   @@index(primary(type: Hash))
   @@index(languageId(type: Hash))
+}
+
+model Keyword {
+  id         String         @id @default(uuid())
+  value      String
+  languageId String
+  keywords   VideoKeyword[]
+}
+
+model VideoKeyword {
+  videoId    String
+  value      String
+  languageId String
+  keywordId  String
+
+  video   Video   @relation(fields: [videoId], references: [id])
+  keyword Keyword @relation(fields: [keywordId], references: [id])
+
+  @@id([videoId, keywordId])
+  @@index([value], name: "value_idx")
+  @@index([languageId], name: "languageId_idx")
 }
