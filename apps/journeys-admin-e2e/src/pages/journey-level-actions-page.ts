@@ -241,7 +241,6 @@ export class JourneyLevelActions {
       .locator('ul[aria-labelledby="edit-journey-actions"] li', {
         hasText: option
       })
-      // eslint-disable-next-line playwright/no-force-option
       .click({ force: true })
   }
 
@@ -267,7 +266,7 @@ export class JourneyLevelActions {
     const selectedValue = await this.page
       .locator('input[placeholder="Search Language"]')
       .getAttribute('value', { timeout: thirtySecondsTimeout })
-    this.selectedLanguage = selectedValue == language ? 'Malayalam' : language
+    this.selectedLanguage = selectedValue === language ? 'Malayalam' : language
     await this.page.locator('input[placeholder="Search Language"]').click()
     await expect(this.page.locator('span[role="progressbar"]')).toBeHidden({
       timeout: thirtySecondsTimeout

@@ -3,8 +3,8 @@ import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
 interface SocialImageProps {
   hasCreatorDescription?: boolean

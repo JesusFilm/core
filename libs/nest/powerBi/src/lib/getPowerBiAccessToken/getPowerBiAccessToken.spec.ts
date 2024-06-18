@@ -27,7 +27,7 @@ describe('getPowerBiAccessToken', () => {
         () =>
           ({
             acquireTokenWithClientCredentials
-          } as unknown as AuthenticationContext)
+          }) as unknown as AuthenticationContext
       )
       expect(
         await getPowerBiAccessToken(

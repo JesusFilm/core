@@ -15,8 +15,8 @@ import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
-import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
 import { UserTeamUpdate } from '../../../../../../__generated__/UserTeamUpdate'
+import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
 import { MenuItem } from '../../../../MenuItem'
 import { UserTeamDeleteMenuItem } from '../../UserTeamDeleteMenuItem'
 

@@ -69,8 +69,18 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @biomejs/biome check --diagnostic-level=warn",
+        "cwd": "apps/api-videos"
+      }
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @biomejs/biome check --write",
+        "cwd": "apps/api-videos"
+      }
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -111,7 +121,8 @@
       "options": {
         "commands": [
           "bash -c 'npx prisma migrate dev --schema apps/api-videos/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
-        ]
+        ],
+        "parallel": false
       },
       "configurations": {
         "production": {

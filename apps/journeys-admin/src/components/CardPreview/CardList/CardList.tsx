@@ -2,9 +2,9 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import Divider from '@mui/material/Divider'
+import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import type {
   DraggableProvided,
@@ -12,16 +12,16 @@ import type {
   DroppableProvided
 } from 'react-beautiful-dnd'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import TargetIcon from '@core/shared/ui/icons/Target'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
@@ -112,8 +112,8 @@ export function CardList({
     activeContent === ActiveContent.Goals
       ? 'goals'
       : activeContent === ActiveContent.Social
-      ? 'social'
-      : selected?.id
+        ? 'social'
+        : selected?.id
 
   return (
     <HorizontalSelect
