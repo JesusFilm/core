@@ -37,16 +37,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+
+      - uses: oven-sh/setup-bun@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
+          bun-version: 1.1.13
+      - name: bun Install
+        run: bun install --silent --frozen-lockfile
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -55,8 +51,8 @@ jobs:
           parallel: 1
         env:
           DISABLE_ERD: true
-      - name: NPM apollo and graphql for codegen
-        run: npm i -g apollo graphql @apollo/rover@0.22.0
+      - name: bun apollo and graphql for codegen
+        run: bun i -g apollo graphql @apollo/rover@0.22.0
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -69,10 +65,10 @@ jobs:
         env:
           APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       - name: lint commit messages
-        run: npx commitlint --from 9a45682 # earliest good commit to main
+        run: bunx commitlint --from 9a45682 # earliest good commit to main
       - name: lint branch name
         if: ${{ github.event_name == 'pull_request' }}
-        run: npx validate-branch-name -t $GITHUB_HEAD_REF
+        run: bunx validate-branch-name -t $GITHUB_HEAD_REF
       - name: Check for file changes due to codegen
         run: ./tools/scripts/check-git-status.sh
   build:
@@ -102,16 +98,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
+          bun-version: 1.1.13
+      - name: bun Install
+        run: bun install --silent --frozen-lockfile
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -176,16 +167,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+
+      - uses: oven-sh/setup-bun@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
+          bun-version: 1.1.13
+      - name: bun Install
+        run: bun install --silent --frozen-lockfile
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -239,19 +226,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+
+      - uses: oven-sh/setup-bun@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
+          bun-version: 1.1.13
+      - name: bun Install
+        run: bun install --silent --frozen-lockfile
       - uses: nrwl/nx-set-shas@v3
       - name: nx Install
-        run: npm install -g nx --silent
+        run: bun install -g nx --silent
       - name: Build Stories
         id: build-storybook
         run: nx affected --target=build-storybook shared-storybook --webpack-stats-json

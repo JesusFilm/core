@@ -24,7 +24,7 @@ export default async () => {
   if (packageChanged && !lockfileChanged) {
     const message =
       'Changes were made to package.json, but not to package-lock.json'
-    const idea = 'Perhaps you need to run `npm install`?'
+    const idea = 'Perhaps you need to run `bun install`?'
     warn(`${message} - <i>${idea}</i>`)
   }
 

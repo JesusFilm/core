@@ -24,7 +24,6 @@
             "output": "./assets"
           }
         ],
-        "generatePackageJson": true,
         "compiler": "tsc",
         "target": "node",
         "webpackConfig": "apps/api-tags/webpack.config.js"
@@ -53,20 +52,20 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-tags --transpileOnly"
+        "command": "bun run ts-node tools/scripts/generate-typings.ts api-tags --transpileOnly"
       }
     },
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check  --diagnostic-level=warn",
+        "command": "bunx @biomejs/biome check  --diagnostic-level=warn",
         "cwd": "apps/api-tags"
       }
     },
     "lint:fix": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --write",
+        "command": "bunx @biomejs/biome check --write",
         "cwd": "apps/api-tags"
       }
     },
@@ -101,7 +100,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma generate --schema apps/api-tags/db/schema.prisma"
+          "bunx prisma generate --schema apps/api-tags/db/schema.prisma"
         ]
       }
     },
@@ -109,13 +108,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bash -c 'npx prisma migrate dev --schema apps/api-tags/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+          "bash -c 'bunx prisma migrate dev --schema apps/api-tags/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
         ]
       },
       "configurations": {
         "production": {
           "commands": [
-            "npx prisma migrate deploy --schema apps/api-tags/db/schema.prisma"
+            "bunx prisma migrate deploy --schema apps/api-tags/db/schema.prisma"
           ]
         }
       }
@@ -124,21 +123,21 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate reset --schema apps/api-tags/db/schema.prisma --force"
+          "bunx prisma migrate reset --schema apps/api-tags/db/schema.prisma --force"
         ]
       }
     },
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run ts-node apps/api-tags/db/seed.ts"]
+        "commands": ["bun run ts-node apps/api-tags/db/seed.ts"]
       }
     },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma studio --schema apps/api-tags/db/schema.prisma"
+          "bunx prisma studio --schema apps/api-tags/db/schema.prisma"
         ]
       }
     },
@@ -146,7 +145,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma validate --schema apps/api-tags/db/schema.prisma"
+          "bunx prisma validate --schema apps/api-tags/db/schema.prisma"
         ]
       }
     },

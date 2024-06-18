@@ -15,18 +15,18 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
-          "npx vercel build",
-          "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/docs/.vercel-url"
+          "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID bunx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "bunx vercel build",
+          "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID bunx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/docs/.vercel-url"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
-            "npx vercel build --prod",
-            "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/docs/.vercel-url"
+            "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID bunx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "bunx vercel build --prod",
+            "VERCEL_PROJECT_ID=$DOCS_VERCEL_PROJECT_ID bunx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/docs/.vercel-url"
           ]
         }
       }
@@ -35,7 +35,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx vercel alias set $(cat apps/docs/.vercel-url) docs-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "bunx vercel alias set $(cat apps/docs/.vercel-url) docs-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
           "echo \"https://docs-$PR_NUMBER-jesusfilm.vercel.app\" > apps/docs/.vercel-url"
         ],
         "parallel": false
@@ -51,14 +51,14 @@
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
+        "command": "bunx @biomejs/biome check --diagnostic-level=warn",
         "cwd": "apps/docs"
       }
     },
     "lint:fix": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --write",
+        "command": "bunx @biomejs/biome check --write",
         "cwd": "apps/docs"
       }
     },
@@ -77,7 +77,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx i18next --config apps/docs/i18next-parser.config.js"
+            "command": "bunx i18next --config apps/docs/i18next-parser.config.js"
           }
         ]
       }

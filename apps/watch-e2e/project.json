@@ -37,20 +37,20 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/watch-e2e/tsconfig.json"
+        "command": "bunx tsc -b apps/watch-e2e/tsconfig.json"
       }
     },
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
+        "command": "bunx @biomejs/biome check --diagnostic-level=warn",
         "cwd": "apps/watch-e2e"
       }
     },
     "lint:fix": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --write",
+        "command": "bunx @biomejs/biome check --write",
         "cwd": "apps/watch-e2e"
       }
     }

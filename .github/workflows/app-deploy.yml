@@ -24,21 +24,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+
+      - uses: oven-sh/setup-bun@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
+          bun-version: 1.1.13
+
+      - name: bun Install
+        run: bun install --silent --frozen-lockfile
       - uses: nrwl/nx-set-shas@v3
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "matrix=$(npx ts-node tools/scripts/affected-apps.ts --withTarget deploy --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
+          echo "matrix=$(bunx ts-node tools/scripts/affected-apps.ts --withTarget deploy --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   deploy-preview:
     name: Deploy Preview and Test
@@ -85,16 +82,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+
+      - uses: oven-sh/setup-bun@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
+          bun-version: 1.1.13
+      - name: bun Install
+        run: bun install --silent --frozen-lockfile
       - uses: nrwl/nx-set-shas@v3
       - name: vercel deployment
         env:
@@ -110,14 +103,14 @@ jobs:
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+        run: bunx nx run-many --target=deploy --projects=${{ matrix.app }}
       - name: vercel set alias
         if: ${{ github.event_name == 'pull_request' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=vercel-alias --projects=${{ matrix.app }}
+        run: bunx nx run-many --target=vercel-alias --projects=${{ matrix.app }}
       - name: Generate GitHub deployment comment
         id: deployment-url
         env:
@@ -151,7 +144,7 @@ jobs:
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
       - name: Store Playwright's Version
         run: |
-          PLAYWRIGHT_VERSION=$(npm run playwright -v)
+          PLAYWRIGHT_VERSION=$(bun run playwright -v)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
       - name: Cache Playwright Browsers for Playwright's Version
@@ -160,12 +153,12 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
-      - run: npx playwright install --with-deps
+      - run: bunx playwright install --with-deps
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-      - run: npx playwright install-deps
+      - run: bunx playwright install-deps
         if: steps.cache-playwright-browsers.outputs.cache-hit == 'true'
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.app }}-e2e:e2e
+        run: bunx nx run ${{ matrix.app }}-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
@@ -233,16 +226,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
+          bun-version: 1.1.13
       - name: NPM Install
-        run: npm install --silent
+        run: bun install --silent --frozen-lockfile
       - uses: nrwl/nx-set-shas@v3
       - name: vercel deployment
         env:
@@ -258,7 +246,7 @@ jobs:
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
+        run: bunx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
       - name: Generate GitHub comment
         id: deployment-url
         env:

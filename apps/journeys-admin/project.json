@@ -39,20 +39,20 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
-          "npx vercel build",
-          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/journeys-admin/.vercel-url",
-          "npx @datadog/datadog-ci sourcemaps upload dist/apps/journeys-admin/.next/static --service=journeys-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/journeys-admin/.vercel-url)/_next/static/"
+          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID bunx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "bunx vercel build",
+          "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID bunx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/journeys-admin/.vercel-url",
+          "bunx @datadog/datadog-ci sourcemaps upload dist/apps/journeys-admin/.next/static --service=journeys-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/journeys-admin/.vercel-url)/_next/static/"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
-            "npx vercel build --prod",
-            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/journeys-admin/.vercel-url",
-            "npx @datadog/datadog-ci sourcemaps upload dist/apps/journeys-admin/.next/static --service=journeys-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://admin.nextstep.is/_next/static/"
+            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID bunx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "bunx vercel build --prod",
+            "VERCEL_PROJECT_ID=$JOURNEYS_ADMIN_VERCEL_PROJECT_ID bunx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/journeys-admin/.vercel-url",
+            "bunx @datadog/datadog-ci sourcemaps upload dist/apps/journeys-admin/.next/static --service=journeys-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://admin.nextstep.is/_next/static/"
           ]
         }
       }
@@ -61,7 +61,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx vercel alias set $(cat apps/journeys-admin/.vercel-url) journeys-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "bunx vercel alias set $(cat apps/journeys-admin/.vercel-url) journeys-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
           "echo \"https://journeys-admin-$PR_NUMBER-jesusfilm.vercel.app\" > apps/journeys-admin/.vercel-url"
         ],
         "parallel": false
@@ -117,21 +117,21 @@
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
+        "command": "bunx @biomejs/biome check --diagnostic-level=warn",
         "cwd": "apps/journeys-admin"
       }
     },
     "lint:fix": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --write",
+        "command": "bunx @biomejs/biome check --write",
         "cwd": "apps/journeys-admin"
       }
     },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/journeys-admin/tsconfig.json"
+        "command": "bunx tsc -b apps/journeys-admin/tsconfig.json"
       }
     },
     "demo": {
@@ -157,7 +157,7 @@
             "command": "rm -rf apps/journeys-admin/__generated__"
           },
           {
-            "command": "npx apollo client:codegen --config apps/journeys-admin/apollo.config.js --target typescript --outputFlat apps/journeys-admin/__generated__"
+            "command": "bunx apollo client:codegen --config apps/journeys-admin/apollo.config.js --target typescript --outputFlat apps/journeys-admin/__generated__"
           }
         ]
       }
@@ -177,7 +177,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx i18next --config apps/journeys-admin/i18next-parser.config.js"
+            "command": "bunx i18next --config apps/journeys-admin/i18next-parser.config.js"
           }
         ]
       }

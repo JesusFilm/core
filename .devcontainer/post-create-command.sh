@@ -6,7 +6,7 @@ sudo chgrp node -R /workspaces
 
 cd /workspaces/core
 
-curl -fsSL https://bun.sh/install | bash
+curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.13"
 
 # add default user to postgres
 psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;"

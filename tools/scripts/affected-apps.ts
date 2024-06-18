@@ -6,7 +6,7 @@ const args = process.argv
 // '/workspaces/core/tools/scripts/affected-apps.ts',
 args.splice(0, 2)
 exec(
-  `npx nx show projects --affected ${args.join(' ')}`,
+  `bunx nx show projects --affected ${args.join(' ')}`,
   (_error, stdout, _stderr) => {
     const services = stdout
       .split('\n')

@@ -7,21 +7,21 @@
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
+        "command": "bunx @biomejs/biome check --diagnostic-level=warn",
         "cwd": "libs/shared/ui-dynamic"
       }
     },
     "lint:fix": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --write",
+        "command": "bunx @biomejs/biome check --write",
         "cwd": "libs/shared/ui-dynamic"
       }
     },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b libs/shared/ui-dynamic/tsconfig.json"
+        "command": "bunx tsc -b libs/shared/ui-dynamic/tsconfig.json"
       }
     },
     "test": {

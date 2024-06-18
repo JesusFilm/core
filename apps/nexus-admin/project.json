@@ -36,20 +36,20 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
-          "npx vercel build",
-          "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url",
-          "npx @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/nexus-admin/.vercel-url)/_next/static/"
+          "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID bunx vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "bunx vercel build",
+          "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID bunx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url",
+          "bunx @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/nexus-admin/.vercel-url)/_next/static/"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
-            "npx vercel build --prod",
-            "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url",
-            "npx @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://admin.nextstep.is/_next/static/"
+            "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID bunx vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "bunx vercel build --prod",
+            "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID bunx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url",
+            "bunx @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://admin.nextstep.is/_next/static/"
           ]
         }
       }
@@ -58,7 +58,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx vercel alias set $(cat apps/nexus-admin/.vercel-url) nexus-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "bunx vercel alias set $(cat apps/nexus-admin/.vercel-url) nexus-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
           "echo \"https://nexus-admin-$PR_NUMBER-jesusfilm.vercel.app\" > apps/nexus-admin/.vercel-url"
         ],
         "parallel": false
@@ -100,21 +100,21 @@
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
+        "command": "bunx @biomejs/biome check --diagnostic-level=warn",
         "cwd": "apps/nexus-admin"
       }
     },
     "lint:fix": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --write",
+        "command": "bunx @biomejs/biome check --write",
         "cwd": "apps/nexus-admin"
       }
     },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/nexus-admin/tsconfig.json"
+        "command": "bunx tsc -b apps/nexus-admin/tsconfig.json"
       }
     },
     "codegen": {
@@ -128,7 +128,7 @@
             "command": "rm -rf apps/nexus-admin/__generated__"
           },
           {
-            "command": "npx apollo client:codegen --config apps/nexus-admin/apollo.config.js --target typescript --outputFlat apps/nexus-admin/__generated__"
+            "command": "bunx apollo client:codegen --config apps/nexus-admin/apollo.config.js --target typescript --outputFlat apps/nexus-admin/__generated__"
           }
         ]
       }
@@ -148,7 +148,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx i18next --config apps/nexus-admin/i18next-parser.config.js"
+            "command": "bunx i18next --config apps/nexus-admin/i18next-parser.config.js"
           }
         ]
       }

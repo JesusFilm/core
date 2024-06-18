@@ -19,7 +19,6 @@
             "output": "./assets"
           }
         ],
-        "generatePackageJson": true,
         "compiler": "tsc",
         "target": "node",
         "webpackConfig": "apps/api-languages/webpack.config.js"
@@ -48,20 +47,20 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-languages --transpileOnly"
+        "command": "bun run ts-node tools/scripts/generate-typings.ts api-languages --transpileOnly"
       }
     },
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
+        "command": "bunx @biomejs/biome check --diagnostic-level=warn",
         "cwd": "apps/api-languages"
       }
     },
     "lint:fix": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --write",
+        "command": "bunx @biomejs/biome check --write",
         "cwd": "apps/api-languages"
       }
     },
@@ -94,7 +93,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma generate --schema apps/api-languages/db/schema.prisma"
+          "bunx prisma generate --schema apps/api-languages/db/schema.prisma"
         ]
       }
     },
@@ -102,14 +101,14 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bash -c 'npx prisma migrate dev --schema apps/api-languages/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+          "bash -c 'bunx prisma migrate dev --schema apps/api-languages/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "npx prisma migrate deploy --schema apps/api-languages/db/schema.prisma"
+            "bunx prisma migrate deploy --schema apps/api-languages/db/schema.prisma"
           ]
         }
       }
@@ -118,21 +117,21 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate reset --schema apps/api-languages/db/schema.prisma --force"
+          "bunx prisma migrate reset --schema apps/api-languages/db/schema.prisma --force"
         ]
       }
     },
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run ts-node apps/api-languages/db/seed.ts"]
+        "commands": ["bun run ts-node apps/api-languages/db/seed.ts"]
       }
     },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma studio --schema apps/api-languages/db/schema.prisma"
+          "bunx prisma studio --schema apps/api-languages/db/schema.prisma"
         ]
       }
     },
@@ -140,7 +139,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma validate --schema apps/api-languages/db/schema.prisma"
+          "bunx prisma validate --schema apps/api-languages/db/schema.prisma"
         ]
       }
     },
