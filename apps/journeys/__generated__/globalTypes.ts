@@ -98,6 +98,10 @@ export enum MessagePlatform {
   whatsApp = "whatsApp",
 }
 
+export enum Role {
+  publisher = "publisher",
+}
+
 export enum Service {
   apiJourneys = "apiJourneys",
   apiLanguages = "apiLanguages",
