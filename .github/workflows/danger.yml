@@ -27,6 +27,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: NPM Install
+        run: npm install @commitlint/cli@17.7.1 @commitlint/lint@17.7.0 @vidavidorra/commitlint-config@5.0.2 danger@11.2.8
+        
       - name: Danger JS
         run: npx danger ci --failOnErrors
         env:
