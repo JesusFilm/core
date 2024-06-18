@@ -138,12 +138,12 @@ export const VisitorInteraction = ({
               </Section>
               {filteredEvents.map((event) => (
                 <Section key={event?.id} align="center" className="px-[28px]">
-                  <Column className="w-3/4">
+                  <Column className="w-2/4">
                     <Text className="font-sans text-[16px] leading-[24px] mb-[0px]">
                       {event.label}
                     </Text>
                   </Column>
-                  <Column className="w-1/4">
+                  <Column className="w-2/4">
                     <Text className="font-sans text-[16px] leading-[24px]  mb-[0px]">
                       {'\u00B7\u00A0\u00A0'} {event.value}
                     </Text>
