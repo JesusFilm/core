@@ -7,6 +7,7 @@ import { ComponentProps } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '../../../__generated__/GetJourney'
@@ -18,7 +19,6 @@ import {
   JourneyFields as Journey,
   JourneyFields_tags as Tag
 } from '../../../__generated__/JourneyFields'
-import { GET_USER_ROLE } from '../../libs/useUserRoleQuery/useUserRoleQuery'
 import { defaultJourney, publishedJourney } from '../Editor/data'
 
 import { journeyVideoBlocks } from './TemplatePreviewTabs/data'
