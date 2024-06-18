@@ -51,8 +51,8 @@ jobs:
           parallel: 1
         env:
           DISABLE_ERD: true
-      - name: bun apollo and graphql for codegen
-        run: bun i -g apollo graphql @apollo/rover@0.22.0
+      - name: bun apollo for codegen
+        run: bun i -g apollo @apollo/rover@0.23.0
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:
