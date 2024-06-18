@@ -69,16 +69,15 @@ export function VisitorCardDetails({
                   loading={loading}
                 />
               )
-            } else {
-              return (
-                <DetailsRow
-                  key={event.id}
-                  label={event.label}
-                  value={event.value}
-                  loading={loading}
-                />
-              )
             }
+            return (
+              <DetailsRow
+                key={event.id}
+                label={event.label}
+                value={event.value}
+                loading={loading}
+              />
+            )
           })}
         </>
       )}

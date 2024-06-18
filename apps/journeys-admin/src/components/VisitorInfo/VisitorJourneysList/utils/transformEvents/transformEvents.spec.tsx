@@ -4,6 +4,7 @@ import {
   GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent as Event,
   GetVisitorEvents_visitor_events_JourneyViewEvent as JourneyViewEvent,
   GetVisitorEvents_visitor_events_SignUpSubmissionEvent as SignUpEvent,
+  GetVisitorEvents_visitor_events_TextResponseSubmissionEvent as TextResponseEvent,
   GetVisitorEvents_visitor_events_VideoCollapseEvent as VideoCollapseEvent,
   GetVisitorEvents_visitor_events_VideoCompleteEvent as VideoCompleteEvent,
   GetVisitorEvents_visitor_events_VideoExpandEvent as VideoExpandEvent,
@@ -49,13 +50,34 @@ const chatOpenEvent: ChatOpenEvent = {
   messagePlatform: MessagePlatform.facebook,
   createdAt: '2022-11-02T03:20:16.368Z'
 }
-const textResponseEvent: Event = {
+const textResponseEvent: TextResponseEvent = {
   __typename: 'TextResponseSubmissionEvent',
   id: 'textResponseSubmissionEvent1.id',
   journeyId: 'journey1.id',
   label: 'Text response label - journey 1',
   value: 'Text response submission - journey 1',
-  createdAt: '2022-11-02T03:30:16.368Z'
+  createdAt: '2022-11-02T03:30:16.368Z',
+  blockId: 'blockId'
+}
+
+const textResponseEvent2: TextResponseEvent = {
+  __typename: 'TextResponseSubmissionEvent',
+  id: 'textResponseSubmissionEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'Text response label - journey 1',
+  value: 'Text response submission two - journey 1',
+  createdAt: '2022-11-02T03:31:16.368Z',
+  blockId: 'blockId'
+}
+
+const textResponseEvent3: TextResponseEvent = {
+  __typename: 'TextResponseSubmissionEvent',
+  id: 'textResponseSubmissionEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'Text response label - journey 1',
+  value: 'Text response submission three most recent text response - journey 1',
+  createdAt: '2022-11-02T03:32:16.368Z',
+  blockId: 'blockId'
 }
 const buttonClickEvent: ButtonClickEvent = {
   __typename: 'ButtonClickEvent',
@@ -245,6 +267,17 @@ describe('transformEvents', () => {
     it('should calculate total duration', () => {
       const result = transformEvents([journeyViewEvent, videoCompleteEvent])
       expect(result.totalDuration).toBe('27:52')
+    })
+    it('should only return most recent text response', () => {
+      const result = transformEvents([
+        textResponseEvent,
+        textResponseEvent2,
+        textResponseEvent3
+      ])
+      expect(result.timelineItems).toHaveLength(1)
+      expect((result.timelineItems[0] as TimelineItem).event.value).toEqual(
+        'Text response submission three most recent text response - journey 1'
+      )
     })
   })
 
