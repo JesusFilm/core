@@ -1,7 +1,6 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { Theme } from '@mui/material/styles'
