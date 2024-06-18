@@ -28,9 +28,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: NPM Install
-        run: npm install @commitlint/cli@17.7.1 @commitlint/lint@17.7.0 @vidavidorra/commitlint-config@5.0.2 danger@11.2.8
-        
+        run: bun install --silent --frozen-lockfile
+
       - name: Danger JS
-        run: npx danger ci --failOnErrors
+        run: bunx danger ci --failOnErrors
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

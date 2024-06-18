@@ -6,4 +6,3 @@ module.exports = composePlugins(withNx(), (config) => {
   // See: https://nx.dev/recipes/webpack/webpack-config-setup
   return config
 })
-
