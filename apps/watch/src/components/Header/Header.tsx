@@ -15,8 +15,8 @@ import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import logo from './assets/logo.svg'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
+import logo from './assets/logo.svg'
 
 interface LocalAppBarProps extends AppBarProps {
   onMenuClick: MouseEventHandler<HTMLButtonElement>

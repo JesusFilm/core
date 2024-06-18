@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
-import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { alpha } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -56,8 +56,6 @@ export function ActionButton({
         return extractTitleAndConnection(block, t('Option'))
       case 'SignUpBlock':
         return extractTitleAndConnection(block, t('Subscribe'))
-      case 'TextResponseBlock':
-        return extractTitleAndConnection(block, t('Feedback'))
       case 'VideoBlock':
         return extractTitleAndConnection(block, t('Video'))
       case 'StepBlock':
@@ -67,12 +65,12 @@ export function ActionButton({
     }
   }
 
-  const { title, isSourceConnected, typename } = getTitleAndConnection()
+  const { title, isSourceConnected } = getTitleAndConnection()
 
   return (
     <BaseNode
       id={block.id}
-      sourceHandle={typename !== 'TextResponseBlock' ? 'show' : 'hide'}
+      sourceHandle="show"
       onSourceConnect={updateEdge}
       selected={selected}
       isSourceConnected={isSourceConnected}

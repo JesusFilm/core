@@ -113,7 +113,7 @@ export class AssessmentPage {
 
   async setJourneyName(journey: string) {
     journeyName =
-      (journey == 'firstJourneyName'
+      (journey === 'firstJourneyName'
         ? testData.journey.firstJourneyName
         : testData.journey.secondJourneyName) + randomNumber
   }

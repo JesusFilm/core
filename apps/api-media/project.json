@@ -57,8 +57,18 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @biomejs/biome check  --diagnostic-level=warn",
+        "cwd": "apps/api-media"
+      }
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @biomejs/biome check --write",
+        "cwd": "apps/api-media"
+      }
     },
     "test": {
       "executor": "@nx/jest:jest",

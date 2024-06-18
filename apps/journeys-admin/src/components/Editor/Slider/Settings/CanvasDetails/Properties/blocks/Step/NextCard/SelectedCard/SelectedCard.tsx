@@ -7,21 +7,21 @@ import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import Lock1Icon from '@core/shared/ui/icons/Lock1'
 import MinusCircleContained from '@core/shared/ui/icons/MinusCircleContained'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
+import { StepBlockNextBlockUpdate } from '../../../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
+import { StepFields } from '../../../../../../../../../../../__generated__/StepFields'
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../../__generated__/globalTypes'
-import { StepBlockNextBlockUpdate } from '../../../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
-import { StepFields } from '../../../../../../../../../../../__generated__/StepFields'
 import { FramePortal } from '../../../../../../../../../FramePortal'
 import { CardWrapper } from '../../../../../../../Content/Canvas/CardWrapper'
 import { VideoWrapper } from '../../../../../../../Content/Canvas/VideoWrapper'

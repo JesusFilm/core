@@ -4,8 +4,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
 import { useJourneyQuery } from '../../../../libs/useJourneyQuery'
