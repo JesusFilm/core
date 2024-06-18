@@ -5,8 +5,8 @@ import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 

@@ -9,7 +9,6 @@ import {
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-
 import { TeamSelect } from '.'
 
 const TeamSelectStory: Meta<typeof TeamSelect> = {

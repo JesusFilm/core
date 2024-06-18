@@ -11,7 +11,6 @@ import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 
-
 import { CopyToTeamDialog } from './CopyToTeamDialog'
 
 describe('DuplicateJourneys', () => {

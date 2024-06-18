@@ -4,7 +4,6 @@ import { Meta, StoryObj } from '@storybook/react'
 import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-
 import { TeamAvatars } from './TeamAvatars'
 
 const TeamAvatarsStory: Meta<typeof TeamAvatars> = {

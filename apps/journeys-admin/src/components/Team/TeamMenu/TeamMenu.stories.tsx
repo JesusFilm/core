@@ -10,7 +10,6 @@ import {
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-
 import { TeamMenu } from '.'
 
 const TeamMenuStory: Meta<typeof TeamMenu> = {

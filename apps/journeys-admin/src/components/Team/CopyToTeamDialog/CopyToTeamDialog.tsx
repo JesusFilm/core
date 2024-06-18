@@ -12,7 +12,6 @@ import { useUpdateLastActiveTeamIdMutation } from '@core/journeys/ui/useUpdateLa
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-
 interface CopyToTeamDialogProps {
   title: string
   submitLabel?: string

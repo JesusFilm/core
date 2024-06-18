@@ -6,7 +6,6 @@ import { SnackbarProvider } from 'notistack'
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
-
 import { RestoreJourneyDialog } from '.'
 
 const RestoreJourneyDialogDemo: Meta<typeof RestoreJourneyDialog> = {
