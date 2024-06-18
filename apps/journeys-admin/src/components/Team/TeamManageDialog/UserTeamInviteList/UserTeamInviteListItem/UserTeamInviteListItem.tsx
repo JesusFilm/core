@@ -41,7 +41,7 @@ export function UserTeamInviteListItem({
         container
         spacing={1}
         alignItems="center"
-        data-testId="UserListItem"
+        data-testId="UserTeamInviteListItem"
       >
         <Grid xs={2} sm={1}>
           <Avatar src={undefined} alt={email}>
