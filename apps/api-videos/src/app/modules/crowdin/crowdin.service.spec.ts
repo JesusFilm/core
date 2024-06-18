@@ -88,7 +88,7 @@ describe('CrowdinService', () => {
                 <target>스토리 클럽</target>
               </trans-unit>
               </body>
-            </file>
+            </file>star
             <file id="36" original="/Arclight/collection_title.csv" source-language="en" target-language="ko">
               <body>
               <trans-unit id="2" resname="cl13-0-0">
@@ -323,7 +323,7 @@ describe('CrowdinService', () => {
       mockGetTranslations.mockResolvedValue({
         ko: [
           {
-            content: `wrong format`,
+            content: 'wrong format',
             file: '/content/3804.xliff'
           }
         ]
