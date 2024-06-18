@@ -4,7 +4,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Service } from '../../../../__generated__/globalTypes'
 import { GET_TAGS } from '../../../libs/useTagsQuery'
 
-
 import { TagsFilter } from '.'
 
 describe('TagsFilter', () => {
