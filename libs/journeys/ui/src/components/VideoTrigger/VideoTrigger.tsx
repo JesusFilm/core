@@ -7,7 +7,7 @@ import Player from 'video.js/dist/types/player'
 import { isIPhone } from '@core/shared/ui/deviceUtils'
 
 import { handleAction } from '../../libs/action'
-import { type TreeBlock, useBlocks } from '../../libs/block'
+import { type TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 
@@ -29,11 +29,8 @@ export function VideoTrigger({
 }: VideoTriggerProps): ReactElement {
   const router = useRouter()
   const { variant } = useJourney()
-  const { blockHistory } = useBlocks()
   const [triggered, setTriggered] = useState(false)
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const activeBlock = blockHistory[blockHistory.length - 1]
-  const stepId = activeBlock?.id
 
   useEffect(() => {
     if (player != null && !triggered) {
@@ -87,7 +84,7 @@ export function VideoTrigger({
               props: {
                 ...input,
                 key: keyify({
-                  stepId,
+                  stepId: input.blockId,
                   event: 'videoTrigger',
                   blockId: input.blockId,
                   target: triggerAction
