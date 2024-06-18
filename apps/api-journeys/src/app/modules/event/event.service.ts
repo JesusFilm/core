@@ -68,10 +68,8 @@ export class EventService {
 
   @FromPostgresql()
   async save<T>(input: Prisma.EventCreateInput): Promise<T> {
-    return (await this.prismaService.event.upsert({
-      where: { id: input.id },
-      update: { ...input },
-      create: input
+    return (await this.prismaService.event.create({
+      data: input
     })) as unknown as T
   }
 }
