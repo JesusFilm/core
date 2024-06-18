@@ -3,15 +3,15 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { VideoBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import { UpdateVideoBlockNextStep } from '../../../../../../../../../../__generated__/UpdateVideoBlockNextStep'
 import { VideoBlockUpdate } from '../../../../../../../../../../__generated__/VideoBlockUpdate'
+import { VideoBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import { VideoBlockEditor } from '../../../../../Drawer/VideoBlockEditor'
 
 export const VIDEO_BLOCK_UPDATE = gql`

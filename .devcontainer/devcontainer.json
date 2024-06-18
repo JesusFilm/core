@@ -9,17 +9,15 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "dbaeumer.vscode-eslint",
         "nrwl.angular-console",
         "eamodio.gitlens",
         "graphql.vscode-graphql",
-        "esbenp.prettier-vscode",
         "mtxr.sqltools",
         "mtxr.sqltools-driver-pg",
         "prisma.prisma",
         "firsttris.vscode-jest-runner",
-        "dbaeumer.vscode-eslint",
-        "redhat.vscode-yaml"
+        "redhat.vscode-yaml",
+        "biomejs.biome"
       ]
     }
   },

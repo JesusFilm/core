@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { styled } from '@mui/material/styles'
 import kebabCase from 'lodash/kebabCase'
 import {
   ComponentProps,

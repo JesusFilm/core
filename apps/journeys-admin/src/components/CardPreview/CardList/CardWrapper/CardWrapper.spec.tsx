@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { Card } from '@core/journeys/ui/Card'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 

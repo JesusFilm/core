@@ -4,9 +4,9 @@ import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import get from 'lodash/get'
 
-import { Action, Block } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import { Action, Block } from '.prisma/api-journeys-client'
 
 import { AppAbility, Action as CaslAction } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'

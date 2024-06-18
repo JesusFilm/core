@@ -16,7 +16,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TemplateCardPreview', () => {
   it('renders correct number of cards', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(false)
     const steps = [
       { id: '1', children: [{ __typename: 'CardBlock' }] },
@@ -70,7 +69,6 @@ describe('TemplateCardPreview', () => {
   })
 
   it('renders correct number of cards on small breakpoints', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(true)
     const steps = [
       { id: '1', children: [{ __typename: 'CardBlock' }] },
