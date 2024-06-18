@@ -1,4 +1,4 @@
-interface Event {
+export interface Event {
   id: string
   __typename: string
   blockId?: string | null

@@ -2,8 +2,8 @@ import differenceInMilliseconds from 'date-fns/differenceInMilliseconds'
 import parseISO from 'date-fns/parseISO'
 import forEachRight from 'lodash/forEachRight'
 
+import { filterRecentTextResponseEvents } from '@core/journeys/ui/filterRecentTextResponseEvents'
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../../__generated__/GetVisitorEvents'
-import { filterRecentTextResponseEvents } from '../../../../../libs/filterRecentTextResponseEvents'
 
 export interface TimelineItem {
   event: Event

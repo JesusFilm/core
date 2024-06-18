@@ -1,3 +1,4 @@
+import { filterRecentTextResponseEvents } from '@core/journeys/ui/filterRecentTextResponseEvents'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -7,7 +8,6 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { GetJourneyVisitors_visitors_edges_node_events as Event } from '../../../../../__generated__/GetJourneyVisitors'
-import { filterRecentTextResponseEvents } from '../../../../libs/filterRecentTextResponseEvents'
 
 interface VisitorCardDetailsProps {
   name?: string | null

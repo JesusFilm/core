@@ -1,8 +1,8 @@
 import {
   GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonClickEvent,
   GetVisitorEvents_visitor_events_TextResponseSubmissionEvent as TextResponseEvent
-} from '../../../__generated__/GetVisitorEvents'
-import { ButtonAction } from '../../../__generated__/globalTypes'
+} from '../../../../../../apps/journeys-admin/__generated__/GetVisitorEvents'
+import { ButtonAction } from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
 import { filterRecentTextResponseEvents } from './filterRecentTextResponseEvents'
 
 const textResponseEvent: TextResponseEvent = {
