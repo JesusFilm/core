@@ -6,7 +6,7 @@ import crypto from 'crypto'
 import { configure } from '@testing-library/react'
 
 import { mswServer } from './test/mswServer'
-import '@core/journeys/ui/test/i18n'
+import './test/i18n'
 
 configure({ asyncUtilTimeout: 2500 })
 
