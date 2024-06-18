@@ -52,7 +52,6 @@ const DynamicCard = dynamic<
   TreeBlock<CardBlock> & { wrappers?: WrappersProps }
 >(
   async () =>
-    // eslint-disable-next-line import/no-cycle
     await import(
       /* webpackChunkName: "Card" */
       '../Card'

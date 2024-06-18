@@ -15,9 +15,9 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { GetJourneyWithPermissions_journey_team_userTeams as JourneyTeamUserTeam } from '../../../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
-import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
 import { UserTeamUpdate } from '../../../../../../__generated__/UserTeamUpdate'
 import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
+import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
 import { MenuItem } from '../../../../MenuItem'
 import { UserTeamDeleteMenuItem } from '../../UserTeamDeleteMenuItem'
 

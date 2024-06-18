@@ -24,7 +24,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TeamCreateDialog', () => {
   beforeEach(() => {
-    // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
   })
 

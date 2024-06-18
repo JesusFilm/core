@@ -22,11 +22,11 @@ import {
   GetCustomDomains_customDomains as CustomDomain,
   GetCustomDomains_customDomains_journeyCollection_journeys as Journey
 } from '../../../../../__generated__/GetCustomDomains'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import {
   UpdateJourneyCollection,
   UpdateJourneyCollectionVariables
 } from '../../../../../__generated__/UpdateJourneyCollection'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../../libs/useAdminJourneysQuery'
 import { useTeam } from '../../TeamProvider'
 import { CustomDomainDialogTitle } from '../CustomDomainDialogTitle'
