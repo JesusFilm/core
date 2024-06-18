@@ -180,7 +180,6 @@ describe('siteCreateMutation', () => {
       ]
     }
     prismaMock.sites.create.mockResolvedValue(site)
-    prismaMock.sites.findUniqueOrThrow.mockResolvedValue(site)
     const data = await client({
       document: SITE_CREATE_MUTATION,
       variables: {
