@@ -3,6 +3,7 @@ import parseISO from 'date-fns/parseISO'
 import forEachRight from 'lodash/forEachRight'
 
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../../__generated__/GetVisitorEvents'
+import { filterRecentTextResponseEvents } from '../../../../../libs/filterRecentTextResponseEvents'
 
 export interface TimelineItem {
   event: Event
@@ -44,9 +45,11 @@ export function transformEvents(events: Event[]): TransformedEvents {
     'VideoCompleteEvent'
   ]
 
-  const filteredEvents = sortedEvents.filter((event) =>
+  const includedEvents = sortedEvents.filter((event) =>
     eventTypesFilter.includes(event.__typename)
   )
+
+  const filteredEvents = filterRecentTextResponseEvents<Event>(includedEvents)
 
   const eventsWithDuration: TimelineItem[] = []
   filteredEvents.forEach((event, i) => {

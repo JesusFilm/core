@@ -6,10 +6,8 @@ import { format, parseISO } from 'date-fns'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import {
-  GetJourneyVisitors_visitors_edges_node_events as Event,
-  GetJourneyVisitors_visitors_edges_node_events_TextResponseSubmissionEvent as TextEvent
-} from '../../../../../__generated__/GetJourneyVisitors'
+import { GetJourneyVisitors_visitors_edges_node_events as Event } from '../../../../../__generated__/GetJourneyVisitors'
+import { filterRecentTextResponseEvents } from '../../../../libs/filterRecentTextResponseEvents'
 
 interface VisitorCardDetailsProps {
   name?: string | null
@@ -26,10 +24,7 @@ export function VisitorCardDetails({
 
   const eventsFilter: Array<Event['__typename']> = [
     'ChatOpenEvent',
-    'RadioQuestionSubmissionEvent'
-  ]
-
-  const textResponseEventFilter: Array<Event['__typename']> = [
+    'RadioQuestionSubmissionEvent',
     'TextResponseSubmissionEvent'
   ]
 
@@ -37,14 +32,7 @@ export function VisitorCardDetails({
     return eventsFilter.includes(event.__typename)
   })
 
-  const textResponseEvents: TextEvent[] = events.filter((event) =>
-    textResponseEventFilter.includes(event.__typename)
-  ) as TextEvent[]
-
-  const eventsToRender = [
-    ...filteredEvents,
-    ...filterRecentTextResponseEvents(textResponseEvents)
-  ]
+  const eventsToRender = filterRecentTextResponseEvents<Event>(filteredEvents)
 
   return (
     <Box
@@ -172,23 +160,4 @@ function DetailsRow({
       </Stack>
     </Stack>
   )
-}
-
-function filterRecentTextResponseEvents<T extends TextEvent>(events: T[]): T[] {
-  const eventMap = new Map<string, T>()
-
-  events.forEach((event) => {
-    if (event.blockId != null) {
-      const existingEvent = eventMap.get(event.blockId)
-      if (
-        existingEvent == null ||
-        new Date(event.createdAt as string) >
-          new Date(existingEvent.createdAt as string)
-      ) {
-        eventMap.set(event.blockId, event)
-      }
-    }
-  })
-
-  return Array.from(eventMap.values())
 }

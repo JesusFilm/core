@@ -67,6 +67,10 @@ export const GET_VISITOR_EVENTS = gql`
           source
           progress
         }
+        ... on TextResponseSubmissionEvent {
+          id
+          blockId
+        }
       }
     }
   }
