@@ -1,16 +1,15 @@
 import replace from 'lodash/replace'
 
-import { TreeBlock } from '../block'
-import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
-import { ActionBlock, isActionBlock } from '../isActionBlock'
 import { JourneyPlausibleEvents, reverseKeyify } from '../plausibleHelpers'
-import { generateActionTargetKey } from '../plausibleHelpers/plausibleHelpers'
 
 import { PlausibleJourneyAggregateVisitorsFields as JourneyAggregateVisitors } from './plausibleFields/__generated__/PlausibleJourneyAggregateVisitorsFields'
 import { PlausibleJourneyReferrerFields as JourneyReferrer } from './plausibleFields/__generated__/PlausibleJourneyReferrerFields'
 import { PlausibleJourneyStepsActionsFields as JourneyStepsAction } from './plausibleFields/__generated__/PlausibleJourneyStepsActionsFields'
 import { PlausibleJourneyStepsFields as JourneyStep } from './plausibleFields/__generated__/PlausibleJourneyStepsFields'
 import { PlausibleJourneyVisitorsPageExitsFields as JourneyVisitorsPageExit } from './plausibleFields/__generated__/PlausibleJourneyVisitorsPageExitsFields'
+import { TreeBlock } from '../block'
+import { isActionBlock } from '../isActionBlock'
+import { generateActionTargetKey } from '../plausibleHelpers/plausibleHelpers'
 
 export interface StatsBreakdown {
   journeySteps: JourneyStep[]
@@ -26,7 +25,8 @@ export interface JourneyStatsBreakdown {
   linksVisited: number
   referrers: JourneyReferrer[]
   stepsStats: StepStat[]
-  actionEventMap: Record<string, PlausibleEvent>
+  stepEventMap: Map<string, StepEventMapValue> // keyed by stepId to retrieve action events and all events by type
+  targetEventMap: Map<string, EventMapValue> // contains events keyed using blockId->target
 }
 
 interface StepStat {
@@ -34,10 +34,10 @@ interface StepStat {
   visitors: number
   timeOnPage: number
   visitorsExitAtStep: number
-  stepEvents: PlausibleEvent[]
 }
 
 export interface PlausibleEvent {
+  [K: string]: string | number | keyof JourneyPlausibleEvents | undefined
   stepId: string
   event: keyof JourneyPlausibleEvents
   blockId: string
@@ -46,23 +46,25 @@ export interface PlausibleEvent {
   events: number
 }
 
-interface PlausibleActionEvent extends PlausibleEvent {
-  target: string
-}
-
 export interface BlockAnalytics {
   percentOfStepEvents: number
   event: PlausibleEvent
 }
 
-interface StepAnalytics {
-  blockAnalyticsMap: Record<string, BlockAnalytics>
-  totalActiveEvents: number
-}
-
 interface TransformPlausibleBreakdownProps {
   journeyId?: string
   data?: StatsBreakdown
+}
+
+interface EventMapValue {
+  total: number
+  events: PlausibleEvent[]
+}
+
+interface StepEventMapValue {
+  blockMap: Map<string, EventMapValue>
+  eventMap: Map<keyof JourneyPlausibleEvents, EventMapValue>
+  total: number
 }
 
 const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
@@ -71,7 +73,6 @@ const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
   'textResponseSubmit',
   'signUpSubmit',
   'radioQuestionSubmit',
-  'chatButtonClick',
   'videoComplete'
 ]
 
@@ -99,15 +100,67 @@ export function transformPlausibleBreakdown({
       visitors: step.visitors ?? 0,
       timeOnPage: step.timeOnPage ?? 0,
       visitorsExitAtStep:
-        stepExits.find((step) => step.id === stepId)?.visitors ?? 0,
-      stepEvents: journeyEvents.filter((event) => event.stepId === stepId)
+        stepExits.find((step) => step.id === stepId)?.visitors ?? 0
     }
   })
 
-  const actionEventMap = Object.fromEntries(
-    journeyEvents
-      .filter(isActiveActionEvent)
-      .map((event) => [formatEventKey(event.blockId, event.target), event])
+  const { stepMap, targetMap } = journeyEvents.reduce(
+    (acc, event) => {
+      // add event to step map keyed by step and event type
+      const step = acc.stepMap.get(event.stepId) ?? {
+        blockMap: new Map<string, EventMapValue>([]),
+        eventMap: new Map<keyof JourneyPlausibleEvents, EventMapValue>([]),
+        total: 0
+      }
+
+      const stepEvent = step.eventMap.get(event.event) ?? {
+        total: 0,
+        events: []
+      }
+
+      stepEvent.total += event.events
+      stepEvent.events.push(event)
+
+      step.eventMap.set(event.event, stepEvent)
+
+      if (
+        event.target != null &&
+        event.target != '' &&
+        ACTION_EVENTS.includes(event.event)
+      ) {
+        // Add event to step blockMap
+        step.total += event.events
+
+        const block = step.blockMap.get(event.blockId) ?? {
+          total: 0,
+          events: []
+        }
+        block.total += event.events
+        block.events.push(event)
+
+        step.blockMap.set(event.blockId, block)
+
+        // add event to targetMap
+        const key = `${event.blockId}->${event.target}`
+        const target = acc.targetMap.get(key) ?? {
+          total: 0,
+          events: []
+        }
+
+        target.total += event.events
+        target.events.push(event)
+
+        acc.targetMap.set(key, target)
+      }
+
+      acc.stepMap.set(event.stepId, step)
+
+      return acc
+    },
+    {
+      stepMap: new Map<string, StepEventMapValue>([]),
+      targetMap: new Map<string, EventMapValue>([])
+    }
   )
 
   return {
@@ -116,7 +169,8 @@ export function transformPlausibleBreakdown({
     linksVisited,
     referrers: journeyReferrer,
     stepsStats,
-    actionEventMap
+    stepEventMap: stepMap,
+    targetEventMap: targetMap
   }
 }
 
@@ -203,47 +257,4 @@ export function getBlockEventKey(block?: TreeBlock): string {
   }
 
   return key
-}
-
-function isActiveActionEvent(
-  event: PlausibleEvent
-): event is PlausibleActionEvent {
-  return ACTION_EVENTS.includes(event.event) && event.target != null
-}
-
-export function getStepAnalytics(
-  blocks: Array<TreeBlock<StepBlock> | ActionBlock>,
-  eventMap?: Record<string, PlausibleEvent>
-): StepAnalytics {
-  let totalActiveEvents = 0
-  const blockAnalyticsMap: { [key: string]: BlockAnalytics } = {}
-
-  // Iterate over action blocks to populate blockAnalyticsMap and totalActiveEvents
-  blocks.forEach((block) => {
-    if (block == null) return
-
-    const key = getBlockEventKey(block)
-    const event = eventMap?.[key]
-
-    if (event != null) {
-      totalActiveEvents += event.events
-      blockAnalyticsMap[block.id] = { event, percentOfStepEvents: 0 }
-    }
-  })
-
-  // Calculate
-  blocks.forEach((block) => {
-    const analytics = blockAnalyticsMap[block.id]
-
-    if (analytics == null) return
-
-    const percentage =
-      Math.round(
-        (analytics.event.events / totalActiveEvents + Number.EPSILON) * 100
-      ) / 100
-
-    blockAnalyticsMap[block.id].percentOfStepEvents = percentage
-  })
-
-  return { blockAnalyticsMap, totalActiveEvents }
 }
