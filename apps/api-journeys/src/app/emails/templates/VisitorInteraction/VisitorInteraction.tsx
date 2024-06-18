@@ -140,7 +140,7 @@ export const VisitorInteraction = ({
                 <Section key={event?.id} align="center" className="px-[28px]">
                   <Column className="w-2/4">
                     <Text className="font-sans text-[16px] leading-[24px] mb-[0px]">
-                      {event.label}
+                      {event.typename === 'ChatOpenEvent' ? 'Chat Started' : event.label}
                     </Text>
                   </Column>
                   <Column className="w-2/4">
@@ -203,7 +203,7 @@ const event: Event = {
   blockId: 'blockId',
   stepId: 'stepId',
   createdAt: new Date('2024-05-27T23:39:28.000Z'),
-  label: 'Step 1',
+  label: null,
   value: 'Test',
   visitorId: 'visitorId',
   action: null,
@@ -241,7 +241,6 @@ VisitorInteraction.PreviewProps = {
         ...event,
         typename: 'ChatOpenEvent',
         id: 'event 2',
-        label: 'Chat Open Event',
         value: '12:00 PM'
       },
       {
