@@ -67,12 +67,12 @@ interface TransformPlausibleBreakdownProps {
 
 const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
   'navigateNextStep',
-  'videoTrigger',
   'buttonClick',
   'textResponseSubmit',
   'signUpSubmit',
   'radioQuestionSubmit',
-  'chatButtonClick'
+  'chatButtonClick',
+  'videoComplete'
 ]
 
 export function transformPlausibleBreakdown({
@@ -178,7 +178,7 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
   }
 }
 
-export function formatEventKey(from: string, to: string): string {
+function formatEventKey(from: string, to: string): string {
   return `${from}->${to}`
 }
 
@@ -237,7 +237,10 @@ export function getStepAnalytics(
 
     if (analytics == null) return
 
-    const percentage = analytics.event.events / totalActiveEvents
+    const percentage =
+      Math.round(
+        (analytics.event.events / totalActiveEvents + Number.EPSILON) * 100
+      ) / 100
 
     blockAnalyticsMap[block.id].percentOfStepEvents = percentage
   })
