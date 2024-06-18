@@ -98,7 +98,6 @@ describe('ChatButtons', () => {
         query: CHAT_BUTTON_EVENT_CREATE,
         variables: {
           input: {
-            id: chatButtons[0]?.id,
             blockId: stepBlock?.id,
             stepId: stepBlock?.id,
             value: chatButtons[0].platform
