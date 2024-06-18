@@ -1,4 +1,3 @@
-/* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
 
 import { CardLevelActionPage } from '../../pages/card-level-actions'

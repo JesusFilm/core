@@ -1,11 +1,11 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
+import { appWithTranslation } from 'next-i18next'
+import { DefaultSeo } from 'next-seo'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
-import { appWithTranslation } from 'next-i18next'
-import { DefaultSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 
@@ -93,9 +93,7 @@ function WatchApp({
                 site: 'datadoghq.com',
                 service: 'watch',
                 env: '${process.env.NEXT_PUBLIC_VERCEL_ENV ?? ''}',
-                version: '${
-                  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
-                }',
+                version: '${process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''}',
                 sampleRate: 50,
                 sessionReplaySampleRate: 10,
                 trackInteractions: true,
