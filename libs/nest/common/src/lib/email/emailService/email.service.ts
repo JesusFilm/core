@@ -1,6 +1,6 @@
 import { SES } from '@aws-sdk/client-ses'
-import { Injectable } from '@nestjs/common'
 import { MailerService } from '@nestjs-modules/mailer'
+import { Injectable } from '@nestjs/common'
 
 export interface SendEmailParams {
   to: string

@@ -11,8 +11,8 @@ import {
 } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
 
-import { blocks, blocksWithStepBlockPosition } from './data'
 import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
+import { blocks, blocksWithStepBlockPosition } from './data'
 
 import { Editor } from '.'
 

@@ -84,7 +84,7 @@ export class CardLevelActionPage {
 
   async clickOnCreatedOrRenamedTextInJourneyCard(createdOrRenamed: string) {
     const text =
-      createdOrRenamed == 'created' ? this.journeyName : this.renameJourmeyName
+      createdOrRenamed === 'created' ? this.journeyName : this.renameJourmeyName
     await this.page
       .frameLocator(this.journeyCardFrame)
       .locator(
@@ -280,7 +280,7 @@ export class CardLevelActionPage {
 
   async verifyUploadVideoInJourney(uplodedType: string) {
     const videoName =
-      uplodedType == 'created'
+      uplodedType === 'created'
         ? testData.cardLevelAction.uploadVideoName
         : this.seletedVideo
     await expect(

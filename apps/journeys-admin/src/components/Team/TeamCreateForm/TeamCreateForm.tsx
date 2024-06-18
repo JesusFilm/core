@@ -5,9 +5,9 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { ObjectSchema, object, string } from 'yup'
 
-import { TeamCreateInput } from '../../../../__generated__/globalTypes'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { TeamCreateInput } from '../../../../__generated__/globalTypes'
 import { useTeamCreateMutation } from '../../../libs/useTeamCreateMutation'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
