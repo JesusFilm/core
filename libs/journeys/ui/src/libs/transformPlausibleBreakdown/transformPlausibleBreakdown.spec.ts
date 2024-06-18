@@ -1,6 +1,10 @@
+import { TreeBlock } from '../block'
+import { BlockFields_VideoBlock } from '../block/__generated__/BlockFields'
 import {
   JourneyStatsBreakdown,
   StatsBreakdown,
+  getBlockEventKey,
+  getStepAnalytics,
   transformPlausibleBreakdown
 } from './transformPlausibleBreakdown'
 
@@ -69,6 +73,12 @@ describe('transformPlausibleBreakdown', () => {
           property:
             '{"stepId":"step1.id","event":"chatButtonClick","blockId":"step1.id","target":"link:https://m.me/test"}',
           events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"step1.id","target":"step2.id"}',
+          events: 2
         }
       ],
       journeyReferrer: [
@@ -183,6 +193,13 @@ describe('transformPlausibleBreakdown', () => {
               blockId: 'step1.id',
               target: 'link:https://m.me/test',
               events: 5
+            },
+            {
+              stepId: 'step1.id',
+              event: 'videoComplete',
+              blockId: 'step1.id',
+              target: 'step2.id',
+              events: 2
             }
           ]
         },
@@ -244,6 +261,13 @@ describe('transformPlausibleBreakdown', () => {
           events: 5,
           stepId: 'step1.id',
           target: 'step2,id'
+        },
+        'step1.id->step2.id': {
+          blockId: 'step1.id',
+          event: 'videoComplete',
+          events: 2,
+          stepId: 'step1.id',
+          target: 'step2.id'
         }
       }
     }
@@ -251,5 +275,117 @@ describe('transformPlausibleBreakdown', () => {
     expect(
       transformPlausibleBreakdown({ journeyId: 'journeyId', data })
     ).toEqual(result)
+  })
+
+  it('should return key for step block', () => {
+    const stepBlock = {
+      id: 'step1.id',
+      locked: false,
+      nextBlockId: 'step2.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      __typename: 'StepBlock' as const,
+      children: []
+    }
+
+    expect(getBlockEventKey(stepBlock)).toEqual('step1.id->step2.id')
+  })
+
+  it('should return key for action block', () => {
+    const actionBlock = {
+      action: {
+        __typename: 'NavigateToBlockAction',
+        parentBlockId: 'video1.id',
+        gtmEventName: null,
+        blockId: 'step2.id'
+      },
+      id: 'video1.id',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      __typename: 'VideoBlock',
+      children: []
+    } as unknown as TreeBlock<BlockFields_VideoBlock>
+
+    expect(getBlockEventKey(actionBlock)).toEqual('video1.id->step2.id')
+  })
+
+  it('should get block analytics', () => {
+    const blocks = [
+      {
+        id: 'step1.id',
+        locked: false,
+        nextBlockId: 'step2.id',
+        parentBlockId: null,
+        parentOrder: 0,
+        __typename: 'StepBlock' as const,
+        children: []
+      },
+      {
+        action: {
+          __typename: 'NavigateToBlockAction',
+          parentBlockId: 'video1.id',
+          gtmEventName: null,
+          blockId: 'step2.id'
+        },
+        id: 'video1.id',
+        parentBlockId: 'step1.id',
+        parentOrder: 0,
+        __typename: 'VideoBlock',
+        children: []
+      } as unknown as TreeBlock<BlockFields_VideoBlock>
+    ]
+
+    const eventMap = {
+      'step1.id->step2.id': {
+        blockId: 'step1.id',
+        event: 'navigateNextStep',
+        events: 5,
+        stepId: 'step1.id',
+        target: 'step2,id'
+      },
+      'video1.id->step2.id': {
+        blockId: 'step1.id',
+        event: 'videoComplete',
+        events: 2,
+        stepId: 'step1.id',
+        target: 'step2.id'
+      },
+      'step2.id->step3.id': {
+        blockId: 'step2.id',
+        event: 'navigateNextStep',
+        events: 5,
+        stepId: 'step2.id',
+        target: 'step3.id'
+      }
+    }
+
+    const { blockAnalyticsMap, totalActiveEvents } = getStepAnalytics(
+      blocks,
+      eventMap
+    )
+
+    expect(totalActiveEvents).toEqual(7)
+    expect(blockAnalyticsMap).toEqual({
+      'step1.id': {
+        event: {
+          blockId: 'step1.id',
+          event: 'navigateNextStep',
+          events: 5,
+          stepId: 'step1.id',
+          target: 'step2,id'
+        },
+        percentOfStepEvents: 0.71
+      },
+      'video1.id': {
+        event: {
+          blockId: 'step1.id',
+          event: 'videoComplete',
+          events: 2,
+          stepId: 'step1.id',
+          target: 'step2.id'
+        },
+        percentOfStepEvents: 0.29
+      }
+    })
   })
 })
