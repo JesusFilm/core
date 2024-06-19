@@ -3,7 +3,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
-import '@core/journeys/ui/test/i18n'
+import '../../../../test/i18n'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 

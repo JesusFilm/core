@@ -13,7 +13,7 @@ import {
   pendingActionJourney
 } from './ActiveJourneyListData'
 import { ActivePriorityList } from './ActivePriorityList'
-import '@core/journeys/ui/test/i18n'
+import '../../../../../test/i18n'
 
 describe('ActivePriorityList', () => {
   it('should show journeyCard in default priority for owners', () => {
