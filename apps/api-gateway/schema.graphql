@@ -571,6 +571,39 @@ enum GridJustifyContent
   center @join__enumValue(graph: JOURNEYS)
 }
 
+type GrowthSpaceIntegration implements Integration
+  @join__implements(graph: JOURNEYS, interface: "Integration")
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  teamId: String!
+  type: IntegrationType!
+  accessId: String!
+  accessSecretPart: String!
+  routes: [GrowthSpaceRoutes!]!
+}
+
+input GrowthSpaceIntegrationCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  accessId: String!
+  accessSecretPart: String!
+}
+
+input GrowthSpaceIntegrationUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  accessId: String
+  accessSecretPart: String
+}
+
+type GrowthSpaceRoutes
+  @join__type(graph: JOURNEYS)
+{
+  id: String!
+  name: String!
+}
+
 type Host
   @join__type(graph: JOURNEYS)
 {
@@ -748,6 +781,34 @@ input ImageBlockUpdateInput
   blurhash: String
   width: Int
   height: Int
+}
+
+interface Integration
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  teamId: String!
+  type: IntegrationType!
+}
+
+input IntegrationInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  teamId: String!
+}
+
+input IntegrationsFilter
+  @join__type(graph: JOURNEYS)
+{
+  teamId: ID!
+  type: IntegrationType!
+}
+
+enum IntegrationType
+  @join__type(graph: JOURNEYS)
+{
+  growthSpace @join__enumValue(graph: JOURNEYS)
 }
 
 scalar join__FieldSet
@@ -1393,6 +1454,9 @@ type Mutation
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
+  growthSpacesIntegrationCreate(teamId: ID!, input: GrowthSpaceIntegrationCreateInput!): GrowthSpaceIntegration! @join__field(graph: JOURNEYS)
+  growthSpacesIntegrationUpdate(teamId: ID!, input: GrowthSpaceIntegrationUpdateInput!): GrowthSpaceIntegration! @join__field(graph: JOURNEYS)
+  integrationDelete(input: IntegrationInput!): Integration! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyDuplicate(id: ID!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
@@ -1539,6 +1603,7 @@ type Query
   customDomain(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
   customDomains(teamId: ID!): [CustomDomain!]! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
+  integrations(input: IntegrationsFilter): [Integration!]! @join__field(graph: JOURNEYS)
 
   """
   returns all journeys that match the provided filters
@@ -2013,6 +2078,7 @@ type Team
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
+  integration: Integration
 }
 
 input TeamCreateInput
@@ -2040,6 +2106,7 @@ type TextResponseBlock implements Block
   label: String!
   hint: String
   minRows: Int
+  type: TextResponseType
 }
 
 input TextResponseBlockCreateInput
@@ -2099,6 +2166,14 @@ input TextResponseSubmissionEventCreateInput
 
   """response from the TextResponseBlock form"""
   value: String!
+}
+
+enum TextResponseType
+  @join__type(graph: JOURNEYS)
+{
+  freeForm @join__enumValue(graph: JOURNEYS)
+  name @join__enumValue(graph: JOURNEYS)
+  email @join__enumValue(graph: JOURNEYS)
 }
 
 enum ThemeMode

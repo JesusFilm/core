@@ -229,6 +229,9 @@ type Mutation {
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
+  growthSpacesIntegrationCreate(teamId: ID!, input: GrowthSpaceIntegrationCreateInput!): GrowthSpaceIntegration!
+  growthSpacesIntegrationUpdate(teamId: ID!, input: GrowthSpaceIntegrationUpdateInput!): GrowthSpaceIntegration!
+  integrationDelete(input: IntegrationInput!): Integration!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
   journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
@@ -350,6 +353,7 @@ extend type Query {
   customDomain(id: ID!): CustomDomain!
   customDomains(teamId: ID!): [CustomDomain!]!
   hosts(teamId: ID!): [Host!]!
+  integrations(input: IntegrationsFilter): [Integration!]!
 
   """
   returns all journeys that match the provided filters
@@ -855,6 +859,13 @@ type TextResponseBlock implements Block {
   label: String!
   hint: String
   minRows: Int
+  type: TextResponseType
+}
+
+enum TextResponseType {
+  freeForm
+  name
+  email
 }
 
 input TextResponseBlockCreateInput {
@@ -1925,6 +1936,50 @@ input HostCreateInput {
   src2: String
 }
 
+type GrowthSpaceRoutes {
+  id: String!
+  name: String!
+}
+
+type GrowthSpaceIntegration implements Integration {
+  id: ID!
+  teamId: String!
+  type: IntegrationType!
+  accessId: String!
+  accessSecretPart: String!
+  routes: [GrowthSpaceRoutes!]!
+}
+
+input GrowthSpaceIntegrationCreateInput {
+  accessId: String!
+  accessSecretPart: String!
+}
+
+input GrowthSpaceIntegrationUpdateInput {
+  accessId: String
+  accessSecretPart: String
+}
+
+enum IntegrationType {
+  growthSpace
+}
+
+interface Integration {
+  id: ID!
+  teamId: String!
+  type: IntegrationType!
+}
+
+input IntegrationInput {
+  id: ID!
+  teamId: String!
+}
+
+input IntegrationsFilter {
+  teamId: ID!
+  type: IntegrationType!
+}
+
 extend type Tag
   @key(fields: "id")
 {
@@ -2249,6 +2304,7 @@ type Team
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
+  integration: Integration
 }
 
 input TeamCreateInput {

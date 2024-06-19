@@ -92,6 +92,12 @@ export enum IconSize {
     inherit = "inherit"
 }
 
+export enum TextResponseType {
+    freeForm = "freeForm",
+    name = "name",
+    email = "email"
+}
+
 export enum TypographyVariant {
     h1 = "h1",
     h2 = "h2",
@@ -149,6 +155,10 @@ export enum MessagePlatform {
     line = "line",
     tikTok = "tikTok",
     custom = "custom"
+}
+
+export enum IntegrationType {
+    growthSpace = "growthSpace"
 }
 
 export enum IdType {
@@ -605,6 +615,26 @@ export class HostCreateInput {
     src2?: Nullable<string>;
 }
 
+export class GrowthSpaceIntegrationCreateInput {
+    accessId: string;
+    accessSecretPart: string;
+}
+
+export class GrowthSpaceIntegrationUpdateInput {
+    accessId?: Nullable<string>;
+    accessSecretPart?: Nullable<string>;
+}
+
+export class IntegrationInput {
+    id: string;
+    teamId: string;
+}
+
+export class IntegrationsFilter {
+    teamId: string;
+    type: IntegrationType;
+}
+
 export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
@@ -747,6 +777,12 @@ export interface Event {
     value?: Nullable<string>;
 }
 
+export interface Integration {
+    id: string;
+    teamId: string;
+    type: IntegrationType;
+}
+
 export class NavigateToBlockAction implements Action {
     __typename?: 'NavigateToBlockAction';
     parentBlockId: string;
@@ -886,6 +922,12 @@ export abstract class IMutation {
 
     abstract hostDelete(id: string, teamId: string): Host | Promise<Host>;
 
+    abstract growthSpacesIntegrationCreate(teamId: string, input: GrowthSpaceIntegrationCreateInput): GrowthSpaceIntegration | Promise<GrowthSpaceIntegration>;
+
+    abstract growthSpacesIntegrationUpdate(teamId: string, input: GrowthSpaceIntegrationUpdateInput): GrowthSpaceIntegration | Promise<GrowthSpaceIntegration>;
+
+    abstract integrationDelete(input: IntegrationInput): Integration | Promise<Integration>;
+
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
     abstract journeyDuplicate(id: string, teamId: string): Journey | Promise<Journey>;
@@ -1003,6 +1045,8 @@ export abstract class IQuery {
     abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
 
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
+
+    abstract integrations(input?: Nullable<IntegrationsFilter>): Integration[] | Promise<Integration[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 
@@ -1197,6 +1241,7 @@ export class TextResponseBlock implements Block {
     label: string;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
+    type?: Nullable<TextResponseType>;
 }
 
 export class TypographyBlock implements Block {
@@ -1459,6 +1504,22 @@ export class Host {
     src2?: Nullable<string>;
 }
 
+export class GrowthSpaceRoutes {
+    __typename?: 'GrowthSpaceRoutes';
+    id: string;
+    name: string;
+}
+
+export class GrowthSpaceIntegration implements Integration {
+    __typename?: 'GrowthSpaceIntegration';
+    id: string;
+    teamId: string;
+    type: IntegrationType;
+    accessId: string;
+    accessSecretPart: string;
+    routes: GrowthSpaceRoutes[];
+}
+
 export class PowerBiEmbed {
     __typename?: 'PowerBiEmbed';
     reportId: string;
@@ -1567,6 +1628,7 @@ export class Team {
     updatedAt: DateTime;
     userTeams: UserTeam[];
     customDomains: CustomDomain[];
+    integration?: Nullable<Integration>;
 }
 
 export class UserInvite {
